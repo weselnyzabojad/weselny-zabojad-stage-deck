@@ -52,12 +52,29 @@ const STEP_TYPE_STYLES = {
   HARD_ANCHOR: "text-[#ffb3ba] bg-[#ED2939]/20 border-[#ED2939]/60"
 };
 
+const SYNC_STATUS_STYLES = {
+  disabled: { label: "Local only", dot: "bg-slate-500", chip: "bg-[#111d3b] border-[#2b3d73] text-slate-300" },
+  connecting: { label: "Connecting…", dot: "bg-amber-400 animate-pulse", chip: "bg-amber-950/60 border-amber-800 text-amber-200" },
+  connected: { label: "Cloud synced", dot: "bg-emerald-400", chip: "bg-emerald-950/60 border-emerald-800 text-emerald-200" },
+  disconnected: { label: "Disconnected", dot: "bg-amber-500", chip: "bg-amber-950/60 border-amber-800 text-amber-200" },
+  offline: { label: "Offline", dot: "bg-slate-400", chip: "bg-slate-900 border-slate-700 text-slate-300" },
+  error: { label: "Sync error", dot: "bg-[#ED2939]", chip: "bg-[#ED2939]/20 border-[#ED2939]/60 text-[#ff8a93]" }
+};
+
 export default function App() {
-  const { liveState, markCurrentDone, undoLastStep, toggleSubtask, savedLocally } = useLiveStageState({
+  const { liveState, markCurrentDone, undoLastStep, toggleSubtask, savedLocally, syncStatus, syncError, remoteUpdatedAt } = useLiveStageState({
     steps: WEDDING.steps,
     weddingId: WEDDING.weddingId,
+    syncPin: WEDDING.syncPin,
     initialLiveState: INITIAL_LIVE_STATE
   });
+
+  const syncMeta = SYNC_STATUS_STYLES[syncStatus] ?? SYNC_STATUS_STYLES.disabled;
+  const syncTitle = syncError
+    ? `Cloud sync: ${syncError}`
+    : remoteUpdatedAt
+      ? `Last remote update: ${new Date(remoteUpdatedAt).toLocaleTimeString()}`
+      : "Cloud sync status";
 
   const { steps } = WEDDING;
   const activeIndex = liveState.active_step_id
@@ -101,7 +118,13 @@ export default function App() {
         <div className="flex items-center space-x-3 font-mono">
           <span className="text-slate-400">PIN: <strong className="text-white">{WEDDING.syncPin}</strong></span>
           <span className="text-slate-500">•</span>
-          <span className="text-slate-400">2 Dev</span>
+          <span
+            title={syncTitle}
+            className={`px-2.5 py-1 rounded text-xs border flex items-center space-x-1.5 ${syncMeta.chip}`}
+          >
+            <span className={`flex h-2 w-2 rounded-full inline-block ${syncMeta.dot}`}></span>
+            <span>{syncMeta.label}</span>
+          </span>
           <span className="bg-[#111d3b] text-slate-200 px-2.5 py-1 rounded text-xs border border-[#2b3d73] flex items-center space-x-1.5">
             <span className="flex h-2 w-2 rounded-full bg-[#002395] inline-block"></span>
             <span>Role: 🎤 {WEDDING.role}</span>
