@@ -314,6 +314,32 @@ The schema uses the app's canonical camelCase shape (`weddingId`, `syncPin`,
 keys; use `extensions` for forward-compatible extras. Legacy snake_case Google
 Docs imports will be mapped by the issue #15 importer.
 
+### 12. AI converter prompt and in-app importer (issue #15)
+
+The ingestion pipeline is now wired end-to-end:
+
+- `schema/ai-converter-prompt.md` is the copy-paste AI prompt. It defines the
+  exact v1.1 shape, ELASTIC/BUFFER/HARD_ANCHOR classification, buffer ranges,
+  hard anchors, teleprompter shapes, Joker games and pre-wedding task
+  extraction.
+- **Import** is available from the pairing screen (so a different wedding can
+  be loaded before entering its PIN) and from the MC header.
+- The importer combines the prompt with an optional raw-notes textarea, lets
+  you paste the generated JSON, validates it in the browser with the same Ajv
+  schema + semantic checks as the CLI, previews the cartridge and then imports.
+- Importing saves to `wzsd:v1:cartridge` and reloads the app. If the new
+  cartridge uses a different `syncPin`, the pairing gate appears for the new
+  wedding. **Reset to built-in demo** clears the imported cartridge.
+- `preWeddingTodos` from the cartridge render in the MC **🧳 Pre-Wedding
+  Checklist** card; check states use the synced `checked_subtasks` map.
+- Ajv is loaded on demand, keeping the main bundle lean while still validating
+  offline after the PWA caches the importer chunk.
+
+Relevant files: `schema/ai-converter-prompt.md`,
+`src/components/CartridgeImporter.jsx`, `src/components/PreWeddingChecklistCard.jsx`,
+`src/lib/cartridgeImporter.js`, `src/lib/cartridgeValidation.js`,
+`src/lib/cartridgeStorage.js`, `src/App.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

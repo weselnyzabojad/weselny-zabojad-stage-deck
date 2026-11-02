@@ -8,6 +8,7 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | --- | --- |
 | `wedding-schema-v1.1.json` | Draft 2020-12 JSON Schema. |
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
+| `ai-converter-prompt.md` | Copy-paste prompt for converting raw Google Docs / notes into v1.1 JSON. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
 
 Validate the example (or any cartridge):
@@ -17,9 +18,22 @@ npm run validate:schema
 npm run validate:schema -- path/to/cartridge.json
 ```
 
-The validator uses `ajv` and additionally checks things JSON Schema cannot
-express: duplicate IDs, live-state references, buffer bounds, deferred vs
-completed conflicts, and joker/VIP counts.
+The same schema and semantic checks run in the browser importer, so pasted
+cartridges are validated against the exact same contract before they replace
+the active wedding.
+
+## AI conversion workflow
+
+1. Open **Import** from the pairing screen or the MC header.
+2. Paste raw Google Doc notes into the importer.
+3. Copy **prompt + notes** into your AI.
+4. Paste the returned JSON into the importer.
+5. **Validate JSON** → **Import & reload**.
+
+The prompt at `ai-converter-prompt.md` uses this schema's canonical camelCase
+shape and also extracts `preWeddingTodos`, which render in the MC
+**Pre-Wedding Checklist** card.
+
 
 ## Canonical shape
 
