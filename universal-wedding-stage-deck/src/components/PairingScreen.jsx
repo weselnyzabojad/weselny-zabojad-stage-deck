@@ -5,7 +5,7 @@ const PIN_LENGTH = 4;
 
 // Full-screen pairing gate. Both devices in a room enter the wedding's
 // 4-digit PIN; the same PIN becomes the cloud sync room key.
-export default function PairingScreen({ wedding, onPair, cloudConfigured = false }) {
+export default function PairingScreen({ wedding, onPair, cloudConfigured = false, onImport }) {
   const [digits, setDigits] = useState(() => Array(PIN_LENGTH).fill(''));
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
@@ -212,6 +212,17 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
           >
             🔓 Pair this device
           </button>
+
+          {onImport ? (
+            <button
+              type="button"
+              onClick={onImport}
+              title="Import a WeddingSchema v1.1 cartridge"
+              className="w-full mt-2 py-2.5 rounded-xl font-heading font-semibold text-xs transition border border-[#2b3d73] bg-[#111d3b] text-slate-200 hover:bg-[#1c2a52]"
+            >
+              📥 Import wedding cartridge
+            </button>
+          ) : null}
 
           <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-mono text-slate-400">
             <span

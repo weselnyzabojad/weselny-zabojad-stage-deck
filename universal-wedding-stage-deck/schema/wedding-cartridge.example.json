@@ -118,6 +118,11 @@
       "title": "Hall Entrance, Toast & Dinner Start",
       "type": "ELASTIC",
       "location": "Main Hall",
+      "subTasks": [
+        "Parents' thank-you speech + gifts (with mic)",
+        "Rosół + Tartare with Vodka shot",
+        "Speeches between starter and main course"
+      ],
       "dj": {
         "playlist": "Dinner Jazz",
         "track": "Fly Me to the Moon — Frank Sinatra",

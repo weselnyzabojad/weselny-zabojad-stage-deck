@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import BufferAccordionCard from './components/BufferAccordionCard';
+import CartridgeImporter from './components/CartridgeImporter';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
@@ -9,6 +10,7 @@ import HardAnchorRadar from './components/HardAnchorRadar';
 import JokerDrawerCard from './components/JokerDrawerCard';
 import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
+import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
 import RoleSwitcher from './components/RoleSwitcher';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
@@ -20,6 +22,7 @@ import { useRole } from './hooks/useRole';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
+import { loadActiveCartridge } from './lib/cartridgeStorage';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -122,7 +125,7 @@ const VIP_ALERTS = [
   }
 ];
 
-const WEDDING = {
+const DEMO_WEDDING = {
   weddingId: "2026-08-20_jennifer_guillaume",
   couple: "Jennifer & Guillaume",
   date: "20.08.2026",
@@ -142,6 +145,11 @@ const WEDDING = {
     { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
+  ],
+  preWeddingTodos: [
+    { task: "Confirm Test Wiedzy questions with witnesses", done: true },
+    { task: "Check XLR cables at 16:15", done: false },
+    { task: "Confirm the Instax cameras and guestbook are packed", done: false }
   ],
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
@@ -171,6 +179,29 @@ const INITIAL_LIVE_STATE = {
   }
 };
 
+function buildInitialLiveState(wedding) {
+  const base = wedding.liveSyncState ?? {};
+  const preWedding = Object.fromEntries(
+    (wedding.preWeddingTodos ?? []).map((todo) => [todo.task, todo.done])
+  );
+  return {
+    ...base,
+    checked_subtasks: {
+      ...preWedding,
+      ...(base.checked_subtasks ?? {})
+    }
+  };
+}
+
+const DEFAULT_WEDDING = {
+  ...DEMO_WEDDING,
+  liveSyncState: INITIAL_LIVE_STATE,
+  steps: DEMO_WEDDING.steps.map((step) =>
+    step.id === "step_03" ? { ...step, subTasks: SUBTASKS } : step
+  )
+};
+const ACTIVE_WEDDING = loadActiveCartridge() ?? DEFAULT_WEDDING;
+
 const STEP_TYPE_STYLES = {
   ELASTIC: "text-white bg-[#002395] border-[#3b5bdb]",
   BUFFER: "text-cyan-200 bg-cyan-950/70 border-cyan-800",
@@ -178,6 +209,7 @@ const STEP_TYPE_STYLES = {
 };
 
 export default function App() {
+  const WEDDING = ACTIVE_WEDDING;
   const pairing = usePairing({ expectedPin: WEDDING.syncPin });
   const {
     liveState,
@@ -200,11 +232,12 @@ export default function App() {
     weddingId: WEDDING.weddingId,
     roomId: pairing.pin,
     syncPin: pairing.pin,
-    initialLiveState: INITIAL_LIVE_STATE
+    initialLiveState: buildInitialLiveState(WEDDING)
   });
   const { role, setRole } = useRole();
   const [overlay, setOverlay] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
+  const [importerOpen, setImporterOpen] = useState(false);
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
@@ -213,11 +246,20 @@ export default function App() {
 
   if (!pairing.isPaired) {
     return (
-      <PairingScreen
-        wedding={WEDDING}
-        onPair={pairing.pair}
-        cloudConfigured={syncConfigured}
-      />
+      <>
+        <PairingScreen
+          wedding={WEDDING}
+          onPair={pairing.pair}
+          cloudConfigured={syncConfigured}
+          onImport={() => setImporterOpen(true)}
+        />
+        <CartridgeImporter
+          key={importerOpen ? 'importer-open' : 'importer-closed'}
+          open={importerOpen}
+          onClose={() => setImporterOpen(false)}
+          currentCartridge={WEDDING}
+        />
+      </>
     );
   }
 
@@ -234,8 +276,10 @@ export default function App() {
 
   const steps = activeSteps(WEDDING.steps, liveState);
   const manualOffset = liveState.manual_offset_minutes ?? 0;
+  const vipAlerts = WEDDING.tact_and_vip_alerts ?? [];
+  const jokerCount = WEDDING.jokersCount ?? WEDDING.jokerGames?.length ?? 0;
   const driftReport = buildDriftReport(steps, liveState, {
-    jokerAvailable: WEDDING.jokersCount > 0,
+    jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
     manualOffsetMinutes: manualOffset,
   });
@@ -255,6 +299,7 @@ export default function App() {
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
+  const stepSubtasks = currentStep?.subTasks ?? [];
   const deferTarget = findDeferTarget(WEDDING.steps, liveState);
   const deferredSteps = WEDDING.steps.filter((step) =>
     liveState.deferred_step_ids?.includes(step.id),
@@ -328,7 +373,8 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+    <>
+      <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
       <header className="bg-[#0b132b] border-b border-[#1c2a52] px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
@@ -356,9 +402,17 @@ export default function App() {
             title="Open confidential VIP & tactful family alerts"
             className="bg-[#ED2939]/20 border border-[#ED2939]/60 text-[#ff808a] px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-[#ED2939]/30 active:bg-[#ED2939]/40 transition"
           >
-            🚨 VIP Radar ({WEDDING.tact_and_vip_alerts.length})
+            🚨 VIP Radar ({vipAlerts.length})
           </button>
-          <span className="bg-[#002395]/40 border border-[#3b5bdb] text-[#849dff] px-2.5 py-1 rounded cursor-pointer hover:bg-[#002395]/60 transition">🃏 Jokers ({WEDDING.jokersCount})</span>
+          <span className="bg-[#002395]/40 border border-[#3b5bdb] text-[#849dff] px-2.5 py-1 rounded cursor-pointer hover:bg-[#002395]/60 transition">🃏 Jokers ({jokerCount})</span>
+          <button
+            type="button"
+            onClick={() => setImporterOpen(true)}
+            title="Import a WeddingSchema v1.1 cartridge"
+            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+          >
+            📥 Import
+          </button>
         </div>
 
         <div className="flex items-center space-x-3 font-mono">
@@ -451,10 +505,11 @@ export default function App() {
                 </div>
 
                 {/* Catering & Sub-Tasks */}
-                <div className="mt-4 bg-[#070b19]/70 p-3.5 rounded-lg border border-[#1c2a52]">
+                {stepSubtasks.length > 0 ? (
+                  <div className="mt-4 bg-[#070b19]/70 p-3.5 rounded-lg border border-[#1c2a52]">
                   <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks (Tap to check off)</h3>
                   <div className="space-y-2">
-                    {SUBTASKS.map((task) => {
+                    {stepSubtasks.map((task) => {
                       const checked = Boolean(liveState.checked_subtasks[task]);
                       return (
                         <div 
@@ -474,6 +529,7 @@ export default function App() {
                     })}
                   </div>
                 </div>
+                ) : null}
               </div>
 
               {/* Launch overlays for the active step */}
@@ -549,6 +605,12 @@ export default function App() {
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
           <JokerDrawerCard steps={deferredSteps} onRestore={handleRestore} />
+
+          <PreWeddingChecklistCard
+            tasks={WEDDING.preWeddingTodos ?? []}
+            checked={liveState.checked_subtasks}
+            onToggle={toggleSubtask}
+          />
 
           <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
 
@@ -677,9 +739,17 @@ export default function App() {
         <GameClickerOverlay open game={game} onClose={closeOverlay} />
       )}
       {overlay === "vip" && (
-        <VipAlertsModal open alerts={WEDDING.tact_and_vip_alerts} onClose={closeOverlay} />
+        <VipAlertsModal open alerts={vipAlerts} onClose={closeOverlay} />
       )}
 
-    </div>
+      </div>
+
+      <CartridgeImporter
+        key={importerOpen ? 'importer-open' : 'importer-closed'}
+        open={importerOpen}
+        onClose={() => setImporterOpen(false)}
+        currentCartridge={WEDDING}
+      />
+    </>
   );
 }
