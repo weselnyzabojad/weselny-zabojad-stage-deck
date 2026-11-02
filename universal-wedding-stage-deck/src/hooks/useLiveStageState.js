@@ -1,10 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  addManualOffset as addManualOffsetState,
+  clearManualOffset as clearManualOffsetState,
+  deferStepToJoker,
   loadLiveState,
   markStepDone,
   normalizeLiveState,
+  restoreDeferredStep as restoreDeferredStepState,
   saveLiveState,
   storageKey,
+  swapStepWithNext,
   toggleSubtask as toggleSubtaskState,
   undoStep,
 } from '../lib/liveStageState';
@@ -190,12 +195,37 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
     setLiveState((state) => sendStagePingState(state, type, { stepId: state.active_step_id }));
   }, []);
 
+  const addManualOffset = useCallback((minutes = 15) => {
+    setLiveState((state) => addManualOffsetState(state, minutes));
+  }, []);
+
+  const clearManualOffset = useCallback(() => {
+    setLiveState((state) => clearManualOffsetState(state));
+  }, []);
+
+  const swapWithNext = useCallback(() => {
+    setLiveState((state) => swapStepWithNext(state, steps));
+  }, [steps]);
+
+  const deferToJokerDrawer = useCallback(() => {
+    setLiveState((state) => deferStepToJoker(state, steps));
+  }, [steps]);
+
+  const restoreDeferredStep = useCallback((stepId) => {
+    setLiveState((state) => restoreDeferredStepState(state, stepId, steps));
+  }, [steps]);
+
   return {
     liveState,
     markCurrentDone,
     undoLastStep,
     toggleSubtask,
     sendStagePing,
+    addManualOffset,
+    clearManualOffset,
+    swapWithNext,
+    deferToJokerDrawer,
+    restoreDeferredStep,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),

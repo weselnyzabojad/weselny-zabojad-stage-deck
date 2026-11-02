@@ -6,6 +6,7 @@ import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
 import HardAnchorAlertBanner from './components/HardAnchorAlertBanner';
 import HardAnchorRadar from './components/HardAnchorRadar';
+import JokerDrawerCard from './components/JokerDrawerCard';
 import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
 import RoleSwitcher from './components/RoleSwitcher';
@@ -18,6 +19,7 @@ import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
+import { activeSteps, findDeferTarget } from './lib/liveStageState';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -145,7 +147,7 @@ const WEDDING = {
     { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
     { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15" }, teleprompter: HALL_ENTRANCE_SCRIPT },
-    { id: "step_04", time: "19:30", durationMin: 30, title: "Buffets Open & Dance Floor", type: "BUFFER", location: "Main Hall", buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }, dj: { playlist: "Dance Floor Block", track: "September — Earth, Wind & Fire" } },
+    { id: "step_04", time: "19:30", durationMin: 30, title: "Buffets Open & Dance Floor", type: "BUFFER", location: "Main Hall", deferable: true, buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }, dj: { playlist: "Dance Floor Block", track: "September — Earth, Wind & Fire" } },
     { id: "step_05", time: "20:30", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
   ]
 };
@@ -183,6 +185,11 @@ export default function App() {
     undoLastStep,
     toggleSubtask,
     sendStagePing,
+    addManualOffset,
+    clearManualOffset,
+    swapWithNext,
+    deferToJokerDrawer,
+    restoreDeferredStep,
     savedLocally,
     syncStatus,
     syncConfigured,
@@ -197,6 +204,7 @@ export default function App() {
   });
   const { role, setRole } = useRole();
   const [overlay, setOverlay] = useState(null);
+  const [controlNotice, setControlNotice] = useState('');
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
@@ -224,10 +232,12 @@ export default function App() {
   const currentRole = roleIds.includes(role) ? role : "mc";
   const showDjCues = roleIds.includes("dj");
 
-  const { steps } = WEDDING;
+  const steps = activeSteps(WEDDING.steps, liveState);
+  const manualOffset = liveState.manual_offset_minutes ?? 0;
   const driftReport = buildDriftReport(steps, liveState, {
     jokerAvailable: WEDDING.jokersCount > 0,
     hardAnchors: WEDDING.hardAnchors,
+    manualOffsetMinutes: manualOffset,
   });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const currentStep = currentEntry?.step ?? null;
@@ -245,6 +255,34 @@ export default function App() {
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
+  const deferTarget = findDeferTarget(WEDDING.steps, liveState);
+  const deferredSteps = WEDDING.steps.filter((step) =>
+    liveState.deferred_step_ids?.includes(step.id),
+  );
+
+  const handleAddOffset = () => {
+    addManualOffset(15);
+    setControlNotice("Kitchen / vendor +15m offset applied.");
+  };
+  const handleClearOffset = () => {
+    clearManualOffset();
+    setControlNotice("Manual offset cleared.");
+  };
+  const handleSwap = () => {
+    if (!currentStep || !nextEntry) return;
+    setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
+    swapWithNext();
+  };
+  const handleDefer = () => {
+    if (!deferTarget) return;
+    setControlNotice(`Deferred ${deferTarget.title} to the Joker Drawer.`);
+    deferToJokerDrawer();
+  };
+  const handleRestore = (stepId) => {
+    const step = WEDDING.steps.find((candidate) => candidate.id === stepId);
+    restoreDeferredStep(stepId);
+    setControlNotice(`Restored ${step?.title ?? "block"} from the Joker Drawer.`);
+  };
 
   const roleProps = {
     role: currentRole,
@@ -510,6 +548,8 @@ export default function App() {
 
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
+          <JokerDrawerCard steps={deferredSteps} onRestore={handleRestore} />
+
           <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
 
           {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
@@ -531,15 +571,73 @@ export default function App() {
         {/* Drift & Sequence Controls */}
         <div className="flex items-center space-x-2 overflow-x-auto py-1">
           <span className="text-xs font-heading font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
-          <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-white px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow">
+          <button
+            type="button"
+            onClick={handleAddOffset}
+            disabled={isComplete}
+            title="Add 15 minutes to the upcoming kitchen / vendor block"
+            className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
+              isComplete
+                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
+                : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-white"
+            }`}
+          >
             ⏱️ Kitchen / Vendor +15m
           </button>
-          <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow">
+          {manualOffset > 0 ? (
+            <span
+              title="Manual kitchen / vendor offset applied to upcoming blocks"
+              className="flex items-center gap-1 rounded-lg border border-amber-800 bg-amber-950/70 px-2.5 py-1.5 font-mono text-[10px] whitespace-nowrap text-amber-200"
+            >
+              +{manualOffset}m offset
+              <button
+                type="button"
+                onClick={handleClearOffset}
+                title="Clear manual offset"
+                aria-label="Clear manual offset"
+                className="rounded px-1 text-sm leading-none text-amber-300 hover:bg-amber-900/60 hover:text-white"
+              >
+                ×
+              </button>
+            </span>
+          ) : null}
+          <button
+            type="button"
+            onClick={handleSwap}
+            disabled={!nextEntry}
+            title={nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap"}
+            className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
+              !nextEntry
+                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
+                : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-slate-200"
+            }`}
+          >
             🔀 Swap w/ Next
           </button>
-          <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-[#849dff] px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow">
+          <button
+            type="button"
+            onClick={handleDefer}
+            disabled={!deferTarget}
+            title={deferTarget ? `Defer ${deferTarget.title} to the Joker Drawer` : "No deferable block"}
+            className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
+              !deferTarget
+                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
+                : drift >= 45
+                  ? "bg-amber-950/60 hover:bg-amber-900/60 border-amber-700 text-amber-200"
+                  : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-[#849dff]"
+            }`}
+          >
             🃏 Defer to Joker Drawer
           </button>
+          {controlNotice ? (
+            <span
+              aria-live="polite"
+              title={controlNotice}
+              className="max-w-[240px] truncate rounded-lg border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1.5 text-[10px] text-slate-300"
+            >
+              {controlNotice}
+            </span>
+          ) : null}
           <span
             title="Timeline progress survives tablet lock or browser refresh"
             className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono whitespace-nowrap border ${savedLocally ? 'bg-emerald-950/60 border-emerald-800 text-emerald-300' : 'bg-amber-950/70 border-amber-800 text-amber-300'}`}
