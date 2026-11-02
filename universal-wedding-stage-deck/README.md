@@ -111,6 +111,35 @@ instead of the dashboard:
 Relevant files: `src/components/PairingScreen.jsx`, `src/hooks/usePairing.js`,
 `src/lib/pairing.js`.
 
+### 5. Role switcher: MC, DJ Booth and Pocket Remote (issue #8)
+
+The header **Role** control switches this device between three views. The
+choice is stored per device under `wzsd:v1:role` and is never added to the
+synced payload, so one tablet can stay on MC Master while a phone follows the
+same room in Pocket Remote.
+
+| Role | Purpose |
+| --- | --- |
+| 🎤 **MC Master** | Full deck: trilingual scripts, game clicker, drift, catering sub-tasks, VIP radar and stage pings. |
+| 🎧 **DJ Booth** | Read-only companion: projected timeline, playlist/track per step and flashing hard-cutoff timers. No step controls, scripts or family notes. |
+| 📱 **Pocket Remote** | Compact phone view for garden/terrace segments: drift, current/next step, script launcher, **Mark done & advance** and **Undo**. |
+
+`WEDDING.hostingMode` controls the MC surface:
+
+- `HOST_AND_DJ` (default) — DJ cues, stage pings and the DJ Booth role are
+  available.
+- `HOST_ONLY` — DJ cues and stage pings are hidden and the DJ Booth role is
+  removed from the switcher.
+
+`src/lib/timeline.js` builds the projected start/end used by both companion
+views: completed/active steps use logged actual times, future steps roll
+forward from the previous projected end, planned buffers hold their slot, and
+`HARD_ANCHOR` steps stay pinned to their fixed clock time.
+
+Relevant files: `src/lib/roles.js`, `src/hooks/useRole.js`,
+`src/components/RoleSwitcher.jsx`, `src/components/DjBoothView.jsx`,
+`src/components/PocketRemoteView.jsx`, `src/lib/timeline.js`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are
@@ -119,4 +148,9 @@ permissive (any client with the anon key can read/write any room) because the
 server-side. Before a real event, tighten this with an RPC or an Edge Function
 that validates the PIN, or per-room RLS using JWT claims. Never expose the
 service-role key here.
+
+Role separation is also a UX boundary for now: all paired devices use the same
+room PIN and can switch views. The roadmap's split `sync_pin_host` /
+`sync_pin_dj` role PINs are not wired yet; add them before handing a DJ device
+access to a real wedding cartridge.
 

@@ -4,6 +4,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  // The PWA precaches the whole deck for offline use, so one ~0.5 MB bundle is
+  // expected. Raise the advisory limit instead of splitting a cached payload.
+  build: {
+    chunkSizeWarningLimit: 600
+  },
   plugins: [
     react(),
     tailwindcss(),
