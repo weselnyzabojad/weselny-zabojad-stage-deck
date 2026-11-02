@@ -230,6 +230,40 @@ buffer with a 10–60 minute range, so the card reacts to late and ahead drift.
 Relevant files: `src/lib/bufferAccordion.js`, `src/lib/driftEngine.js`,
 `src/components/BufferAccordionCard.jsx`, `src/App.jsx`.
 
+### 9. HARD_ANCHOR protection radar (issue #12)
+
+Fixed deadlines live in the cartridge as `hardAnchors`:
+
+```js
+hardAnchors: [
+  { time: '20:30', label: 'Photo / Video Leaves', alertBeforeMin: 45 },
+  { time: '00:00', label: 'Oczepiny (Exact)', alertBeforeMin: 30 },
+]
+```
+
+`src/lib/hardAnchorRadar.js` finds the last projected block before each anchor
+and compares its projected end with the anchor time:
+
+- **Collision** — projected work overruns the anchor. A red MC banner appears
+  with the overrun and the blocking step.
+- **Compression / WATCH** — work leaves 10 minutes or less of slack. An amber
+  banner appears and advises swapping or deferring a block.
+- **Approaching** — the anchor is inside its `alertBeforeMin` window but still
+  has healthy slack; it appears as a cyan notice in the radar.
+- **Safe** — the anchor has comfortable slack.
+
+The MC dashboard now renders the dynamic **🚨 Hard Anchor Radar** card with
+every anchor's work-end, slack/overrun and status, plus the full-width
+**⏰ Hard anchor collision / compression** banner when action is needed. The
+warning is advisory; the one-tap recovery actions are issue #13.
+
+Clock math is shared through `src/lib/clockMath.js` so the drift engine and
+radar use the same day-aware midnight handling.
+
+Relevant files: `src/lib/hardAnchorRadar.js`, `src/lib/clockMath.js`,
+`src/lib/driftEngine.js`, `src/components/HardAnchorRadar.jsx`,
+`src/components/HardAnchorAlertBanner.jsx`, `src/App.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are
