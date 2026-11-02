@@ -93,11 +93,30 @@ cp .env.example .env.local
 - Header badge states: **Local only**, **Connecting…**, **Cloud synced**,
   **Offline**, **Sync error** (hover for the error / last remote update).
 
+### 4. Room PIN pairing (issue #7)
+
+On first load (or after unpairing) the app renders a full-screen pairing gate
+instead of the dashboard:
+
+- Enter the wedding cartridge's 4-digit `syncPin` (e.g. `2008` for
+  Jennifer & Guillaume). Digits auto-advance; paste and arrow keys work.
+- The PIN is verified **locally**, so pairing works with no connection.
+- Once paired, the PIN becomes the Realtime room key (`wzsd:<pin>`) and is
+  stored under `wzsd:v1:pairing` in `localStorage`. Every device entering the
+  same PIN joins the same room.
+- A wrong PIN shakes the field, clears it, and shows an inline error.
+- Click the **PIN: 2008 🔓** chip in the dashboard header to unpair this device.
+  Timeline progress is not deleted; re-entering the PIN restores it.
+
+Relevant files: `src/components/PairingScreen.jsx`, `src/hooks/usePairing.js`,
+`src/lib/pairing.js`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are
 permissive (any client with the anon key can read/write any room) because the
-4-digit PIN check is not enforced server-side yet — that is issue #7. Before a
-real event, tighten this with an RPC or an Edge Function that validates the PIN,
-or per-room RLS using JWT claims. Never expose the service-role key here.
+4-digit PIN gate is currently **client-side UX only** — it is not enforced
+server-side. Before a real event, tighten this with an RPC or an Edge Function
+that validates the PIN, or per-room RLS using JWT claims. Never expose the
+service-role key here.
 

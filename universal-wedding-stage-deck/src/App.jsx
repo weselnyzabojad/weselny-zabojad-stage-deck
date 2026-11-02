@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import GameClickerOverlay from './components/GameClickerOverlay';
+import PairingScreen from './components/PairingScreen';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
 import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
+import { usePairing } from './hooks/usePairing';
 import { addMinutesToClock } from './lib/liveStageState';
 
 const HALL_ENTRANCE_SCRIPT = {
@@ -167,14 +169,43 @@ const SYNC_STATUS_STYLES = {
 };
 
 export default function App() {
-  const { liveState, markCurrentDone, undoLastStep, toggleSubtask, savedLocally, syncStatus, syncError, remoteUpdatedAt } = useLiveStageState({
+  const pairing = usePairing({ expectedPin: WEDDING.syncPin });
+  const {
+    liveState,
+    markCurrentDone,
+    undoLastStep,
+    toggleSubtask,
+    savedLocally,
+    syncStatus,
+    syncConfigured,
+    syncError,
+    remoteUpdatedAt,
+  } = useLiveStageState({
     steps: WEDDING.steps,
     weddingId: WEDDING.weddingId,
-    syncPin: WEDDING.syncPin,
+    roomId: pairing.pin,
+    syncPin: pairing.pin,
     initialLiveState: INITIAL_LIVE_STATE
   });
   const [overlay, setOverlay] = useState(null);
   const closeOverlay = () => setOverlay(null);
+
+  if (!pairing.isPaired) {
+    return (
+      <PairingScreen
+        wedding={WEDDING}
+        onPair={pairing.pair}
+        cloudConfigured={syncConfigured}
+      />
+    );
+  }
+
+  const handleUnpair = () => {
+    const confirmed = window.confirm(
+      "Forget the room PIN on this device? Timeline progress stays saved locally."
+    );
+    if (confirmed) pairing.unpair();
+  };
 
   const syncMeta = SYNC_STATUS_STYLES[syncStatus] ?? SYNC_STATUS_STYLES.disabled;
   const syncTitle = syncError
@@ -232,7 +263,15 @@ export default function App() {
         </div>
 
         <div className="flex items-center space-x-3 font-mono">
-          <span className="text-slate-400">PIN: <strong className="text-white">{WEDDING.syncPin}</strong></span>
+          <button
+            type="button"
+            onClick={handleUnpair}
+            title="Paired room PIN — click to forget this device"
+            className="text-slate-400 hover:text-white transition"
+          >
+            PIN: <strong className="text-white">{pairing.pin}</strong>
+            <span className="ml-1 text-[10px]">🔓</span>
+          </button>
           <span className="text-slate-500">•</span>
           <span
             title={syncTitle}
