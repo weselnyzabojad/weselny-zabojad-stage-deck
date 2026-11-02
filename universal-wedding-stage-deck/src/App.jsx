@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import CulturalRulesBar from './components/CulturalRulesBar';
+import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
 import PairingScreen from './components/PairingScreen';
+import PocketRemoteView from './components/PocketRemoteView';
+import RoleSwitcher from './components/RoleSwitcher';
+import SyncStatusBadge from './components/SyncStatusBadge';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
 import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { usePairing } from './hooks/usePairing';
-import { addMinutesToClock } from './lib/liveStageState';
+import { useRole } from './hooks/useRole';
+import { availableRoleIds } from './lib/roles';
+import { buildTimeline, computeDriftMinutes, driftLabel } from './lib/timeline';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -116,6 +122,7 @@ const WEDDING = {
   date: "20.08.2026",
   syncPin: "2008",
   role: "MC",
+  hostingMode: "HOST_AND_DJ",
   driftMinutes: 25,
   culturalRules: {
     sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
@@ -126,11 +133,11 @@ const WEDDING = {
   tact_and_vip_alerts: VIP_ALERTS,
   jokersCount: 3,
   steps: [
-    { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden" },
-    { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo" },
-    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", teleprompter: HALL_ENTRANCE_SCRIPT },
-    { id: "step_04", time: "20:30", durationMin: 30, title: "Buffets Open", type: "BUFFER", location: "Main Hall" },
-    { id: "step_05", time: "21:00", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", teleprompter: TEST_WIEDZY_GAME }
+    { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
+    { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
+    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15" }, teleprompter: HALL_ENTRANCE_SCRIPT },
+    { id: "step_04", time: "20:30", durationMin: 30, title: "Buffets Open", type: "BUFFER", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Don't Know Why — Norah Jones" } },
+    { id: "step_05", time: "21:00", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
   ]
 };
 
@@ -159,15 +166,6 @@ const STEP_TYPE_STYLES = {
   HARD_ANCHOR: "text-[#ffb3ba] bg-[#ED2939]/20 border-[#ED2939]/60"
 };
 
-const SYNC_STATUS_STYLES = {
-  disabled: { label: "Local only", dot: "bg-slate-500", chip: "bg-[#111d3b] border-[#2b3d73] text-slate-300" },
-  connecting: { label: "Connecting…", dot: "bg-amber-400 animate-pulse", chip: "bg-amber-950/60 border-amber-800 text-amber-200" },
-  connected: { label: "Cloud synced", dot: "bg-emerald-400", chip: "bg-emerald-950/60 border-emerald-800 text-emerald-200" },
-  disconnected: { label: "Disconnected", dot: "bg-amber-500", chip: "bg-amber-950/60 border-amber-800 text-amber-200" },
-  offline: { label: "Offline", dot: "bg-slate-400", chip: "bg-slate-900 border-slate-700 text-slate-300" },
-  error: { label: "Sync error", dot: "bg-[#ED2939]", chip: "bg-[#ED2939]/20 border-[#ED2939]/60 text-[#ff8a93]" }
-};
-
 export default function App() {
   const pairing = usePairing({ expectedPin: WEDDING.syncPin });
   const {
@@ -187,8 +185,13 @@ export default function App() {
     syncPin: pairing.pin,
     initialLiveState: INITIAL_LIVE_STATE
   });
+  const { role, setRole } = useRole();
   const [overlay, setOverlay] = useState(null);
   const closeOverlay = () => setOverlay(null);
+  const handleRoleChange = (next) => {
+    setOverlay(null);
+    setRole(next);
+  };
 
   if (!pairing.isPaired) {
     return (
@@ -207,28 +210,72 @@ export default function App() {
     if (confirmed) pairing.unpair();
   };
 
-  const syncMeta = SYNC_STATUS_STYLES[syncStatus] ?? SYNC_STATUS_STYLES.disabled;
-  const syncTitle = syncError
-    ? `Cloud sync: ${syncError}`
-    : remoteUpdatedAt
-      ? `Last remote update: ${new Date(remoteUpdatedAt).toLocaleTimeString()}`
-      : "Cloud sync status";
+  const roleIds = availableRoleIds(WEDDING.hostingMode);
+  const currentRole = roleIds.includes(role) ? role : "mc";
+  const showDjCues = roleIds.includes("dj");
 
   const { steps } = WEDDING;
-  const activeIndex = liveState.active_step_id
-    ? steps.findIndex((step) => step.id === liveState.active_step_id)
-    : -1;
-  const currentStep = activeIndex >= 0 ? steps[activeIndex] : null;
-  const nextStep = activeIndex >= 0 ? steps[activeIndex + 1] ?? null : null;
+  const timeline = buildTimeline(steps, liveState);
+  const activeIndex = timeline.findIndex((entry) => entry.isActive);
+  const currentEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
+  const currentStep = currentEntry?.step ?? null;
+  const nextStep = activeIndex >= 0 ? timeline[activeIndex + 1]?.step ?? null : null;
   const completedCount = liveState.completed_step_ids.length;
   const isComplete = !currentStep;
-  const realStart = currentStep
-    ? liveState.actual_timestamps[currentStep.id] ?? currentStep.realStart ?? currentStep.time
-    : null;
-  const estimatedEnd = currentStep ? addMinutesToClock(realStart, currentStep.durationMin) : null;
+  const realStart = currentEntry?.projectedStart ?? null;
+  const estimatedEnd = currentEntry?.projectedEnd ?? null;
+  const drift = computeDriftMinutes(currentStep, liveState);
+  const driftText = driftLabel(drift);
+  const driftClass = drift > 0
+    ? "bg-[#ED2939]/20 border-[#ED2939]/60 text-[#ff6b75]"
+    : drift < 0
+      ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
+      : "bg-[#111d3b] border-[#2b3d73] text-slate-300";
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
+
+  const roleProps = {
+    role: currentRole,
+    roles: roleIds,
+    onRoleChange: handleRoleChange
+  };
+
+  if (currentRole === "dj") {
+    return (
+      <DjBoothView
+        wedding={WEDDING}
+        timeline={timeline}
+        syncStatus={syncStatus}
+        syncError={syncError}
+        remoteUpdatedAt={remoteUpdatedAt}
+        {...roleProps}
+      />
+    );
+  }
+
+  if (currentRole === "pocket") {
+    return (
+      <>
+        <PocketRemoteView
+          wedding={WEDDING}
+          timeline={timeline}
+          liveState={liveState}
+          onAdvance={markCurrentDone}
+          onUndo={undoLastStep}
+          onOpenScript={() => setOverlay("teleprompter")}
+          hasScript={Boolean(script)}
+          syncStatus={syncStatus}
+          syncError={syncError}
+          remoteUpdatedAt={remoteUpdatedAt}
+          {...roleProps}
+        />
+        {overlay === "teleprompter" && (
+          <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
+        )}
+      </>
+    );
+  }
 
   return (
     <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
@@ -244,8 +291,10 @@ export default function App() {
             />
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
-          <span className="bg-[#111d3b] px-3 py-1.5 rounded text-white font-mono font-semibold border border-[#2b3d73] text-sm">18:25</span>
-          <span className="bg-[#ED2939]/20 border border-[#ED2939]/60 text-[#ff6b75] px-3 py-1.5 rounded font-semibold text-sm">+{WEDDING.driftMinutes}m LATE</span>
+          <span className="bg-[#111d3b] px-3 py-1.5 rounded text-white font-mono font-semibold border border-[#2b3d73] text-sm">{realStart ?? "—"}</span>
+          {driftText ? (
+            <span className={`px-3 py-1.5 rounded font-semibold text-sm border ${driftClass}`}>{driftText}</span>
+          ) : null}
           <span className="text-slate-300 font-medium hidden md:inline">Wedding: <strong className="text-white">{WEDDING.couple}</strong></span>
         </div>
 
@@ -273,17 +322,8 @@ export default function App() {
             <span className="ml-1 text-[10px]">🔓</span>
           </button>
           <span className="text-slate-500">•</span>
-          <span
-            title={syncTitle}
-            className={`px-2.5 py-1 rounded text-xs border flex items-center space-x-1.5 ${syncMeta.chip}`}
-          >
-            <span className={`flex h-2 w-2 rounded-full inline-block ${syncMeta.dot}`}></span>
-            <span>{syncMeta.label}</span>
-          </span>
-          <span className="bg-[#111d3b] text-slate-200 px-2.5 py-1 rounded text-xs border border-[#2b3d73] flex items-center space-x-1.5">
-            <span className="flex h-2 w-2 rounded-full bg-[#002395] inline-block"></span>
-            <span>Role: 🎤 {WEDDING.role}</span>
-          </span>
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
         </div>
       </header>
 
@@ -313,7 +353,7 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-3">
+                <div className={`grid grid-cols-1 gap-4 my-3 ${showDjCues ? "md:grid-cols-2" : ""}`}>
                   {/* MC Cues */}
                   <div className="bg-[#070b19]/60 p-3.5 rounded-lg border border-[#1c2a52]">
                     <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
@@ -336,22 +376,24 @@ export default function App() {
                     </ul>
                   </div>
 
-                  {/* DJ / Audio Cues */}
-                  <div className="bg-[#070b19]/60 p-3.5 rounded-lg border border-[#1c2a52]">
-                    <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#002395]"></span>
-                      <span>🎧 DJ / Audio Cues</span>
-                    </h3>
-                    <ul className="space-y-2 text-sm text-slate-300">
-                      <li className="flex items-start space-x-2">
-                        <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
-                        <span>Background dinner music (Kurp playlist active).</span>
-                      </li>
-                      <li className="text-xs text-slate-400 bg-[#0b132b] p-2 rounded border border-[#1c2a52] mt-2">
-                        ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
-                      </li>
-                    </ul>
-                  </div>
+                  {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
+                  {showDjCues && (
+                    <div className="bg-[#070b19]/60 p-3.5 rounded-lg border border-[#1c2a52]">
+                      <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#002395]"></span>
+                        <span>🎧 DJ / Audio Cues</span>
+                      </h3>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li className="flex items-start space-x-2">
+                          <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
+                          <span>{currentStep.dj?.playlist ?? "Background dinner music"} ({currentStep.dj?.track ?? "playlist active"}).</span>
+                        </li>
+                        <li className="text-xs text-slate-400 bg-[#0b132b] p-2 rounded border border-[#1c2a52] mt-2">
+                          ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 {/* Catering & Sub-Tasks */}
@@ -455,24 +497,26 @@ export default function App() {
             </div>
           </div>
 
-          {/* Silent Stage Pings to DJ */}
-          <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg flex-1">
-            <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📡 Silent Stage Pings</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
-                ▶️ Drop Track
-              </button>
-              <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
-                🔉 Fade Music
-              </button>
-              <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
-                ⏳ Hold 2m
-              </button>
-              <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
-                🎤 Ready
-              </button>
+          {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
+          {showDjCues && (
+            <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg flex-1">
+              <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📡 Silent Stage Pings</h3>
+              <div className="grid grid-cols-2 gap-2">
+                <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
+                  ▶️ Drop Track
+                </button>
+                <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
+                  🔉 Fade Music
+                </button>
+                <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
+                  ⏳ Hold 2m
+                </button>
+                <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
+                  🎤 Ready
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
         </section>
 
