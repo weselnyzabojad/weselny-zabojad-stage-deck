@@ -23,6 +23,7 @@ function statusFor(entry, activeIndex) {
 export default function DjBoothView({
   wedding,
   timeline,
+  projectedFinish,
   stagePing,
   syncStatus,
   syncError,
@@ -87,6 +88,9 @@ export default function DjBoothView({
                     ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
                     : '—'}
                 </div>
+                <div className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
+                  Finish <span className="text-slate-200">{projectedFinish ?? '—'}</span>
+                </div>
                 {activeEntry?.step.dj?.cutoff ? (
                   <div className="mt-1 rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-1.5 py-0.5 text-[10px] font-bold text-[#ff808a]">
                     CUTOFF {activeEntry.step.dj.cutoff}
@@ -144,6 +148,20 @@ export default function DjBoothView({
                           <span className="text-sm text-white">
                             {entry.projectedStart ?? '—'}–{entry.projectedEnd ?? '—'}
                           </span>
+                          {entry.projectedDriftMinutes ? (
+                            <span
+                              title={`Projected ${entry.driftLabel ?? 'drift'} vs plan`}
+                              className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
+                                entry.projectedDriftMinutes > 0
+                                  ? 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]'
+                                  : 'border-emerald-700 bg-emerald-950/60 text-emerald-300'
+                              }`}
+                            >
+                              {entry.projectedDriftMinutes > 0
+                                ? `+${entry.projectedDriftMinutes}m`
+                                : `${Math.abs(entry.projectedDriftMinutes)}m ahead`}
+                            </span>
+                          ) : null}
                           <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${STATUS_CHIPS[status.key]}`}>
                             {status.label}
                           </span>
