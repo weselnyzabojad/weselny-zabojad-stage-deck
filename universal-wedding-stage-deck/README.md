@@ -264,6 +264,32 @@ Relevant files: `src/lib/hardAnchorRadar.js`, `src/lib/clockMath.js`,
 `src/lib/driftEngine.js`, `src/components/HardAnchorRadar.jsx`,
 `src/components/HardAnchorAlertBanner.jsx`, `src/App.jsx`.
 
+### 10. One-tap on-stage controls (issue #13)
+
+The MC footer now has three live controls backed by the synced live state:
+
+- **⏱️ Kitchen / Vendor +15m** — adds a manual offset to
+  `manual_offset_minutes`. The active block keeps its real start but gains 15
+  minutes, future non-anchor blocks shift by the same amount, and
+  `HARD_ANCHOR`s stay pinned so the radar immediately shows any new
+  compression. The footer displays the accumulated offset with a `×` reset.
+- **🔀 Swap w/ Next** — swaps the active block with the next block in
+  `step_order`, moves the active marker to the swapped-in block, and keeps
+  advance/undo working in the new order.
+- **🃏 Defer to Joker Drawer** — removes the first upcoming `deferable: true`
+  block from the active sequence, stores it in `deferred_step_ids`, and shows
+  it in the **Joker Drawer** card. **Restore** inserts it back immediately
+  after the current block.
+
+The demo marks *Buffets Open & Dance Floor* as deferable. All three controls
+update the same `live_sync_state` payload used by cloud sync and offline
+storage, so the DJ Booth and Pocket Remote see the shifted timeline/order
+immediately.
+
+Relevant files: `src/lib/liveStageState.js`,
+`src/hooks/useLiveStageState.js`, `src/components/JokerDrawerCard.jsx`,
+`src/App.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

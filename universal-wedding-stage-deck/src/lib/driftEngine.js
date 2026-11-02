@@ -54,12 +54,16 @@ function projectionSource(step, actualStart) {
 // working; the extra drift fields are what the engine report consumes.
 // `durationOverrides` lets the buffer accordion project the recommended
 // shortened/extended lengths without mutating the cartridge.
-export function buildTimeline(steps = [], liveState = {}, { durationOverrides = null } = {}) {
+export function buildTimeline(
+  steps = [],
+  liveState = {},
+  { durationOverrides = null, manualOffsetMinutes = 0 } = {},
+) {
   const completed = new Set(liveState?.completed_step_ids ?? []);
   const actuals = liveState?.actual_timestamps ?? {};
   let cursor = null;
 
-  return steps.map((step, index) => {
+  const entries = steps.map((step, index) => {
     const plannedStart = stepPlannedStart(step);
     const plannedDurationMin = Number.isFinite(step.durationMin) ? step.durationMin : null;
     const override = durationOverrides?.[step.id];
@@ -124,6 +128,44 @@ export function buildTimeline(steps = [], liveState = {}, { durationOverrides = 
       projectionSource: projectionSource(step, actualStart),
     };
   });
+
+  const offset = Number.isFinite(manualOffsetMinutes)
+    ? Math.max(0, Math.min(12 * 60, Math.round(manualOffsetMinutes)))
+    : 0;
+  const activeIndex = steps.findIndex((step) => step.id === liveState?.active_step_id);
+  if (offset <= 0 || activeIndex < 0) return entries;
+
+  // Apply the manual kitchen/vendor offset after the base projection: the
+  // active block keeps its real start but ends later, future blocks shift by
+  // the same amount, and HARD_ANCHORs stay pinned.
+  return entries.map((entry, index) => {
+    if (index < activeIndex || entry.isHardAnchor) return entry;
+
+    const isActive = index === activeIndex;
+    const startShift = isActive ? 0 : offset;
+    const projectedStart =
+      entry.projectedStart && startShift
+        ? addMinutesToClock(entry.projectedStart, startShift)
+        : entry.projectedStart;
+    const projectedEnd = entry.projectedEnd
+      ? addMinutesToClock(entry.projectedEnd, offset)
+      : entry.projectedEnd;
+    const projectedDriftMinutes = projectedStart
+      ? clockDeltaMinutes(entry.plannedStart, projectedStart)
+      : null;
+    const driftMinutes = entry.actualDriftMinutes ?? projectedDriftMinutes ?? null;
+
+    return {
+      ...entry,
+      projectedStart,
+      projectedEnd,
+      projectedDriftMinutes,
+      driftMinutes,
+      driftLabel: driftLabel(driftMinutes),
+      driftTone: driftTone(driftMinutes),
+      manualOffsetMinutes: offset,
+    };
+  });
 }
 
 export function buildDriftReport(
@@ -133,9 +175,10 @@ export function buildDriftReport(
     jokerAvailable = true,
     hardAnchors = [],
     compressionSlackMinutes = 10,
+    manualOffsetMinutes = 0,
   } = {},
 ) {
-  const entries = buildTimeline(steps, liveState);
+  const entries = buildTimeline(steps, liveState, { manualOffsetMinutes });
   const activeIndex = entries.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? entries[activeIndex] : null;
   const nextEntry = activeIndex >= 0 ? entries[activeIndex + 1] ?? null : null;
@@ -146,18 +189,23 @@ export function buildDriftReport(
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
   const currentDriftMinutes = currentEntry?.driftMinutes ?? null;
+  const effectiveDriftMinutes =
+    currentDriftMinutes == null && !manualOffsetMinutes
+      ? null
+      : (currentDriftMinutes ?? 0) + manualOffsetMinutes;
 
   const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
     currentEntry,
     compressionSlackMinutes,
   });
 
-  const bufferAccordion = buildBufferAccordion(entries, currentDriftMinutes, {
+  const bufferAccordion = buildBufferAccordion(entries, effectiveDriftMinutes, {
     jokerAvailable,
   });
   const accordionEntries = bufferAccordion.hasChanges
     ? buildTimeline(steps, liveState, {
         durationOverrides: bufferAccordion.durationByStepId,
+        manualOffsetMinutes,
       })
     : entries;
 
@@ -183,6 +231,7 @@ export function buildDriftReport(
     currentDriftLabel: driftLabel(currentDriftMinutes),
     currentDriftTone: driftTone(currentDriftMinutes),
     currentDriftSource: currentEntry?.driftSource ?? 'none',
+    manualOffsetMinutes,
     hardAnchorRadar,
     projectedElasticEntries,
     upcomingElasticEntries,
@@ -200,6 +249,7 @@ export function buildDriftReport(
         : null,
     bufferAccordion: {
       ...bufferAccordion,
+      manualOffsetMinutes,
       baselineProjectedFinish: projectedFinish,
       accordionProjectedFinish,
       accordionFinishDeltaMinutes:
