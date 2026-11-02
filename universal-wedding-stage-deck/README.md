@@ -140,6 +140,35 @@ Relevant files: `src/lib/roles.js`, `src/hooks/useRole.js`,
 `src/components/RoleSwitcher.jsx`, `src/components/DjBoothView.jsx`,
 `src/components/PocketRemoteView.jsx`, `src/lib/timeline.js`.
 
+### 6. Silent stage pings (issue #9)
+
+The MC dashboard has four one-tap silent cues:
+
+- **▶️ Drop Track** — start the active step track immediately.
+- **🔉 Fade Music** — bring the current track down under an announcement.
+- **⏳ Hold 2m** — keep the floor held for two minutes.
+- **🎤 Ready** — signal that the MC is ready for the entrance.
+
+Tapping a button writes a small `stage_ping` object (`type`, `sent_at`,
+`step_id`) into the same `live_sync_state` payload that carries the timeline.
+The DJ Booth listens on the same room channel and flashes a full-width,
+high-visibility banner:
+
+- **Drop Track** also shows the active step's track title.
+- **Hold 2m** shows a live two-minute countdown.
+- Normal pings auto-clear after 25 seconds; Hold stays for the full two
+  minutes. Pings older than five minutes are ignored, so a device that
+  reconnects late never fires a stale cue mid-ceremony.
+
+The MC card confirms the last ping and its time. When cloud sync is connected
+it reports **Cloud synced**; otherwise the ping is saved locally and delivered
+when the room reconnects. `HOST_ONLY` hides the ping controls along with the
+rest of the DJ surface.
+
+Relevant files: `src/lib/stagePings.js`, `src/components/StagePingControls.jsx`,
+`src/components/StagePingBanner.jsx`, `src/lib/liveStageState.js`,
+`src/hooks/useLiveStageState.js`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

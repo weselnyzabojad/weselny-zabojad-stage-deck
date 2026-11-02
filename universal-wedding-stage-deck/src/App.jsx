@@ -6,6 +6,7 @@ import GameClickerOverlay from './components/GameClickerOverlay';
 import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
 import RoleSwitcher from './components/RoleSwitcher';
+import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
 import VipAlertsModal from './components/VipAlertsModal';
@@ -173,6 +174,7 @@ export default function App() {
     markCurrentDone,
     undoLastStep,
     toggleSubtask,
+    sendStagePing,
     savedLocally,
     syncStatus,
     syncConfigured,
@@ -246,6 +248,7 @@ export default function App() {
       <DjBoothView
         wedding={WEDDING}
         timeline={timeline}
+        stagePing={liveState.stage_ping}
         syncStatus={syncStatus}
         syncError={syncError}
         remoteUpdatedAt={remoteUpdatedAt}
@@ -499,23 +502,11 @@ export default function App() {
 
           {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
           {showDjCues && (
-            <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg flex-1">
-              <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📡 Silent Stage Pings</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
-                  ▶️ Drop Track
-                </button>
-                <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
-                  🔉 Fade Music
-                </button>
-                <button className="bg-[#111d3b] hover:bg-[#1c2a52] border border-[#2b3d73] text-slate-200 p-2 rounded text-xs font-semibold transition text-center">
-                  ⏳ Hold 2m
-                </button>
-                <button className="bg-[#002395]/40 hover:bg-[#002395]/70 border border-[#3b5bdb] text-white p-2 rounded text-xs font-semibold transition text-center shadow">
-                  🎤 Ready
-                </button>
-              </div>
-            </div>
+            <StagePingControls
+              onSend={sendStagePing}
+              lastPing={liveState.stage_ping}
+              syncStatus={syncStatus}
+            />
           )}
 
         </section>

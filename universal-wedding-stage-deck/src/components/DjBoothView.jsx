@@ -1,5 +1,6 @@
 import logo from '../assets/img/logo.png';
 import RoleSwitcher from './RoleSwitcher';
+import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 
 const STATUS_CHIPS = {
@@ -22,6 +23,7 @@ function statusFor(entry, activeIndex) {
 export default function DjBoothView({
   wedding,
   timeline,
+  stagePing,
   syncStatus,
   syncError,
   remoteUpdatedAt,
@@ -33,6 +35,8 @@ export default function DjBoothView({
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
   const cutoffs = timeline.filter((entry) => entry.step.dj?.cutoff);
   const completedCount = timeline.filter((entry) => entry.isDone).length;
+  const pingStep =
+    timeline.find((entry) => entry.step.id === stagePing?.step_id)?.step ?? activeEntry?.step ?? null;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#070b19] text-slate-100 antialiased select-none">
@@ -57,6 +61,8 @@ export default function DjBoothView({
           <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
         </div>
       </header>
+
+      <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
 
       <main className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
