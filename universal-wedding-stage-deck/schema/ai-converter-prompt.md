@@ -248,8 +248,7 @@ Extract social-media vendors into `contentCreators`:
 
 `platform` is `INSTAGRAM`, `TIKTOK`, `YOUTUBE`, `FACEBOOK` or `OTHER`.
 Capture arrival/departure windows, deliverables and explicit photo/video
-boundaries. Do **not** invent a divorce/family-dynamic warning flag; that
-extension is intentionally deferred and must not be added to the cartridge.
+boundaries.
 
 ## Pre-Flight Action Extractor
 

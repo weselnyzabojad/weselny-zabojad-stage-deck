@@ -356,17 +356,6 @@ The cartridge can now describe the wider stage team:
   converter prompt. Imported cartridges populate the module automatically.
 - The importer preview shows co-host and content-creator counts.
 
-#### Deferred: Family Dynamic / Divorce Warning Flag
-
-The optional divorce / family-dynamic warning flag from the roadmap is
-**intentionally not implemented** in this issue. It should not be added to the
-schema, importer prompt or UI until a future revision.
-
-Future design note: add an optional `familyDynamics` array (for example
-`{ id, label, detail, applyTo: ["entrance", "bread_salt"], visibility: "MC_ONLY" }`)
-and surface it only in sensitive staging moments. Keep it separate from
-`tact_and_vip_alerts` until the privacy model is agreed.
-
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

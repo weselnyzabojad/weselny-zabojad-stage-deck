@@ -216,10 +216,6 @@ Each rule accepts an optional `note`.
 Co-hosts and content creators are both optional arrays. The MC header exposes a
 **Team** module that lists them; imported cartridges populate it directly.
 
-**Deferred:** the Family Dynamic / Divorce Warning Flag extension is
-intentionally not part of v1.1 yet. Do not add `familyDynamics` or similar
-fields until a future schema revision.
-
 ## Hard anchors
 
 ```json
