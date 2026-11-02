@@ -169,6 +169,36 @@ Relevant files: `src/lib/stagePings.js`, `src/components/StagePingControls.jsx`,
 `src/components/StagePingBanner.jsx`, `src/lib/liveStageState.js`,
 `src/hooks/useLiveStageState.js`.
 
+### 7. Automatic time-drift engine (issue #10)
+
+`src/lib/driftEngine.js` turns the synced live state into a schedule report on
+every render:
+
+- Each transition already logs `actual_timestamps[nextStep]`; the engine
+  compares that actual start with the step's `planned`/`time` value.
+- `currentDriftMinutes` is the newest actual-vs-planned delta, with
+  `currentDriftLabel` / `currentDriftTone` helpers for the header and Pocket
+  pill (`ON TIME`, `+25m LATE`, `10m AHEAD`).
+- Every timeline entry also carries `projectedStart`, `projectedEnd`,
+  `actualDriftMinutes`, `projectedDriftMinutes` and a drift source, so upcoming
+  `ELASTIC` blocks show their realistic start time and projected delay.
+- `projectedElasticEntries` (not-yet-done `ELASTIC` blocks),
+  `upcomingElasticEntries` (after the active block), `projectedFinish` and
+  `projectedFinishDeltaMinutes` expose the rest of the evening in one object.
+- Clock deltas are day-aware: `23:50 -> 00:10` is `+20m`, not a 23-hour jump.
+  Projection comparisons and durations also roll across midnight.
+
+`buildTimeline` is still exported through `src/lib/timeline.js` for existing
+imports; it now returns the enriched entries. The MC header, Pocket drift pill
+and DJ timeline drift chips read from the same engine.
+
+`BUFFER` accordion recommendations (issue #11) and `HARD_ANCHOR` collision
+warnings (issue #12) are intentionally not part of this engine yet.
+
+Relevant files: `src/lib/driftEngine.js`, `src/lib/timeline.js`,
+`src/App.jsx`, `src/components/PocketRemoteView.jsx`,
+`src/components/DjBoothView.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

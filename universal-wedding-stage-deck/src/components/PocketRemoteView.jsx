@@ -1,5 +1,4 @@
 import logo from '../assets/img/logo.png';
-import { computeDriftMinutes, driftLabel, driftTone } from '../lib/timeline';
 import RoleSwitcher from './RoleSwitcher';
 import SyncStatusBadge from './SyncStatusBadge';
 
@@ -15,7 +14,6 @@ const DRIFT_TONES = {
 export default function PocketRemoteView({
   wedding,
   timeline,
-  liveState,
   onAdvance,
   onUndo,
   onOpenScript,
@@ -32,9 +30,8 @@ export default function PocketRemoteView({
   const nextEntry = activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : null;
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const isComplete = !activeEntry;
-  const drift = computeDriftMinutes(activeEntry?.step, liveState);
-  const driftText = driftLabel(drift);
-  const driftClass = DRIFT_TONES[driftTone(drift)];
+  const driftText = activeEntry?.driftLabel ?? 'No actual start yet';
+  const driftClass = DRIFT_TONES[activeEntry?.driftTone ?? 'unknown'];
 
   return (
     <div className="flex min-h-screen flex-col bg-[#070b19] text-slate-100 antialiased select-none">

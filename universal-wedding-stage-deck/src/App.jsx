@@ -14,7 +14,7 @@ import { useLiveStageState } from './hooks/useLiveStageState';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
 import { availableRoleIds } from './lib/roles';
-import { buildTimeline, computeDriftMinutes, driftLabel } from './lib/timeline';
+import { buildDriftReport } from './lib/driftEngine';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -217,17 +217,15 @@ export default function App() {
   const showDjCues = roleIds.includes("dj");
 
   const { steps } = WEDDING;
-  const timeline = buildTimeline(steps, liveState);
-  const activeIndex = timeline.findIndex((entry) => entry.isActive);
-  const currentEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
+  const driftReport = buildDriftReport(steps, liveState);
+  const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const currentStep = currentEntry?.step ?? null;
-  const nextStep = activeIndex >= 0 ? timeline[activeIndex + 1]?.step ?? null : null;
-  const completedCount = liveState.completed_step_ids.length;
+  const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
   const realStart = currentEntry?.projectedStart ?? null;
   const estimatedEnd = currentEntry?.projectedEnd ?? null;
-  const drift = computeDriftMinutes(currentStep, liveState);
-  const driftText = driftLabel(drift);
+  const drift = driftReport.currentDriftMinutes;
+  const driftText = driftReport.currentDriftLabel;
   const driftClass = drift > 0
     ? "bg-[#ED2939]/20 border-[#ED2939]/60 text-[#ff6b75]"
     : drift < 0
@@ -248,6 +246,7 @@ export default function App() {
       <DjBoothView
         wedding={WEDDING}
         timeline={timeline}
+        projectedFinish={driftReport.projectedFinish}
         stagePing={liveState.stage_ping}
         syncStatus={syncStatus}
         syncError={syncError}
@@ -263,7 +262,6 @@ export default function App() {
         <PocketRemoteView
           wedding={WEDDING}
           timeline={timeline}
-          liveState={liveState}
           onAdvance={markCurrentDone}
           onUndo={undoLastStep}
           onOpenScript={() => setOverlay("teleprompter")}
@@ -450,7 +448,7 @@ export default function App() {
                     <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
                   )}
                 </div>
-                <span className="text-xs text-slate-400 font-mono">Step {activeIndex + 1} of {steps.length}</span>
+                <span className="text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</span>
               </div>
             </div>
           ) : (
@@ -472,10 +470,23 @@ export default function App() {
           {/* Peek Next */}
           <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg">
             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-heading font-semibold">PEEK NEXT</span>
-            {nextStep ? (
+            {nextEntry ? (
               <>
-                <div className="text-lg font-heading font-bold text-white mt-1">{nextStep.title}</div>
-                <div className="text-xs text-[#849dff] font-mono mt-1">Planned: {nextStep.time}</div>
+                <div className="text-lg font-heading font-bold text-white mt-1">{nextEntry.step.title}</div>
+                <div className="text-xs font-mono mt-1">
+                  <span className="text-slate-500 line-through">{nextEntry.plannedStart}</span>
+                  <span className="mx-1 text-slate-500">→</span>
+                  <span className="text-white">{nextEntry.projectedStart}</span>
+                  {nextEntry.projectedDriftMinutes ? (
+                    <span
+                      className={`ml-2 font-semibold ${
+                        nextEntry.projectedDriftMinutes > 0 ? 'text-[#ff808a]' : 'text-emerald-300'
+                      }`}
+                    >
+                      {nextEntry.driftLabel}
+                    </span>
+                  ) : null}
+                </div>
               </>
             ) : (
               <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
