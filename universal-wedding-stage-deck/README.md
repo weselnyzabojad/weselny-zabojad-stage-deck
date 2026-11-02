@@ -340,6 +340,22 @@ Relevant files: `schema/ai-converter-prompt.md`,
 `src/lib/cartridgeImporter.js`, `src/lib/cartridgeValidation.js`,
 `src/lib/cartridgeStorage.js`, `src/App.jsx`.
 
+### 13. Co-Hosting & Content Creator module (issue #16)
+
+The cartridge can now describe the wider stage team:
+
+- **Co-hosts / co-MCs** — `coHosts` tracks names, roles, phone numbers,
+  responsibilities (Bread & Salt, games pool, second microphone) and notes so
+  duties can be shared without losing the run of show.
+- **Content creators** — `contentCreators` tracks social-media vendors,
+  platform/handle, arrival/departure windows, deliverables (BTS reel, stories)
+  and boundaries such as not blocking the official photographer/videographer.
+- The MC header exposes **🤝 Team (N)** and opens the
+  **Co-Hosting & Content Creator** modal.
+- Both arrays are optional in WeddingSchema v1.1 and are extracted by the AI
+  converter prompt. Imported cartridges populate the module automatically.
+- The importer preview shows co-host and content-creator counts.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

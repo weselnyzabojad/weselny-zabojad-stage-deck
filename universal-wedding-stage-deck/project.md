@@ -14460,3 +14460,34 @@ deploy_pages:
   only:
     - main
 ```
+
+
+---
+
+## Future Implementation — Family Dynamic / Divorce Warning Flag
+
+Status: **not implemented** in the current schema, UI, importer or AI prompt.
+
+Reason: family dynamics are highly sensitive and need a clear privacy model
+before they appear in any shared or vendor-facing view.
+
+Future design note (not part of WeddingSchema v1.1 yet): add an optional
+`familyDynamics` array to a future schema revision, for example:
+
+```json
+{
+  "familyDynamics": [
+    {
+      "id": "groom-parents",
+      "label": "Groom's parents are divorced / estranged",
+      "detail": "Keep seating and entrance greetings calm and separate.",
+      "applyTo": ["entrance", "bread_salt"],
+      "visibility": "MC_ONLY"
+    }
+  ]
+}
+```
+
+Keep this separate from `tact_and_vip_alerts` until the visibility and consent
+rules are agreed. Do not surface it on DJ, content-creator or guest-facing
+views.

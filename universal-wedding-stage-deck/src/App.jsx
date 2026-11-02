@@ -14,6 +14,7 @@ import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
 import RoleSwitcher from './components/RoleSwitcher';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
+import TeamModule from './components/TeamModule';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
 import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
@@ -141,6 +142,13 @@ const DEMO_WEDDING = {
   vipRadarCount: VIP_ALERTS.length,
   tact_and_vip_alerts: VIP_ALERTS,
   jokersCount: 3,
+  coHosts: [
+    { id: "zuzia", name: "Zuzia", role: "Co-MC", phone: "+48 600 111 222", responsibilities: ["Bread & Salt", "Games pool", "Second microphone"], notes: "Shares the stage during the entrance and games." },
+    { id: "val", name: "Val", role: "Co-host", phone: "+33 6 11 22 33 44", responsibilities: ["Guest wrangling", "Vendor coordination"] }
+  ],
+  contentCreators: [
+    { id: "paulina", name: "Paulina Nózka", platform: "INSTAGRAM", handle: "@paulinan", phone: "+48 600 333 444", arrivalTime: "16:00", departureTime: "22:00", deliverables: ["Behind-the-scenes reel", "Stories", "Couple interviews"], boundaries: ["Do not block official photo/video", "No flash during the ceremony", "Stay out of the aisle during the entrance"], notes: "Capture candid BTS moments and publish after couple approval." }
+  ],
   hardAnchors: [
     { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
@@ -238,6 +246,7 @@ export default function App() {
   const [overlay, setOverlay] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [importerOpen, setImporterOpen] = useState(false);
+  const [teamOpen, setTeamOpen] = useState(false);
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
@@ -278,6 +287,9 @@ export default function App() {
   const manualOffset = liveState.manual_offset_minutes ?? 0;
   const vipAlerts = WEDDING.tact_and_vip_alerts ?? [];
   const jokerCount = WEDDING.jokersCount ?? WEDDING.jokerGames?.length ?? 0;
+  const coHosts = WEDDING.coHosts ?? [];
+  const contentCreators = WEDDING.contentCreators ?? [];
+  const teamCount = coHosts.length + contentCreators.length;
   const driftReport = buildDriftReport(steps, liveState, {
     jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
@@ -412,6 +424,14 @@ export default function App() {
             className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
           >
             📥 Import
+          </button>
+          <button
+            type="button"
+            onClick={() => setTeamOpen(true)}
+            title="Open co-hosts and content creators"
+            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+          >
+            🤝 Team ({teamCount})
           </button>
         </div>
 
@@ -749,6 +769,13 @@ export default function App() {
         open={importerOpen}
         onClose={() => setImporterOpen(false)}
         currentCartridge={WEDDING}
+      />
+
+      <TeamModule
+        open={teamOpen}
+        onClose={() => setTeamOpen(false)}
+        coHosts={coHosts}
+        contentCreators={contentCreators}
       />
     </>
   );
