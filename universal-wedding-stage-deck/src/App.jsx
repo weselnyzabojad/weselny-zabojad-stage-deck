@@ -4,6 +4,8 @@ import BufferAccordionCard from './components/BufferAccordionCard';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
+import HardAnchorAlertBanner from './components/HardAnchorAlertBanner';
+import HardAnchorRadar from './components/HardAnchorRadar';
 import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
 import RoleSwitcher from './components/RoleSwitcher';
@@ -134,6 +136,11 @@ const WEDDING = {
   vipRadarCount: VIP_ALERTS.length,
   tact_and_vip_alerts: VIP_ALERTS,
   jokersCount: 3,
+  hardAnchors: [
+    { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
+    { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
+    { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
+  ],
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
@@ -220,6 +227,7 @@ export default function App() {
   const { steps } = WEDDING;
   const driftReport = buildDriftReport(steps, liveState, {
     jokerAvailable: WEDDING.jokersCount > 0,
+    hardAnchors: WEDDING.hardAnchors,
   });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const currentStep = currentEntry?.step ?? null;
@@ -330,6 +338,10 @@ export default function App() {
           <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
         </div>
       </header>
+
+      {driftReport.hardAnchorRadar.hasWarning ? (
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
+      ) : null}
 
       {/* ================= MAIN DASHBOARD (70% / 30% SPLIT) ================= */}
       <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
@@ -498,23 +510,7 @@ export default function App() {
 
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
-          {/* Hard Anchor Radar */}
-          <div className="bg-[#0b132b]/95 border border-[#ED2939]/40 rounded-xl p-4 shadow-lg relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-[#ED2939] text-white px-2 py-0.5 text-[10px] font-mono rounded-bl font-bold">
-              LOCK RADAR
-            </div>
-            <h3 className="text-xs font-heading font-bold text-[#ff808a] uppercase tracking-wider mb-2">🚨 Hard Anchor Radar</h3>
-            <div className="space-y-2 text-xs">
-              <div className="bg-[#070b19] p-2.5 rounded border border-[#1c2a52] flex justify-between items-center">
-                <span>📸 Photo/Video Leaves</span>
-                <span className="font-mono text-[#ff808a] font-semibold">00:00 (in 5h 35m)</span>
-              </div>
-              <div className="bg-[#070b19] p-2.5 rounded border border-[#1c2a52] flex justify-between items-center">
-                <span>🎂 Oczepiny (Exact)</span>
-                <span className="font-mono text-white font-semibold">00:00</span>
-              </div>
-            </div>
-          </div>
+          <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
 
           {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
           {showDjCues && (

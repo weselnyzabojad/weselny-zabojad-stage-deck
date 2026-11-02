@@ -10,28 +10,10 @@
 
 import { addMinutesToClock } from './liveStageState.js';
 import { buildBufferAccordion } from './bufferAccordion.js';
+import { clockDeltaMinutes, clockToMinutes } from './clockMath.js';
+import { buildHardAnchorRadar } from './hardAnchorRadar.js';
 
-const MINUTES_PER_DAY = 24 * 60;
-const MAX_CLOCK_DELTA = MINUTES_PER_DAY / 2;
-
-export function clockToMinutes(clock) {
-  const match = /^(\d{1,2}):(\d{2})$/.exec(clock ?? '');
-  if (!match) return null;
-  return Number(match[1]) * 60 + Number(match[2]);
-}
-
-// Signed difference `to - from`. When the raw difference crosses midnight,
-// fold it into the shorter path so 00:10 against 23:50 reads as +20 minutes.
-export function clockDeltaMinutes(fromClock, toClock) {
-  const from = clockToMinutes(fromClock);
-  const to = clockToMinutes(toClock);
-  if (from == null || to == null) return null;
-
-  let delta = to - from;
-  if (delta > MAX_CLOCK_DELTA) delta -= MINUTES_PER_DAY;
-  if (delta < -MAX_CLOCK_DELTA) delta += MINUTES_PER_DAY;
-  return delta;
-}
+export { clockDeltaMinutes, clockToMinutes };
 
 export function stepPlannedStart(step) {
   return step?.planned ?? step?.time ?? null;
@@ -144,7 +126,15 @@ export function buildTimeline(steps = [], liveState = {}, { durationOverrides = 
   });
 }
 
-export function buildDriftReport(steps = [], liveState = {}, { jokerAvailable = true } = {}) {
+export function buildDriftReport(
+  steps = [],
+  liveState = {},
+  {
+    jokerAvailable = true,
+    hardAnchors = [],
+    compressionSlackMinutes = 10,
+  } = {},
+) {
   const entries = buildTimeline(steps, liveState);
   const activeIndex = entries.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? entries[activeIndex] : null;
@@ -156,6 +146,11 @@ export function buildDriftReport(steps = [], liveState = {}, { jokerAvailable = 
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
   const currentDriftMinutes = currentEntry?.driftMinutes ?? null;
+
+  const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
+    currentEntry,
+    compressionSlackMinutes,
+  });
 
   const bufferAccordion = buildBufferAccordion(entries, currentDriftMinutes, {
     jokerAvailable,
@@ -188,6 +183,7 @@ export function buildDriftReport(steps = [], liveState = {}, { jokerAvailable = 
     currentDriftLabel: driftLabel(currentDriftMinutes),
     currentDriftTone: driftTone(currentDriftMinutes),
     currentDriftSource: currentEntry?.driftSource ?? 'none',
+    hardAnchorRadar,
     projectedElasticEntries,
     upcomingElasticEntries,
     accordionElasticEntries,
