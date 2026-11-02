@@ -8,6 +8,7 @@ import {
   toggleSubtask as toggleSubtaskState,
   undoStep,
 } from '../lib/liveStageState';
+import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
 
@@ -185,11 +186,16 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
     setLiveState((state) => toggleSubtaskState(state, task));
   }, []);
 
+  const sendStagePing = useCallback((type) => {
+    setLiveState((state) => sendStagePingState(state, type, { stepId: state.active_step_id }));
+  }, []);
+
   return {
     liveState,
     markCurrentDone,
     undoLastStep,
     toggleSubtask,
+    sendStagePing,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),

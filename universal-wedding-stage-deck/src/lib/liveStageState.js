@@ -4,6 +4,8 @@
 // the same payload can later be pushed to a cloud sync channel untouched and
 // still work as the offline fallback when the venue loses reception.
 
+import { normalizeStagePing } from './stagePings.js';
+
 const STORAGE_VERSION = 1;
 
 export function storageKey(weddingId) {
@@ -30,6 +32,7 @@ export function createLiveState(steps, overrides = {}) {
     completed_step_ids: [],
     actual_timestamps: {},
     checked_subtasks: {},
+    stage_ping: null,
     ...overrides,
   };
 }
@@ -70,6 +73,7 @@ export function normalizeLiveState(raw, steps) {
     completed_step_ids: completed,
     actual_timestamps: actual,
     checked_subtasks: checked,
+    stage_ping: normalizeStagePing(raw.stage_ping),
   };
 }
 
