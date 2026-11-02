@@ -1,8 +1,112 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import CulturalRulesBar from './components/CulturalRulesBar';
+import GameClickerOverlay from './components/GameClickerOverlay';
+import TeleprompterOverlay from './components/TeleprompterOverlay';
+import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { addMinutesToClock } from './lib/liveStageState';
+
+const HALL_ENTRANCE_SCRIPT = {
+  has_script: true,
+  type: "SPEECH",
+  title: "Hall Entrance, Toast & Dinner Start",
+  items: [
+    {
+      id: "welcome",
+      heading: "Welcome the couple",
+      lines: [
+        { lang: "PL", text: "Drodzy Państwo, prosimy o powstanie i powitanie Pary Młodej gromkimi brawami!" },
+        { lang: "FR", text: "Mesdames et messieurs, veuillez vous lever et accueillir les jeunes mariés par un tonnerre d'applaudissements !" },
+        { lang: "EN", text: "Ladies and gentlemen, please stand and welcome the newlyweds with a round of applause!" }
+      ]
+    },
+    {
+      id: "no-sto-lat",
+      heading: "No Sto Lat tonight",
+      lines: [
+        { lang: "PL", text: "Uwaga: dziś wieczorem NIE śpiewamy „Sto lat”. Prosimy uszanować życzenie Pary Młodej." },
+        { lang: "FR", text: "Attention : ce soir, nous ne chanterons PAS « Sto lat ». Merci de respecter le souhait des mariés." },
+        { lang: "EN", text: "Please note: we will NOT sing “Sto Lat” tonight. Thank you for respecting the couple's wish." }
+      ]
+    },
+    {
+      id: "tartare",
+      heading: "Steak tartare & vodka (FR explanation)",
+      lines: [
+        { lang: "FR", text: "En Pologne, la tradition veut que lorsqu'on mange un tartare, on se doit de boire de la vodka avec." },
+        { lang: "PL", text: "W Polsce tradycja mówi, że do tatara pije się wódkę." },
+        { lang: "EN", text: "In Poland, tradition says that steak tartare is served with a shot of vodka." }
+      ]
+    },
+    {
+      id: "guestbook",
+      heading: "Guestbook, Instax & anniversary bottle",
+      lines: [
+        { lang: "EN", text: "A quick reminder: the guestbook and Instax cameras are by the entrance. Add a wish to the bottle for the couple's first anniversary!" },
+        { lang: "PL", text: "Przypominamy: księga gości i aparaty Instax są przy wejściu. Wrzućcie życzenia do butelki na pierwszą rocznicę!" },
+        { lang: "FR", text: "Petit rappel : le livre d'or et les appareils Instax sont à l'entrée. Ajoutez un vœu dans la bouteille pour le premier anniversaire du couple !" }
+      ]
+    }
+  ]
+};
+
+const TEST_WIEDZY_GAME = {
+  has_script: true,
+  type: "GAME_QUESTIONS",
+  title: "Test Wiedzy — 14 Questions",
+  items: [
+    { id: "q01", question: { EN: "Who arrives at the airport 4 hours before the flight?", PL: "Kto przychodzi na lotnisko 4 godziny przed odlotem?", FR: "Qui arrive à l'aéroport 4 heures avant le vol ?" }, answer: "Antoine" },
+    { id: "q02", question: { EN: "Who is the boss at home?", PL: "Kto rządzi w domu?", FR: "Qui est le chef à la maison ?" }, answer: "Justyna" },
+    { id: "q03", question: { EN: "Who walks Silvio the dog?", PL: "Kto wyprowadza psa Silvio?", FR: "Qui promène Silvio le chien ?" }, answer: "Antoine" },
+    { id: "q04", question: { EN: "Who sent the first message?", PL: "Kto napisał pierwszą wiadomość?", FR: "Qui a envoyé le premier message ?" }, answer: "Antoine" },
+    { id: "q05", question: { EN: "Who is always late?", PL: "Kto zawsze się spóźnia?", FR: "Qui est toujours en retard ?" }, answer: "Justyna" },
+    { id: "q06", question: { EN: "Who is the more romantic one?", PL: "Kto jest bardziej romantyczny?", FR: "Qui est le plus romantique ?" }, answer: "Antoine" },
+    { id: "q07", question: { EN: "Who owns more shoes?", PL: "Kto ma więcej butów?", FR: "Qui a le plus de chaussures ?" }, answer: "Justyna" },
+    { id: "q08", question: { EN: "Who is the gadget person?", PL: "Kto jest gadżeciarzem?", FR: "Qui est fou de gadgets ?" }, answer: "Antoine" },
+    { id: "q09", question: { EN: "Who is the better cook?", PL: "Kto lepiej gotuje?", FR: "Qui cuisine le mieux ?" }, answer: "Justyna" },
+    { id: "q10", question: { EN: "Who is the better driver?", PL: "Kto lepiej prowadzi samochód?", FR: "Qui est le meilleur conducteur ?" }, answer: "Antoine" },
+    { id: "q11", question: { EN: "Who always knows where everything is?", PL: "Kto zawsze wie, gdzie wszystko jest?", FR: "Qui sait toujours où tout se trouve ?" }, answer: "Justyna" },
+    { id: "q12", question: { EN: "Who has the worst handwriting?", PL: "Kto ma najbrzydszy charakter pisma?", FR: "Qui a la plus mauvaise écriture ?" }, answer: "Antoine" },
+    { id: "q13", question: { EN: "Who falls asleep first?", PL: "Kto pierwszy zasypia?", FR: "Qui s'endort en premier ?" }, answer: "Justyna" },
+    { id: "q14", question: { EN: "Who is worse at maths?", PL: "Kto jest gorszy z matematyki?", FR: "Qui est le plus nul en maths ?" }, answer: "Justyna" }
+  ]
+};
+
+const VIP_ALERTS = [
+  {
+    id: "uncle-sylwek",
+    tone: "critical",
+    icon: "🎸",
+    tag: "Family",
+    title: "Uncle Sylwek — guitar limit",
+    detail: "May arrive with a guitar and ask to play. Allow MAX 1 short performance (a few minutes). Do not allow repeated concerts."
+  },
+  {
+    id: "uncle-dawid",
+    tone: "critical",
+    icon: "⚠️",
+    tag: "Family",
+    title: "Uncle Dawid Chmielewski",
+    detail: "Can become difficult to control after alcohol. If needed, discreetly alert Wojtek — he takes full responsibility for handling him."
+  },
+  {
+    id: "birthdays",
+    tone: "celebrate",
+    icon: "🎂",
+    tag: "Birthday",
+    title: "Guest birthdays today",
+    detail: "Call Melanie and Marzena to the center: “Joyeux Anniversaire” for Melanie, “Sto Lat” for Marzena. Best moment: cake."
+  },
+  {
+    id: "blind-grandmother",
+    tone: "care",
+    icon: "👵",
+    tag: "Care",
+    title: "Blind grandmother",
+    detail: "Groom's grandmother is elderly and nearly blind; groom's mother cares for her. Keep walkways clear and warn before loud moments."
+  }
+];
 
 const WEDDING = {
   weddingId: "2026-08-20_jennifer_guillaume",
@@ -16,14 +120,15 @@ const WEDDING = {
     gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
     bread_salt: { status: "YES", note: "Vodka vs water shot, break glasses" }
   },
-  vipRadarCount: 4,
+  vipRadarCount: VIP_ALERTS.length,
+  tact_and_vip_alerts: VIP_ALERTS,
   jokersCount: 3,
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden" },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo" },
-    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall" },
+    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", teleprompter: HALL_ENTRANCE_SCRIPT },
     { id: "step_04", time: "20:30", durationMin: 30, title: "Buffets Open", type: "BUFFER", location: "Main Hall" },
-    { id: "step_05", time: "21:00", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace" }
+    { id: "step_05", time: "21:00", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", teleprompter: TEST_WIEDZY_GAME }
   ]
 };
 
@@ -58,6 +163,8 @@ export default function App() {
     weddingId: WEDDING.weddingId,
     initialLiveState: INITIAL_LIVE_STATE
   });
+  const [overlay, setOverlay] = useState(null);
+  const closeOverlay = () => setOverlay(null);
 
   const { steps } = WEDDING;
   const activeIndex = liveState.active_step_id
@@ -72,6 +179,8 @@ export default function App() {
     : null;
   const estimatedEnd = currentStep ? addMinutesToClock(realStart, currentStep.durationMin) : null;
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
+  const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
+  const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
 
   return (
     <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
@@ -94,7 +203,14 @@ export default function App() {
 
         <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">
           <CulturalRulesBar rules={WEDDING.culturalRules} />
-          <span className="bg-amber-950/80 border border-amber-800 text-amber-300 px-2.5 py-1 rounded cursor-pointer hover:bg-amber-900 transition">⚠️ VIP Radar ({WEDDING.vipRadarCount})</span>
+          <button
+            type="button"
+            onClick={() => setOverlay("vip")}
+            title="Open confidential VIP & tactful family alerts"
+            className="bg-[#ED2939]/20 border border-[#ED2939]/60 text-[#ff808a] px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-[#ED2939]/30 active:bg-[#ED2939]/40 transition"
+          >
+            🚨 VIP Radar ({WEDDING.tact_and_vip_alerts.length})
+          </button>
           <span className="bg-[#002395]/40 border border-[#3b5bdb] text-[#849dff] px-2.5 py-1 rounded cursor-pointer hover:bg-[#002395]/60 transition">🃏 Jokers ({WEDDING.jokersCount})</span>
         </div>
 
@@ -202,11 +318,31 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Teleprompter Button Prompt inside Active Card */}
-              <div className="mt-4 pt-3 border-t border-[#1c2a52] flex items-center justify-between">
-                <button className="bg-[#111d3b] hover:bg-[#1c2a52] text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-[#2b3d73]">
-                  📖 Open Teleprompter / Script Overlay
-                </button>
+              {/* Launch overlays for the active step */}
+              <div className="mt-4 pt-3 border-t border-[#1c2a52] flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {script && (
+                    <button
+                      type="button"
+                      onClick={() => setOverlay("teleprompter")}
+                      className="bg-[#111d3b] hover:bg-[#1c2a52] text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-[#2b3d73]"
+                    >
+                      📖 Open Teleprompter / Script
+                    </button>
+                  )}
+                  {game && (
+                    <button
+                      type="button"
+                      onClick={() => setOverlay("game")}
+                      className="bg-[#002395]/40 hover:bg-[#002395]/70 text-white px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-[#3b5bdb]"
+                    >
+                      🎮 Game Clicker ({game.items.length} Qs)
+                    </button>
+                  )}
+                  {!script && !game && (
+                    <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
+                  )}
+                </div>
                 <span className="text-xs text-slate-400 font-mono">Step {activeIndex + 1} of {steps.length}</span>
               </div>
             </div>
@@ -326,6 +462,16 @@ export default function App() {
         </div>
 
       </footer>
+
+      {overlay === "teleprompter" && (
+        <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
+      )}
+      {overlay === "game" && (
+        <GameClickerOverlay open game={game} onClose={closeOverlay} />
+      )}
+      {overlay === "vip" && (
+        <VipAlertsModal open alerts={WEDDING.tact_and_vip_alerts} onClose={closeOverlay} />
+      )}
 
     </div>
   );
