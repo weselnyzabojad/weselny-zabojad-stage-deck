@@ -15,9 +15,9 @@ const PUBLISH_DEBOUNCE_MS = 200;
 
 // State machine for the on-stage timeline. Hydrates from localStorage on mount,
 // mirrors every transition back to localStorage (offline fallback), follows
-// writes from other tabs, and — when Supabase env vars are present — mirrors
-// the same payload through a Realtime channel keyed by the room/wedding id.
-export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiveState }) {
+// writes from other tabs, and — when the device is paired and Supabase env vars
+// are present — mirrors the same payload through a Realtime room channel.
+export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = null, initialLiveState }) {
   const key = storageKey(weddingId);
   const [liveState, setLiveState] = useState(
     () => loadLiveState(key, steps) ?? normalizeLiveState(initialLiveState, steps),
@@ -25,11 +25,12 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
   const [savedLocally, setSavedLocally] = useState(true);
 
   const syncConfig = useMemo(() => getSyncConfig(), []);
+  const canSync = syncConfig.enabled && Boolean(roomId);
   const client = useMemo(
-    () => (syncConfig.enabled ? createSupabaseSyncClient(syncConfig) : null),
-    [syncConfig],
+    () => (canSync ? createSupabaseSyncClient(syncConfig) : null),
+    [canSync, syncConfig],
   );
-  const roomKey = client ? syncRoomKey(syncConfig.roomPrefix, weddingId) : '';
+  const roomKey = client ? syncRoomKey(syncConfig.roomPrefix, roomId) : '';
 
   const [syncStatus, setSyncStatus] = useState(() => {
     if (!syncConfig.enabled) return 'disabled';
@@ -37,7 +38,10 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
   });
   const [syncError, setSyncError] = useState(null);
   const [remoteUpdatedAt, setRemoteUpdatedAt] = useState(null);
-  const [syncReady, setSyncReady] = useState(false);
+  // Room + client whose authoritative row has already been fetched. Prevents
+  // publishing stale local state into a newly paired room before hydration
+  // finishes; keying on the client handles re-pairing to the same room.
+  const [hydration, setHydration] = useState({ client: null, room: null });
 
   const lastSerializedRef = useRef(null);
   const lastPublishedRef = useRef(null);
@@ -71,6 +75,11 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
   // Subscribe to the room channel and hydrate from the authoritative row once.
   useEffect(() => {
     if (!client) return undefined;
+
+    // A new pairing opens a new room: forget per-room echo guards.
+    lastPublishedRef.current = null;
+    lastAdoptedRef.current = null;
+    latestRemoteAtRef.current = 0;
 
     let cancelled = false;
 
@@ -111,13 +120,13 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
         if (row?.state) {
           applyRemote({ state: row.state, updated_at: row.updated_at, pin: row.pin });
         }
-        setSyncReady(true);
+        setHydration({ client, room: roomKey });
       })
       .catch((error) => {
         if (cancelled) return;
         // Stay usable offline; the local mirror keeps the show running.
         setSyncError(error.message);
-        setSyncReady(true);
+        setHydration({ client, room: roomKey });
       });
 
     return () => {
@@ -128,7 +137,7 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
 
   // Push local transitions to the room, debounced so rapid taps collapse.
   useEffect(() => {
-    if (!client || !syncReady) return undefined;
+    if (!client || hydration.client !== client || hydration.room !== roomKey) return undefined;
     if (serialized === lastPublishedRef.current) return undefined;
     // Don't bounce a payload the cloud just sent us back to the cloud.
     if (serialized === lastAdoptedRef.current) return undefined;
@@ -148,7 +157,7 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
     }, PUBLISH_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [client, syncReady, serialized, roomKey, syncPin]);
+  }, [client, hydration, serialized, roomKey, syncPin]);
 
   useEffect(() => {
     if (!client) return undefined;
@@ -182,8 +191,9 @@ export function useLiveStageState({ steps, weddingId, syncPin = null, initialLiv
     undoLastStep,
     toggleSubtask,
     savedLocally,
-    syncStatus,
+    syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),
+    syncConfigured: syncConfig.enabled,
     syncError,
     remoteUpdatedAt,
   };

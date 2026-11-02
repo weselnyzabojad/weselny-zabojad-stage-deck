@@ -36,6 +36,6 @@ export function getSyncConfig(env = import.meta.env) {
 }
 
 // Rows are namespaced so several deployments can share one Supabase project.
-export function syncRoomKey(roomPrefix, weddingId) {
-  return `${roomPrefix}:${weddingId}`;
+export function syncRoomKey(roomPrefix, roomId) {
+  return `${roomPrefix}:${roomId}`;
 }
