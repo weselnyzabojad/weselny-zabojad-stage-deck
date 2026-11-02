@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
+import BufferAccordionCard from './components/BufferAccordionCard';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
@@ -134,11 +135,11 @@ const WEDDING = {
   tact_and_vip_alerts: VIP_ALERTS,
   jokersCount: 3,
   steps: [
-    { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
+    { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
     { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15" }, teleprompter: HALL_ENTRANCE_SCRIPT },
-    { id: "step_04", time: "20:30", durationMin: 30, title: "Buffets Open", type: "BUFFER", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Don't Know Why — Norah Jones" } },
-    { id: "step_05", time: "21:00", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
+    { id: "step_04", time: "19:30", durationMin: 30, title: "Buffets Open & Dance Floor", type: "BUFFER", location: "Main Hall", buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }, dj: { playlist: "Dance Floor Block", track: "September — Earth, Wind & Fire" } },
+    { id: "step_05", time: "20:30", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
   ]
 };
 
@@ -217,7 +218,9 @@ export default function App() {
   const showDjCues = roleIds.includes("dj");
 
   const { steps } = WEDDING;
-  const driftReport = buildDriftReport(steps, liveState);
+  const driftReport = buildDriftReport(steps, liveState, {
+    jokerAvailable: WEDDING.jokersCount > 0,
+  });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
@@ -492,6 +495,8 @@ export default function App() {
               <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
             )}
           </div>
+
+          <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
           {/* Hard Anchor Radar */}
           <div className="bg-[#0b132b]/95 border border-[#ED2939]/40 rounded-xl p-4 shadow-lg relative overflow-hidden">
