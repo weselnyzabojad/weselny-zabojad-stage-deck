@@ -78,6 +78,8 @@ rejected; put app-specific data under `extensions`.
 | `tact_and_vip_alerts` | no | Sensitive family / care notes. |
 | `jokersCount` | no | Should equal `jokerGames.length` when both exist. |
 | `jokerGames` | no | Joker Drawer games / crates. |
+| `coHosts` | no | Assistant hosts / co-MCs, responsibilities and contacts. |
+| `contentCreators` | no | Social-media vendors, windows, deliverables and boundaries. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
 | `contacts` | no | Vendor and family contacts. |
@@ -180,6 +182,43 @@ Notes:
 | `bread_salt` | `YES`, `NO`, `TBC` |
 
 Each rule accepts an optional `note`.
+
+## Co-hosts and content creators
+
+```json
+"coHosts": [
+  {
+    "id": "zuzia",
+    "name": "Zuzia",
+    "role": "Co-MC",
+    "phone": "+48 600 111 222",
+    "responsibilities": ["Bread & Salt", "Games pool"],
+    "notes": "Shares the second microphone."
+  }
+],
+"contentCreators": [
+  {
+    "id": "paulina",
+    "name": "Paulina Nózka",
+    "platform": "INSTAGRAM",
+    "handle": "@paulinan",
+    "phone": "+48 600 333 444",
+    "arrivalTime": "16:00",
+    "departureTime": "22:00",
+    "deliverables": ["Behind-the-scenes reel", "Stories"],
+    "boundaries": ["Do not block official photo/video"],
+    "notes": "Publish after the couple approves."
+  }
+]
+```
+
+`platform` is `INSTAGRAM`, `TIKTOK`, `YOUTUBE`, `FACEBOOK` or `OTHER`.
+Co-hosts and content creators are both optional arrays. The MC header exposes a
+**Team** module that lists them; imported cartridges populate it directly.
+
+**Deferred:** the Family Dynamic / Divorce Warning Flag extension is
+intentionally not part of v1.1 yet. Do not add `familyDynamics` or similar
+fields until a future schema revision.
 
 ## Hard anchors
 

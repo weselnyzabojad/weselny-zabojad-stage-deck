@@ -93,6 +93,18 @@
         "$ref": "#/$defs/jokerGame"
       }
     },
+    "coHosts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/coHost"
+      }
+    },
+    "contentCreators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contentCreator"
+      }
+    },
     "hardAnchors": {
       "type": "array",
       "items": {
@@ -320,6 +332,83 @@
         },
         "content": {
           "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "coHost": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "responsibilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "contentCreator": {
+      "type": "object",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["INSTAGRAM", "TIKTOK", "YOUTUBE", "FACEBOOK", "OTHER"]
+        },
+        "handle": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "arrivalTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "departureTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "notes": {
           "type": "string"

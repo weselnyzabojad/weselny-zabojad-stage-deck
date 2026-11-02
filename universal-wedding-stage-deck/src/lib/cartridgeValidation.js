@@ -70,6 +70,8 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.hardAnchors, '/hardAnchors', 'hard anchor');
   uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
   uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
+  uniqueList(cartridge?.coHosts, '/coHosts', 'co-host');
+  uniqueList(cartridge?.contentCreators, '/contentCreators', 'content creator');
 
   if (
     Number.isInteger(cartridge?.jokersCount) &&

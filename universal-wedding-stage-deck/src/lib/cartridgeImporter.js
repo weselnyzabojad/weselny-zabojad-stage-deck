@@ -62,6 +62,10 @@ export function summarizeCartridge(cartridge) {
     ? cartridge.preWeddingTodos
     : [];
   const jokers = Array.isArray(cartridge?.jokerGames) ? cartridge.jokerGames : [];
+  const coHosts = Array.isArray(cartridge?.coHosts) ? cartridge.coHosts : [];
+  const contentCreators = Array.isArray(cartridge?.contentCreators)
+    ? cartridge.contentCreators
+    : [];
 
   return {
     couple: cartridge?.couple ?? '—',
@@ -73,5 +77,7 @@ export function summarizeCartridge(cartridge) {
     vipAlertCount: vipAlerts.length,
     preWeddingCount: preWedding.length,
     jokerCount: jokers.length,
+    coHostCount: coHosts.length,
+    contentCreatorCount: contentCreators.length,
   };
 }
