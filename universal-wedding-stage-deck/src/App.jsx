@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
+import CulturalRulesBar from './components/CulturalRulesBar';
 
 export default function App() {
   const [weddingState, setWeddingState] = useState({
@@ -10,9 +11,9 @@ export default function App() {
     activeStepIndex: 2,
     driftMinutes: 25,
     culturalRules: {
-      stoLat: { status: "STRICT NO", note: "Inform guests: NO Sto Lat tonight!" },
-      gorzko: { status: "STRICT NO", note: "No Gorzko Gorzko" },
-      breadSalt: { status: "YES", note: "Vodka vs water shot" }
+      sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
+      gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
+      bread_salt: { status: "YES", note: "Vodka vs water shot, break glasses" }
     },
     vipRadarCount: 4,
     jokersCount: 3,
@@ -45,7 +46,7 @@ export default function App() {
   const nextStep = weddingState.steps[weddingState.activeStepIndex + 1] || { time: "23:30", title: "Late Night Party" };
 
   return (
-    <div className="min-h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+    <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
       <header className="bg-[#0b132b] border-b border-[#1c2a52] px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
@@ -63,9 +64,8 @@ export default function App() {
           <span className="text-slate-300 font-medium hidden md:inline">Wedding: <strong className="text-white">{weddingState.couple}</strong></span>
         </div>
 
-        <div className="flex items-center space-x-2 my-2 sm:my-0">
-          <span className="bg-[#ED2939]/20 border border-[#ED2939]/50 text-[#ff808a] px-2.5 py-1 rounded">« NO STO LAT</span>
-          <span className="bg-[#ED2939]/20 border border-[#ED2939]/50 text-[#ff808a] px-2.5 py-1 rounded">« NO GORZKO</span>
+        <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">
+          <CulturalRulesBar rules={weddingState.culturalRules} />
           <span className="bg-amber-950/80 border border-amber-800 text-amber-300 px-2.5 py-1 rounded cursor-pointer hover:bg-amber-900 transition">⚠️ VIP Radar ({weddingState.vipRadarCount})</span>
           <span className="bg-[#002395]/40 border border-[#3b5bdb] text-[#849dff] px-2.5 py-1 rounded cursor-pointer hover:bg-[#002395]/60 transition">🃏 Jokers ({weddingState.jokersCount})</span>
         </div>
@@ -82,7 +82,7 @@ export default function App() {
       </header>
 
       {/* ================= MAIN DASHBOARD (70% / 30% SPLIT) ================= */}
-      <main className="flex-1 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 max-h-[calc(100vh-125px)] overflow-y-auto">
+      <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
         
         {/* ACTIVE STEP (70% Width -> 7 cols on lg) */}
         <section className="lg:col-span-7 bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-5 flex flex-col justify-between shadow-xl relative">
