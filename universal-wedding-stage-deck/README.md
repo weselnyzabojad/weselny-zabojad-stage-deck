@@ -290,6 +290,30 @@ Relevant files: `src/lib/liveStageState.js`,
 `src/hooks/useLiveStageState.js`, `src/components/JokerDrawerCard.jsx`,
 `src/App.jsx`.
 
+### 11. WeddingSchema v1.1 specification (issue #14)
+
+The portable cartridge format is now defined in `schema/`:
+
+- `schema/wedding-schema-v1.1.json` — Draft 2020-12 JSON Schema.
+- `schema/wedding-cartridge.example.json` — complete demo cartridge.
+- `schema/validate-cartridge.mjs` — structural validation plus cross-field
+  checks (unique IDs, live-state references, buffer bounds, joker/VIP counts).
+- `schema/README.md` — field reference, step types, teleprompter shapes,
+  hard anchors, live-state defaults and versioning rules.
+
+Run:
+
+```bash
+npm run validate:schema
+npm run validate:schema -- path/to/cartridge.json
+```
+
+The schema uses the app's canonical camelCase shape (`weddingId`, `syncPin`,
+`hostingMode`, `hardAnchors`, `durationMin`, `buffer`, `step_order`,
+`deferred_step_ids`, `manual_offset_minutes`) and rejects unknown top-level
+keys; use `extensions` for forward-compatible extras. Legacy snake_case Google
+Docs imports will be mapped by the issue #15 importer.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

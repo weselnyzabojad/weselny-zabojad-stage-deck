@@ -1,0 +1,260 @@
+{
+  "$schema": "./wedding-schema-v1.1.json",
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_jennifer_guillaume",
+  "couple": "Jennifer & Guillaume",
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "role": "MC",
+  "hostingMode": "HOST_AND_DJ",
+  "venue": "Château de la Forêt",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "STRICT_NO",
+      "note": "Inform guests: NO Sto Lat tonight!"
+    },
+    "gorzko": {
+      "status": "STRICT_NO",
+      "note": "No Gorzko Gorzko"
+    },
+    "bread_salt": {
+      "status": "YES",
+      "note": "Vodka vs water shot, break glasses"
+    }
+  },
+  "vipRadarCount": 2,
+  "tact_and_vip_alerts": [
+    {
+      "id": "uncle-sylwek",
+      "tone": "critical",
+      "icon": "🎸",
+      "tag": "Family",
+      "title": "Uncle Sylwek — guitar limit",
+      "detail": "Allow MAX 1 short performance. Do not allow repeated concerts."
+    },
+    {
+      "id": "blind-grandmother",
+      "tone": "care",
+      "icon": "👵",
+      "tag": "Care",
+      "title": "Blind grandmother",
+      "detail": "Keep walkways clear and warn before loud moments."
+    }
+  ],
+  "jokersCount": 2,
+  "jokerGames": [
+    {
+      "id": "joker_musical_chairs",
+      "category": "GAME",
+      "title": "Musical Chairs",
+      "content": "Classic musical chairs with a short 3-minute round."
+    },
+    {
+      "id": "joker_music_crate",
+      "category": "MUSIC_CRATE",
+      "title": "Polish Disco Crate",
+      "content": "Five safe dance-floor tracks to pull if the floor needs a lift."
+    }
+  ],
+  "hardAnchors": [
+    {
+      "id": "photo_video",
+      "time": "20:30",
+      "label": "Photo / Video Leaves",
+      "alertBeforeMin": 45,
+      "kind": "VENDOR"
+    },
+    {
+      "id": "sunset",
+      "time": "21:10",
+      "label": "Sunset Window",
+      "alertBeforeMin": 30,
+      "kind": "SUNSET"
+    },
+    {
+      "id": "ocsepiny",
+      "time": "00:00",
+      "label": "Oczepiny (Exact)",
+      "alertBeforeMin": 30,
+      "kind": "FAMILY"
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "durationMin": 30,
+      "title": "Aperitif in Garden",
+      "type": "BUFFER",
+      "location": "Garden",
+      "buffer": {
+        "minDurationMin": 15,
+        "maxDurationMin": 45
+      },
+      "dj": {
+        "playlist": "Garden Aperitif",
+        "track": "La Vie en Rose — Édith Piaf"
+      }
+    },
+    {
+      "id": "step_02",
+      "time": "17:00",
+      "durationMin": 60,
+      "title": "Outdoor Civil Ceremony",
+      "type": "ELASTIC",
+      "location": "Garden Gazebo",
+      "dj": {
+        "playlist": "Ceremony Procession",
+        "track": "Canon in D — Pachelbel",
+        "cutoff": "18:20"
+      }
+    },
+    {
+      "id": "step_03",
+      "time": "18:00",
+      "planned": "18:00",
+      "realStart": "18:25",
+      "durationMin": 90,
+      "title": "Hall Entrance, Toast & Dinner Start",
+      "type": "ELASTIC",
+      "location": "Main Hall",
+      "dj": {
+        "playlist": "Dinner Jazz",
+        "track": "Fly Me to the Moon — Frank Sinatra",
+        "cutoff": "20:15"
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "SPEECH",
+        "title": "Hall Entrance, Toast & Dinner Start",
+        "items": [
+          {
+            "id": "welcome",
+            "heading": "Welcome the couple",
+            "lines": [
+              {
+                "lang": "PL",
+                "text": "Drodzy Państwo, prosimy o powstanie i powitanie Pary Młodej gromkimi brawami!"
+              },
+              {
+                "lang": "FR",
+                "text": "Mesdames et messieurs, veuillez vous lever et accueillir les jeunes mariés par un tonnerre d'applaudissements !"
+              },
+              {
+                "lang": "EN",
+                "text": "Ladies and gentlemen, please stand and welcome the newlyweds with a round of applause!"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "step_04",
+      "time": "19:30",
+      "durationMin": 30,
+      "title": "Buffets Open & Dance Floor",
+      "type": "BUFFER",
+      "location": "Main Hall",
+      "deferable": true,
+      "buffer": {
+        "minDurationMin": 10,
+        "maxDurationMin": 60,
+        "danceBlock": true
+      },
+      "dj": {
+        "playlist": "Dance Floor Block",
+        "track": "September — Earth, Wind & Fire"
+      }
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "durationMin": 30,
+      "title": "Cake & Sparklers",
+      "type": "HARD_ANCHOR",
+      "location": "Terrace",
+      "dj": {
+        "playlist": "Party Set",
+        "track": "Dancing Queen — ABBA",
+        "cutoff": "21:30"
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "GAME_QUESTIONS",
+        "title": "Test Wiedzy — 2 Questions",
+        "items": [
+          {
+            "id": "q01",
+            "question": {
+              "EN": "Who arrives at the airport 4 hours before the flight?",
+              "PL": "Kto przychodzi na lotnisko 4 godziny przed odlotem?",
+              "FR": "Qui arrive à l'aéroport 4 heures avant le vol ?"
+            },
+            "answer": "Antoine"
+          },
+          {
+            "id": "q02",
+            "question": {
+              "EN": "Who is the boss at home?",
+              "PL": "Kto rządzi w domu?",
+              "FR": "Qui est le chef à la maison ?"
+            },
+            "answer": "Justyna"
+          }
+        ]
+      }
+    }
+  ],
+  "demographics": {
+    "total": 100,
+    "pl": 50,
+    "fr": 40,
+    "other": 10,
+    "languages": ["PL", "FR", "EN"],
+    "notes": "10–15 kids; most guests understand English."
+  },
+  "contacts": [
+    {
+      "role": "DJ",
+      "name": "DJ Marc",
+      "phone": "+33 6 00 00 00 00",
+      "notes": "Booth on the left; silent pings enabled."
+    },
+    {
+      "role": "Photographer",
+      "name": "Magda",
+      "phone": "+48 600 000 000",
+      "notes": "Leaves after the sunset window."
+    }
+  ],
+  "preWeddingTodos": [
+    {
+      "task": "Confirm Test Wiedzy questions with witnesses",
+      "done": true
+    },
+    {
+      "task": "Check XLR cables at 16:15",
+      "done": false
+    }
+  ],
+  "weatherVariants": ["DEFAULT", "RAIN", "HEATWAVE"],
+  "liveSyncState": {
+    "active_step_id": "step_03",
+    "completed_step_ids": ["step_01", "step_02"],
+    "actual_timestamps": {
+      "step_01": "16:31",
+      "step_02": "17:00",
+      "step_03": "18:25"
+    },
+    "checked_subtasks": {
+      "Parents' thank-you speech + gifts (with mic)": true,
+      "Rosół + Tartare with Vodka shot": false,
+      "Speeches between starter and main course": false
+    },
+    "stage_ping": null,
+    "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
+    "deferred_step_ids": [],
+    "manual_offset_minutes": 0
+  }
+}
