@@ -9,6 +9,7 @@
 // 00:10 = +20m) does not produce a 23-hour phantom drift.
 
 import { addMinutesToClock } from './liveStageState.js';
+import { buildBufferAccordion } from './bufferAccordion.js';
 
 const MINUTES_PER_DAY = 24 * 60;
 const MAX_CLOCK_DELTA = MINUTES_PER_DAY / 2;
@@ -69,14 +70,19 @@ function projectionSource(step, actualStart) {
 
 // Build one enriched entry per step. Existing callers of `buildTimeline` keep
 // working; the extra drift fields are what the engine report consumes.
-export function buildTimeline(steps = [], liveState = {}) {
+// `durationOverrides` lets the buffer accordion project the recommended
+// shortened/extended lengths without mutating the cartridge.
+export function buildTimeline(steps = [], liveState = {}, { durationOverrides = null } = {}) {
   const completed = new Set(liveState?.completed_step_ids ?? []);
   const actuals = liveState?.actual_timestamps ?? {};
   let cursor = null;
 
   return steps.map((step, index) => {
     const plannedStart = stepPlannedStart(step);
-    const plannedEnd = addMinutesToClock(plannedStart, step.durationMin);
+    const plannedDurationMin = Number.isFinite(step.durationMin) ? step.durationMin : null;
+    const override = durationOverrides?.[step.id];
+    const durationMin = Number.isFinite(override) ? override : plannedDurationMin;
+    const plannedEnd = addMinutesToClock(plannedStart, plannedDurationMin);
     const actualStart = typeof actuals[step.id] === 'string' ? actuals[step.id] : null;
     let projectedStart = actualStart ?? step.realStart ?? null;
 
@@ -94,7 +100,7 @@ export function buildTimeline(steps = [], liveState = {}) {
       }
     }
 
-    const projectedEnd = addMinutesToClock(projectedStart, step.durationMin);
+    const projectedEnd = addMinutesToClock(projectedStart, durationMin);
     if (projectedEnd) cursor = projectedEnd;
 
     const actualDriftMinutes = actualStart
@@ -119,6 +125,9 @@ export function buildTimeline(steps = [], liveState = {}) {
       actualStart,
       projectedStart,
       projectedEnd,
+      plannedDurationMin,
+      durationMin,
+      durationAdjusted: durationMin !== plannedDurationMin,
       actualDriftMinutes,
       projectedDriftMinutes,
       driftMinutes,
@@ -135,7 +144,7 @@ export function buildTimeline(steps = [], liveState = {}) {
   });
 }
 
-export function buildDriftReport(steps = [], liveState = {}) {
+export function buildDriftReport(steps = [], liveState = {}, { jokerAvailable = true } = {}) {
   const entries = buildTimeline(steps, liveState);
   const activeIndex = entries.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? entries[activeIndex] : null;
@@ -147,14 +156,30 @@ export function buildDriftReport(steps = [], liveState = {}) {
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
   const currentDriftMinutes = currentEntry?.driftMinutes ?? null;
+
+  const bufferAccordion = buildBufferAccordion(entries, currentDriftMinutes, {
+    jokerAvailable,
+  });
+  const accordionEntries = bufferAccordion.hasChanges
+    ? buildTimeline(steps, liveState, {
+        durationOverrides: bufferAccordion.durationByStepId,
+      })
+    : entries;
+
   const projectedFinish = entries.length > 0 ? entries[entries.length - 1].projectedEnd : null;
   const plannedFinish = entries.length > 0 ? entries[entries.length - 1].plannedEnd : null;
+  const accordionProjectedFinish =
+    accordionEntries.length > 0 ? accordionEntries[accordionEntries.length - 1].projectedEnd : null;
 
   const projectedElasticEntries = entries.filter((entry) => entry.isElastic && !entry.isDone);
   const upcomingElasticEntries = projectedElasticEntries.filter((entry) => !entry.isActive);
+  const accordionElasticEntries = accordionEntries.filter(
+    (entry) => entry.isElastic && !entry.isDone,
+  );
 
   return {
     entries,
+    accordionEntries,
     activeEntry,
     nextEntry,
     lastCompletedEntry,
@@ -165,12 +190,27 @@ export function buildDriftReport(steps = [], liveState = {}) {
     currentDriftSource: currentEntry?.driftSource ?? 'none',
     projectedElasticEntries,
     upcomingElasticEntries,
+    accordionElasticEntries,
     projectedFinish,
     plannedFinish,
     projectedFinishDeltaMinutes:
       projectedFinish && plannedFinish
         ? clockDeltaMinutes(plannedFinish, projectedFinish)
         : null,
+    accordionProjectedFinish,
+    accordionProjectedFinishDeltaMinutes:
+      accordionProjectedFinish && plannedFinish
+        ? clockDeltaMinutes(plannedFinish, accordionProjectedFinish)
+        : null,
+    bufferAccordion: {
+      ...bufferAccordion,
+      baselineProjectedFinish: projectedFinish,
+      accordionProjectedFinish,
+      accordionFinishDeltaMinutes:
+        accordionProjectedFinish && projectedFinish
+          ? clockDeltaMinutes(projectedFinish, accordionProjectedFinish)
+          : null,
+    },
     completedCount: entries.filter((entry) => entry.isDone).length,
     totalCount: entries.length,
     isComplete: entries.length > 0 && entries.every((entry) => entry.isDone),

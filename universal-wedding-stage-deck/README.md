@@ -199,6 +199,37 @@ Relevant files: `src/lib/driftEngine.js`, `src/lib/timeline.js`,
 `src/App.jsx`, `src/components/PocketRemoteView.jsx`,
 `src/components/DjBoothView.jsx`.
 
+### 8. BUFFER accordion logic (issue #11)
+
+`BUFFER` steps can declare their flexible range in the cartridge:
+
+```js
+buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }
+```
+
+`src/lib/bufferAccordion.js` compares that range with the current drift:
+
+- **Late** — recommends shortening upcoming buffers, in order, until the
+  delay is recovered or every buffer reaches `minDurationMin`. It reports the
+  recovered minutes and any remaining delay.
+- **Ahead** — recommends extending upcoming buffers up to `maxDurationMin` to
+  absorb the lead. If the flex is exhausted, it prompts to pull a Joker Game
+  from the drawer (when one is available).
+- **On time** — leaves the planned buffer lengths untouched.
+
+`buildDriftReport` exposes the plan as `bufferAccordion` and also returns
+`accordionEntries` / `accordionProjectedFinish`, which project the recommended
+durations without mutating the original cartridge. The MC dashboard shows the
+recommendation in the **🪗 Buffer Accordion** card, including per-buffer
+`30 → 10 min` changes, recovered minutes and the Joker prompt. Applying the
+recommended duration with a one-tap control belongs to issue #13.
+
+The demo cartridge marks *Buffets Open & Dance Floor* as a 30-minute dance
+buffer with a 10–60 minute range, so the card reacts to late and ahead drift.
+
+Relevant files: `src/lib/bufferAccordion.js`, `src/lib/driftEngine.js`,
+`src/components/BufferAccordionCard.jsx`, `src/App.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are
