@@ -20,6 +20,7 @@ import RoleJoinScreen from './components/RoleJoinScreen';
 import RoleSwitcher from './components/RoleSwitcher';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
+import ThemeToggle from './components/ThemeToggle';
 import TeamModule from './components/TeamModule';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
 import VipAlertsModal from './components/VipAlertsModal';
@@ -27,6 +28,7 @@ import { useLiveStageState } from './hooks/useLiveStageState';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
 import { useEventClock } from './hooks/useEventClock';
+import { useTheme } from './hooks/useTheme';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
@@ -376,9 +378,9 @@ const DECK_INTENT =
     : { roomCode: null, role: null };
 
 const STEP_TYPE_STYLES = {
-  ELASTIC: "text-white bg-[#002395] border-[#3b5bdb]",
+  ELASTIC: "text-white bg-brand border-brand-strong",
   BUFFER: "text-cyan-200 bg-cyan-950/70 border-cyan-800",
-  HARD_ANCHOR: "text-[#ffb3ba] bg-[#ED2939]/20 border-[#ED2939]/60"
+  HARD_ANCHOR: "text-alert-tint bg-alert/20 border-alert/60"
 };
 
 export default function App() {
@@ -418,6 +420,8 @@ export default function App() {
     requireToken: IS_PRODUCTION,
   });
   const { role, setRole } = useRole();
+  // Per-device theme (TODO 27): Night Stage default, Daylight for outdoor glare.
+  const { theme, toggleTheme } = useTheme();
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
@@ -470,6 +474,8 @@ export default function App() {
     return (
       <RoleJoinScreen
         intent={DECK_INTENT}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onJoined={(session) => {
           saveRoleSession(session);
           setRoleSession(session);
@@ -480,8 +486,8 @@ export default function App() {
 
   if (needsProductionCartridge) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#070b19] px-4 text-center text-slate-100">
-        <div className="max-w-sm rounded-2xl border border-[#1c2a52] bg-[#0b132b] p-6 shadow-2xl">
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+        <div className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
           <div className="text-3xl" aria-hidden="true">
             {cartridgeError ? '⚠️' : '🎧'}
           </div>
@@ -496,7 +502,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="mt-4 rounded-lg border border-[#3b5bdb] bg-[#002395] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#1a3cb0]"
+              className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
             >
               Retry
             </button>
@@ -513,6 +519,8 @@ export default function App() {
           wedding={WEDDING}
           onPair={pairing.pair}
           cloudConfigured={syncConfigured}
+          theme={theme}
+          onToggleTheme={toggleTheme}
           onImport={() => setImporterOpen(true)}
         />
         <CartridgeImporter
@@ -585,10 +593,10 @@ export default function App() {
   const drift = driftReport.currentDriftMinutes;
   const driftText = driftReport.currentDriftLabel;
   const driftClass = drift > 0
-    ? "bg-[#ED2939]/20 border-[#ED2939]/60 text-[#ff6b75]"
+    ? "bg-alert/20 border-alert/60 text-alert-soft"
     : drift < 0
       ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-      : "bg-[#111d3b] border-[#2b3d73] text-slate-300";
+      : "bg-raised border-line-strong text-slate-300";
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
@@ -650,6 +658,8 @@ export default function App() {
         remoteUpdatedAt={remoteUpdatedAt}
         servicePackage={WEDDING.servicePackage}
         viewVisibility={WEDDING.viewVisibility?.dj}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         {...roleProps}
       />
     );
@@ -664,6 +674,8 @@ export default function App() {
           clock={driftReport.clock}
           cake={cakeProtocol}
           musicPolicy={musicPolicy}
+          theme={theme}
+          onToggleTheme={toggleTheme}
           onAdvance={markCurrentDone}
           onUndo={undoLastStep}
           onOpenScript={() => setOverlay("teleprompter")}
@@ -682,10 +694,10 @@ export default function App() {
 
   return (
     <>
-      <div className="h-screen bg-[#070b19] text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+      <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
-      <header className="bg-[#0b132b] border-b border-[#1c2a52] px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
+      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
         <div className="flex items-center space-x-4">
           <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
             <img 
@@ -695,7 +707,7 @@ export default function App() {
             />
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
-          <span className="bg-[#111d3b] px-3 py-1.5 rounded text-white font-mono font-semibold border border-[#2b3d73] text-sm">{realStart ?? "—"}</span>
+          <span className="bg-raised px-3 py-1.5 rounded text-white font-mono font-semibold border border-line-strong text-sm">{realStart ?? "—"}</span>
           {driftText ? (
             <span className={`px-3 py-1.5 rounded font-semibold text-sm border ${driftClass}`}>{driftText}</span>
           ) : null}
@@ -708,16 +720,16 @@ export default function App() {
             type="button"
             onClick={() => setOverlay("vip")}
             title="Open confidential VIP & tactful family alerts"
-            className="bg-[#ED2939]/20 border border-[#ED2939]/60 text-[#ff808a] px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-[#ED2939]/30 active:bg-[#ED2939]/40 transition"
+            className="bg-alert/20 border border-alert/60 text-alert-soft px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-alert/30 active:bg-alert/40 transition"
           >
             🚨 VIP Radar ({vipAlerts.length})
           </button>
-          <span className="bg-[#002395]/40 border border-[#3b5bdb] text-[#849dff] px-2.5 py-1 rounded cursor-pointer hover:bg-[#002395]/60 transition">🃏 Jokers ({jokerCount})</span>
+          <span className="bg-brand/40 border border-brand-strong text-brand-soft px-2.5 py-1 rounded cursor-pointer hover:bg-brand/60 transition">🃏 Jokers ({jokerCount})</span>
           <button
             type="button"
             onClick={() => setImporterOpen(true)}
             title="Import a WeddingSchema v1.1 cartridge"
-            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
           >
             📥 Import
           </button>
@@ -725,7 +737,7 @@ export default function App() {
             type="button"
             onClick={() => setTeamOpen(true)}
             title="Open co-hosts and content creators"
-            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
           >
             🤝 Team ({teamCount})
           </button>
@@ -733,7 +745,7 @@ export default function App() {
             type="button"
             onClick={() => setContactsOpen(true)}
             title="Open the vendor contacts directory"
-            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
           >
             📇 Contacts ({contacts.length})
           </button>
@@ -767,6 +779,7 @@ export default function App() {
           {roleIds.length > 1 ? (
             <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
           ) : null}
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
         </div>
       </header>
 
@@ -778,12 +791,12 @@ export default function App() {
       <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
         
         {/* ACTIVE STEP (70% Width -> 7 cols on lg) */}
-        <section className="lg:col-span-7 bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 flex flex-col justify-between shadow-xl relative">
+        <section className="lg:col-span-7 bg-card/95 border border-line rounded-xl p-4 flex flex-col justify-between shadow-xl relative">
           {currentStep ? (
             <div className="flex-1 min-h-0 flex flex-col justify-between">
               <div>
                 {/* Step Header & Timing */}
-                <div className="flex items-center justify-between border-b border-[#1c2a52] pb-2.5 mb-3">
+                <div className="flex items-center justify-between border-b border-line pb-2.5 mb-3">
                   <div>
                     <span className={`text-xs uppercase tracking-wider font-heading font-semibold px-2.5 py-1 rounded border ${stepTypeClass}`}>
                       {currentStep.type.replace("_", " ")} STEP
@@ -793,7 +806,7 @@ export default function App() {
                       <span>📍 Location: <strong className="text-slate-200">{currentStep.location}</strong></span>
                     </div>
                   </div>
-                  <div className="text-right bg-[#070b19]/80 p-3 rounded-lg border border-[#1c2a52]">
+                  <div className="text-right bg-page/80 p-3 rounded-lg border border-line">
                     <div className="text-xs text-slate-400">Planned: <span className="line-through text-slate-500">{currentStep.planned || currentStep.time}</span></div>
                     <div className="text-sm font-mono text-white font-semibold mt-0.5">Real Start: {realStart}</div>
                     <div className="text-xs text-slate-300 mt-0.5">Est. End: {estimatedEnd ?? "—"}</div>
@@ -802,22 +815,22 @@ export default function App() {
 
                 <div className={`grid grid-cols-1 gap-4 my-3 ${showDjCues ? "md:grid-cols-2" : ""}`}>
                   {/* MC Cues */}
-                  <div className="bg-[#070b19]/60 p-3.5 rounded-lg border border-[#1c2a52]">
+                  <div className="bg-page/60 p-3.5 rounded-lg border border-line">
                     <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#ED2939]"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
                       <span>🗣️ MC Cues (FR / PL / EN)</span>
                     </h3>
                     <ul className="space-y-2 text-sm text-slate-300">
                       <li className="flex items-start space-x-2">
-                        <span className="text-[#849dff] font-mono text-xs mt-0.5">[FR/PL]</span>
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR/PL]</span>
                         <span>Inform guests: NO Sto Lat tonight!</span>
                       </li>
                       <li className="flex items-start space-x-2">
-                        <span className="text-[#849dff] font-mono text-xs mt-0.5">[FR]</span>
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR]</span>
                         <span>Explain Polish Steak Tartare + Vodka tradition.</span>
                       </li>
                       <li className="flex items-start space-x-2">
-                        <span className="text-[#849dff] font-mono text-xs mt-0.5">[ALL]</span>
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[ALL]</span>
                         <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
                       </li>
                     </ul>
@@ -825,9 +838,9 @@ export default function App() {
 
                   {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
                   {showDjCues && (
-                    <div className="bg-[#070b19]/60 p-3.5 rounded-lg border border-[#1c2a52]">
+                    <div className="bg-page/60 p-3.5 rounded-lg border border-line">
                       <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#002395]"></span>
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
                         <span>🎧 DJ / Audio Cues</span>
                       </h3>
                       <ul className="space-y-2 text-sm text-slate-300">
@@ -835,7 +848,7 @@ export default function App() {
                           <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
                           <span>{currentStep.dj?.playlist ?? "Background dinner music"} ({currentStep.dj?.track ?? "playlist active"}).</span>
                         </li>
-                        <li className="text-xs text-slate-400 bg-[#0b132b] p-2 rounded border border-[#1c2a52] mt-2">
+                        <li className="text-xs text-slate-400 bg-card p-2 rounded border border-line mt-2">
                           ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
                         </li>
                       </ul>
@@ -845,7 +858,7 @@ export default function App() {
 
                 {/* Catering & Sub-Tasks */}
                 {stepSubtasks.length > 0 ? (
-                  <div className="mt-4 bg-[#070b19]/70 p-3.5 rounded-lg border border-[#1c2a52]">
+                  <div className="mt-4 bg-page/70 p-3.5 rounded-lg border border-line">
                   <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks (Tap to check off)</h3>
                   <div className="space-y-2">
                     {stepSubtasks.map((task) => {
@@ -854,13 +867,13 @@ export default function App() {
                         <div 
                           key={task} 
                           onClick={() => toggleSubtask(task)}
-                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition ${checked ? 'bg-[#002395]/30 border border-[#002395]/60 text-slate-200' : 'bg-[#0b132b] border border-[#1c2a52] text-slate-300 hover:border-[#2b3d73]'}`}
+                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
                         >
                           <input 
                             type="checkbox" 
                             checked={checked} 
                             onChange={() => {}} 
-                            className="w-4 h-4 rounded text-[#002395] bg-[#070b19] border-slate-700 focus:ring-[#002395]"
+                            className="w-4 h-4 rounded text-brand bg-page border-slate-700 focus:ring-brand"
                           />
                           <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
                         </div>
@@ -872,13 +885,13 @@ export default function App() {
               </div>
 
               {/* Launch overlays for the active step */}
-              <div className="mt-4 pt-3 border-t border-[#1c2a52] flex flex-wrap items-center justify-between gap-2">
+              <div className="mt-4 pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {script && (
                     <button
                       type="button"
                       onClick={() => setOverlay("teleprompter")}
-                      className="bg-[#111d3b] hover:bg-[#1c2a52] text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-[#2b3d73]"
+                      className="bg-raised hover:bg-line text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
                     >
                       📖 Open Teleprompter / Script
                     </button>
@@ -887,7 +900,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setOverlay("game")}
-                      className="bg-[#002395]/40 hover:bg-[#002395]/70 text-white px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-[#3b5bdb]"
+                      className="bg-brand/40 hover:bg-brand/70 text-white px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
                     >
                       🎮 Game Clicker ({game.items.length} Qs)
                     </button>
@@ -918,7 +931,7 @@ export default function App() {
           <ReelClock clock={driftReport.clock} />
 
           {/* Peek Next */}
-          <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg">
+          <div className="bg-card/95 border border-line rounded-xl p-4 shadow-lg">
             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-heading font-semibold">PEEK NEXT</span>
             {nextEntry ? (
               <>
@@ -930,7 +943,7 @@ export default function App() {
                   {nextEntry.projectedDriftMinutes ? (
                     <span
                       className={`ml-2 font-semibold ${
-                        nextEntry.projectedDriftMinutes > 0 ? 'text-[#ff808a]' : 'text-emerald-300'
+                        nextEntry.projectedDriftMinutes > 0 ? 'text-alert-soft' : 'text-emerald-300'
                       }`}
                     >
                       {nextEntry.driftLabel}
@@ -973,7 +986,7 @@ export default function App() {
       </main>
 
       {/* ================= BOTTOM BAR (DRIFT CONTROLS & PRIMARY ACTION) ================= */}
-      <footer className="bg-[#0b132b] border-t border-[#1c2a52] px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+      <footer className="bg-card border-t border-line px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
         
         {/* Drift & Sequence Controls */}
         <div className="flex items-center space-x-2 overflow-x-auto py-1">
@@ -985,8 +998,8 @@ export default function App() {
             title="Add 15 minutes to the upcoming kitchen / vendor block"
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
               isComplete
-                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
-                : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-white"
+                ? "bg-card text-slate-600 border-line cursor-not-allowed"
+                : "bg-raised hover:bg-line border-line-strong text-white"
             }`}
           >
             ⏱️ Kitchen / Vendor +15m
@@ -1015,8 +1028,8 @@ export default function App() {
             title={nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap"}
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
               !nextEntry
-                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
-                : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-slate-200"
+                ? "bg-card text-slate-600 border-line cursor-not-allowed"
+                : "bg-raised hover:bg-line border-line-strong text-slate-200"
             }`}
           >
             🔀 Swap w/ Next
@@ -1028,10 +1041,10 @@ export default function App() {
             title={deferTarget ? `Defer ${deferTarget.title} to the Joker Drawer` : "No deferable block"}
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
               !deferTarget
-                ? "bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed"
+                ? "bg-card text-slate-600 border-line cursor-not-allowed"
                 : drift >= 45
                   ? "bg-amber-950/60 hover:bg-amber-900/60 border-amber-700 text-amber-200"
-                  : "bg-[#111d3b] hover:bg-[#1c2a52] border-[#2b3d73] text-[#849dff]"
+                  : "bg-raised hover:bg-line border-line-strong text-brand-soft"
             }`}
           >
             🃏 Defer to Joker Drawer
@@ -1040,7 +1053,7 @@ export default function App() {
             <span
               aria-live="polite"
               title={controlNotice}
-              className="max-w-[240px] truncate rounded-lg border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1.5 text-[10px] text-slate-300"
+              className="max-w-[240px] truncate rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] text-slate-300"
             >
               {controlNotice}
             </span>
@@ -1060,7 +1073,7 @@ export default function App() {
             onClick={undoLastStep}
             disabled={completedCount === 0}
             title="Undo last completed step"
-            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${completedCount === 0 ? 'bg-[#0b132b] text-slate-600 border-[#1c2a52] cursor-not-allowed' : 'bg-[#111d3b] hover:bg-[#1c2a52] text-slate-200 border-[#2b3d73]'}`}
+            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${completedCount === 0 ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
           >
             ↩ Undo
           </button>
@@ -1068,7 +1081,7 @@ export default function App() {
             type="button"
             onClick={markCurrentDone}
             disabled={isComplete}
-            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition flex items-center space-x-2 border ${isComplete ? 'bg-[#0b132b] text-slate-500 border-[#1c2a52] cursor-not-allowed' : 'bg-[#002395] hover:bg-[#1a3cb0] active:bg-[#00186b] text-white shadow-lg shadow-blue-950/60 border-[#3b5bdb]'}`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition flex items-center space-x-2 border ${isComplete ? 'bg-card text-slate-500 border-line cursor-not-allowed' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
           >
             <span>{isComplete ? "EVENT COMPLETE" : "MARK DONE & ADVANCE"}</span>
             <span className="text-lg">{isComplete ? "✓" : "➔"}</span>

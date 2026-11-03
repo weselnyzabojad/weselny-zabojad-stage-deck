@@ -1,5 +1,120 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Theme tokens (TODO 27 / Light-Dark Mode Design)
+
+   Night Stage (default) values equal the pre-theme palette, so this first step
+   is a zero-visual-change refactor. Daylight flips only the canvas and text;
+   the French-blue / Polish-red accent identity is unchanged.
+
+   Utilities such as `bg-page`, `bg-card`, `border-line`, `text-brand-soft`
+   resolve through these variables, so a view can be migrated incrementally
+   (together with the App.jsx split, TODO 22).
+--------------------------------------------------------------------------- */
+@theme inline {
+  --color-page: var(--bg-page);
+  --color-card: var(--bg-card);
+  --color-raised: var(--bg-raised);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text-primary);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-active: var(--brand-active);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-tint: var(--brand-tint);
+  --color-alert: var(--alert);
+  --color-alert-soft: var(--alert-soft);
+  --color-alert-tint: var(--alert-tint);
+  --color-alert-deep: var(--alert-deep);
+}
+
+:root,
+[data-theme="night"] {
+  color-scheme: dark;
+
+  --bg-page: #070b19;
+  --bg-card: #0b132b;
+  --bg-raised: #111d3b;
+  --border: #1c2a52;
+  --border-strong: #2b3d73;
+  --text-primary: #ffffff;
+  --text-muted: #94a3b8;
+
+  --brand: #002395;
+  --brand-strong: #3b5bdb;
+  --brand-hover: #1a3cb0;
+  --brand-active: #00186b;
+  --brand-soft: #849dff;
+  --brand-tint: #b8c6ff;
+
+  --alert: #ed2939;
+  --alert-soft: #ff808a;
+  --alert-tint: #ffb3ba;
+  --alert-deep: #1a0b12;
+
+  --on-accent: #ffffff;
+}
+
+[data-theme="day"] {
+  color-scheme: light;
+
+  --bg-page: #eef2f7;
+  --bg-card: #ffffff;
+  --bg-raised: #e2e8f0;
+  --border: #cbd5e1;
+  --border-strong: #94a3b8;
+  --text-primary: #0b132b;
+  --text-muted: #475569;
+
+  --brand: #002395;
+  --brand-strong: #1e40af;
+  --brand-hover: #1e3a8a;
+  --brand-active: #172554;
+  --brand-soft: #002395;
+  --brand-tint: #1e3a8a;
+
+  --alert: #d02432;
+  --alert-soft: #b91c1c;
+  --alert-tint: #991b1b;
+  --alert-deep: #fef2f2;
+
+  --on-accent: #ffffff;
+
+  /* Bridge for legacy slate utilities until each view is migrated. The scale
+     mirrors so "muted" stays muted and primary text becomes navy. */
+  --color-slate-100: #0b132b;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-600: #94a3b8;
+  --color-slate-700: #cbd5e1;
+  --color-slate-950: #eef2f7;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+}
+
+/* Daylight compatibility bridge: primary text flips to navy, except on solid
+   brand/alert surfaces and the red stage-ping banner. Migrated views use
+   `text-ink` / `text-on-accent` directly instead of relying on this rule. */
+[data-theme="day"] .text-white {
+  color: var(--text-primary);
+}
+
+[data-theme="day"] .bg-brand.text-white,
+[data-theme="day"] .bg-brand-strong.text-white,
+[data-theme="day"] .bg-brand-hover.text-white,
+[data-theme="day"] .bg-brand-active.text-white,
+[data-theme="day"] .bg-alert.text-white,
+[data-theme="day"] .stage-ping-flash.text-white {
+  color: var(--on-accent);
+}
+
 @keyframes pin-shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }

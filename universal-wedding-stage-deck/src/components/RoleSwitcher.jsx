@@ -43,7 +43,7 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj', 'poc
         aria-expanded={open}
         aria-label={`Device role: ${current.label}. Switch role`}
         title="Switch this device's role"
-        className="flex items-center gap-1.5 rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 text-xs text-slate-200 transition hover:border-[#3b5bdb] hover:bg-[#1c2a52]"
+        className="flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs text-slate-200 transition hover:border-brand-strong hover:bg-line"
       >
         <span aria-hidden="true">{current.icon}</span>
         <span>
@@ -58,9 +58,9 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj', 'poc
         <div
           role="menu"
           aria-label="Switch device role"
-          className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-[#1c2a52] bg-[#0b132b] shadow-2xl"
+          className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-line bg-card shadow-2xl"
         >
-          <div className="border-b border-[#1c2a52] px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          <div className="border-b border-line px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
             This device
           </div>
           {roles.map((id) => {
@@ -75,7 +75,7 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj', 'poc
                 aria-checked={active}
                 onClick={() => choose(id)}
                 className={`flex w-full items-start gap-3 px-3 py-2.5 text-left transition ${
-                  active ? 'bg-[#002395]/30' : 'hover:bg-[#111d3b]'
+                  active ? 'bg-brand/30' : 'hover:bg-raised'
                 }`}
               >
                 <span aria-hidden="true" className="mt-0.5 text-lg leading-none">

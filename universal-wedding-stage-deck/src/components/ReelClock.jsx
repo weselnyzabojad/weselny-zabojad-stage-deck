@@ -4,12 +4,12 @@ const TONE = {
   normal: 'text-white',
   good: 'text-emerald-300',
   warn: 'text-amber-200',
-  bad: 'text-[#ff808a]',
+  bad: 'text-alert-soft',
 };
 
 function Metric({ label, value, tone = 'normal', title }) {
   return (
-    <div className="rounded-lg border border-[#1c2a52] bg-[#070b19]" title={title}>
+    <div className="rounded-lg border border-line bg-page" title={title}>
       <div className="px-2 pt-1.5 text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
       <div className={`px-2 pb-1.5 font-mono text-sm font-semibold tabular-nums ${TONE[tone]}`}>
         {value}
@@ -22,7 +22,7 @@ function Chip({ label, value, tone = 'normal', title }) {
   return (
     <span
       title={title}
-      className="inline-flex items-center gap-1 rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5"
+      className="inline-flex items-center gap-1 rounded border border-line-strong bg-raised px-1.5 py-0.5"
     >
       <span className="text-[9px] uppercase tracking-wider text-slate-500">{label}</span>
       <span className={`font-semibold tabular-nums ${TONE[tone]}`}>{value}</span>
@@ -71,11 +71,11 @@ export default function ReelClock({ clock, compact = false }) {
     return (
       <section
         aria-label="Real-time reel clock"
-        className="rounded-xl border border-[#3b5bdb]/60 bg-[#0b132b] p-3 shadow-lg"
+        className="rounded-xl border border-brand-strong/60 bg-card p-3 shadow-lg"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="font-heading text-[9px] font-semibold uppercase tracking-widest text-[#849dff]">
+            <span className="font-heading text-[9px] font-semibold uppercase tracking-widest text-brand-soft">
               ⏱ Reel clock
             </span>
             <span className="font-mono text-2xl font-bold tabular-nums text-white">
@@ -108,11 +108,11 @@ export default function ReelClock({ clock, compact = false }) {
   return (
     <section
       aria-label="Real-time reel clock"
-      className="rounded-xl border border-[#3b5bdb]/60 bg-[#0b132b] p-4 shadow-lg"
+      className="rounded-xl border border-brand-strong/60 bg-card p-4 shadow-lg"
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-[#849dff]">
+          <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
             ⏱ Reel clock
           </div>
           <div className="font-mono text-4xl font-bold leading-none tabular-nums text-white">
@@ -122,7 +122,7 @@ export default function ReelClock({ clock, compact = false }) {
             {active ? active.title : clock.isComplete ? 'Event complete' : 'Event in progress'}
           </div>
         </div>
-        <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-0.5 font-mono text-[9px] text-slate-400">
+        <span className="rounded border border-line-strong bg-raised px-2 py-0.5 font-mono text-[9px] text-slate-400">
           {clock.timeZone}
         </span>
       </div>

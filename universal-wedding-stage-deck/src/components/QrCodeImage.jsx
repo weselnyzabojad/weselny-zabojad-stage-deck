@@ -55,7 +55,7 @@ export default function QrCodeImage({ text, size = 60, label = 'QR code' }) {
   if (!current.markup) {
     return (
       <div
-        className="animate-pulse rounded bg-slate-200"
+        className="animate-pulse rounded bg-raised"
         style={{ width: size, height: size }}
         aria-hidden="true"
       />

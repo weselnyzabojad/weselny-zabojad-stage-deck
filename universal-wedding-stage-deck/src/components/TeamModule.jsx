@@ -10,8 +10,8 @@ const PLATFORM_LABELS = {
 
 function Chip({ children, tone = 'slate' }) {
   const tones = {
-    slate: 'border-[#2b3d73] bg-[#111d3b] text-slate-300',
-    blue: 'border-[#3b5bdb]/60 bg-[#002395]/30 text-[#b8c6ff]',
+    slate: 'border-line-strong bg-raised text-slate-300',
+    blue: 'border-brand-strong/60 bg-brand/30 text-brand-tint',
     amber: 'border-amber-700/70 bg-amber-950/50 text-amber-200',
     emerald: 'border-emerald-800 bg-emerald-950/50 text-emerald-300',
   };
@@ -27,7 +27,7 @@ export default function TeamModule({ open, onClose, coHosts = [], contentCreator
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="team-module-title" size="panel">
-      <header className="border-b border-[#1c2a52] bg-[#0b132b] px-5 py-3 pr-16">
+      <header className="border-b border-line bg-card px-5 py-3 pr-16">
         <h2 id="team-module-title" className="font-heading text-lg font-bold text-white">
           🤝 Co-Hosting & Content Creator
         </h2>
@@ -52,14 +52,14 @@ export default function TeamModule({ open, onClose, coHosts = [], contentCreator
               {coHosts.map((host) => (
                 <article
                   key={host.id}
-                  className="rounded-lg border border-[#1c2a52] bg-[#070b19]/70 p-3"
+                  className="rounded-lg border border-line bg-page/70 p-3"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <div className="font-heading text-sm font-semibold text-white">
                         {host.name}
                       </div>
-                      <div className="text-[11px] text-[#849dff]">{host.role ?? 'Co-host'}</div>
+                      <div className="text-[11px] text-brand-soft">{host.role ?? 'Co-host'}</div>
                     </div>
                     {host.phone ? (
                       <a
@@ -101,14 +101,14 @@ export default function TeamModule({ open, onClose, coHosts = [], contentCreator
               {contentCreators.map((creator) => (
                 <article
                   key={creator.id}
-                  className="rounded-lg border border-[#1c2a52] bg-[#070b19]/70 p-3"
+                  className="rounded-lg border border-line bg-page/70 p-3"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div>
                       <div className="font-heading text-sm font-semibold text-white">
                         {creator.name}
                       </div>
-                      <div className="text-[11px] text-[#849dff]">
+                      <div className="text-[11px] text-brand-soft">
                         {PLATFORM_LABELS[creator.platform] ?? creator.platform ?? 'Content creator'}
                         {creator.handle ? (
                           <span className="ml-1 font-mono text-slate-400">{creator.handle}</span>

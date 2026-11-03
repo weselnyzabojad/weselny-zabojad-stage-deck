@@ -8,15 +8,15 @@ const STATUS_META = {
     dot: 'bg-cyan-300',
   },
   closed: {
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
+    chip: 'border-line-strong bg-raised text-slate-400',
     dot: 'bg-slate-500',
   },
   disabled: {
-    chip: 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ffb3ba]',
-    dot: 'bg-[#ED2939]',
+    chip: 'border-alert/60 bg-alert/20 text-alert-tint',
+    dot: 'bg-alert',
   },
   unknown: {
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
+    chip: 'border-line-strong bg-raised text-slate-400',
     dot: 'bg-slate-500',
   },
 };
@@ -40,7 +40,7 @@ function StatusChip({ status, compact }) {
 function CleanChip({ cleanVersions }) {
   if (cleanVersions === null) {
     return (
-      <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-500">
+      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
         ✨ Clean versions —
       </span>
     );
@@ -50,7 +50,7 @@ function CleanChip({ cleanVersions }) {
       ✨ Clean versions ON
     </span>
   ) : (
-    <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-400">
+    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-400">
       ✨ Clean versions OFF
     </span>
   );
@@ -66,20 +66,20 @@ export default function MusicPolicyCard({ policy, compact = false }) {
     return (
       <section
         aria-label="Music policy"
-        className="rounded-xl border border-[#1c2a52] bg-[#0b132b] p-3 shadow-lg"
+        className="rounded-xl border border-line bg-card p-3 shadow-lg"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-[#849dff]">
+          <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
             🎵 Music policy
           </span>
           <StatusChip status={requestStatus} compact />
         </div>
 
         <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-slate-300">
-          <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
             ✅ {mustPlay.length} must play
           </span>
-          <span className="rounded border border-[#ED2939]/50 bg-[#ED2939]/15 px-1.5 py-0.5 text-[#ffb3ba]">
+          <span className="rounded border border-alert/50 bg-alert/15 px-1.5 py-0.5 text-alert-tint">
             🚫 {doNotPlay.length} do not play
           </span>
           <CleanChip cleanVersions={cleanVersions} />
@@ -97,7 +97,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
   return (
     <section
       aria-labelledby="music-policy-title"
-      className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg"
+      className="rounded-xl border border-line bg-card/95 p-4 shadow-lg"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
@@ -125,7 +125,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           </h3>
           <ul className="mt-1.5 space-y-1.5">
             {mustPlay.map((item) => (
-              <li key={item.id} className="rounded border border-[#1c2a52] bg-[#070b19]/70 p-2">
+              <li key={item.id} className="rounded border border-line bg-page/70 p-2">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="font-heading text-xs font-semibold text-white">
                     {item.track}
@@ -133,7 +133,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
                   {item.linked ? (
                     <span
                       title="Linked to the DJ Key Songs card by id"
-                      className="rounded border border-[#3b5bdb] bg-[#002395]/30 px-1.5 py-0.5 font-mono text-[9px] text-[#b8c6ff]"
+                      className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] text-brand-tint"
                     >
                       🎵 Key song
                     </span>
@@ -155,16 +155,16 @@ export default function MusicPolicyCard({ policy, compact = false }) {
 
       {doNotPlay.length > 0 ? (
         <div className="mt-3">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-[#ff808a]">
+          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
             🚫 Do not play ({doNotPlay.length})
           </h3>
           <ul className="mt-1.5 space-y-1.5">
             {doNotPlay.map((item) => (
               <li
                 key={item.id}
-                className="rounded border border-[#ED2939]/40 bg-[#ED2939]/10 p-2"
+                className="rounded border border-alert/40 bg-alert/10 p-2"
               >
-                <div className="font-heading text-xs font-semibold text-[#ffb3ba]">
+                <div className="font-heading text-xs font-semibold text-alert-tint">
                   {item.track}
                 </div>
                 {item.reason ? (
@@ -179,7 +179,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
         <CleanChip cleanVersions={cleanVersions} />
         {licensing ? (
-          <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-300">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
             📄 {licensing}
           </span>
         ) : null}

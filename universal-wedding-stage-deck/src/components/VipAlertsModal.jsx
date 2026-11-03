@@ -2,8 +2,8 @@ import ModalShell from './ModalShell';
 
 const TONES = {
   critical: {
-    card: 'border-[#ED2939]/50 bg-[#ED2939]/10',
-    icon: 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]'
+    card: 'border-alert/50 bg-alert/10',
+    icon: 'border-alert/60 bg-alert/20 text-alert-soft'
   },
   celebrate: {
     card: 'border-amber-700/60 bg-amber-950/40',
@@ -19,13 +19,13 @@ const TONES = {
 export default function VipAlertsModal({ open, alerts = [], onClose }) {
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="vip-title" size="panel">
-      <header className="border-b border-[#ED2939]/30 bg-[#1a0b12] px-5 py-4 pr-16">
+      <header className="border-b border-alert/30 bg-alert-deep px-5 py-4 pr-16">
         <div className="flex items-center gap-2">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ED2939] opacity-75" />
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#ED2939]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-alert opacity-75" />
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-alert" />
           </span>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#ff808a]">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-alert-soft">
             Confidential · MC / host eyes only
           </span>
         </div>
@@ -62,12 +62,12 @@ export default function VipAlertsModal({ open, alerts = [], onClose }) {
         })}
       </div>
 
-      <footer className="flex items-center justify-between gap-3 border-t border-[#1c2a52] bg-[#0b132b] px-4 py-3">
+      <footer className="flex items-center justify-between gap-3 border-t border-line bg-card px-4 py-3">
         <span className="font-mono text-[10px] text-slate-500">Never shown on the DJ screen.</span>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/20 px-4 py-2 font-heading text-xs font-bold text-[#ff8080] transition hover:bg-[#ED2939]/30"
+          className="rounded-lg border border-alert/50 bg-alert/20 px-4 py-2 font-heading text-xs font-bold text-alert-soft transition hover:bg-alert/30"
         >
           Got it — close
         </button>

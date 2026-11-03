@@ -125,7 +125,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="cartridge-importer-title" size="full">
-      <header className="border-b border-[#1c2a52] bg-[#0b132b] px-5 py-3 pr-16">
+      <header className="border-b border-line bg-card px-5 py-3 pr-16">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2
@@ -139,7 +139,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
               WeddingSchema v1.1 JSON here.
             </p>
           </div>
-          <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-1 font-mono text-[10px] text-slate-300">
+          <span className="rounded border border-line-strong bg-raised px-2 py-1 font-mono text-[10px] text-slate-300">
             Current: {current.couple} · PIN {current.syncPin}
           </span>
         </div>
@@ -147,12 +147,12 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="flex flex-col rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4">
+          <section className="flex flex-col rounded-xl border border-line bg-card/95 p-4">
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                 1. AI Converter Prompt
               </h3>
-              <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
+              <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
                 v1.1
               </span>
             </div>
@@ -166,27 +166,27 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               placeholder="Paste raw Google Doc notes, timeline skeleton, vendor departures, games, cultural rules..."
-              className="mt-2 min-h-36 w-full resize-y rounded-lg border border-[#1c2a52] bg-[#070b19] p-3 font-mono text-xs text-slate-200 outline-none focus:border-[#3b5bdb]"
+              className="mt-2 min-h-36 w-full resize-y rounded-lg border border-line bg-page p-3 font-mono text-xs text-slate-200 outline-none focus:border-brand-strong"
             />
 
             <div className="mt-2 flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => copy(promptText, 'Prompt')}
-                className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+                className="rounded-lg border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-line"
               >
                 Copy prompt
               </button>
               <button
                 type="button"
                 onClick={() => copy(promptWithNotes, 'Prompt + notes')}
-                className="rounded-lg border border-[#3b5bdb] bg-[#002395]/40 px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#002395]/70"
+                className="rounded-lg border border-brand-strong bg-brand/40 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand/70"
               >
                 Copy prompt + notes
               </button>
             </div>
 
-            <details className="mt-3 rounded-lg border border-[#1c2a52] bg-[#070b19]/70 p-2">
+            <details className="mt-3 rounded-lg border border-line bg-page/70 p-2">
               <summary className="cursor-pointer text-[11px] font-semibold text-slate-300">
                 View the converter prompt
               </summary>
@@ -196,7 +196,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
             </details>
           </section>
 
-          <section className="flex flex-col rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4">
+          <section className="flex flex-col rounded-xl border border-line bg-card/95 p-4">
             <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
               2. Paste WeddingSchema JSON
             </h3>
@@ -215,7 +215,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
               }}
               placeholder='{ "schemaVersion": "1.1", ... }'
               spellCheck={false}
-              className="mt-2 min-h-64 flex-1 resize-y rounded-lg border border-[#1c2a52] bg-[#070b19] p-3 font-mono text-xs text-slate-200 outline-none focus:border-[#3b5bdb]"
+              className="mt-2 min-h-64 flex-1 resize-y rounded-lg border border-line bg-page p-3 font-mono text-xs text-slate-200 outline-none focus:border-brand-strong"
             />
 
             <div className="mt-2 flex flex-wrap gap-2">
@@ -223,14 +223,14 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                 type="button"
                 onClick={validate}
                 disabled={busy}
-                className="rounded-lg border border-[#3b5bdb] bg-[#002395] px-3 py-2 text-xs font-bold text-white transition hover:bg-[#1a3cb0] disabled:cursor-wait disabled:opacity-60"
+                className="rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60"
               >
                 {busy ? 'Validating…' : 'Validate JSON'}
               </button>
               <button
                 type="button"
                 onClick={loadExample}
-                className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+                className="rounded-lg border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-line"
               >
                 Load example
               </button>
@@ -241,7 +241,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                   setPreview(null);
                   setErrors([]);
                 }}
-                className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-3 py-2 text-xs font-semibold text-slate-400 transition hover:bg-[#1c2a52]"
+                className="rounded-lg border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-slate-400 transition hover:bg-line"
               >
                 Clear
               </button>
@@ -250,12 +250,12 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
             {errors.length > 0 ? (
               <div
                 role="alert"
-                className="mt-3 max-h-48 overflow-y-auto rounded-lg border border-[#ED2939]/60 bg-[#ED2939]/15 p-2.5"
+                className="mt-3 max-h-48 overflow-y-auto rounded-lg border border-alert/60 bg-alert/15 p-2.5"
               >
-                <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-[#ff808a]">
+                <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-alert-soft">
                   Validation failed ({errors.length})
                 </div>
-                <ul className="mt-1 space-y-1 font-mono text-[10px] leading-snug text-[#ffb3ba]">
+                <ul className="mt-1 space-y-1 font-mono text-[10px] leading-snug text-alert-tint">
                   {errors.map((error, index) => (
                     <li key={`${error.location}-${index}`}>
                       <span className="text-slate-400">{error.location}</span> — {error.message}
@@ -309,7 +309,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                     different PIN so devices are not ambiguous.
                   </p>
                 ) : null}
-                <div className="mt-2 rounded-lg border border-[#1c2a52] bg-[#070b19] px-2 py-1.5">
+                <div className="mt-2 rounded-lg border border-line bg-page px-2 py-1.5">
                   <div className="font-heading text-[9px] font-semibold uppercase tracking-widest text-slate-500">
                     Couple identity
                   </div>
@@ -319,7 +319,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                   type="button"
                   onClick={importCartridge}
                   disabled={busy}
-                  className="mt-2 w-full rounded-lg border border-[#3b5bdb] bg-[#002395] px-3 py-2.5 text-xs font-heading font-bold text-white transition hover:bg-[#1a3cb0] disabled:opacity-60"
+                  className="mt-2 w-full rounded-lg border border-brand-strong bg-brand px-3 py-2.5 text-xs font-heading font-bold text-white transition hover:bg-brand-hover disabled:opacity-60"
                 >
                   Import & reload
                 </button>
@@ -328,14 +328,14 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
           </section>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#1c2a52] bg-[#0b132b]/70 px-3 py-2">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-card/70 px-3 py-2">
           <span aria-live="polite" className="text-[11px] text-slate-400">
             {copyState || 'Imported cartridges replace the built-in demo on this device.'}
           </span>
           <button
             type="button"
             onClick={resetDemo}
-            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1.5 text-[10px] font-semibold text-slate-400 transition hover:bg-[#1c2a52] hover:text-white"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-slate-400 transition hover:bg-line hover:text-white"
           >
             Reset to built-in demo
           </button>

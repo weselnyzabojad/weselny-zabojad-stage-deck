@@ -6,8 +6,8 @@ const MIN_TEXT_SIZE = 18;
 const MAX_TEXT_SIZE = 40;
 
 const LANG_TONES = {
-  PL: 'border-[#ED2939]/50 bg-[#ED2939]/10 text-[#ff808a]',
-  FR: 'border-[#3b5bdb] bg-[#002395]/30 text-[#849dff]',
+  PL: 'border-alert/50 bg-alert/10 text-alert-soft',
+  FR: 'border-brand-strong bg-brand/30 text-brand-soft',
   EN: 'border-cyan-800 bg-cyan-950/50 text-cyan-300'
 };
 
@@ -22,11 +22,11 @@ export default function TeleprompterOverlay({ open, step, onClose }) {
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="teleprompter-title" size="full">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1c2a52] bg-[#0b132b] px-5 py-3 pr-16">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-5 py-3 pr-16">
         <div>
           <div className="flex items-center gap-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
             <span>🎤 Teleprompter</span>
-            <span className="rounded border border-[#3b5bdb] bg-[#002395]/40 px-1.5 py-0.5 font-mono text-[#849dff]">
+            <span className="rounded border border-brand-strong bg-brand/40 px-1.5 py-0.5 font-mono text-brand-soft">
               {teleprompter?.type === 'GAME_QUESTIONS' ? 'GAME' : 'SPEECH'}
             </span>
           </div>
@@ -36,21 +36,21 @@ export default function TeleprompterOverlay({ open, step, onClose }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center rounded-lg border border-[#2b3d73] bg-[#111d3b] p-0.5">
+          <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
             {LANGS.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => setLang(option)}
                 aria-pressed={lang === option}
-                className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-[#002395] text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-brand text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {option}
               </button>
             ))}
           </div>
 
-          <div className="flex items-center rounded-lg border border-[#2b3d73] bg-[#111d3b]">
+          <div className="flex items-center rounded-lg border border-line-strong bg-raised">
             <button
               type="button"
               onClick={() => setTextSize((size) => Math.max(MIN_TEXT_SIZE, size - 2))}
@@ -82,7 +82,7 @@ export default function TeleprompterOverlay({ open, step, onClose }) {
             items.map((item, index) => {
               const lines = (item.lines ?? []).filter((line) => lang === 'ALL' || line.lang === lang);
               return (
-                <section key={item.id ?? index} className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/80 p-4">
+                <section key={item.id ?? index} className="rounded-xl border border-line bg-card/80 p-4">
                   <div className="mb-2 flex items-center gap-2">
                     <span className="font-mono text-[10px] text-slate-500">{String(index + 1).padStart(2, '0')}</span>
                     <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-slate-300">
@@ -96,7 +96,7 @@ export default function TeleprompterOverlay({ open, step, onClose }) {
                     <div className="space-y-3">
                       {lines.map((line) => (
                         <p key={line.lang} className="flex items-start gap-3">
-                          <span className={`mt-1.5 shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold ${LANG_TONES[line.lang] ?? 'border-[#2b3d73] bg-[#111d3b] text-slate-300'}`}>
+                          <span className={`mt-1.5 shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold ${LANG_TONES[line.lang] ?? 'border-line-strong bg-raised text-slate-300'}`}>
                             {line.lang}
                           </span>
                           <span className="text-white" style={{ fontSize: `${textSize}px`, lineHeight: 1.45 }}>
@@ -113,7 +113,7 @@ export default function TeleprompterOverlay({ open, step, onClose }) {
         </div>
       </div>
 
-      <footer className="border-t border-[#1c2a52] bg-[#0b132b] px-5 py-2.5 text-center font-mono text-[11px] text-slate-500">
+      <footer className="border-t border-line bg-card px-5 py-2.5 text-center font-mono text-[11px] text-slate-500">
         Esc closes · {items.length} sections · scroll for the full script
       </footer>
     </ModalShell>

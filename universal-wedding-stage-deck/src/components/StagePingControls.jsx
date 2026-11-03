@@ -3,9 +3,9 @@ import { STAGE_PINGS, STAGE_PING_ORDER } from '../lib/stagePings';
 
 const BUTTON_STYLES = {
   drop_track:
-    'border-[#3b5bdb] bg-[#002395]/40 text-white shadow hover:bg-[#002395]/70 active:bg-[#00186b]',
+    'border-brand-strong bg-brand/40 text-white shadow hover:bg-brand/70 active:bg-brand-active',
   fade_music:
-    'border-[#2b3d73] bg-[#111d3b] text-slate-200 hover:bg-[#1c2a52] active:bg-[#0b132b]',
+    'border-line-strong bg-raised text-slate-200 hover:bg-line active:bg-card',
   hold_2m:
     'border-amber-700 bg-amber-950/50 text-amber-200 hover:bg-amber-900/60 active:bg-amber-950',
   ready:
@@ -40,12 +40,12 @@ export default function StagePingControls({ onSend, lastPing, syncStatus }) {
   const hint = deliveryHint(syncStatus);
 
   return (
-    <div className="flex-1 rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg">
+    <div className="flex-1 rounded-xl border border-line bg-card/95 p-4 shadow-lg">
       <div className="mb-2 flex items-center justify-between gap-2">
         <h3 className="text-xs font-heading font-bold uppercase tracking-wider text-white">
           📡 Silent Stage Pings
         </h3>
-        <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-slate-400">
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider text-slate-400">
           1-tap · silent
         </span>
       </div>

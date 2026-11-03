@@ -2,13 +2,14 @@ import { useState } from 'react';
 import logo from '../assets/img/logo.png';
 import { ROLES } from '../lib/roles';
 import { joinRoom } from '../lib/sync/joinRoom';
+import ThemeToggle from './ThemeToggle';
 
 const JOIN_ROLES = ['mc', 'dj', 'pocket'];
 
 // Production `/deck/` gate: per-role PIN validated server-side by the
 // `join_room` Edge Function. No couple names or cartridge data are rendered
 // before the server returns a role token.
-export default function RoleJoinScreen({ intent, onJoined }) {
+export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onToggleTheme }) {
   const [roomCode, setRoomCode] = useState(intent?.roomCode ?? '');
   const [role, setRole] = useState(
     intent?.role && JOIN_ROLES.includes(intent.role) ? intent.role : 'mc',
@@ -46,19 +47,23 @@ export default function RoleJoinScreen({ intent, onJoined }) {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#070b19] px-4 py-8 font-body text-slate-100 select-none">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-slate-100 select-none">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
+
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+      </div>
 
       <form
         onSubmit={submit}
-        className="relative w-full max-w-md rounded-2xl border border-[#1c2a52] bg-[#0b132b] p-7 shadow-2xl sm:p-9"
+        className="relative w-full max-w-md rounded-2xl border border-line bg-card p-7 shadow-2xl sm:p-9"
       >
         <div className="mb-6 flex items-center justify-center rounded-xl bg-white px-4 py-3 shadow-md">
           <img src={logo} alt="Weselny Żabojad" className="h-16 w-auto max-w-[220px] object-contain" />
         </div>
 
         <div className="text-center">
-          <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-[#849dff]">
+          <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
             Production stage deck
           </span>
           <h1 className="mt-2 font-heading text-2xl font-bold text-white">Join this room</h1>
@@ -85,7 +90,7 @@ export default function RoleJoinScreen({ intent, onJoined }) {
             autoCapitalize="off"
             spellCheck={false}
             placeholder="e.g. 8f3k2q"
-            className="mt-1.5 w-full rounded-lg border border-[#1c2a52] bg-[#070b19] px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-[#3b5bdb]"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-brand-strong"
           />
         </div>
 
@@ -110,8 +115,8 @@ export default function RoleJoinScreen({ intent, onJoined }) {
                   }}
                   className={`rounded-lg border px-2 py-2.5 text-center transition ${
                     active
-                      ? 'border-[#3b5bdb] bg-[#002395]/40 text-white'
-                      : 'border-[#1c2a52] bg-[#111d3b] text-slate-300 hover:border-[#2b3d73]'
+                      ? 'border-brand-strong bg-brand/40 text-white'
+                      : 'border-line bg-raised text-slate-300 hover:border-line-strong'
                   }`}
                 >
                   <span aria-hidden="true" className="block text-lg leading-none">
@@ -145,18 +150,18 @@ export default function RoleJoinScreen({ intent, onJoined }) {
             autoComplete="one-time-code"
             placeholder="••••••"
             aria-invalid={Boolean(error)}
-            className="mt-1.5 w-full rounded-lg border border-[#1c2a52] bg-[#070b19] px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-[#3b5bdb]"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-brand-strong"
           />
         </div>
 
         <div className="mt-2 min-h-[1.25rem] text-center" aria-live="polite">
-          {error ? <span className="text-xs font-mono text-[#ff808a]">{error}</span> : null}
+          {error ? <span className="text-xs font-mono text-alert-soft">{error}</span> : null}
         </div>
 
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 w-full rounded-xl border border-[#3b5bdb] bg-[#002395] py-3.5 font-heading text-sm font-bold text-white shadow-lg shadow-blue-950/60 transition hover:bg-[#1a3cb0] active:bg-[#00186b] disabled:cursor-wait disabled:opacity-60"
+          className="mt-2 w-full rounded-xl border border-brand-strong bg-brand py-3.5 font-heading text-sm font-bold text-white shadow-lg shadow-blue-950/60 transition hover:bg-brand-hover active:bg-brand-active disabled:cursor-wait disabled:opacity-60"
         >
           {busy ? 'Checking PIN…' : '🔐 Join room'}
         </button>

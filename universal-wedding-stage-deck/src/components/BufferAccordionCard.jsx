@@ -21,8 +21,8 @@ const STATUS_META = {
   },
   blocked: {
     label: 'NO FLEX',
-    chip: 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]',
-    border: 'border-[#ED2939]/50',
+    chip: 'border-alert/60 bg-alert/20 text-alert-soft',
+    border: 'border-alert/50',
   },
   ontime: {
     label: 'ON TIME',
@@ -31,13 +31,13 @@ const STATUS_META = {
   },
   unknown: {
     label: 'NO DRIFT',
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-300',
-    border: 'border-[#1c2a52]',
+    chip: 'border-line-strong bg-raised text-slate-300',
+    border: 'border-line',
   },
   unavailable: {
     label: 'NO FLEX',
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
-    border: 'border-[#1c2a52]',
+    chip: 'border-line-strong bg-raised text-slate-400',
+    border: 'border-line',
   },
 };
 
@@ -72,7 +72,7 @@ export default function BufferAccordionCard({ accordion }) {
     <section
       role="status"
       aria-live="polite"
-      className={`rounded-xl border bg-[#0b132b]/95 p-4 shadow-lg ${meta.border}`}
+      className={`rounded-xl border bg-card/95 p-4 shadow-lg ${meta.border}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
@@ -90,7 +90,7 @@ export default function BufferAccordionCard({ accordion }) {
           {accordion.items.map((item) => (
             <div
               key={item.stepId}
-              className="rounded-lg border border-[#1c2a52] bg-[#070b19]/70 p-2.5"
+              className="rounded-lg border border-line bg-page/70 p-2.5"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -106,7 +106,7 @@ export default function BufferAccordionCard({ accordion }) {
                 <span
                   className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] font-bold ${
                     item.deltaMinutes < 0
-                      ? 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]'
+                      ? 'border-alert/60 bg-alert/20 text-alert-soft'
                       : 'border-cyan-800 bg-cyan-950/60 text-cyan-200'
                   }`}
                 >
