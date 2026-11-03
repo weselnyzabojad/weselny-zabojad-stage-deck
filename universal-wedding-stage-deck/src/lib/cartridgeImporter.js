@@ -70,6 +70,7 @@ export function summarizeCartridge(cartridge) {
     ? cartridge.musicPolicy.importantSongs
     : [];
   const cake = cartridge?.cake && typeof cartridge.cake === 'object' ? cartridge.cake : null;
+  const contacts = Array.isArray(cartridge?.contacts) ? cartridge.contacts : [];
 
   return {
     couple: cartridge?.couple ?? '—',
@@ -87,5 +88,7 @@ export function summarizeCartridge(cartridge) {
     hasCake: Boolean(cake),
     cakeTime: cake?.time ?? null,
     cakeServeTime: cake?.serveTime ?? null,
+    contactCount: contacts.length,
+    contactsWithDeparture: contacts.filter((contact) => contact?.leavesAt).length,
   };
 }

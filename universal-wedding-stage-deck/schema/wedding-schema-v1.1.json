@@ -514,6 +514,9 @@
       "required": ["role", "name"],
       "additionalProperties": false,
       "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
         "role": {
           "type": "string"
         },
@@ -522,6 +525,13 @@
         },
         "phone": {
           "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "leavesAt": {
+          "$ref": "#/$defs/clock",
+          "description": "Vendor departure time. Link it to a hard anchor with the same time so the directory can jump to the protected anchor."
         },
         "notes": {
           "type": "string"

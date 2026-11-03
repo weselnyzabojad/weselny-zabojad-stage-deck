@@ -3,6 +3,7 @@ import logo from './assets/img/logo.png';
 import BufferAccordionCard from './components/BufferAccordionCard';
 import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
+import ContactsModal from './components/ContactsModal';
 import CoupleIdentity from './components/CoupleIdentity';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
@@ -27,6 +28,7 @@ import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
+import { resolveContacts } from './lib/contacts';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
 import { loadActiveCartridge } from './lib/cartridgeStorage';
@@ -246,6 +248,33 @@ const DEMO_WEDDING = {
     photographerCue: "Front-left of the cake table",
     serveTime: "20:45"
   },
+  contacts: [
+    {
+      id: "photo_video",
+      role: "Photo / Video",
+      name: "Magda & Tomek",
+      phone: "+48 600 000 000",
+      email: "photo@studio.example",
+      leavesAt: "20:30",
+      notes: "Group photo before 20:15; leaves with the video team at the hard anchor."
+    },
+    {
+      id: "dj_mark",
+      role: "DJ",
+      name: "DJ Mark",
+      phone: "+48 600 444 444",
+      email: "dj@example.com",
+      notes: "Booth on the left; silent pings enabled."
+    },
+    {
+      id: "venue_manager",
+      role: "Venue manager",
+      name: "Anna Kowalska",
+      phone: "+48 600 111 111",
+      email: "anna@venue.example",
+      notes: "Key holder; service entrance at the back."
+    }
+  ],
   preWeddingTodos: [
     { task: "Confirm Test Wiedzy questions with witnesses", done: true },
     { task: "Check XLR cables at 16:15", done: false },
@@ -355,6 +384,7 @@ export default function App() {
   const [controlNotice, setControlNotice] = useState('');
   const [importerOpen, setImporterOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
+  const [contactsOpen, setContactsOpen] = useState(false);
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
@@ -398,6 +428,7 @@ export default function App() {
   const coHosts = WEDDING.coHosts ?? [];
   const contentCreators = WEDDING.contentCreators ?? [];
   const teamCount = coHosts.length + contentCreators.length;
+  const contacts = resolveContacts(WEDDING);
   const driftReport = buildDriftReport(steps, liveState, {
     jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
@@ -454,6 +485,14 @@ export default function App() {
     const step = WEDDING.steps.find((candidate) => candidate.id === stepId);
     restoreDeferredStep(stepId);
     setControlNotice(`Restored ${step?.title ?? "block"} from the Joker Drawer.`);
+  };
+  const handleOpenAnchor = (anchorElementId) => {
+    setContactsOpen(false);
+    window.setTimeout(() => {
+      document
+        .getElementById(anchorElementId)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
   };
 
   const roleProps = {
@@ -552,6 +591,14 @@ export default function App() {
             className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
           >
             🤝 Team ({teamCount})
+          </button>
+          <button
+            type="button"
+            onClick={() => setContactsOpen(true)}
+            title="Open the vendor contacts directory"
+            className="rounded border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+          >
+            📇 Contacts ({contacts.length})
           </button>
         </div>
 
@@ -900,6 +947,13 @@ export default function App() {
         onClose={() => setTeamOpen(false)}
         coHosts={coHosts}
         contentCreators={contentCreators}
+      />
+
+      <ContactsModal
+        open={contactsOpen}
+        onClose={() => setContactsOpen(false)}
+        contacts={contacts}
+        onOpenAnchor={handleOpenAnchor}
       />
     </>
   );
