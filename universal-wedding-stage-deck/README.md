@@ -1083,6 +1083,26 @@ display format only:
   rename the map to `actualTimestamps`.
 - Full details: [`docs/iso-timestamps.md`](docs/iso-timestamps.md).
 
+### 33. Accessibility: checkboxes, modal focus, live regions and motion (issue #68 / TODO 26)
+
+- Active-step subtasks and the pre-wedding checklist are real native
+  checkboxes inside labels: `Tab` + `Space`, clickable label text, visible focus
+  ring and theme-aware `accent-color`.
+- [`src/components/ModalShell.jsx`](src/components/ModalShell.jsx) now traps
+  `Tab` / `Shift+Tab` inside the dialog, closes on `Escape`, focuses the close
+  button on open and restores focus to the trigger on close. This covers the
+  teleprompter, game clicker, VIP alerts, contacts and cartridge importer.
+- Stage pings and hard-anchor warnings are assertive live regions; drift pills
+  and the pocket drift strip are polite live regions, all atomic.
+- The Night theme's `slate-500`/`slate-600` steps were raised to meet WCAG AA on
+  dark cards; the Daylight bridge was adjusted too. Focus outlines use a
+  theme-aware `--focus-ring`.
+- `prefers-reduced-motion: reduce` now disables all animations/transitions
+  globally, including ping/pulse, stage-ping flash, pin shake and toast
+  countdown.
+- Contrast measurements, rules, exceptions and the manual keyboard checklist
+  are in [`docs/accessibility-audit.md`](docs/accessibility-audit.md).
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

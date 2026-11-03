@@ -257,24 +257,23 @@ export default function McMasterView({ model }) {
                 {/* Catering & Sub-Tasks */}
                 {stepSubtasks.length > 0 ? (
                   <div className="mt-4 bg-page/70 p-3.5 rounded-lg border border-line">
-                  <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks (Tap to check off)</h3>
+                  <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks</h3>
                   <div className="space-y-2">
                     {stepSubtasks.map((task) => {
                       const checked = Boolean(liveState.checked_subtasks[task]);
                       return (
-                        <div 
-                          key={task} 
-                          onClick={() => toggleSubtask(task)}
-                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
+                        <label
+                          key={task}
+                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
                         >
-                          <input 
-                            type="checkbox" 
-                            checked={checked} 
-                            onChange={() => {}} 
-                            className="w-4 h-4 rounded text-brand bg-page border-slate-700 focus:ring-brand"
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleSubtask(task)}
+                            className="w-4 h-4 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
                           />
                           <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
-                        </div>
+                        </label>
                       );
                     })}
                   </div>

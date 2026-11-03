@@ -55,6 +55,12 @@
   --alert-deep: #1a0b12;
 
   --on-accent: #ffffff;
+  --focus-ring: #b8c6ff;
+
+  /* Contrast audit (TODO 26): small muted labels on the dark card were below
+     WCAG AA at the default slate-500/600 values. Raise only those two steps. */
+  --color-slate-500: #8b9bb0;
+  --color-slate-600: #7c8ba1;
 }
 
 [data-theme="day"] {
@@ -81,6 +87,7 @@
   --alert-deep: #fef2f2;
 
   --on-accent: #ffffff;
+  --focus-ring: #002395;
 
   /* Bridge for legacy slate utilities until each view is migrated. The scale
      mirrors so "muted" stays muted and primary text becomes navy. */
@@ -89,7 +96,7 @@
   --color-slate-300: #334155;
   --color-slate-400: #475569;
   --color-slate-500: #64748b;
-  --color-slate-600: #94a3b8;
+  --color-slate-600: #5b6b80;
   --color-slate-700: #cbd5e1;
   --color-slate-950: #eef2f7;
 }
@@ -113,6 +120,36 @@ body {
 [data-theme="day"] .bg-alert.text-white,
 [data-theme="day"] .stage-ping-flash.text-white {
   color: var(--on-accent);
+}
+
+/* Keyboard visibility (TODO 26): every interactive control gets a high-contrast
+   ring that is independent of the theme and of hover/focus colour changes. */
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--brand-strong);
+}
+
+/* Honour the OS reduced-motion preference for every animated utility, including
+   Tailwind's animate-ping/animate-pulse, the stage-ping flash and pin shake. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .pin-shake,
+  .stage-ping-flash,
+  .undo-toast-progress {
+    animation: none !important;
+  }
 }
 
 @keyframes pin-shake {

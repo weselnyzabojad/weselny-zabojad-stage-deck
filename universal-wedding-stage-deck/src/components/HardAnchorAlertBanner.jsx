@@ -13,6 +13,8 @@ export default function HardAnchorAlertBanner({ radar }) {
   return (
     <section
       role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
       className={`flex flex-wrap items-center justify-between gap-3 border-y-2 px-4 py-2 shadow-lg ${tone}`}
     >
       <div className="flex min-w-0 items-center gap-3">

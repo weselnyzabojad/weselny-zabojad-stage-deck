@@ -76,6 +76,9 @@ export default function PocketRemoteView({
 
         <div
           title={drift?.detail || undefined}
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
           className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}
         >
           <span className="text-[10px] uppercase tracking-widest">Drift</span>

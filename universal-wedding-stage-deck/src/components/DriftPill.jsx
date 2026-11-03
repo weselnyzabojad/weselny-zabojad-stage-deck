@@ -31,6 +31,9 @@ export default function DriftPill({ drift, size = 'md', className = '' }) {
   return (
     <span
       title={drift?.detail || undefined}
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
       className={`inline-flex items-center gap-1.5 rounded border font-semibold ${sizing} ${tone.chip} ${className}`}
     >
       <span aria-hidden="true" className="text-[9px] leading-none">
