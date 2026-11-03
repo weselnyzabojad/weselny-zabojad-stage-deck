@@ -44,6 +44,7 @@ export default function DjBoothView({
   syncStatus,
   syncError,
   remoteUpdatedAt,
+  outbox = null,
   role,
   roles,
   onRoleChange,
@@ -117,7 +118,7 @@ export default function DjBoothView({
 
         <div className="flex flex-wrap items-center gap-2">
           <DriftPill drift={drift} size="sm" />
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}

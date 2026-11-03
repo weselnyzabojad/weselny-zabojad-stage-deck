@@ -19,6 +19,15 @@ import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
+import {
+  clearOutbox as clearStoredOutbox,
+  enqueueOutbox,
+  loadOutbox,
+  outboxRetryDelayMs,
+  recordOutboxFailure,
+  saveOutbox,
+  wakeOutbox as wakeOutboxEntry,
+} from '../lib/sync/outbox';
 
 const PUBLISH_DEBOUNCE_MS = 200;
 const SERVER_TIME_REFRESH_MS = 5 * 60 * 1000;
@@ -86,11 +95,96 @@ export function useLiveStageState({
   // finishes; keying on the client handles re-pairing to the same room.
   const [hydration, setHydration] = useState({ client: null, room: null });
 
+  // TODO 25: the local outbox records a room whose cloud publish has failed.
+  // The live state itself is already persisted by saveLiveState, so the entry
+  // only needs retry metadata; the latest snapshot is re-read on each attempt.
+  const [outboxState, setOutboxState] = useState(() => ({
+    room: roomKey,
+    entry: roomKey ? loadOutbox(roomKey) : null,
+  }));
+  const outbox =
+    outboxState.room === roomKey
+      ? outboxState.entry
+      : roomKey
+        ? loadOutbox(roomKey)
+        : null;
+  const outboxRef = useRef(outbox);
+
+  useEffect(() => {
+    outboxRef.current = outbox;
+  }, [outbox]);
+
+  const setOutbox = useCallback(
+    (entry) => {
+      outboxRef.current = entry;
+      setOutboxState({ room: roomKey, entry });
+    },
+    [roomKey],
+  );
+
+  // Reconnect or a fresh Realtime subscription ignores the remaining backoff.
+  const wakePendingOutbox = useCallback(() => {
+    const current = outboxRef.current;
+    if (!current) return;
+    const next = wakeOutboxEntry(current, new Date());
+    saveOutbox(next);
+    setOutbox(next);
+  }, [setOutbox]);
+
   const lastSerializedRef = useRef(null);
   const lastPublishedRef = useRef(null);
   const lastAdoptedRef = useRef(null);
   const latestRemoteAtRef = useRef(0);
   const serialized = JSON.stringify(liveState);
+  const latestSerializedRef = useRef(serialized);
+  const publishingRef = useRef(false);
+  const [publishTick, setPublishTick] = useState(0);
+
+  useEffect(() => {
+    latestSerializedRef.current = serialized;
+  }, [serialized]);
+
+  const publishLatest = useCallback(
+    (snapshot) => {
+      if (!client || !roomKey || publishingRef.current) return;
+
+      let payload;
+      try {
+        payload = JSON.parse(snapshot);
+      } catch {
+        return;
+      }
+
+      publishingRef.current = true;
+      client
+        .publish(roomKey, payload)
+        .then(() => {
+          lastPublishedRef.current = snapshot;
+          setSyncError(null);
+          if (latestSerializedRef.current === snapshot) {
+            // The cloud is exactly in sync: the outbox is now empty.
+            clearStoredOutbox(roomKey);
+            setOutbox(null);
+            setSyncStatus((current) => (current === 'error' ? 'connected' : current));
+          } else {
+            // Local state moved while the write was in flight. Keep the room
+            // queued so the newer snapshot is retried immediately.
+            setOutbox(enqueueOutbox(roomKey, new Date()));
+          }
+        })
+        .catch((error) => {
+          setOutbox(recordOutboxFailure(roomKey, error.message, new Date()));
+          setSyncError(error.message);
+          setSyncStatus('error');
+        })
+        .finally(() => {
+          publishingRef.current = false;
+          // Re-evaluate the effect even if serialized did not change.
+          setPublishTick((tick) => tick + 1);
+        });
+    },
+    [client, roomKey, setOutbox],
+  );
 
   useEffect(() => {
     // Skip the echo write after adopting a payload from another tab.
@@ -168,6 +262,8 @@ export function useLiveStageState({
           setSyncError(message ?? 'Realtime channel error');
         } else if (status === 'connected') {
           setSyncError(null);
+          // Realtime is back: do not wait out the remaining outbox backoff.
+          wakePendingOutbox();
         }
       },
     });
@@ -192,7 +288,7 @@ export function useLiveStageState({
       cancelled = true;
       unsubscribe();
     };
-  }, [client, roomKey, steps, eventContext]);
+  }, [client, roomKey, steps, eventContext, wakePendingOutbox]);
 
   // Probe the authoritative server clock so the reel clock can warn about a
   // device clock that is more than ~30s off. Refresh periodically and after
@@ -225,34 +321,31 @@ export function useLiveStageState({
     };
   }, [client]);
 
-  // Push local transitions to the room, debounced so rapid taps collapse.
+  // Push local transitions to the room. A clean publish uses the short
+  // debounce; a queued outbox entry uses its exponential backoff. The effect
+  // always sends the newest local snapshot, never a stale queued payload.
   useEffect(() => {
     if (!client || hydration.client !== client || hydration.room !== roomKey) return undefined;
     if (serialized === lastPublishedRef.current) return undefined;
-    // Don't bounce a payload the cloud just sent us back to the cloud.
-    if (serialized === lastAdoptedRef.current) return undefined;
+    // Don't bounce a payload the cloud just sent us back to the cloud, unless a
+    // failure left an outbox entry that still needs confirmation.
+    if (!outbox && serialized === lastAdoptedRef.current) return undefined;
 
-    const payload = JSON.parse(serialized);
+    const delay = outbox ? outboxRetryDelayMs(outbox, new Date()) : PUBLISH_DEBOUNCE_MS;
     const timer = setTimeout(() => {
-      client
-        .publish(roomKey, payload)
-        .then(() => {
-          lastPublishedRef.current = serialized;
-          setSyncError(null);
-        })
-        .catch((error) => {
-          setSyncError(error.message);
-          setSyncStatus('error');
-        });
-    }, PUBLISH_DEBOUNCE_MS);
+      publishLatest(latestSerializedRef.current);
+    }, delay);
 
     return () => clearTimeout(timer);
-  }, [client, hydration, serialized, roomKey]);
+  }, [client, hydration, serialized, roomKey, outbox, publishTick, publishLatest]);
 
   useEffect(() => {
     if (!client) return undefined;
 
-    const handleOnline = () => setSyncStatus('connecting');
+    const handleOnline = () => {
+      setSyncStatus('connecting');
+      wakePendingOutbox();
+    };
     const handleOffline = () => setSyncStatus('offline');
 
     window.addEventListener('online', handleOnline);
@@ -261,7 +354,7 @@ export function useLiveStageState({
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [client]);
+  }, [client, wakePendingOutbox]);
 
   // Apply a user command and push the previous state on the undo stack.
   const apply = useCallback((updater, meta = {}) => {
@@ -394,6 +487,7 @@ export function useLiveStageState({
     syncEnabled: Boolean(client),
     syncConfigured: syncConfig.enabled,
     syncError,
+    outbox,
     remoteUpdatedAt,
     serverTimeOffsetMs: serverTime.offsetMs,
     serverTimeAvailable: serverTime.available,
