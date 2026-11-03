@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './assets/img/logo.png';
 import BufferAccordionCard from './components/BufferAccordionCard';
 import CakeCard from './components/CakeCard';
@@ -16,6 +16,7 @@ import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
 import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
 import ReelClock from './components/ReelClock';
+import RoleJoinScreen from './components/RoleJoinScreen';
 import RoleSwitcher from './components/RoleSwitcher';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
@@ -32,8 +33,17 @@ import { resolveCakeProtocol } from './lib/cake';
 import { resolveContacts } from './lib/contacts';
 import { resolveMusicPolicy } from './lib/musicPolicy';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
+import { getSyncConfig } from './lib/sync/syncConfig';
+import {
+  clearRoleSession,
+  isRoleSessionValid,
+  loadRoleSession,
+  parseDeckIntent,
+  saveRoleSession,
+} from './lib/sync/roleSession';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
-import { loadActiveCartridge } from './lib/cartridgeStorage';
+import { loadActiveCartridge, saveActiveCartridge } from './lib/cartridgeStorage';
+import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -348,11 +358,22 @@ const DEFAULT_WEDDING = {
     step.id === "step_03" ? { ...step, subTasks: SUBTASKS } : step
   )
 };
-const ACTIVE_WEDDING = loadActiveCartridge() ?? DEFAULT_WEDDING;
+const STORED_CARTRIDGE = loadActiveCartridge();
+const ACTIVE_WEDDING = STORED_CARTRIDGE ?? DEFAULT_WEDDING;
+const HAS_STORED_CARTRIDGE = Boolean(STORED_CARTRIDGE);
 
 // Venue date/timezone drive ISO migration, clock display and day rollover.
 const EVENT_DATE_ISO = resolveEventDateISO(ACTIVE_WEDDING);
 const VENUE_TIME_ZONE = resolveVenueTimeZone(ACTIVE_WEDDING);
+
+// Production `/deck/` uses per-role PINs validated by the join_room Edge
+// Function. Local/demo mode keeps the DDMM display-PIN gate.
+const SYNC_CONFIG = getSyncConfig();
+const IS_PRODUCTION = SYNC_CONFIG.isProduction;
+const DECK_INTENT =
+  typeof window !== 'undefined'
+    ? parseDeckIntent(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
+    : { roomCode: null, role: null };
 
 const STEP_TYPE_STYLES = {
   ELASTIC: "text-white bg-[#002395] border-[#3b5bdb]",
@@ -362,7 +383,11 @@ const STEP_TYPE_STYLES = {
 
 export default function App() {
   const WEDDING = ACTIVE_WEDDING;
-  const pairing = usePairing({ expectedPin: WEDDING.syncPin });
+  const [roleSession, setRoleSession] = useState(() =>
+    IS_PRODUCTION ? loadRoleSession() : null,
+  );
+  const sessionValid = IS_PRODUCTION && isRoleSessionValid(roleSession);
+  const pairing = usePairing({ expectedPin: WEDDING.syncPin, weddingId: WEDDING.weddingId });
   const {
     liveState,
     markCurrentDone,
@@ -384,11 +409,13 @@ export default function App() {
   } = useLiveStageState({
     steps: WEDDING.steps,
     weddingId: WEDDING.weddingId,
-    roomId: pairing.pin,
-    syncPin: pairing.pin,
+    // D7: the room is keyed by the weddingId, never the DDMM PIN.
+    roomId: IS_PRODUCTION ? roleSession?.weddingId ?? null : WEDDING.weddingId,
     initialLiveState: buildInitialLiveState(WEDDING),
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
+    accessToken: sessionValid ? roleSession.token : null,
+    requireToken: IS_PRODUCTION,
   });
   const { role, setRole } = useRole();
   // One shared ticking clock for every view (P0.6). Recomputing the drift
@@ -399,13 +426,87 @@ export default function App() {
   const [importerOpen, setImporterOpen] = useState(false);
   const [teamOpen, setTeamOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
+  const [cartridgeError, setCartridgeError] = useState(null);
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
     setRole(next);
   };
 
-  if (!pairing.isPaired) {
+  // Production: after the role PIN is accepted, fetch the role-scoped cartridge
+  // from the room. A cartridge cached for another wedding does not count.
+  const hasMatchingCartridge =
+    HAS_STORED_CARTRIDGE &&
+    (!IS_PRODUCTION || ACTIVE_WEDDING.weddingId === roleSession?.weddingId);
+  const needsProductionCartridge = IS_PRODUCTION && sessionValid && !hasMatchingCartridge;
+  useEffect(() => {
+    if (!needsProductionCartridge) return undefined;
+
+    let cancelled = false;
+    const client = createSupabaseSyncClient(SYNC_CONFIG, {
+      accessToken: roleSession.token,
+    });
+
+    client
+      .fetchWedding(roleSession.weddingId)
+      .then((row) => {
+        if (cancelled) return;
+        if (!row?.cartridge) throw new Error('The server has no cartridge for this room.');
+        if (!saveActiveCartridge(row.cartridge)) {
+          throw new Error('The published cartridge is missing required fields.');
+        }
+        window.location.reload();
+      })
+      .catch((error) => {
+        if (!cancelled) setCartridgeError(error.message);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [needsProductionCartridge, roleSession]);
+
+  if (IS_PRODUCTION && !sessionValid) {
+    return (
+      <RoleJoinScreen
+        intent={DECK_INTENT}
+        onJoined={(session) => {
+          saveRoleSession(session);
+          setRoleSession(session);
+        }}
+      />
+    );
+  }
+
+  if (needsProductionCartridge) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#070b19] px-4 text-center text-slate-100">
+        <div className="max-w-sm rounded-2xl border border-[#1c2a52] bg-[#0b132b] p-6 shadow-2xl">
+          <div className="text-3xl" aria-hidden="true">
+            {cartridgeError ? '⚠️' : '🎧'}
+          </div>
+          <h1 className="mt-2 font-heading text-lg font-bold text-white">
+            {cartridgeError ? 'Could not load this wedding' : 'Loading wedding…'}
+          </h1>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            {cartridgeError ??
+              'Fetching the role-scoped cartridge for this room. No wedding data is cached until it arrives.'}
+          </p>
+          {cartridgeError ? (
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-4 rounded-lg border border-[#3b5bdb] bg-[#002395] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#1a3cb0]"
+            >
+              Retry
+            </button>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  if (!IS_PRODUCTION && !pairing.isPaired) {
     return (
       <>
         <PairingScreen
@@ -425,15 +526,31 @@ export default function App() {
   }
 
   const handleUnpair = () => {
+    if (IS_PRODUCTION) {
+      const confirmed = window.confirm(
+        'Sign out of this role? You will need the role PIN to rejoin.'
+      );
+      if (!confirmed) return;
+      clearRoleSession();
+      setRoleSession(null);
+      return;
+    }
     const confirmed = window.confirm(
       "Forget the room PIN on this device? Timeline progress stays saved locally."
     );
     if (confirmed) pairing.unpair();
   };
 
-  const roleIds = availableRoleIds(WEDDING.hostingMode);
-  const currentRole = roleIds.includes(role) ? role : "mc";
-  const showDjCues = roleIds.includes("dj");
+  const availableRoles = availableRoleIds(WEDDING.hostingMode);
+  // Production: the role token fixes this device to exactly one role. Switching
+  // requires signing out and joining with another role's PIN.
+  const roleIds = IS_PRODUCTION ? [roleSession.role] : availableRoles;
+  const currentRole = IS_PRODUCTION
+    ? roleSession.role
+    : roleIds.includes(role)
+      ? role
+      : "mc";
+  const showDjCues = availableRoles.includes("dj");
 
   const steps = activeSteps(WEDDING.steps, liveState);
   const manualOffset = liveState.manual_offset_minutes ?? 0;
@@ -626,15 +743,30 @@ export default function App() {
           <button
             type="button"
             onClick={handleUnpair}
-            title="Paired room PIN — click to forget this device"
+            title={
+              IS_PRODUCTION
+                ? 'Sign out of this role'
+                : 'Paired room PIN — click to forget this device'
+            }
             className="text-slate-400 hover:text-white transition"
           >
-            PIN: <strong className="text-white">{pairing.pin}</strong>
-            <span className="ml-1 text-[10px]">🔓</span>
+            {IS_PRODUCTION ? (
+              <>
+                ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
+                <span className="ml-1 text-[10px]">🔐</span>
+              </>
+            ) : (
+              <>
+                PIN: <strong className="text-white">{pairing.pin}</strong>
+                <span className="ml-1 text-[10px]">🔓</span>
+              </>
+            )}
           </button>
           <span className="text-slate-500">•</span>
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
-          <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
+          {roleIds.length > 1 ? (
+            <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
+          ) : null}
         </div>
       </header>
 

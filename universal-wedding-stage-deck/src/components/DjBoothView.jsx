@@ -79,7 +79,9 @@ export default function DjBoothView({
 
         <div className="flex flex-wrap items-center gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
-          <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
+          {roles.length > 1 ? (
+            <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
+          ) : null}
         </div>
       </header>
 

@@ -93,20 +93,24 @@ cp .env.example .env.local
 - Header badge states: **Local only**, **Connecting…**, **Cloud synced**,
   **Offline**, **Sync error** (hover for the error / last remote update).
 
-### 4. Room PIN pairing (issue #7)
+### 4. Room PIN pairing (issue #7 / D7)
 
 On first load (or after unpairing) the app renders a full-screen pairing gate
 instead of the dashboard:
 
 - Enter the wedding cartridge's 4-digit `syncPin` (e.g. `2008` for
   Jennifer & Guillaume). Digits auto-advance; paste and arrow keys work.
-- The PIN is verified **locally**, so pairing works with no connection.
-- Once paired, the PIN becomes the Realtime room key (`wzsd:<pin>`) and is
-  stored under `wzsd:v1:pairing` in `localStorage`. Every device entering the
-  same PIN joins the same room.
+- The PIN is verified **locally**, so pairing works with no connection. It is a
+  display/entry gate only.
+- The cloud room key is **`wzsd:<weddingId>`**, never the PIN. The pairing
+  record is bound to the cartridge `weddingId` under `wzsd:v1:pairing`, so two
+  weddings that share a DDMM PIN never inherit each other's state.
 - A wrong PIN shakes the field, clears it, and shows an inline error.
 - Click the **PIN: 2008 🔓** chip in the dashboard header to unpair this device.
   Timeline progress is not deleted; re-entering the PIN restores it.
+
+Production `/deck/` supersedes this local gate with server-validated per-role
+PINs — see section 20.
 
 Relevant files: `src/components/PairingScreen.jsx`, `src/hooks/usePairing.js`,
 `src/lib/pairing.js`.
@@ -117,6 +121,10 @@ The header **Role** control switches this device between three views. The
 choice is stored per device under `wzsd:v1:role` and is never added to the
 synced payload, so one tablet can stay on MC Master while a phone follows the
 same room in Pocket Remote.
+
+In production (`VITE_DECK_MODE=production`) the role is fixed by the role token:
+there is no free switching. The switcher is hidden and signing out is required
+to join with another role's PIN.
 
 | Role | Purpose |
 | --- | --- |
@@ -616,17 +624,75 @@ Relevant files: `src/lib/musicPolicy.js`, `src/components/MusicPolicyCard.jsx`,
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `schema/wedding-cartridge.example.json`.
 
+### 20. Room identity and production role PINs (issue #38 / P0.2)
+
+**D7 room key.** The cloud room is now keyed by **`wzsd:<weddingId>`**, not the
+PIN. `App.jsx` passes `roomId: WEDDING.weddingId`; the DDMM `syncPin` stays a
+local/display gate only. Two weddings on the same date — or with the same DDMM
+PIN — no longer collide or inherit each other's state. The pairing record is
+bound to the `weddingId`, and legacy PIN-only records are treated as unpaired.
+The importer warns when a new cartridge reuses the current cartridge's display
+PIN.
+
+**Production per-role PINs (`VITE_DECK_MODE=production`).**
+- The `/deck/` gate is `RoleJoinScreen`: room code + role (`mc`, `dj`, `pocket`)
+  + a **6-digit role PIN**. No couple names or cartridge data are rendered
+  before the server returns a token.
+- The client calls the `join_room` Edge Function. The server validates a bcrypt
+  hash from `wedding_roles`, rate-limits to **5 failures per room/role/IP per
+  15 minutes**, and returns a 24-hour JWT with
+  `{ wedding_id, room_id, app_role }`. Supabase's reserved `role` claim stays
+  `authenticated`; the device role is `app_role`.
+- After joining, the client fetches the role-scoped cartridge from `weddings`
+  (RLS only returns the matching row), caches it locally and reloads. Production
+  never falls back to the demo wedding.
+- The token is cached in `localStorage` (`wzsd:v1:role-session`) so a joined
+  device keeps working offline until expiry. The sync client sends it as a
+  bearer token to PostgREST and Realtime.
+- The token fixes the device to one role: the role switcher is hidden, and
+  signing out (the header role chip) is required to join with another PIN.
+
+**Server setup**
+1. Run [`supabase/schema.sql`](supabase/schema.sql): creates `weddings`,
+   `wedding_roles`, `join_attempts`, removes the plaintext `pin` column and
+   replaces the permissive policies with claim-scoped RLS.
+2. Deploy the functions:
+   `supabase functions deploy join_room` and
+   `supabase functions deploy publish_room`.
+3. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
+   `DECK_PUBLISH_SECRET`, and optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
+4. Publish a room with `publish_room` (admin only, `x-publish-secret`). It
+   returns the 6-digit PINs and share links **once**; only hashes are stored.
+5. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
+   key. Never ship the service-role key.
+
+Local/demo mode still runs entirely offline (localStorage + cross-tab events).
+If a local-mode build is pointed at the hardened schema, cloud sync is denied
+because there is no role token — use `VITE_DECK_MODE=production` for cloud
+rooms.
+
+Relevant files: `src/App.jsx`, `src/lib/pairing.js`, `src/hooks/usePairing.js`,
+`src/lib/sync/syncConfig.js`, `src/lib/sync/roleSession.js`,
+`src/lib/sync/joinRoom.js`, `src/components/RoleJoinScreen.jsx`,
+`src/lib/sync/supabaseSyncClient.js`, `src/hooks/useLiveStageState.js`,
+`src/components/CartridgeImporter.jsx`, `supabase/schema.sql`,
+`supabase/functions/join_room/index.ts`,
+`supabase/functions/publish_room/index.ts`.
+
 ### Security notes
 
-The anon key ships in the browser bundle by design. The included policies are
-permissive (any client with the anon key can read/write any room) because the
-4-digit PIN gate is currently **client-side UX only** — it is not enforced
-server-side. Before a real event, tighten this with an RPC or an Edge Function
-that validates the PIN, or per-room RLS using JWT claims. Never expose the
-service-role key here.
+The anon key ships in the browser bundle by design, but the database is no
+longer open: `live_sync_state` and `weddings` require a role JWT issued by
+`join_room`, and `wedding_roles` / `join_attempts` are service-role only. The
+4-digit DDMM PIN is a local display gate, not a server secret; production uses
+6-digit per-role PINs hashed server-side and rate-limited.
 
-Role separation is also a UX boundary for now: all paired devices use the same
-room PIN and can switch views. The roadmap's split `sync_pin_host` /
-`sync_pin_dj` role PINs are not wired yet; add them before handing a DJ device
-access to a real wedding cartridge.
+Remaining hardening work (tracked in project.md): encrypted sensitive notes
+(D4), TTL/purge automation, role-based filtering of sensitive cartridge fields
+before delivery, and the full `/deck/` Apache/PWA deployment (TODO 19). Never
+expose the service-role key in the client.
+
+Role separation is now enforced by the role token for production joins. In
+local/demo mode it remains a UX boundary: one paired device can still switch
+views.
 

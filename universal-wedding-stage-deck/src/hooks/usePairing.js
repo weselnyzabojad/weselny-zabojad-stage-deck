@@ -1,12 +1,19 @@
 import { useCallback, useState } from 'react';
-import { clearPairing, loadPairing, normalizePin, savePairing } from '../lib/pairing';
+import {
+  clearPairing,
+  loadPairing,
+  normalizePin,
+  pairingMatches,
+  savePairing,
+} from '../lib/pairing';
 
-// Gate that keeps the stage deck locked behind the wedding cartridge's
-// 4-digit room PIN. Verification happens locally, so pairing works offline;
-// the PIN doubles as the Supabase Realtime room key once paired.
-export function usePairing({ expectedPin }) {
+// Local gate for the legacy/demo DDMM PIN. Verification happens in the browser
+// and only unlocks the UI; the cloud room is keyed by `weddingId`, not the PIN.
+// The stored pairing is bound to the active cartridge's `weddingId`.
+export function usePairing({ expectedPin, weddingId }) {
   const [pairing, setPairing] = useState(() => loadPairing());
-  const pin = pairing && pairing.pin === expectedPin ? pairing.pin : null;
+  const matches = pairingMatches(pairing, { pin: expectedPin, weddingId });
+  const pin = matches ? pairing.pin : null;
 
   const pair = useCallback(
     (rawPin) => {
@@ -18,12 +25,12 @@ export function usePairing({ expectedPin }) {
         return { ok: false, error: 'Incorrect PIN for this wedding cartridge.' };
       }
 
-      const record = { pin: candidate, pairedAt: new Date().toISOString() };
+      const record = { pin: candidate, weddingId, pairedAt: new Date().toISOString() };
       savePairing(record);
       setPairing(record);
       return { ok: true };
     },
-    [expectedPin],
+    [expectedPin, weddingId],
   );
 
   const unpair = useCallback(() => {

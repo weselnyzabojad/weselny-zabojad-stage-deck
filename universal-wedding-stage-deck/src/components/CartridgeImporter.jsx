@@ -117,6 +117,11 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
 
   const summary = preview ? summarizeCartridge(preview) : null;
   const current = summarizeCartridge(currentCartridge);
+  const pinCollision =
+    Boolean(preview) &&
+    Boolean(currentCartridge) &&
+    preview.syncPin === currentCartridge.syncPin &&
+    preview.weddingId !== currentCartridge.weddingId;
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="cartridge-importer-title" size="full">
@@ -294,6 +299,16 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                   🎵 {summary.mustPlayCount} must play · {summary.doNotPlayCount} do not play · Clean{' '}
                   {summary.cleanVersions === null ? '—' : summary.cleanVersions ? 'ON' : 'OFF'}
                 </div>
+                {pinCollision ? (
+                  <p
+                    role="status"
+                    className="mt-2 rounded border border-amber-700 bg-amber-950/60 px-2 py-1.5 text-[10px] leading-snug text-amber-200"
+                  >
+                    ⚠ This display PIN is already used by “{currentCartridge.couple}”. Cloud
+                    rooms are keyed by <span className="font-mono">weddingId</span>, but pick a
+                    different PIN so devices are not ambiguous.
+                  </p>
+                ) : null}
                 <div className="mt-2 rounded-lg border border-[#1c2a52] bg-[#070b19] px-2 py-1.5">
                   <div className="font-heading text-[9px] font-semibold uppercase tracking-widest text-slate-500">
                     Couple identity

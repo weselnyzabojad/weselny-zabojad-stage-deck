@@ -1,0 +1,168 @@
+// Supabase Edge Function: join_room
+//
+// Validates a 6-digit per-role PIN against `public.wedding_roles.pin_hash`
+// (bcrypt), rate-limits failures to 5 per room/role/IP / 15 minutes, and returns
+// a short-lived role-scoped JWT.
+//
+// Deploy:
+//   supabase functions deploy join_room
+// Secrets:
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_JWT_SECRET
+//   ALLOWED_ORIGIN (optional, default *)
+//
+// The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
+// and a separate `app_role` claim for the device role (mc/dj/pocket/photo/...).
+
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import bcrypt from 'npm:bcryptjs@2.4.3';
+import { SignJWT } from 'npm:jose@5';
+
+const ALLOWED_ROLES = new Set(['mc', 'dj', 'pocket', 'photo', 'speaker']);
+const WINDOW_MS = 15 * 60 * 1000;
+const MAX_FAILURES = 5;
+const TOKEN_TTL_SECONDS = 24 * 60 * 60;
+
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type': 'application/json',
+  };
+}
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), { status, headers: corsHeaders() });
+}
+
+function serverEnv(name: string) {
+  const value = Deno.env.get(name);
+  if (!value) throw new Error(`Missing secret ${name}`);
+  return value;
+}
+
+function clientIp(req: Request) {
+  const forwarded = req.headers.get('x-forwarded-for') ?? '';
+  return forwarded.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown';
+}
+
+async function sha256Hex(value: string) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders() });
+  }
+  if (req.method !== 'POST') {
+    return json({ error: 'Method not allowed.' }, 405);
+  }
+
+  try {
+    const body = await req.json().catch(() => null);
+    const roomCode = typeof body?.roomCode === 'string' ? body.roomCode.trim() : '';
+    const role = typeof body?.role === 'string' ? body.role.trim() : '';
+    const pin = typeof body?.pin === 'string' ? body.pin.trim() : '';
+
+    if (!roomCode || !ALLOWED_ROLES.has(role) || !/^\d{6}$/.test(pin)) {
+      return json({ error: 'Enter the room code and the 6-digit PIN for this role.' }, 400);
+    }
+
+    const admin = createClient(serverEnv('SUPABASE_URL'), serverEnv('SUPABASE_SERVICE_ROLE_KEY'), {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    const ipHash = await sha256Hex(clientIp(req));
+    const since = new Date(Date.now() - WINDOW_MS).toISOString();
+
+    const { count, error: rateError } = await admin
+      .from('join_attempts')
+      .select('id', { count: 'exact', head: true })
+      .eq('room_code', roomCode)
+      .eq('role', role)
+      .eq('ip_hash', ipHash)
+      .eq('success', false)
+      .gte('attempted_at', since);
+
+    if (rateError) throw rateError;
+    if ((count ?? 0) >= MAX_FAILURES) {
+      return json({ error: 'Too many failed attempts. This role is locked for 15 minutes.' }, 429);
+    }
+
+    const { data: wedding, error: weddingError } = await admin
+      .from('weddings')
+      .select('wedding_id, room_code')
+      .eq('room_code', roomCode)
+      .maybeSingle();
+
+    if (weddingError) throw weddingError;
+    if (!wedding) {
+      return json({ error: 'Room not found. Check the share link.' }, 404);
+    }
+
+    const { data: roleRow, error: roleError } = await admin
+      .from('wedding_roles')
+      .select('pin_hash')
+      .eq('wedding_id', wedding.wedding_id)
+      .eq('role', role)
+      .maybeSingle();
+
+    if (roleError) throw roleError;
+
+    const validPin = Boolean(roleRow?.pin_hash) && bcrypt.compareSync(pin, roleRow.pin_hash);
+
+    if (!validPin) {
+      await admin.from('join_attempts').insert({
+        room_code: roomCode,
+        role,
+        ip_hash: ipHash,
+        success: false,
+      });
+      return json({ error: 'Incorrect PIN for this role.' }, 401);
+    }
+
+    // Successful join clears the failure window for this device/role.
+    await admin
+      .from('join_attempts')
+      .delete()
+      .eq('room_code', roomCode)
+      .eq('role', role)
+      .eq('ip_hash', ipHash)
+      .eq('success', false);
+
+    const roomId = `wzsd:${wedding.wedding_id}`;
+    const expiry = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
+
+    const token = await new SignJWT({
+      // Reserved Supabase/PostgREST claim: the Postgres role, not the device role.
+      role: 'authenticated',
+      wedding_id: wedding.wedding_id,
+      room_id: roomId,
+      app_role: role,
+    })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setSubject(wedding.wedding_id)
+      .setAudience('authenticated')
+      .setIssuer('supabase')
+      .setIssuedAt()
+      .setJti(crypto.randomUUID())
+      .setExpirationTime(expiry)
+      .sign(new TextEncoder().encode(serverEnv('SUPABASE_JWT_SECRET')));
+
+    return json({
+      token,
+      weddingId: wedding.wedding_id,
+      roomId,
+      role,
+      expiresAt: new Date(expiry * 1000).toISOString(),
+    });
+  } catch (error) {
+    console.error('join_room failed', error);
+    return json({ error: 'Could not join the room. Try again shortly.' }, 500);
+  }
+});
