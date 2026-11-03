@@ -1,5 +1,8 @@
 // Persistence for an imported wedding cartridge. Imported cartridges replace
-// the built-in demo until cleared.
+// the built-in demo until cleared. Deprecated D10 arrays are stripped on load
+// and save so they never reach the app or the cloud again.
+
+import { dropDeprecatedCartridgeFields } from './cartridgeCompat.js';
 
 const STORAGE_VERSION = 1;
 
@@ -38,7 +41,7 @@ export function loadActiveCartridge(storage) {
     const raw = store.getItem(CARTRIDGE_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    return isCartridgeLike(parsed) ? parsed : null;
+    return isCartridgeLike(parsed) ? dropDeprecatedCartridgeFields(parsed) : null;
   } catch {
     // Corrupt or blocked storage: fall back to the built-in demo.
     return null;
@@ -47,10 +50,11 @@ export function loadActiveCartridge(storage) {
 
 export function saveActiveCartridge(cartridge, storage) {
   const store = getStorage(storage);
-  if (!store || !isCartridgeLike(cartridge)) return false;
+  const cleaned = dropDeprecatedCartridgeFields(cartridge);
+  if (!store || !isCartridgeLike(cleaned)) return false;
 
   try {
-    store.setItem(CARTRIDGE_STORAGE_KEY, JSON.stringify(cartridge));
+    store.setItem(CARTRIDGE_STORAGE_KEY, JSON.stringify(cleaned));
     return true;
   } catch {
     return false;

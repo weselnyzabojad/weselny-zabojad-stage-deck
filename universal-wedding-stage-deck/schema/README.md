@@ -1,12 +1,15 @@
 # WeddingSchema v1.1
 
+> **v1.2 proposal available:** see `wedding-schema-v1.2.proposal.md`. v1.1 remains canonical until that proposal is approved.
+
 Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
-| `wedding-schema-v1.1.json` | Draft 2020-12 JSON Schema. |
+| `wedding-schema-v1.1.json` | Draft 2020-12 JSON Schema (canonical). |
+| `wedding-schema-v1.2.proposal.md` | Proposed v1.2 field model, decisions D1-D9, migration, and validation rules. |
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
 | `ai-converter-prompt.md` | Copy-paste prompt for converting raw Google Docs / notes into v1.1 JSON. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
@@ -78,8 +81,8 @@ rejected; put app-specific data under `extensions`.
 | `tact_and_vip_alerts` | no | Sensitive family / care notes. |
 | `jokersCount` | no | Should equal `jokerGames.length` when both exist. |
 | `jokerGames` | no | Joker Drawer games / crates. |
-| `coHosts` | no | Assistant hosts / co-MCs, responsibilities and contacts. |
-| `contentCreators` | no | Social-media vendors, windows, deliverables and boundaries. |
+| `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
+| `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
 | `contacts` | no | Vendor and family contacts. |
@@ -183,38 +186,18 @@ Notes:
 
 Each rule accepts an optional `note`.
 
-## Co-hosts and content creators
+## Legacy: co-hosts and content creators
+
+`coHosts` and `contentCreators` belonged to the removed Issue #16 module. They
+remain defined only so older v1.1 cartridges still pass structural validation.
+The app no longer renders them, the AI converter prompt no longer emits them,
+and the importer drops both arrays when a cartridge is stored (D10 / TODO 20).
+Use `contacts` for the vendor directory.
 
 ```json
-"coHosts": [
-  {
-    "id": "zuzia",
-    "name": "Zuzia",
-    "role": "Co-MC",
-    "phone": "+48 600 111 222",
-    "responsibilities": ["Bread & Salt", "Games pool"],
-    "notes": "Shares the second microphone."
-  }
-],
-"contentCreators": [
-  {
-    "id": "paulina",
-    "name": "Paulina Nózka",
-    "platform": "INSTAGRAM",
-    "handle": "@paulinan",
-    "phone": "+48 600 333 444",
-    "arrivalTime": "16:00",
-    "departureTime": "22:00",
-    "deliverables": ["Behind-the-scenes reel", "Stories"],
-    "boundaries": ["Do not block official photo/video"],
-    "notes": "Publish after the couple approves."
-  }
-]
+"coHosts": [],
+"contentCreators": []
 ```
-
-`platform` is `INSTAGRAM`, `TIKTOK`, `YOUTUBE`, `FACEBOOK` or `OTHER`.
-Co-hosts and content creators are both optional arrays. The MC header exposes a
-**Team** module that lists them; imported cartridges populate it directly.
 
 ## Hard anchors
 

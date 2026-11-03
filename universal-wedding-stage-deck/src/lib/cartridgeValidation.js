@@ -73,8 +73,6 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.hardAnchors, '/hardAnchors', 'hard anchor');
   uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
   uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
-  uniqueList(cartridge?.coHosts, '/coHosts', 'co-host');
-  uniqueList(cartridge?.contentCreators, '/contentCreators', 'content creator');
   uniqueList(cartridge?.contacts, '/contacts', 'contact');
 
   // Key songs (TODO 18 / Phase 1.5d). Missing titles, artists or sources are

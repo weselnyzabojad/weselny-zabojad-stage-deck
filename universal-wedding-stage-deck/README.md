@@ -351,21 +351,19 @@ Relevant files: `schema/ai-converter-prompt.md`,
 `src/lib/cartridgeImporter.js`, `src/lib/cartridgeValidation.js`,
 `src/lib/cartridgeStorage.js`, `src/App.jsx`.
 
-### 13. Co-Hosting & Content Creator module (issue #16)
+### 13. Retired: Co-Hosting & Content Creator module (D10 / TODO 20)
 
-The cartridge can now describe the wider stage team:
+The Issue #16 module was removed on 2026-11-03 (decision D10):
 
-- **Co-hosts / co-MCs** — `coHosts` tracks names, roles, phone numbers,
-  responsibilities (Bread & Salt, games pool, second microphone) and notes so
-  duties can be shared without losing the run of show.
-- **Content creators** — `contentCreators` tracks social-media vendors,
-  platform/handle, arrival/departure windows, deliverables (BTS reel, stories)
-  and boundaries such as not blocking the official photographer/videographer.
-- The MC header exposes **🤝 Team (N)** and opens the
-  **Co-Hosting & Content Creator** modal.
-- Both arrays are optional in WeddingSchema v1.1 and are extracted by the AI
-  converter prompt. Imported cartridges populate the module automatically.
-- The importer preview shows co-host and content-creator counts.
+- `src/components/TeamModule.jsx` is deleted; the MC header no longer has a
+  **Team (N)** button.
+- Demo `coHosts`/`contentCreators` data, the importer preview counts and the
+  duplicate-ID validator checks are gone.
+- `WeddingSchema v1.1` keeps the `coHosts` / `contentCreators` definitions so
+  existing cartridges still validate, but they are marked legacy and the
+  importer **drops both arrays** when a cartridge is stored. The AI converter
+  prompt no longer asks for them.
+- Use `contacts` for the vendor directory instead.
 
 ### 14. DJ Key Songs card: VIP vs Standard (issue #60 / TODO 18)
 

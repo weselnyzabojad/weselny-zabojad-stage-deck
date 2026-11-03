@@ -6,6 +6,7 @@ import {
   summarizeCartridge,
   validateCartridge,
 } from '../lib/cartridgeImporter';
+import { hasLegacyTeamBlocks } from '../lib/cartridgeCompat';
 import { clearActiveCartridge, saveActiveCartridge } from '../lib/cartridgeStorage';
 import CoupleIdentity from './CoupleIdentity';
 import ModalShell from './ModalShell';
@@ -282,9 +283,6 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                   {summary.preWeddingCount} pre-wedding tasks
                 </div>
                 <div className="mt-0.5 font-mono text-[10px] text-slate-400">
-                  {summary.coHostCount} co-hosts · {summary.contentCreatorCount} content creators
-                </div>
-                <div className="mt-0.5 font-mono text-[10px] text-slate-400">
                   {summary.keySongCount} key songs (DJ Booth)
                 </div>
                 {summary.hasCake ? (
@@ -307,6 +305,13 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                     ⚠ This display PIN is already used by “{currentCartridge.couple}”. Cloud
                     rooms are keyed by <span className="font-mono">weddingId</span>, but pick a
                     different PIN so devices are not ambiguous.
+                  </p>
+                ) : null}
+                {hasLegacyTeamBlocks(preview) ? (
+                  <p className="mt-2 rounded border border-line bg-page px-2 py-1.5 text-[10px] leading-snug text-slate-400">
+                    Legacy <span className="font-mono">coHosts</span> /{' '}
+                    <span className="font-mono">contentCreators</span> blocks will be dropped on
+                    import (D10).
                   </p>
                 ) : null}
                 <div className="mt-2 rounded-lg border border-line bg-page px-2 py-1.5">

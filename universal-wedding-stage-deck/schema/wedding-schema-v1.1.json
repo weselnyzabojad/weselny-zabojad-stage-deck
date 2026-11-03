@@ -98,12 +98,16 @@
     },
     "coHosts": {
       "type": "array",
+      "deprecated": true,
+      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
       "items": {
         "$ref": "#/$defs/coHost"
       }
     },
     "contentCreators": {
       "type": "array",
+      "deprecated": true,
+      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
       "items": {
         "$ref": "#/$defs/contentCreator"
       }
