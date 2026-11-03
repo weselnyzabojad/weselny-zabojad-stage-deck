@@ -83,6 +83,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                       {speech.durationMin != null ? <span>{speech.durationMin} min</span> : null}
                       {speech.mic ? <span>🎙 {speech.mic}</span> : null}
                       {speech.language ? <span>{speech.language}</span> : null}
+                      {speech.readFrom ? <span>Reads {speech.readFrom.toLowerCase()}</span> : null}
                     </div>
                     {speech.cue ? (
                       <div className="mt-0.5 text-[10px] text-slate-400">Cue: {speech.cue}</div>
@@ -110,6 +111,20 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                         Script missing
                       </span>
                     )}
+                    <span
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[9px] ${
+                        speech.consent.storeScript
+                          ? 'border-line-strong bg-raised text-slate-400'
+                          : 'border-amber-800 bg-amber-950/60 text-amber-200'
+                      }`}
+                    >
+                      {speech.consent.storeScript ? 'Consent ✓' : 'Consent pending'}
+                    </span>
+                    {!speech.speakerVisible ? (
+                      <span className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 font-mono text-[9px] text-alert-tint">
+                        Speaker hidden
+                      </span>
+                    ) : null}
                   </div>
                 </div>
 

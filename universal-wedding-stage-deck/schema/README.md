@@ -88,8 +88,8 @@ rejected; put app-specific data under `extensions`.
 | `contacts` | no | Vendor and family contacts. |
 | `preWeddingTodos` | no | Pre-flight checklist. |
 | `weatherVariants` | no | `DEFAULT`, `RAIN`, `HEATWAVE`. |
-| `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX` (TODO 8; provisional). |
-| `speeches` | no | Speech records + verbatim script text (TODO 8; provisional). |
+| `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
+| `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
 | `extensions` | no | Forward-compatible namespace. |
 
@@ -200,6 +200,39 @@ Use `contacts` for the vendor directory.
 "coHosts": [],
 "contentCreators": []
 ```
+
+## Speeches
+
+`speechMode` is `OFF`, `LIGHT` or `COMPLEX`. Each speech may override
+`LIGHT` / `COMPLEX`:
+
+```json
+"speeches": [
+  {
+    "id": "speech_witness",
+    "speaker": { "name": "Bartek", "relationship": "Best man" },
+    "order": 1,
+    "time": "19:45",
+    "durationMin": 5,
+    "language": "PL",
+    "mic": "MIC_2",
+    "cue": "After the main course",
+    "script": { "text": "...", "format": "PLAIN", "ready": true, "source": "GOOGLE_DOC" },
+    "delivery": "READ",
+    "readFrom": "TABLET",
+    "consent": { "storeScript": true },
+    "visibleToRoles": ["mc", "speaker"]
+  }
+]
+```
+
+- Scripts are stored verbatim; never summarise or rewrite them.
+- `consent.storeScript: false` locks the script on the speaker device.
+  `visibleToRoles` must include `speaker` (or be empty) for the script to appear.
+- `delivery` is `READ`, `MEMORIZE` or `NOTES`; `readFrom` is `PHONE`, `TABLET`,
+  `PAPER`, `MEMORY` or `OTHER`.
+- `liveSyncState.active_speech_id` selects the live speech (synced to the
+  speaker device). A missing COMPLEX script warns; it does not block import.
 
 ## Hard anchors
 

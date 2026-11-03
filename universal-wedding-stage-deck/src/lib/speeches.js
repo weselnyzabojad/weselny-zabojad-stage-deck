@@ -9,6 +9,7 @@ import { clockToEventDate } from './eventTime.js';
 
 export const SPEECH_MODES = ['OFF', 'LIGHT', 'COMPLEX'];
 export const SPEECH_DELIVERY = ['READ', 'MEMORIZE', 'NOTES'];
+export const SPEECH_READ_FROM = ['PHONE', 'TABLET', 'PAPER', 'MEMORY', 'OTHER'];
 
 const CLOCK_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -59,6 +60,20 @@ function normalizeScript(raw) {
   };
 }
 
+// Consent defaults to granted for speeches captured before this field existed;
+// an explicit `storeScript: false` locks the script on the speaker device.
+function normalizeConsent(raw) {
+  if (!raw || typeof raw !== 'object') {
+    return { storeScript: true, confirmedBy: null, confirmedAt: null, notes: null };
+  }
+  return {
+    storeScript: raw.storeScript === false ? false : true,
+    confirmedBy: text(raw.confirmedBy),
+    confirmedAt: text(raw.confirmedAt),
+    notes: text(raw.notes),
+  };
+}
+
 export function resolveSpeeches(wedding) {
   const items = Array.isArray(wedding?.speeches) ? wedding.speeches : [];
   const weddingMode = normalizeSpeechMode(wedding?.speechMode);
@@ -76,6 +91,8 @@ export function resolveSpeeches(wedding) {
       const visibleToRoles = Array.isArray(speech.visibleToRoles)
         ? speech.visibleToRoles.map(text).filter(Boolean)
         : [];
+      const consent = normalizeConsent(speech.consent);
+      const speakerVisible = visibleToRoles.length === 0 || visibleToRoles.includes('speaker');
 
       return {
         id: text(speech.id) ?? `speech_${index + 1}`,
@@ -90,11 +107,14 @@ export function resolveSpeeches(wedding) {
         teleprompterRef: text(speech.teleprompterRef),
         script: normalizeScript(speech.script),
         delivery: SPEECH_DELIVERY.includes(speech.delivery) ? speech.delivery : null,
+        readFrom: SPEECH_READ_FROM.includes(speech.readFrom) ? speech.readFrom : null,
         mcIntro: speech.mcIntro === true,
         visibleToRoles,
-        // Only the assigned speaker device should see a script. An empty list
-        // means "shared with the speaker role by default".
-        speakerVisible: visibleToRoles.length === 0 || visibleToRoles.includes('speaker'),
+        consent,
+        // The speaker device may see the script only when the role is allowed
+        // and the couple consented to storing it.
+        speakerVisible,
+        scriptAllowed: speakerVisible && consent.storeScript,
       };
     })
     .sort((a, b) => a.order - b.order);
