@@ -357,6 +357,10 @@ Add a seed state:
 the first step. If the source says the wedding is already in progress, seed the
 matching completed ids and actual timestamps instead.
 
+`actual_timestamps` store full ISO-8601 datetimes in v1.2 (for example
+`2026-08-20T18:25:00+02:00`). Bare `HH:MM` is accepted only for legacy v1.1
+cartridges and is migrated to ISO when the cartridge loads.
+
 ## Final validation checklist
 
 Before returning JSON, verify:

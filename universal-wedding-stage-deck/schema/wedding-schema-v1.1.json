@@ -193,6 +193,18 @@
       "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?Z$",
       "description": "UTC ISO-8601 timestamp, e.g. 2026-08-20T18:25:00.000Z."
     },
+    "actualTimestamp": {
+      "description": "Actual step start as a full ISO-8601 datetime (TODO 23). Legacy v1.1 bare HH:MM values still validate and are migrated on load.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        {
+          "$ref": "#/$defs/clock"
+        }
+      ]
+    },
     "nullableClock": {
       "anyOf": [
         {
@@ -873,7 +885,7 @@
             "$ref": "#/$defs/id"
           },
           "additionalProperties": {
-            "$ref": "#/$defs/clock"
+            "$ref": "#/$defs/actualTimestamp"
           }
         },
         "checked_subtasks": {

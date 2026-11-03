@@ -352,9 +352,9 @@
     "active_step_id": "step_03",
     "completed_step_ids": ["step_01", "step_02"],
     "actual_timestamps": {
-      "step_01": "16:31",
-      "step_02": "17:00",
-      "step_03": "18:25"
+      "step_01": "2026-08-20T16:31:00+02:00",
+      "step_02": "2026-08-20T17:00:00+02:00",
+      "step_03": "2026-08-20T18:25:00+02:00"
     },
     "checked_subtasks": {
       "Parents' thank-you speech + gifts (with mic)": true,

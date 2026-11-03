@@ -1,5 +1,6 @@
 import logo from '../assets/img/logo.png';
 import KeySongsCard from './KeySongsCard';
+import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -30,6 +31,7 @@ export default function DjBoothView({
   wedding,
   timeline,
   projectedFinish,
+  clock,
   stagePing,
   syncStatus,
   syncError,
@@ -82,6 +84,8 @@ export default function DjBoothView({
 
       <main className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
+          <ReelClock clock={clock} compact />
+
           <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b] p-4 shadow-lg">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>

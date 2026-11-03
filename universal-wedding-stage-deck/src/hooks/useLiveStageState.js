@@ -18,17 +18,36 @@ import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
 
 const PUBLISH_DEBOUNCE_MS = 200;
+const SERVER_TIME_REFRESH_MS = 5 * 60 * 1000;
 
 // State machine for the on-stage timeline. Hydrates from localStorage on mount,
 // mirrors every transition back to localStorage (offline fallback), follows
 // writes from other tabs, and — when the device is paired and Supabase env vars
 // are present — mirrors the same payload through a Realtime room channel.
-export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = null, initialLiveState }) {
+// `eventDateISO` + `timeZone` migrate legacy HH:MM actual timestamps to ISO.
+export function useLiveStageState({
+  steps,
+  weddingId,
+  roomId = null,
+  syncPin = null,
+  initialLiveState,
+  eventDateISO = null,
+  timeZone = 'UTC',
+}) {
   const key = storageKey(weddingId);
+  const eventContext = useMemo(
+    () => ({ eventDateISO, timeZone }),
+    [eventDateISO, timeZone],
+  );
   const [liveState, setLiveState] = useState(
-    () => loadLiveState(key, steps) ?? normalizeLiveState(initialLiveState, steps),
+    () =>
+      loadLiveState(key, steps, eventContext) ??
+      normalizeLiveState(initialLiveState, steps, eventContext),
   );
   const [savedLocally, setSavedLocally] = useState(true);
+  // Offset between the authoritative server clock and this device, used by the
+  // reel clock's skew warning. `available` is false until a probe succeeds.
+  const [serverTime, setServerTime] = useState({ offsetMs: 0, available: false });
 
   const syncConfig = useMemo(() => getSyncConfig(), []);
   const canSync = syncConfig.enabled && Boolean(roomId);
@@ -66,7 +85,7 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
     const handleStorage = (event) => {
       if (event.key !== key || !event.newValue) return;
       try {
-        const next = normalizeLiveState(JSON.parse(event.newValue), steps);
+        const next = normalizeLiveState(JSON.parse(event.newValue), steps, eventContext);
         lastSerializedRef.current = JSON.stringify(next);
         setLiveState(next);
       } catch {
@@ -76,7 +95,7 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, [key, steps]);
+  }, [key, steps, eventContext]);
 
   // Subscribe to the room channel and hydrate from the authoritative row once.
   useEffect(() => {
@@ -97,7 +116,7 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
       if (remoteAt && remoteAt < latestRemoteAtRef.current) return;
       if (remoteAt) latestRemoteAtRef.current = remoteAt;
 
-      const next = normalizeLiveState(payload.state, steps);
+      const next = normalizeLiveState(payload.state, steps, eventContext);
       const nextSerialized = JSON.stringify(next);
       lastAdoptedRef.current = nextSerialized;
       if (payload.updated_at) setRemoteUpdatedAt(payload.updated_at);
@@ -139,7 +158,38 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
       cancelled = true;
       unsubscribe();
     };
-  }, [client, roomKey, steps]);
+  }, [client, roomKey, steps, eventContext]);
+
+  // Probe the authoritative server clock so the reel clock can warn about a
+  // device clock that is more than ~30s off. Refresh periodically and after
+  // reconnect; failures leave the warning hidden instead of blocking the app.
+  useEffect(() => {
+    if (!client) return undefined;
+
+    let cancelled = false;
+
+    const probe = () => {
+      client
+        .fetchServerTime()
+        .then((serverMs) => {
+          if (cancelled) return;
+          setServerTime({ offsetMs: serverMs - Date.now(), available: true });
+        })
+        .catch(() => {
+          if (!cancelled) setServerTime((prev) => ({ ...prev, available: false }));
+        });
+    };
+
+    probe();
+    const interval = setInterval(probe, SERVER_TIME_REFRESH_MS);
+    window.addEventListener('online', probe);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener('online', probe);
+    };
+  }, [client]);
 
   // Push local transitions to the room, debounced so rapid taps collapse.
   useEffect(() => {
@@ -232,5 +282,7 @@ export function useLiveStageState({ steps, weddingId, roomId = null, syncPin = n
     syncConfigured: syncConfig.enabled,
     syncError,
     remoteUpdatedAt,
+    serverTimeOffsetMs: serverTime.offsetMs,
+    serverTimeAvailable: serverTime.available,
   };
 }

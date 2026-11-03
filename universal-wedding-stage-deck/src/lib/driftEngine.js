@@ -11,7 +11,9 @@
 import { addMinutesToClock } from './liveStageState.js';
 import { buildBufferAccordion } from './bufferAccordion.js';
 import { clockDeltaMinutes, clockToMinutes } from './clockMath.js';
+import { clockToEventDate, formatClockInZone, isIsoTimestamp } from './eventTime.js';
 import { buildHardAnchorRadar } from './hardAnchorRadar.js';
+import { buildReelClock } from './reelClock.js';
 
 export { clockDeltaMinutes, clockToMinutes };
 
@@ -57,8 +59,9 @@ function projectionSource(step, actualStart) {
 export function buildTimeline(
   steps = [],
   liveState = {},
-  { durationOverrides = null, manualOffsetMinutes = 0 } = {},
+  { durationOverrides = null, manualOffsetMinutes = 0, eventContext = {} } = {},
 ) {
+  const { eventDateISO = null, timeZone = 'UTC' } = eventContext;
   const completed = new Set(liveState?.completed_step_ids ?? []);
   const actuals = liveState?.actual_timestamps ?? {};
   let cursor = null;
@@ -69,7 +72,18 @@ export function buildTimeline(
     const override = durationOverrides?.[step.id];
     const durationMin = Number.isFinite(override) ? override : plannedDurationMin;
     const plannedEnd = addMinutesToClock(plannedStart, plannedDurationMin);
-    const actualStart = typeof actuals[step.id] === 'string' ? actuals[step.id] : null;
+
+    // TODO 23: actual starts are ISO internally; legacy HH:MM still loads and
+    // is rendered as-is until the normalizer upgrades it.
+    const actualTimestamp =
+      typeof actuals[step.id] === 'string' ? actuals[step.id] : null;
+    const actualDate = isIsoTimestamp(actualTimestamp) ? new Date(actualTimestamp) : null;
+    const actualStart = actualTimestamp
+      ? actualDate
+        ? formatClockInZone(actualDate, timeZone)
+        : actualTimestamp
+      : null;
+
     let projectedStart = actualStart ?? step.realStart ?? null;
 
     if (!projectedStart) {
@@ -89,9 +103,23 @@ export function buildTimeline(
     const projectedEnd = addMinutesToClock(projectedStart, durationMin);
     if (projectedEnd) cursor = projectedEnd;
 
-    const actualDriftMinutes = actualStart
-      ? clockDeltaMinutes(plannedStart, actualStart)
-      : null;
+    // Absolute ISO actuals remove the ±12h fold limit of clockDeltaMinutes.
+    let actualDriftMinutes = null;
+    if (actualDate && plannedStart) {
+      const plannedDate = clockToEventDate({
+        clock: plannedStart,
+        eventDateISO,
+        timeZone,
+        after: actualDate,
+      });
+      if (plannedDate) {
+        actualDriftMinutes = Math.round((actualDate.getTime() - plannedDate.getTime()) / 60000);
+      }
+    }
+    if (actualDriftMinutes == null && actualStart) {
+      actualDriftMinutes = clockDeltaMinutes(plannedStart, actualStart);
+    }
+
     const projectedDriftMinutes = projectedStart
       ? clockDeltaMinutes(plannedStart, projectedStart)
       : null;
@@ -109,6 +137,8 @@ export function buildTimeline(
       plannedStart,
       plannedEnd,
       actualStart,
+      actualTimestamp,
+      actualDate,
       projectedStart,
       projectedEnd,
       plannedDurationMin,
@@ -176,9 +206,15 @@ export function buildDriftReport(
     hardAnchors = [],
     compressionSlackMinutes = 10,
     manualOffsetMinutes = 0,
+    now = new Date(),
+    eventDateISO = null,
+    timeZone = 'UTC',
+    serverTimeOffsetMs = 0,
+    serverTimeAvailable = false,
   } = {},
 ) {
-  const entries = buildTimeline(steps, liveState, { manualOffsetMinutes });
+  const eventContext = { eventDateISO, timeZone };
+  const entries = buildTimeline(steps, liveState, { manualOffsetMinutes, eventContext });
   const activeIndex = entries.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? entries[activeIndex] : null;
   const nextEntry = activeIndex >= 0 ? entries[activeIndex + 1] ?? null : null;
@@ -206,6 +242,7 @@ export function buildDriftReport(
     ? buildTimeline(steps, liveState, {
         durationOverrides: bufferAccordion.durationByStepId,
         manualOffsetMinutes,
+        eventContext,
       })
     : entries;
 
@@ -213,6 +250,21 @@ export function buildDriftReport(
   const plannedFinish = entries.length > 0 ? entries[entries.length - 1].plannedEnd : null;
   const accordionProjectedFinish =
     accordionEntries.length > 0 ? accordionEntries[accordionEntries.length - 1].projectedEnd : null;
+
+  // Live reel clock: recomputed from `now` on every tick so overruns,
+  // anchor countdowns and DJ cutoffs move without a step transition.
+  const eventComplete = entries.length > 0 && entries.every((entry) => entry.isDone);
+  const clock = buildReelClock({
+    activeEntry,
+    projectedFinish,
+    hardAnchors,
+    now,
+    eventDateISO,
+    timeZone,
+    serverTimeOffsetMs,
+    serverTimeAvailable,
+    isComplete: eventComplete,
+  });
 
   const projectedElasticEntries = entries.filter((entry) => entry.isElastic && !entry.isDone);
   const upcomingElasticEntries = projectedElasticEntries.filter((entry) => !entry.isActive);
@@ -232,6 +284,13 @@ export function buildDriftReport(
     currentDriftTone: driftTone(currentDriftMinutes),
     currentDriftSource: currentEntry?.driftSource ?? 'none',
     manualOffsetMinutes,
+    clock,
+    liveOverrunMinutes: clock.active ? clock.active.overrunSec / 60 : 0,
+    liveRemainingMinutes:
+      clock.active && clock.active.remainingSec != null ? clock.active.remainingSec / 60 : null,
+    serverTimeOffsetMs: clock.serverTimeOffsetMs,
+    clockSkewMinutes: clock.clockSkewMs / 60000,
+    isClockSkewed: clock.isClockSkewed,
     hardAnchorRadar,
     projectedElasticEntries,
     upcomingElasticEntries,
@@ -259,6 +318,6 @@ export function buildDriftReport(
     },
     completedCount: entries.filter((entry) => entry.isDone).length,
     totalCount: entries.length,
-    isComplete: entries.length > 0 && entries.every((entry) => entry.isDone),
+    isComplete: eventComplete,
   };
 }

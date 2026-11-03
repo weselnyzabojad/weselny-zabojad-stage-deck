@@ -59,12 +59,24 @@ export function createSupabaseSyncClient(config) {
         wedding_id: roomKey,
         pin,
         state,
+        // A DB trigger overwrites this with server `now()` when deployed, so
+        // `updated_at` remains authoritative even if a device clock is wrong.
         updated_at: new Date().toISOString(),
       },
       { onConflict: 'wedding_id' },
     );
 
     if (error) throw new Error(describeError(error));
+  }
+
+  // Server-authoritative clock for the reel clock's skew warning. Backed by the
+  // `stage_deck_server_time()` SQL function. Returns epoch milliseconds.
+  async function fetchServerTime() {
+    const { data, error } = await supabase.rpc('stage_deck_server_time');
+    if (error) throw new Error(describeError(error));
+    const ms = typeof data === 'string' ? Date.parse(data) : Number(data);
+    if (!Number.isFinite(ms)) throw new Error('Invalid server time response');
+    return ms;
   }
 
   function subscribe(roomKey, { onState, onStatus } = {}) {
@@ -108,6 +120,7 @@ export function createSupabaseSyncClient(config) {
   return {
     provider: 'supabase',
     fetchLatest,
+    fetchServerTime,
     publish,
     subscribe,
   };

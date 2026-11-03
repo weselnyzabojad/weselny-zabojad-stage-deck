@@ -421,6 +421,45 @@ Relevant files: `src/lib/importantSongs.js`,
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `src/lib/cartridgeValidation.js`.
 
+### 15. Real-time reel clock (issue #42 / P0.6)
+
+Drift used to be recomputed only on renders and step transitions, so a step
+never showed a live overrun. The deck now runs **one shared ticking clock**:
+
+- `src/hooks/useEventClock.js` ticks once per second and applies a server-time
+  offset. It is instantiated once in `App.jsx` and passed to every view.
+- `buildDriftReport(..., { now })` is recomputed on every tick, so overruns,
+  anchor countdowns and DJ cutoffs update without waiting for a transition.
+- `src/components/ReelClock.jsx` renders the clock:
+  - **MC Master** — large card: current time (venue timezone), active step,
+    elapsed, remaining / overrun, projected finish, next hard-anchor countdown,
+    DJ cutoff countdown and a clock-skew warning.
+  - **DJ Booth / Pocket Remote** — compact version with the same live values.
+- DJ cutoff countdown uses the active step's absolute `dj.cutoff` when set,
+  otherwise `actual start + dj.cutoffSec`.
+- Clock skew is measured with the Supabase `stage_deck_server_time()` RPC. A
+  device more than ~30 seconds off the server shows a warning. Without cloud
+  sync the warning stays hidden (there is no authoritative clock to compare).
+- Time formatting uses `Intl.DateTimeFormat` with the venue timezone
+  (`venueLogistics.timezone`, falling back to the device timezone).
+
+**ISO timestamps (TODO 23).** Actual step starts are now stored as full ISO
+datetimes internally (`actual_timestamps`); `HH:MM` is derived for display in
+the venue timezone. The drift engine compares absolute instants, so a step that
+crosses midnight no longer hits the old ±12h fold limit. Legacy v1.1 cartridges
+that store bare `HH:MM` still load: `normalizeActualTimestamp` migrates them on
+load against the event date + timezone. The JSON Schema accepts both forms.
+
+After pulling this change, re-run [`supabase/schema.sql`](supabase/schema.sql)
+to create the `stage_deck_server_time()` function and the `updated_at` trigger.
+
+Relevant files: `src/lib/eventTime.js`, `src/lib/reelClock.js`,
+`src/lib/driftEngine.js`, `src/lib/liveStageState.js`,
+`src/hooks/useEventClock.js`, `src/hooks/useLiveStageState.js`,
+`src/components/ReelClock.jsx`, `src/App.jsx`,
+`src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
+`schema/wedding-schema-v1.1.json`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

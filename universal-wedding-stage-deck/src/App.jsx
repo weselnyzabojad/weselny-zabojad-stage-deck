@@ -11,6 +11,7 @@ import JokerDrawerCard from './components/JokerDrawerCard';
 import PairingScreen from './components/PairingScreen';
 import PocketRemoteView from './components/PocketRemoteView';
 import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
+import ReelClock from './components/ReelClock';
 import RoleSwitcher from './components/RoleSwitcher';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
@@ -20,8 +21,10 @@ import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
+import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
+import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
 import { loadActiveCartridge } from './lib/cartridgeStorage';
 
@@ -134,6 +137,7 @@ const DEMO_WEDDING = {
   role: "MC",
   hostingMode: "HOST_AND_DJ",
   driftMinutes: 25,
+  venueLogistics: { timezone: "Europe/Warsaw" },
   culturalRules: {
     sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
     gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
@@ -248,11 +252,16 @@ const SUBTASKS = [
 ];
 
 // Demo cartridge starting mid-evening, as it would after a couple of taps.
-// `WeddingSchema v1.1` shape: `live_sync_state`.
+// `WeddingSchema v1.1` shape: `live_sync_state`. Actual starts are stored as
+// full ISO datetimes (TODO 23); HH:MM display is derived from them.
 const INITIAL_LIVE_STATE = {
   active_step_id: "step_03",
   completed_step_ids: ["step_01", "step_02"],
-  actual_timestamps: { step_01: "16:31", step_02: "17:00", step_03: "18:25" },
+  actual_timestamps: {
+    step_01: "2026-08-20T16:31:00+02:00",
+    step_02: "2026-08-20T17:00:00+02:00",
+    step_03: "2026-08-20T18:25:00+02:00"
+  },
   checked_subtasks: {
     [SUBTASKS[0]]: true,
     [SUBTASKS[1]]: false,
@@ -283,6 +292,10 @@ const DEFAULT_WEDDING = {
 };
 const ACTIVE_WEDDING = loadActiveCartridge() ?? DEFAULT_WEDDING;
 
+// Venue date/timezone drive ISO migration, clock display and day rollover.
+const EVENT_DATE_ISO = resolveEventDateISO(ACTIVE_WEDDING);
+const VENUE_TIME_ZONE = resolveVenueTimeZone(ACTIVE_WEDDING);
+
 const STEP_TYPE_STYLES = {
   ELASTIC: "text-white bg-[#002395] border-[#3b5bdb]",
   BUFFER: "text-cyan-200 bg-cyan-950/70 border-cyan-800",
@@ -308,14 +321,21 @@ export default function App() {
     syncConfigured,
     syncError,
     remoteUpdatedAt,
+    serverTimeOffsetMs,
+    serverTimeAvailable,
   } = useLiveStageState({
     steps: WEDDING.steps,
     weddingId: WEDDING.weddingId,
     roomId: pairing.pin,
     syncPin: pairing.pin,
-    initialLiveState: buildInitialLiveState(WEDDING)
+    initialLiveState: buildInitialLiveState(WEDDING),
+    eventDateISO: EVENT_DATE_ISO,
+    timeZone: VENUE_TIME_ZONE,
   });
   const { role, setRole } = useRole();
+  // One shared ticking clock for every view (P0.6). Recomputing the drift
+  // report from `now` keeps overruns, anchors and cutoffs live.
+  const now = useEventClock({ serverTimeOffsetMs });
   const [overlay, setOverlay] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [importerOpen, setImporterOpen] = useState(false);
@@ -367,6 +387,11 @@ export default function App() {
     jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
     manualOffsetMinutes: manualOffset,
+    now,
+    eventDateISO: EVENT_DATE_ISO,
+    timeZone: VENUE_TIME_ZONE,
+    serverTimeOffsetMs,
+    serverTimeAvailable,
   });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const currentStep = currentEntry?.step ?? null;
@@ -426,6 +451,7 @@ export default function App() {
         wedding={WEDDING}
         timeline={timeline}
         projectedFinish={driftReport.projectedFinish}
+        clock={driftReport.clock}
         stagePing={liveState.stage_ping}
         syncStatus={syncStatus}
         syncError={syncError}
@@ -443,6 +469,7 @@ export default function App() {
         <PocketRemoteView
           wedding={WEDDING}
           timeline={timeline}
+          clock={driftReport.clock}
           onAdvance={markCurrentDone}
           onUndo={undoLastStep}
           onOpenScript={() => setOverlay("teleprompter")}
@@ -671,6 +698,8 @@ export default function App() {
         {/* PEEK NEXT & HARD ANCHOR RADAR (30% Width -> 3 cols on lg) */}
         <section className="lg:col-span-3 flex flex-col space-y-4">
           
+          <ReelClock clock={driftReport.clock} />
+
           {/* Peek Next */}
           <div className="bg-[#0b132b]/95 border border-[#1c2a52] rounded-xl p-4 shadow-lg">
             <span className="text-[10px] uppercase tracking-wider text-slate-400 font-heading font-semibold">PEEK NEXT</span>
