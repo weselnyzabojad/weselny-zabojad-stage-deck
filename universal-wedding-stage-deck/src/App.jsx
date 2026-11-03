@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import BufferAccordionCard from './components/BufferAccordionCard';
+import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
 import CoupleIdentity from './components/CoupleIdentity';
 import CulturalRulesBar from './components/CulturalRulesBar';
@@ -25,6 +26,7 @@ import { useRole } from './hooks/useRole';
 import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
+import { resolveCakeProtocol } from './lib/cake';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
 import { loadActiveCartridge } from './lib/cartridgeStorage';
@@ -237,6 +239,13 @@ const DEMO_WEDDING = {
       }
     ]
   },
+  cake: {
+    time: "20:30",
+    cuttingSong: "Cake - The Coup",
+    sparklers: true,
+    photographerCue: "Front-left of the cake table",
+    serveTime: "20:45"
+  },
   preWeddingTodos: [
     { task: "Confirm Test Wiedzy questions with witnesses", done: true },
     { task: "Check XLR cables at 16:15", done: false },
@@ -400,6 +409,8 @@ export default function App() {
     serverTimeAvailable,
   });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
+  const activeIndex = timeline.findIndex((entry) => entry.isActive);
+  const cakeProtocol = resolveCakeProtocol(WEDDING, timeline, activeIndex);
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
@@ -476,6 +487,7 @@ export default function App() {
           wedding={WEDDING}
           timeline={timeline}
           clock={driftReport.clock}
+          cake={cakeProtocol}
           onAdvance={markCurrentDone}
           onUndo={undoLastStep}
           onOpenScript={() => setOverlay("teleprompter")}
@@ -731,6 +743,8 @@ export default function App() {
               <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
             )}
           </div>
+
+          <CakeCard cake={cakeProtocol} />
 
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 

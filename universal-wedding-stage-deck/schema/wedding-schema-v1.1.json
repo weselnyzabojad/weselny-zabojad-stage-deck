@@ -157,6 +157,29 @@
         }
       }
     },
+    "cake": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Cake protocol (project.md TODO 6). The cutting song stays in sync with musicPolicy.importantSongs[] (moment CAKE); the app prefers the Key Songs entry when both are present.",
+      "properties": {
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "cuttingSong": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sparklers": {
+          "type": "boolean"
+        },
+        "photographerCue": {
+          "type": "string"
+        },
+        "serveTime": {
+          "$ref": "#/$defs/clock"
+        }
+      }
+    },
     "liveSyncState": {
       "$ref": "#/$defs/liveSyncState"
     },

@@ -503,6 +503,41 @@ Relevant files: `src/components/CoupleIdentity.jsx`, `src/lib/coupleIdentity.js`
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `schema/wedding-cartridge.example.json`, `vite.config.js`.
 
+### 17. Cake protocol (issue #49 / TODO 6)
+
+The cartridge can now describe the cake moment as a first-class block:
+
+```json
+"cake": {
+  "time": "20:30",
+  "cuttingSong": "Cake - The Coup",
+  "sparklers": true,
+  "photographerCue": "Front-left of the cake table",
+  "serveTime": "20:45"
+}
+```
+
+- The MC dashboard shows a **🎂 Cake protocol** card (cutting time, serve time,
+  cutting song, sparklers, photographer cue) with a DONE / ON AIR / NEXT /
+  PLANNED state linked to the cake step. Pocket Remote gets a compact version.
+- The song is kept in sync with `musicPolicy.importantSongs[]` (TODO 18): when
+  a `CAKE` entry exists, its title/artist is the single source of truth for
+  both the Cake card and the DJ Key Songs card. `cake.cuttingSong` is only the
+  legacy/display fallback. A conflicting `cuttingSong` is surfaced in the card
+  and never wins.
+- If `cake.time` is missing, the CAKE key song's `plannedTime` is used. Missing
+  sparklers/cue/serve time render as `—`; nothing is inferred.
+- Validation: `cake.serveTime` cannot be before `cake.time`. The importer
+  preview shows the cake cutting and serve times.
+- The AI converter prompt maps a Google Doc `## CAKE` section to this block and
+  tells the AI to reuse the CAKE row from `musicPolicy.importantSongs[]`.
+
+Relevant files: `src/lib/cake.js`, `src/components/CakeCard.jsx`, `src/App.jsx`,
+`src/components/PocketRemoteView.jsx`, `src/lib/cartridgeValidation.js`,
+`src/lib/cartridgeImporter.js`, `src/components/CartridgeImporter.jsx`,
+`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-cartridge.example.json`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

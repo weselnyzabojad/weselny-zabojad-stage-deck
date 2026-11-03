@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import CakeCard from './CakeCard';
 import CoupleIdentity from './CoupleIdentity';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
@@ -17,6 +18,7 @@ export default function PocketRemoteView({
   wedding,
   timeline,
   clock,
+  cake,
   onAdvance,
   onUndo,
   onOpenScript,
@@ -106,6 +108,8 @@ export default function PocketRemoteView({
                 </button>
               ) : null}
             </section>
+
+            <CakeCard cake={cake} compact />
 
             <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/80 p-3">
               <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
