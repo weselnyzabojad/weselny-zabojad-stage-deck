@@ -21,15 +21,32 @@ export function stepPlannedStart(step) {
   return step?.planned ?? step?.time ?? null;
 }
 
-export function computeStepDriftMinutes(step, actualStart) {
+export function computeStepDriftMinutes(step, actualStart, context = {}) {
   if (!step || typeof actualStart !== 'string') return null;
-  return clockDeltaMinutes(stepPlannedStart(step), actualStart);
+  const plannedStart = stepPlannedStart(step);
+
+  // ISO actuals compare absolute instants, so midnight and DST do not hit the
+  // old ±12h fold limit of `clockDeltaMinutes`.
+  if (isIsoTimestamp(actualStart)) {
+    const actualDate = new Date(actualStart);
+    if (!Number.isFinite(actualDate.getTime())) return null;
+    const plannedDate = clockToEventDate({
+      clock: plannedStart,
+      eventDateISO: context.eventDateISO ?? null,
+      timeZone: context.timeZone ?? 'UTC',
+      after: actualDate,
+    });
+    if (!plannedDate) return null;
+    return Math.round((actualDate.getTime() - plannedDate.getTime()) / 60000);
+  }
+
+  return clockDeltaMinutes(plannedStart, actualStart);
 }
 
 // Backwards-compatible helper used by the Pocket view before the engine.
-export function computeDriftMinutes(step, liveState) {
+export function computeDriftMinutes(step, liveState, context = {}) {
   if (!step) return null;
-  return computeStepDriftMinutes(step, liveState?.actual_timestamps?.[step.id]);
+  return computeStepDriftMinutes(step, liveState?.actual_timestamps?.[step.id], context);
 }
 
 export function driftLabel(drift) {

@@ -171,6 +171,26 @@ export function normalizeActualTimestamp(value, { eventDateISO, timeZone } = {})
   return value;
 }
 
+// Migrate a whole `actual_timestamps` / `actualTimestamps` map to canonical ISO
+// datetimes. When `stepIds` is given, only those keys are kept (live state);
+// omit it to preserve unknown keys (cartridge migration tooling).
+export function migrateActualTimestamps(
+  timestamps,
+  { stepIds = null, eventDateISO = null, timeZone = 'UTC' } = {},
+) {
+  if (!timestamps || typeof timestamps !== 'object' || Array.isArray(timestamps)) return {};
+
+  const ids = Array.isArray(stepIds) ? stepIds : Object.keys(timestamps);
+  const migrated = {};
+
+  for (const id of ids) {
+    const value = normalizeActualTimestamp(timestamps[id], { eventDateISO, timeZone });
+    if (value) migrated[id] = value;
+  }
+
+  return migrated;
+}
+
 // Display clock (HH:MM) in the venue timezone. Accepts a Date, an ISO string,
 // or a legacy HH:MM string.
 export function formatClockInZone(value, timeZone) {

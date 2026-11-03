@@ -291,6 +291,20 @@ Missing fields are filled with safe defaults by `normalizeLiveState`:
 `stage_ping.type` is one of `drop_track`, `fade_music`, `hold_2m`, `ready`.
 `manual_offset_minutes` is capped at 720 (12 hours).
 
+## Actual timestamp migration
+
+`liveSyncState.actual_timestamps` stores full ISO-8601 datetimes internally
+(TODO 23). Legacy `HH:MM` values still validate and are migrated on load. To
+upgrade a cartridge file ahead of time:
+
+```bash
+npm run migrate:timestamps -- path/to/cartridge.json --check
+npm run migrate:timestamps -- path/to/cartridge.json --write
+```
+
+See [`docs/iso-timestamps.md`](../docs/iso-timestamps.md) for the storage shape,
+display rules and edge cases.
+
 ## Versioning
 
 - `schemaVersion` is a required literal for each release.
