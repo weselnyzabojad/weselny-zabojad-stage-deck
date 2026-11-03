@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_test_wedding",
+  "couple": "Test & Couple",
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "hostingMode": "HOST_ONLY",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "YES"
+    },
+    "gorzko": {
+      "status": "STRICT_NO"
+    },
+    "bread_salt": {
+      "status": "TBC"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "durationMin": 30,
+      "title": "Arrival",
+      "type": "BUFFER",
+      "location": "Garden",
+      "buffer": {
+        "minDurationMin": 15,
+        "maxDurationMin": 45
+      }
+    },
+    {
+      "id": "step_02",
+      "time": "17:30",
+      "durationMin": 60,
+      "title": "Ceremony",
+      "type": "ELASTIC",
+      "location": "Gazebo"
+    }
+  ],
+  "musicPolicy": {
+    "importantSongs": [
+      {
+        "id": "first_dance",
+        "moment": "FIRST_DANCE",
+        "title": "Perfect",
+        "artist": "Ed Sheeran",
+        "stepId": "step_02",
+        "source": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/demo"
+        },
+        "backupSource": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/perfect.mp3"
+        }
+      }
+    ],
+    "mustPlay": [
+      {
+        "id": "first_dance",
+        "track": "Perfect - Ed Sheeran",
+        "note": "First dance"
+      }
+    ],
+    "doNotPlay": [
+      {
+        "id": "no_macarena",
+        "track": "Macarena",
+        "reason": "Couple's request"
+      }
+    ],
+    "requestsOpen": true,
+    "requestWindow": {
+      "start": "20:00",
+      "end": "23:00"
+    },
+    "cleanVersions": true,
+    "licensing": "Venue ZAIKS license confirmed."
+  }
+}

@@ -14,6 +14,9 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
 | `ai-converter-prompt.md` | Copy-paste prompt for converting raw Google Docs / notes into v1.1 JSON. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
+| `validate-lib.mjs` | Shared Ajv + semantic validator used by the CLI, fixtures and Vitest. |
+| `validate-fixtures.mjs` | Fixture-suite validator (`valid-`/`real-` pass, `invalid-` fail). |
+| `fixtures/` | One fixture per edge case, one per real wedding, one per invalid rule. |
 
 The Google Doc template is generated from the v1.2 proposal and is not wired
 into the importer until v1.2 is approved. Its conventions and field map live in
@@ -25,6 +28,8 @@ Validate the example (or any cartridge):
 ```bash
 npm run validate:schema
 npm run validate:schema -- path/to/cartridge.json
+npm run validate:fixtures
+npm test
 ```
 
 The same schema and semantic checks run in the browser importer, so pasted

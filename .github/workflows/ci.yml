@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: universal-wedding-stage-deck
+
+jobs:
+  validate:
+    name: Schema, fixtures, tests and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: universal-wedding-stage-deck/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Validate canonical schema example
+        run: npm run validate:schema
+
+      - name: Validate all committed fixtures
+        run: npm run validate:fixtures
+
+      - name: Run Vitest
+        run: npm test
+
+      - name: Validate Google Doc template
+        run: npm run validate:template
+
+      - name: Build production bundle
+        run: npm run build

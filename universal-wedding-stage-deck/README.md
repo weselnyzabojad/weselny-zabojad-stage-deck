@@ -1126,6 +1126,35 @@ A failed cloud publish now stays pending instead of being forgotten:
 - Scenario walkthrough, storage shape and limitations:
   [`docs/sync-outbox.md`](docs/sync-outbox.md).
 
+### 35. Vitest, schema fixtures and CI (issue #57 / TODO 14)
+
+The project now has a repeatable test suite and a fixture contract:
+
+- `npm test` runs **Vitest** (`vitest.config.js`, Node environment) over the
+  shared schema and pure time helpers.
+- [`schema/fixtures/`](schema/fixtures/) contains:
+  - `valid-*` edge-case cartridges (minimal, midnight, buffers, speeches, music,
+    photo/Oczepiny, ISO timestamps),
+  - `real-jennifer-guillaume.json` for the real example wedding,
+  - `invalid-*` cartridges, one focused rule each (IDs, references, buffers,
+    cake, music window, Oczepiny anchor, fire safety, speech order, song refs,
+    unknown fields, ISO format, cultural rules, PIN).
+- `npm run validate:fixtures` checks every fixture and enforces the
+  `valid-`/`real-`/`invalid-` naming contract.
+- [`schema/validate-lib.mjs`](schema/validate-lib.mjs) shares the Ajv + semantic
+  validation between the CLI, fixture suite and Vitest; the browser importer
+  still uses the same semantic rules.
+- Tests:
+  - `tests/schema-fixtures.test.js` — fixture expectations and expected error
+    reasons,
+  - `tests/validation-rules.test.js` — cross-field rules directly,
+  - `tests/iso-timestamps.test.js` — ISO/legacy migration edge cases.
+- [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs lint,
+  `npm run validate:schema`, `npm run validate:fixtures`, `npm test`,
+  `npm run validate:template` and the production build.
+- Coverage, fixture rules and how to add a real wedding are documented in
+  [`docs/testing.md`](docs/testing.md).
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
