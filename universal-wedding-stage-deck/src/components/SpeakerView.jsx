@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -7,6 +8,10 @@ import {
   resolveEventDateISO,
   resolveVenueTimeZone,
 } from '../lib/eventTime.js';
+import {
+  clearSpeakerScript,
+  saveSpeakerScript,
+} from '../lib/speakerCache.js';
 import { speechTiming } from '../lib/speeches.js';
 
 function TimerChip({ value, tone }) {
@@ -30,6 +35,8 @@ export default function SpeakerView({
   speechMode = 'OFF',
   speechCount = 0,
   activeSpeech,
+  activeSpeechId = null,
+  fromCache = false,
   syncStatus,
   syncError,
   remoteUpdatedAt,
@@ -44,6 +51,23 @@ export default function SpeakerView({
   const timing = activeSpeech
     ? speechTiming(activeSpeech, { now, eventDateISO, timeZone })
     : null;
+
+  // Offline-first: keep only the assigned script on this device. Clear it when
+  // the MC explicitly ends the speech; never cache a non-consented script.
+  // The snapshot keeps the effect keyed to meaningful changes.
+  const speechSnapshot = activeSpeech ? JSON.stringify(activeSpeech) : '';
+  useEffect(() => {
+    if (fromCache) return;
+    if (speechSnapshot) {
+      try {
+        saveSpeakerScript(wedding.weddingId, JSON.parse(speechSnapshot));
+      } catch {
+        // Ignore a malformed snapshot; the view still renders from props.
+      }
+    } else if (!activeSpeechId) {
+      clearSpeakerScript(wedding.weddingId);
+    }
+  }, [speechSnapshot, activeSpeechId, fromCache, wedding.weddingId]);
 
   const started = timing?.startsInSec != null && timing.startsInSec <= 0;
   const overrun = timing?.remainingSec != null && timing.remainingSec < 0;
@@ -128,13 +152,33 @@ export default function SpeakerView({
               <span className="font-mono"> speaker</span>.
             </p>
           </section>
+        ) : !activeSpeech.scriptAllowed ? (
+          <section className="rounded-2xl border border-line bg-card p-6 text-center">
+            <div className="text-4xl" aria-hidden="true">
+              🔒
+            </div>
+            <h1 className="mt-2 font-heading text-xl font-bold text-ink">
+              Script not stored
+            </h1>
+            <p className="mt-1 text-sm text-slate-400">
+              The couple has not consented to storing this script on the speaker device. Ask
+              the MC for a printed copy.
+            </p>
+          </section>
         ) : (
           <div className="space-y-4">
             <section className="rounded-2xl border border-brand-strong/50 bg-card p-4 shadow-lg">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-widest text-brand-soft">
-                    Now speaking
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-brand-soft">
+                      Now speaking
+                    </div>
+                    {fromCache ? (
+                      <span className="rounded border border-amber-700 bg-amber-950/60 px-1.5 py-0.5 font-mono text-[9px] text-amber-200">
+                        Offline copy
+                      </span>
+                    ) : null}
                   </div>
                   <h1 className="mt-0.5 font-heading text-2xl font-bold text-ink">
                     {activeSpeech.speaker.name}
@@ -192,6 +236,22 @@ export default function SpeakerView({
                 {activeSpeech.delivery ? (
                   <span className="rounded border border-line bg-raised px-1.5 py-0.5 text-slate-300">
                     {activeSpeech.delivery}
+                  </span>
+                ) : null}
+                {activeSpeech.readFrom ? (
+                  <span className="rounded border border-line bg-raised px-1.5 py-0.5 text-slate-300">
+                    Reads from {activeSpeech.readFrom.toLowerCase()}
+                  </span>
+                ) : null}
+                {activeSpeech.consent ? (
+                  <span
+                    className={`rounded border px-1.5 py-0.5 ${
+                      activeSpeech.consent.storeScript
+                        ? 'border-emerald-800 bg-emerald-950/60 text-emerald-300'
+                        : 'border-alert/60 bg-alert/20 text-alert-tint'
+                    }`}
+                  >
+                    {activeSpeech.consent.storeScript ? 'Script consent confirmed' : 'Consent pending'}
                   </span>
                 ) : null}
                 {activeSpeech.mcIntro ? (

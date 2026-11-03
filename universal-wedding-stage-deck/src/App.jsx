@@ -44,6 +44,7 @@ import {
   resolveSpeechMode,
   resolveSpeeches,
 } from './lib/speeches';
+import { clearSpeakerScript, loadSpeakerScript } from './lib/speakerCache';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { getSyncConfig } from './lib/sync/syncConfig';
 import {
@@ -444,6 +445,12 @@ const DEMO_WEDDING = {
         source: "GOOGLE_DOC"
       },
       delivery: "READ",
+      readFrom: "TABLET",
+      consent: {
+        storeScript: true,
+        confirmedBy: "MC",
+        confirmedAt: "2026-08-19T18:00:00.000Z"
+      },
       mcIntro: true,
       visibleToRoles: ["mc", "speaker"]
     },
@@ -459,6 +466,12 @@ const DEMO_WEDDING = {
       cue: "Before the cake",
       script: { text: "", format: "PLAIN", ready: false, source: "GOOGLE_DOC" },
       delivery: "MEMORIZE",
+      readFrom: "MEMORY",
+      consent: {
+        storeScript: true,
+        confirmedBy: "MC",
+        confirmedAt: "2026-08-19T18:00:00.000Z"
+      },
       mcIntro: true,
       visibleToRoles: ["mc", "speaker"]
     }
@@ -600,6 +613,8 @@ export default function App() {
   const [controlNotice, setControlNotice] = useState('');
   const [importerOpen, setImporterOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
+  // Offline cache for the speaker script (the active id is synced separately).
+  const [cachedSpeakerSpeech] = useState(() => loadSpeakerScript(ACTIVE_WEDDING.weddingId));
   const [cartridgeError, setCartridgeError] = useState(null);
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
@@ -759,6 +774,13 @@ export default function App() {
   const speeches = resolveSpeeches(WEDDING);
   const speechMode = resolveSpeechMode(WEDDING, speeches);
   const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
+  // If the cartridge is unavailable but the active speech id is still known,
+  // show the cached copy on this speaker device instead of a blank screen.
+  const speakerSpeech =
+    activeSpeech ??
+    (cachedSpeakerSpeech && cachedSpeakerSpeech.id === liveState.active_speech_id
+      ? cachedSpeakerSpeech
+      : null);
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
@@ -816,6 +838,7 @@ export default function App() {
     pairing.unpair();
     clearRoleSession();
     clearStoredHostKey();
+    clearSpeakerScript(WEDDING.weddingId);
     window.location.reload();
   };
 
@@ -872,7 +895,9 @@ export default function App() {
         clock={driftReport.clock}
         speechMode={speechMode}
         speechCount={speeches.length}
-        activeSpeech={activeSpeech}
+        activeSpeech={speakerSpeech}
+        activeSpeechId={liveState.active_speech_id}
+        fromCache={!activeSpeech && Boolean(speakerSpeech)}
         syncStatus={syncStatus}
         syncError={syncError}
         remoteUpdatedAt={remoteUpdatedAt}

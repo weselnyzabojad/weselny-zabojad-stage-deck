@@ -251,7 +251,7 @@
     },
     "speeches": {
       "type": "array",
-      "description": "Provisional speech records. Scripts are stored verbatim; the final schema/UI is still deferred.",
+      "description": "Speech records. Scripts are stored verbatim; the speaker role sees only the active, consented speech.",
       "items": {
         "$ref": "#/$defs/speech"
       }
@@ -1435,7 +1435,7 @@
       "type": "object",
       "required": ["id"],
       "additionalProperties": true,
-      "description": "Provisional speech record (TODO 8). Script text is stored verbatim.",
+      "description": "Speech record (TODO 8). Script text is stored verbatim; consent and visibility gate the speaker view.",
       "properties": {
         "id": {
           "$ref": "#/$defs/id"
@@ -1507,6 +1507,30 @@
         "delivery": {
           "type": "string",
           "enum": ["READ", "MEMORIZE", "NOTES"]
+        },
+        "readFrom": {
+          "type": "string",
+          "enum": ["PHONE", "TABLET", "PAPER", "MEMORY", "OTHER"],
+          "description": "Where the speaker reads from: phone/tablet, printed paper or memory."
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Couple consent to store the script on the speaker device. `storeScript: false` locks it.",
+          "properties": {
+            "storeScript": {
+              "type": "boolean"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "confirmedAt": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
         },
         "mcIntro": {
           "type": "boolean"

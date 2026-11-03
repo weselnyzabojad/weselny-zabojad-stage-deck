@@ -540,6 +540,12 @@
         "source": "GOOGLE_DOC"
       },
       "delivery": "READ",
+      "readFrom": "TABLET",
+      "consent": {
+        "storeScript": true,
+        "confirmedBy": "MC",
+        "confirmedAt": "2026-08-19T18:00:00.000Z"
+      },
       "mcIntro": true,
       "visibleToRoles": ["mc", "speaker"]
     },
@@ -563,6 +569,12 @@
         "source": "GOOGLE_DOC"
       },
       "delivery": "MEMORIZE",
+      "readFrom": "MEMORY",
+      "consent": {
+        "storeScript": true,
+        "confirmedBy": "MC",
+        "confirmedAt": "2026-08-19T18:00:00.000Z"
+      },
       "mcIntro": true,
       "visibleToRoles": ["mc", "speaker"]
     }

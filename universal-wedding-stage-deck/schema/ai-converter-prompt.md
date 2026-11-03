@@ -274,8 +274,7 @@ Rules:
 
 ## Speeches (Google Doc `## SPEECHES`)
 
-Capture the speech plan and the script text. This shape is provisional; keep it
-exactly as given.
+Capture the speech plan and the script text. Keep this shape exactly as given.
 
 ```json
 "speechMode": "COMPLEX",
@@ -292,6 +291,8 @@ exactly as given.
     "cue": "After the main course",
     "script": { "text": "...", "format": "PLAIN", "ready": true, "source": "GOOGLE_DOC" },
     "delivery": "READ",
+    "readFrom": "TABLET",
+    "consent": { "storeScript": true, "confirmedBy": "MC", "confirmedAt": "2026-08-19T18:00:00.000Z" },
     "mcIntro": true,
     "visibleToRoles": ["mc", "speaker"],
     "teleprompterRef": "step_05"
@@ -306,9 +307,11 @@ Rules:
 - A per-speech `mode` may override `LIGHT` / `COMPLEX`.
 - Copy the script **verbatim**, preserving paragraph breaks. Never invent,
   summarize or rewrite a speech.
-- `delivery` is `READ`, `MEMORIZE` or `NOTES`.
+- `delivery` is `READ`, `MEMORIZE` or `NOTES`; `readFrom` is `PHONE`, `TABLET`,
+  `PAPER`, `MEMORY` or `OTHER`.
 - Capture `speaker.name`, `relationship`, `order`, `time`, `durationMin`,
-  `language`, `mic`, `cue`, `mcIntro` and `visibleToRoles`.
+  `language`, `mic`, `cue`, `mcIntro`, `visibleToRoles` and `consent`.
+  `consent.storeScript: false` locks the script on the speaker device.
 - For a `COMPLEX` speech with no script, add a pre-wedding TODO and an
   `extensions.warnings` entry; do not block the import and do not fabricate text.
 - If the source has no speeches, set `speechMode: "OFF"` and omit `speeches`.
