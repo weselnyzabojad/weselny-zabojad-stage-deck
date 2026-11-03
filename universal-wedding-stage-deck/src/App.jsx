@@ -13,6 +13,7 @@ import HardAnchorAlertBanner from './components/HardAnchorAlertBanner';
 import HardAnchorRadar from './components/HardAnchorRadar';
 import JokerDrawerCard from './components/JokerDrawerCard';
 import PairingScreen from './components/PairingScreen';
+import PhotographerView from './components/PhotographerView';
 import PocketRemoteView from './components/PocketRemoteView';
 import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
 import ReelClock from './components/ReelClock';
@@ -161,7 +162,123 @@ const DEMO_WEDDING = {
     groom: { firstName: "Guillaume", nationalities: ["FR"] },
     commonLanguages: ["FR", "PL", "EN"]
   },
-  venueLogistics: { timezone: "Europe/Warsaw" },
+  venueLogistics: {
+    timezone: "Europe/Warsaw",
+    address: "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
+    coordinates: { latitude: 51.05, longitude: 16.19 },
+    manager: { name: "Anna Kowalska", phone: "+48 600 111 111", email: "anna@venue.example" },
+    installation: {
+      windowStart: "12:00",
+      windowEnd: "16:00",
+      loadInMinutes: 45,
+      accessNotes: "Service entrance at the back; ask for the key.",
+      parking: "Staff car park behind the building.",
+      power: "2x 230V sockets at the DJ table.",
+      loadingDock: true,
+      noiseCurfew: "01:00"
+    },
+    notes: "Group photos in the garden before 20:15."
+  },
+  mediaTeam: [
+    {
+      id: "photo_main",
+      role: "PHOTO",
+      name: "Magda & Tomek",
+      phone: "+48 600 000 000",
+      startTime: "14:00",
+      endTime: "21:30",
+      deliverables: ["Ceremony", "Group photos", "First dance", "Oczepiny"],
+      notes: "Leaves after the winner photo."
+    },
+    {
+      id: "video_main",
+      role: "VIDEO",
+      name: "Ola",
+      phone: "+48 600 333 333",
+      startTime: "14:30",
+      endTime: "00:30",
+      deliverables: ["Highlight film"],
+      notes: "Needs a clean feed from the DJ booth."
+    }
+  ],
+  photoPlan: {
+    sunset: {
+      source: "ONLINE_API",
+      provider: "sunrise-sunset.org",
+      latitude: 51.05,
+      longitude: 16.19,
+      timezone: "Europe/Warsaw",
+      lastFetchedAt: "2026-08-20T17:05:00.000Z",
+      sunsetTime: "20:12",
+      goldenHourStart: "19:32",
+      civilTwilightEnd: "20:48",
+      status: "LIVE"
+    },
+    miniSession: {
+      enabled: true,
+      latestStartMinutesBeforeSunset: 30,
+      durationMin: 20,
+      location: "Garden",
+      backupLocation: "Ballroom window"
+    },
+    groupPhotos: {
+      location: "OUTDOOR",
+      groups: [
+        { id: "bride_family", label: "Bride's family" },
+        { id: "groom_family", label: "Groom's family" },
+        { id: "friends", label: "Friends" }
+      ],
+      minGroupSize: 5,
+      durationMin: 25
+    },
+    speedFoto: {
+      enabled: true,
+      description: "Couple in the middle of the dance floor; guests run in, pose, and clear.",
+      durationMin: 10,
+      music: "Fast party block"
+    },
+    specialEffects: {
+      sparklers: true,
+      fire: false,
+      heavySmoke: true,
+      other: "Cold sparks",
+      permitRequired: false,
+      venueApproved: true,
+      safetyBriefing: "Briefed the venue manager and the photographer."
+    },
+    guestCoverage: {
+      allGuests: false,
+      selectedGuests: 12,
+      description: "Formal photos with immediate family and witnesses only.",
+      consent: "Couple approved; announce before candid coverage."
+    }
+  },
+  oczepiny: {
+    enabled: true,
+    order: "MIDNIGHT",
+    anchorId: "ocsepiny",
+    toss: "VEIL",
+    ties: "BOW_TIE",
+    winnerPhoto: {
+      enabled: true,
+      replacesWinnersDance: false,
+      photographerCue: "Winner photo with the couple, then clear the floor."
+    },
+    photographerBriefed: {
+      confirmed: true,
+      confirmedAt: "2026-08-19T18:00:00.000Z",
+      confirmedBy: "MC",
+      notes: "Cameraman confirmed the midnight window."
+    },
+    props: ["Veil", "Bow ties", "Test cards"],
+    music: { track: "Oczepiny mix", playlist: "Midnight" },
+    subEvents: [
+      { id: "toss", title: "Veil toss", durationMin: 10, deferable: false, skippable: true },
+      { id: "ties", title: "Bow-tie game", durationMin: 10, deferable: true, skippable: true },
+      { id: "test", title: "Test Zgodności", durationMin: 15, deferable: true, skippable: true },
+      { id: "winner_photo", title: "Winner photo", durationMin: 5, deferable: false, skippable: false }
+    ]
+  },
   culturalRules: {
     sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
     gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
@@ -658,6 +775,24 @@ export default function App() {
         remoteUpdatedAt={remoteUpdatedAt}
         servicePackage={WEDDING.servicePackage}
         viewVisibility={WEDDING.viewVisibility?.dj}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        {...roleProps}
+      />
+    );
+  }
+
+  if (currentRole === "photo") {
+    return (
+      <PhotographerView
+        wedding={WEDDING}
+        timeline={timeline}
+        clock={driftReport.clock}
+        stagePing={liveState.stage_ping}
+        hardAnchors={WEDDING.hardAnchors}
+        syncStatus={syncStatus}
+        syncError={syncError}
+        remoteUpdatedAt={remoteUpdatedAt}
         theme={theme}
         onToggleTheme={toggleTheme}
         {...roleProps}

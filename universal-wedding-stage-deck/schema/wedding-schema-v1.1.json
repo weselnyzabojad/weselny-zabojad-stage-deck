@@ -219,6 +219,24 @@
         }
       }
     },
+    "venueLogistics": {
+      "$ref": "#/$defs/venueLogistics"
+    },
+    "viewVisibility": {
+      "$ref": "#/$defs/viewVisibility"
+    },
+    "mediaTeam": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mediaMember"
+      }
+    },
+    "photoPlan": {
+      "$ref": "#/$defs/photoPlan"
+    },
+    "oczepiny": {
+      "$ref": "#/$defs/oczepiny"
+    },
     "liveSyncState": {
       "$ref": "#/$defs/liveSyncState"
     },
@@ -932,6 +950,431 @@
         },
         "notes": {
           "type": "string"
+        }
+      }
+    },
+    "venueLogistics": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Structured venue data (v1.2 proposal). The photographer view reads address, manager, installation access/parking and notes.",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            }
+          }
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "manager": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "installation": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "windowStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "windowEnd": {
+              "$ref": "#/$defs/clock"
+            },
+            "latestStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "loadInMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "setupMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "loadOutMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "accessNotes": {
+              "type": "string"
+            },
+            "parking": {
+              "type": "string"
+            },
+            "power": {
+              "type": "string"
+            },
+            "loadingDock": {
+              "type": "boolean"
+            },
+            "elevator": {
+              "type": "boolean"
+            },
+            "noiseCurfew": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "viewVisibility": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per-role section visibility (D1/D9). Missing roles default to all-false in v1.2; this app merges role defaults.",
+      "properties": {
+        "mc": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "dj": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "pocket": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "photo": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "speaker": {
+          "$ref": "#/$defs/visibilityMatrix"
+        }
+      }
+    },
+    "visibilityMatrix": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "mediaMember": {
+      "type": "object",
+      "required": ["id", "role", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["PHOTO", "VIDEO", "DRONE"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "startTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "endTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "photoPlan": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Photographer plan (D2/D6). Sunset status is LIVE, STALE or UNAVAILABLE; the app never estimates it offline.",
+      "properties": {
+        "sunset": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            },
+            "timezone": {
+              "type": "string"
+            },
+            "lastFetchedAt": {
+              "type": "string"
+            },
+            "sunsetTime": {
+              "$ref": "#/$defs/clock"
+            },
+            "goldenHourStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "civilTwilightEnd": {
+              "$ref": "#/$defs/clock"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["LIVE", "STALE", "UNAVAILABLE"]
+            }
+          }
+        },
+        "miniSession": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "latestStartMinutesBeforeSunset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "location": {
+              "type": "string"
+            },
+            "backupLocation": {
+              "type": "string"
+            }
+          }
+        },
+        "groupPhotos": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "label"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "minGroupSize": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "speedFoto": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "music": {
+              "type": "string"
+            }
+          }
+        },
+        "specialEffects": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "sparklers": {
+              "type": "boolean"
+            },
+            "fire": {
+              "type": "boolean"
+            },
+            "heavySmoke": {
+              "type": "boolean"
+            },
+            "other": {
+              "type": "string"
+            },
+            "permitRequired": {
+              "type": "boolean"
+            },
+            "venueApproved": {
+              "type": "boolean"
+            },
+            "safetyBriefing": {
+              "type": "string"
+            }
+          }
+        },
+        "guestCoverage": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "allGuests": {
+              "type": "boolean"
+            },
+            "selectedGuests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": {
+              "type": "string"
+            },
+            "consent": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "oczepiny": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Oczepini / midnight tradition cues (v1.2 proposal).",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "order": {
+          "type": "string",
+          "enum": ["MIDNIGHT", "AFTER_CAKE", "CUSTOM"]
+        },
+        "anchorId": {
+          "$ref": "#/$defs/id"
+        },
+        "toss": {
+          "type": "string",
+          "enum": ["VEIL", "BOUQUET", "OFF"]
+        },
+        "ties": {
+          "type": "string",
+          "enum": ["BOW_TIE", "TIE", "OFF"]
+        },
+        "testZgodnosci": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "winnerPhoto": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "replacesWinnersDance": {
+              "type": "boolean"
+            },
+            "photographerCue": {
+              "type": "string"
+            }
+          }
+        },
+        "photographerBriefed": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "confirmed": {
+              "type": "boolean"
+            },
+            "confirmedAt": {
+              "type": "string"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "music": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "track": {
+              "type": "string"
+            },
+            "playlist": {
+              "type": "string"
+            }
+          }
+        },
+        "subEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "title"],
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "title": {
+                "type": "string"
+              },
+              "durationMin": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "deferable": {
+                "type": "boolean"
+              },
+              "skippable": {
+                "type": "boolean"
+              }
+            }
+          }
         }
       }
     },
