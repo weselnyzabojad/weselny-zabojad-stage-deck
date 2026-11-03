@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from './assets/img/logo.png';
 import BufferAccordionCard from './components/BufferAccordionCard';
 import CartridgeImporter from './components/CartridgeImporter';
+import CoupleIdentity from './components/CoupleIdentity';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
@@ -137,6 +138,11 @@ const DEMO_WEDDING = {
   role: "MC",
   hostingMode: "HOST_AND_DJ",
   driftMinutes: 25,
+  coupleProfile: {
+    bride: { firstName: "Jennifer", nationalities: ["FR"] },
+    groom: { firstName: "Guillaume", nationalities: ["FR"] },
+    commonLanguages: ["FR", "PL", "EN"]
+  },
   venueLogistics: { timezone: "Europe/Warsaw" },
   culturalRules: {
     sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
@@ -505,7 +511,7 @@ export default function App() {
           {driftText ? (
             <span className={`px-3 py-1.5 rounded font-semibold text-sm border ${driftClass}`}>{driftText}</span>
           ) : null}
-          <span className="text-slate-300 font-medium hidden md:inline">Wedding: <strong className="text-white">{WEDDING.couple}</strong></span>
+          <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>
 
         <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">

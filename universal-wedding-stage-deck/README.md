@@ -460,6 +460,49 @@ Relevant files: `src/lib/eventTime.js`, `src/lib/reelClock.js`,
 `src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
 `schema/wedding-schema-v1.1.json`.
 
+### 16. Couple identity in the top bar (issue #58 / TODO 15)
+
+The MC, DJ Booth and Pocket headers now render the cartridge-driven
+`coupleProfile` instead of a hardcoded label:
+
+```json
+"couple": "Jennifer & Guillaume",
+"coupleProfile": {
+  "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
+  "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
+  "commonLanguages": ["FR", "PL", "EN"]
+}
+```
+
+- Layout: `Jennifer 🇫🇷 & Guillaume 🇫🇷 · 🌐 FR PL EN` (bride first, cartridge
+  order). Flags are 24×18 px, 4:3, rounded with a thin border; up to two per
+  person with `+N` for extra nationalities.
+- Flags are **self-hosted SVGs** from the `flag-icons` package, bundled by Vite
+  so the header works offline with no third-party request or API key.
+- Language chips are uppercase ISO 639-1 codes with a globe icon; the full name
+  is in the tooltip via `Intl.DisplayNames` (device browser locale, until the
+  per-device i18n layer lands). Chips collapse below `sm`; flags stay visible.
+- Flags are `aria-hidden`; a screen-reader suffix reads the localized country
+  names. Unknown/invalid codes render as plain text instead of a guessed flag.
+- Fallback order: `coupleProfile` -> legacy `couple` string -> "Wedding".
+  v1.1 cartridges therefore keep the old `Wedding: {couple}` label.
+- The importer preview shows the parsed first names, flags and shared
+  languages before saving.
+
+**Google Doc parser:** the `## COUPLE IDENTITY` section maps to `coupleProfile`
+(see `schema/ai-converter-prompt.md`). Nationality names are normalized to ISO
+3166-1 alpha-2 (`French`/`France`/`Français`/`Francja` -> `FR`, `Polish`/`Poland`/
+`Polonais`/`Pologne`/`Polska` -> `PL`). Nationality is never inferred from a
+name, birthplace or spoken language, and `commonLanguages` is never derived from
+`languages.supported`. If the section is missing, the legacy `couple` string may
+be split on `&` only as an unconfirmed prefill.
+
+Relevant files: `src/components/CoupleIdentity.jsx`, `src/lib/coupleIdentity.js`,
+`src/lib/flags.js`, `src/App.jsx`, `src/components/DjBoothView.jsx`,
+`src/components/PocketRemoteView.jsx`, `src/components/CartridgeImporter.jsx`,
+`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-cartridge.example.json`, `vite.config.js`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

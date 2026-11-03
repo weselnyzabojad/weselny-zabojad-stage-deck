@@ -32,6 +32,9 @@
       "minLength": 1,
       "description": "Display name, e.g. Jennifer & Guillaume."
     },
+    "coupleProfile": {
+      "$ref": "#/$defs/coupleProfile"
+    },
     "date": {
       "$ref": "#/$defs/date"
     },
@@ -182,6 +185,49 @@
       "type": "string",
       "pattern": "^[0-3][0-9]\\.[0-1][0-9]\\.[0-9]{4}$",
       "description": "Display date as DD.MM.YYYY."
+    },
+    "coupleProfile": {
+      "type": "object",
+      "required": ["bride", "groom"],
+      "additionalProperties": false,
+      "description": "Optional v1.2 couple identity for the top bar (project.md TODO 15 / Phase 1.5c). Both first names are required; nationalities are ISO 3166-1 alpha-2 and may be empty. `couple` remains the display fallback.",
+      "properties": {
+        "bride": {
+          "$ref": "#/$defs/couplePerson"
+        },
+        "groom": {
+          "$ref": "#/$defs/couplePerson"
+        },
+        "commonLanguages": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 639-1 languages the couple and the MC/host share. Never derived from `languages.supported`.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$"
+          }
+        }
+      }
+    },
+    "couplePerson": {
+      "type": "object",
+      "required": ["firstName"],
+      "additionalProperties": false,
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nationalities": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 3166-1 alpha-2 country codes. May be empty; never infer nationality from a name or language.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$"
+          }
+        }
+      }
     },
     "clock": {
       "type": "string",

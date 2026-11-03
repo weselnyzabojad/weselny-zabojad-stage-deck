@@ -48,6 +48,51 @@ the Universal Wedding Stage Deck.
 - `hostingMode`: `HOST_AND_DJ` when there is a DJ / audio cues, otherwise
   `HOST_ONLY`.
 
+## Couple identity (Google Doc `## COUPLE IDENTITY`)
+
+Extract the top-bar identity from the Google Doc section `## COUPLE IDENTITY`:
+
+```text
+## COUPLE IDENTITY
+Bride first name: Jennifer
+Bride nationality: French
+Groom first name: Guillaume
+Groom nationality: French
+Shared languages: FR, PL, EN
+```
+
+Map it to `coupleProfile` (keep the legacy `couple` string as the fallback
+label):
+
+```json
+"couple": "Jennifer & Guillaume",
+"coupleProfile": {
+  "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
+  "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
+  "commonLanguages": ["FR", "PL", "EN"]
+}
+```
+
+Rules:
+
+- Keep the cartridge order: bride first, then groom. Never split or guess names
+  from the `couple` string at runtime.
+- `nationalities[]` are ISO 3166-1 alpha-2 codes. Normalize names:
+  `French` / `France` / `Français` / `Francja` -> `FR`;
+  `Polish` / `Poland` / `Polonais` / `Pologne` / `Polska` -> `PL`.
+- **Never infer nationality from a name, birthplace or spoken language.**
+  `English` is language `EN`, not country `GB`, unless the document explicitly
+  states the nationality. If the section is ambiguous, leave `nationalities`
+  empty, keep the raw text in `extensions.warnings`, and let the couple review
+  the import preview.
+- `commonLanguages[]` are ISO 639-1 codes for the languages the couple and the
+  MC/host share. Do not reuse `demographics` or `languages.supported` as the
+  source; `languages.supported` describes cartridge content, not the couple.
+- `nationalities` may be empty; never require or invent a flag.
+- If `## COUPLE IDENTITY` is missing, you may split the legacy `couple` string on
+  `&` to prefill first names, but mark it unconfirmed in
+  `extensions.warnings` and require review in the import preview.
+
 ## Cultural rules
 
 | Rule | Allowed `status` values |
