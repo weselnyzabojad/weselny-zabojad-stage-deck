@@ -55,6 +55,7 @@ export default function StagePingBanner({ ping, step }) {
     <section
       role="status"
       aria-live="assertive"
+      aria-atomic="true"
       className="stage-ping-flash relative z-20 flex flex-wrap items-center justify-between gap-3 border-y-2 border-alert-tint px-4 py-3 text-white shadow-2xl"
     >
       <div className="flex min-w-0 items-center gap-3">

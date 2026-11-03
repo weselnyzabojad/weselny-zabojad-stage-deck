@@ -95,6 +95,8 @@ export default function HardAnchorRadar({ radar }) {
       {radar.primary ? (
         <div
           role="alert"
+          aria-live="assertive"
+          aria-atomic="true"
           className={`mt-2 rounded-lg border p-2.5 text-[11px] leading-snug ${
             radar.primary.status === 'collision'
               ? 'border-alert/60 bg-alert/20 text-alert-tint'

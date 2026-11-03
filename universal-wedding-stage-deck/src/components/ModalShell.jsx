@@ -5,10 +5,20 @@ const SIZES = {
   panel: 'w-full max-w-2xl max-h-[calc(100dvh-2rem)] rounded-2xl'
 };
 
-// Shared dialog shell: backdrop dismiss, Escape to close, focus the close
-// button on open and restore focus when the overlay unmounts.
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled]):not([type="hidden"])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+// Shared dialog shell: backdrop dismiss, Escape to close, Tab/Shift+Tab focus
+// trap, initial focus on the close button, and focus restored on unmount.
 export default function ModalShell({ open, onClose, labelledBy, size = 'panel', children }) {
   const closeRef = useRef(null);
+  const dialogRef = useRef(null);
   const previouslyFocused = useRef(null);
   const onCloseRef = useRef(onClose);
 
@@ -25,6 +35,38 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
       if (event.key === 'Escape') {
         event.preventDefault();
         onCloseRef.current();
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusable = [...dialog.querySelectorAll(FOCUSABLE_SELECTOR)].filter(
+        (element) => element instanceof HTMLElement && element.getClientRects().length > 0,
+      );
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey) {
+        if (active === first || active === dialog || !dialog.contains(active)) {
+          event.preventDefault();
+          last.focus();
+        }
+        return;
+      }
+
+      if (active === last || active === dialog || !dialog.contains(active)) {
+        event.preventDefault();
+        first.focus();
       }
     };
 
@@ -48,9 +90,11 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
       }}
     >
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
+        tabIndex={-1}
         className={`relative flex flex-col overflow-hidden border border-line bg-page shadow-2xl ${SIZES[size] ?? SIZES.panel}`}
       >
         <button

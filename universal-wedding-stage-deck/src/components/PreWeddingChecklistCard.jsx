@@ -21,21 +21,21 @@ export default function PreWeddingChecklistCard({ tasks = [], checked = {}, onTo
           const done = checked[task.task] ?? task.done;
           return (
             <li key={task.task}>
-              <button
-                type="button"
-                onClick={() => onToggle(task.task)}
-                aria-pressed={done}
-                className={`flex w-full items-start gap-2 rounded-lg border p-2 text-left text-[11px] leading-snug transition ${
+              <label
+                className={`flex w-full cursor-pointer items-start gap-2 rounded-lg border p-2 text-left text-[11px] leading-snug transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-card ${
                   done
                     ? 'border-emerald-900/70 bg-emerald-950/30 text-slate-500'
                     : 'border-line bg-page/70 text-slate-300 hover:border-brand-strong/60 hover:bg-raised'
                 }`}
               >
-                <span aria-hidden="true" className={done ? 'text-emerald-400' : 'text-slate-500'}>
-                  {done ? '☑' : '☐'}
-                </span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(done)}
+                  onChange={() => onToggle(task.task)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-page focus:ring-brand"
+                />
                 <span className={done ? 'line-through' : ''}>{task.task}</span>
-              </button>
+              </label>
             </li>
           );
         })}
