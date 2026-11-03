@@ -154,6 +154,79 @@ const DEMO_WEDDING = {
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
+  musicPolicy: {
+    importantSongs: [
+      {
+        id: "grand_entrance",
+        moment: "GRAND_ENTRANCE",
+        title: "Marry You",
+        artist: "Bruno Mars",
+        version: "Album version",
+        stepId: "step_03",
+        plannedTime: "18:00",
+        startAtSec: 0,
+        fadeOutSec: 215,
+        source: {
+          type: "CUSTOMER_FILE",
+          fileRef: "assets/audio/marry-you-bruno-mars.mp3",
+          filename: "marry-you-bruno-mars.mp3",
+          checksum: "sha256:5d41402abc4b2a76b9719d911017c592",
+          durationSec: 230,
+          availability: "LOCAL",
+          notes: "Clean intro, no cold ending. Kept on the DJ laptop."
+        },
+        backupSource: {
+          type: "SPOTIFY",
+          url: "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE",
+          notes: "Demo link — replace with the couple's exact URL."
+        },
+        note: "Wait for the MC's cue before pressing play."
+      },
+      {
+        id: "cake_cutting",
+        moment: "CAKE",
+        title: "Cake",
+        artist: "The Coup",
+        stepId: "step_05",
+        plannedTime: "20:30",
+        startAtSec: 18,
+        fadeOutSec: 240,
+        source: {
+          type: "YOUTUBE",
+          url: "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING",
+          notes: "Demo link — opens online."
+        },
+        backupSource: {
+          type: "CUSTOMER_FILE",
+          fileRef: "assets/audio/cake-the-coup.mp3",
+          filename: "cake-the-coup.mp3",
+          availability: "LOCAL"
+        },
+        note: "Start on the chorus; photographers need the full cake moment."
+      },
+      {
+        id: "first_dance",
+        moment: "FIRST_DANCE",
+        title: "Perfect",
+        artist: "Ed Sheeran",
+        version: "Duet version",
+        stepId: "step_04",
+        plannedTime: "19:30",
+        startAtSec: 0,
+        fadeOutSec: 270,
+        source: {
+          type: "SPOTIFY",
+          url: "https://open.spotify.com/track/DEMO_FIRST_DANCE",
+          notes: "Demo link — replace with the couple's exact URL."
+        },
+        backupSource: {
+          type: "DEEZER",
+          url: "https://www.deezer.com/track/DEMO_FIRST_DANCE"
+        },
+        note: "Dance floor cleared; fade out after the second chorus."
+      }
+    ]
+  },
   preWeddingTodos: [
     { task: "Confirm Test Wiedzy questions with witnesses", done: true },
     { task: "Check XLR cables at 16:15", done: false },
@@ -357,6 +430,8 @@ export default function App() {
         syncStatus={syncStatus}
         syncError={syncError}
         remoteUpdatedAt={remoteUpdatedAt}
+        servicePackage={WEDDING.servicePackage}
+        viewVisibility={WEDDING.viewVisibility?.dj}
         {...roleProps}
       />
     );

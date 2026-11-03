@@ -356,6 +356,71 @@ The cartridge can now describe the wider stage team:
   converter prompt. Imported cartridges populate the module automatically.
 - The importer preview shows co-host and content-creator counts.
 
+### 14. DJ Key Songs card: VIP vs Standard (issue #60 / TODO 18)
+
+The DJ Booth now pins a **🔑 Key songs** card above the projected timeline for
+the moments that must not be missed: grand entrance, cake cutting and first
+dance (plus optional parents/last dance/custom moments). Each row shows a
+DONE / ON AIR / NEXT / PLANNED state linked to its timeline step through
+`stepId`.
+
+The cartridge supplies the data in `musicPolicy.importantSongs[]`:
+
+```json
+"musicPolicy": {
+  "importantSongs": [
+    {
+      "id": "grand_entrance",
+      "moment": "GRAND_ENTRANCE",
+      "title": "Marry You",
+      "artist": "Bruno Mars",
+      "version": "Album version",
+      "stepId": "step_03",
+      "plannedTime": "18:00",
+      "startAtSec": 0,
+      "fadeOutSec": 215,
+      "source": {
+        "type": "CUSTOMER_FILE",
+        "fileRef": "assets/audio/marry-you.mp3",
+        "filename": "marry-you.mp3",
+        "checksum": "sha256:...",
+        "durationSec": 230,
+        "availability": "LOCAL"
+      },
+      "backupSource": { "type": "SPOTIFY", "url": "https://open.spotify.com/track/..." },
+      "note": "Wait for the MC cue before pressing play."
+    }
+  ]
+}
+```
+
+- `servicePackage: "HOST_AND_DJ_VIP"` renders the VIP detail level: the
+  source/root badge (customer file, YouTube, Spotify, Deezer or other), file
+  name/checksum/duration/availability or link actions, start/fade cues, the
+  backup source and a VIP-only mini QR at the right edge of each row.
+- `HOST_AND_DJ_STANDARD` and `HOST_AND_DJ_SOLO` render title + artist only —
+  never a source, cue, link or QR. Missing values show `Title TBC` /
+  `Artist TBC`.
+- v1.1 cartridges keep working: `hostingMode: "HOST_AND_DJ"` maps to the VIP
+  package (the v1.2 migration rule).
+- The QR is generated locally from the stored link (the `qrcode` encoder is
+  loaded on demand and precached by the PWA). Tapping the mini QR opens a
+  large, non-auto-dismissing overlay with **Copy link** and **Close**.
+  Streaming sources show "opens online"; customer files show a QR only when
+  they have a stable, intentionally shared HTTPS URL, otherwise "QR
+  unavailable for protected file".
+- `viewVisibility.dj.music: false` hides the whole card. The card is driven by
+  the service package and visibility matrix, not by role switching.
+- The Google Doc `## IMPORTANT SONGS` section maps to this block; see
+  `schema/ai-converter-prompt.md`. Links are preserved exactly and never
+  invented; missing sources warn instead of blocking the import.
+
+Relevant files: `src/lib/importantSongs.js`,
+`src/components/KeySongsCard.jsx`, `src/components/QrCodeImage.jsx`,
+`src/components/DjBoothView.jsx`, `src/App.jsx`,
+`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`src/lib/cartridgeValidation.js`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

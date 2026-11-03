@@ -66,6 +66,9 @@ export function summarizeCartridge(cartridge) {
   const contentCreators = Array.isArray(cartridge?.contentCreators)
     ? cartridge.contentCreators
     : [];
+  const keySongs = Array.isArray(cartridge?.musicPolicy?.importantSongs)
+    ? cartridge.musicPolicy.importantSongs
+    : [];
 
   return {
     couple: cartridge?.couple ?? '—',
@@ -79,5 +82,6 @@ export function summarizeCartridge(cartridge) {
     jokerCount: jokers.length,
     coHostCount: coHosts.length,
     contentCreatorCount: contentCreators.length,
+    keySongCount: keySongs.length,
   };
 }

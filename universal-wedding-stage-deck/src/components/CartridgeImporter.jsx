@@ -278,6 +278,9 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                 <div className="mt-0.5 font-mono text-[10px] text-slate-400">
                   {summary.coHostCount} co-hosts · {summary.contentCreatorCount} content creators
                 </div>
+                <div className="mt-0.5 font-mono text-[10px] text-slate-400">
+                  {summary.keySongCount} key songs (DJ Booth)
+                </div>
                 <button
                   type="button"
                   onClick={importCartridge}
