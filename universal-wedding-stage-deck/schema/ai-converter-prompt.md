@@ -133,6 +133,66 @@ Use `alertBeforeMin: 45` unless the source specifies otherwise.
 
 Never put MC scripts or VIP notes inside `dj`.
 
+## Important songs (Google Doc `## IMPORTANT SONGS`)
+
+Extract the fixed key moments from the Google Doc section `## IMPORTANT SONGS`
+into `musicPolicy.importantSongs[]`. The section carries one row per moment:
+moment, title, artist, version, source type, link or file name, start/end cue
+and notes.
+
+```json
+"musicPolicy": {
+  "importantSongs": [
+    {
+      "id": "grand_entrance",
+      "moment": "GRAND_ENTRANCE",
+      "title": "Marry You",
+      "artist": "Bruno Mars",
+      "version": "Album version",
+      "stepId": "step_03",
+      "plannedTime": "18:00",
+      "startAtSec": 0,
+      "fadeOutSec": 215,
+      "source": {
+        "type": "CUSTOMER_FILE",
+        "fileRef": "assets/audio/marry-you-bruno-mars.mp3",
+        "filename": "marry-you-bruno-mars.mp3",
+        "checksum": "sha256:...",
+        "durationSec": 230,
+        "availability": "LOCAL",
+        "notes": "Clean intro; no cold ending."
+      },
+      "backupSource": {
+        "type": "SPOTIFY",
+        "url": "https://open.spotify.com/track/..."
+      },
+      "note": "Wait for the MC cue before pressing play."
+    }
+  ]
+}
+```
+
+Rules:
+
+- `moment` is `GRAND_ENTRANCE`, `CAKE`, `FIRST_DANCE`, `PARENTS_DANCE`,
+  `LAST_DANCE` or `CUSTOM`. `GRAND_ENTRANCE`, `CAKE` and `FIRST_DANCE` are the
+  expected rows.
+- `source.type` is `CUSTOMER_FILE`, `YOUTUBE`, `SPOTIFY`, `DEEZER` or `OTHER`.
+  `OTHER` uses `label` for Tidal, Apple Music, SoundCloud, etc.
+- Preserve the original link **exactly**. Never invent, shorten or resolve a
+  Spotify, Deezer, YouTube or other URL. If the row has no link, leave `url`
+  out, add an `extensions.warnings` entry and do not block the import: the
+  couple may send the file later.
+- `CUSTOMER_FILE` requires a stable `fileRef` (and `filename`); never embed
+  audio bytes in the cartridge. Record `checksum`, `durationSec` and
+  `availability` when known.
+- Convert start/end cues to seconds (`startAtSec`, `fadeOutSec`).
+- Link the song to its timeline block with `stepId` and keep `plannedTime`
+  equal to that step's time.
+- Add `backupSource` only when the couple provided a second source. Never store
+  a signed URL or a QR image: the DJ Booth generates the QR locally from the
+  stored link.
+
 ## Teleprompter
 
 ### Speech

@@ -279,6 +279,75 @@
     }
   ],
   "weatherVariants": ["DEFAULT", "RAIN", "HEATWAVE"],
+  "musicPolicy": {
+    "importantSongs": [
+      {
+        "id": "grand_entrance",
+        "moment": "GRAND_ENTRANCE",
+        "title": "Marry You",
+        "artist": "Bruno Mars",
+        "version": "Album version",
+        "stepId": "step_03",
+        "plannedTime": "18:00",
+        "startAtSec": 0,
+        "fadeOutSec": 215,
+        "source": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/marry-you-bruno-mars.mp3",
+          "filename": "marry-you-bruno-mars.mp3",
+          "checksum": "sha256:5d41402abc4b2a76b9719d911017c592",
+          "durationSec": 230,
+          "availability": "LOCAL",
+          "notes": "Clean intro; no cold ending."
+        },
+        "backupSource": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE"
+        },
+        "note": "Wait for the MC cue before pressing play."
+      },
+      {
+        "id": "cake_cutting",
+        "moment": "CAKE",
+        "title": "Cake",
+        "artist": "The Coup",
+        "stepId": "step_05",
+        "plannedTime": "20:30",
+        "startAtSec": 18,
+        "fadeOutSec": 240,
+        "source": {
+          "type": "YOUTUBE",
+          "url": "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING"
+        },
+        "backupSource": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/cake-the-coup.mp3",
+          "filename": "cake-the-coup.mp3",
+          "availability": "LOCAL"
+        }
+      },
+      {
+        "id": "first_dance",
+        "moment": "FIRST_DANCE",
+        "title": "Perfect",
+        "artist": "Ed Sheeran",
+        "version": "Duet version",
+        "stepId": "step_04",
+        "plannedTime": "19:30",
+        "startAtSec": 0,
+        "fadeOutSec": 270,
+        "source": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_FIRST_DANCE"
+        },
+        "backupSource": {
+          "type": "DEEZER",
+          "url": "https://www.deezer.com/track/DEMO_FIRST_DANCE"
+        },
+        "note": "Dance floor cleared; fade out after the second chorus."
+      }
+    ]
+  },
   "liveSyncState": {
     "active_step_id": "step_03",
     "completed_step_ids": ["step_01", "step_02"],

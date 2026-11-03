@@ -2,6 +2,8 @@
 // Shared by the Node CLI validator and the browser importer so both enforce
 // the same rules.
 
+import { isHttpUrl } from './importantSongs.js';
+
 export function collectSemanticErrors(cartridge) {
   const errors = [];
   const pushError = (location, message) => {
@@ -72,6 +74,42 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
   uniqueList(cartridge?.coHosts, '/coHosts', 'co-host');
   uniqueList(cartridge?.contentCreators, '/contentCreators', 'content creator');
+
+  // Key songs (TODO 18 / Phase 1.5d). Missing titles, artists or sources are
+  // warnings in the product spec, not import blockers; only broken references
+  // and unusable source shapes fail here.
+  const importantSongs = cartridge?.musicPolicy?.importantSongs;
+  if (Array.isArray(importantSongs)) {
+    uniqueList(importantSongs, '/musicPolicy/importantSongs', 'key song');
+
+    const validateSource = (source, location) => {
+      if (!source || typeof source !== 'object' || !source.type) return;
+
+      if (source.type === 'CUSTOMER_FILE') {
+        if (typeof source.fileRef !== 'string' || source.fileRef.trim() === '') {
+          pushError(`${location}/fileRef`, 'CUSTOMER_FILE requires a fileRef');
+        }
+        return;
+      }
+
+      for (const key of ['url', 'shortUrl']) {
+        const value = source[key];
+        if (value == null || value === '') continue;
+        if (!isHttpUrl(value)) {
+          pushError(`${location}/${key}`, `${source.type} ${key} must be a valid http(s) link`);
+        }
+      }
+    };
+
+    for (const [index, song] of importantSongs.entries()) {
+      if (!song || typeof song !== 'object') continue;
+      validateSource(song.source, `/musicPolicy/importantSongs/${index}/source`);
+      validateSource(song.backupSource, `/musicPolicy/importantSongs/${index}/backupSource`);
+      if (typeof song.stepId === 'string' && !stepIds.includes(song.stepId)) {
+        pushError(`/musicPolicy/importantSongs/${index}/stepId`, `unknown step id "${song.stepId}"`);
+      }
+    }
+  }
 
   if (
     Number.isInteger(cartridge?.jokersCount) &&

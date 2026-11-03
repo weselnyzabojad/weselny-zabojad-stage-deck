@@ -1,7 +1,13 @@
 import logo from '../assets/img/logo.png';
+import KeySongsCard from './KeySongsCard';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
+import {
+  djDetailTier,
+  getImportantSongs,
+  resolveServicePackage,
+} from '../lib/importantSongs';
 
 const STATUS_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
@@ -31,6 +37,8 @@ export default function DjBoothView({
   role,
   roles,
   onRoleChange,
+  servicePackage,
+  viewVisibility,
 }) {
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
@@ -38,6 +46,13 @@ export default function DjBoothView({
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const pingStep =
     timeline.find((entry) => entry.step.id === stagePing?.step_id)?.step ?? activeEntry?.step ?? null;
+
+  // Key Songs card: driven by the service package and `viewVisibility.dj.music`,
+  // never by role switching. VIP adds source/root, cues and the mini QR;
+  // Standard and Solo only show title + artist.
+  const detailTier = djDetailTier(servicePackage ?? resolveServicePackage(wedding));
+  const keySongs = getImportantSongs(wedding);
+  const showKeySongs = viewVisibility?.music !== false && keySongs.length > 0;
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#070b19] text-slate-100 antialiased select-none">
@@ -114,6 +129,15 @@ export default function DjBoothView({
               </div>
             ) : null}
           </section>
+
+          {showKeySongs ? (
+            <KeySongsCard
+              songs={keySongs}
+              tier={detailTier}
+              timeline={timeline}
+              activeIndex={activeIndex}
+            />
+          ) : null}
 
           <div className="grid gap-4 lg:grid-cols-3">
             <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg lg:col-span-2">
