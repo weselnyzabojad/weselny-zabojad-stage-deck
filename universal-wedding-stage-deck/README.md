@@ -1006,6 +1006,34 @@ The couple's Google Doc is now a deterministic input, not only an AI prompt:
   v1.1 schema and runtime importer are unchanged until v1.2 is approved. The
   parser is additive and ready to wire in after approval.
 
+### 30. Error boundaries, last-known step and local error log (issue #66 / TODO 24)
+
+A render crash no longer leaves a white screen:
+
+- [`src/components/AppErrorBoundary.jsx`](src/components/AppErrorBoundary.jsx)
+  wraps the whole app in `main.jsx` and each view separately: MC, DJ, pocket,
+  photographer, speaker, pairing, role sign-in and cartridge loading.
+- The fallback shows the **last known step** (title, planned time, location,
+  type and completed count), a **Safe reload** button, and "Try this view
+  again". Reload restores the saved live state, so the host continues from the
+  step that actually started.
+- [`src/lib/lastKnownStep.js`](src/lib/lastKnownStep.js) derives and persists a
+  tiny display snapshot per wedding (`stepId`, title, time, location, counts).
+  It stores no scripts, contacts, VIP alerts or sensitive notes. The top-level
+  boundary scans for the newest snapshot because it does not know the wedding
+  id; wiping the event clears it.
+- [`src/lib/errorLog.js`](src/lib/errorLog.js) keeps a bounded (20-entry)
+  `localStorage` log with timestamp, scope, role, step context, message, a short
+  stack and the React component stack. The fallback shows the latest five
+  entries and can copy or clear the log — useful after the event, with no
+  server upload.
+- The snapshot is derived during render and only persisted in an effect, so the
+  boundary always has current context without extra state updates.
+
+Limits: React error boundaries catch render/lifecycle crashes, not errors in
+event handlers, timers or rejected promises. Those still belong to their own
+guards; the boundary is the last line of defence against a blank screen.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
