@@ -934,6 +934,27 @@ Relevant files: `src/lib/liveStageState.js`, `src/hooks/useLiveStageState.js`,
 `src/App.jsx`, `src/components/PocketRemoteView.jsx`, `src/index.css`,
 `schema/wedding-schema-v1.1.json`.
 
+### 27. Optional games: Test Wiedzy & Test Zgodności (issue #59 / TODO 16)
+
+Design and content are prepared without changing the cartridge schema or the AI
+converter prompt (the `games` schema is still awaiting approval):
+
+- [`docs/optional-games.md`](docs/optional-games.md) defines the Google Doc
+  `## GAMES` section with an explicit `YES` / `NO` / `UNDECIDED` per game,
+  capture rules, preparation checklists, scoring, MC scripts and offline
+  fallbacks.
+- [`src/content/games/testWiedzy.js`](src/content/games/testWiedzy.js) contains a
+  12-question trilingual knowledge-quiz bank, scoring, tie-breaker, prize, MC
+  script and paper fallback.
+- [`src/content/games/testZgodnosci.js`](src/content/games/testZgodnosci.js)
+  contains a 10-question compatibility bank, separate bride/groom answer sheets,
+  score bands, MC script, Oczepini relationship and fallbacks.
+- `src/content/games/index.js` exposes the capture options (`YES`/`NO`/
+  `UNDECIDED`) and game metadata.
+- **Not added** to `schema/ai-converter-prompt.md` or the cartridge validator on
+  purpose. Once the `games` schema is approved, wire these banks into the
+  schema, parser and importer.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
