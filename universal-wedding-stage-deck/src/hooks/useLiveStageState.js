@@ -29,10 +29,11 @@ export function useLiveStageState({
   steps,
   weddingId,
   roomId = null,
-  syncPin = null,
   initialLiveState,
   eventDateISO = null,
   timeZone = 'UTC',
+  accessToken = null,
+  requireToken = false,
 }) {
   const key = storageKey(weddingId);
   const eventContext = useMemo(
@@ -50,10 +51,13 @@ export function useLiveStageState({
   const [serverTime, setServerTime] = useState({ offsetMs: 0, available: false });
 
   const syncConfig = useMemo(() => getSyncConfig(), []);
-  const canSync = syncConfig.enabled && Boolean(roomId);
+  // Production rooms only sync with a role token from join_room; the token also
+  // authorizes the RLS policies. Local mode keeps the legacy anon client.
+  const canSync =
+    syncConfig.enabled && Boolean(roomId) && (!requireToken || Boolean(accessToken));
   const client = useMemo(
-    () => (canSync ? createSupabaseSyncClient(syncConfig) : null),
-    [canSync, syncConfig],
+    () => (canSync ? createSupabaseSyncClient(syncConfig, { accessToken }) : null),
+    [canSync, syncConfig, accessToken],
   );
   const roomKey = client ? syncRoomKey(syncConfig.roomPrefix, roomId) : '';
 
@@ -201,7 +205,7 @@ export function useLiveStageState({
     const payload = JSON.parse(serialized);
     const timer = setTimeout(() => {
       client
-        .publish(roomKey, payload, { pin: syncPin })
+        .publish(roomKey, payload)
         .then(() => {
           lastPublishedRef.current = serialized;
           setSyncError(null);
@@ -213,7 +217,7 @@ export function useLiveStageState({
     }, PUBLISH_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [client, hydration, serialized, roomKey, syncPin]);
+  }, [client, hydration, serialized, roomKey]);
 
   useEffect(() => {
     if (!client) return undefined;

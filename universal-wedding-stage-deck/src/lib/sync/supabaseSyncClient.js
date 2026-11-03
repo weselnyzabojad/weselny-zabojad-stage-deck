@@ -1,12 +1,14 @@
 // Supabase Realtime listener for the on-stage `live_sync_state` payload.
 //
-// The client intentionally mirrors the shape persisted in localStorage
-// (`WeddingSchema v1.1` -> `live_sync_state`) so a payload can be pushed to the
-// cloud untouched and re-hydrated on another device with `normalizeLiveState`.
+// The room key is `wzsd:<weddingId>` (D7); the display PIN is never part of it.
+// In production the client is created with the role token returned by the
+// `join_room` Edge Function, so PostgREST and Realtime requests carry the JWT
+// that the RLS policies check.
 //
 // Contract used by `useLiveStageState`:
-//   fetchLatest(roomKey)          -> { state, updated_at, pin } | null
-//   publish(roomKey, state, meta) -> Promise<void>
+//   fetchLatest(roomKey)          -> { state, updated_at } | null
+//   fetchServerTime()             -> epoch ms
+//   publish(roomKey, state)       -> Promise<void>
 //   subscribe(roomKey, handlers)  -> unsubscribe()
 //
 // `onStatus` receives one of: 'connecting' | 'connected' | 'disconnected' |
@@ -17,18 +19,27 @@ import { createClient } from '@supabase/supabase-js';
 let sharedClient = null;
 let sharedClientKey = '';
 
-function getClient(url, anonKey) {
-  const key = `${url}::${anonKey}`;
+function getClient(url, anonKey, accessToken) {
+  const key = `${url}::${anonKey}::${accessToken ?? 'anon'}`;
   if (!sharedClient || sharedClientKey !== key) {
     sharedClient = createClient(url, anonKey, {
       auth: {
-        // The stage deck uses room PINs, not Supabase Auth sessions. Keeping
-        // this off avoids writing session tokens into localStorage.
+        // The stage deck uses room/role tokens, not Supabase Auth sessions.
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false,
       },
+      ...(accessToken
+        ? {
+            global: { headers: { Authorization: `Bearer ${accessToken}` } },
+            realtime: { params: { access_token: accessToken } },
+          }
+        : {}),
     });
+    if (accessToken) {
+      // Keeps the Realtime socket authorized after a reconnect.
+      sharedClient.realtime.setAuth(accessToken);
+    }
     sharedClientKey = key;
   }
   return sharedClient;
@@ -39,13 +50,13 @@ function describeError(error) {
   return error.message ?? String(error);
 }
 
-export function createSupabaseSyncClient(config) {
-  const supabase = getClient(config.url, config.anonKey);
+export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
+  const supabase = getClient(config.url, config.anonKey, accessToken);
 
   async function fetchLatest(roomKey) {
     const { data, error } = await supabase
       .from(config.table)
-      .select('state, updated_at, pin')
+      .select('state, updated_at')
       .eq('wedding_id', roomKey)
       .maybeSingle();
 
@@ -53,11 +64,23 @@ export function createSupabaseSyncClient(config) {
     return data ?? null;
   }
 
-  async function publish(roomKey, state, { pin = null } = {}) {
+  // Role-scoped cartridge fetch after a successful join. RLS only returns the
+  // wedding whose `wedding_id` matches the token claim.
+  async function fetchWedding(weddingId) {
+    const { data, error } = await supabase
+      .from('weddings')
+      .select('wedding_id, couple, date, cartridge')
+      .eq('wedding_id', weddingId)
+      .maybeSingle();
+
+    if (error) throw new Error(describeError(error));
+    return data ?? null;
+  }
+
+  async function publish(roomKey, state) {
     const { error } = await supabase.from(config.table).upsert(
       {
         wedding_id: roomKey,
-        pin,
         state,
         // A DB trigger overwrites this with server `now()` when deployed, so
         // `updated_at` remains authoritative even if a device clock is wrong.
@@ -98,7 +121,6 @@ export function createSupabaseSyncClient(config) {
           onState?.({
             state: row.state,
             updated_at: row.updated_at,
-            pin: row.pin,
           });
         },
       )
@@ -120,6 +142,7 @@ export function createSupabaseSyncClient(config) {
   return {
     provider: 'supabase',
     fetchLatest,
+    fetchWedding,
     fetchServerTime,
     publish,
     subscribe,

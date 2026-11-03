@@ -3,8 +3,9 @@ import logo from '../assets/img/logo.png';
 
 const PIN_LENGTH = 4;
 
-// Full-screen pairing gate. Both devices in a room enter the wedding's
-// 4-digit PIN; the same PIN becomes the cloud sync room key.
+// Full-screen local pairing gate. The DDMM PIN unlocks this device only; the
+// cloud room is keyed by `wzsd:<weddingId>` (D7), never by the PIN. Production
+// `/deck/` uses the server-validated per-role gate instead.
 export default function PairingScreen({ wedding, onPair, cloudConfigured = false, onImport }) {
   const [digits, setDigits] = useState(() => Array(PIN_LENGTH).fill(''));
   const [error, setError] = useState('');
@@ -161,7 +162,8 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
           </div>
 
           <p className="text-sm text-slate-300 text-center mt-6">
-            Enter the <strong className="text-white">4-digit room PIN</strong> to join this wedding&apos;s stage deck.
+            Enter the <strong className="text-white">4-digit display PIN</strong> to unlock this
+            device. The cloud room is keyed by the wedding ID, not the PIN.
           </p>
 
           <div
