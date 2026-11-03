@@ -1,6 +1,7 @@
 import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
 import KeySongsCard from './KeySongsCard';
+import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
@@ -33,6 +34,7 @@ export default function DjBoothView({
   timeline,
   projectedFinish,
   clock,
+  musicPolicy,
   stagePing,
   syncStatus,
   syncError,
@@ -250,6 +252,8 @@ export default function DjBoothView({
                   </ul>
                 )}
               </section>
+
+              <MusicPolicyCard policy={musicPolicy} />
 
               <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">

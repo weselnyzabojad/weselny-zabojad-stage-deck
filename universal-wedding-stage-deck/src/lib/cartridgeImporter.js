@@ -71,6 +71,10 @@ export function summarizeCartridge(cartridge) {
     : [];
   const cake = cartridge?.cake && typeof cartridge.cake === 'object' ? cartridge.cake : null;
   const contacts = Array.isArray(cartridge?.contacts) ? cartridge.contacts : [];
+  const musicPolicy =
+    cartridge?.musicPolicy && typeof cartridge.musicPolicy === 'object'
+      ? cartridge.musicPolicy
+      : null;
 
   return {
     couple: cartridge?.couple ?? '—',
@@ -90,5 +94,11 @@ export function summarizeCartridge(cartridge) {
     cakeServeTime: cake?.serveTime ?? null,
     contactCount: contacts.length,
     contactsWithDeparture: contacts.filter((contact) => contact?.leavesAt).length,
+    mustPlayCount: Array.isArray(musicPolicy?.mustPlay) ? musicPolicy.mustPlay.length : 0,
+    doNotPlayCount: Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay.length : 0,
+    requestsOpen:
+      typeof musicPolicy?.requestsOpen === 'boolean' ? musicPolicy.requestsOpen : null,
+    cleanVersions:
+      typeof musicPolicy?.cleanVersions === 'boolean' ? musicPolicy.cleanVersions : null,
   };
 }

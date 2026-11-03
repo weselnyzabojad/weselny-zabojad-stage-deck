@@ -146,7 +146,7 @@
     },
     "musicPolicy": {
       "type": "object",
-      "description": "Music requests and the key songs pinned in the DJ Booth (project.md TODO 18 / Phase 1.5d). v1.1 carries importantSongs[]; v1.2 extends this object (mustPlay, doNotPlay, ...), so unknown keys inside musicPolicy are allowed.",
+      "description": "Music requests, blacklist and the key songs pinned in the DJ Booth (project.md TODO 2 / TODO 18 / Phase 1.5d). v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
       "additionalProperties": true,
       "properties": {
         "importantSongs": {
@@ -154,6 +154,45 @@
           "items": {
             "$ref": "#/$defs/importantSong"
           }
+        },
+        "mustPlay": {
+          "type": "array",
+          "description": "Songs the couple wants. Reuse the importantSongs id when the entry is a key moment (first_dance, grand_entrance, cake_cutting).",
+          "items": {
+            "$ref": "#/$defs/mustPlayTrack"
+          }
+        },
+        "doNotPlay": {
+          "type": "array",
+          "description": "Guest-request blacklist with the reason.",
+          "items": {
+            "$ref": "#/$defs/doNotPlayTrack"
+          }
+        },
+        "requestsOpen": {
+          "type": "boolean",
+          "description": "Whether guest requests are accepted at all."
+        },
+        "requestWindow": {
+          "type": "object",
+          "required": ["start", "end"],
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/clock"
+            },
+            "end": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "cleanVersions": {
+          "type": "boolean",
+          "description": "Play clean/radio edits only."
+        },
+        "licensing": {
+          "type": "string",
+          "description": "Licensing note, e.g. Venue ZAIKS license confirmed."
         }
       }
     },
@@ -892,6 +931,40 @@
           "description": "Display label for OTHER sources (Tidal, Apple Music, SoundCloud, ...)."
         },
         "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "mustPlayTrack": {
+      "type": "object",
+      "required": ["id", "track"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "doNotPlayTrack": {
+      "type": "object",
+      "required": ["id", "track"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
           "type": "string"
         }
       }

@@ -290,6 +290,37 @@
   ],
   "weatherVariants": ["DEFAULT", "RAIN", "HEATWAVE"],
   "musicPolicy": {
+    "mustPlay": [
+      {
+        "id": "grand_entrance",
+        "track": "Marry You - Bruno Mars",
+        "note": "Grand entrance cue."
+      },
+      {
+        "id": "first_dance",
+        "track": "Perfect - Ed Sheeran",
+        "note": "First dance — duet version."
+      }
+    ],
+    "doNotPlay": [
+      {
+        "id": "no_macarena",
+        "track": "Macarena - Los del Río",
+        "reason": "Couple's request."
+      },
+      {
+        "id": "no_sto_lat",
+        "track": "Sto lat",
+        "reason": "No Sto Lat tonight."
+      }
+    ],
+    "requestsOpen": true,
+    "requestWindow": {
+      "start": "20:00",
+      "end": "23:00"
+    },
+    "cleanVersions": true,
+    "licensing": "Venue ZAIKS license confirmed.",
     "importantSongs": [
       {
         "id": "grand_entrance",
