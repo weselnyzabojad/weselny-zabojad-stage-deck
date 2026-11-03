@@ -137,17 +137,26 @@ alter table public.wedding_roles  enable row level security;
 alter table public.join_attempts  enable row level security;
 alter table public.sensitive_notes enable row level security;
 
--- Remove the old permissive MVP policies.
+-- Remove the old permissive MVP policies and recreate everything so this file
+-- is safe to re-run on an existing deployment.
 drop policy if exists "stage deck read"   on public.live_sync_state;
 drop policy if exists "stage deck insert" on public.live_sync_state;
 drop policy if exists "stage deck update" on public.live_sync_state;
+drop policy if exists "room read"         on public.live_sync_state;
+drop policy if exists "room insert"       on public.live_sync_state;
+drop policy if exists "room update"       on public.live_sync_state;
+drop policy if exists "wedding read"      on public.weddings;
 
 -- A room token may only touch its own room key (wzsd:<weddingId>). Reads are
 -- open to every joined role; writes are limited to the host roles (MC/Pocket).
+-- The role claim must be one of the roles issued by join_room.
 create policy "room read"
   on public.live_sync_state for select
   to authenticated
-  using (wedding_id = 'wzsd:' || public.current_wedding_id());
+  using (
+    wedding_id = 'wzsd:' || public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+  );
 
 create policy "room insert"
   on public.live_sync_state for insert
@@ -155,6 +164,10 @@ create policy "room insert"
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
     and public.current_app_role() in ('mc', 'pocket')
+    and exists (
+      select 1 from public.weddings w
+      where w.wedding_id = public.current_wedding_id()
+    )
   );
 
 create policy "room update"
@@ -163,17 +176,29 @@ create policy "room update"
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
     and public.current_app_role() in ('mc', 'pocket')
+    and exists (
+      select 1 from public.weddings w
+      where w.wedding_id = public.current_wedding_id()
+    )
   )
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
     and public.current_app_role() in ('mc', 'pocket')
+    and exists (
+      select 1 from public.weddings w
+      where w.wedding_id = public.current_wedding_id()
+    )
   );
 
--- Joined devices may read only their own wedding row.
+-- Joined devices may read only their own wedding row, and only with a role
+-- claim from a join token.
 create policy "wedding read"
   on public.weddings for select
   to authenticated
-  using (wedding_id = public.current_wedding_id());
+  using (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+  );
 
 -- D4: encrypted sensitive notes are MC-only, and only for the joined room.
 drop policy if exists "sensitive host read"   on public.sensitive_notes;
@@ -225,6 +250,8 @@ grant select on public.weddings to authenticated;
 grant select, insert, update on public.sensitive_notes to authenticated;
 
 grant execute on function public.stage_deck_server_time() to anon, authenticated;
+revoke all on function public.current_wedding_id() from public, anon;
+revoke all on function public.current_app_role()   from public, anon;
 grant execute on function public.current_wedding_id()    to authenticated;
 grant execute on function public.current_app_role()      to authenticated;
 
@@ -288,6 +315,14 @@ begin
     delete from public.weddings where wedding_id = wid;
     removed := removed + 1;
   end loop;
+
+  -- Orphaned room state (wedding row already removed) and old rate-limit logs.
+  delete from public.live_sync_state s
+  where not exists (
+    select 1 from public.weddings w where 'wzsd:' || w.wedding_id = s.wedding_id
+  );
+  delete from public.join_attempts where attempted_at < now() - interval '30 days';
+
   return removed;
 end $$;
 

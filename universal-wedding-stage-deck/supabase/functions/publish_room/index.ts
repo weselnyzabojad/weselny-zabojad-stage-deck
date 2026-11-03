@@ -60,6 +60,29 @@ function redactSensitive(cartridge: Record<string, unknown>) {
   return copy;
 }
 
+function parseEventDateISO(body: any, cartridge: Record<string, any>, fallbackDate: string | null, weddingId: string) {
+  if (typeof cartridge.dateISO === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cartridge.dateISO)) {
+    return cartridge.dateISO;
+  }
+  const display = typeof cartridge.date === 'string' ? cartridge.date : fallbackDate;
+  const match = /^([0-3]\d)\.([01]\d)\.(\d{4})$/.exec(display ?? '');
+  if (match) return `${match[3]}-${match[2]}-${match[1]}`;
+
+  const fromId = /^(\d{4}-\d{2}-\d{2})/.exec(weddingId);
+  return fromId?.[1] ?? null;
+}
+
+// TTL runs from the event, not from publish time: `expiresInDays` is the grace
+// period after the wedding (default 7). Without an event date, fall back to 30
+// days from now. Never let the room die before the event.
+function resolveExpiresAt(body: any, cartridge: Record<string, any>, date: string | null, weddingId: string) {
+  const requested = Number.isFinite(body?.expiresInDays) ? Math.round(body.expiresInDays) : null;
+  const eventDateISO = parseEventDateISO(body, cartridge, date, weddingId);
+  const days = Math.min(365, Math.max(1, requested ?? (eventDateISO ? 7 : 30)));
+  const baseMs = eventDateISO ? Date.parse(`${eventDateISO}T23:59:59Z`) : Date.now();
+  return new Date(baseMs + days * 86400000).toISOString();
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
@@ -121,17 +144,7 @@ Deno.serve(async (req) => {
         couple,
         date,
         cartridge: redactSensitive(cartridge),
-        expires_at: new Date(
-          Date.now() +
-            Math.min(
-              365,
-              Math.max(
-                1,
-                Number.isFinite(body?.expiresInDays) ? Math.round(body.expiresInDays) : 30,
-              ),
-            ) *
-              86400000,
-        ).toISOString(),
+        expires_at: resolveExpiresAt(body, cartridge, date, weddingId),
       },
       { onConflict: 'wedding_id' },
     );
