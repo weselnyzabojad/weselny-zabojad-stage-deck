@@ -79,7 +79,10 @@ export default function HardAnchorRadar({ radar }) {
   const overall = OVERALL_META[radar.status] ?? OVERALL_META.empty;
 
   return (
-    <section className={`rounded-xl border bg-[#0b132b]/95 p-4 shadow-lg ${overall.border}`}>
+    <section
+      id="hard-anchor-radar"
+      className={`scroll-mt-4 rounded-xl border bg-[#0b132b]/95 p-4 shadow-lg ${overall.border}`}
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
           🚨 Hard Anchor Radar
@@ -108,7 +111,8 @@ export default function HardAnchorRadar({ radar }) {
           return (
             <div
               key={report.id}
-              className={`rounded-lg border bg-[#070b19]/70 p-2.5 ${meta.border}`}
+              id={`anchor-${report.id}`}
+              className={`scroll-mt-4 rounded-lg border bg-[#070b19]/70 p-2.5 ${meta.border}`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">

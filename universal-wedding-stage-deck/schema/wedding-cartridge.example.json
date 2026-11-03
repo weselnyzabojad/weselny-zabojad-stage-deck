@@ -261,16 +261,21 @@
   },
   "contacts": [
     {
+      "id": "dj_marc",
       "role": "DJ",
       "name": "DJ Marc",
       "phone": "+33 6 00 00 00 00",
+      "email": "dj.marc@example.com",
       "notes": "Booth on the left; silent pings enabled."
     },
     {
-      "role": "Photographer",
-      "name": "Magda",
+      "id": "photo_video",
+      "role": "Photo / Video",
+      "name": "Magda & Tomek",
       "phone": "+48 600 000 000",
-      "notes": "Leaves after the sunset window."
+      "email": "photo@studio.example",
+      "leavesAt": "20:30",
+      "notes": "Group photo before 20:15; leaves with the video team at the photo/video anchor."
     }
   ],
   "preWeddingTodos": [

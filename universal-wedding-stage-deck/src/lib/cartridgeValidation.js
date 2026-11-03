@@ -75,6 +75,7 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
   uniqueList(cartridge?.coHosts, '/coHosts', 'co-host');
   uniqueList(cartridge?.contentCreators, '/contentCreators', 'content creator');
+  uniqueList(cartridge?.contacts, '/contacts', 'contact');
 
   // Key songs (TODO 18 / Phase 1.5d). Missing titles, artists or sources are
   // warnings in the product spec, not import blockers; only broken references

@@ -538,6 +538,45 @@ Relevant files: `src/lib/cake.js`, `src/components/CakeCard.jsx`, `src/App.jsx`,
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `schema/wedding-cartridge.example.json`.
 
+### 18. Vendor contacts directory (issue #53 / TODO 10)
+
+The MC header now exposes **📇 Contacts (N)**, opening a structured vendor
+directory:
+
+```json
+"contacts": [
+  {
+    "id": "photo_video",
+    "role": "Photo / Video",
+    "name": "Magda & Tomek",
+    "phone": "+48 600 000 000",
+    "email": "photo@studio.example",
+    "leavesAt": "20:30",
+    "notes": "Group photo before 20:15; leaves at the photo/video anchor."
+  }
+]
+```
+
+- Phone numbers render as `tel:` buttons (spaces, dashes and brackets stripped,
+  leading `+` kept) and emails as `mailto:` buttons. Invalid values stay visible
+  as plain text instead of becoming broken links.
+- `leavesAt` is matched by time to a `hardAnchors[]` entry. A matched departure
+  shows the anchor label and a **show anchor** action that closes the modal and
+  scrolls to that row in the Hard Anchor Radar. An unmatched `leavesAt` shows a
+  warning so the departure can be protected with an anchor.
+- The schema now allows `contacts[].id`, `email` and `leavesAt`; duplicate
+  contact ids are rejected on import. v1.1 cartridges without those fields still
+  load.
+- The importer preview shows the contact count and how many have departures.
+- The AI converter prompt maps a Google Doc `## VENDOR CONTACTS` section to this
+  block and tells the AI never to invent phone numbers or emails.
+
+Relevant files: `src/lib/contacts.js`, `src/components/ContactsModal.jsx`,
+`src/components/HardAnchorRadar.jsx`, `src/App.jsx`,
+`src/lib/cartridgeValidation.js`, `src/lib/cartridgeImporter.js`,
+`src/components/CartridgeImporter.jsx`, `schema/wedding-schema-v1.1.json`,
+`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

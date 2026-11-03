@@ -266,6 +266,37 @@ Rules:
   "front-left of the cake table").
 - Never invent a cake song, time or cue.
 
+## Vendor contacts (Google Doc `## VENDOR CONTACTS`)
+
+Extract the vendor directory into `contacts`:
+
+```json
+"contacts": [
+  {
+    "id": "photo_video",
+    "role": "Photo / Video",
+    "name": "Magda & Tomek",
+    "phone": "+48 600 000 000",
+    "email": "photo@studio.example",
+    "leavesAt": "20:30",
+    "notes": "Group photo before 20:15; leaves at the photo/video anchor."
+  }
+]
+```
+
+Rules:
+
+- Give every contact a stable `id` (lowercase, underscores) so it can be
+  referenced.
+- Copy `phone` and `email` exactly as written; never invent or guess them.
+- `leavesAt` is the departure time as `HH:MM`. When the source treats it as a
+  fixed departure, reuse the matching `hardAnchors[].time` so the directory can
+  link to the protected anchor; add the anchor if the source defines it but the
+  timeline does not.
+- Keep `role` short: `DJ`, `Photo / Video`, `Venue manager`, `Florist`,
+  `Transport`, etc.
+- Do not put MC scripts or VIP notes in `contacts`.
+
 ## Teleprompter
 
 ### Speech
@@ -405,7 +436,7 @@ Include when present in the source:
 
 - `venue`
 - `demographics` (`total`, `pl`, `fr`, `other`, `languages`, `notes`)
-- `contacts` (`role`, `name`, `phone`, `notes`)
+- `contacts` (`id`, `role`, `name`, `phone`, `email`, `leavesAt`, `notes`)
 - `weatherVariants` (`DEFAULT`, `RAIN`, `HEATWAVE`)
 - `vipRadarCount` (must equal `tact_and_vip_alerts.length`)
 
