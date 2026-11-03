@@ -6,6 +6,7 @@ import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
+import ThemeToggle from './ThemeToggle';
 import {
   djDetailTier,
   getImportantSongs,
@@ -14,9 +15,9 @@ import {
 
 const STATUS_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
-  active: 'border-[#3b5bdb] bg-[#002395]/40 text-[#b8c6ff] animate-pulse',
+  active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
   next: 'border-amber-800 bg-amber-950/60 text-amber-200',
-  later: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
+  later: 'border-line-strong bg-raised text-slate-400',
 };
 
 function statusFor(entry, activeIndex) {
@@ -44,6 +45,8 @@ export default function DjBoothView({
   onRoleChange,
   servicePackage,
   viewVisibility,
+  theme = 'night',
+  onToggleTheme,
 }) {
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
@@ -60,14 +63,14 @@ export default function DjBoothView({
   const showKeySongs = viewVisibility?.music !== false && keySongs.length > 0;
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#070b19] text-slate-100 antialiased select-none">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1c2a52] bg-[#0b132b] px-4 py-3">
+    <div className="flex h-screen flex-col overflow-hidden bg-page text-slate-100 antialiased select-none">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
           <div>
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-[#849dff]">
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
               🎧 DJ Booth · read-only
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -82,6 +85,7 @@ export default function DjBoothView({
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>
 
@@ -91,7 +95,7 @@ export default function DjBoothView({
         <div className="mx-auto max-w-5xl space-y-4">
           <ReelClock clock={clock} compact />
 
-          <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b] p-4 shadow-lg">
+          <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">
@@ -105,7 +109,7 @@ export default function DjBoothView({
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#1c2a52] bg-[#070b19]/80 p-3 text-right font-mono">
+              <div className="rounded-lg border border-line bg-page/80 p-3 text-right font-mono">
                 <div className="text-[10px] uppercase tracking-wider text-slate-400">Projected</div>
                 <div className="text-lg font-semibold text-white">
                   {activeEntry
@@ -116,7 +120,7 @@ export default function DjBoothView({
                   Finish <span className="text-slate-200">{projectedFinish ?? '—'}</span>
                 </div>
                 {activeEntry?.step.dj?.cutoff ? (
-                  <div className="mt-1 rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-1.5 py-0.5 text-[10px] font-bold text-[#ff808a]">
+                  <div className="mt-1 rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
                     CUTOFF {activeEntry.step.dj.cutoff}
                   </div>
                 ) : null}
@@ -126,12 +130,12 @@ export default function DjBoothView({
             {activeEntry?.step.dj ? (
               <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
                 {activeEntry.step.dj.playlist ? (
-                  <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-1 text-slate-300">
+                  <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
                     🎵 {activeEntry.step.dj.playlist}
                   </span>
                 ) : null}
                 {activeEntry.step.dj.track ? (
-                  <span className="rounded border border-[#3b5bdb] bg-[#002395]/30 px-2 py-1 text-[#b8c6ff]">
+                  <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
                     ▶ {activeEntry.step.dj.track}
                   </span>
                 ) : null}
@@ -149,7 +153,7 @@ export default function DjBoothView({
           ) : null}
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg lg:col-span-2">
+            <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg lg:col-span-2">
               <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                 📋 Projected timeline
               </h2>
@@ -161,8 +165,8 @@ export default function DjBoothView({
                       key={entry.step.id}
                       className={`rounded-lg border p-3 ${
                         entry.isActive
-                          ? 'border-[#3b5bdb] bg-[#002395]/20'
-                          : 'border-[#1c2a52] bg-[#070b19]/60'
+                          ? 'border-brand-strong bg-brand/20'
+                          : 'border-line bg-page/60'
                       }`}
                     >
                       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -186,7 +190,7 @@ export default function DjBoothView({
                               title={`Projected ${entry.driftLabel ?? 'drift'} vs plan`}
                               className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
                                 entry.projectedDriftMinutes > 0
-                                  ? 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]'
+                                  ? 'border-alert/60 bg-alert/20 text-alert-soft'
                                   : 'border-emerald-700 bg-emerald-950/60 text-emerald-300'
                               }`}
                             >
@@ -203,17 +207,17 @@ export default function DjBoothView({
 
                       <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
                         {entry.step.dj?.playlist ? (
-                          <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-0.5 text-slate-300">
+                          <span className="rounded border border-line-strong bg-raised px-2 py-0.5 text-slate-300">
                             🎵 {entry.step.dj.playlist}
                           </span>
                         ) : null}
                         {entry.step.dj?.track ? (
-                          <span className="rounded border border-[#1c2a52] bg-[#070b19] px-2 py-0.5 text-slate-300">
+                          <span className="rounded border border-line bg-page px-2 py-0.5 text-slate-300">
                             ▶ {entry.step.dj.track}
                           </span>
                         ) : null}
                         {entry.step.dj?.cutoff ? (
-                          <span className="rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-2 py-0.5 font-mono font-bold text-[#ff808a]">
+                          <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono font-bold text-alert-soft">
                             CUTOFF {entry.step.dj.cutoff}
                           </span>
                         ) : null}
@@ -225,8 +229,8 @@ export default function DjBoothView({
             </section>
 
             <aside className="space-y-4">
-              <section className="rounded-xl border border-[#ED2939]/40 bg-[#0b132b]/95 p-4 shadow-lg">
-                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-[#ff808a]">
+              <section className="rounded-xl border border-alert/40 bg-card/95 p-4 shadow-lg">
+                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-alert-soft">
                   🚨 Hard cutoffs
                 </h2>
                 {cutoffs.length === 0 ? (
@@ -240,8 +244,8 @@ export default function DjBoothView({
                           key={entry.step.id}
                           className={`flex items-center justify-between gap-2 rounded-lg border p-2.5 text-xs ${
                             urgent
-                              ? 'animate-pulse border-[#ED2939]/70 bg-[#ED2939]/20 text-[#ffb3ba]'
-                              : 'border-[#1c2a52] bg-[#070b19] text-slate-300'
+                              ? 'animate-pulse border-alert/70 bg-alert/20 text-alert-tint'
+                              : 'border-line bg-page text-slate-300'
                           }`}
                         >
                           <span className="min-w-0 truncate">{entry.step.title}</span>
@@ -257,7 +261,7 @@ export default function DjBoothView({
 
               <MusicPolicyCard policy={musicPolicy} />
 
-              <section className="rounded-xl border border-[#1c2a52] bg-[#0b132b]/95 p-4 shadow-lg">
+              <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                   🎚️ Set notes
                 </h2>
@@ -272,7 +276,7 @@ export default function DjBoothView({
         </div>
       </main>
 
-      <footer className="border-t border-[#1c2a52] bg-[#0b132b] px-4 py-2 text-center font-mono text-[11px] text-slate-500">
+      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
         Read-only DJ view · no step controls · syncs with the host over the room PIN
       </footer>
     </div>

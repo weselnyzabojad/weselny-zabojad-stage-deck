@@ -45,12 +45,12 @@ const TONES = {
     dot: 'bg-amber-400',
   },
   no: {
-    chip: 'border-[#ED2939]/60 bg-[#ED2939]/15',
-    text: 'text-[#ff808a]',
-    dot: 'bg-[#ED2939]',
+    chip: 'border-alert/60 bg-alert/15',
+    text: 'text-alert-soft',
+    dot: 'bg-alert',
   },
   pending: {
-    chip: 'border-[#2b3d73] bg-[#111d3b]',
+    chip: 'border-line-strong bg-raised',
     text: 'text-slate-300',
     dot: 'bg-slate-400',
   },

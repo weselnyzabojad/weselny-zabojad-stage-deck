@@ -48,7 +48,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="game-title" size="full">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1c2a52] bg-[#0b132b] px-5 py-3 pr-16">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-5 py-3 pr-16">
         <div>
           <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
             🎮 Game Clicker
@@ -59,17 +59,17 @@ export default function GameClickerOverlay({ open, game, onClose }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-2.5 py-1.5 font-mono text-xs text-white">
+          <span className="rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 font-mono text-xs text-white">
             {total === 0 ? '0 / 0' : `${index + 1} / ${total}`}
           </span>
-          <div className="flex items-center rounded-lg border border-[#2b3d73] bg-[#111d3b] p-0.5">
+          <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
             {LANGS.map((option) => (
               <button
                 key={option}
                 type="button"
                 onClick={() => setLang(option)}
                 aria-pressed={lang === option}
-                className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-[#002395] text-white' : 'text-slate-400 hover:text-slate-200'}`}
+                className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-brand text-white' : 'text-slate-400 hover:text-slate-200'}`}
               >
                 {option}
               </button>
@@ -88,12 +88,12 @@ export default function GameClickerOverlay({ open, game, onClose }) {
                 {items.map((entry, dotIndex) => (
                   <span
                     key={entry.id ?? dotIndex}
-                    className={`h-1.5 rounded-full transition-all ${dotIndex === index ? 'w-6 bg-[#849dff]' : dotIndex < index ? 'w-1.5 bg-[#3b5bdb]' : 'w-1.5 bg-[#2b3d73]'}`}
+                    className={`h-1.5 rounded-full transition-all ${dotIndex === index ? 'w-6 bg-brand-soft' : dotIndex < index ? 'w-1.5 bg-brand-strong' : 'w-1.5 bg-line-strong'}`}
                   />
                 ))}
               </div>
 
-              <div className="rounded-2xl border border-[#1c2a52] bg-[#0b132b] p-6 text-center shadow-lg sm:p-8">
+              <div className="rounded-2xl border border-line bg-card p-6 text-center shadow-lg sm:p-8">
                 <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
                   Question {index + 1}
                 </span>
@@ -113,7 +113,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
                     <button
                       type="button"
                       onClick={() => setRevealed(true)}
-                      className="rounded-xl border border-[#3b5bdb] bg-[#002395]/40 px-5 py-3 font-heading text-sm font-semibold text-white transition hover:bg-[#002395]/70"
+                      className="rounded-xl border border-brand-strong bg-brand/40 px-5 py-3 font-heading text-sm font-semibold text-white transition hover:bg-brand/70"
                     >
                       Reveal answer
                     </button>
@@ -125,7 +125,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
         </div>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-[#1c2a52] bg-[#0b132b] px-4 py-3">
+      <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-card px-4 py-3">
         <span className="font-mono text-[10px] text-slate-500">← → navigate · Space reveals · Esc closes</span>
 
         <div className="flex items-center gap-2">
@@ -133,7 +133,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             type="button"
             onClick={goPrev}
             disabled={index === 0}
-            className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-4 py-2 font-heading text-xs font-semibold text-slate-200 transition hover:bg-[#1c2a52] disabled:cursor-not-allowed disabled:text-slate-600"
+            className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-slate-200 transition hover:bg-line disabled:cursor-not-allowed disabled:text-slate-600"
           >
             ← Previous
           </button>
@@ -141,7 +141,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             type="button"
             onClick={() => setRevealed((value) => !value)}
             disabled={total === 0}
-            className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-4 py-2 font-heading text-xs font-semibold text-slate-200 transition hover:bg-[#1c2a52] disabled:cursor-not-allowed disabled:text-slate-600"
+            className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-slate-200 transition hover:bg-line disabled:cursor-not-allowed disabled:text-slate-600"
           >
             {revealed ? 'Hide answer' : 'Reveal answer'}
           </button>
@@ -149,7 +149,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             type="button"
             onClick={isLast ? onClose : goNext}
             disabled={total === 0}
-            className="rounded-lg border border-[#3b5bdb] bg-[#002395] px-5 py-2 font-heading text-xs font-bold text-white transition hover:bg-[#1a3cb0] disabled:cursor-not-allowed disabled:border-[#1c2a52] disabled:bg-[#0b132b] disabled:text-slate-600"
+            className="rounded-lg border border-brand-strong bg-brand px-5 py-2 font-heading text-xs font-bold text-white transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:border-line disabled:bg-card disabled:text-slate-600"
           >
             {isLast ? 'Finish ✓' : 'Next →'}
           </button>

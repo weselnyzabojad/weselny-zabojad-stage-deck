@@ -1,8 +1,8 @@
 const OVERALL_META = {
   collision: {
     label: 'COLLISION',
-    chip: 'border-[#ED2939]/70 bg-[#ED2939]/25 text-[#ffb3ba]',
-    border: 'border-[#ED2939]/60',
+    chip: 'border-alert/70 bg-alert/25 text-alert-tint',
+    border: 'border-alert/60',
   },
   compression: {
     label: 'WATCH',
@@ -21,17 +21,17 @@ const OVERALL_META = {
   },
   empty: {
     label: 'NO ANCHORS',
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
-    border: 'border-[#1c2a52]',
+    chip: 'border-line-strong bg-raised text-slate-400',
+    border: 'border-line',
   },
 };
 
 const ROW_META = {
   collision: {
     label: 'COLLISION',
-    chip: 'border-[#ED2939]/70 bg-[#ED2939]/25 text-[#ffb3ba]',
-    border: 'border-[#ED2939]/50',
-    value: 'text-[#ff808a]',
+    chip: 'border-alert/70 bg-alert/25 text-alert-tint',
+    border: 'border-alert/50',
+    value: 'text-alert-soft',
   },
   compression: {
     label: 'WATCH',
@@ -53,14 +53,14 @@ const ROW_META = {
   },
   passed: {
     label: 'PASSED',
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
-    border: 'border-[#1c2a52]',
+    chip: 'border-line-strong bg-raised text-slate-400',
+    border: 'border-line',
     value: 'text-slate-500',
   },
   unknown: {
     label: 'UNKNOWN',
-    chip: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
-    border: 'border-[#1c2a52]',
+    chip: 'border-line-strong bg-raised text-slate-400',
+    border: 'border-line',
     value: 'text-slate-500',
   },
 };
@@ -81,7 +81,7 @@ export default function HardAnchorRadar({ radar }) {
   return (
     <section
       id="hard-anchor-radar"
-      className={`scroll-mt-4 rounded-xl border bg-[#0b132b]/95 p-4 shadow-lg ${overall.border}`}
+      className={`scroll-mt-4 rounded-xl border bg-card/95 p-4 shadow-lg ${overall.border}`}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
@@ -97,7 +97,7 @@ export default function HardAnchorRadar({ radar }) {
           role="alert"
           className={`mt-2 rounded-lg border p-2.5 text-[11px] leading-snug ${
             radar.primary.status === 'collision'
-              ? 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ffb3ba]'
+              ? 'border-alert/60 bg-alert/20 text-alert-tint'
               : 'border-amber-700/70 bg-amber-950/50 text-amber-100'
           }`}
         >
@@ -112,7 +112,7 @@ export default function HardAnchorRadar({ radar }) {
             <div
               key={report.id}
               id={`anchor-${report.id}`}
-              className={`scroll-mt-4 rounded-lg border bg-[#070b19]/70 p-2.5 ${meta.border}`}
+              className={`scroll-mt-4 rounded-lg border bg-page/70 p-2.5 ${meta.border}`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">

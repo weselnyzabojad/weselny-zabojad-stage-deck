@@ -1,12 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/logo.png';
+import ThemeToggle from './ThemeToggle';
 
 const PIN_LENGTH = 4;
 
 // Full-screen local pairing gate. The DDMM PIN unlocks this device only; the
 // cloud room is keyed by `wzsd:<weddingId>` (D7), never by the PIN. Production
 // `/deck/` uses the server-validated per-role gate instead.
-export default function PairingScreen({ wedding, onPair, cloudConfigured = false, onImport }) {
+export default function PairingScreen({
+  wedding,
+  onPair,
+  cloudConfigured = false,
+  onImport,
+  theme = 'night',
+  onToggleTheme,
+}) {
   const [digits, setDigits] = useState(() => Array(PIN_LENGTH).fill(''));
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
@@ -144,17 +152,21 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#070b19] text-slate-100 font-body flex items-center justify-center px-4 py-8 relative overflow-hidden select-none">
+    <div className="min-h-screen w-full bg-page text-slate-100 font-body flex items-center justify-center px-4 py-8 relative overflow-hidden select-none">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+      </div>
+
       <div className="relative w-full max-w-md">
-        <div className="bg-[#0b132b] border border-[#1c2a52] rounded-2xl shadow-2xl p-7 sm:p-9">
+        <div className="bg-card border border-line rounded-2xl shadow-2xl p-7 sm:p-9">
           <div className="flex items-center justify-center bg-white rounded-xl px-4 py-3 mb-6 shadow-md">
             <img src={logo} alt="Weselny Żabojad" className="h-16 w-auto object-contain max-w-[220px]" />
           </div>
 
           <div className="text-center">
-            <span className="text-[10px] uppercase tracking-[0.25em] text-[#849dff] font-heading font-semibold">
+            <span className="text-[10px] uppercase tracking-[0.25em] text-brand-soft font-heading font-semibold">
               Wedding Stage Deck
             </span>
             <h1 className="text-2xl font-heading font-bold text-white mt-2">{wedding.couple}</h1>
@@ -172,10 +184,10 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
           >
             {digits.map((digit, index) => {
               const boxClass = error
-                ? 'border-[#ED2939] focus:border-[#ED2939]'
+                ? 'border-alert focus:border-alert'
                 : digit
-                  ? 'border-[#3b5bdb] focus:border-[#3b5bdb]'
-                  : 'border-[#1c2a52] focus:border-[#3b5bdb]';
+                  ? 'border-brand-strong focus:border-brand-strong'
+                  : 'border-line focus:border-brand-strong';
               return (
                 <input
                   key={`pin-${index}`}
@@ -192,14 +204,14 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
                   maxLength={1}
                   aria-label={`PIN digit ${index + 1} of ${PIN_LENGTH}`}
                   aria-invalid={Boolean(error)}
-                  className={`w-16 h-[4.5rem] text-center text-4xl font-mono font-bold rounded-xl border-2 bg-[#070b19] text-white outline-none transition focus:ring-2 focus:ring-[#002395]/60 ${boxClass}`}
+                  className={`w-16 h-[4.5rem] text-center text-4xl font-mono font-bold rounded-xl border-2 bg-page text-white outline-none transition focus:ring-2 focus:ring-brand/60 ${boxClass}`}
                 />
               );
             })}
           </div>
 
           <div className="min-h-[1.25rem] text-center" aria-live="polite">
-            {error ? <span className="text-xs font-mono text-[#ff808a]">{error}</span> : null}
+            {error ? <span className="text-xs font-mono text-alert-soft">{error}</span> : null}
           </div>
 
           <button
@@ -208,8 +220,8 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
             disabled={!complete}
             className={`w-full mt-2 py-3.5 rounded-xl font-heading font-bold text-sm transition border ${
               complete
-                ? 'bg-[#002395] hover:bg-[#1a3cb0] active:bg-[#00186b] text-white border-[#3b5bdb] shadow-lg shadow-blue-950/60'
-                : 'bg-[#111d3b] text-slate-500 border-[#1c2a52] cursor-not-allowed'
+                ? 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong shadow-lg shadow-blue-950/60'
+                : 'bg-raised text-slate-500 border-line cursor-not-allowed'
             }`}
           >
             🔓 Pair this device
@@ -220,7 +232,7 @@ export default function PairingScreen({ wedding, onPair, cloudConfigured = false
               type="button"
               onClick={onImport}
               title="Import a WeddingSchema v1.1 cartridge"
-              className="w-full mt-2 py-2.5 rounded-xl font-heading font-semibold text-xs transition border border-[#2b3d73] bg-[#111d3b] text-slate-200 hover:bg-[#1c2a52]"
+              className="w-full mt-2 py-2.5 rounded-xl font-heading font-semibold text-xs transition border border-line-strong bg-raised text-slate-200 hover:bg-line"
             >
               📥 Import wedding cartridge
             </button>

@@ -12,7 +12,7 @@ function Flag({ code }) {
   if (!url) {
     // Unknown / unbundled code: plain text, never a guessed flag.
     return (
-      <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1 font-mono text-[9px] text-slate-300">
+      <span className="rounded border border-line-strong bg-raised px-1 font-mono text-[9px] text-slate-300">
         {code}
       </span>
     );
@@ -99,7 +99,7 @@ export default function CoupleIdentity({ wedding, className = '' }) {
             <span
               key={code}
               title={localizedLanguageName(code)}
-              className="rounded border border-[#2b3d73] bg-[#111d3b] px-1 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-[#b8c6ff]"
+              className="rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-brand-tint"
             >
               {code}
             </span>

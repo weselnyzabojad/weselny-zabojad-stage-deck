@@ -679,6 +679,42 @@ Relevant files: `src/App.jsx`, `src/lib/pairing.js`, `src/hooks/usePairing.js`,
 `supabase/functions/join_room/index.ts`,
 `supabase/functions/publish_room/index.ts`.
 
+### 21. Night Stage / Daylight theming (issue #69 / TODO 27)
+
+The deck now has a token-based, per-device theme on the same France/Poland
+blue-white-red identity:
+
+- **Night Stage** (default) is the original deep-navy palette, so the token
+  refactor is visually identical to the previous build.
+- **Daylight** is a white/ivory canvas with navy text for outdoor glare. The
+  French blue and Polish red accents are unchanged; only surfaces and text flip.
+- Theme is stored per device under `wzsd:v1:theme`; it is **never synced**, so
+  the MC tablet can stay dark while the Pocket phone runs Daylight.
+- The initial value follows `prefers-color-scheme`; an explicit toggle wins and
+  is persisted. `index.html` applies the stored theme before first paint so the
+  canvas never flashes the wrong theme.
+- A sun/moon **theme toggle** sits in the MC, DJ Booth and Pocket headers, and
+  on the pairing/join screens. It is keyboard- and screen-reader accessible
+  (`aria-pressed`, translated label).
+- `useTheme`/`lib/theme.js` update `data-theme` on `<html>`, `color-scheme`,
+  and the `<meta name="theme-color">` value (`#070b19` Night, `#eef2f7` Day).
+- Tokens live in `src/index.css`: `--bg-page`, `--bg-card`, `--bg-raised`,
+  `--border`, `--border-strong`, `--text-primary`, `--brand*`, `--alert*`.
+  Tailwind utilities (`bg-page`, `bg-card`, `border-line`, `text-brand-soft`,
+  `text-alert-tint`, ...) resolve through them.
+- The existing views were migrated mechanically from the old hexes to the
+  tokens (dark values unchanged). `text-white` keeps a Daylight bridge to navy
+  except on solid blue/red surfaces; the remaining `text-slate-*` utilities use
+  a mirrored neutral scale. Full per-view refinement continues with the
+  App.jsx split (TODO 22).
+- Status colours stay explicit and are never colour-only; the red stage-ping
+  banner keeps white text in both themes.
+
+Relevant files: `src/index.css`, `index.html`, `src/lib/theme.js`,
+`src/hooks/useTheme.js`, `src/components/ThemeToggle.jsx`, `src/App.jsx`,
+`src/components/DjBoothView.jsx`, `src/components/PocketRemoteView.jsx`,
+`src/components/PairingScreen.jsx`, `src/components/RoleJoinScreen.jsx`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

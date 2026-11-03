@@ -25,8 +25,8 @@ export default defineConfig({
       manifest: {
         name: 'Universal Wedding Stage Deck',
         short_name: 'StageDeck',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#070b19',
+        background_color: '#070b19',
         display: 'standalone',
         icons: [
           {

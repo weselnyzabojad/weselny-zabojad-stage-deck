@@ -1,8 +1,8 @@
 const STATE_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
-  active: 'border-[#3b5bdb] bg-[#002395]/40 text-[#b8c6ff] animate-pulse',
+  active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
   next: 'border-amber-800 bg-amber-950/60 text-amber-200',
-  planned: 'border-[#2b3d73] bg-[#111d3b] text-slate-400',
+  planned: 'border-line-strong bg-raised text-slate-400',
 };
 
 const STATE_LABELS = {
@@ -22,13 +22,13 @@ function SparklersChip({ sparklers }) {
   }
   if (sparklers === false) {
     return (
-      <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-400">
+      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-400">
         ✨ Sparklers OFF
       </span>
     );
   }
   return (
-    <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-500">
+    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
       ✨ Sparklers —
     </span>
   );
@@ -71,7 +71,7 @@ export default function CakeCard({ cake, compact = false }) {
     return (
       <section
         aria-label="Cake protocol"
-        className="rounded-xl border border-amber-700/50 bg-[#0b132b] p-3 shadow-lg"
+        className="rounded-xl border border-amber-700/50 bg-card p-3 shadow-lg"
       >
         <div className="flex items-center justify-between gap-2">
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-amber-200">
@@ -87,7 +87,7 @@ export default function CakeCard({ cake, compact = false }) {
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
           <SparklersChip sparklers={cake.sparklers} />
           {cake.photographerCue ? (
-            <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-300">
+            <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
               📷 {cake.photographerCue}
             </span>
           ) : null}
@@ -107,7 +107,7 @@ export default function CakeCard({ cake, compact = false }) {
   return (
     <section
       aria-labelledby="cake-protocol-title"
-      className="rounded-xl border border-amber-700/50 bg-[#0b132b] p-4 shadow-lg"
+      className="rounded-xl border border-amber-700/50 bg-card p-4 shadow-lg"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
@@ -133,11 +133,11 @@ export default function CakeCard({ cake, compact = false }) {
       <SyncNote cake={cake} />
 
       <div className="mt-2 grid grid-cols-2 gap-2">
-        <div className="rounded-lg border border-[#1c2a52] bg-[#070b19] p-2">
+        <div className="rounded-lg border border-line bg-page p-2">
           <div className="text-[9px] uppercase tracking-wider text-slate-500">Cutting time</div>
           <div className="font-mono text-base font-semibold text-white">{cake.time ?? '—'}</div>
         </div>
-        <div className="rounded-lg border border-[#1c2a52] bg-[#070b19] p-2">
+        <div className="rounded-lg border border-line bg-page p-2">
           <div className="text-[9px] uppercase tracking-wider text-slate-500">Serve time</div>
           <div className="font-mono text-base font-semibold text-white">
             {cake.serveTime ?? '—'}
@@ -150,12 +150,12 @@ export default function CakeCard({ cake, compact = false }) {
         {cake.photographerCue ? (
           <span
             title={cake.photographerCue}
-            className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-300"
+            className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300"
           >
             📷 {cake.photographerCue}
           </span>
         ) : (
-          <span className="rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 text-slate-500">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
             📷 Photographer cue —
           </span>
         )}

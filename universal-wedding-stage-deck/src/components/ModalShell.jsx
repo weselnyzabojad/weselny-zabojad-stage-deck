@@ -51,14 +51,14 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
-        className={`relative flex flex-col overflow-hidden border border-[#1c2a52] bg-[#070b19] shadow-2xl ${SIZES[size] ?? SIZES.panel}`}
+        className={`relative flex flex-col overflow-hidden border border-line bg-page shadow-2xl ${SIZES[size] ?? SIZES.panel}`}
       >
         <button
           ref={closeRef}
           type="button"
           onClick={onClose}
           aria-label="Close overlay"
-          className="absolute right-3 top-3 z-20 h-10 w-10 rounded-lg border border-[#2b3d73] bg-[#111d3b] text-lg font-bold text-slate-200 transition hover:bg-[#1c2a52]"
+          className="absolute right-3 top-3 z-20 h-10 w-10 rounded-lg border border-line-strong bg-raised text-lg font-bold text-slate-200 transition hover:bg-line"
         >
           ✕
         </button>

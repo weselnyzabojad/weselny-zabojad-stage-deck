@@ -7,7 +7,7 @@ export default function HardAnchorAlertBanner({ radar }) {
 
   const collision = warning.status === 'collision';
   const tone = collision
-    ? 'border-[#ED2939]/80 bg-[#ED2939]/25 text-[#ffb3ba]'
+    ? 'border-alert/80 bg-alert/25 text-alert-tint'
     : 'border-amber-600/80 bg-amber-950/80 text-amber-100';
 
   return (

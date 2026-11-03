@@ -5,10 +5,10 @@ function ContactCard({ contact, onOpenAnchor }) {
   const anchorElementId = contactAnchorElementId(contact.anchor);
 
   return (
-    <article className="rounded-xl border border-[#1c2a52] bg-[#070b19]/70 p-3.5">
+    <article className="rounded-xl border border-line bg-page/70 p-3.5">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-mono text-[9px] uppercase tracking-widest text-[#849dff]">
+          <div className="font-mono text-[9px] uppercase tracking-widest text-brand-soft">
             {contact.role}
           </div>
           <h3 className="mt-0.5 font-heading text-base font-bold text-white">
@@ -16,7 +16,7 @@ function ContactCard({ contact, onOpenAnchor }) {
           </h3>
         </div>
         {contact.leavesAt ? (
-          <span className="shrink-0 rounded border border-[#2b3d73] bg-[#111d3b] px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+          <span className="shrink-0 rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
             🕒 {contact.leavesAt}
           </span>
         ) : null}
@@ -27,12 +27,12 @@ function ContactCard({ contact, onOpenAnchor }) {
           <a
             href={contact.phoneHref}
             title={`Call ${contact.name}`}
-            className="inline-flex items-center gap-1 rounded border border-[#3b5bdb]/60 bg-[#002395]/30 px-2 py-1 font-semibold text-[#b8c6ff] transition hover:bg-[#002395]/60"
+            className="inline-flex items-center gap-1 rounded border border-brand-strong/60 bg-brand/30 px-2 py-1 font-semibold text-brand-tint transition hover:bg-brand/60"
           >
             📞 {contact.phone}
           </a>
         ) : contact.phone ? (
-          <span className="inline-flex items-center gap-1 rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-1 text-slate-400">
+          <span className="inline-flex items-center gap-1 rounded border border-line-strong bg-raised px-2 py-1 text-slate-400">
             📞 {contact.phone}
           </span>
         ) : null}
@@ -41,12 +41,12 @@ function ContactCard({ contact, onOpenAnchor }) {
           <a
             href={contact.emailHref}
             title={`Email ${contact.name}`}
-            className="inline-flex items-center gap-1 rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-1 font-semibold text-slate-200 transition hover:bg-[#1c2a52]"
+            className="inline-flex items-center gap-1 rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200 transition hover:bg-line"
           >
             ✉️ {contact.email}
           </a>
         ) : contact.email ? (
-          <span className="inline-flex items-center gap-1 rounded border border-[#2b3d73] bg-[#111d3b] px-2 py-1 text-slate-400">
+          <span className="inline-flex items-center gap-1 rounded border border-line-strong bg-raised px-2 py-1 text-slate-400">
             ✉️ {contact.email}
           </span>
         ) : null}
@@ -84,8 +84,8 @@ function ContactCard({ contact, onOpenAnchor }) {
 export default function ContactsModal({ open, onClose, contacts = [], onOpenAnchor }) {
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="contacts-title" size="panel">
-      <header className="border-b border-[#1c2a52] bg-[#0b132b] px-5 py-4 pr-16">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-[#849dff]">
+      <header className="border-b border-line bg-card px-5 py-4 pr-16">
+        <div className="font-mono text-[10px] uppercase tracking-widest text-brand-soft">
           Vendor directory · this device
         </div>
         <h2 id="contacts-title" className="mt-1 font-heading text-xl font-bold text-white">
@@ -99,7 +99,7 @@ export default function ContactsModal({ open, onClose, contacts = [], onOpenAnch
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
         {contacts.length === 0 ? (
-          <p className="rounded-lg border border-[#1c2a52] bg-[#070b19] p-3 text-sm text-slate-400">
+          <p className="rounded-lg border border-line bg-page p-3 text-sm text-slate-400">
             No contacts in this cartridge. Add them under{' '}
             <span className="font-mono text-slate-300">contacts[]</span>.
           </p>
@@ -112,14 +112,14 @@ export default function ContactsModal({ open, onClose, contacts = [], onOpenAnch
         )}
       </div>
 
-      <footer className="flex items-center justify-between gap-3 border-t border-[#1c2a52] bg-[#0b132b] px-4 py-3">
+      <footer className="flex items-center justify-between gap-3 border-t border-line bg-card px-4 py-3">
         <span className="font-mono text-[10px] text-slate-500">
           Phone and email are vendor details; keep the device with the MC.
         </span>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-lg border border-[#2b3d73] bg-[#111d3b] px-4 py-2 font-heading text-xs font-bold text-slate-200 transition hover:bg-[#1c2a52]"
+          className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-bold text-slate-200 transition hover:bg-line"
         >
           Close
         </button>
