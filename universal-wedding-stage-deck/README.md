@@ -981,6 +981,31 @@ Every step can carry one DJ cutoff. The rule is:
 - The existing compact `ReelClock` cutoff chip uses the same rule through
   `buildReelClock(...).djCutoff`.
 
+### 29. Google Doc template with stable section markers (issue #70 / D8)
+
+The couple's Google Doc is now a deterministic input, not only an AI prompt:
+
+- [`schema/google-doc-template.md`](schema/google-doc-template.md) is the
+  copy-paste D8 template. It contains all 28 stable `## SECTION` markers in a
+  fixed order, from `## EVENT` and `## COUPLE IDENTITY` through `## PHOTO PLAN`,
+  `## SPEECHES`, `## GAMES` and `## EXTENSIONS`.
+- [`src/lib/googleDocTemplate.js`](src/lib/googleDocTemplate.js) holds the
+  canonical `SECTION_MANIFEST` (marker, required flag, v1.2 target path) plus a
+  pure parser: `parseGoogleDocTemplate`, `validateGoogleDocTemplate`,
+  `parseMarkdownTables`, `parseKeyValues`, `parseBullets` and
+  `parseCodeBlocks`.
+- [`docs/google-doc-template-conventions.md`](docs/google-doc-template-conventions.md)
+  documents the marker grammar, formatting rules, section-to-field map, error
+  policy and approval gate.
+- `npm run validate:template` checks the template's exact marker set, order and
+  fixed table headers.
+- Sections map deterministically: `## TIMELINE` to `steps`, `## DJ CUES`,
+  `## MC CUES` and `## SUBTASKS` attach by `Step ID`, `## VIEW VISIBILITY` to
+  the D1 matrix, `## PHOTO PLAN` to the D6 online-sunset plan, and so on.
+- **Provisional:** generated from the v1.2 proposal; the AI converter prompt,
+  v1.1 schema and runtime importer are unchanged until v1.2 is approved. The
+  parser is additive and ready to wire in after approval.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
