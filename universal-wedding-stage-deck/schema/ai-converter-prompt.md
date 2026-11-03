@@ -405,48 +405,13 @@ Extract games / crates that are not fixed into:
 `jokersCount` must equal `jokerGames.length`. `category` is `GAME`,
 `ANECDOTE` or `MUSIC_CRATE`.
 
-## Co-hosts and content creators
+## Removed: co-hosts and content creators
 
-Extract assistant hosts / co-MCs into `coHosts`:
-
-```json
-"coHosts": [
-  {
-    "id": "zuzia",
-    "name": "Zuzia",
-    "role": "Co-MC",
-    "phone": "+48 600 111 222",
-    "responsibilities": ["Bread & Salt", "Games pool", "Second microphone"],
-    "notes": "Shares the stage during the entrance and games."
-  }
-]
-```
-
-Extract social-media vendors into `contentCreators`:
-
-```json
-"contentCreators": [
-  {
-    "id": "paulina",
-    "name": "Paulina Nózka",
-    "platform": "INSTAGRAM",
-    "handle": "@paulinan",
-    "phone": "+48 600 333 444",
-    "arrivalTime": "16:00",
-    "departureTime": "22:00",
-    "deliverables": ["Behind-the-scenes reel", "Stories"],
-    "boundaries": [
-      "Do not block the official photographer or videographer",
-      "No flash during the ceremony"
-    ],
-    "notes": "Publish after the couple approves."
-  }
-]
-```
-
-`platform` is `INSTAGRAM`, `TIKTOK`, `YOUTUBE`, `FACEBOOK` or `OTHER`.
-Capture arrival/departure windows, deliverables and explicit photo/video
-boundaries.
+The Issue #16 module was removed (D10 / TODO 20). **Do not emit `coHosts` or
+`contentCreators`** in new cartridges; if the source mentions assistant hosts or
+social-media vendors, ignore those blocks or place a short note in
+`extensions.warnings`. The v1.1 schema still accepts the legacy arrays so old
+cartridges validate, but the importer drops them.
 
 ## Pre-Flight Action Extractor
 
