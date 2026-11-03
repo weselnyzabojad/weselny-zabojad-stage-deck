@@ -1,6 +1,7 @@
 import logo from '../assets/img/logo.png';
 import { useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
+import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
@@ -36,6 +37,7 @@ export default function DjBoothView({
   timeline,
   projectedFinish,
   clock,
+  drift,
   musicPolicy,
   stagePing,
   syncStatus,
@@ -114,6 +116,7 @@ export default function DjBoothView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <DriftPill drift={drift} size="sm" />
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />

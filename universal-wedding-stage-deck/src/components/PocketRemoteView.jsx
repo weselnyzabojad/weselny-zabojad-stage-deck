@@ -20,6 +20,7 @@ export default function PocketRemoteView({
   wedding,
   timeline,
   clock,
+  drift,
   cake,
   musicPolicy,
   onAdvance,
@@ -40,8 +41,8 @@ export default function PocketRemoteView({
   const nextEntry = activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : null;
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const isComplete = !activeEntry;
-  const driftText = activeEntry?.driftLabel ?? 'No actual start yet';
-  const driftClass = DRIFT_TONES[activeEntry?.driftTone ?? 'unknown'];
+  const driftText = drift?.canonicalDriftLabel ?? 'No actual start yet';
+  const driftClass = DRIFT_TONES[drift?.canonicalDriftTone ?? 'unknown'] ?? DRIFT_TONES.unknown;
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
@@ -70,7 +71,10 @@ export default function PocketRemoteView({
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 p-3">
         <ReelClock clock={clock} compact />
 
-        <div className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}>
+        <div
+          title={drift?.detail || undefined}
+          className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}
+        >
           <span className="text-[10px] uppercase tracking-widest">Drift</span>
           <span className="text-sm font-bold">{driftText ?? 'No actual start yet'}</span>
         </div>

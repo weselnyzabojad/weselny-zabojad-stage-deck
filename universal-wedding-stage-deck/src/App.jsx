@@ -5,6 +5,7 @@ import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
 import ContactsModal from './components/ContactsModal';
 import CoupleIdentity from './components/CoupleIdentity';
+import DriftPill from './components/DriftPill';
 import EventAdminCard from './components/EventAdminCard';
 import MusicPolicyCard from './components/MusicPolicyCard';
 import CulturalRulesBar from './components/CulturalRulesBar';
@@ -721,13 +722,6 @@ export default function App() {
   const isComplete = !currentStep;
   const realStart = currentEntry?.projectedStart ?? null;
   const estimatedEnd = currentEntry?.projectedEnd ?? null;
-  const drift = driftReport.currentDriftMinutes;
-  const driftText = driftReport.currentDriftLabel;
-  const driftClass = drift > 0
-    ? "bg-alert/20 border-alert/60 text-alert-soft"
-    : drift < 0
-      ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-      : "bg-raised border-line-strong text-slate-300";
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
@@ -796,6 +790,7 @@ export default function App() {
         timeline={timeline}
         projectedFinish={driftReport.projectedFinish}
         clock={driftReport.clock}
+        drift={driftReport.drift}
         musicPolicy={musicPolicy}
         stagePing={liveState.stage_ping}
         syncStatus={syncStatus}
@@ -835,6 +830,7 @@ export default function App() {
           wedding={WEDDING}
           timeline={timeline}
           clock={driftReport.clock}
+          drift={driftReport.drift}
           cake={cakeProtocol}
           musicPolicy={musicPolicy}
           theme={theme}
@@ -871,9 +867,7 @@ export default function App() {
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
           <span className="bg-raised px-3 py-1.5 rounded text-white font-mono font-semibold border border-line-strong text-sm">{realStart ?? "—"}</span>
-          {driftText ? (
-            <span className={`px-3 py-1.5 rounded font-semibold text-sm border ${driftClass}`}>{driftText}</span>
-          ) : null}
+          <DriftPill drift={driftReport.drift} />
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>
 
@@ -1213,7 +1207,7 @@ export default function App() {
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
               !deferTarget
                 ? "bg-card text-slate-600 border-line cursor-not-allowed"
-                : drift >= 45
+                : driftReport.canonicalDriftMinutes >= 45
                   ? "bg-amber-950/60 hover:bg-amber-900/60 border-amber-700 text-amber-200"
                   : "bg-raised hover:bg-line border-line-strong text-brand-soft"
             }`}
