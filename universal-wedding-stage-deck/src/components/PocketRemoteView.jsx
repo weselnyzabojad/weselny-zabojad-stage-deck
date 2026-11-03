@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import CoupleIdentity from './CoupleIdentity';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -46,7 +47,7 @@ export default function PocketRemoteView({
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.2em] text-[#849dff]">
               📱 Pocket Remote
             </div>
-            <div className="font-heading text-xs font-bold text-white">{wedding.couple}</div>
+            <CoupleIdentity wedding={wedding} className="text-xs" />
           </div>
         </div>
 

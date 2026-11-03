@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import CoupleIdentity from './CoupleIdentity';
 import KeySongsCard from './KeySongsCard';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
@@ -67,9 +68,9 @@ export default function DjBoothView({
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-[#849dff]">
               🎧 DJ Booth · read-only
             </div>
-            <div className="font-heading text-sm font-bold text-white">
-              {wedding.couple}
-              <span className="ml-2 font-body text-xs font-normal text-slate-400">{wedding.date}</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <CoupleIdentity wedding={wedding} className="text-sm" />
+              <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
             </div>
           </div>
         </div>
