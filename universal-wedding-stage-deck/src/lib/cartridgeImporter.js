@@ -69,6 +69,7 @@ export function summarizeCartridge(cartridge) {
   const keySongs = Array.isArray(cartridge?.musicPolicy?.importantSongs)
     ? cartridge.musicPolicy.importantSongs
     : [];
+  const cake = cartridge?.cake && typeof cartridge.cake === 'object' ? cartridge.cake : null;
 
   return {
     couple: cartridge?.couple ?? '—',
@@ -83,5 +84,8 @@ export function summarizeCartridge(cartridge) {
     coHostCount: coHosts.length,
     contentCreatorCount: contentCreators.length,
     keySongCount: keySongs.length,
+    hasCake: Boolean(cake),
+    cakeTime: cake?.time ?? null,
+    cakeServeTime: cake?.serveTime ?? null,
   };
 }

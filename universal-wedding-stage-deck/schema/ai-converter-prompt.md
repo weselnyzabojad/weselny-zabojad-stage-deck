@@ -238,6 +238,34 @@ Rules:
   a signed URL or a QR image: the DJ Booth generates the QR locally from the
   stored link.
 
+## Cake protocol (Google Doc `## CAKE`)
+
+Extract the cake protocol into the `cake` block:
+
+```json
+"cake": {
+  "time": "20:30",
+  "cuttingSong": "Cake - The Coup",
+  "sparklers": true,
+  "photographerCue": "Front-left of the cake table",
+  "serveTime": "20:45"
+}
+```
+
+Rules:
+
+- `time` is the cutting time, `serveTime` is when the plates leave the kitchen;
+  `serveTime` must not be before `time`.
+- `cuttingSong` must match the `CAKE` row of `musicPolicy.importantSongs[]`. If
+  both are present, keep the same title and artist; never store two conflicting
+  songs. The app prefers the Key Songs entry and ignores a conflicting
+  `cuttingSong`.
+- `sparklers` is a boolean. Omit it when the source does not say; do not invent
+  a permit or an effect.
+- `photographerCue` is the photographer position or cue (for example
+  "front-left of the cake table").
+- Never invent a cake song, time or cue.
+
 ## Teleprompter
 
 ### Speech
@@ -420,6 +448,8 @@ Before returning JSON, verify:
 8. No MC scripts or VIP details are inside `dj`.
 9. No markdown fences or commentary surround the JSON.
 10. Any assumptions are listed in `extensions.warnings`.
+11. `cake.serveTime` is not before `cake.time`, and the cake song matches the
+    `CAKE` row in `musicPolicy.importantSongs[]`.
 
 ## Raw wedding notes
 

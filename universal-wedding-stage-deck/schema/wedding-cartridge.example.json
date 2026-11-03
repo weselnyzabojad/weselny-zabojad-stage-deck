@@ -353,6 +353,13 @@
       }
     ]
   },
+  "cake": {
+    "time": "20:30",
+    "cuttingSong": "Cake - The Coup",
+    "sparklers": true,
+    "photographerCue": "Front-left of the cake table",
+    "serveTime": "20:45"
+  },
   "liveSyncState": {
     "active_step_id": "step_03",
     "completed_step_ids": ["step_01", "step_02"],

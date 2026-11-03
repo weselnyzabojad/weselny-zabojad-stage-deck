@@ -3,6 +3,7 @@
 // the same rules.
 
 import { isHttpUrl } from './importantSongs.js';
+import { clockDeltaMinutes } from './clockMath.js';
 
 export function collectSemanticErrors(cartridge) {
   const errors = [];
@@ -108,6 +109,15 @@ export function collectSemanticErrors(cartridge) {
       if (typeof song.stepId === 'string' && !stepIds.includes(song.stepId)) {
         pushError(`/musicPolicy/importantSongs/${index}/stepId`, `unknown step id "${song.stepId}"`);
       }
+    }
+  }
+
+  // Cake protocol (TODO 6): the serve time cannot precede the cutting time.
+  const cake = cartridge?.cake;
+  if (cake && typeof cake === 'object' && cake.time && cake.serveTime) {
+    const serveDelta = clockDeltaMinutes(cake.time, cake.serveTime);
+    if (serveDelta != null && serveDelta < 0) {
+      pushError('/cake/serveTime', 'serveTime cannot be before the cake cutting time');
     }
   }
 
