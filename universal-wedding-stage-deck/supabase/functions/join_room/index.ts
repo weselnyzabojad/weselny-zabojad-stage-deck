@@ -96,13 +96,16 @@ Deno.serve(async (req) => {
 
     const { data: wedding, error: weddingError } = await admin
       .from('weddings')
-      .select('wedding_id, room_code')
+      .select('wedding_id, room_code, expires_at')
       .eq('room_code', roomCode)
       .maybeSingle();
 
     if (weddingError) throw weddingError;
     if (!wedding) {
       return json({ error: 'Room not found. Check the share link.' }, 404);
+    }
+    if (wedding.expires_at && Date.parse(wedding.expires_at) < Date.now()) {
+      return json({ error: 'This room has ended. Ask the MC for a new share link.' }, 410);
     }
 
     const { data: roleRow, error: roleError } = await admin

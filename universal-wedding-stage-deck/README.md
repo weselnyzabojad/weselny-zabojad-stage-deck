@@ -793,10 +793,13 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
   service-role only.
 
 **TTL / delete.**
-- `weddings.expires_at` defaults to 30 days and is set by `publish_room`
-  (`expiresInDays`).
+- `weddings.expires_at` is set by `publish_room` from the **event date plus a
+  grace period** (default 7 days; configurable with `expiresInDays`, 1–365).
+  Without an event date it falls back to 30 days from publish time.
+- `join_room` rejects an expired room with HTTP 410.
 - `stage_deck_purge_expired()` deletes expired rooms (state, wedding, roles,
-  notes). Schedule it daily with pg_cron (commented example in `schema.sql`).
+  notes), orphaned room state and old `join_attempts`. Schedule it daily with
+  pg_cron (commented example in `schema.sql`).
 - `stage_deck_wipe_my_room()` lets the MC token wipe its own room immediately;
   the **Event data** card calls it and then clears the local cartridge, pairing,
   role session and host key.
@@ -893,14 +896,25 @@ Relevant files: `src/lib/speeches.js`, `src/components/SpeechesCard.jsx`,
 
 The anon key ships in the browser bundle by design, but the database is no
 longer open: `live_sync_state` and `weddings` require a role JWT issued by
-`join_room`, and `wedding_roles` / `join_attempts` are service-role only. The
-4-digit DDMM PIN is a local display gate, not a server secret; production uses
-6-digit per-role PINs hashed server-side and rate-limited.
+`join_room`, and `wedding_roles` / `join_attempts` are service-role only. There
+are no anon policies or data grants; `schema.sql` is idempotent (all policies
+are dropped and recreated), so it is safe to re-run on an existing deployment.
 
-Remaining hardening work (tracked in project.md): encrypted sensitive notes
-(D4), TTL/purge automation, role-based filtering of sensitive cartridge fields
-before delivery, and the full `/deck/` Apache/PWA deployment (TODO 19). Never
-expose the service-role key in the client.
+- Reads require both `wedding_id` and a valid `app_role` claim; writes are
+  limited to `mc`/`pocket`. `sensitive_notes` is `mc`-only ciphertext.
+- The 4-digit DDMM PIN is a local display gate, not a server secret; production
+  uses 6-digit per-role PINs hashed server-side and rate-limited.
+- `publish_room` sets `expires_at` to the event date + 7 days grace
+  (`expiresInDays`); `join_room` rejects expired rooms with 410;
+  `stage_deck_purge_expired()` removes expired and orphaned data plus old join
+  attempts. The MC can wipe immediately via `stage_deck_wipe_my_room()`.
+- The service-role key is only read from Edge Function secrets and is never in
+  the client bundle.
+
+Remaining hardening work (tracked in project.md): role-based filtering of
+sensitive cartridge fields before delivery, script encryption, and the full
+`/deck/` Apache/PWA deployment (TODO 19). Never expose the service-role key in
+the client.
 
 Role separation is now enforced by the role token for production joins. In
 local/demo mode it remains a UX boundary: one paired device can still switch
