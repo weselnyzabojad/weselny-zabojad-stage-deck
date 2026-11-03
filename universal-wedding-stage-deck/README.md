@@ -131,6 +131,7 @@ to join with another role's PIN.
 | 🎤 **MC Master** | Full deck: trilingual scripts, game clicker, drift, catering sub-tasks, VIP radar and stage pings. |
 | 🎧 **DJ Booth** | Read-only companion: projected timeline, playlist/track per step and flashing hard-cutoff timers. No step controls, scripts or family notes. |
 | 📱 **Pocket Remote** | Compact phone view for garden/terrace segments: drift, current/next step, script launcher, **Mark done & advance** and **Undo**. |
+| 📷 **Photographer** | Shot lists, sunset/golden-hour countdown, Oczepini cues, media-team contacts and venue access/load-in. |
 
 `WEDDING.hostingMode` controls the MC surface:
 
@@ -635,9 +636,9 @@ The importer warns when a new cartridge reuses the current cartridge's display
 PIN.
 
 **Production per-role PINs (`VITE_DECK_MODE=production`).**
-- The `/deck/` gate is `RoleJoinScreen`: room code + role (`mc`, `dj`, `pocket`)
-  + a **6-digit role PIN**. No couple names or cartridge data are rendered
-  before the server returns a token.
+- The `/deck/` gate is `RoleJoinScreen`: room code + role (`mc`, `dj`, `pocket`,
+  `photo`) + a **6-digit role PIN**. No couple names or cartridge data are
+  rendered before the server returns a token.
 - The client calls the `join_room` Edge Function. The server validates a bcrypt
   hash from `wedding_roles`, rate-limits to **5 failures per room/role/IP per
   15 minutes**, and returns a 24-hour JWT with
@@ -714,6 +715,51 @@ Relevant files: `src/index.css`, `index.html`, `src/lib/theme.js`,
 `src/hooks/useTheme.js`, `src/components/ThemeToggle.jsx`, `src/App.jsx`,
 `src/components/DjBoothView.jsx`, `src/components/PocketRemoteView.jsx`,
 `src/components/PairingScreen.jsx`, `src/components/RoleJoinScreen.jsx`.
+
+### 22. Photographer view and DJ detail tiers (issue #69 / TODO 21)
+
+**Photo role.** The `photo` role is now a first-class device view (D2), offered
+by the role switcher and the `/deck/` join screen. It is never hidden by the
+service package (`HOST_ONLY` only removes the DJ role).
+
+`PhotographerView` is driven by `viewVisibility.photo` (v1.2 defaults, merged
+with cartridge overrides) and renders:
+
+- a shared compact reel clock plus the read-only timeline;
+- **sunset / golden hour** with `LIVE` / `STALE` / `UNAVAILABLE` status,
+  countdowns, and the mini-session latest-start timer. D6 is respected: a
+  missing/unavailable value shows “Sunset unavailable — check connection” and is
+  never estimated offline; stale values are explicitly marked;
+- **Oczepini cues**: anchor countdown, toss/ties, winner-photo cue, briefed
+  status, sub-events, props and music, plus a warning when every media-team
+  member leaves before the Oczepini anchor;
+- **photo plan**: mini session, group photos (groups + minimum size), speed
+  foto, special effects (permit/approval/briefing) and guest coverage;
+- **media team** contacts with `tel:` links, call windows and departures;
+- **venue access**: address, Maps link, manager call, installation window,
+  load-in, access notes and parking.
+
+Data blocks `mediaTeam`, `photoPlan`, `oczepiny` and `venueLogistics` (plus
+`viewVisibility`) are now optional v1.1 schema fields. Validation enforces
+unique media IDs, an anchor for midnight Oczepini, fire-effect permit/approval/
+briefing, and coordinates for an enabled mini session.
+
+**DJ detail tiers.** `DjBoothView` now makes the service package explicit:
+
+- a **VIP / STANDARD / SOLO** badge in the header;
+- **VIP** unlocks playlist, notes and full cue detail, the Key Songs
+  source/root + mini QR, and a VIP-only **Copy set list** control;
+- **Standard** shows the essentials (track titles, basic timeline, cutoffs,
+  title + artist key songs);
+- **Solo** shows a “combined host + DJ” banner and keeps the Standard song
+  detail level (the MC view carries scripts and drift controls).
+
+The `speaker` role remains deferred until the speeches schema is approved.
+
+Relevant files: `src/lib/roles.js`, `src/components/PhotographerView.jsx`,
+`src/lib/photoPlan.js`, `src/components/DjBoothView.jsx`, `src/App.jsx`,
+`src/components/RoleJoinScreen.jsx`, `schema/wedding-schema-v1.1.json`,
+`src/lib/cartridgeValidation.js`, `schema/wedding-cartridge.example.json`.
 
 ### Security notes
 

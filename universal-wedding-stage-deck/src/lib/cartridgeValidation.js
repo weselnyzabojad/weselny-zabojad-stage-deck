@@ -139,6 +139,41 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
+  // Photographer view (TODO 21 / D2): structural refs and fire-safety rules.
+  uniqueList(cartridge?.mediaTeam, '/mediaTeam', 'media team member');
+
+  const oczepiny = cartridge?.oczepiny;
+  if (
+    oczepiny &&
+    typeof oczepiny === 'object' &&
+    oczepiny.enabled === true &&
+    oczepiny.order === 'MIDNIGHT' &&
+    !oczepiny.anchorId
+  ) {
+    pushError('/oczepiny/anchorId', 'MIDNIGHT Oczepiny requires an anchorId');
+  }
+
+  const effects = cartridge?.photoPlan?.specialEffects;
+  if (effects && typeof effects === 'object' && effects.fire === true) {
+    if (effects.permitRequired !== true) {
+      pushError('/photoPlan/specialEffects/permitRequired', 'fire effects require a permit requirement');
+    }
+    if (effects.venueApproved !== true) {
+      pushError('/photoPlan/specialEffects/venueApproved', 'fire effects require venue approval');
+    }
+    if (typeof effects.safetyBriefing !== 'string' || effects.safetyBriefing.trim() === '') {
+      pushError('/photoPlan/specialEffects/safetyBriefing', 'fire effects require a safety briefing');
+    }
+  }
+
+  const miniSession = cartridge?.photoPlan?.miniSession;
+  const sunset = cartridge?.photoPlan?.sunset;
+  if (miniSession?.enabled === true) {
+    if (!Number.isFinite(sunset?.latitude) || !Number.isFinite(sunset?.longitude)) {
+      pushError('/photoPlan/miniSession', 'mini session requires sunset latitude and longitude');
+    }
+  }
+
   if (
     Number.isInteger(cartridge?.jokersCount) &&
     Array.isArray(cartridge?.jokerGames) &&

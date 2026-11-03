@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import { useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -58,9 +59,28 @@ export default function DjBoothView({
   // Key Songs card: driven by the service package and `viewVisibility.dj.music`,
   // never by role switching. VIP adds source/root, cues and the mini QR;
   // Standard and Solo only show title + artist.
-  const detailTier = djDetailTier(servicePackage ?? resolveServicePackage(wedding));
+  const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
+  const detailTier = djDetailTier(resolvedPackage);
+  const isVip = detailTier === 'vip';
+  const isSolo = resolvedPackage === 'HOST_AND_DJ_SOLO';
+  const tierLabel = isVip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
   const keySongs = getImportantSongs(wedding);
   const showKeySongs = viewVisibility?.music !== false && keySongs.length > 0;
+  const [copyNotice, setCopyNotice] = useState('');
+
+  const copySetList = async () => {
+    const lines = timeline.map((entry) => {
+      const track = entry.step.dj?.track ?? entry.step.dj?.playlist ?? entry.step.title;
+      return `${entry.projectedStart ?? '--:--'}  ${track}`;
+    });
+    try {
+      await navigator.clipboard.writeText(lines.join('\n'));
+      setCopyNotice('Set list copied.');
+    } catch {
+      setCopyNotice('Copy failed — select the timeline manually.');
+    }
+    window.setTimeout(() => setCopyNotice(''), 2500);
+  };
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-page text-slate-100 antialiased select-none">
@@ -70,8 +90,21 @@ export default function DjBoothView({
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
           <div>
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-              🎧 DJ Booth · read-only
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
+                🎧 DJ Booth · read-only
+              </div>
+              <span
+                className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${
+                  isVip
+                    ? 'border-alert/60 bg-alert/20 text-alert-tint'
+                    : isSolo
+                      ? 'border-brand-strong bg-brand/30 text-brand-tint'
+                      : 'border-line bg-raised text-slate-400'
+                }`}
+              >
+                {tierLabel}
+              </span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <CoupleIdentity wedding={wedding} className="text-sm" />
@@ -93,6 +126,14 @@ export default function DjBoothView({
 
       <main className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
+          {isSolo ? (
+            <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
+              <strong className="font-heading">Solo package.</strong> Host and DJ run from one
+              device — open the MC view for scripts and drift controls. Song detail stays at the
+              Standard level.
+            </div>
+          ) : null}
+
           <ReelClock clock={clock} compact />
 
           <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
@@ -129,7 +170,7 @@ export default function DjBoothView({
 
             {activeEntry?.step.dj ? (
               <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-                {activeEntry.step.dj.playlist ? (
+                {isVip && activeEntry.step.dj.playlist ? (
                   <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
                     🎵 {activeEntry.step.dj.playlist}
                   </span>
@@ -137,6 +178,11 @@ export default function DjBoothView({
                 {activeEntry.step.dj.track ? (
                   <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
                     ▶ {activeEntry.step.dj.track}
+                  </span>
+                ) : null}
+                {isVip && activeEntry.step.dj.note ? (
+                  <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
+                    📝 {activeEntry.step.dj.note}
                   </span>
                 ) : null}
               </div>
@@ -206,7 +252,7 @@ export default function DjBoothView({
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
-                        {entry.step.dj?.playlist ? (
+                        {isVip && entry.step.dj?.playlist ? (
                           <span className="rounded border border-line-strong bg-raised px-2 py-0.5 text-slate-300">
                             🎵 {entry.step.dj.playlist}
                           </span>
@@ -219,6 +265,11 @@ export default function DjBoothView({
                         {entry.step.dj?.cutoff ? (
                           <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono font-bold text-alert-soft">
                             CUTOFF {entry.step.dj.cutoff}
+                          </span>
+                        ) : null}
+                        {isVip && entry.step.dj?.note ? (
+                          <span className="rounded border border-line-strong bg-raised px-2 py-0.5 text-slate-300">
+                            📝 {entry.step.dj.note}
                           </span>
                         ) : null}
                       </div>
@@ -260,6 +311,33 @@ export default function DjBoothView({
               </section>
 
               <MusicPolicyCard policy={musicPolicy} />
+
+              {isVip ? (
+                <section className="rounded-xl border border-brand-strong/50 bg-card/95 p-4 shadow-lg">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
+                      🎛️ VIP booth cues
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={copySetList}
+                      className="rounded border border-brand-strong bg-brand/30 px-2 py-0.5 text-[10px] font-semibold text-brand-tint transition hover:bg-brand/50"
+                    >
+                      Copy set list
+                    </button>
+                  </div>
+                  <ul className="mt-2 space-y-1.5 text-[11px] text-slate-400">
+                    <li>Playlist, track, notes and cutoff details are unlocked.</li>
+                    <li>Key Songs include source/root, cues and the mini QR.</li>
+                    <li>Red cutoffs are hard stops — fade before the stated time.</li>
+                  </ul>
+                  {copyNotice ? (
+                    <p className="mt-1 text-[10px] text-emerald-300" aria-live="polite">
+                      {copyNotice}
+                    </p>
+                  ) : null}
+                </section>
+              ) : null}
 
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">

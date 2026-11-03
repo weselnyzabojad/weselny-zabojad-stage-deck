@@ -31,15 +31,23 @@ export const ROLES = {
     icon: '📱',
     blurb: 'Compact advance and drift check for walking segments.',
   },
+  photo: {
+    id: 'photo',
+    label: 'Photographer',
+    short: 'Photo',
+    icon: '📷',
+    blurb: 'Shot lists, sunset windows and Oczepini cues.',
+  },
 };
 
-export const ROLE_ORDER = ['mc', 'dj', 'pocket'];
+export const ROLE_ORDER = ['mc', 'dj', 'pocket', 'photo'];
 
 export function normalizeRole(value) {
   return typeof value === 'string' && ROLES[value] ? value : 'mc';
 }
 
 // HOST_ONLY weddings have no DJ booth: hide that role from the switcher.
+// `photo` is a separate device role (D2) and is never hidden by the package.
 export function availableRoleIds(hostingMode) {
   if (hostingMode === 'HOST_ONLY') return ROLE_ORDER.filter((id) => id !== 'dj');
   return ROLE_ORDER;
