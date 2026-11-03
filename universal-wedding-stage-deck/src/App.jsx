@@ -629,6 +629,7 @@ export default function App() {
     handleAdvance,
     overlay,
     closeOverlay,
+    undoToast,
     setUndoToast,
     importerOpen,
     contactsOpen,
