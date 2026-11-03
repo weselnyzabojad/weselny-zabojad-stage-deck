@@ -1,6 +1,7 @@
 import logo from '../assets/img/logo.png';
 import { useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
+import CutoffStopwatchCard from './CutoffStopwatchCard';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -53,7 +54,6 @@ export default function DjBoothView({
 }) {
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
-  const cutoffs = timeline.filter((entry) => entry.step.dj?.cutoff);
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const pingStep =
     timeline.find((entry) => entry.step.id === stagePing?.step_id)?.step ?? activeEntry?.step ?? null;
@@ -163,9 +163,11 @@ export default function DjBoothView({
                 <div className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
                   Finish <span className="text-slate-200">{projectedFinish ?? '—'}</span>
                 </div>
-                {activeEntry?.step.dj?.cutoff ? (
+                {activeEntry?.step.dj?.cutoff || Number.isFinite(activeEntry?.step.dj?.cutoffSec) ? (
                   <div className="mt-1 rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
-                    CUTOFF {activeEntry.step.dj.cutoff}
+                    CUTOFF{' '}
+                    {activeEntry.step.dj.cutoff ??
+                      `start + ${activeEntry.step.dj.cutoffSec}s`}
                   </div>
                 ) : null}
               </div>
@@ -265,9 +267,10 @@ export default function DjBoothView({
                             ▶ {entry.step.dj.track}
                           </span>
                         ) : null}
-                        {entry.step.dj?.cutoff ? (
+                        {entry.step.dj?.cutoff || Number.isFinite(entry.step.dj?.cutoffSec) ? (
                           <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono font-bold text-alert-soft">
-                            CUTOFF {entry.step.dj.cutoff}
+                            CUTOFF{' '}
+                            {entry.step.dj.cutoff ?? `start + ${entry.step.dj.cutoffSec}s`}
                           </span>
                         ) : null}
                         {isVip && entry.step.dj?.note ? (
@@ -283,35 +286,7 @@ export default function DjBoothView({
             </section>
 
             <aside className="space-y-4">
-              <section className="rounded-xl border border-alert/40 bg-card/95 p-4 shadow-lg">
-                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-alert-soft">
-                  🚨 Hard cutoffs
-                </h2>
-                {cutoffs.length === 0 ? (
-                  <p className="mt-2 text-xs text-slate-400">No hard cutoffs in this cartridge.</p>
-                ) : (
-                  <ul className="mt-2 space-y-2">
-                    {cutoffs.map((entry) => {
-                      const urgent = entry.isActive || entry.index === activeIndex + 1;
-                      return (
-                        <li
-                          key={entry.step.id}
-                          className={`flex items-center justify-between gap-2 rounded-lg border p-2.5 text-xs ${
-                            urgent
-                              ? 'animate-pulse border-alert/70 bg-alert/20 text-alert-tint'
-                              : 'border-line bg-page text-slate-300'
-                          }`}
-                        >
-                          <span className="min-w-0 truncate">{entry.step.title}</span>
-                          <span className="shrink-0 font-mono font-bold">
-                            {entry.step.dj.cutoff}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </section>
+              <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
 
               <MusicPolicyCard policy={musicPolicy} />
 
