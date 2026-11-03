@@ -1,6 +1,7 @@
 import logo from '../assets/img/logo.png';
 import CakeCard from './CakeCard';
 import CoupleIdentity from './CoupleIdentity';
+import HoldToConfirmButton from './HoldToConfirmButton';
 import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
@@ -25,6 +26,8 @@ export default function PocketRemoteView({
   musicPolicy,
   onAdvance,
   onUndo,
+  canUndo = false,
+  canAdvance = true,
   onOpenScript,
   hasScript,
   syncStatus,
@@ -142,32 +145,31 @@ export default function PocketRemoteView({
         )}
 
         <div className="mt-auto space-y-2 pt-2">
-          <button
-            type="button"
-            onClick={onAdvance}
-            disabled={isComplete}
-            className={`flex w-full items-center justify-center gap-2 rounded-2xl border px-5 py-4 text-base font-heading font-bold transition ${
-              isComplete
-                ? 'cursor-not-allowed border-line bg-card text-slate-500'
+          <HoldToConfirmButton
+            onConfirm={onAdvance}
+            disabled={isComplete || !canAdvance}
+            label={isComplete ? 'EVENT COMPLETE ✓' : 'HOLD TO ADVANCE ➔'}
+            holdLabel="hold 1.2s"
+            className={`w-full rounded-2xl border px-5 py-4 text-base font-heading font-bold transition ${
+              isComplete || !canAdvance
+                ? 'border-line bg-card text-slate-500'
                 : 'border-brand-strong bg-brand text-white shadow-lg shadow-blue-950/60 hover:bg-brand-hover active:bg-brand-active'
             }`}
-          >
-            <span>{isComplete ? 'EVENT COMPLETE' : 'MARK DONE & ADVANCE'}</span>
-            <span className="text-xl">{isComplete ? '✓' : '➔'}</span>
-          </button>
+          />
 
           <div className="flex gap-2">
             <button
               type="button"
               onClick={onUndo}
-              disabled={completedCount === 0}
+              disabled={!canUndo}
+              title={canUndo ? 'Undo the last stage action' : 'Nothing to undo'}
               className={`flex-1 rounded-xl border px-4 py-3 text-sm font-heading font-semibold transition ${
-                completedCount === 0
+                !canUndo
                   ? 'cursor-not-allowed border-line bg-card text-slate-600'
                   : 'border-line-strong bg-raised text-slate-200 hover:bg-line'
               }`}
             >
-              ↩ Undo last step
+              ↩ Undo last action
             </button>
             <span className="flex items-center rounded-xl border border-line bg-card px-3 font-mono text-[10px] text-slate-400">
               {completedCount}/{timeline.length} done

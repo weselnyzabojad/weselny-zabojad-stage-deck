@@ -902,6 +902,38 @@ Relevant files: `src/lib/speeches.js`, `src/lib/speakerCache.js`,
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `schema/wedding-cartridge.example.json`.
 
+### 26. Command/undo stack, audit log and anchor-safe controls (issue #43 / P0.7)
+
+Every stage mutation is now undoable and auditable:
+
+- **Command/undo stack** — the last 25 state snapshots (in memory, per device)
+  cover completion, swap, defer, restore, manual offsets, subtask toggles and
+  speech selection. The footer **Undo** restores the previous state while
+  keeping the audit log intact.
+- **5-second Undo toast** — completion, swap, defer, restore, offset and clear
+  offset show a bottom toast with **Undo** and a 5-second countdown. Clicking
+  Undo reverts the action and dismisses the toast.
+- **Hold-to-confirm** — the MC footer and Pocket Remote replace
+  “MARK DONE & ADVANCE” with a 1.2-second hold button (pointer or Space/Enter).
+  A quick tap does nothing; the fill bar shows progress.
+- **Append-only `mutation_log`** — each action appends
+  `{ id, device_id, role, op, timestamp, payload }` to the synced live state.
+  A stable per-device id lives in `wzsd:v1:device-id`. Logs are merged by id
+  when remote/cross-tab state is adopted, so entries are never dropped and the
+  history stays append-only.
+- **Anchor safety** — swap is blocked when either side is a `HARD_ANCHOR`
+  (button disabled with an explanation). Defer only targets safe steps: hard
+  anchors and steps carrying a photographer cue are skipped. Swapping a step
+  with a photographer cue asks for explicit confirmation first.
+- The demo marks the entrance step with a photographer cue so the warning path
+  is visible.
+
+Relevant files: `src/lib/liveStageState.js`, `src/hooks/useLiveStageState.js`,
+`src/lib/deviceId.js`, `src/lib/stepGuards.js`,
+`src/components/HoldToConfirmButton.jsx`, `src/components/UndoToast.jsx`,
+`src/App.jsx`, `src/components/PocketRemoteView.jsx`, `src/index.css`,
+`schema/wedding-schema-v1.1.json`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

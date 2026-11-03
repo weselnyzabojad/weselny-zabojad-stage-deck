@@ -898,6 +898,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "photographerCue": {
+          "type": "string",
+          "description": "Optional photographer/vendor cue for this step. Swap warns and defer skips protected steps."
         }
       }
     },
@@ -1431,6 +1435,30 @@
         }
       }
     },
+    "mutationEntry": {
+      "type": "object",
+      "required": ["id", "op", "timestamp"],
+      "additionalProperties": true,
+      "description": "One append-only audit entry for a stage mutation (P0.7).",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "payload": {}
+      }
+    },
     "speech": {
       "type": "object",
       "required": ["id"],
@@ -1688,6 +1716,13 @@
         },
         "active_speech_id": {
           "$ref": "#/$defs/nullableId"
+        },
+        "mutation_log": {
+          "type": "array",
+          "description": "Append-only audit entries (device_id, role, op, timestamp, payload).",
+          "items": {
+            "$ref": "#/$defs/mutationEntry"
+          }
         }
       }
     }
