@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import logo from './assets/img/logo.png';
+import AppErrorBoundary from './components/AppErrorBoundary';
 import BufferAccordionCard from './components/BufferAccordionCard';
 import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
@@ -58,6 +59,7 @@ import {
   saveRoleSession,
 } from './lib/sync/roleSession';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
+import { deriveLastKnownStep, saveLastKnownStep, clearLastKnownStep } from './lib/lastKnownStep';
 import { loadActiveCartridge, saveActiveCartridge, clearActiveCartridge } from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
 import { clearStoredHostKey } from './lib/sensitiveNotes';
@@ -617,6 +619,43 @@ export default function App() {
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
+  // TODO 24: derive a tiny human-readable snapshot for the error boundaries,
+  // then persist it. The snapshot is derived during render (no extra state) and
+  // the effect only writes to localStorage.
+  const lastKnownStep = deriveLastKnownStep({
+    weddingId: WEDDING.weddingId,
+    steps: WEDDING.steps,
+    activeStepId: liveState.active_step_id,
+    completedStepIds: liveState.completed_step_ids,
+    role: actorRole,
+  });
+  useEffect(() => {
+    saveLastKnownStep({
+      weddingId: lastKnownStep.weddingId,
+      step: lastKnownStep.stepId
+        ? {
+            id: lastKnownStep.stepId,
+            title: lastKnownStep.title,
+            type: lastKnownStep.type,
+            location: lastKnownStep.location,
+            time: lastKnownStep.plannedTime,
+          }
+        : null,
+      role: lastKnownStep.role,
+      completedCount: lastKnownStep.completedCount,
+      totalSteps: lastKnownStep.totalSteps,
+    });
+  }, [
+    lastKnownStep.weddingId,
+    lastKnownStep.stepId,
+    lastKnownStep.title,
+    lastKnownStep.type,
+    lastKnownStep.location,
+    lastKnownStep.plannedTime,
+    lastKnownStep.role,
+    lastKnownStep.completedCount,
+    lastKnownStep.totalSteps,
+  ]);
   const [overlay, setOverlay] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [undoToast, setUndoToast] = useState(null);
@@ -666,49 +705,65 @@ export default function App() {
 
   if (IS_PRODUCTION && !sessionValid) {
     return (
-      <RoleJoinScreen
-        intent={DECK_INTENT}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        onJoined={(session) => {
-          saveRoleSession(session);
-          setRoleSession(session);
-        }}
-      />
+      <AppErrorBoundary
+        scope="join"
+        weddingId={WEDDING.weddingId}
+        lastKnownStep={lastKnownStep}
+      >
+        <RoleJoinScreen
+          intent={DECK_INTENT}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onJoined={(session) => {
+            saveRoleSession(session);
+            setRoleSession(session);
+          }}
+        />
+      </AppErrorBoundary>
     );
   }
 
   if (needsProductionCartridge) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
-        <div className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
-          <div className="text-3xl" aria-hidden="true">
-            {cartridgeError ? '⚠️' : '🎧'}
+      <AppErrorBoundary
+        scope="cartridge"
+        weddingId={WEDDING.weddingId}
+        lastKnownStep={lastKnownStep}
+      >
+        <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+          <div className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
+            <div className="text-3xl" aria-hidden="true">
+              {cartridgeError ? '⚠️' : '🎧'}
+            </div>
+            <h1 className="mt-2 font-heading text-lg font-bold text-white">
+              {cartridgeError ? 'Could not load this wedding' : 'Loading wedding…'}
+            </h1>
+            <p className="mt-2 text-xs leading-relaxed text-slate-400">
+              {cartridgeError ??
+                'Fetching the role-scoped cartridge for this room. No wedding data is cached until it arrives.'}
+            </p>
+            {cartridgeError ? (
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+              >
+                Retry
+              </button>
+            ) : null}
           </div>
-          <h1 className="mt-2 font-heading text-lg font-bold text-white">
-            {cartridgeError ? 'Could not load this wedding' : 'Loading wedding…'}
-          </h1>
-          <p className="mt-2 text-xs leading-relaxed text-slate-400">
-            {cartridgeError ??
-              'Fetching the role-scoped cartridge for this room. No wedding data is cached until it arrives.'}
-          </p>
-          {cartridgeError ? (
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
-            >
-              Retry
-            </button>
-          ) : null}
         </div>
-      </div>
+      </AppErrorBoundary>
     );
   }
 
   if (!IS_PRODUCTION && !pairing.isPaired) {
     return (
-      <>
+      <AppErrorBoundary
+        scope="pairing"
+        weddingId={WEDDING.weddingId}
+        lastKnownStep={lastKnownStep}
+      >
         <PairingScreen
           wedding={WEDDING}
           onPair={pairing.pair}
@@ -723,7 +778,7 @@ export default function App() {
           onClose={() => setImporterOpen(false)}
           currentCartridge={WEDDING}
         />
-      </>
+      </AppErrorBoundary>
     );
   }
 
@@ -873,6 +928,7 @@ export default function App() {
       await client.wipeRoom();
     }
     clearActiveCartridge();
+    clearLastKnownStep(WEDDING.weddingId);
     pairing.unpair();
     clearRoleSession();
     clearStoredHostKey();
@@ -888,102 +944,141 @@ export default function App() {
 
   if (currentRole === "dj") {
     return (
-      <DjBoothView
-        wedding={WEDDING}
-        timeline={timeline}
-        projectedFinish={driftReport.projectedFinish}
-        clock={driftReport.clock}
-        drift={driftReport.drift}
-        musicPolicy={musicPolicy}
-        stagePing={liveState.stage_ping}
-        syncStatus={syncStatus}
-        syncError={syncError}
-        remoteUpdatedAt={remoteUpdatedAt}
-        servicePackage={WEDDING.servicePackage}
-        viewVisibility={WEDDING.viewVisibility?.dj}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        {...roleProps}
-      />
+      <AppErrorBoundary
+        scope="dj"
+        weddingId={WEDDING.weddingId}
+        role={currentRole}
+        resetKey={currentRole}
+        lastKnownStep={lastKnownStep}
+      >
+        <DjBoothView
+          wedding={WEDDING}
+          timeline={timeline}
+          projectedFinish={driftReport.projectedFinish}
+          clock={driftReport.clock}
+          drift={driftReport.drift}
+          musicPolicy={musicPolicy}
+          stagePing={liveState.stage_ping}
+          syncStatus={syncStatus}
+          syncError={syncError}
+          remoteUpdatedAt={remoteUpdatedAt}
+          servicePackage={WEDDING.servicePackage}
+          viewVisibility={WEDDING.viewVisibility?.dj}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          {...roleProps}
+        />
+      </AppErrorBoundary>
     );
   }
 
   if (currentRole === "photo") {
     return (
-      <PhotographerView
-        wedding={WEDDING}
-        timeline={timeline}
-        clock={driftReport.clock}
-        stagePing={liveState.stage_ping}
-        hardAnchors={WEDDING.hardAnchors}
-        syncStatus={syncStatus}
-        syncError={syncError}
-        remoteUpdatedAt={remoteUpdatedAt}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        {...roleProps}
-      />
+      <AppErrorBoundary
+        scope="photo"
+        weddingId={WEDDING.weddingId}
+        role={currentRole}
+        resetKey={currentRole}
+        lastKnownStep={lastKnownStep}
+      >
+        <PhotographerView
+          wedding={WEDDING}
+          timeline={timeline}
+          clock={driftReport.clock}
+          stagePing={liveState.stage_ping}
+          hardAnchors={WEDDING.hardAnchors}
+          syncStatus={syncStatus}
+          syncError={syncError}
+          remoteUpdatedAt={remoteUpdatedAt}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          {...roleProps}
+        />
+      </AppErrorBoundary>
     );
   }
 
   if (currentRole === "speaker") {
     return (
-      <SpeakerView
-        wedding={WEDDING}
-        clock={driftReport.clock}
-        speechMode={speechMode}
-        speechCount={speeches.length}
-        activeSpeech={speakerSpeech}
-        activeSpeechId={liveState.active_speech_id}
-        fromCache={!activeSpeech && Boolean(speakerSpeech)}
-        syncStatus={syncStatus}
-        syncError={syncError}
-        remoteUpdatedAt={remoteUpdatedAt}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        canExit={!IS_PRODUCTION}
-        onExit={() => handleRoleChange("mc")}
-      />
+      <AppErrorBoundary
+        scope="speaker"
+        weddingId={WEDDING.weddingId}
+        role={currentRole}
+        resetKey={currentRole}
+        lastKnownStep={lastKnownStep}
+      >
+        <SpeakerView
+          wedding={WEDDING}
+          clock={driftReport.clock}
+          speechMode={speechMode}
+          speechCount={speeches.length}
+          activeSpeech={speakerSpeech}
+          activeSpeechId={liveState.active_speech_id}
+          fromCache={!activeSpeech && Boolean(speakerSpeech)}
+          syncStatus={syncStatus}
+          syncError={syncError}
+          remoteUpdatedAt={remoteUpdatedAt}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          canExit={!IS_PRODUCTION}
+          onExit={() => handleRoleChange("mc")}
+        />
+      </AppErrorBoundary>
     );
   }
 
   if (currentRole === "pocket") {
     return (
-      <>
-        <PocketRemoteView
-          wedding={WEDDING}
-          timeline={timeline}
-          clock={driftReport.clock}
-          drift={driftReport.drift}
-          cake={cakeProtocol}
-          musicPolicy={musicPolicy}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          onAdvance={handleAdvance}
-          onUndo={handleUndo}
-          canUndo={canUndo}
-          canAdvance={!isComplete}
-          onOpenScript={() => setOverlay("teleprompter")}
-          hasScript={Boolean(script)}
-          syncStatus={syncStatus}
-          syncError={syncError}
-          remoteUpdatedAt={remoteUpdatedAt}
-          {...roleProps}
-        />
-        {overlay === "teleprompter" && (
-          <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
-        )}
-        <UndoToast
-          toast={undoToast}
-          onUndo={handleUndo}
-          onDismiss={() => setUndoToast(null)}
-        />
-      </>
+      <AppErrorBoundary
+        scope="pocket"
+        weddingId={WEDDING.weddingId}
+        role={currentRole}
+        resetKey={currentRole}
+        lastKnownStep={lastKnownStep}
+      >
+        <>
+          <PocketRemoteView
+            wedding={WEDDING}
+            timeline={timeline}
+            clock={driftReport.clock}
+            drift={driftReport.drift}
+            cake={cakeProtocol}
+            musicPolicy={musicPolicy}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            onAdvance={handleAdvance}
+            onUndo={handleUndo}
+            canUndo={canUndo}
+            canAdvance={!isComplete}
+            onOpenScript={() => setOverlay("teleprompter")}
+            hasScript={Boolean(script)}
+            syncStatus={syncStatus}
+            syncError={syncError}
+            remoteUpdatedAt={remoteUpdatedAt}
+            {...roleProps}
+          />
+          {overlay === "teleprompter" && (
+            <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
+          )}
+          <UndoToast
+            toast={undoToast}
+            onUndo={handleUndo}
+            onDismiss={() => setUndoToast(null)}
+          />
+        </>
+      </AppErrorBoundary>
     );
   }
 
   return (
-    <>
+    <AppErrorBoundary
+      scope="mc"
+      weddingId={WEDDING.weddingId}
+      role={currentRole}
+      resetKey={currentRole}
+      lastKnownStep={lastKnownStep}
+    >
+      <>
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
@@ -1423,6 +1518,7 @@ export default function App() {
         contacts={contacts}
         onOpenAnchor={handleOpenAnchor}
       />
-    </>
+      </>
+    </AppErrorBoundary>
   );
 }
