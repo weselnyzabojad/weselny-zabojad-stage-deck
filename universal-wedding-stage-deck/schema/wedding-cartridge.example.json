@@ -274,6 +274,7 @@
       "title": "Hall Entrance, Toast & Dinner Start",
       "type": "ELASTIC",
       "location": "Main Hall",
+      "photographerCue": "Group photo before the toast",
       "subTasks": [
         "Parents' thank-you speech + gifts (with mic)",
         "Rosół + Tartare with Vodka shot",
@@ -596,6 +597,7 @@
     "stage_ping": null,
     "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
     "deferred_step_ids": [],
-    "manual_offset_minutes": 0
+    "manual_offset_minutes": 0,
+    "mutation_log": []
   }
 }

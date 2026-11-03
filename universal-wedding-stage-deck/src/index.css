@@ -123,6 +123,24 @@ body {
   80% { transform: translateX(3px); }
 }
 
+@keyframes undo-toast-countdown {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.undo-toast-progress {
+  animation-name: undo-toast-countdown;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .undo-toast-progress {
+    animation: none;
+    width: 100%;
+  }
+}
+
 .pin-shake {
   animation: pin-shake 0.4s ease-in-out;
 }

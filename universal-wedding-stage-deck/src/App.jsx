@@ -13,6 +13,7 @@ import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
 import HardAnchorAlertBanner from './components/HardAnchorAlertBanner';
 import HardAnchorRadar from './components/HardAnchorRadar';
+import HoldToConfirmButton from './components/HoldToConfirmButton';
 import JokerDrawerCard from './components/JokerDrawerCard';
 import PairingScreen from './components/PairingScreen';
 import PhotographerView from './components/PhotographerView';
@@ -27,6 +28,7 @@ import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
 import ThemeToggle from './components/ThemeToggle';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
+import UndoToast from './components/UndoToast';
 import VipAlertsModal from './components/VipAlertsModal';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { usePairing } from './hooks/usePairing';
@@ -45,6 +47,7 @@ import {
   resolveSpeeches,
 } from './lib/speeches';
 import { clearSpeakerScript, loadSpeakerScript } from './lib/speakerCache';
+import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { getSyncConfig } from './lib/sync/syncConfig';
 import {
@@ -484,7 +487,7 @@ const DEMO_WEDDING = {
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
-    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15" }, teleprompter: HALL_ENTRANCE_SCRIPT },
+    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", photographerCue: "Group photo before the toast", dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15" }, teleprompter: HALL_ENTRANCE_SCRIPT },
     { id: "step_04", time: "19:30", durationMin: 30, title: "Buffets Open & Dance Floor", type: "BUFFER", location: "Main Hall", deferable: true, buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }, dj: { playlist: "Dance Floor Block", track: "September — Earth, Wind & Fire" } },
     { id: "step_05", time: "20:30", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
   ]
@@ -566,10 +569,15 @@ export default function App() {
   );
   const sessionValid = IS_PRODUCTION && isRoleSessionValid(roleSession);
   const pairing = usePairing({ expectedPin: WEDDING.syncPin, weddingId: WEDDING.weddingId });
+  const { role, setRole } = useRole();
+  // The actor role is logged in mutation entries; production uses the token role.
+  const actorRole = IS_PRODUCTION ? roleSession?.role ?? 'mc' : role;
   const {
     liveState,
     markCurrentDone,
     undoLastStep,
+    canUndo,
+    lastUndo,
     toggleSubtask,
     sendStagePing,
     addManualOffset,
@@ -595,8 +603,8 @@ export default function App() {
     timeZone: VENUE_TIME_ZONE,
     accessToken: sessionValid ? roleSession.token : null,
     requireToken: IS_PRODUCTION,
+    role: actorRole,
   });
-  const { role, setRole } = useRole();
   // Per-device theme (TODO 27): Night Stage default, Daylight for outdoor glare.
   const { theme, toggleTheme } = useTheme();
   // D4: the host/MC device decrypts sensitive notes with its local host key.
@@ -611,6 +619,7 @@ export default function App() {
   const now = useEventClock({ serverTimeOffsetMs });
   const [overlay, setOverlay] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
+  const [undoToast, setUndoToast] = useState(null);
   const [importerOpen, setImporterOpen] = useState(false);
   const [contactsOpen, setContactsOpen] = useState(false);
   // Offline cache for the speaker script (the active id is synced separately).
@@ -795,28 +804,57 @@ export default function App() {
     liveState.deferred_step_ids?.includes(step.id),
   );
 
+  // P0.7: block hard anchors, warn on photographer cues.
+  const swapBlock = swapBlockReason(currentStep, nextEntry?.step ?? null);
+  const swapWarn = swapNeedsWarning(currentStep, nextEntry?.step ?? null);
+  const notifyUndo = (label) => setUndoToast({ id: Date.now(), label });
+
   const handleAddOffset = () => {
     addManualOffset(15);
     setControlNotice("Kitchen / vendor +15m offset applied.");
+    notifyUndo('Manual offset +15m');
   };
   const handleClearOffset = () => {
     clearManualOffset();
     setControlNotice("Manual offset cleared.");
+    notifyUndo('Manual offset cleared');
   };
   const handleSwap = () => {
-    if (!currentStep || !nextEntry) return;
+    if (!currentStep || !nextEntry || swapBlock) return;
+    if (
+      swapWarn &&
+      !window.confirm(
+        'One of these steps carries a photographer cue. Swap anyway? The vendor may be waiting for that moment.',
+      )
+    ) {
+      return;
+    }
     setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
     swapWithNext();
+    notifyUndo('Swapped steps');
   };
   const handleDefer = () => {
     if (!deferTarget) return;
     setControlNotice(`Deferred ${deferTarget.title} to the Joker Drawer.`);
     deferToJokerDrawer();
+    notifyUndo('Deferred to Joker Drawer');
   };
   const handleRestore = (stepId) => {
     const step = WEDDING.steps.find((candidate) => candidate.id === stepId);
     restoreDeferredStep(stepId);
     setControlNotice(`Restored ${step?.title ?? "block"} from the Joker Drawer.`);
+    notifyUndo('Restored block');
+  };
+  const handleAdvance = () => {
+    markCurrentDone();
+    setControlNotice('Step marked done.');
+    notifyUndo('Step completed');
+  };
+  const handleUndo = () => {
+    if (!canUndo) return;
+    undoLastStep();
+    setUndoToast(null);
+    setControlNotice('Last action undone.');
   };
   const handleOpenAnchor = (anchorElementId) => {
     setContactsOpen(false);
@@ -921,8 +959,10 @@ export default function App() {
           musicPolicy={musicPolicy}
           theme={theme}
           onToggleTheme={toggleTheme}
-          onAdvance={markCurrentDone}
-          onUndo={undoLastStep}
+          onAdvance={handleAdvance}
+          onUndo={handleUndo}
+          canUndo={canUndo}
+          canAdvance={!isComplete}
           onOpenScript={() => setOverlay("teleprompter")}
           hasScript={Boolean(script)}
           syncStatus={syncStatus}
@@ -933,6 +973,11 @@ export default function App() {
         {overlay === "teleprompter" && (
           <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
         )}
+        <UndoToast
+          toast={undoToast}
+          onUndo={handleUndo}
+          onDismiss={() => setUndoToast(null)}
+        />
       </>
     );
   }
@@ -1276,10 +1321,13 @@ export default function App() {
           <button
             type="button"
             onClick={handleSwap}
-            disabled={!nextEntry}
-            title={nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap"}
+            disabled={!nextEntry || Boolean(swapBlock)}
+            title={
+              swapBlock ??
+              (nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap")
+            }
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
-              !nextEntry
+              !nextEntry || swapBlock
                 ? "bg-card text-slate-600 border-line cursor-not-allowed"
                 : "bg-raised hover:bg-line border-line-strong text-slate-200"
             }`}
@@ -1290,7 +1338,11 @@ export default function App() {
             type="button"
             onClick={handleDefer}
             disabled={!deferTarget}
-            title={deferTarget ? `Defer ${deferTarget.title} to the Joker Drawer` : "No deferable block"}
+            title={
+              deferTarget
+                ? `Defer ${deferTarget.title} to the Joker Drawer`
+                : "No safe deferable block (anchors and photographer-cue steps are protected)"
+            }
             className={`px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border ${
               !deferTarget
                 ? "bg-card text-slate-600 border-line cursor-not-allowed"
@@ -1322,22 +1374,20 @@ export default function App() {
         <div className="flex items-center space-x-3 ml-auto">
           <button
             type="button"
-            onClick={undoLastStep}
-            disabled={completedCount === 0}
-            title="Undo last completed step"
-            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${completedCount === 0 ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
+            onClick={handleUndo}
+            disabled={!canUndo}
+            title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
+            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
           >
             ↩ Undo
           </button>
-          <button 
-            type="button"
-            onClick={markCurrentDone}
+          <HoldToConfirmButton
+            onConfirm={handleAdvance}
             disabled={isComplete}
-            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition flex items-center space-x-2 border ${isComplete ? 'bg-card text-slate-500 border-line cursor-not-allowed' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
-          >
-            <span>{isComplete ? "EVENT COMPLETE" : "MARK DONE & ADVANCE"}</span>
-            <span className="text-lg">{isComplete ? "✓" : "➔"}</span>
-          </button>
+            label={isComplete ? "EVENT COMPLETE ✓" : "HOLD TO ADVANCE ➔"}
+            holdLabel="hold 1.2s"
+            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
+          />
         </div>
 
       </footer>
@@ -1351,6 +1401,12 @@ export default function App() {
       {overlay === "vip" && (
         <VipAlertsModal open alerts={vipAlerts} onClose={closeOverlay} />
       )}
+
+      <UndoToast
+        toast={undoToast}
+        onUndo={handleUndo}
+        onDismiss={() => setUndoToast(null)}
+      />
 
       </div>
 

@@ -267,7 +267,9 @@ object is stored in `localStorage` and in the Supabase
   "stage_ping": null,
   "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
   "deferred_step_ids": [],
-  "manual_offset_minutes": 0
+  "manual_offset_minutes": 0,
+  "active_speech_id": "speech_witness",
+  "mutation_log": []
 }
 ```
 
@@ -278,6 +280,7 @@ Missing fields are filled with safe defaults by `normalizeLiveState`:
 - `manual_offset_minutes` -> `0`
 - `stage_ping` -> `null`
 - `active_speech_id` -> `null` (the MC selects the live speech)
+- `mutation_log` -> `[]` (append-only audit entries)
 
 `stage_ping.type` is one of `drop_track`, `fade_music`, `hold_2m`, `ready`.
 `manual_offset_minutes` is capped at 720 (12 hours).

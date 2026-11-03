@@ -5,6 +5,7 @@ import {
   deferStepToJoker,
   loadLiveState,
   markStepDone,
+  mergeMutationLogs,
   normalizeLiveState,
   restoreDeferredStep as restoreDeferredStepState,
   saveLiveState,
@@ -12,20 +13,26 @@ import {
   storageKey,
   swapStepWithNext,
   toggleSubtask as toggleSubtaskState,
-  undoStep,
+  undoSnapshot,
 } from '../lib/liveStageState';
+import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
 
 const PUBLISH_DEBOUNCE_MS = 200;
 const SERVER_TIME_REFRESH_MS = 5 * 60 * 1000;
+const MAX_UNDO_STEPS = 25;
 
 // State machine for the on-stage timeline. Hydrates from localStorage on mount,
 // mirrors every transition back to localStorage (offline fallback), follows
 // writes from other tabs, and — when the device is paired and Supabase env vars
 // are present — mirrors the same payload through a Realtime room channel.
-// `eventDateISO` + `timeZone` migrate legacy HH:MM actual timestamps to ISO.
+//
+// P0.7: every user command pushes an in-memory snapshot on an undo stack, and
+// each transition appends to the synced, append-only `mutation_log`. Remote or
+// cross-tab state clears the local undo stack (undoing another device's change
+// from this tablet would be unsafe).
 export function useLiveStageState({
   steps,
   weddingId,
@@ -35,21 +42,27 @@ export function useLiveStageState({
   timeZone = 'UTC',
   accessToken = null,
   requireToken = false,
+  role = 'mc',
 }) {
   const key = storageKey(weddingId);
   const eventContext = useMemo(
     () => ({ eventDateISO, timeZone }),
     [eventDateISO, timeZone],
   );
-  const [liveState, setLiveState] = useState(
-    () =>
+  const [model, setModel] = useState(() => ({
+    state:
       loadLiveState(key, steps, eventContext) ??
       normalizeLiveState(initialLiveState, steps, eventContext),
-  );
+    undo: [],
+  }));
+  const liveState = model.state;
   const [savedLocally, setSavedLocally] = useState(true);
   // Offset between the authoritative server clock and this device, used by the
   // reel clock's skew warning. `available` is false until a probe succeeds.
   const [serverTime, setServerTime] = useState({ offsetMs: 0, available: false });
+
+  const deviceId = useMemo(() => getDeviceId(), []);
+  const actor = useMemo(() => ({ deviceId, role }), [deviceId, role]);
 
   const syncConfig = useMemo(() => getSyncConfig(), []);
   // Production rooms only sync with a role token from join_room; the token also
@@ -91,8 +104,15 @@ export function useLiveStageState({
       if (event.key !== key || !event.newValue) return;
       try {
         const next = normalizeLiveState(JSON.parse(event.newValue), steps, eventContext);
-        lastSerializedRef.current = JSON.stringify(next);
-        setLiveState(next);
+        setModel((prev) => {
+          const state = {
+            ...next,
+            mutation_log: mergeMutationLogs(prev.state.mutation_log, next.mutation_log),
+          };
+          lastSerializedRef.current = JSON.stringify(state);
+          // Another tab changed the show; local undo no longer applies.
+          return { state, undo: [] };
+        });
       } catch {
         // Ignore malformed payloads written by other tabs/clients.
       }
@@ -123,9 +143,18 @@ export function useLiveStageState({
 
       const next = normalizeLiveState(payload.state, steps, eventContext);
       const nextSerialized = JSON.stringify(next);
-      lastAdoptedRef.current = nextSerialized;
       if (payload.updated_at) setRemoteUpdatedAt(payload.updated_at);
-      setLiveState((prev) => (JSON.stringify(prev) === nextSerialized ? prev : next));
+      setModel((prev) => {
+        if (JSON.stringify(prev.state) === nextSerialized) return prev;
+        // Keep local audit entries when adopting remote state.
+        const merged = {
+          ...next,
+          mutation_log: mergeMutationLogs(prev.state.mutation_log, next.mutation_log),
+        };
+        lastAdoptedRef.current = JSON.stringify(merged);
+        // Remote state wins; local undo would revert another device's change.
+        return { state: merged, undo: [] };
+      });
     };
 
     const unsubscribe = client.subscribe(roomKey, {
@@ -234,50 +263,124 @@ export function useLiveStageState({
     };
   }, [client]);
 
+  // Apply a user command and push the previous state on the undo stack.
+  const apply = useCallback((updater, meta = {}) => {
+    setModel((current) => {
+      const next = updater(current.state);
+      if (!next || next === current.state) return current;
+
+      const entry = {
+        state: current.state,
+        op: meta.op ?? 'change',
+        label: meta.label ?? meta.op ?? 'Change',
+        at: Date.now(),
+      };
+      return {
+        state: next,
+        undo: [...current.undo.slice(-(MAX_UNDO_STEPS - 1)), entry],
+      };
+    });
+  }, []);
+
   const markCurrentDone = useCallback(() => {
-    setLiveState((state) => markStepDone(state, steps));
-  }, [steps]);
+    apply((state) => markStepDone(state, steps, new Date(), actor), {
+      op: 'complete_step',
+      label: 'Step completed',
+    });
+  }, [apply, steps, actor]);
 
+  // Generic undo: covers completion, swap, defer, restore, offset, subtask and
+  // speech selection. Each snapshot is the exact previous state.
   const undoLastStep = useCallback(() => {
-    setLiveState((state) => undoStep(state));
-  }, []);
+    setModel((current) => {
+      if (current.undo.length === 0) return current;
+      const last = current.undo[current.undo.length - 1];
+      const restored = undoSnapshot(current.state, last.state, {
+        actor,
+        now: new Date(),
+        targetOp: last.op,
+      });
+      return { state: restored, undo: current.undo.slice(0, -1) };
+    });
+  }, [actor]);
 
-  const toggleSubtask = useCallback((task) => {
-    setLiveState((state) => toggleSubtaskState(state, task));
-  }, []);
+  const toggleSubtask = useCallback(
+    (task) => {
+      apply((state) => toggleSubtaskState(state, task, actor), {
+        op: 'toggle_subtask',
+        label: 'Subtask changed',
+      });
+    },
+    [apply, actor],
+  );
 
+  // Stage pings are a transient cue, not a schedule command: no undo entry.
   const sendStagePing = useCallback((type) => {
-    setLiveState((state) => sendStagePingState(state, type, { stepId: state.active_step_id }));
+    setModel((current) => ({
+      ...current,
+      state: sendStagePingState(current.state, type, { stepId: current.state.active_step_id }),
+    }));
   }, []);
 
-  const addManualOffset = useCallback((minutes = 15) => {
-    setLiveState((state) => addManualOffsetState(state, minutes));
-  }, []);
+  const addManualOffset = useCallback(
+    (minutes = 15) => {
+      apply((state) => addManualOffsetState(state, minutes, actor), {
+        op: 'offset',
+        label: 'Manual offset',
+      });
+    },
+    [apply, actor],
+  );
 
   const clearManualOffset = useCallback(() => {
-    setLiveState((state) => clearManualOffsetState(state));
-  }, []);
+    apply((state) => clearManualOffsetState(state, actor), {
+      op: 'clear_offset',
+      label: 'Offset cleared',
+    });
+  }, [apply, actor]);
 
   const swapWithNext = useCallback(() => {
-    setLiveState((state) => swapStepWithNext(state, steps));
-  }, [steps]);
+    apply((state) => swapStepWithNext(state, steps, new Date(), actor), {
+      op: 'swap',
+      label: 'Swapped steps',
+    });
+  }, [apply, steps, actor]);
 
   const deferToJokerDrawer = useCallback(() => {
-    setLiveState((state) => deferStepToJoker(state, steps));
-  }, [steps]);
+    apply((state) => deferStepToJoker(state, steps, new Date(), actor), {
+      op: 'defer',
+      label: 'Deferred to Joker Drawer',
+    });
+  }, [apply, steps, actor]);
 
-  const restoreDeferredStep = useCallback((stepId) => {
-    setLiveState((state) => restoreDeferredStepState(state, stepId, steps));
-  }, [steps]);
+  const restoreDeferredStep = useCallback(
+    (stepId) => {
+      apply((state) => restoreDeferredStepState(state, stepId, steps, actor), {
+        op: 'restore',
+        label: 'Restored block',
+      });
+    },
+    [apply, steps, actor],
+  );
 
-  const selectSpeech = useCallback((speechId) => {
-    setLiveState((state) => setActiveSpeechState(state, speechId));
-  }, []);
+  const selectSpeech = useCallback(
+    (speechId) => {
+      apply((state) => setActiveSpeechState(state, speechId, actor), {
+        op: 'select_speech',
+        label: 'Speech selection',
+      });
+    },
+    [apply, actor],
+  );
+
+  const lastUndo = model.undo.length > 0 ? model.undo[model.undo.length - 1] : null;
 
   return {
     liveState,
     markCurrentDone,
     undoLastStep,
+    canUndo: model.undo.length > 0,
+    lastUndo,
     toggleSubtask,
     sendStagePing,
     addManualOffset,
