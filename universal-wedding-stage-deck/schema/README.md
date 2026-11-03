@@ -10,9 +10,15 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | --- | --- |
 | `wedding-schema-v1.1.json` | Draft 2020-12 JSON Schema (canonical). |
 | `wedding-schema-v1.2.proposal.md` | Proposed v1.2 field model, decisions D1-D9, migration, and validation rules. |
+| `google-doc-template.md` | Provisional Google Doc template with stable `## SECTION` markers (D8 / issue #70). |
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
 | `ai-converter-prompt.md` | Copy-paste prompt for converting raw Google Docs / notes into v1.1 JSON. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
+
+The Google Doc template is generated from the v1.2 proposal and is not wired
+into the importer until v1.2 is approved. Its conventions and field map live in
+[`docs/google-doc-template-conventions.md`](../docs/google-doc-template-conventions.md);
+check it with `npm run validate:template`.
 
 Validate the example (or any cartridge):
 
