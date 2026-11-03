@@ -42,3 +42,27 @@ create policy "stage deck update"
   with check (true);
 
 grant select, insert, update on table public.live_sync_state to anon, authenticated;
+
+-- P0.6 / reel clock: authoritative server time + server-side `updated_at`.
+-- The reel clock uses this to warn when a device clock is more than ~30s off.
+create or replace function public.stage_deck_server_time()
+returns timestamptz
+language sql
+stable
+as $$ select now(); $$;
+
+grant execute on function public.stage_deck_server_time() to anon, authenticated;
+
+create or replace function public.touch_live_sync_state_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at := now();
+  return new;
+end $$;
+
+drop trigger if exists touch_live_sync_state on public.live_sync_state;
+create trigger touch_live_sync_state
+  before insert or update on public.live_sync_state
+  for each row execute function public.touch_live_sync_state_updated_at();

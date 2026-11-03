@@ -5,6 +5,7 @@
 // still work as the offline fallback when the venue loses reception.
 
 import { normalizeStagePing } from './stagePings.js';
+import { normalizeActualTimestamp } from './eventTime.js';
 
 const STORAGE_VERSION = 1;
 const MAX_MANUAL_OFFSET_MINUTES = 12 * 60;
@@ -87,7 +88,7 @@ export function createLiveState(steps, overrides = {}) {
   };
 }
 
-export function normalizeLiveState(raw, steps) {
+export function normalizeLiveState(raw, steps, context = {}) {
   const order = normalizeStepOrder(raw?.step_order, steps);
   if (!raw || typeof raw !== 'object' || order.length === 0) {
     return createLiveState(steps);
@@ -112,7 +113,8 @@ export function normalizeLiveState(raw, steps) {
   const actual = {};
   if (raw.actual_timestamps && typeof raw.actual_timestamps === 'object') {
     for (const id of order) {
-      if (typeof raw.actual_timestamps[id] === 'string') actual[id] = raw.actual_timestamps[id];
+      const value = normalizeActualTimestamp(raw.actual_timestamps[id], context);
+      if (value) actual[id] = value;
     }
   }
 
@@ -153,7 +155,7 @@ export function markStepDone(state, steps, now = new Date()) {
   const nextStep = ordered.slice(index + 1).find((step) => !completed.includes(step.id)) ?? null;
   const actual = { ...state.actual_timestamps };
   if (nextStep && !actual[nextStep.id]) {
-    actual[nextStep.id] = formatClock(now);
+    actual[nextStep.id] = now.toISOString();
   }
 
   return {
@@ -233,7 +235,7 @@ export function swapStepWithNext(state, steps, now = new Date()) {
 
   const actual = { ...state.actual_timestamps };
   delete actual[state.active_step_id];
-  if (!actual[next.id]) actual[next.id] = formatClock(now);
+  if (!actual[next.id]) actual[next.id] = now.toISOString();
 
   return {
     ...state,
@@ -258,7 +260,7 @@ export function deferStepToJoker(state, steps, now = new Date()) {
   if (wasActive) {
     const next = ordered.slice(targetIndex + 1).find((step) => !state.completed_step_ids.includes(step.id)) ?? null;
     active = next?.id ?? null;
-    if (next && !actual[next.id]) actual[next.id] = formatClock(now);
+    if (next && !actual[next.id]) actual[next.id] = now.toISOString();
   }
 
   const deferred = state.deferred_step_ids ?? [];
@@ -297,12 +299,12 @@ export function restoreDeferredStep(state, stepId, steps = []) {
   };
 }
 
-export function loadLiveState(key, steps) {
+export function loadLiveState(key, steps, context = {}) {
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(key);
     if (!raw) return null;
-    return normalizeLiveState(JSON.parse(raw), steps);
+    return normalizeLiveState(JSON.parse(raw), steps, context);
   } catch {
     // Corrupt JSON or blocked storage: fall back to the cartridge defaults.
     return null;

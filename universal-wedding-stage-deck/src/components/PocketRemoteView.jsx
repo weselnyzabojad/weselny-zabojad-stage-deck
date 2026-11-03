@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import SyncStatusBadge from './SyncStatusBadge';
 
@@ -14,6 +15,7 @@ const DRIFT_TONES = {
 export default function PocketRemoteView({
   wedding,
   timeline,
+  clock,
   onAdvance,
   onUndo,
   onOpenScript,
@@ -55,6 +57,8 @@ export default function PocketRemoteView({
       </header>
 
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 p-3">
+        <ReelClock clock={clock} compact />
+
         <div className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}>
           <span className="text-[10px] uppercase tracking-widest">Drift</span>
           <span className="text-sm font-bold">{driftText ?? 'No actual start yet'}</span>
