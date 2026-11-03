@@ -8,6 +8,7 @@ import {
   normalizeLiveState,
   restoreDeferredStep as restoreDeferredStepState,
   saveLiveState,
+  setActiveSpeech as setActiveSpeechState,
   storageKey,
   swapStepWithNext,
   toggleSubtask as toggleSubtaskState,
@@ -269,6 +270,10 @@ export function useLiveStageState({
     setLiveState((state) => restoreDeferredStepState(state, stepId, steps));
   }, [steps]);
 
+  const selectSpeech = useCallback((speechId) => {
+    setLiveState((state) => setActiveSpeechState(state, speechId));
+  }, []);
+
   return {
     liveState,
     markCurrentDone,
@@ -280,6 +285,7 @@ export function useLiveStageState({
     swapWithNext,
     deferToJokerDrawer,
     restoreDeferredStep,
+    selectSpeech,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),

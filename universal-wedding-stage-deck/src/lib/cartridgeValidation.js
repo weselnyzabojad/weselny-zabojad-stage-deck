@@ -57,6 +57,16 @@ export function collectSemanticErrors(cartridge) {
     if (pingStep != null && !known.has(pingStep)) {
       pushError('/liveSyncState/stage_ping/step_id', `unknown step id "${pingStep}"`);
     }
+
+    const speechIds = new Set(
+      (Array.isArray(cartridge?.speeches) ? cartridge.speeches : [])
+        .map((speech) => (typeof speech?.id === 'string' ? speech.id : null))
+        .filter(Boolean),
+    );
+    const activeSpeech = live.active_speech_id;
+    if (activeSpeech != null && !speechIds.has(activeSpeech)) {
+      pushError('/liveSyncState/active_speech_id', `unknown speech id "${activeSpeech}"`);
+    }
   }
 
   const uniqueList = (items, location, label) => {
@@ -74,6 +84,22 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
   uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
   uniqueList(cartridge?.contacts, '/contacts', 'contact');
+
+  // Speeches (TODO 8): ids and explicit order values must be unique. A missing
+  // COMPLEX script is a warning in the product spec, not an import blocker.
+  uniqueList(cartridge?.speeches, '/speeches', 'speech');
+  const speechOrders = new Map();
+  for (const [index, speech] of (Array.isArray(cartridge?.speeches) ? cartridge.speeches : []).entries()) {
+    if (!speech || !Number.isInteger(speech.order)) continue;
+    if (speechOrders.has(speech.order)) {
+      pushError(
+        `/speeches/${index}/order`,
+        `duplicate speech order ${speech.order} (also used by "${speechOrders.get(speech.order)}")`,
+      );
+    } else {
+      speechOrders.set(speech.order, speech.id ?? `speech ${index + 1}`);
+    }
+  }
 
   // Key songs (TODO 18 / Phase 1.5d). Missing titles, artists or sources are
   // warnings in the product spec, not import blockers; only broken references

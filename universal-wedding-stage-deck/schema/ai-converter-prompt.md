@@ -272,6 +272,47 @@ Rules:
 - `licensing`: free text for the licence (venue ZAIKS, SACEM, etc.).
 - Never invent songs, reasons, request windows or licensing details.
 
+## Speeches (Google Doc `## SPEECHES`)
+
+Capture the speech plan and the script text. This shape is provisional; keep it
+exactly as given.
+
+```json
+"speechMode": "COMPLEX",
+"speeches": [
+  {
+    "id": "speech_witness",
+    "mode": "COMPLEX",
+    "speaker": { "name": "Bartek", "relationship": "Best man", "contact": "+48 600 222 333" },
+    "order": 1,
+    "time": "19:45",
+    "durationMin": 5,
+    "language": "PL",
+    "mic": "MIC_2",
+    "cue": "After the main course",
+    "script": { "text": "...", "format": "PLAIN", "ready": true, "source": "GOOGLE_DOC" },
+    "delivery": "READ",
+    "mcIntro": true,
+    "visibleToRoles": ["mc", "speaker"],
+    "teleprompterRef": "step_05"
+  }
+]
+```
+
+Rules:
+
+- `speechMode` is `OFF`, `LIGHT` or `COMPLEX`. `LIGHT` means a few unprepared
+  words; `COMPLEX` means prepared, rehearsed scripts driven by the MC.
+- A per-speech `mode` may override `LIGHT` / `COMPLEX`.
+- Copy the script **verbatim**, preserving paragraph breaks. Never invent,
+  summarize or rewrite a speech.
+- `delivery` is `READ`, `MEMORIZE` or `NOTES`.
+- Capture `speaker.name`, `relationship`, `order`, `time`, `durationMin`,
+  `language`, `mic`, `cue`, `mcIntro` and `visibleToRoles`.
+- For a `COMPLEX` speech with no script, add a pre-wedding TODO and an
+  `extensions.warnings` entry; do not block the import and do not fabricate text.
+- If the source has no speeches, set `speechMode: "OFF"` and omit `speeches`.
+
 ## Cake protocol (Google Doc `## CAKE`)
 
 Extract the cake protocol into the `cake` block:

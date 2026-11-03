@@ -244,6 +244,18 @@
     "privacy": {
       "$ref": "#/$defs/privacy"
     },
+    "speechMode": {
+      "type": "string",
+      "enum": ["OFF", "LIGHT", "COMPLEX"],
+      "description": "Wedding-level speech mode (TODO 8); per-speech `mode` may override LIGHT/COMPLEX."
+    },
+    "speeches": {
+      "type": "array",
+      "description": "Provisional speech records. Scripts are stored verbatim; the final schema/UI is still deferred.",
+      "items": {
+        "$ref": "#/$defs/speech"
+      }
+    },
     "liveSyncState": {
       "$ref": "#/$defs/liveSyncState"
     },
@@ -1419,6 +1431,97 @@
         }
       }
     },
+    "speech": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": true,
+      "description": "Provisional speech record (TODO 8). Script text is stored verbatim.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["LIGHT", "COMPLEX"]
+        },
+        "speaker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": ["name"],
+              "additionalProperties": true,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "relationship": {
+                  "type": "string"
+                },
+                "contact": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "order": {
+          "type": "integer"
+        },
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "durationMin": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "language": {
+          "type": "string"
+        },
+        "mic": {
+          "type": "string"
+        },
+        "cue": {
+          "type": "string"
+        },
+        "script": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "format": {
+              "type": "string"
+            },
+            "ready": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string"
+            }
+          }
+        },
+        "delivery": {
+          "type": "string",
+          "enum": ["READ", "MEMORIZE", "NOTES"]
+        },
+        "mcIntro": {
+          "type": "boolean"
+        },
+        "visibleToRoles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teleprompterRef": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
     "mustPlayTrack": {
       "type": "object",
       "required": ["id", "track"],
@@ -1558,6 +1661,9 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 720
+        },
+        "active_speech_id": {
+          "$ref": "#/$defs/nullableId"
         }
       }
     }

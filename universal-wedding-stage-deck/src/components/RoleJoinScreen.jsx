@@ -4,7 +4,7 @@ import { ROLES } from '../lib/roles';
 import { joinRoom } from '../lib/sync/joinRoom';
 import ThemeToggle from './ThemeToggle';
 
-const JOIN_ROLES = ['mc', 'dj', 'pocket', 'photo'];
+const JOIN_ROLES = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
 
 // Production `/deck/` gate: per-role PIN validated server-side by the
 // `join_room` Edge Function. No couple names or cartridge data are rendered
@@ -98,7 +98,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
             Your role
           </span>
-          <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Device role">
+          <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Device role">
             {JOIN_ROLES.map((id) => {
               const meta = ROLES[id];
               const active = role === id;

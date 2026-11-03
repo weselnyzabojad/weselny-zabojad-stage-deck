@@ -132,6 +132,7 @@ to join with another role's PIN.
 | 🎧 **DJ Booth** | Read-only companion: projected timeline, playlist/track per step and flashing hard-cutoff timers. No step controls, scripts or family notes. |
 | 📱 **Pocket Remote** | Compact phone view for garden/terrace segments: drift, current/next step, script launcher, **Mark done & advance** and **Undo**. |
 | 📷 **Photographer** | Shot lists, sunset/golden-hour countdown, Oczepini cues, media-team contacts and venue access/load-in. |
+| 🗣️ **Speaker** | Read-only "Speech text — script" teleprompter for the speech the MC has made live. |
 
 `WEDDING.hostingMode` controls the MC surface:
 
@@ -637,8 +638,8 @@ PIN.
 
 **Production per-role PINs (`VITE_DECK_MODE=production`).**
 - The `/deck/` gate is `RoleJoinScreen`: room code + role (`mc`, `dj`, `pocket`,
-  `photo`) + a **6-digit role PIN**. No couple names or cartridge data are
-  rendered before the server returns a token.
+  `photo`, `speaker`) + a **6-digit role PIN**. No couple names or cartridge data
+  are rendered before the server returns a token.
 - The client calls the `join_room` Edge Function. The server validates a bcrypt
   hash from `wedding_roles`, rate-limits to **5 failures per room/role/IP per
   15 minutes**, and returns a 24-hour JWT with
@@ -754,7 +755,7 @@ briefing, and coordinates for an enabled mini session.
 - **Solo** shows a “combined host + DJ” banner and keeps the Standard song
   detail level (the MC view carries scripts and drift controls).
 
-The `speaker` role remains deferred until the speeches schema is approved.
+The `speaker` role is now implemented — see section 25.
 
 Relevant files: `src/lib/roles.js`, `src/components/PhotographerView.jsx`,
 `src/lib/photoPlan.js`, `src/components/DjBoothView.jsx`, `src/App.jsx`,
@@ -838,6 +839,55 @@ components for backward compatibility, but no view renders them.
 Relevant files: `src/lib/driftEngine.js`, `src/components/DriftPill.jsx`,
 `src/App.jsx`, `src/components/PocketRemoteView.jsx`,
 `src/components/DjBoothView.jsx`, `src/lib/bufferAccordion.js`.
+
+### 25. Speeches and the Speaker role (issue #51 / TODO 8)
+
+Speeches are now captured and rendered, with the final schema/UI still marked
+provisional.
+
+**Data**
+- `speechMode: OFF | LIGHT | COMPLEX` at the wedding level, with per-speech
+  `mode` overrides.
+- `speeches[]` records speaker name/relationship, order, time, duration,
+  language, mic, cue, delivery, MC-intro flag, visibility, `teleprompterRef` and
+  `script: { text, format, ready, source }`.
+- Script text is stored **verbatim** (paragraph breaks preserved). A missing
+  COMPLEX script warns and remains editable; it never blocks the import.
+- Validation rejects duplicate speech IDs/order and an `active_speech_id` that
+  references an unknown speech.
+
+**MC**
+- A **🗣️ Speeches** card lists the plan, script readiness and countdown. The MC
+  selects which speech is live with **Go live / Stop live**; the selection is
+  stored as `liveSyncState.active_speech_id` and syncs to the speaker device.
+
+**Speaker role + view**
+- `speaker` is a first-class device role, offered by the role switcher and the
+  `/deck/` join flow (its own 6-digit PIN).
+- **“Speech text — script”** is a large, high-contrast, read-only teleprompter.
+  It shows only the live speech, the speaker name, cue, mic, language, timing
+  (starts in / remaining / over) and the script. It never shows VIP alerts,
+  timeline controls or other speeches.
+- If the MC has not selected a speech, the device waits; a speech whose
+  `visibleToRoles` excludes `speaker` shows a locked state.
+- The cartridge is cached locally, so the assigned script works offline.
+
+**Google Doc parser**
+- The AI converter prompt maps a `## SPEECHES` section to `speechMode` +
+  `speeches[]` and tells the model to copy scripts exactly, never summarise,
+  and to add a pre-wedding TODO when a COMPLEX script is missing.
+
+**Still deferred**
+- The final speech schema/UI, consent workflow, per-role cartridge filtering and
+  script encryption/offline policy (D4) are not finalised. The speaker view only
+  *presents* the assigned script; the cartridge on the device still contains the
+  other speeches until role-scoped delivery/encryption lands.
+
+Relevant files: `src/lib/speeches.js`, `src/components/SpeechesCard.jsx`,
+`src/components/SpeakerView.jsx`, `src/lib/roles.js`, `src/App.jsx`,
+`src/lib/liveStageState.js`, `src/hooks/useLiveStageState.js`,
+`src/components/RoleJoinScreen.jsx`, `schema/wedding-schema-v1.1.json`,
+`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
 
 ### Security notes
 

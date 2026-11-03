@@ -84,6 +84,7 @@ export function createLiveState(steps, overrides = {}) {
     step_order: steps.map((step) => step.id),
     deferred_step_ids: [],
     manual_offset_minutes: 0,
+    active_speech_id: null,
     ...overrides,
   };
 }
@@ -130,6 +131,11 @@ export function normalizeLiveState(raw, steps, context = {}) {
     ? Math.max(0, Math.min(MAX_MANUAL_OFFSET_MINUTES, Math.round(rawOffset)))
     : 0;
 
+  const activeSpeech =
+    typeof raw.active_speech_id === 'string' && raw.active_speech_id.trim()
+      ? raw.active_speech_id.trim()
+      : null;
+
   return {
     active_step_id: active ?? null,
     completed_step_ids: completed,
@@ -139,6 +145,7 @@ export function normalizeLiveState(raw, steps, context = {}) {
     step_order: order,
     deferred_step_ids: deferred,
     manual_offset_minutes: manualOffset,
+    active_speech_id: activeSpeech,
   };
 }
 
@@ -213,6 +220,14 @@ export function addManualOffset(state, minutes) {
 export function clearManualOffset(state) {
   if (!state.manual_offset_minutes) return state;
   return { ...state, manual_offset_minutes: 0 };
+}
+
+// MC-only selection of the live speech; synced so the speaker device receives
+// only the assigned script (see `resolveActiveSpeech`).
+export function setActiveSpeech(state, speechId) {
+  const next = typeof speechId === 'string' && speechId.trim() ? speechId.trim() : null;
+  if ((state.active_speech_id ?? null) === next) return state;
+  return { ...state, active_speech_id: next };
 }
 
 // Execute the next block first, then return to the current block. The old
