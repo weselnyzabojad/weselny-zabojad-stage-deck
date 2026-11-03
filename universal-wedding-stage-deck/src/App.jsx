@@ -5,6 +5,7 @@ import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
 import ContactsModal from './components/ContactsModal';
 import CoupleIdentity from './components/CoupleIdentity';
+import EventAdminCard from './components/EventAdminCard';
 import MusicPolicyCard from './components/MusicPolicyCard';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
@@ -30,6 +31,7 @@ import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
 import { useEventClock } from './hooks/useEventClock';
 import { useTheme } from './hooks/useTheme';
+import { useSensitiveNotes } from './hooks/useSensitiveNotes';
 import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
@@ -45,8 +47,9 @@ import {
   saveRoleSession,
 } from './lib/sync/roleSession';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
-import { loadActiveCartridge, saveActiveCartridge } from './lib/cartridgeStorage';
+import { loadActiveCartridge, saveActiveCartridge, clearActiveCartridge } from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
+import { clearStoredHostKey } from './lib/sensitiveNotes';
 
 const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
@@ -539,6 +542,13 @@ export default function App() {
   const { role, setRole } = useRole();
   // Per-device theme (TODO 27): Night Stage default, Daylight for outdoor glare.
   const { theme, toggleTheme } = useTheme();
+  // D4: the host/MC device decrypts sensitive notes with its local host key.
+  const sensitiveNotes = useSensitiveNotes({
+    enabled: IS_PRODUCTION && sessionValid && roleSession?.role === 'mc',
+    wedding: WEDDING,
+    weddingId: roleSession?.weddingId ?? WEDDING.weddingId,
+    accessToken: sessionValid ? roleSession.token : null,
+  });
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
@@ -679,12 +689,16 @@ export default function App() {
 
   const steps = activeSteps(WEDDING.steps, liveState);
   const manualOffset = liveState.manual_offset_minutes ?? 0;
-  const vipAlerts = WEDDING.tact_and_vip_alerts ?? [];
+  const vipAlerts =
+    sensitiveNotes.payload?.vipAlerts ?? WEDDING.tact_and_vip_alerts ?? [];
   const jokerCount = WEDDING.jokersCount ?? WEDDING.jokerGames?.length ?? 0;
   const coHosts = WEDDING.coHosts ?? [];
   const contentCreators = WEDDING.contentCreators ?? [];
   const teamCount = coHosts.length + contentCreators.length;
-  const contacts = resolveContacts(WEDDING);
+  const contacts = resolveContacts({
+    ...WEDDING,
+    contacts: sensitiveNotes.payload?.contacts ?? WEDDING.contacts,
+  });
   const driftReport = buildDriftReport(steps, liveState, {
     jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
@@ -753,6 +767,20 @@ export default function App() {
         .getElementById(anchorElementId)
         ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 80);
+  };
+
+  const handleWipeEvent = async () => {
+    if (IS_PRODUCTION && roleSession?.role === 'mc') {
+      const client = createSupabaseSyncClient(SYNC_CONFIG, {
+        accessToken: roleSession.token,
+      });
+      await client.wipeRoom();
+    }
+    clearActiveCartridge();
+    pairing.unpair();
+    clearRoleSession();
+    clearStoredHostKey();
+    window.location.reload();
   };
 
   const roleProps = {
@@ -1103,6 +1131,14 @@ export default function App() {
             tasks={WEDDING.preWeddingTodos ?? []}
             checked={liveState.checked_subtasks}
             onToggle={toggleSubtask}
+          />
+
+          <EventAdminCard
+            wedding={WEDDING}
+            isProduction={IS_PRODUCTION}
+            hostKey={sensitiveNotes.hostKey}
+            sensitiveStatus={sensitiveNotes.status}
+            onWipe={handleWipeEvent}
           />
 
           <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
