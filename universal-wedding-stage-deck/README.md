@@ -186,8 +186,10 @@ every render:
 - Each transition already logs `actual_timestamps[nextStep]`; the engine
   compares that actual start with the step's `planned`/`time` value.
 - `currentDriftMinutes` is the newest actual-vs-planned delta, with
-  `currentDriftLabel` / `currentDriftTone` helpers for the header and Pocket
-  pill (`ON TIME`, `+25m LATE`, `10m AHEAD`).
+  `currentDriftLabel` / `currentDriftTone` helpers. The header, Pocket and DJ
+  views instead render `drift.canonicalDriftMinutes` (start/projected drift +
+  manual offset), so every surface shows the same number (P0.5). The live
+  overrun from the reel clock is a separate metric.
 - Every timeline entry also carries `projectedStart`, `projectedEnd`,
   `actualDriftMinutes`, `projectedDriftMinutes` and a drift source, so upcoming
   `ELASTIC` blocks show their realistic start time and projected delay.
@@ -809,6 +811,35 @@ Relevant files: `src/lib/sensitiveNotes.js`,
 `src/hooks/useSensitiveNotes.js`, `src/components/EventAdminCard.jsx`,
 `src/App.jsx`, `src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
 `supabase/functions/publish_room/index.ts`.
+
+### 24. One canonical drift value (issue #41 / P0.5)
+
+Drift used to disagree: the header showed the raw actual-vs-planned sample
+(excluding the manual offset) while the buffer accordion used the offset-adjusted
+value. The same schedule could read `ON TIME` in the header and `+15m LATE` in
+the buffer advice.
+
+`buildDriftReport` now exposes one canonical value used by every surface:
+
+- `startDriftMinutes` — newest actual start vs planned start.
+- `projectedDriftMinutes` — projected start vs planned.
+- `liveOverrunMinutes` — now vs the projected end of the active step (live clock).
+- `manualOffsetMinutes` — explicit kitchen/vendor adjustment.
+- **`canonicalDriftMinutes` = (startDrift ?? projectedDrift) + manualOffset**, with
+  `canonicalDriftLabel`, `canonicalDriftTone`, `canonicalDriftSource` and a
+  `detail` string for the tooltip.
+
+The header pill, Pocket drift bar and DJ header now render the same
+`DriftPill` from `driftReport.drift`. The buffer accordion is fed the same
+canonical value. The live overrun stays a separate reel-clock metric and is
+explained in the pill tooltip, never as a competing headline number.
+
+`currentDriftMinutes` / `currentDriftLabel` remain as the raw start-drift
+components for backward compatibility, but no view renders them.
+
+Relevant files: `src/lib/driftEngine.js`, `src/components/DriftPill.jsx`,
+`src/App.jsx`, `src/components/PocketRemoteView.jsx`,
+`src/components/DjBoothView.jsx`, `src/lib/bufferAccordion.js`.
 
 ### Security notes
 

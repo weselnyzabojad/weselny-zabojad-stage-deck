@@ -224,18 +224,35 @@ export function buildDriftReport(
   // While a step is live, its actual start is the newest drift sample. When the
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
-  const currentDriftMinutes = currentEntry?.driftMinutes ?? null;
-  const effectiveDriftMinutes =
-    currentDriftMinutes == null && !manualOffsetMinutes
+
+  // P0.5: one canonical drift value for the header, buffer advice, radar,
+  // Pocket and DJ. `startDrift` is the newest actual-vs-planned sample;
+  // `projectedDrift` is the projected start vs plan; the explicit manual offset
+  // shifts the rest of the segment. The live overrun is a separate live-clock
+  // metric and never replaces the schedule drift.
+  const startDriftMinutes = currentEntry?.actualDriftMinutes ?? null;
+  const projectedDriftMinutes = currentEntry?.projectedDriftMinutes ?? null;
+  const canonicalDriftMinutes =
+    startDriftMinutes == null && !manualOffsetMinutes
       ? null
-      : (currentDriftMinutes ?? 0) + manualOffsetMinutes;
+      : (startDriftMinutes ?? projectedDriftMinutes ?? 0) + manualOffsetMinutes;
+  const canonicalDriftLabel = driftLabel(canonicalDriftMinutes);
+  const canonicalDriftTone = driftTone(canonicalDriftMinutes);
+  const canonicalDriftSource =
+    startDriftMinutes != null
+      ? 'actual'
+      : projectedDriftMinutes != null
+        ? 'projected'
+        : manualOffsetMinutes
+          ? 'manualOffset'
+          : 'none';
 
   const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
     currentEntry,
     compressionSlackMinutes,
   });
 
-  const bufferAccordion = buildBufferAccordion(entries, effectiveDriftMinutes, {
+  const bufferAccordion = buildBufferAccordion(entries, canonicalDriftMinutes, {
     jokerAvailable,
   });
   const accordionEntries = bufferAccordion.hasChanges
@@ -266,6 +283,37 @@ export function buildDriftReport(
     isComplete: eventComplete,
   });
 
+  const currentDriftMinutes = startDriftMinutes;
+  const liveOverrunMinutes = clock.active ? clock.active.overrunSec / 60 : 0;
+  const liveRemainingMinutes =
+    clock.active && clock.active.remainingSec != null ? clock.active.remainingSec / 60 : null;
+
+  // Everything the UI needs to render the one canonical pill, plus the
+  // component values required to explain it in a tooltip.
+  const drift = {
+    startDriftMinutes,
+    projectedDriftMinutes,
+    liveOverrunMinutes,
+    liveRemainingMinutes,
+    manualOffsetMinutes,
+    canonicalDriftMinutes,
+    canonicalDriftLabel,
+    canonicalDriftTone,
+    canonicalDriftSource,
+    detail: [
+      startDriftMinutes != null ? `start ${driftLabel(startDriftMinutes)}` : null,
+      projectedDriftMinutes != null ? `projected ${driftLabel(projectedDriftMinutes)}` : null,
+      manualOffsetMinutes ? `manual +${manualOffsetMinutes}m` : null,
+      clock.active
+        ? liveOverrunMinutes > 0
+          ? `live +${Math.round(liveOverrunMinutes)}m over`
+          : `live ${Math.abs(Math.round(liveRemainingMinutes ?? 0))}m left`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  };
+
   const projectedElasticEntries = entries.filter((entry) => entry.isElastic && !entry.isDone);
   const upcomingElasticEntries = projectedElasticEntries.filter((entry) => !entry.isActive);
   const accordionElasticEntries = accordionEntries.filter(
@@ -283,11 +331,15 @@ export function buildDriftReport(
     currentDriftLabel: driftLabel(currentDriftMinutes),
     currentDriftTone: driftTone(currentDriftMinutes),
     currentDriftSource: currentEntry?.driftSource ?? 'none',
+    canonicalDriftMinutes,
+    canonicalDriftLabel,
+    canonicalDriftTone,
+    canonicalDriftSource,
+    drift,
     manualOffsetMinutes,
     clock,
-    liveOverrunMinutes: clock.active ? clock.active.overrunSec / 60 : 0,
-    liveRemainingMinutes:
-      clock.active && clock.active.remainingSec != null ? clock.active.remainingSec / 60 : null,
+    liveOverrunMinutes,
+    liveRemainingMinutes: liveRemainingMinutes,
     serverTimeOffsetMs: clock.serverTimeOffsetMs,
     clockSkewMinutes: clock.clockSkewMs / 60000,
     isClockSkewed: clock.isClockSkewed,
