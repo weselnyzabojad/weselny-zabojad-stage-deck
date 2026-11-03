@@ -24,9 +24,16 @@ create table if not exists public.weddings (
   couple     text,
   date       text,
   cartridge  jsonb,
+  expires_at timestamptz not null default (now() + interval '30 days'),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- TTL for existing deployments.
+alter table public.weddings
+  add column if not exists expires_at timestamptz not null default (now() + interval '30 days');
+
+create index if not exists weddings_expires_idx on public.weddings (expires_at);
 
 create table if not exists public.wedding_roles (
   wedding_id  text not null references public.weddings(wedding_id) on delete cascade,
@@ -35,6 +42,15 @@ create table if not exists public.wedding_roles (
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
   primary key (wedding_id, role)
+);
+
+-- D4: sensitive notes sync only as ciphertext, readable by the MC role. The
+-- AES-GCM key stays on the host device and is never stored here.
+create table if not exists public.sensitive_notes (
+  wedding_id text primary key references public.weddings(wedding_id) on delete cascade,
+  bundle     jsonb not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 -- Rate-limit log for join_room: 5 failed attempts per room/role/IP / 15 min.
@@ -92,6 +108,11 @@ create trigger touch_wedding_roles
   before insert or update on public.wedding_roles
   for each row execute function public.touch_updated_at();
 
+drop trigger if exists touch_sensitive_notes on public.sensitive_notes;
+create trigger touch_sensitive_notes
+  before insert or update on public.sensitive_notes
+  for each row execute function public.touch_updated_at();
+
 -- ---------------------------------------------------------------------------
 -- JWT helpers (join_room issues these claims)
 -- ---------------------------------------------------------------------------
@@ -114,13 +135,15 @@ alter table public.live_sync_state enable row level security;
 alter table public.weddings       enable row level security;
 alter table public.wedding_roles  enable row level security;
 alter table public.join_attempts  enable row level security;
+alter table public.sensitive_notes enable row level security;
 
 -- Remove the old permissive MVP policies.
 drop policy if exists "stage deck read"   on public.live_sync_state;
 drop policy if exists "stage deck insert" on public.live_sync_state;
 drop policy if exists "stage deck update" on public.live_sync_state;
 
--- A room token may only touch its own room key (wzsd:<weddingId>).
+-- A room token may only touch its own room key (wzsd:<weddingId>). Reads are
+-- open to every joined role; writes are limited to the host roles (MC/Pocket).
 create policy "room read"
   on public.live_sync_state for select
   to authenticated
@@ -129,19 +152,61 @@ create policy "room read"
 create policy "room insert"
   on public.live_sync_state for insert
   to authenticated
-  with check (wedding_id = 'wzsd:' || public.current_wedding_id());
+  with check (
+    wedding_id = 'wzsd:' || public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'pocket')
+  );
 
 create policy "room update"
   on public.live_sync_state for update
   to authenticated
-  using (wedding_id = 'wzsd:' || public.current_wedding_id())
-  with check (wedding_id = 'wzsd:' || public.current_wedding_id());
+  using (
+    wedding_id = 'wzsd:' || public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'pocket')
+  )
+  with check (
+    wedding_id = 'wzsd:' || public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'pocket')
+  );
 
 -- Joined devices may read only their own wedding row.
 create policy "wedding read"
   on public.weddings for select
   to authenticated
   using (wedding_id = public.current_wedding_id());
+
+-- D4: encrypted sensitive notes are MC-only, and only for the joined room.
+drop policy if exists "sensitive host read"   on public.sensitive_notes;
+drop policy if exists "sensitive host insert" on public.sensitive_notes;
+drop policy if exists "sensitive host update" on public.sensitive_notes;
+
+create policy "sensitive host read"
+  on public.sensitive_notes for select
+  to authenticated
+  using (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() = 'mc'
+  );
+
+create policy "sensitive host insert"
+  on public.sensitive_notes for insert
+  to authenticated
+  with check (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() = 'mc'
+  );
+
+create policy "sensitive host update"
+  on public.sensitive_notes for update
+  to authenticated
+  using (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() = 'mc'
+  )
+  with check (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() = 'mc'
+  );
 
 -- `wedding_roles` and `join_attempts` intentionally have NO client policies:
 -- only the service-role key (Edge Functions) can read/write their hashes.
@@ -153,16 +218,18 @@ revoke all on public.live_sync_state from anon;
 revoke all on public.weddings       from anon;
 revoke all on public.wedding_roles  from anon;
 revoke all on public.join_attempts  from anon;
+revoke all on public.sensitive_notes from anon;
 
 grant select, insert, update on public.live_sync_state to authenticated;
 grant select on public.weddings to authenticated;
+grant select, insert, update on public.sensitive_notes to authenticated;
 
 grant execute on function public.stage_deck_server_time() to anon, authenticated;
 grant execute on function public.current_wedding_id()    to authenticated;
 grant execute on function public.current_app_role()      to authenticated;
 
 -- End-of-event wipe (service role / admin only): removes the room state and
--- the wedding row; `wedding_roles` cascades.
+-- the wedding row; roles and sensitive notes cascade.
 create or replace function public.stage_deck_wipe_room(p_wedding_id text)
 returns void
 language sql
@@ -174,3 +241,54 @@ as $$
 $$;
 
 revoke all on function public.stage_deck_wipe_room(text) from public, anon, authenticated;
+
+-- Client-triggered wipe: only the MC role token may remove its own room.
+create or replace function public.stage_deck_wipe_my_room()
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  wid text := nullif(auth.jwt() ->> 'wedding_id', '');
+begin
+  if wid is null then
+    raise exception 'No room claim';
+  end if;
+  if coalesce(auth.jwt() ->> 'app_role', '') <> 'mc' then
+    raise exception 'Only the MC role may wipe this room';
+  end if;
+
+  delete from public.live_sync_state where wedding_id = 'wzsd:' || wid;
+  delete from public.weddings where wedding_id = wid;
+end $$;
+
+grant execute on function public.stage_deck_wipe_my_room() to authenticated;
+revoke all on function public.stage_deck_wipe_my_room() from public, anon;
+
+-- TTL purge: deletes rooms past `expires_at` (state, wedding, roles, notes).
+-- Schedule daily with pg_cron when available:
+--   select cron.schedule(
+--     'stage-deck-purge',
+--     '15 4 * * *',
+--     $$select public.stage_deck_purge_expired()$$
+--   );
+create or replace function public.stage_deck_purge_expired()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  removed integer := 0;
+  wid text;
+begin
+  for wid in select wedding_id from public.weddings where expires_at < now() loop
+    delete from public.live_sync_state where wedding_id = 'wzsd:' || wid;
+    delete from public.weddings where wedding_id = wid;
+    removed := removed + 1;
+  end loop;
+  return removed;
+end $$;
+
+revoke all on function public.stage_deck_purge_expired() from public, anon, authenticated;

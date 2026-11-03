@@ -761,6 +761,55 @@ Relevant files: `src/lib/roles.js`, `src/components/PhotographerView.jsx`,
 `src/components/RoleJoinScreen.jsx`, `schema/wedding-schema-v1.1.json`,
 `src/lib/cartridgeValidation.js`, `schema/wedding-cartridge.example.json`.
 
+### 23. Encrypted sensitive notes, role RLS and TTL/delete (issue #44 / TODO 1)
+
+This completes the D4 privacy layer on top of the D7 room/role work in section
+20.
+
+**Encrypted sensitive notes (host-held key).**
+- VIP/family alerts and the vendor contact list are collected into a sensitive
+  payload and encrypted client-side with **WebCrypto AES-GCM (256-bit)** before
+  upload. Cloud rows contain only `{ v, alg, iv, ciphertext }`.
+- The random host key is generated on the MC device and stored under
+  `wzsd:v1:host-key`. It is never written to the cartridge, sync payload, logs,
+  URLs or Supabase. Non-MC devices never receive it.
+- Encrypted bundles live in `sensitive_notes`, readable only by the `mc` role
+  for its own room. The published cartridge is **redacted** server-side
+  (`publish_room` strips `vipAlerts`/`contacts`), so plaintext never reaches the
+  cloud.
+- The MC loads and decrypts the bundle at runtime; the VIP Radar and Contacts
+  directory then use the decrypted data. If the bundle exists but this device
+  has no host key, the view shows a locked state.
+- Recovery/handoff: the **Event data** card (MC only) can copy the host key to
+  another host device, import a key, export the cartridge, and wipe the event.
+
+**Role-scoped RLS.**
+- `live_sync_state`: reads for any joined role in its room; inserts/updates only
+  for `app_role IN ('mc', 'pocket')`. DJ and Photo are read-only at the database
+  level.
+- `sensitive_notes`: `mc` only, matching `wedding_id`.
+- `weddings`: any joined role in its room. `wedding_roles`/`join_attempts` remain
+  service-role only.
+
+**TTL / delete.**
+- `weddings.expires_at` defaults to 30 days and is set by `publish_room`
+  (`expiresInDays`).
+- `stage_deck_purge_expired()` deletes expired rooms (state, wedding, roles,
+  notes). Schedule it daily with pg_cron (commented example in `schema.sql`).
+- `stage_deck_wipe_my_room()` lets the MC token wipe its own room immediately;
+  the **Event data** card calls it and then clears the local cartridge, pairing,
+  role session and host key.
+- The service-role `stage_deck_wipe_room(wedding_id)` remains for admin use.
+
+After pulling this change, re-run [`supabase/schema.sql`](supabase/schema.sql)
+and redeploy `publish_room` (it now redacts sensitive fields and sets
+`expires_at`).
+
+Relevant files: `src/lib/sensitiveNotes.js`,
+`src/hooks/useSensitiveNotes.js`, `src/components/EventAdminCard.jsx`,
+`src/App.jsx`, `src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
+`supabase/functions/publish_room/index.ts`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

@@ -50,6 +50,16 @@ function randomPin() {
   return String(100000 + value);
 }
 
+// D4: never store plaintext VIP alerts or contacts in the published cartridge.
+// The MC device uploads the encrypted bundle separately to `sensitive_notes`.
+function redactSensitive(cartridge: Record<string, unknown>) {
+  const copy = { ...cartridge };
+  delete copy.vipAlerts;
+  delete copy.tact_and_vip_alerts;
+  delete copy.contacts;
+  return copy;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
@@ -110,7 +120,18 @@ Deno.serve(async (req) => {
         room_code: roomCode,
         couple,
         date,
-        cartridge,
+        cartridge: redactSensitive(cartridge),
+        expires_at: new Date(
+          Date.now() +
+            Math.min(
+              365,
+              Math.max(
+                1,
+                Number.isFinite(body?.expiresInDays) ? Math.round(body.expiresInDays) : 30,
+              ),
+            ) *
+              86400000,
+        ).toISOString(),
       },
       { onConflict: 'wedding_id' },
     );

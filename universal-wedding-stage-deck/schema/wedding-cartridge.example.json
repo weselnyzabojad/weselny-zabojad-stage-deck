@@ -375,6 +375,11 @@
     "languages": ["PL", "FR", "EN"],
     "notes": "10–15 kids; most guests understand English."
   },
+  "privacy": {
+    "sensitiveFields": ["vipAlerts", "contacts[].phone"],
+    "cloudSync": "ENCRYPTED_HOST_KEY",
+    "encryption": { "alg": "AES-GCM", "keyHolder": "HOST", "version": 1 }
+  },
   "contacts": [
     {
       "id": "dj_marc",
