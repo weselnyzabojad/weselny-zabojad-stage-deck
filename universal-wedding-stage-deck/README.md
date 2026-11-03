@@ -1034,6 +1034,29 @@ Limits: React error boundaries catch render/lifecycle crashes, not errors in
 event handlers, timers or rejected promises. Those still belong to their own
 guards; the boundary is the last line of defence against a blank screen.
 
+### 31. App shell split, demo data and style constants (issue #64 / TODO 22)
+
+`App.jsx` is now a routed shell instead of one god component. This is a pure
+refactor with no behavior change:
+
+- [`src/views/McMasterView.jsx`](src/views/McMasterView.jsx) owns the MC
+  presentation layer (header, active-step panel, timeline/aside cards, footer,
+  overlays and modals). It receives one already-derived `model` object; all
+  live-sync state, effects and handlers stay in `App.jsx`.
+- `App.jsx` keeps role routing (`mc`, `dj`, `pocket`, `photo`, `speaker`),
+  production pairing/join branches, cartridge loading, the shared event clock
+  and the error boundaries. It shrank from roughly 1,500 lines to about 650.
+- [`src/demo/demoWedding.js`](src/demo/demoWedding.js) holds `DEMO_WEDDING`,
+  `HALL_ENTRANCE_SCRIPT`, `TEST_WIEDZY_GAME`, `VIP_ALERTS`, the demo subtasks
+  and initial live state, plus `DEFAULT_WEDDING` and `buildInitialLiveState`.
+- [`src/lib/styleConstants.js`](src/lib/styleConstants.js) centralises
+  `STEP_TYPE_STYLES` and the MC footer's control-button base/disabled classes.
+  The class strings are unchanged.
+- The per-view error boundary still wraps `McMasterView`, so a crash in the MC
+  view keeps the last-known-step fallback and local error log.
+- Demo data remains demo-only: an imported cartridge still replaces it, and no
+  new data reaches the server.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
