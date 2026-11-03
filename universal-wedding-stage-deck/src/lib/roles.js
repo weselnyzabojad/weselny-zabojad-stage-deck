@@ -38,9 +38,16 @@ export const ROLES = {
     icon: '📷',
     blurb: 'Shot lists, sunset windows and Oczepini cues.',
   },
+  speaker: {
+    id: 'speaker',
+    label: 'Speaker',
+    short: 'Speaker',
+    icon: '🗣️',
+    blurb: 'Read-only script teleprompter for the assigned speech.',
+  },
 };
 
-export const ROLE_ORDER = ['mc', 'dj', 'pocket', 'photo'];
+export const ROLE_ORDER = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
 
 export function normalizeRole(value) {
   return typeof value === 'string' && ROLES[value] ? value : 'mc';

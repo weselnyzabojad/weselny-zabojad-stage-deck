@@ -21,6 +21,8 @@ import PreWeddingChecklistCard from './components/PreWeddingChecklistCard';
 import ReelClock from './components/ReelClock';
 import RoleJoinScreen from './components/RoleJoinScreen';
 import RoleSwitcher from './components/RoleSwitcher';
+import SpeechesCard from './components/SpeechesCard';
+import SpeakerView from './components/SpeakerView';
 import StagePingControls from './components/StagePingControls';
 import SyncStatusBadge from './components/SyncStatusBadge';
 import ThemeToggle from './components/ThemeToggle';
@@ -37,6 +39,11 @@ import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveContacts } from './lib/contacts';
 import { resolveMusicPolicy } from './lib/musicPolicy';
+import {
+  resolveActiveSpeech,
+  resolveSpeechMode,
+  resolveSpeeches,
+} from './lib/speeches';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { getSyncConfig } from './lib/sync/syncConfig';
 import {
@@ -414,6 +421,48 @@ const DEMO_WEDDING = {
       notes: "Key holder; service entrance at the back."
     }
   ],
+  speechMode: "COMPLEX",
+  speeches: [
+    {
+      id: "speech_witness",
+      mode: "COMPLEX",
+      speaker: { name: "Bartek", relationship: "Best man", contact: "+48 600 222 333" },
+      order: 1,
+      time: "19:45",
+      durationMin: 5,
+      language: "PL",
+      mic: "MIC_2",
+      cue: "After the main course",
+      script: {
+        text:
+          "Dobry wieczór Państwu,\n\n" +
+          "Kiedy Jennifer i Guillaume poprosili mnie, żebym stanął tu dziś jako świadek, od razu wiedziałem, że to zaszczyt.\n\n" +
+          "Guillaume, pamiętasz naszą pierwszą podróż? Jennifer od razu przejęła mapę… i dobrze, bo my i tak byśmy się zgubili.\n\n" +
+          "Wznieśmy toast za tę dwójkę: za śmiech, za cierpliwość i za wszystkie drogi, które jeszcze przed Wami.",
+        format: "PLAIN",
+        ready: true,
+        source: "GOOGLE_DOC"
+      },
+      delivery: "READ",
+      mcIntro: true,
+      visibleToRoles: ["mc", "speaker"]
+    },
+    {
+      id: "speech_father",
+      mode: "LIGHT",
+      speaker: { name: "Père de Guillaume", relationship: "Father of the groom" },
+      order: 2,
+      time: "20:05",
+      durationMin: 3,
+      language: "FR",
+      mic: "MIC_1",
+      cue: "Before the cake",
+      script: { text: "", format: "PLAIN", ready: false, source: "GOOGLE_DOC" },
+      delivery: "MEMORIZE",
+      mcIntro: true,
+      visibleToRoles: ["mc", "speaker"]
+    }
+  ],
   preWeddingTodos: [
     { task: "Confirm Test Wiedzy questions with witnesses", done: true },
     { task: "Check XLR cables at 16:15", done: false },
@@ -439,6 +488,7 @@ const SUBTASKS = [
 // full ISO datetimes (TODO 23); HH:MM display is derived from them.
 const INITIAL_LIVE_STATE = {
   active_step_id: "step_03",
+  active_speech_id: "speech_witness",
   completed_step_ids: ["step_01", "step_02"],
   actual_timestamps: {
     step_01: "2026-08-20T16:31:00+02:00",
@@ -514,6 +564,7 @@ export default function App() {
     swapWithNext,
     deferToJokerDrawer,
     restoreDeferredStep,
+    selectSpeech,
     savedLocally,
     syncStatus,
     syncConfigured,
@@ -705,6 +756,9 @@ export default function App() {
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
   });
+  const speeches = resolveSpeeches(WEDDING);
+  const speechMode = resolveSpeechMode(WEDDING, speeches);
+  const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
@@ -807,6 +861,25 @@ export default function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         {...roleProps}
+      />
+    );
+  }
+
+  if (currentRole === "speaker") {
+    return (
+      <SpeakerView
+        wedding={WEDDING}
+        clock={driftReport.clock}
+        speechMode={speechMode}
+        speechCount={speeches.length}
+        activeSpeech={activeSpeech}
+        syncStatus={syncStatus}
+        syncError={syncError}
+        remoteUpdatedAt={remoteUpdatedAt}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+        canExit={!IS_PRODUCTION}
+        onExit={() => handleRoleChange("mc")}
       />
     );
   }
@@ -1113,6 +1186,15 @@ export default function App() {
             hostKey={sensitiveNotes.hostKey}
             sensitiveStatus={sensitiveNotes.status}
             onWipe={handleWipeEvent}
+          />
+
+          <SpeechesCard
+            wedding={WEDDING}
+            mode={speechMode}
+            speeches={speeches}
+            activeSpeechId={liveState.active_speech_id}
+            onSelect={selectSpeech}
+            clock={driftReport.clock}
           />
 
           <HardAnchorRadar radar={driftReport.hardAnchorRadar} />

@@ -88,6 +88,8 @@ rejected; put app-specific data under `extensions`.
 | `contacts` | no | Vendor and family contacts. |
 | `preWeddingTodos` | no | Pre-flight checklist. |
 | `weatherVariants` | no | `DEFAULT`, `RAIN`, `HEATWAVE`. |
+| `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX` (TODO 8; provisional). |
+| `speeches` | no | Speech records + verbatim script text (TODO 8; provisional). |
 | `liveSyncState` | no | Optional seed for the synced live state. |
 | `extensions` | no | Forward-compatible namespace. |
 
@@ -225,6 +227,7 @@ object is stored in `localStorage` and in the Supabase
 ```json
 {
   "active_step_id": "step_03",
+  "active_speech_id": "speech_witness",
   "completed_step_ids": ["step_01", "step_02"],
   "actual_timestamps": { "step_03": "18:25" },
   "checked_subtasks": { "Speeches": false },
@@ -241,6 +244,7 @@ Missing fields are filled with safe defaults by `normalizeLiveState`:
 - `deferred_step_ids` -> `[]`
 - `manual_offset_minutes` -> `0`
 - `stage_ping` -> `null`
+- `active_speech_id` -> `null` (the MC selects the live speech)
 
 `stage_ping.type` is one of `drop_track`, `fade_music`, `hold_2m`, `ready`.
 `manual_offset_minutes` is capped at 720 (12 hours).
