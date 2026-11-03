@@ -238,6 +238,40 @@ Rules:
   a signed URL or a QR image: the DJ Booth generates the QR locally from the
   stored link.
 
+## Music policy (Google Doc `## MUSIC POLICY` / `## GUEST REQUESTS`)
+
+Fill `musicPolicy` alongside `importantSongs[]`:
+
+```json
+"musicPolicy": {
+  "mustPlay": [
+    { "id": "first_dance", "track": "Perfect - Ed Sheeran", "note": "First dance — duet version." }
+  ],
+  "doNotPlay": [
+    { "id": "no_macarena", "track": "Macarena - Los del Río", "reason": "Couple's request." }
+  ],
+  "requestsOpen": true,
+  "requestWindow": { "start": "20:00", "end": "23:00" },
+  "cleanVersions": true,
+  "licensing": "Venue ZAIKS license confirmed."
+}
+```
+
+Rules:
+
+- `mustPlay` entries need a stable `id` and `track`. When a song is also a key
+  moment, reuse the `importantSongs[].id` (`first_dance`, `grand_entrance`,
+  `cake_cutting`) so the app shows one title; do not store conflicting metadata
+  in both blocks.
+- `doNotPlay` entries need a stable `id`, `track` and the `reason` given by the
+  couple.
+- `requestsOpen`: `true` when guests may request songs, `false` when the couple
+  declines requests. Omit when unknown.
+- `requestWindow.start` and `.end` are `HH:MM`; `end` must be after `start`.
+- `cleanVersions`: `true` when only clean/radio edits may be played.
+- `licensing`: free text for the licence (venue ZAIKS, SACEM, etc.).
+- Never invent songs, reasons, request windows or licensing details.
+
 ## Cake protocol (Google Doc `## CAKE`)
 
 Extract the cake protocol into the `cake` block:

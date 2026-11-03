@@ -1,0 +1,153 @@
+// Music policy for the DJ Booth and host views (project.md TODO 2).
+//
+// `musicPolicy` carries the guest-facing rules: must-play, do-not-play, the
+// request window, clean-version policy and licensing. `importantSongs[]` stays
+// the single source of truth when a must-play entry links to a key moment by
+// `id` (Phase 1.5d), so a first-dance song is never shown with two different
+// titles.
+
+import { clockToEventDate, formatDuration } from './eventTime.js';
+import { getImportantSongs } from './importantSongs.js';
+
+function text(value) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function normalize(value) {
+  return (text(value) ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function trackLabel(title, artist) {
+  if (title && artist) return `${title} — ${artist}`;
+  return title || artist || null;
+}
+
+function resolveMustPlay(policy, importantById) {
+  const items = Array.isArray(policy?.mustPlay) ? policy.mustPlay : [];
+
+  return items
+    .filter((item) => item && typeof item === 'object' && text(item.track))
+    .map((item, index) => {
+      const id = text(item.id) ?? `must_${index + 1}`;
+      const storedTrack = text(item.track);
+      const linkedSong = item.id ? importantById.get(item.id) ?? null : null;
+      const linkedLabel = linkedSong
+        ? trackLabel(text(linkedSong.title), text(linkedSong.artist))
+        : null;
+
+      return {
+        id,
+        track: linkedLabel ?? storedTrack,
+        storedTrack,
+        note: text(item.note),
+        linked: Boolean(linkedLabel),
+        conflict: Boolean(
+          linkedLabel && storedTrack && normalize(linkedLabel) !== normalize(storedTrack),
+        ),
+      };
+    });
+}
+
+function resolveDoNotPlay(policy) {
+  const items = Array.isArray(policy?.doNotPlay) ? policy.doNotPlay : [];
+
+  return items
+    .filter((item) => item && typeof item === 'object' && text(item.track))
+    .map((item, index) => ({
+      id: text(item.id) ?? `blocked_${index + 1}`,
+      track: text(item.track),
+      reason: text(item.reason),
+    }));
+}
+
+function resolveRequestStatus({ requestsOpen, start, end, now, eventDateISO, timeZone }) {
+  if (requestsOpen === false) {
+    return { key: 'disabled', label: 'Requests closed', detail: 'Guest requests are turned off.' };
+  }
+
+  if (!start || !end) {
+    if (requestsOpen === true) {
+      return { key: 'open', label: 'Requests open', detail: 'No request window set.' };
+    }
+    return null;
+  }
+
+  const startAt = clockToEventDate({ clock: start, eventDateISO, timeZone });
+  const endAt = clockToEventDate({ clock: end, eventDateISO, timeZone, after: startAt });
+  if (!startAt || !endAt) {
+    return { key: 'unknown', label: `${start}–${end}`, detail: 'Request window' };
+  }
+
+  if (now < startAt) {
+    const toStartSec = (startAt.getTime() - now.getTime()) / 1000;
+    return {
+      key: 'upcoming',
+      label: `Opens ${start}`,
+      // Avoid a multi-day countdown when the cartridge is opened days early.
+      detail: toStartSec <= 24 * 3600 ? `in ${formatDuration(toStartSec)}` : null,
+    };
+  }
+
+  if (now > endAt) {
+    return { key: 'closed', label: `Closed at ${end}`, detail: 'Request window has ended.' };
+  }
+
+  return {
+    key: 'open',
+    label: `Open until ${end}`,
+    detail: `${formatDuration((endAt.getTime() - now.getTime()) / 1000)} left`,
+  };
+}
+
+export function resolveMusicPolicy(wedding, now = new Date(), { eventDateISO = null, timeZone = 'UTC' } = {}) {
+  const policy = wedding?.musicPolicy && typeof wedding.musicPolicy === 'object'
+    ? wedding.musicPolicy
+    : null;
+
+  const importantById = new Map(
+    getImportantSongs(wedding)
+      .filter((song) => typeof song?.id === 'string')
+      .map((song) => [song.id, song]),
+  );
+
+  const mustPlay = resolveMustPlay(policy, importantById);
+  const doNotPlay = resolveDoNotPlay(policy);
+
+  const requestsOpen =
+    typeof policy?.requestsOpen === 'boolean' ? policy.requestsOpen : null;
+  const cleanVersions =
+    typeof policy?.cleanVersions === 'boolean' ? policy.cleanVersions : null;
+  const licensing = text(policy?.licensing);
+  const start = text(policy?.requestWindow?.start);
+  const end = text(policy?.requestWindow?.end);
+  const requestWindow = start && end ? { start, end } : null;
+
+  const requestStatus =
+    policy === null
+      ? null
+      : resolveRequestStatus({ requestsOpen, start, end, now, eventDateISO, timeZone });
+
+  const hasData = Boolean(
+    policy &&
+      (mustPlay.length ||
+        doNotPlay.length ||
+        requestWindow ||
+        requestsOpen !== null ||
+        cleanVersions !== null ||
+        licensing),
+  );
+
+  return {
+    hasData,
+    mustPlay,
+    doNotPlay,
+    requestsOpen,
+    requestWindow,
+    requestStatus,
+    cleanVersions,
+    licensing,
+  };
+}

@@ -290,6 +290,10 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                 <div className="mt-0.5 font-mono text-[10px] text-slate-400">
                   {summary.contactCount} contacts · {summary.contactsWithDeparture} with departures
                 </div>
+                <div className="mt-0.5 font-mono text-[10px] text-slate-400">
+                  🎵 {summary.mustPlayCount} must play · {summary.doNotPlayCount} do not play · Clean{' '}
+                  {summary.cleanVersions === null ? '—' : summary.cleanVersions ? 'ON' : 'OFF'}
+                </div>
                 <div className="mt-2 rounded-lg border border-[#1c2a52] bg-[#070b19] px-2 py-1.5">
                   <div className="font-heading text-[9px] font-semibold uppercase tracking-widest text-slate-500">
                     Couple identity

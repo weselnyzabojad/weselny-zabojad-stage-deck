@@ -5,6 +5,7 @@ import CakeCard from './components/CakeCard';
 import CartridgeImporter from './components/CartridgeImporter';
 import ContactsModal from './components/ContactsModal';
 import CoupleIdentity from './components/CoupleIdentity';
+import MusicPolicyCard from './components/MusicPolicyCard';
 import CulturalRulesBar from './components/CulturalRulesBar';
 import DjBoothView from './components/DjBoothView';
 import GameClickerOverlay from './components/GameClickerOverlay';
@@ -29,6 +30,7 @@ import { availableRoleIds } from './lib/roles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveContacts } from './lib/contacts';
+import { resolveMusicPolicy } from './lib/musicPolicy';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { activeSteps, findDeferTarget } from './lib/liveStageState';
 import { loadActiveCartridge } from './lib/cartridgeStorage';
@@ -169,6 +171,18 @@ const DEMO_WEDDING = {
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
   musicPolicy: {
+    mustPlay: [
+      { id: "first_dance", track: "Perfect - Ed Sheeran", note: "First dance — duet version." },
+      { id: "grand_entrance", track: "Marry You - Bruno Mars", note: "Grand entrance cue." }
+    ],
+    doNotPlay: [
+      { id: "no_macarena", track: "Macarena - Los del Río", reason: "Couple's request." },
+      { id: "no_sto_lat", track: "Sto lat", reason: "No Sto Lat tonight." }
+    ],
+    requestsOpen: true,
+    requestWindow: { start: "20:00", end: "23:00" },
+    cleanVersions: true,
+    licensing: "Venue ZAIKS license confirmed.",
     importantSongs: [
       {
         id: "grand_entrance",
@@ -442,6 +456,10 @@ export default function App() {
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const cakeProtocol = resolveCakeProtocol(WEDDING, timeline, activeIndex);
+  const musicPolicy = resolveMusicPolicy(WEDDING, now, {
+    eventDateISO: EVENT_DATE_ISO,
+    timeZone: VENUE_TIME_ZONE,
+  });
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
@@ -508,6 +526,7 @@ export default function App() {
         timeline={timeline}
         projectedFinish={driftReport.projectedFinish}
         clock={driftReport.clock}
+        musicPolicy={musicPolicy}
         stagePing={liveState.stage_ping}
         syncStatus={syncStatus}
         syncError={syncError}
@@ -527,6 +546,7 @@ export default function App() {
           timeline={timeline}
           clock={driftReport.clock}
           cake={cakeProtocol}
+          musicPolicy={musicPolicy}
           onAdvance={markCurrentDone}
           onUndo={undoLastStep}
           onOpenScript={() => setOverlay("teleprompter")}
@@ -792,6 +812,8 @@ export default function App() {
           </div>
 
           <CakeCard cake={cakeProtocol} />
+
+          <MusicPolicyCard policy={musicPolicy} compact />
 
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 

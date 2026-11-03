@@ -577,6 +577,45 @@ Relevant files: `src/lib/contacts.js`, `src/components/ContactsModal.jsx`,
 `src/components/CartridgeImporter.jsx`, `schema/wedding-schema-v1.1.json`,
 `schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
 
+### 19. Music policy: requests, blacklist and licensing (issue #45 / TODO 2)
+
+The cartridge now carries the full guest-music policy:
+
+```json
+"musicPolicy": {
+  "mustPlay": [{ "id": "first_dance", "track": "Perfect - Ed Sheeran", "note": "Duet version." }],
+  "doNotPlay": [{ "id": "no_macarena", "track": "Macarena - Los del Río", "reason": "Couple's request." }],
+  "requestsOpen": true,
+  "requestWindow": { "start": "20:00", "end": "23:00" },
+  "cleanVersions": true,
+  "licensing": "Venue ZAIKS license confirmed."
+}
+```
+
+- The **DJ Booth** renders the full **🎵 Music policy** card in the sidebar:
+  must-play and do-not-play lists with notes/reasons, the live request-window
+  state, clean-version policy and licensing note.
+- **MC Master** and **Pocket Remote** get a compact card with the request
+  state, list counts, clean-version policy and the blacklist.
+- The request window is evaluated against the shared reel clock and venue
+  timezone: `Opens 20:00 in 25:00`, `Open until 23:00 · 45:00 left`, `Closed at
+  23:00`, or `Requests closed` when `requestsOpen` is `false`.
+- `mustPlay` entries that reuse an `importantSongs[].id` are linked to the DJ
+  Key Songs card: the Key Songs title wins and a differing stored `track` is
+  flagged (never two conflicting first-dance titles).
+- Validation rejects duplicate must-play/do-not-play ids and a
+  `requestWindow.end` that is not after `start`. The importer preview shows the
+  must-play / do-not-play counts and clean-version flag.
+- The AI converter prompt maps `## MUSIC POLICY` / `## GUEST REQUESTS` to this
+  block and forbids inventing songs, reasons or licensing details.
+
+Relevant files: `src/lib/musicPolicy.js`, `src/components/MusicPolicyCard.jsx`,
+`src/components/DjBoothView.jsx`, `src/components/PocketRemoteView.jsx`,
+`src/App.jsx`, `src/lib/cartridgeValidation.js`,
+`src/lib/cartridgeImporter.js`, `src/components/CartridgeImporter.jsx`,
+`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-cartridge.example.json`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design. The included policies are

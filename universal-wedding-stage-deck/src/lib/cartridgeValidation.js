@@ -122,6 +122,23 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
+  // Music policy (TODO 2): ids are unique and the request window is ordered.
+  const mustPlay = cartridge?.musicPolicy?.mustPlay;
+  if (Array.isArray(mustPlay)) {
+    uniqueList(mustPlay, '/musicPolicy/mustPlay', 'must-play track');
+  }
+  const doNotPlay = cartridge?.musicPolicy?.doNotPlay;
+  if (Array.isArray(doNotPlay)) {
+    uniqueList(doNotPlay, '/musicPolicy/doNotPlay', 'do-not-play track');
+  }
+  const requestWindow = cartridge?.musicPolicy?.requestWindow;
+  if (requestWindow?.start && requestWindow?.end) {
+    const windowDelta = clockDeltaMinutes(requestWindow.start, requestWindow.end);
+    if (windowDelta != null && windowDelta <= 0) {
+      pushError('/musicPolicy/requestWindow/end', 'requestWindow.end must be after start');
+    }
+  }
+
   if (
     Number.isInteger(cartridge?.jokersCount) &&
     Array.isArray(cartridge?.jokerGames) &&
