@@ -33,6 +33,7 @@ export default function PocketRemoteView({
   syncStatus,
   syncError,
   remoteUpdatedAt,
+  outbox = null,
   role,
   roles,
   onRoleChange,
@@ -63,7 +64,7 @@ export default function PocketRemoteView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}

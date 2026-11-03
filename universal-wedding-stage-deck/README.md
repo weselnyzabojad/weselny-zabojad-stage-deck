@@ -1103,6 +1103,29 @@ display format only:
 - Contrast measurements, rules, exceptions and the manual keyboard checklist
   are in [`docs/accessibility-audit.md`](docs/accessibility-audit.md).
 
+### 34. Local sync outbox with backoff retry (issue #67 / TODO 25)
+
+A failed cloud publish now stays pending instead of being forgotten:
+
+- [`src/lib/sync/outbox.js`](src/lib/sync/outbox.js) stores one metadata record
+  per room in `localStorage` (`wzsd:v1:sync-outbox:<roomKey>`) with queued time,
+  attempts, next retry, last attempt and last error. The payload is the latest
+  local snapshot, so coalescing never drops a stage mutation.
+- `useLiveStageState` has one publish path: clean sends use the 200ms debounce;
+  queued sends use exponential backoff (2s, 4s, 8s … capped at 60s). On success
+  it clears the outbox only when the cloud has the current snapshot; if local
+  state moved during the write, the newer snapshot is requeued immediately.
+- The browser `online` event and a Realtime `connected` status wake the outbox
+  immediately instead of waiting out the remaining backoff. An in-flight publish
+  is never overlapped.
+- `SyncStatusBadge` shows **Pending sync** with the attempt count and a tooltip
+  containing the next retry time and last error. It is a polite live region and
+  is passed through the MC, DJ, pocket, photographer and speaker views.
+- Wiping the event clears the room's outbox, so a stale snapshot cannot be
+  resurrected later.
+- Scenario walkthrough, storage shape and limitations:
+  [`docs/sync-outbox.md`](docs/sync-outbox.md).
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

@@ -40,6 +40,7 @@ export default function SpeakerView({
   syncStatus,
   syncError,
   remoteUpdatedAt,
+  outbox = null,
   theme = 'night',
   onToggleTheme,
   onExit,
@@ -91,7 +92,7 @@ export default function SpeakerView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           {canExit ? (
             <button
               type="button"

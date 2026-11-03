@@ -31,7 +31,8 @@ import {
 import { clearSpeakerScript, loadSpeakerScript } from './lib/speakerCache';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
-import { getSyncConfig } from './lib/sync/syncConfig';
+import { getSyncConfig, syncRoomKey } from './lib/sync/syncConfig';
+import { clearOutbox as clearSyncOutbox } from './lib/sync/outbox';
 import {
   clearRoleSession,
   isRoleSessionValid,
@@ -90,6 +91,7 @@ export default function App() {
     syncStatus,
     syncConfigured,
     syncError,
+    outbox,
     remoteUpdatedAt,
     serverTimeOffsetMs,
     serverTimeAvailable,
@@ -427,6 +429,8 @@ export default function App() {
     }
     clearActiveCartridge();
     clearLastKnownStep(WEDDING.weddingId);
+    const roomId = IS_PRODUCTION ? roleSession?.weddingId ?? WEDDING.weddingId : WEDDING.weddingId;
+    clearSyncOutbox(syncRoomKey(SYNC_CONFIG.roomPrefix, roomId));
     pairing.unpair();
     clearRoleSession();
     clearStoredHostKey();
@@ -460,6 +464,7 @@ export default function App() {
           syncStatus={syncStatus}
           syncError={syncError}
           remoteUpdatedAt={remoteUpdatedAt}
+          outbox={outbox}
           servicePackage={WEDDING.servicePackage}
           viewVisibility={WEDDING.viewVisibility?.dj}
           theme={theme}
@@ -488,6 +493,7 @@ export default function App() {
           syncStatus={syncStatus}
           syncError={syncError}
           remoteUpdatedAt={remoteUpdatedAt}
+          outbox={outbox}
           theme={theme}
           onToggleTheme={toggleTheme}
           {...roleProps}
@@ -516,6 +522,7 @@ export default function App() {
           syncStatus={syncStatus}
           syncError={syncError}
           remoteUpdatedAt={remoteUpdatedAt}
+          outbox={outbox}
           theme={theme}
           onToggleTheme={toggleTheme}
           canExit={!IS_PRODUCTION}
@@ -553,6 +560,7 @@ export default function App() {
             syncStatus={syncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
+            outbox={outbox}
             {...roleProps}
           />
           {overlay === "teleprompter" && (
@@ -588,6 +596,7 @@ export default function App() {
     toggleTheme,
     syncStatus,
     syncError,
+    outbox,
     remoteUpdatedAt,
     currentStep,
     stepTypeClass,

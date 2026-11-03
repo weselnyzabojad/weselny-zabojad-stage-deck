@@ -54,6 +54,7 @@ export default function McMasterView({ model }) {
   syncStatus,
   syncError,
   remoteUpdatedAt,
+  outbox,
   currentStep,
   stepTypeClass,
   estimatedEnd,
@@ -174,7 +175,7 @@ export default function McMasterView({ model }) {
             )}
           </button>
           <span className="text-slate-500">•</span>
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           {roleIds.length > 1 ? (
             <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
           ) : null}
