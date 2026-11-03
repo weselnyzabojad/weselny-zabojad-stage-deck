@@ -1057,6 +1057,32 @@ refactor with no behavior change:
 - Demo data remains demo-only: an imported cartridge still replaces it, and no
   new data reaches the server.
 
+### 32. ISO actual timestamps and migration (issue #65 / TODO 23)
+
+Actual step starts are stored as full ISO-8601 instants internally; `HH:MM` is a
+display format only:
+
+- [`src/lib/eventTime.js`](src/lib/eventTime.js) exposes
+  `normalizeActualTimestamp` and `migrateActualTimestamps`. ISO input is
+  re-serialized in UTC, legacy `HH:MM`/`HH:MM:SS` is resolved against the event
+  date plus venue timezone, after-midnight clocks roll to the next service day,
+  and DST is handled with a two-pass offset.
+- `normalizeLiveState` uses the map migration for localStorage, remote Supabase
+  rows, cross-tab events and cartridge seeds. The normalized state is persisted
+  again, so a device upgrades once.
+- Runtime transitions (`markStepDone`, swap, defer, restore) write
+  `now.toISOString()`; undo deletes the affected timestamp.
+- The drift engine compares absolute instants and preserves seconds, so the old
+  ±12-hour fold limit no longer applies to actual starts. `computeDriftMinutes`
+  now accepts `{ eventDateISO, timeZone }` and handles ISO actuals.
+- [`scripts/migrate-actual-timestamps.mjs`](scripts/migrate-actual-timestamps.mjs)
+  upgrades cartridge files:
+  `npm run migrate:timestamps -- file.json [--write|--check]`. Dry-run by
+  default; `--check` is a CI guard.
+- v1.1 still accepts both ISO and legacy `HH:MM`; v1.2 should require ISO and
+  rename the map to `actualTimestamps`.
+- Full details: [`docs/iso-timestamps.md`](docs/iso-timestamps.md).
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no

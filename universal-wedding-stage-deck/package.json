@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "validate:schema": "node schema/validate-cartridge.mjs",
     "validate:template": "node scripts/validate-google-doc-template.mjs",
+    "migrate:timestamps": "node scripts/migrate-actual-timestamps.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

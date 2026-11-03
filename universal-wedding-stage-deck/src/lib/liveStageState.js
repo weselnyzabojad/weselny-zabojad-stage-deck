@@ -5,7 +5,7 @@
 // still work as the offline fallback when the venue loses reception.
 
 import { normalizeStagePing } from './stagePings.js';
-import { normalizeActualTimestamp } from './eventTime.js';
+import { migrateActualTimestamps } from './eventTime.js';
 import { isProtectedStep, swapBlockReason } from './stepGuards.js';
 
 const STORAGE_VERSION = 1;
@@ -177,13 +177,10 @@ export function normalizeLiveState(raw, steps, context = {}) {
     active = order.find((id) => !completed.includes(id) && !deferred.includes(id)) ?? null;
   }
 
-  const actual = {};
-  if (raw.actual_timestamps && typeof raw.actual_timestamps === 'object') {
-    for (const id of order) {
-      const value = normalizeActualTimestamp(raw.actual_timestamps[id], context);
-      if (value) actual[id] = value;
-    }
-  }
+  const actual = migrateActualTimestamps(raw.actual_timestamps, {
+    ...context,
+    stepIds: order,
+  });
 
   const checked = {};
   if (raw.checked_subtasks && typeof raw.checked_subtasks === 'object') {
