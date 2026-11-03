@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_test_wedding",
+  "couple": "Test & Couple",
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "hostingMode": "HOST_ONLY",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "YES"
+    },
+    "gorzko": {
+      "status": "STRICT_NO"
+    },
+    "bread_salt": {
+      "status": "TBC"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "durationMin": 30,
+      "title": "Aperitif",
+      "type": "BUFFER",
+      "location": "Garden",
+      "buffer": {
+        "minDurationMin": 15,
+        "maxDurationMin": 45,
+        "danceBlock": true
+      },
+      "deferable": true
+    },
+    {
+      "id": "step_02",
+      "time": "17:30",
+      "durationMin": 60,
+      "title": "Dinner",
+      "type": "ELASTIC",
+      "location": "Hall"
+    },
+    {
+      "id": "step_03",
+      "time": "20:30",
+      "durationMin": 30,
+      "title": "Cake",
+      "type": "HARD_ANCHOR",
+      "location": "Terrace"
+    }
+  ],
+  "hardAnchors": [
+    {
+      "id": "cake",
+      "time": "20:30",
+      "label": "Cake service",
+      "kind": "VENDOR",
+      "alertBeforeMin": 30
+    }
+  ]
+}

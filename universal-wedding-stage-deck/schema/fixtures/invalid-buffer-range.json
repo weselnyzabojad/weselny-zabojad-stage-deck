@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_test_wedding",
+  "couple": "Test & Couple",
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "hostingMode": "HOST_ONLY",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "YES"
+    },
+    "gorzko": {
+      "status": "STRICT_NO"
+    },
+    "bread_salt": {
+      "status": "TBC"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "durationMin": 70,
+      "title": "Bad Buffer",
+      "type": "BUFFER",
+      "location": "Garden",
+      "buffer": {
+        "minDurationMin": 60,
+        "maxDurationMin": 30
+      }
+    }
+  ]
+}

@@ -1,0 +1,605 @@
+{
+  "$schema": "../wedding-schema-v1.1.json",
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_jennifer_guillaume",
+  "couple": "Jennifer & Guillaume",
+  "coupleProfile": {
+    "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
+    "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
+    "commonLanguages": ["FR", "PL", "EN"]
+  },
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "role": "MC",
+  "hostingMode": "HOST_AND_DJ",
+  "venue": "Château de la Forêt",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "STRICT_NO",
+      "note": "Inform guests: NO Sto Lat tonight!"
+    },
+    "gorzko": {
+      "status": "STRICT_NO",
+      "note": "No Gorzko Gorzko"
+    },
+    "bread_salt": {
+      "status": "YES",
+      "note": "Vodka vs water shot, break glasses"
+    }
+  },
+  "vipRadarCount": 2,
+  "tact_and_vip_alerts": [
+    {
+      "id": "uncle-sylwek",
+      "tone": "critical",
+      "icon": "🎸",
+      "tag": "Family",
+      "title": "Uncle Sylwek — guitar limit",
+      "detail": "Allow MAX 1 short performance. Do not allow repeated concerts."
+    },
+    {
+      "id": "blind-grandmother",
+      "tone": "care",
+      "icon": "👵",
+      "tag": "Care",
+      "title": "Blind grandmother",
+      "detail": "Keep walkways clear and warn before loud moments."
+    }
+  ],
+  "jokersCount": 2,
+  "jokerGames": [
+    {
+      "id": "joker_musical_chairs",
+      "category": "GAME",
+      "title": "Musical Chairs",
+      "content": "Classic musical chairs with a short 3-minute round."
+    },
+    {
+      "id": "joker_music_crate",
+      "category": "MUSIC_CRATE",
+      "title": "Polish Disco Crate",
+      "content": "Five safe dance-floor tracks to pull if the floor needs a lift."
+    }
+  ],
+  "coHosts": [
+    {
+      "id": "zuzia",
+      "name": "Zuzia",
+      "role": "Co-MC",
+      "phone": "+48 600 111 222",
+      "responsibilities": ["Bread & Salt", "Games pool", "Second microphone"],
+      "notes": "Shares the stage with the MC during the entrance and games."
+    },
+    {
+      "id": "val",
+      "name": "Val",
+      "role": "Co-host",
+      "phone": "+33 6 11 22 33 44",
+      "responsibilities": ["Guest wrangling", "Vendor coordination"]
+    }
+  ],
+  "contentCreators": [
+    {
+      "id": "paulina",
+      "name": "Paulina Nózka",
+      "platform": "INSTAGRAM",
+      "handle": "@paulinan",
+      "phone": "+48 600 333 444",
+      "arrivalTime": "16:00",
+      "departureTime": "22:00",
+      "deliverables": ["Behind-the-scenes reel", "Stories", "Couple interviews"],
+      "boundaries": [
+        "Do not block the official photographer or videographer",
+        "No flash during the ceremony",
+        "Stay out of the aisle during the entrance"
+      ],
+      "notes": "Capture candid BTS moments and publish after the couple approves."
+    }
+  ],
+  "hardAnchors": [
+    {
+      "id": "photo_video",
+      "time": "20:30",
+      "label": "Photo / Video Leaves",
+      "alertBeforeMin": 45,
+      "kind": "VENDOR"
+    },
+    {
+      "id": "sunset",
+      "time": "21:10",
+      "label": "Sunset Window",
+      "alertBeforeMin": 30,
+      "kind": "SUNSET"
+    },
+    {
+      "id": "ocsepiny",
+      "time": "00:00",
+      "label": "Oczepiny (Exact)",
+      "alertBeforeMin": 30,
+      "kind": "FAMILY"
+    }
+  ],
+  "venueLogistics": {
+    "address": "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
+    "coordinates": { "latitude": 51.05, "longitude": 16.19 },
+    "timezone": "Europe/Warsaw",
+    "manager": { "name": "Anna Kowalska", "phone": "+48 600 111 111", "email": "anna@venue.example" },
+    "installation": {
+      "windowStart": "12:00",
+      "windowEnd": "16:00",
+      "loadInMinutes": 45,
+      "accessNotes": "Service entrance at the back; ask for the key.",
+      "parking": "Staff car park behind the building.",
+      "power": "2x 230V sockets at the DJ table.",
+      "loadingDock": true
+    },
+    "notes": "Group photos in the garden before 20:15."
+  },
+  "mediaTeam": [
+    {
+      "id": "photo_main",
+      "role": "PHOTO",
+      "name": "Magda & Tomek",
+      "phone": "+48 600 000 000",
+      "startTime": "14:00",
+      "endTime": "21:30",
+      "deliverables": ["Ceremony", "Group photos", "First dance", "Oczepiny"],
+      "notes": "Leaves after the winner photo."
+    },
+    {
+      "id": "video_main",
+      "role": "VIDEO",
+      "name": "Ola",
+      "phone": "+48 600 333 333",
+      "startTime": "14:30",
+      "endTime": "00:30",
+      "deliverables": ["Highlight film"],
+      "notes": "Needs a clean feed from the DJ booth."
+    }
+  ],
+  "photoPlan": {
+    "sunset": {
+      "source": "ONLINE_API",
+      "provider": "sunrise-sunset.org",
+      "latitude": 51.05,
+      "longitude": 16.19,
+      "timezone": "Europe/Warsaw",
+      "lastFetchedAt": "2026-08-20T17:05:00.000Z",
+      "sunsetTime": "20:12",
+      "goldenHourStart": "19:32",
+      "civilTwilightEnd": "20:48",
+      "status": "LIVE"
+    },
+    "miniSession": {
+      "enabled": true,
+      "latestStartMinutesBeforeSunset": 30,
+      "durationMin": 20,
+      "location": "Garden",
+      "backupLocation": "Ballroom window"
+    },
+    "groupPhotos": {
+      "location": "OUTDOOR",
+      "groups": [
+        { "id": "bride_family", "label": "Bride's family" },
+        { "id": "groom_family", "label": "Groom's family" },
+        { "id": "friends", "label": "Friends" }
+      ],
+      "minGroupSize": 5,
+      "durationMin": 25
+    },
+    "speedFoto": {
+      "enabled": true,
+      "description": "Couple in the middle of the dance floor; guests run in, pose, and clear.",
+      "durationMin": 10,
+      "music": "Fast party block"
+    },
+    "specialEffects": {
+      "sparklers": true,
+      "fire": false,
+      "heavySmoke": true,
+      "other": "Cold sparks",
+      "permitRequired": false,
+      "venueApproved": true,
+      "safetyBriefing": "Briefed the venue manager and the photographer."
+    },
+    "guestCoverage": {
+      "allGuests": false,
+      "selectedGuests": 12,
+      "description": "Formal photos with immediate family and witnesses only.",
+      "consent": "Couple approved; announce before candid coverage."
+    }
+  },
+  "oczepiny": {
+    "enabled": true,
+    "order": "MIDNIGHT",
+    "anchorId": "ocsepiny",
+    "toss": "VEIL",
+    "ties": "BOW_TIE",
+    "winnerPhoto": {
+      "enabled": true,
+      "replacesWinnersDance": false,
+      "photographerCue": "Winner photo with the couple, then clear the floor."
+    },
+    "photographerBriefed": {
+      "confirmed": true,
+      "confirmedAt": "2026-08-19T18:00:00.000Z",
+      "confirmedBy": "MC",
+      "notes": "Cameraman confirmed the midnight window."
+    },
+    "props": ["Veil", "Bow ties", "Test cards"],
+    "music": { "track": "Oczepiny mix", "playlist": "Midnight" },
+    "subEvents": [
+      { "id": "toss", "title": "Veil toss", "durationMin": 10, "deferable": false, "skippable": true },
+      { "id": "ties", "title": "Bow-tie game", "durationMin": 10, "deferable": true, "skippable": true },
+      { "id": "test", "title": "Test Zgodności", "durationMin": 15, "deferable": true, "skippable": true },
+      { "id": "winner_photo", "title": "Winner photo", "durationMin": 5, "deferable": false, "skippable": false }
+    ]
+  },
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "durationMin": 30,
+      "title": "Aperitif in Garden",
+      "type": "BUFFER",
+      "location": "Garden",
+      "buffer": {
+        "minDurationMin": 15,
+        "maxDurationMin": 45
+      },
+      "dj": {
+        "playlist": "Garden Aperitif",
+        "track": "La Vie en Rose — Édith Piaf"
+      }
+    },
+    {
+      "id": "step_02",
+      "time": "17:00",
+      "durationMin": 60,
+      "title": "Outdoor Civil Ceremony",
+      "type": "ELASTIC",
+      "location": "Garden Gazebo",
+      "dj": {
+        "playlist": "Ceremony Procession",
+        "track": "Canon in D — Pachelbel",
+        "cutoff": "18:20"
+      }
+    },
+    {
+      "id": "step_03",
+      "time": "18:00",
+      "planned": "18:00",
+      "realStart": "18:25",
+      "durationMin": 90,
+      "title": "Hall Entrance, Toast & Dinner Start",
+      "type": "ELASTIC",
+      "location": "Main Hall",
+      "photographerCue": "Group photo before the toast",
+      "subTasks": [
+        "Parents' thank-you speech + gifts (with mic)",
+        "Rosół + Tartare with Vodka shot",
+        "Speeches between starter and main course"
+      ],
+      "dj": {
+        "playlist": "Dinner Jazz",
+        "track": "Fly Me to the Moon — Frank Sinatra",
+        "cutoff": "20:15",
+        "cutoffSec": 3600
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "SPEECH",
+        "title": "Hall Entrance, Toast & Dinner Start",
+        "items": [
+          {
+            "id": "welcome",
+            "heading": "Welcome the couple",
+            "lines": [
+              {
+                "lang": "PL",
+                "text": "Drodzy Państwo, prosimy o powstanie i powitanie Pary Młodej gromkimi brawami!"
+              },
+              {
+                "lang": "FR",
+                "text": "Mesdames et messieurs, veuillez vous lever et accueillir les jeunes mariés par un tonnerre d'applaudissements !"
+              },
+              {
+                "lang": "EN",
+                "text": "Ladies and gentlemen, please stand and welcome the newlyweds with a round of applause!"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "step_04",
+      "time": "19:30",
+      "durationMin": 30,
+      "title": "Buffets Open & Dance Floor",
+      "type": "BUFFER",
+      "location": "Main Hall",
+      "deferable": true,
+      "buffer": {
+        "minDurationMin": 10,
+        "maxDurationMin": 60,
+        "danceBlock": true
+      },
+      "dj": {
+        "playlist": "Dance Floor Block",
+        "track": "September — Earth, Wind & Fire",
+        "cutoffSec": 1800
+      }
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "durationMin": 30,
+      "title": "Cake & Sparklers",
+      "type": "HARD_ANCHOR",
+      "location": "Terrace",
+      "dj": {
+        "playlist": "Party Set",
+        "track": "Dancing Queen — ABBA",
+        "cutoff": "21:30"
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "GAME_QUESTIONS",
+        "title": "Test Wiedzy — 2 Questions",
+        "items": [
+          {
+            "id": "q01",
+            "question": {
+              "EN": "Who arrives at the airport 4 hours before the flight?",
+              "PL": "Kto przychodzi na lotnisko 4 godziny przed odlotem?",
+              "FR": "Qui arrive à l'aéroport 4 heures avant le vol ?"
+            },
+            "answer": "Antoine"
+          },
+          {
+            "id": "q02",
+            "question": {
+              "EN": "Who is the boss at home?",
+              "PL": "Kto rządzi w domu?",
+              "FR": "Qui est le chef à la maison ?"
+            },
+            "answer": "Justyna"
+          }
+        ]
+      }
+    }
+  ],
+  "demographics": {
+    "total": 100,
+    "pl": 50,
+    "fr": 40,
+    "other": 10,
+    "languages": ["PL", "FR", "EN"],
+    "notes": "10–15 kids; most guests understand English."
+  },
+  "privacy": {
+    "sensitiveFields": ["vipAlerts", "contacts[].phone"],
+    "cloudSync": "ENCRYPTED_HOST_KEY",
+    "encryption": { "alg": "AES-GCM", "keyHolder": "HOST", "version": 1 }
+  },
+  "contacts": [
+    {
+      "id": "dj_marc",
+      "role": "DJ",
+      "name": "DJ Marc",
+      "phone": "+33 6 00 00 00 00",
+      "email": "dj.marc@example.com",
+      "notes": "Booth on the left; silent pings enabled."
+    },
+    {
+      "id": "photo_video",
+      "role": "Photo / Video",
+      "name": "Magda & Tomek",
+      "phone": "+48 600 000 000",
+      "email": "photo@studio.example",
+      "leavesAt": "20:30",
+      "notes": "Group photo before 20:15; leaves with the video team at the photo/video anchor."
+    }
+  ],
+  "preWeddingTodos": [
+    {
+      "task": "Confirm Test Wiedzy questions with witnesses",
+      "done": true
+    },
+    {
+      "task": "Check XLR cables at 16:15",
+      "done": false
+    }
+  ],
+  "weatherVariants": ["DEFAULT", "RAIN", "HEATWAVE"],
+  "musicPolicy": {
+    "mustPlay": [
+      {
+        "id": "grand_entrance",
+        "track": "Marry You - Bruno Mars",
+        "note": "Grand entrance cue."
+      },
+      {
+        "id": "first_dance",
+        "track": "Perfect - Ed Sheeran",
+        "note": "First dance — duet version."
+      }
+    ],
+    "doNotPlay": [
+      {
+        "id": "no_macarena",
+        "track": "Macarena - Los del Río",
+        "reason": "Couple's request."
+      },
+      {
+        "id": "no_sto_lat",
+        "track": "Sto lat",
+        "reason": "No Sto Lat tonight."
+      }
+    ],
+    "requestsOpen": true,
+    "requestWindow": {
+      "start": "20:00",
+      "end": "23:00"
+    },
+    "cleanVersions": true,
+    "licensing": "Venue ZAIKS license confirmed.",
+    "importantSongs": [
+      {
+        "id": "grand_entrance",
+        "moment": "GRAND_ENTRANCE",
+        "title": "Marry You",
+        "artist": "Bruno Mars",
+        "version": "Album version",
+        "stepId": "step_03",
+        "plannedTime": "18:00",
+        "startAtSec": 0,
+        "fadeOutSec": 215,
+        "source": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/marry-you-bruno-mars.mp3",
+          "filename": "marry-you-bruno-mars.mp3",
+          "checksum": "sha256:5d41402abc4b2a76b9719d911017c592",
+          "durationSec": 230,
+          "availability": "LOCAL",
+          "notes": "Clean intro; no cold ending."
+        },
+        "backupSource": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE"
+        },
+        "note": "Wait for the MC cue before pressing play."
+      },
+      {
+        "id": "cake_cutting",
+        "moment": "CAKE",
+        "title": "Cake",
+        "artist": "The Coup",
+        "stepId": "step_05",
+        "plannedTime": "20:30",
+        "startAtSec": 18,
+        "fadeOutSec": 240,
+        "source": {
+          "type": "YOUTUBE",
+          "url": "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING"
+        },
+        "backupSource": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/cake-the-coup.mp3",
+          "filename": "cake-the-coup.mp3",
+          "availability": "LOCAL"
+        }
+      },
+      {
+        "id": "first_dance",
+        "moment": "FIRST_DANCE",
+        "title": "Perfect",
+        "artist": "Ed Sheeran",
+        "version": "Duet version",
+        "stepId": "step_04",
+        "plannedTime": "19:30",
+        "startAtSec": 0,
+        "fadeOutSec": 270,
+        "source": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_FIRST_DANCE"
+        },
+        "backupSource": {
+          "type": "DEEZER",
+          "url": "https://www.deezer.com/track/DEMO_FIRST_DANCE"
+        },
+        "note": "Dance floor cleared; fade out after the second chorus."
+      }
+    ]
+  },
+  "cake": {
+    "time": "20:30",
+    "cuttingSong": "Cake - The Coup",
+    "sparklers": true,
+    "photographerCue": "Front-left of the cake table",
+    "serveTime": "20:45"
+  },
+  "speechMode": "COMPLEX",
+  "speeches": [
+    {
+      "id": "speech_witness",
+      "mode": "COMPLEX",
+      "speaker": {
+        "name": "Bartek",
+        "relationship": "Best man",
+        "contact": "+48 600 222 333"
+      },
+      "order": 1,
+      "time": "19:45",
+      "durationMin": 5,
+      "language": "PL",
+      "mic": "MIC_2",
+      "cue": "After the main course",
+      "script": {
+        "text": "Dobry wieczór Państwu,\n\nKiedy Jennifer i Guillaume poprosili mnie, żebym stanął tu dziś jako świadek, od razu wiedziałem, że to zaszczyt.\n\nWznieśmy toast za tę dwójkę: za śmiech, za cierpliwość i za wszystkie drogi, które jeszcze przed Wami.",
+        "format": "PLAIN",
+        "ready": true,
+        "source": "GOOGLE_DOC"
+      },
+      "delivery": "READ",
+      "readFrom": "TABLET",
+      "consent": {
+        "storeScript": true,
+        "confirmedBy": "MC",
+        "confirmedAt": "2026-08-19T18:00:00.000Z"
+      },
+      "mcIntro": true,
+      "visibleToRoles": ["mc", "speaker"]
+    },
+    {
+      "id": "speech_father",
+      "mode": "LIGHT",
+      "speaker": {
+        "name": "Père de Guillaume",
+        "relationship": "Father of the groom"
+      },
+      "order": 2,
+      "time": "20:05",
+      "durationMin": 3,
+      "language": "FR",
+      "mic": "MIC_1",
+      "cue": "Before the cake",
+      "script": {
+        "text": "",
+        "format": "PLAIN",
+        "ready": false,
+        "source": "GOOGLE_DOC"
+      },
+      "delivery": "MEMORIZE",
+      "readFrom": "MEMORY",
+      "consent": {
+        "storeScript": true,
+        "confirmedBy": "MC",
+        "confirmedAt": "2026-08-19T18:00:00.000Z"
+      },
+      "mcIntro": true,
+      "visibleToRoles": ["mc", "speaker"]
+    }
+  ],
+  "liveSyncState": {
+    "active_step_id": "step_03",
+    "active_speech_id": "speech_witness",
+    "completed_step_ids": ["step_01", "step_02"],
+    "actual_timestamps": {
+      "step_01": "2026-08-20T16:31:00+02:00",
+      "step_02": "2026-08-20T17:00:00+02:00",
+      "step_03": "2026-08-20T18:25:00+02:00"
+    },
+    "checked_subtasks": {
+      "Parents' thank-you speech + gifts (with mic)": true,
+      "Rosół + Tartare with Vodka shot": false,
+      "Speeches between starter and main course": false
+    },
+    "stage_ping": null,
+    "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
+    "deferred_step_ids": [],
+    "manual_offset_minutes": 0,
+    "mutation_log": []
+  }
+}
