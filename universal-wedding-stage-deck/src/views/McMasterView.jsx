@@ -1,0 +1,546 @@
+// MC master view (project.md TODO 22).
+//
+// Extracted from the former App.jsx god component as a pure refactor. All state,
+// live-sync effects and handlers stay in App.jsx; this file is the presentation
+// layer for the MC role. The `model` object carries the already-derived values
+// and callbacks so there is exactly one place to wire a future routed shell.
+
+import logo from '../assets/img/logo.png';
+import BufferAccordionCard from '../components/BufferAccordionCard';
+import CakeCard from '../components/CakeCard';
+import CartridgeImporter from '../components/CartridgeImporter';
+import ContactsModal from '../components/ContactsModal';
+import CoupleIdentity from '../components/CoupleIdentity';
+import CulturalRulesBar from '../components/CulturalRulesBar';
+import DriftPill from '../components/DriftPill';
+import EventAdminCard from '../components/EventAdminCard';
+import GameClickerOverlay from '../components/GameClickerOverlay';
+import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
+import HardAnchorRadar from '../components/HardAnchorRadar';
+import HoldToConfirmButton from '../components/HoldToConfirmButton';
+import JokerDrawerCard from '../components/JokerDrawerCard';
+import MusicPolicyCard from '../components/MusicPolicyCard';
+import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
+import ReelClock from '../components/ReelClock';
+import RoleSwitcher from '../components/RoleSwitcher';
+import SpeechesCard from '../components/SpeechesCard';
+import StagePingControls from '../components/StagePingControls';
+import SyncStatusBadge from '../components/SyncStatusBadge';
+import TeleprompterOverlay from '../components/TeleprompterOverlay';
+import ThemeToggle from '../components/ThemeToggle';
+import UndoToast from '../components/UndoToast';
+import VipAlertsModal from '../components/VipAlertsModal';
+import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConstants';
+
+export default function McMasterView({ model }) {
+  const {
+  WEDDING,
+  realStart,
+  driftReport,
+  vipAlerts,
+  jokerCount,
+  setImporterOpen,
+  setContactsOpen,
+  contacts,
+  handleUnpair,
+  IS_PRODUCTION,
+  roleSession,
+  pairing,
+  roleIds,
+  currentRole,
+  handleRoleChange,
+  theme,
+  toggleTheme,
+  syncStatus,
+  syncError,
+  remoteUpdatedAt,
+  currentStep,
+  stepTypeClass,
+  estimatedEnd,
+  showDjCues,
+  stepSubtasks,
+  liveState,
+  toggleSubtask,
+  script,
+  game,
+  setOverlay,
+  currentEntry,
+  steps,
+  completedCount,
+  nextEntry,
+  cakeProtocol,
+  musicPolicy,
+  deferredSteps,
+  handleRestore,
+  sensitiveNotes,
+  handleWipeEvent,
+  speechMode,
+  speeches,
+  selectSpeech,
+  sendStagePing,
+  handleAddOffset,
+  isComplete,
+  manualOffset,
+  handleClearOffset,
+  handleSwap,
+  swapBlock,
+  handleDefer,
+  deferTarget,
+  controlNotice,
+  savedLocally,
+  handleUndo,
+  canUndo,
+  lastUndo,
+  handleAdvance,
+  overlay,
+  closeOverlay,
+  setUndoToast,
+  importerOpen,
+  contactsOpen,
+  handleOpenAnchor,
+} = model;
+
+  return (
+    <>
+      <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+      
+      {/* ================= TOP BAR ================= */}
+      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
+        <div className="flex items-center space-x-4">
+          <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
+            <img 
+              src={logo} 
+              alt="Weselny Żabojad" 
+              className="h-20 w-auto object-contain max-w-[260px]" 
+            />
+          </div>
+          <span className="text-slate-500 hidden sm:inline">|</span>
+          <span className="bg-raised px-3 py-1.5 rounded text-white font-mono font-semibold border border-line-strong text-sm">{realStart ?? "—"}</span>
+          <DriftPill drift={driftReport.drift} />
+          <CoupleIdentity wedding={WEDDING} className="text-xs" />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">
+          <CulturalRulesBar rules={WEDDING.culturalRules} />
+          <button
+            type="button"
+            onClick={() => setOverlay("vip")}
+            title="Open confidential VIP & tactful family alerts"
+            className="bg-alert/20 border border-alert/60 text-alert-soft px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-alert/30 active:bg-alert/40 transition"
+          >
+            🚨 VIP Radar ({vipAlerts.length})
+          </button>
+          <span className="bg-brand/40 border border-brand-strong text-brand-soft px-2.5 py-1 rounded cursor-pointer hover:bg-brand/60 transition">🃏 Jokers ({jokerCount})</span>
+          <button
+            type="button"
+            onClick={() => setImporterOpen(true)}
+            title="Import a WeddingSchema v1.1 cartridge"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
+          >
+            📥 Import
+          </button>
+          <button
+            type="button"
+            onClick={() => setContactsOpen(true)}
+            title="Open the vendor contacts directory"
+            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
+          >
+            📇 Contacts ({contacts.length})
+          </button>
+        </div>
+
+        <div className="flex items-center space-x-3 font-mono">
+          <button
+            type="button"
+            onClick={handleUnpair}
+            title={
+              IS_PRODUCTION
+                ? 'Sign out of this role'
+                : 'Paired room PIN — click to forget this device'
+            }
+            className="text-slate-400 hover:text-white transition"
+          >
+            {IS_PRODUCTION ? (
+              <>
+                ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
+                <span className="ml-1 text-[10px]">🔐</span>
+              </>
+            ) : (
+              <>
+                PIN: <strong className="text-white">{pairing.pin}</strong>
+                <span className="ml-1 text-[10px]">🔓</span>
+              </>
+            )}
+          </button>
+          <span className="text-slate-500">•</span>
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} />
+          {roleIds.length > 1 ? (
+            <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
+          ) : null}
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        </div>
+      </header>
+
+      {driftReport.hardAnchorRadar.hasWarning ? (
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
+      ) : null}
+
+      {/* ================= MAIN DASHBOARD (70% / 30% SPLIT) ================= */}
+      <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
+        
+        {/* ACTIVE STEP (70% Width -> 7 cols on lg) */}
+        <section className="lg:col-span-7 bg-card/95 border border-line rounded-xl p-4 flex flex-col justify-between shadow-xl relative">
+          {currentStep ? (
+            <div className="flex-1 min-h-0 flex flex-col justify-between">
+              <div>
+                {/* Step Header & Timing */}
+                <div className="flex items-center justify-between border-b border-line pb-2.5 mb-3">
+                  <div>
+                    <span className={`text-xs uppercase tracking-wider font-heading font-semibold px-2.5 py-1 rounded border ${stepTypeClass}`}>
+                      {currentStep.type.replace("_", " ")} STEP
+                    </span>
+                    <h1 className="text-2xl font-heading font-bold text-white mt-2">{currentStep.title}</h1>
+                    <div className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
+                      <span>📍 Location: <strong className="text-slate-200">{currentStep.location}</strong></span>
+                    </div>
+                  </div>
+                  <div className="text-right bg-page/80 p-3 rounded-lg border border-line">
+                    <div className="text-xs text-slate-400">Planned: <span className="line-through text-slate-500">{currentStep.planned || currentStep.time}</span></div>
+                    <div className="text-sm font-mono text-white font-semibold mt-0.5">Real Start: {realStart}</div>
+                    <div className="text-xs text-slate-300 mt-0.5">Est. End: {estimatedEnd ?? "—"}</div>
+                  </div>
+                </div>
+
+                <div className={`grid grid-cols-1 gap-4 my-3 ${showDjCues ? "md:grid-cols-2" : ""}`}>
+                  {/* MC Cues */}
+                  <div className="bg-page/60 p-3.5 rounded-lg border border-line">
+                    <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
+                      <span>🗣️ MC Cues (FR / PL / EN)</span>
+                    </h3>
+                    <ul className="space-y-2 text-sm text-slate-300">
+                      <li className="flex items-start space-x-2">
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR/PL]</span>
+                        <span>Inform guests: NO Sto Lat tonight!</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR]</span>
+                        <span>Explain Polish Steak Tartare + Vodka tradition.</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="text-brand-soft font-mono text-xs mt-0.5">[ALL]</span>
+                        <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
+                  {showDjCues && (
+                    <div className="bg-page/60 p-3.5 rounded-lg border border-line">
+                      <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
+                        <span>🎧 DJ / Audio Cues</span>
+                      </h3>
+                      <ul className="space-y-2 text-sm text-slate-300">
+                        <li className="flex items-start space-x-2">
+                          <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
+                          <span>{currentStep.dj?.playlist ?? "Background dinner music"} ({currentStep.dj?.track ?? "playlist active"}).</span>
+                        </li>
+                        <li className="text-xs text-slate-400 bg-card p-2 rounded border border-line mt-2">
+                          ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                {/* Catering & Sub-Tasks */}
+                {stepSubtasks.length > 0 ? (
+                  <div className="mt-4 bg-page/70 p-3.5 rounded-lg border border-line">
+                  <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks (Tap to check off)</h3>
+                  <div className="space-y-2">
+                    {stepSubtasks.map((task) => {
+                      const checked = Boolean(liveState.checked_subtasks[task]);
+                      return (
+                        <div 
+                          key={task} 
+                          onClick={() => toggleSubtask(task)}
+                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
+                        >
+                          <input 
+                            type="checkbox" 
+                            checked={checked} 
+                            onChange={() => {}} 
+                            className="w-4 h-4 rounded text-brand bg-page border-slate-700 focus:ring-brand"
+                          />
+                          <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                ) : null}
+              </div>
+
+              {/* Launch overlays for the active step */}
+              <div className="mt-4 pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {script && (
+                    <button
+                      type="button"
+                      onClick={() => setOverlay("teleprompter")}
+                      className="bg-raised hover:bg-line text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
+                    >
+                      📖 Open Teleprompter / Script
+                    </button>
+                  )}
+                  {game && (
+                    <button
+                      type="button"
+                      onClick={() => setOverlay("game")}
+                      className="bg-brand/40 hover:bg-brand/70 text-white px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
+                    >
+                      🎮 Game Clicker ({game.items.length} Qs)
+                    </button>
+                  )}
+                  {!script && !game && (
+                    <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
+                  )}
+                </div>
+                <span className="text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
+              <div className="text-5xl mb-3">🎉</div>
+              <span className="text-xs uppercase tracking-widest text-emerald-300 font-heading font-semibold">Event complete</span>
+              <h1 className="text-2xl font-heading font-bold text-white mt-2">All {steps.length} steps marked done</h1>
+              <p className="text-sm text-slate-400 mt-2 max-w-md">
+                Progress is saved on this device. Use Undo in the footer if you advanced by mistake.
+              </p>
+              <div className="mt-4 text-xs font-mono text-slate-400">{completedCount} / {steps.length} completed</div>
+            </div>
+          )}
+        </section>
+
+        {/* PEEK NEXT & HARD ANCHOR RADAR (30% Width -> 3 cols on lg) */}
+        <section className="lg:col-span-3 flex flex-col space-y-4">
+          
+          <ReelClock clock={driftReport.clock} />
+
+          {/* Peek Next */}
+          <div className="bg-card/95 border border-line rounded-xl p-4 shadow-lg">
+            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-heading font-semibold">PEEK NEXT</span>
+            {nextEntry ? (
+              <>
+                <div className="text-lg font-heading font-bold text-white mt-1">{nextEntry.step.title}</div>
+                <div className="text-xs font-mono mt-1">
+                  <span className="text-slate-500 line-through">{nextEntry.plannedStart}</span>
+                  <span className="mx-1 text-slate-500">→</span>
+                  <span className="text-white">{nextEntry.projectedStart}</span>
+                  {nextEntry.projectedDriftMinutes ? (
+                    <span
+                      className={`ml-2 font-semibold ${
+                        nextEntry.projectedDriftMinutes > 0 ? 'text-alert-soft' : 'text-emerald-300'
+                      }`}
+                    >
+                      {nextEntry.driftLabel}
+                    </span>
+                  ) : null}
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
+            )}
+          </div>
+
+          <CakeCard cake={cakeProtocol} />
+
+          <MusicPolicyCard policy={musicPolicy} compact />
+
+          <BufferAccordionCard accordion={driftReport.bufferAccordion} />
+
+          <JokerDrawerCard steps={deferredSteps} onRestore={handleRestore} />
+
+          <PreWeddingChecklistCard
+            tasks={WEDDING.preWeddingTodos ?? []}
+            checked={liveState.checked_subtasks}
+            onToggle={toggleSubtask}
+          />
+
+          <EventAdminCard
+            wedding={WEDDING}
+            isProduction={IS_PRODUCTION}
+            hostKey={sensitiveNotes.hostKey}
+            sensitiveStatus={sensitiveNotes.status}
+            onWipe={handleWipeEvent}
+          />
+
+          <SpeechesCard
+            wedding={WEDDING}
+            mode={speechMode}
+            speeches={speeches}
+            activeSpeechId={liveState.active_speech_id}
+            onSelect={selectSpeech}
+            clock={driftReport.clock}
+          />
+
+          <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
+
+          {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
+          {showDjCues && (
+            <StagePingControls
+              onSend={sendStagePing}
+              lastPing={liveState.stage_ping}
+              syncStatus={syncStatus}
+            />
+          )}
+
+        </section>
+
+      </main>
+
+      {/* ================= BOTTOM BAR (DRIFT CONTROLS & PRIMARY ACTION) ================= */}
+      <footer className="bg-card border-t border-line px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+        
+        {/* Drift & Sequence Controls */}
+        <div className="flex items-center space-x-2 overflow-x-auto py-1">
+          <span className="text-xs font-heading font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
+          <button
+            type="button"
+            onClick={handleAddOffset}
+            disabled={isComplete}
+            title="Add 15 minutes to the upcoming kitchen / vendor block"
+            className={`${CONTROL_BUTTON_BASE} ${
+              isComplete
+                ? CONTROL_BUTTON_DISABLED
+                : "bg-raised hover:bg-line border-line-strong text-white"
+            }`}
+          >
+            ⏱️ Kitchen / Vendor +15m
+          </button>
+          {manualOffset > 0 ? (
+            <span
+              title="Manual kitchen / vendor offset applied to upcoming blocks"
+              className="flex items-center gap-1 rounded-lg border border-amber-800 bg-amber-950/70 px-2.5 py-1.5 font-mono text-[10px] whitespace-nowrap text-amber-200"
+            >
+              +{manualOffset}m offset
+              <button
+                type="button"
+                onClick={handleClearOffset}
+                title="Clear manual offset"
+                aria-label="Clear manual offset"
+                className="rounded px-1 text-sm leading-none text-amber-300 hover:bg-amber-900/60 hover:text-white"
+              >
+                ×
+              </button>
+            </span>
+          ) : null}
+          <button
+            type="button"
+            onClick={handleSwap}
+            disabled={!nextEntry || Boolean(swapBlock)}
+            title={
+              swapBlock ??
+              (nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap")
+            }
+            className={`${CONTROL_BUTTON_BASE} ${
+              !nextEntry || swapBlock
+                ? CONTROL_BUTTON_DISABLED
+                : "bg-raised hover:bg-line border-line-strong text-slate-200"
+            }`}
+          >
+            🔀 Swap w/ Next
+          </button>
+          <button
+            type="button"
+            onClick={handleDefer}
+            disabled={!deferTarget}
+            title={
+              deferTarget
+                ? `Defer ${deferTarget.title} to the Joker Drawer`
+                : "No safe deferable block (anchors and photographer-cue steps are protected)"
+            }
+            className={`${CONTROL_BUTTON_BASE} ${
+              !deferTarget
+                ? CONTROL_BUTTON_DISABLED
+                : driftReport.canonicalDriftMinutes >= 45
+                  ? "bg-amber-950/60 hover:bg-amber-900/60 border-amber-700 text-amber-200"
+                  : "bg-raised hover:bg-line border-line-strong text-brand-soft"
+            }`}
+          >
+            🃏 Defer to Joker Drawer
+          </button>
+          {controlNotice ? (
+            <span
+              aria-live="polite"
+              title={controlNotice}
+              className="max-w-[240px] truncate rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] text-slate-300"
+            >
+              {controlNotice}
+            </span>
+          ) : null}
+          <span
+            title="Timeline progress survives tablet lock or browser refresh"
+            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono whitespace-nowrap border ${savedLocally ? 'bg-emerald-950/60 border-emerald-800 text-emerald-300' : 'bg-amber-950/70 border-amber-800 text-amber-300'}`}
+          >
+            {savedLocally ? "💾 Saved locally" : "⚠️ Local save unavailable"}
+          </span>
+        </div>
+
+        {/* Undo + Primary Action Button */}
+        <div className="flex items-center space-x-3 ml-auto">
+          <button
+            type="button"
+            onClick={handleUndo}
+            disabled={!canUndo}
+            title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
+            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
+          >
+            ↩ Undo
+          </button>
+          <HoldToConfirmButton
+            onConfirm={handleAdvance}
+            disabled={isComplete}
+            label={isComplete ? "EVENT COMPLETE ✓" : "HOLD TO ADVANCE ➔"}
+            holdLabel="hold 1.2s"
+            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
+          />
+        </div>
+
+      </footer>
+
+      {overlay === "teleprompter" && (
+        <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
+      )}
+      {overlay === "game" && (
+        <GameClickerOverlay open game={game} onClose={closeOverlay} />
+      )}
+      {overlay === "vip" && (
+        <VipAlertsModal open alerts={vipAlerts} onClose={closeOverlay} />
+      )}
+
+      <UndoToast
+        toast={undoToast}
+        onUndo={handleUndo}
+        onDismiss={() => setUndoToast(null)}
+      />
+
+      </div>
+
+      <CartridgeImporter
+        key={importerOpen ? 'importer-open' : 'importer-closed'}
+        open={importerOpen}
+        onClose={() => setImporterOpen(false)}
+        currentCartridge={WEDDING}
+      />
+
+      <ContactsModal
+        open={contactsOpen}
+        onClose={() => setContactsOpen(false)}
+        contacts={contacts}
+        onOpenAnchor={handleOpenAnchor}
+      />
+    </>
+  );
+}
