@@ -283,7 +283,8 @@
       "dj": {
         "playlist": "Dinner Jazz",
         "track": "Fly Me to the Moon — Frank Sinatra",
-        "cutoff": "20:15"
+        "cutoff": "20:15",
+        "cutoffSec": 3600
       },
       "teleprompter": {
         "has_script": true,
@@ -326,7 +327,8 @@
       },
       "dj": {
         "playlist": "Dance Floor Block",
-        "track": "September — Earth, Wind & Fire"
+        "track": "September — Earth, Wind & Fire",
+        "cutoffSec": 1800
       }
     },
     {

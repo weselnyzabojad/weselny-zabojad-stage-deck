@@ -955,6 +955,32 @@ converter prompt (the `games` schema is still awaiting approval):
   purpose. Once the `games` schema is approved, wire these banks into the
   schema, parser and importer.
 
+### 28. DJ track cutoff stopwatches (issue #47 / TODO 4)
+
+Every step can carry one DJ cutoff. The rule is:
+
+1. An **absolute** `dj.cutoff` (`HH:MM`) always wins.
+2. Otherwise `dj.cutoffSec` counts down from that step's **actual** start
+   (ISO timestamp, TODO 23), never from the planned time.
+3. A relative cutoff stays **pending** until the step has actually started; an
+   absolute cutoff works for future steps too.
+
+- [`src/lib/cutoff.js`](src/lib/cutoff.js) holds the pure calculation
+  (`computeCutoffStopwatches`, `activeCutoff`). It classifies each cue as
+  `running`, `upcoming`, `over`, `pending` or `done`, exposes the remaining or
+  overrun seconds, and sorts the active cue first.
+- [`src/components/CutoffStopwatchCard.jsx`](src/components/CutoffStopwatchCard.jsx)
+  renders a live primary stopwatch plus a per-step list on the DJ booth view. It
+  is driven by the shared reel clock (P0.6), so ticks and overruns update every
+  second.
+- When a step has both, the card shows an **Absolute wins** badge and counts to
+  the absolute clock time.
+- Demo data: `step_03` carries both (`cutoff: "20:15"` + `cutoffSec: 3600`) to
+  demonstrate precedence; `step_04` carries only `cutoffSec: 1800` and stays
+  pending until it starts. `dj.cutoffSec` is limited to `0..3600` by the schema.
+- The existing compact `ReelClock` cutoff chip uses the same rule through
+  `buildReelClock(...).djCutoff`.
+
 ### Security notes
 
 The anon key ships in the browser bundle by design, but the database is no
