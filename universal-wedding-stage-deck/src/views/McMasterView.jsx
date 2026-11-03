@@ -94,6 +94,7 @@ export default function McMasterView({ model }) {
   handleAdvance,
   overlay,
   closeOverlay,
+  undoToast,
   setUndoToast,
   importerOpen,
   contactsOpen,
