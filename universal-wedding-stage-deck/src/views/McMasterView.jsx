@@ -23,6 +23,7 @@ import MusicPolicyCard from '../components/MusicPolicyCard';
 import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import ReelClock from '../components/ReelClock';
 import RoleSwitcher from '../components/RoleSwitcher';
+import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import SpeechesCard from '../components/SpeechesCard';
 import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
@@ -102,6 +103,13 @@ export default function McMasterView({ model }) {
   handleOpenAnchor,
 } = model;
 
+  const oczepinyStatus = resolveOczepinyIndicator({
+    wedding: WEDDING,
+    now: driftReport?.clock?.now ?? null,
+    eventDateISO: WEDDING?.dateISO ?? null,
+    timeZone: driftReport?.clock?.timeZone ?? null,
+  });
+
   return (
     <>
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
@@ -123,7 +131,10 @@ export default function McMasterView({ model }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">
-          <CulturalRulesBar rules={WEDDING.culturalRules} />
+          <CulturalRulesBar
+            rules={WEDDING.culturalRules}
+            oczepinyStatus={oczepinyStatus}
+          />
           <button
             type="button"
             onClick={() => setOverlay("vip")}
