@@ -644,18 +644,30 @@ PIN.
 1. Run [`supabase/schema.sql`](supabase/schema.sql): creates `weddings`,
    `wedding_roles`, `join_attempts`, removes the plaintext `pin` column and
    replaces the permissive policies with claim-scoped RLS.
-2. Apply [`supabase/migrations/202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql):
+2. Apply the migrations:
+   [`202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql)
    adds `app_admins`, the audit log, per-device `role_sessions` /
-   `role_presence`, and enforces revoked sessions in RLS.
+   `role_presence`, and enforces revoked sessions in RLS;
+   [`202611060002_song_requests.sql`](supabase/migrations/202611060002_song_requests.sql)
+   adds the public guest request queue and rate-limit log.
 3. Deploy the functions: `supabase functions deploy join_room`,
-   `supabase functions deploy publish_room` and
-   `supabase functions deploy admin_api`.
+   `supabase functions deploy publish_room`,
+   `supabase functions deploy admin_api` and
+   `supabase functions deploy submit_song_request`.
 4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
    `DECK_PUBLISH_SECRET`, and optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
 5. Insert the owner account into `app_admins` (no self-signup):
    `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`
 6. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
    key. Never ship the service-role key.
+
+**Guest song requests**
+- The public form lives at `/deck/request/<roomCode>` (or
+  `/deck/request?room=<roomCode>`).
+- Guests submit only `song` and `artist`. The `submit_song_request` Edge Function
+  validates, rate-limits and stores a pending request; the guest sees only a
+  received confirmation.
+- No guest account exists, and `song_requests` has no anon insert/read policy.
 
 **Owner admin (`/deck/admin`)**
 - Supabase Auth email/password + verified TOTP MFA. The account must exist in

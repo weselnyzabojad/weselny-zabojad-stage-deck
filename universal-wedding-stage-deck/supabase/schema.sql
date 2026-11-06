@@ -67,6 +67,36 @@ create table if not exists public.join_attempts (
 create index if not exists join_attempts_window_idx
   on public.join_attempts (room_code, role, ip_hash, attempted_at);
 
+-- Public guest song requests (issue #148). Guests submit only through the
+-- submit_song_request Edge Function using the service role. Browser clients can
+-- never insert or read this table directly; joined MC/DJ tokens can read and
+-- triage requests later.
+create table if not exists public.song_requests (
+  id          uuid primary key default gen_random_uuid(),
+  wedding_id  text not null references public.weddings(wedding_id) on delete cascade,
+  song        text not null check (char_length(song) between 1 and 120),
+  artist      text not null check (char_length(artist) between 1 and 120),
+  status      text not null default 'pending' check (status in ('pending', 'accepted', 'declined')),
+  source      text not null default 'guest_qr' check (source in ('guest_qr')),
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+create index if not exists song_requests_queue_idx
+  on public.song_requests (wedding_id, status, created_at);
+
+-- Rate-limit log for submit_song_request. IPs are hashed before insert and this
+-- table has no client policies.
+create table if not exists public.song_request_attempts (
+  id           bigint generated always as identity primary key,
+  room_code    text not null,
+  ip_hash      text not null,
+  attempted_at timestamptz not null default now()
+);
+
+create index if not exists song_request_attempts_window_idx
+  on public.song_request_attempts (room_code, ip_hash, attempted_at);
+
 -- Realtime needs the state table in the publication. Ignore "already member".
 do $$
 begin
@@ -113,6 +143,11 @@ create trigger touch_sensitive_notes
   before insert or update on public.sensitive_notes
   for each row execute function public.touch_updated_at();
 
+drop trigger if exists touch_song_requests on public.song_requests;
+create trigger touch_song_requests
+  before insert or update on public.song_requests
+  for each row execute function public.touch_updated_at();
+
 -- ---------------------------------------------------------------------------
 -- JWT helpers (join_room issues these claims)
 -- ---------------------------------------------------------------------------
@@ -136,6 +171,8 @@ alter table public.weddings       enable row level security;
 alter table public.wedding_roles  enable row level security;
 alter table public.join_attempts  enable row level security;
 alter table public.sensitive_notes enable row level security;
+alter table public.song_requests enable row level security;
+alter table public.song_request_attempts enable row level security;
 
 -- Remove the old permissive MVP policies and recreate everything so this file
 -- is safe to re-run on an existing deployment.
@@ -236,6 +273,32 @@ create policy "sensitive host update"
 -- `wedding_roles` and `join_attempts` intentionally have NO client policies:
 -- only the service-role key (Edge Functions) can read/write their hashes.
 
+-- Public song requests are inserted only by the service-role Edge Function.
+-- Joined MC/DJ tokens may read and change status only (column grant below).
+drop policy if exists "song request queue read" on public.song_requests;
+drop policy if exists "song request queue update" on public.song_requests;
+
+create policy "song request queue read"
+  on public.song_requests for select
+  to authenticated
+  using (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'dj')
+  );
+
+create policy "song request queue update"
+  on public.song_requests for update
+  to authenticated
+  using (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'dj')
+  )
+  with check (
+    wedding_id = public.current_wedding_id()
+    and public.current_app_role() in ('mc', 'dj')
+    and status in ('accepted', 'declined')
+  );
+
 -- ---------------------------------------------------------------------------
 -- Privileges
 -- ---------------------------------------------------------------------------
@@ -244,10 +307,14 @@ revoke all on public.weddings       from anon;
 revoke all on public.wedding_roles  from anon;
 revoke all on public.join_attempts  from anon;
 revoke all on public.sensitive_notes from anon;
+revoke all on public.song_requests from anon, authenticated;
+revoke all on public.song_request_attempts from anon, authenticated;
 
 grant select, insert, update on public.live_sync_state to authenticated;
 grant select on public.weddings to authenticated;
 grant select, insert, update on public.sensitive_notes to authenticated;
+grant select on public.song_requests to authenticated;
+grant update (status) on public.song_requests to authenticated;
 
 grant execute on function public.stage_deck_server_time() to anon, authenticated;
 revoke all on function public.current_wedding_id() from public, anon;
