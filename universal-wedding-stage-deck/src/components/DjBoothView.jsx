@@ -1,11 +1,12 @@
 import logo from '../assets/img/logo.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import CutoffStopwatchCard from './CutoffStopwatchCard';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
+import RoleShell from './RoleShell';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -89,7 +90,94 @@ export default function DjBoothView({
     window.setTimeout(() => setCopyNotice(''), 2500);
   };
 
-  return (
+  const [isCompact, setIsCompact] = useState(
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 639px)').matches
+      : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    setIsCompact(mq.matches);
+    const listener = () => setIsCompact(mq.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  // Compact (phone) read-only content: no step controls.
+  const compactContent = (
+    <div id="main-content" tabIndex={-1} className="space-y-4">
+      <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
+
+      <ReelClock clock={clock} compact />
+
+      <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
+        <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">
+          {activeEntry ? t('dj.nowOnStage') : t('dj.eventComplete')}
+        </span>
+        <h1 className="mt-1 font-heading text-lg font-bold text-white">
+          {activeEntry ? activeEntry.step.title : t('dj.allComplete')}
+        </h1>
+        <div className="mt-1 text-xs text-slate-400">
+          📍 {activeEntry?.step.location ?? '—'} · {t('dj.stepsDone', { done: completedCount, total: timeline.length })}
+        </div>
+        <div className="mt-2 flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
+          <span className="text-slate-400">{t('dj.projected')}</span>
+          <span className="text-white">
+            {activeEntry
+              ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
+              : '—'}
+          </span>
+        </div>
+        <div className="mt-1 text-right text-[10px] uppercase tracking-wider text-slate-500">
+          {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
+        </div>
+      </section>
+
+      {showKeySongs ? (
+        <KeySongsCard
+          songs={keySongs}
+          tier={detailTier}
+          timeline={timeline}
+          activeIndex={activeIndex}
+        />
+      ) : null}
+
+      <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
+          📋 Projected timeline
+        </h2>
+        <ol className="mt-2 space-y-2">
+          {timeline.map((entry) => {
+            const status = statusFor(entry, activeIndex);
+            return (
+              <li
+                key={entry.step.id}
+                className={`rounded-lg border p-2.5 ${entry.isActive ? 'border-brand-strong bg-brand/20' : 'border-line bg-page'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 truncate font-heading text-sm font-semibold text-white">
+                    {entry.step.title}
+                  </span>
+                  <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIPS[status.key]}`}>
+                    {status.label}
+                  </span>
+                </div>
+                <div className="mt-0.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                  <span>{entry.step.location}</span>
+                  <span className="text-slate-300">{entry.projectedStart ?? '—'}–{entry.projectedEnd ?? '—'}</span>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
+
+      <MusicPolicyCard policy={musicPolicy} />
+    </div>
+  );
+
+  const wideContent = (
     <div className="flex h-screen flex-col overflow-hidden bg-page text-slate-100 antialiased select-none">
       <SkipLink />
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
@@ -343,5 +431,26 @@ export default function DjBoothView({
         Read-only DJ view · no step controls · syncs with the host over the room PIN
       </footer>
     </div>
+  );
+
+  if (!isCompact) {
+    return wideContent;
+  }
+
+  return (
+    <RoleShell
+      compact
+      role={role}
+      roles={roles}
+      syncStatus={syncStatus}
+      syncError={syncError}
+      remoteUpdatedAt={remoteUpdatedAt}
+      outbox={outbox}
+      onToggleTheme={onToggleTheme}
+      theme={theme}
+      onRoleChange={onRoleChange}
+    >
+      {compactContent}
+    </RoleShell>
   );
 }
