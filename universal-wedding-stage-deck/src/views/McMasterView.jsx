@@ -29,6 +29,7 @@ import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
 import LanguageToggle from '../components/LanguageToggle';
+import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
 import VipAlertsModal from '../components/VipAlertsModal';
 import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConstants';
@@ -104,6 +105,7 @@ export default function McMasterView({ model }) {
 
   return (
     <>
+      <SkipLink />
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
@@ -191,7 +193,7 @@ export default function McMasterView({ model }) {
       ) : null}
 
       {/* ================= MAIN DASHBOARD (70% / 30% SPLIT) ================= */}
-      <main className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
+      <main id="main-content" tabIndex={-1} className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
         
         {/* ACTIVE STEP (70% Width -> 7 cols on lg) */}
         <section className="lg:col-span-7 bg-card/95 border border-line rounded-xl p-4 flex flex-col justify-between shadow-xl relative">

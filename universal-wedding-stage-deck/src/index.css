@@ -206,6 +206,27 @@ input[type="checkbox"] {
   }
 }
 
+/* Skip link (issue #97): visible only while keyboard-focused. */
+.skip-link {
+  position: fixed;
+  top: -4rem;
+  left: 1rem;
+  z-index: 200;
+  border-radius: 0.5rem;
+  border: 2px solid var(--brand-strong);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-heading, inherit);
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
 /* Admin QR cards (issue #76): print only the cards, never the PIN list. */
 @media print {
   body * {

@@ -145,6 +145,7 @@ const fr = {
   'error.cleared': "Journal local d'erreurs effacé.",
   'error.reference': 'Référence : {id}',
 
+  'a11y.skipToContent': 'Aller au contenu principal',
   'pocket.drift': 'Décalage',
   'pocket.allComplete': 'Toutes les étapes sont terminées',
   'pocket.allCompleteBody':

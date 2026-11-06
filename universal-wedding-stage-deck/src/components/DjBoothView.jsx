@@ -11,6 +11,7 @@ import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import {
   djDetailTier,
@@ -90,6 +91,7 @@ export default function DjBoothView({
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-page text-slate-100 antialiased select-none">
+      <SkipLink />
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
@@ -132,7 +134,7 @@ export default function DjBoothView({
 
       <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
 
-      <main className="min-h-0 flex-1 overflow-y-auto p-4">
+      <main id="main-content" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
           {isSolo ? (
             <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
