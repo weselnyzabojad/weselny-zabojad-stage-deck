@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ROLES, roleBlurb, roleLabel, roleShort } from '../lib/roles';
+import { ROLES, roleBlurb, roleLabel, roleOptionsFor, roleShort } from '../lib/roles';
 import { useI18n } from '../i18n/useI18n';
 
 // Compact header control that switches this device between the three role
@@ -38,7 +38,8 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
 
   // Only MC Master may switch views. Companion views are read-only and locked:
   // DJ Booth (#139), Photographer (#138) and Speaker (#137).
-  if (role !== 'mc') return null;
+  const availableRoles = roleOptionsFor(role, roles);
+  if (availableRoles.length === 0) return null;
 
   return (
     <div ref={rootRef} className="relative">
@@ -67,7 +68,7 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
           <div className="border-b border-line px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
             {t('roles.title')}
           </div>
-          {roles.map((id) => {
+          {availableRoles.map((id) => {
             const option = ROLES[id];
             if (!option) return null;
             const active = id === role;
