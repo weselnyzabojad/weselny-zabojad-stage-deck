@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
+import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -77,42 +78,21 @@ export default function SpeakerView({
   const started = timing?.startsInSec != null && timing.startsInSec <= 0;
   const overrun = timing?.remainingSec != null && timing.remainingSec < 0;
 
-  return (
-    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
-      <SkipLink />
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
-          </div>
-          <div>
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-              {t('speaker.title')}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <CoupleIdentity wedding={wedding} className="text-sm" />
-              <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
-            </div>
-          </div>
-        </div>
+  const [isCompact, setIsCompact] = useState(
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 639px)').matches
+      : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    setIsCompact(mq.matches);
+    const listener = () => setIsCompact(mq.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, []);
 
-        <div className="flex flex-wrap items-center gap-2">
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          {canExit ? (
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded border border-line bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-line-strong"
-            >
-              {t('speaker.exit')}
-            </button>
-          ) : null}
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-        </div>
-      </header>
-
-      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
+  const speakerBody = (
+    <>
         {speechMode === 'OFF' ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
@@ -284,6 +264,67 @@ export default function SpeakerView({
             </section>
           </div>
         )}
+    </>
+  );
+
+  if (isCompact) {
+    return (
+      <RoleShell
+        compact
+        role="speaker"
+        roles={[]}
+        syncStatus={syncStatus}
+        syncError={syncError}
+        remoteUpdatedAt={remoteUpdatedAt}
+        outbox={outbox}
+        onToggleTheme={onToggleTheme}
+        theme={theme}
+      >
+        <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl">
+          <SkipLink />
+          {speakerBody}
+        </div>
+      </RoleShell>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+      <SkipLink />
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
+            <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
+          </div>
+          <div>
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
+              {t('speaker.title')}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <CoupleIdentity wedding={wedding} className="text-sm" />
+              <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+          {canExit ? (
+            <button
+              type="button"
+              onClick={onExit}
+              className="rounded border border-line bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-line-strong"
+            >
+              {t('speaker.exit')}
+            </button>
+          ) : null}
+          <LanguageToggle />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+        </div>
+      </header>
+
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
+        {speakerBody}
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-slate-500">
