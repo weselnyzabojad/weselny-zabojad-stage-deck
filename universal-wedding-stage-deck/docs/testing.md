@@ -61,7 +61,6 @@ Invalid edge cases:
 
 - duplicate step IDs,
 - unknown live-state step references,
-- a step both deferred and completed,
 - inverted buffer bounds / out-of-range duration,
 - cake served before cutting,
 - reversed music request window,
