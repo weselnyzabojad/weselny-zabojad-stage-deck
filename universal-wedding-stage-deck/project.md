@@ -119,6 +119,9 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
 6. **QR to open on a phone.** When the view is a laptop/desktop width, display
    a QR code that opens the same view on a phone (scan to open the deck URL on
    the device).
+7. **Top-bar relocation TODO.** The MC top bar no longer exposes VIP Radar,
+   vendor Contacts or cartridge Import. Keep their functionality intact and ask
+   the owner in a future pass where these controls should be surfaced.
 
 ---
 
