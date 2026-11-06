@@ -36,9 +36,9 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
     setOpen(false);
   };
 
-  // Read-only companion views are locked to their role.
-  // DJ Booth: issue #139; Photographer: issue #138.
-  if (role === 'dj' || role === 'photo') return null;
+  // Only MC Master may switch views. Companion views are read-only and locked:
+  // DJ Booth (#139), Photographer (#138) and Speaker (#137).
+  if (role !== 'mc') return null;
 
   return (
     <div ref={rootRef} className="relative">
