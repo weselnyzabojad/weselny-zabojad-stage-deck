@@ -94,6 +94,20 @@ export function buildQrCards({ baseUrl, roomCode, wedding = {}, roles = [], labe
   }));
 }
 
+export function filterWeddings(rows = [], { query = '', status = 'active', role = null } = {}) {
+  const needle = String(query).trim().toLowerCase();
+  return rows.filter((row) => {
+    const archived = Boolean(row.archived_at ?? row.archived);
+    if (status === 'active' && archived) return false;
+    if (status === 'archived' && !archived) return false;
+    if (role && !validateRoles(row.roles).includes(role)) return false;
+    if (!needle) return true;
+    return [row.wedding_id, row.weddingId, row.couple, row.room_code, row.roomCode]
+      .filter(Boolean)
+      .some((value) => String(value).toLowerCase().includes(needle));
+  });
+}
+
 export function formatAdminTime(value, locale = 'en') {
   const date = value instanceof Date ? value : new Date(value);
   if (!Number.isFinite(date.getTime())) return '—';

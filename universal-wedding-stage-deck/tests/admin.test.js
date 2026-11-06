@@ -8,6 +8,7 @@ import {
   buildQrCards,
   buildRoleLink,
   createAdminSession,
+  filterWeddings,
   getAdminSessionState,
   hasFreshMfa,
   isAdminPath,
@@ -127,6 +128,20 @@ describe('issue #76 owner admin panel', () => {
     );
     expect(confirm).toContain('Delete wedding');
     expect(confirm).toContain('2026-08-20_x');
+  });
+
+  it('filters the wedding library by query, archive state and role', () => {
+    const rows = [
+      { wedding_id: '2026-08-20_jennifer_guillaume', couple: 'Jennifer & Guillaume', room_code: '8f3k2q', roles: ['mc', 'dj'] },
+      { wedding_id: '2026-09-12_anna_tomek', couple: 'Anna & Tomek', room_code: 'abc123', roles: ['mc', 'photo'], archived_at: '2026-10-01T00:00:00Z' },
+    ];
+    expect(filterWeddings(rows)).toHaveLength(1);
+    expect(filterWeddings(rows, { status: 'all' })).toHaveLength(2);
+    expect(filterWeddings(rows, { status: 'archived' })).toHaveLength(1);
+    expect(filterWeddings(rows, { query: 'guillaume' })[0].room_code).toBe('8f3k2q');
+    expect(filterWeddings(rows, { query: 'ABC123', status: 'all' })[0].couple).toBe('Anna & Tomek');
+    expect(filterWeddings(rows, { status: 'all', role: 'photo' })).toHaveLength(1);
+    expect(filterWeddings(rows, { status: 'all', role: 'dj' })).toHaveLength(1);
   });
 
   it('normalizes a wedding row for the admin list', () => {
