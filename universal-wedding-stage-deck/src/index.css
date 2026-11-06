@@ -251,3 +251,20 @@ input[type="checkbox"] {
     break-inside: avoid;
   }
 }
+
+/* MC Stage Rail: independent rail scrolling with soft edge fades on desktop. */
+@media (min-width: 1024px) {
+  .stage-rail-scroll {
+    max-height: 62vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 10px,
+      #000 calc(100% - 10px),
+      transparent 100%
+    );
+    scrollbar-width: thin;
+  }
+}

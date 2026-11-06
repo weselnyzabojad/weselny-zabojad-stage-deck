@@ -118,3 +118,37 @@ Keyboard only (no mouse):
   screenshot-based contrast regression suite.
 - Automated axe/Playwright checks in CI.
 - Focus management for the full-screen MC view after a role switch.
+
+## 8. MC Stage Rail (SR-03 / SR-04)
+
+The MC desktop dashboard now arranges the timeline as a Stage Rail: completed
+steps on the left, the current step as the hero in the centre and upcoming steps
+on the right.
+
+- **Disclosure widgets:** every side card is a real `<button>` with
+  `aria-expanded` and `aria-controls`; the body is a labelled region. The current
+  hero is always expanded and is not collapsible.
+- **One open per rail:** opening a second completed/upcoming card closes the
+  previous one, so the rail never becomes a wall of open panels.
+- **Roving focus:** `ArrowUp` / `ArrowDown` move between cards in a rail (with
+  wrap), `Home` / `End` jump to the ends and `Escape` collapses the rail.
+- **Status is colour + text:** `DONE`, `ON AIR`, `NEXT` and `PLANNED` chips keep
+  a word, so colour is never the only signal.
+- **Theme parity:** the rail uses semantic tokens (`border-line`, `bg-card`,
+  `text-brand-soft`, `text-slate-*`) plus a mid-tone emerald/amber accent bar so
+  both Night and Day themes stay readable. The hero keeps the brand ring and
+  shadow.
+- **Responsive:** 3-zone grid ≥1024px, hero-first with two side columns at
+  tablet widths, and a single stacked column inside the phone RoleShell.
+- **Motion:** the chevron uses `motion-reduce:transition-none`; no other rail
+  animation is added.
+
+Manual checks for the rail:
+
+- [ ] `Tab` reaches each side card; `Enter`/`Space` toggles it.
+- [ ] `ArrowUp` / `ArrowDown` / `Home` / `End` move focus within a rail.
+- [ ] `Escape` collapses the open card without leaving the rail.
+- [ ] Only one card per side rail is open at a time.
+- [ ] At 320px there is no horizontal overflow; the hero is first.
+- [ ] Both themes keep the done/next accents and hero ring visible at 200% zoom.
+

@@ -262,3 +262,32 @@ describe('MC dashboard rail integration (#119)', () => {
     expect(source).not.toContain('MAIN DASHBOARD (70% / 30% SPLIT)');
   });
 });
+
+describe('rail responsive and theme polish (#121)', () => {
+  const readSource = async (path) => {
+    const { readFileSync } = await import('node:fs');
+    return readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
+  };
+
+  it('degrades from three zones to tablet columns and phone stack', async () => {
+    const source = await readSource('src/components/StageRail.jsx');
+    expect(source).toContain('md:grid-cols-2');
+    expect(source).toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)]');
+    expect(source).toContain('stage-rail-scroll');
+  });
+
+  it('uses theme-safe accents instead of dark-only emerald/amber fills', async () => {
+    const source = await readSource('src/components/StageStepCard.jsx');
+    expect(source).toContain('border-l-emerald-500/70');
+    expect(source).toContain('border-l-amber-500/80');
+    expect(source).toContain('ring-brand-strong');
+    expect(source).not.toContain('bg-emerald-950/30');
+    expect(source).not.toContain('bg-amber-950/30');
+  });
+
+  it('defines the desktop rail scroll fade', async () => {
+    const css = await readSource('src/index.css');
+    expect(css).toContain('.stage-rail-scroll');
+    expect(css).toContain('mask-image');
+  });
+});
