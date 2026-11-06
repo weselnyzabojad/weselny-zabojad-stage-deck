@@ -367,7 +367,6 @@ export default function McMasterView({ model }) {
             title="Import a WeddingSchema v1.1 cartridge"
             className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
           >
-            📥 Import
           </button>
           <button
             type="button"
