@@ -40,6 +40,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Validate translations
+        run: npm run validate:i18n
+
       - name: Validate canonical schema example
         run: npm run validate:schema
 

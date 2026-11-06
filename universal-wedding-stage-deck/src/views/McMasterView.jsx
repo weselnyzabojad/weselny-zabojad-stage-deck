@@ -29,6 +29,7 @@ import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
+import LanguageToggle from '../components/LanguageToggle';
 import UndoToast from '../components/UndoToast';
 import VipAlertsModal from '../components/VipAlertsModal';
 import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConstants';
@@ -190,6 +191,7 @@ export default function McMasterView({ model }) {
           {roleIds.length > 1 ? (
             <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
           ) : null}
+          <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
         </div>
       </header>

@@ -6,17 +6,18 @@ import {
   recordError,
 } from '../lib/errorLog.js';
 import { loadLatestLastKnownStep } from '../lib/lastKnownStep.js';
+import { t } from '../i18n/index.js';
 
-const SCOPE_LABEL = {
-  app: 'the deck',
-  mc: 'the MC view',
-  dj: 'the DJ booth',
-  pocket: 'the pocket remote',
-  photo: 'the photographer view',
-  speaker: 'the speaker view',
-  pairing: 'the pairing screen',
-  join: 'the role sign-in',
-  cartridge: 'the cartridge loader',
+const SCOPE_LABEL_KEY = {
+  app: 'error.scope.app',
+  mc: 'error.scope.mc',
+  dj: 'error.scope.dj',
+  pocket: 'error.scope.pocket',
+  photo: 'error.scope.photo',
+  speaker: 'error.scope.speaker',
+  pairing: 'error.scope.pairing',
+  join: 'error.scope.join',
+  cartridge: 'error.scope.cartridge',
 };
 
 // Catches render crashes so a bad card never leaves a white screen (TODO 24).
@@ -82,16 +83,16 @@ export default class AppErrorBoundary extends React.Component {
     const text = formatErrorLog(loadErrorLog());
     try {
       await navigator.clipboard.writeText(text);
-      this.setState({ copyNotice: 'Diagnostics copied to the clipboard.' });
+      this.setState({ copyNotice: 'error.copied' });
     } catch {
-      this.setState({ copyNotice: 'Copy failed — expand the log and select the text.' });
+      this.setState({ copyNotice: 'error.copyFailed' });
     }
   };
 
   clearLog = () => {
     clearErrorLog();
     this.setState((state) => ({
-      copyNotice: 'Local error log cleared.',
+      copyNotice: 'error.cleared',
       logVersion: state.logVersion + 1,
     }));
   };
@@ -100,7 +101,7 @@ export default class AppErrorBoundary extends React.Component {
     if (!this.state.hasError) return this.props.children;
 
     const scope = this.props.scope ?? 'app';
-    const scopeLabel = SCOPE_LABEL[scope] ?? 'this view';
+    const scopeLabel = t(SCOPE_LABEL_KEY[scope] ?? 'error.scope.app');
     const step = this.props.lastKnownStep ?? this.state.lastKnown;
     const entries = loadErrorLog();
     const recent = entries.slice(0, 5);
@@ -116,7 +117,7 @@ export default class AppErrorBoundary extends React.Component {
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono text-[10px] font-bold tracking-widest text-alert-soft">
-              RECOVERED
+              {t('error.recovered')}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
               {scopeLabel}
@@ -124,16 +125,15 @@ export default class AppErrorBoundary extends React.Component {
           </div>
 
           <h1 className="mt-3 font-heading text-xl font-bold text-white">
-            This view stopped. The timeline did not.
+            {t('error.title')}
           </h1>
           <p className="mt-2 text-xs leading-relaxed text-slate-400">
-            A render error was caught before it could blank the screen. Your live progress stays
-            saved on this device; nothing was sent to a server.
+            {t('error.body')}
           </p>
 
           <div className="mt-3 rounded-lg border border-line bg-page/80 p-3">
             <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-500">
-              Last known step
+              {t('error.lastKnownStep')}
             </div>
             {step?.title ? (
               <>
@@ -141,7 +141,7 @@ export default class AppErrorBoundary extends React.Component {
                   {step.title}
                 </div>
                 <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-slate-400">
-                  <span>Planned {step.plannedTime ?? '—'}</span>
+                  <span>{t('error.planned', { time: step.plannedTime ?? '—' })}</span>
                   <span>·</span>
                   <span>{step.location ?? '—'}</span>
                   {step.type ? (
@@ -153,13 +153,13 @@ export default class AppErrorBoundary extends React.Component {
                 </div>
                 {completedCount != null && totalSteps ? (
                   <div className="mt-1 font-mono text-[10px] text-slate-500">
-                    {completedCount} / {totalSteps} steps completed
+                    {t('error.stepsCompleted', { done: completedCount, total: totalSteps })}
                   </div>
                 ) : null}
               </>
             ) : (
               <div className="mt-1 text-sm text-slate-300">
-                No step snapshot yet — reload to rebuild it from the saved live state.
+                {t('error.noSnapshot')}
               </div>
             )}
           </div>
@@ -170,20 +170,19 @@ export default class AppErrorBoundary extends React.Component {
               onClick={this.safeReload}
               className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
             >
-              🔁 Safe reload
+              {t('error.safeReload')}
             </button>
             <button
               type="button"
               onClick={this.resetView}
               className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-line"
             >
-              Try this view again
+              {t('error.tryAgain')}
             </button>
           </div>
 
           <p className="mt-3 text-[10px] leading-snug text-slate-500">
-            Safe reload restores the saved live state and the last step the host started. If the
-            crash repeats, switch this device to another role or reopen the deck.
+            {t('error.safeReloadHelp')}
           </p>
 
           <details
@@ -192,11 +191,11 @@ export default class AppErrorBoundary extends React.Component {
             onToggle={(event) => this.setState({ showLog: event.currentTarget.open })}
           >
             <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-slate-400">
-              Local error log ({entries.length})
+              {t('error.logTitle', { count: entries.length })}
             </summary>
 
             {recent.length === 0 ? (
-              <p className="mt-2 text-[11px] text-slate-500">No errors logged on this device.</p>
+              <p className="mt-2 text-[11px] text-slate-500">{t('error.noErrors')}</p>
             ) : (
               <ul className="mt-2 space-y-1.5">
                 {recent.map((entry) => (
@@ -205,7 +204,7 @@ export default class AppErrorBoundary extends React.Component {
                       {entry.at ?? '—'} · {entry.scope ?? 'app'}
                     </div>
                     <div className="mt-0.5 break-words text-[11px] text-slate-300">
-                      {entry.message ?? 'Unknown error'}
+                      {entry.message ?? t('error.unknown')}
                     </div>
                   </li>
                 ))}
@@ -218,18 +217,18 @@ export default class AppErrorBoundary extends React.Component {
                 onClick={this.copyDiagnostics}
                 className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-line"
               >
-                Copy diagnostics
+                {t('error.copyDiagnostics')}
               </button>
               <button
                 type="button"
                 onClick={this.clearLog}
                 className="rounded border border-line bg-page px-2 py-1 text-[10px] font-semibold text-slate-400 transition hover:text-white"
               >
-                Clear log
+                {t('error.clearLog')}
               </button>
               {this.state.copyNotice ? (
                 <span className="font-mono text-[10px] text-emerald-300" aria-live="polite">
-                  {this.state.copyNotice}
+                  {t(this.state.copyNotice)}
                 </span>
               ) : null}
             </div>
@@ -237,7 +236,7 @@ export default class AppErrorBoundary extends React.Component {
 
           {this.state.errorId ? (
             <p className="mt-3 font-mono text-[9px] text-slate-600">
-              Reference: {this.state.errorId}
+              {t('error.reference', { id: this.state.errorId })}
             </p>
           ) : null}
         </section>

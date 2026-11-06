@@ -4,10 +4,12 @@ import {
   resolveCoupleIdentity,
 } from '../lib/coupleIdentity.js';
 import { flagUrl } from '../lib/flags.js';
+import { useI18n } from '../i18n/useI18n.js';
 
 function Flag({ code }) {
+  const { locale } = useI18n();
   const url = flagUrl(code);
-  const name = localizedCountryName(code);
+  const name = localizedCountryName(code, locale);
 
   if (!url) {
     // Unknown / unbundled code: plain text, never a guessed flag.
@@ -30,8 +32,9 @@ function Flag({ code }) {
 }
 
 function Person({ person }) {
+  const { locale } = useI18n();
   const countryNames = person.nationalities
-    .map((code) => localizedCountryName(code))
+    .map((code) => localizedCountryName(code, locale))
     .filter(Boolean);
   const visible = person.nationalities.slice(0, 2);
   const extra = person.nationalities.length - visible.length;
@@ -58,13 +61,16 @@ function Person({ person }) {
 
 // Cartridge-driven couple identity for the top bar (TODO 15 / Phase 1.5c).
 // `coupleProfile` -> legacy `couple` -> "Wedding". No demo names live here.
+// The language chips describe the couple's shared content languages, not the
+// per-device UI language (see LanguageToggle).
 export default function CoupleIdentity({ wedding, className = '' }) {
+  const { t, locale } = useI18n();
   const identity = resolveCoupleIdentity(wedding);
 
   if (!identity.hasProfile) {
     return (
       <span className={`inline-flex items-baseline gap-1 text-slate-300 ${className}`}>
-        <span>Wedding:</span>
+        <span>{t('couple.wedding')}</span>
         <strong className="font-heading font-semibold text-white">
           {identity.fallbackLabel}
         </strong>
@@ -98,7 +104,7 @@ export default function CoupleIdentity({ wedding, className = '' }) {
           {identity.commonLanguages.map((code) => (
             <span
               key={code}
-              title={localizedLanguageName(code)}
+              title={localizedLanguageName(code, locale)}
               className="rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide text-brand-tint"
             >
               {code}

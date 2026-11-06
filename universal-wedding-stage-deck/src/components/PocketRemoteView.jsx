@@ -2,11 +2,14 @@ import logo from '../assets/img/logo.png';
 import CakeCard from './CakeCard';
 import CoupleIdentity from './CoupleIdentity';
 import HoldToConfirmButton from './HoldToConfirmButton';
+import LanguageToggle from './LanguageToggle';
 import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
+import { useI18n } from '../i18n/useI18n';
+import { roleLabel } from '../lib/roles';
 
 const DRIFT_TONES = {
   late: 'border-alert/60 bg-alert/20 text-alert-soft',
@@ -40,12 +43,13 @@ export default function PocketRemoteView({
   theme = 'night',
   onToggleTheme,
 }) {
+  const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
   const nextEntry = activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : null;
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const isComplete = !activeEntry;
-  const driftText = drift?.canonicalDriftLabel ?? 'No actual start yet';
+  const driftText = drift?.canonicalDriftLabel ?? t('drift.noActual');
   const driftClass = DRIFT_TONES[drift?.canonicalDriftTone ?? 'unknown'] ?? DRIFT_TONES.unknown;
 
   return (
@@ -57,7 +61,7 @@ export default function PocketRemoteView({
           </div>
           <div>
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-soft">
-              📱 Pocket Remote
+              {roleLabel(role)}
             </div>
             <CoupleIdentity wedding={wedding} className="text-xs" />
           </div>
@@ -68,6 +72,7 @@ export default function PocketRemoteView({
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}
+          <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>
@@ -83,7 +88,7 @@ export default function PocketRemoteView({
           className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}
         >
           <span className="text-[10px] uppercase tracking-widest">Drift</span>
-          <span className="text-sm font-bold">{driftText ?? 'No actual start yet'}</span>
+          <span className="text-sm font-bold">{driftText ?? t('drift.noActual')}</span>
         </div>
 
         {isComplete ? (

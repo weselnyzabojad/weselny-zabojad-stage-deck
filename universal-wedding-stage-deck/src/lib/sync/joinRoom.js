@@ -20,6 +20,7 @@ export async function joinRoom({ roomCode, role, pin }) {
   if (!config.enabled) {
     return {
       ok: false,
+      code: 'notConfigured',
       error: 'Cloud is not configured for this build. Ask the MC for the deployment URL.',
     };
   }
@@ -42,6 +43,7 @@ export async function joinRoom({ roomCode, role, pin }) {
       return {
         ok: false,
         status: response.status,
+        code: String(response.status),
         error: data?.error || STATUS_MESSAGES[response.status] || 'Could not join the room.',
       };
     }
@@ -50,6 +52,7 @@ export async function joinRoom({ roomCode, role, pin }) {
   } catch {
     return {
       ok: false,
+      code: 'network',
       error: 'Network error — the first join needs a connection.',
     };
   }

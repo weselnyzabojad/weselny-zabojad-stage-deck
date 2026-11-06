@@ -5,6 +5,8 @@
 // Role separation is currently a UX boundary, not an auth boundary: every
 // paired device uses the same room PIN. Split role PINs are tracked separately.
 
+import { t } from '../i18n/index.js';
+
 const STORAGE_VERSION = 1;
 
 export const ROLE_STORAGE_KEY = `wzsd:v${STORAGE_VERSION}:role`;
@@ -51,6 +53,24 @@ export const ROLE_ORDER = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
 
 export function normalizeRole(value) {
   return typeof value === 'string' && ROLES[value] ? value : 'mc';
+}
+
+// Localized role labels for the current device UI language (issue #78). The
+// `ROLES` object keeps the canonical ids/icons; these helpers resolve display
+// text so every role view follows the language toggle.
+export function roleLabel(id) {
+  const key = ROLES[id] ? id : 'mc';
+  return t(`role.${key}.label`);
+}
+
+export function roleShort(id) {
+  const key = ROLES[id] ? id : 'mc';
+  return t(`role.${key}.short`);
+}
+
+export function roleBlurb(id) {
+  const key = ROLES[id] ? id : 'mc';
+  return t(`role.${key}.blurb`);
 }
 
 // HOST_ONLY weddings have no DJ booth: hide that role from the switcher.

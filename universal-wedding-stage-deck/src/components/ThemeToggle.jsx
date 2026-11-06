@@ -1,8 +1,11 @@
+import { useI18n } from '../i18n/useI18n';
+
 // Sun/moon theme switch (TODO 27). Accessible toggle that only changes this
 // device's theme; it is never synced to other roles.
 export default function ThemeToggle({ theme = 'night', onToggle, compact = false, className = '' }) {
+  const { t } = useI18n();
   const isDay = theme === 'day';
-  const label = isDay ? 'Switch to Night Stage (dark)' : 'Switch to Daylight (light)';
+  const label = isDay ? t('theme.toNight') : t('theme.toDay');
 
   return (
     <button
@@ -17,7 +20,9 @@ export default function ThemeToggle({ theme = 'night', onToggle, compact = false
         {isDay ? '☀️' : '🌙'}
       </span>
       {compact ? null : (
-        <span className="font-heading font-semibold">{isDay ? 'Daylight' : 'Night Stage'}</span>
+        <span className="font-heading font-semibold">
+          {isDay ? t('theme.day') : t('theme.night')}
+        </span>
       )}
     </button>
   );

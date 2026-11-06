@@ -5,6 +5,7 @@ import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
+import LanguageToggle from './LanguageToggle';
 import {
   clockToEventDate,
   formatCountdown,
@@ -159,6 +160,7 @@ export default function PhotographerView({
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}
+          <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>
