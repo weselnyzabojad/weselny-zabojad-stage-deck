@@ -1,39 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
-import CartridgeImporter from './components/CartridgeImporter';
-import DjBoothView from './components/DjBoothView';
 import PairingScreen from './components/PairingScreen';
-import PhotographerView from './components/PhotographerView';
 import RoleJoinScreen from './components/RoleJoinScreen';
-import SpeakerView from './components/SpeakerView';
-import TeleprompterOverlay from './components/TeleprompterOverlay';
-import UndoToast from './components/UndoToast';
-import McMasterView from './views/McMasterView';
-import { DEFAULT_WEDDING, buildInitialLiveState } from './demo/demoWedding';
-import { STEP_TYPE_STYLES } from './lib/styleConstants';
-import { useLiveStageState } from './hooks/useLiveStageState';
-import { usePairing } from './hooks/usePairing';
-import { useRole } from './hooks/useRole';
-import { useEventClock } from './hooks/useEventClock';
-import { useTheme } from './hooks/useTheme';
-import { useSensitiveNotes } from './hooks/useSensitiveNotes';
-import { availableRoleIds } from './lib/roles';
-import { buildDriftReport } from './lib/driftEngine';
-import { resolveCakeProtocol } from './lib/cake';
-import { resolveContacts } from './lib/contacts';
-import { resolveMusicPolicy } from './lib/musicPolicy';
-import {
-  resolveActiveSpeech,
-  resolveSpeechMode,
-  resolveSpeeches,
-} from './lib/speeches';
-import { loadSpeakerScript } from './lib/speakerCache';
-import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
-import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
+import StageDeck from './StageDeck';
+import { DEFAULT_WEDDING } from './demo/demoWedding';
 import { getSyncConfig } from './lib/sync/syncConfig';
-import { clearReloadState, loadReloadState } from './lib/reloadState';
-import { resolvePwaReloadBlock } from './lib/pwaUpdate';
-import { setPwaReloadContext } from './lib/pwaUpdateState';
 import {
   clearRoleSession,
   isRoleSessionValid,
@@ -41,22 +12,20 @@ import {
   parseDeckIntent,
   saveRoleSession,
 } from './lib/sync/roleSession';
-import { activeSteps } from './lib/liveStageState';
-import { deriveLastKnownStep, saveLastKnownStep } from './lib/lastKnownStep';
-import { loadActiveCartridge, saveActiveCartridge } from './lib/cartridgeStorage';
+import {
+  isCartridgeLike,
+  loadCachedCartridge,
+  saveCachedCartridge,
+} from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
 import { useI18n } from './i18n/useI18n';
-
-const STORED_CARTRIDGE = loadActiveCartridge();
-const ACTIVE_WEDDING = STORED_CARTRIDGE ?? DEFAULT_WEDDING;
-const HAS_STORED_CARTRIDGE = Boolean(STORED_CARTRIDGE);
-
-// Venue date/timezone drive ISO migration, clock display and day rollover.
-const EVENT_DATE_ISO = resolveEventDateISO(ACTIVE_WEDDING);
-const VENUE_TIME_ZONE = resolveVenueTimeZone(ACTIVE_WEDDING);
+import { usePairing } from './hooks/usePairing';
+import { useRole } from './hooks/useRole';
+import { useTheme } from './hooks/useTheme';
 
 // Production `/deck/` uses per-role PINs validated by the join_room Edge
-// Function. Local/demo mode keeps the DDMM display-PIN gate.
+// Function. Local/demo mode keeps the DDMM display-PIN gate and the demo
+// cartridge, but still has no cartridge import/reset path.
 const SYNC_CONFIG = getSyncConfig();
 const IS_PRODUCTION = SYNC_CONFIG.isProduction;
 const DECK_INTENT =
@@ -64,157 +33,65 @@ const DECK_INTENT =
     ? parseDeckIntent(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
     : { roomCode: null, role: null };
 
+function idleCartridgeState() {
+  return { status: 'idle', wedding: null, stale: false, error: null };
+}
+
 export default function App() {
-  // Subscribing here makes every locale change re-render the tree, including
-  // the schedule labels computed by the pure drift engine (issue #78).
   const { t } = useI18n();
-  const WEDDING = ACTIVE_WEDDING;
+  const { theme, toggleTheme } = useTheme();
   const [roleSession, setRoleSession] = useState(() =>
     IS_PRODUCTION ? loadRoleSession() : null,
   );
   const sessionValid = IS_PRODUCTION && isRoleSessionValid(roleSession);
-  const pairing = usePairing({ expectedPin: WEDDING.syncPin, weddingId: WEDDING.weddingId });
+  const pairing = usePairing({
+    expectedPin: DEFAULT_WEDDING.syncPin,
+    weddingId: DEFAULT_WEDDING.weddingId,
+  });
   const { role, setRole } = useRole();
+  const [reloadKey, setReloadKey] = useState(0);
+  // Production must never fall back to the built-in demo. The cache is only a
+  // read-only copy of a server-published cartridge for the same wedding.
+  const [cartridgeState, setCartridgeState] = useState(() => {
+    if (!IS_PRODUCTION) {
+      return { status: 'ready', wedding: DEFAULT_WEDDING, stale: false, error: null };
+    }
+    if (!sessionValid) return idleCartridgeState();
+    const cached = loadCachedCartridge(roleSession.weddingId);
+    return cached
+      ? { status: 'loading', wedding: cached.cartridge, stale: true, error: null }
+      : { status: 'loading', wedding: null, stale: false, error: null };
+  });
+
   // Local pocket deep links use `?role=...`; apply the intent once on mount so
   // an Open on phone QR can select the same role on a fresh device.
   useEffect(() => {
     if (!IS_PRODUCTION && DECK_INTENT.role) setRole(DECK_INTENT.role);
   }, [setRole]);
-  // The actor role is logged in mutation entries; production uses the token role.
-  const actorRole = IS_PRODUCTION ? roleSession?.role ?? 'mc' : role;
-  const {
-    liveState,
-    markCurrentDone,
-    undoLastStep,
-    canUndo,
-    lastUndo,
-    toggleSubtask,
-    sendStagePing,
-    swapWithNext,
-    selectSpeech,
-    savedLocally,
-    syncStatus,
-    syncConfigured,
-    syncError,
-    outbox,
-    remoteUpdatedAt,
-    serverTimeOffsetMs,
-    serverTimeAvailable,
-  } = useLiveStageState({
-    steps: WEDDING.steps,
-    weddingId: WEDDING.weddingId,
-    // D7: the room is keyed by the weddingId, never the DDMM PIN.
-    roomId: IS_PRODUCTION ? roleSession?.weddingId ?? null : WEDDING.weddingId,
-    initialLiveState: buildInitialLiveState(WEDDING),
-    eventDateISO: EVENT_DATE_ISO,
-    timeZone: VENUE_TIME_ZONE,
-    accessToken: sessionValid ? roleSession.token : null,
-    requireToken: IS_PRODUCTION,
-    role: actorRole,
-  });
-  // Per-device theme (TODO 27): Night Stage default, Daylight for outdoor glare.
-  const { theme, toggleTheme } = useTheme();
-  // D4: the host/MC device decrypts sensitive notes with its local host key.
-  const sensitiveNotes = useSensitiveNotes({
-    enabled: IS_PRODUCTION && sessionValid && roleSession?.role === 'mc',
-    wedding: WEDDING,
-    weddingId: roleSession?.weddingId ?? WEDDING.weddingId,
-    accessToken: sessionValid ? roleSession.token : null,
-  });
-  // One shared ticking clock for every view (P0.6). Recomputing the drift
-  // report from `now` keeps overruns, anchors and cutoffs live.
-  const now = useEventClock({ serverTimeOffsetMs });
-  // TODO 24: derive a tiny human-readable snapshot for the error boundaries,
-  // then persist it. The snapshot is derived during render (no extra state) and
-  // the effect only writes to localStorage.
-  const lastKnownStep = deriveLastKnownStep({
-    weddingId: WEDDING.weddingId,
-    steps: WEDDING.steps,
-    activeStepId: liveState.active_step_id,
-    completedStepIds: liveState.completed_step_ids,
-    role: actorRole,
-  });
-  useEffect(() => {
-    saveLastKnownStep({
-      weddingId: lastKnownStep.weddingId,
-      step: lastKnownStep.stepId
-        ? {
-            id: lastKnownStep.stepId,
-            title: lastKnownStep.title,
-            type: lastKnownStep.type,
-            location: lastKnownStep.location,
-            time: lastKnownStep.plannedTime,
-          }
-        : null,
-      role: lastKnownStep.role,
-      completedCount: lastKnownStep.completedCount,
-      totalSteps: lastKnownStep.totalSteps,
-    });
-  }, [
-    lastKnownStep.weddingId,
-    lastKnownStep.stepId,
-    lastKnownStep.title,
-    lastKnownStep.type,
-    lastKnownStep.location,
-    lastKnownStep.plannedTime,
-    lastKnownStep.role,
-    lastKnownStep.completedCount,
-    lastKnownStep.totalSteps,
-  ]);
-  const [overlay, setOverlay] = useState(() => loadReloadState()?.overlay ?? null);
-  const [controlNotice, setControlNotice] = useState('');
-  const [undoToast, setUndoToast] = useState(null);
-  const [importerOpen, setImporterOpen] = useState(false);
-  const [contactsOpen, setContactsOpen] = useState(false);
-  // Offline cache for the speaker script (the active id is synced separately).
-  const [cachedSpeakerSpeech] = useState(() => loadSpeakerScript(ACTIVE_WEDDING.weddingId));
-  const [cartridgeError, setCartridgeError] = useState(null);
-  const closeOverlay = () => setOverlay(null);
-  const handleRoleChange = (next) => {
-    setOverlay(null);
-    setRole(next);
-    window.setTimeout(() => document.getElementById('main-content')?.focus(), 50);
-  };
 
-  // Issue #81: restore the overlay/scroll saved before an accepted PWA reload.
+  // Fetch the server-published cartridge after the role PIN is accepted. A
+  // cached copy for the same wedding keeps the deck usable offline; it is
+  // marked stale until the authoritative fetch succeeds. There is deliberately
+  // no local import, activation or demo fallback in production.
   useEffect(() => {
-    const state = loadReloadState();
-    if (!state) return undefined;
-    clearReloadState();
-    if (state.scrollY > 0) {
-      const frame = window.requestAnimationFrame(() => window.scrollTo(0, state.scrollY));
-      return () => window.cancelAnimationFrame(frame);
+    if (!IS_PRODUCTION) return undefined;
+    if (!sessionValid || !roleSession) {
+      setCartridgeState(idleCartridgeState());
+      return undefined;
     }
-    return undefined;
-  }, []);
-
-  // Issue #81: tell the global update prompt when a reload is unsafe.
-  useEffect(() => {
-    setPwaReloadContext({
-      overlay,
-      blockedReason: resolvePwaReloadBlock({
-        overlay,
-        activeSpeech: Boolean(liveState.active_speech_id),
-        activeStepId: liveState.active_step_id ?? null,
-      }),
-    });
-  }, [overlay, liveState.active_speech_id, liveState.active_step_id]);
-
-  useEffect(
-    () => () => setPwaReloadContext({ overlay: null, blockedReason: null }),
-    [],
-  );
-
-  // Production: after the role PIN is accepted, fetch the role-scoped cartridge
-  // from the room. A cartridge cached for another wedding does not count.
-  const hasMatchingCartridge =
-    HAS_STORED_CARTRIDGE &&
-    (!IS_PRODUCTION || ACTIVE_WEDDING.weddingId === roleSession?.weddingId);
-  const needsProductionCartridge = IS_PRODUCTION && sessionValid && !hasMatchingCartridge;
-  useEffect(() => {
-    if (!needsProductionCartridge) return undefined;
 
     let cancelled = false;
+    const cached = loadCachedCartridge(roleSession.weddingId);
+    setCartridgeState((current) => {
+      const sameWedding = current.wedding?.weddingId === roleSession.weddingId;
+      return {
+        status: 'loading',
+        wedding: cached?.cartridge ?? (sameWedding ? current.wedding : null),
+        stale: Boolean(cached) || (sameWedding && current.stale),
+        error: null,
+      };
+    });
+
     const client = createSupabaseSyncClient(SYNC_CONFIG, {
       accessToken: roleSession.token,
     });
@@ -223,27 +100,62 @@ export default function App() {
       .fetchWedding(roleSession.weddingId)
       .then((row) => {
         if (cancelled) return;
-        if (!row?.cartridge) throw new Error('The server has no cartridge for this room.');
-        if (!saveActiveCartridge(row.cartridge)) {
-          throw new Error('The published cartridge is missing required fields.');
+        if (!row?.cartridge) throw new Error(t('app.noPublishedCartridge'));
+        if (!isCartridgeLike(row.cartridge)) {
+          throw new Error(t('app.invalidPublishedCartridge'));
         }
-        window.location.reload();
+        // `updated_at` is the server publication marker available before the
+        // revision contract lands (#165); it also keeps the cache tied to the
+        // exact snapshot that was rendered.
+        saveCachedCartridge({
+          weddingId: roleSession.weddingId,
+          cartridge: row.cartridge,
+          revision: row.updated_at ?? null,
+          fetchedAt: new Date().toISOString(),
+        });
+        setCartridgeState({
+          status: 'ready',
+          wedding: row.cartridge,
+          stale: false,
+          error: null,
+        });
       })
       .catch((error) => {
-        if (!cancelled) setCartridgeError(error.message);
+        if (cancelled) return;
+        setCartridgeState((current) => {
+          if (current.wedding?.weddingId === roleSession.weddingId) {
+            return {
+              status: 'ready',
+              wedding: current.wedding,
+              stale: true,
+              error: error.message,
+            };
+          }
+          return { status: 'error', wedding: null, stale: false, error: error.message };
+        });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [needsProductionCartridge, roleSession]);
+  }, [roleSession, sessionValid, reloadKey, t]);
+
+  // Never render a cartridge that belongs to a different joined wedding. Keep
+  // the error/loading state for this session intact so a missing server
+  // cartridge surfaces the retry screen instead of an endless loader.
+  const activeCartridgeState =
+    IS_PRODUCTION && cartridgeState.wedding
+      ? cartridgeState.wedding.weddingId === roleSession?.weddingId
+        ? cartridgeState
+        : { status: 'loading', wedding: null, stale: false, error: null }
+      : cartridgeState;
 
   if (IS_PRODUCTION && !sessionValid) {
     return (
       <AppErrorBoundary
         scope="join"
-        weddingId={WEDDING.weddingId}
-        lastKnownStep={lastKnownStep}
+        weddingId={roleSession?.weddingId ?? null}
+        lastKnownStep={null}
       >
         <RoleJoinScreen
           intent={DECK_INTENT}
@@ -258,28 +170,31 @@ export default function App() {
     );
   }
 
-  if (needsProductionCartridge) {
+  if (IS_PRODUCTION && !activeCartridgeState.wedding) {
+    const failed = activeCartridgeState.status === 'error';
     return (
       <AppErrorBoundary
         scope="cartridge"
-        weddingId={WEDDING.weddingId}
-        lastKnownStep={lastKnownStep}
+        weddingId={roleSession?.weddingId ?? null}
+        lastKnownStep={null}
       >
         <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
           <div className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
             <div className="text-3xl" aria-hidden="true">
-              {cartridgeError ? '⚠️' : '🎧'}
+              {failed ? '⚠️' : '🎧'}
             </div>
             <h1 className="mt-2 font-heading text-lg font-bold text-white">
-              {cartridgeError ? t('app.errorWedding') : t('app.loadingWedding')}
+              {failed ? t('app.errorWedding') : t('app.loadingWedding')}
             </h1>
             <p className="mt-2 text-xs leading-relaxed text-slate-400">
-              {cartridgeError ?? t('app.loadingWeddingBody')}
+              {failed
+                ? activeCartridgeState.error ?? t('app.errorWedding')
+                : t('app.loadingWeddingBody')}
             </p>
-            {cartridgeError ? (
+            {failed ? (
               <button
                 type="button"
-                onClick={() => window.location.reload()}
+                onClick={() => setReloadKey((key) => key + 1)}
                 className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
               >
                 {t('app.retry')}
@@ -295,300 +210,40 @@ export default function App() {
     return (
       <AppErrorBoundary
         scope="pairing"
-        weddingId={WEDDING.weddingId}
-        lastKnownStep={lastKnownStep}
+        weddingId={DEFAULT_WEDDING.weddingId}
+        lastKnownStep={null}
       >
         <PairingScreen
-          wedding={WEDDING}
+          wedding={DEFAULT_WEDDING}
           onPair={pairing.pair}
-          cloudConfigured={syncConfigured}
+          cloudConfigured={SYNC_CONFIG.enabled}
           theme={theme}
           onToggleTheme={toggleTheme}
-          onImport={() => setImporterOpen(true)}
-        />
-        <CartridgeImporter
-          key={importerOpen ? 'importer-open' : 'importer-closed'}
-          open={importerOpen}
-          onClose={() => setImporterOpen(false)}
-          currentCartridge={WEDDING}
         />
       </AppErrorBoundary>
     );
   }
 
-  const handleUnpair = () => {
-    if (IS_PRODUCTION) {
-      const confirmed = window.confirm(
-        'Sign out of this role? You will need the role PIN to rejoin.'
-      );
-      if (!confirmed) return;
-      clearRoleSession();
-      setRoleSession(null);
-      return;
-    }
-    const confirmed = window.confirm(
-      "Forget the room PIN on this device? Timeline progress stays saved locally."
-    );
-    if (confirmed) pairing.unpair();
-  };
-
-  const availableRoles = availableRoleIds(WEDDING.hostingMode);
-  // Production: the role token fixes this device to exactly one role. Switching
-  // requires signing out and joining with another role's PIN.
-  const roleIds = IS_PRODUCTION ? [roleSession.role] : availableRoles;
-  const currentRole = IS_PRODUCTION
-    ? roleSession.role
-    : roleIds.includes(role)
-      ? role
-      : "mc";
-  const showDjCues = availableRoles.includes("dj");
-
-  const steps = activeSteps(WEDDING.steps, liveState);
-  const vipAlerts =
-    sensitiveNotes.payload?.vipAlerts ?? WEDDING.tact_and_vip_alerts ?? [];
-  const contacts = resolveContacts({
-    ...WEDDING,
-    contacts: sensitiveNotes.payload?.contacts ?? WEDDING.contacts,
-  });
-  const driftReport = buildDriftReport(steps, liveState, {
-    hardAnchors: WEDDING.hardAnchors,
-    now,
-    eventDateISO: EVENT_DATE_ISO,
-    timeZone: VENUE_TIME_ZONE,
-    serverTimeOffsetMs,
-    serverTimeAvailable,
-  });
-  const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
-  const activeIndex = timeline.findIndex((entry) => entry.isActive);
-  const cakeProtocol = resolveCakeProtocol(WEDDING, timeline, activeIndex);
-  const musicPolicy = resolveMusicPolicy(WEDDING, now, {
-    eventDateISO: EVENT_DATE_ISO,
-    timeZone: VENUE_TIME_ZONE,
-  });
-  const speeches = resolveSpeeches(WEDDING);
-  const speechMode = resolveSpeechMode(WEDDING, speeches);
-  const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
-  // If the cartridge is unavailable but the active speech id is still known,
-  // show the cached copy on this speaker device instead of a blank screen.
-  const speakerSpeech =
-    activeSpeech ??
-    (cachedSpeakerSpeech && cachedSpeakerSpeech.id === liveState.active_speech_id
-      ? cachedSpeakerSpeech
-      : null);
-  const currentStep = currentEntry?.step ?? null;
-  const completedCount = driftReport.completedCount;
-  const isComplete = !currentStep;
-  const realStart = currentEntry?.projectedStart ?? null;
-  const estimatedEnd = currentEntry?.projectedEnd ?? null;
-  const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
-  const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
-  const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
-  const stepSubtasks = currentStep?.subTasks ?? [];
-
-  // P0.7: block hard anchors, warn on photographer cues.
-  const swapBlock = swapBlockReason(currentStep, nextEntry?.step ?? null);
-  const swapWarn = swapNeedsWarning(currentStep, nextEntry?.step ?? null);
-  const notifyUndo = (label) => setUndoToast({ id: Date.now(), label });
-
-  const handleSwap = () => {
-    if (!currentStep || !nextEntry || swapBlock) return;
-    if (
-      swapWarn &&
-      !window.confirm(
-        'One of these steps carries a photographer cue. Swap anyway? The vendor may be waiting for that moment.',
-      )
-    ) {
-      return;
-    }
-    setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
-    swapWithNext();
-    notifyUndo('Swapped steps');
-  };
-  const handleAdvance = () => {
-    markCurrentDone();
-    setControlNotice('Step marked done.');
-    notifyUndo('Step completed');
-  };
-  const handleUndo = () => {
-    if (!canUndo) return;
-    undoLastStep();
-    setUndoToast(null);
-    setControlNotice('Last action undone.');
-  };
-  const handleOpenAnchor = (anchorElementId) => {
-    setContactsOpen(false);
-    window.setTimeout(() => {
-      document
-        .getElementById(anchorElementId)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
-  };
-
-  const roleProps = {
-    role: currentRole,
-    roles: roleIds,
-    onRoleChange: handleRoleChange
-  };
-
-  if (currentRole === "dj") {
-    return (
-      <AppErrorBoundary
-        scope="dj"
-        weddingId={WEDDING.weddingId}
-        role={currentRole}
-        resetKey={currentRole}
-        lastKnownStep={lastKnownStep}
-      >
-        <DjBoothView
-          wedding={WEDDING}
-          timeline={timeline}
-          projectedFinish={driftReport.projectedFinish}
-          clock={driftReport.clock}
-          musicPolicy={musicPolicy}
-          stagePing={liveState.stage_ping}
-          syncStatus={syncStatus}
-          syncError={syncError}
-          remoteUpdatedAt={remoteUpdatedAt}
-          outbox={outbox}
-          servicePackage={WEDDING.servicePackage}
-          viewVisibility={WEDDING.viewVisibility?.dj}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
-          songRequestRoomCode={DECK_INTENT.roomCode}
-          roomCode={DECK_INTENT.roomCode}
-          {...roleProps}
-        />
-      </AppErrorBoundary>
-    );
-  }
-
-  if (currentRole === "photo") {
-    return (
-      <AppErrorBoundary
-        scope="photo"
-        weddingId={WEDDING.weddingId}
-        role={currentRole}
-        resetKey={currentRole}
-        lastKnownStep={lastKnownStep}
-      >
-        <PhotographerView
-          wedding={WEDDING}
-          timeline={timeline}
-          clock={driftReport.clock}
-          stagePing={liveState.stage_ping}
-          hardAnchors={WEDDING.hardAnchors}
-          syncStatus={syncStatus}
-          syncError={syncError}
-          remoteUpdatedAt={remoteUpdatedAt}
-          outbox={outbox}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          roomCode={DECK_INTENT.roomCode}
-          {...roleProps}
-        />
-      </AppErrorBoundary>
-    );
-  }
-
-  if (currentRole === "speaker") {
-    return (
-      <AppErrorBoundary
-        scope="speaker"
-        weddingId={WEDDING.weddingId}
-        role={currentRole}
-        resetKey={currentRole}
-        lastKnownStep={lastKnownStep}
-      >
-        <SpeakerView
-          wedding={WEDDING}
-          clock={driftReport.clock}
-          speechMode={speechMode}
-          speechCount={speeches.length}
-          activeSpeech={speakerSpeech}
-          activeSpeechId={liveState.active_speech_id}
-          fromCache={!activeSpeech && Boolean(speakerSpeech)}
-          syncStatus={syncStatus}
-          syncError={syncError}
-          remoteUpdatedAt={remoteUpdatedAt}
-          outbox={outbox}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          roomCode={DECK_INTENT.roomCode}
-        />
-      </AppErrorBoundary>
-    );
-  }
-
-  const mcModel = {
-    WEDDING,
-    realStart,
-    driftReport,
-    vipAlerts,
-    setImporterOpen,
-    setContactsOpen,
-    contacts,
-    handleUnpair,
-    IS_PRODUCTION,
-    roleSession,
-    pairing,
-    roleIds,
-    currentRole,
-    handleRoleChange,
-    roomCode: DECK_INTENT.roomCode,
-    theme,
-    toggleTheme,
-    syncStatus,
-    syncError,
-    outbox,
-    remoteUpdatedAt,
-    currentStep,
-    stepTypeClass,
-    estimatedEnd,
-    showDjCues,
-    stepSubtasks,
-    liveState,
-    toggleSubtask,
-    script,
-    game,
-    setOverlay,
-    currentEntry,
-    steps,
-    completedCount,
-    nextEntry,
-    cakeProtocol,
-    musicPolicy,
-    speechMode,
-    speeches,
-    selectSpeech,
-    sendStagePing,
-    isComplete,
-    handleSwap,
-    swapBlock,
-    controlNotice,
-    savedLocally,
-    handleUndo,
-    canUndo,
-    lastUndo,
-    handleAdvance,
-    overlay,
-    closeOverlay,
-    undoToast,
-    setUndoToast,
-    importerOpen,
-    contactsOpen,
-    handleOpenAnchor,
-  };
+  const wedding = IS_PRODUCTION ? activeCartridgeState.wedding : DEFAULT_WEDDING;
 
   return (
-    <AppErrorBoundary
-      scope="mc"
-      weddingId={WEDDING.weddingId}
-      role={currentRole}
-      resetKey={currentRole}
-      lastKnownStep={lastKnownStep}
-    >
-      <McMasterView model={mcModel} />
-    </AppErrorBoundary>
+    <StageDeck
+      wedding={wedding}
+      roleSession={roleSession}
+      sessionValid={sessionValid}
+      pairing={pairing}
+      role={role}
+      setRole={setRole}
+      theme={theme}
+      toggleTheme={toggleTheme}
+      cartridgeStale={IS_PRODUCTION ? activeCartridgeState.stale : false}
+      isProduction={IS_PRODUCTION}
+      deckIntent={DECK_INTENT}
+      onSignOut={() => {
+        clearRoleSession();
+        setRoleSession(null);
+        setCartridgeState(idleCartridgeState());
+      }}
+    />
   );
 }

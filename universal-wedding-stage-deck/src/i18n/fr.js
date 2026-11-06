@@ -107,8 +107,14 @@ const fr = {
   'app.loadingWedding': 'Chargement du mariage…',
   'app.errorWedding': 'Impossible de charger ce mariage',
   'app.loadingWeddingBody':
-    'Récupération de la cartouche limitée au rôle pour cette salle. Aucune donnée du mariage n\'est mise en cache avant son arrivée.',
+    'Récupération de la cartouche publiée sur le serveur pour cette salle. Une copie en cache n\'est utilisée que pour ce même mariage.',
   'app.retry': 'Réessayer',
+  'app.noPublishedCartridge':
+    'Aucune cartouche n\'a encore été publiée pour ce mariage. Demandez au propriétaire de la publier depuis /deck/admin.',
+  'app.invalidPublishedCartridge':
+    'La cartouche publiée est invalide. Réessayez ou demandez au propriétaire de la republier depuis /deck/admin.',
+  'app.offlineCartridge':
+    'Hors ligne — affichage de la dernière cartouche publiée pour ce mariage. Lecture seule jusqu\'au retour du serveur.',
 
   'error.recovered': 'RÉCUPÉRÉ',
   'error.scope.app': 'le deck',

@@ -107,8 +107,14 @@ const pl = {
   'app.loadingWedding': 'Wczytywanie wesela…',
   'app.errorWedding': 'Nie udało się wczytać tego wesela',
   'app.loadingWeddingBody':
-    'Pobieranie kartridża ograniczonego do roli dla tego pokoju. Żadne dane wesela nie są buforowane, dopóki nie dotrą.',
+    'Pobieranie kartridża opublikowanego na serwerze dla tego pokoju. Kopia z pamięci podręcznej jest używana tylko dla tego samego wesela.',
   'app.retry': 'Ponów',
+  'app.noPublishedCartridge':
+    'Dla tego wesela nie opublikowano jeszcze kartridża. Poproś właściciela o publikację w /deck/admin.',
+  'app.invalidPublishedCartridge':
+    'Opublikowany kartridż jest nieprawidłowy. Ponów próbę lub poproś właściciela o ponowną publikację w /deck/admin.',
+  'app.offlineCartridge':
+    'Offline — wyświetlany jest ostatni opublikowany kartridż tego wesela. Tylko do odczytu, dopóki serwer jest niedostępny.',
 
   'error.recovered': 'ODZYSKANO',
   'error.scope.app': 'deck',

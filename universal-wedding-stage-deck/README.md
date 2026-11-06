@@ -311,32 +311,37 @@ npm run validate:schema -- path/to/cartridge.json
 The schema uses the app's canonical camelCase shape (`weddingId`, `syncPin`,
 `hostingMode`, `hardAnchors`, `durationMin`, `buffer`, `step_order`) and
 rejects unknown top-level keys; use `extensions` for forward-compatible extras. Legacy snake_case Google
-Docs imports will be mapped by the issue #15 importer.
+Legacy snake_case Google Docs imports are mapped by the shared cartridge
+converter used by admin publishing.
 
-### 12. AI converter prompt and in-app importer (issue #15)
+### 12. AI converter prompt and admin-only cartridge publishing (issue #15 / #166)
 
-The ingestion pipeline is now wired end-to-end:
+The ingestion pipeline is admin-only:
 
 - `schema/ai-converter-prompt.md` is the copy-paste AI prompt. It defines the
   exact v1.1 shape, ELASTIC/BUFFER/HARD_ANCHOR classification, buffer ranges,
   hard anchors, teleprompter shapes and pre-wedding task extraction.
-- **Import** is available from the pairing screen (so a different wedding can
-  be loaded before entering its PIN) and from the MC header.
-- The importer combines the prompt with an optional raw-notes textarea, lets
-  you paste the generated JSON, validates it in the browser with the same Ajv
-  schema + semantic checks as the CLI, previews the cartridge and then imports.
-- Importing saves to `wzsd:v1:cartridge` and reloads the app. If the new
-  cartridge uses a different `syncPin`, the pairing gate appears for the new
-  wedding. **Reset to built-in demo** clears the imported cartridge.
+- Cartridge JSON is pasted and published only from `/deck/admin`
+  (**Create / publish wedding**). The page validates it in the browser with the
+  same Ajv schema + semantic checks as the CLI before calling `admin_api`.
+- Stage roles never import, activate, replace or reset a cartridge. After a role
+  PIN is accepted they fetch the server-published snapshot.
+- For offline continuity the device keeps a read-only cache keyed by
+  `weddingId`. It records the server `updated_at` revision marker and can only
+  be written by the fetch path in `App.jsx`.
+- When the server is unreachable, the cached snapshot for the same joined
+  wedding is shown with a persistent stale/read-only banner.
+- When no server cartridge is available, production shows a clear retry/error
+  state. It never falls back to the built-in demo.
 - `preWeddingTodos` from the cartridge render in the MC **🧳 Pre-Wedding
   Checklist** card; check states use the synced `checked_subtasks` map.
-- Ajv is loaded on demand, keeping the main bundle lean while still validating
-  offline after the PWA caches the importer chunk.
+- The AI prompt payload and the former `CartridgeImporter` component are not
+  part of the role-device bundle.
 
-Relevant files: `schema/ai-converter-prompt.md`,
-`src/components/CartridgeImporter.jsx`, `src/components/PreWeddingChecklistCard.jsx`,
+Relevant files: `schema/ai-converter-prompt.md`, `src/admin/AdminApp.jsx`,
 `src/lib/cartridgeImporter.js`, `src/lib/cartridgeValidation.js`,
-`src/lib/cartridgeStorage.js`, `src/App.jsx`.
+`src/lib/cartridgeStorage.js`, `src/App.jsx`, `src/StageDeck.jsx`,
+`src/components/PreWeddingChecklistCard.jsx`.
 
 ### 13. Retired: Co-Hosting & Content Creator module (D10 / TODO 20)
 
@@ -344,12 +349,12 @@ The Issue #16 module was removed on 2026-11-03 (decision D10):
 
 - `src/components/TeamModule.jsx` is deleted; the MC header no longer has a
   **Team (N)** button.
-- Demo `coHosts`/`contentCreators` data, the importer preview counts and the
+- Demo `coHosts`/`contentCreators` data, the preview counts and the
   duplicate-ID validator checks are gone.
 - `WeddingSchema v1.1` keeps the `coHosts` / `contentCreators` definitions so
-  existing cartridges still validate, but they are marked legacy and the
-  importer **drops both arrays** when a cartridge is stored. The AI converter
-  prompt no longer asks for them.
+  existing cartridges still validate, but they are marked legacy and the shared
+  validator **drops both arrays** when a cartridge is published or cached. The
+  AI converter prompt no longer asks for them.
 - Use `contacts` for the vendor directory instead.
 
 ### 14. DJ Key Songs card: VIP vs Standard (issue #60 / TODO 18)
@@ -409,7 +414,7 @@ The cartridge supplies the data in `musicPolicy.importantSongs[]`:
   the service package and visibility matrix, not by role switching.
 - The Google Doc `## IMPORTANT SONGS` section maps to this block; see
   `schema/ai-converter-prompt.md`. Links are preserved exactly and never
-  invented; missing sources warn instead of blocking the import.
+  invented; missing sources warn instead of blocking admin publishing.
 
 Relevant files: `src/lib/importantSongs.js`,
 `src/components/KeySongsCard.jsx`, `src/components/QrCodeImage.jsx`,
@@ -482,9 +487,6 @@ The MC, DJ Booth and Pocket headers now render the cartridge-driven
   names. Unknown/invalid codes render as plain text instead of a guessed flag.
 - Fallback order: `coupleProfile` -> legacy `couple` string -> "Wedding".
   v1.1 cartridges therefore keep the old `Wedding: {couple}` label.
-- The importer preview shows the parsed first names, flags and shared
-  languages before saving.
-
 **Google Doc parser:** the `## COUPLE IDENTITY` section maps to `coupleProfile`
 (see `schema/ai-converter-prompt.md`). Nationality names are normalized to ISO
 3166-1 alpha-2 (`French`/`France`/`Français`/`Francja` -> `FR`, `Polish`/`Poland`/
@@ -495,7 +497,6 @@ be split on `&` only as an unconfirmed prefill.
 
 Relevant files: `src/components/CoupleIdentity.jsx`, `src/lib/coupleIdentity.js`,
 `src/lib/flags.js`, `src/App.jsx`, `src/components/DjBoothView.jsx`,
-`src/components/PocketRemoteView.jsx`, `src/components/CartridgeImporter.jsx`,
 `schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
 `schema/wedding-cartridge.example.json`, `vite.config.js`.
 
@@ -523,16 +524,14 @@ The cartridge can now describe the cake moment as a first-class block:
   and never wins.
 - If `cake.time` is missing, the CAKE key song's `plannedTime` is used. Missing
   sparklers/cue/serve time render as `—`; nothing is inferred.
-- Validation: `cake.serveTime` cannot be before `cake.time`. The importer
-  preview shows the cake cutting and serve times.
+- Validation: `cake.serveTime` cannot be before `cake.time`.
 - The AI converter prompt maps a Google Doc `## CAKE` section to this block and
   tells the AI to reuse the CAKE row from `musicPolicy.importantSongs[]`.
 
 Relevant files: `src/lib/cake.js`, `src/components/CakeCard.jsx`, `src/App.jsx`,
 `src/components/PocketRemoteView.jsx`, `src/lib/cartridgeValidation.js`,
-`src/lib/cartridgeImporter.js`, `src/components/CartridgeImporter.jsx`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
-`schema/wedding-cartridge.example.json`.
+`src/lib/cartridgeImporter.js`, `schema/wedding-schema-v1.1.json`,
+`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
 
 ### 18. Vendor contacts directory (issue #53 / TODO 10)
 
@@ -561,17 +560,16 @@ directory:
   scrolls to that row in the Hard Anchor Radar. An unmatched `leavesAt` shows a
   warning so the departure can be protected with an anchor.
 - The schema now allows `contacts[].id`, `email` and `leavesAt`; duplicate
-  contact ids are rejected on import. v1.1 cartridges without those fields still
-  load.
-- The importer preview shows the contact count and how many have departures.
+  contact ids are rejected when publishing from `/deck/admin`. v1.1 cartridges
+  without those fields still load.
 - The AI converter prompt maps a Google Doc `## VENDOR CONTACTS` section to this
   block and tells the AI never to invent phone numbers or emails.
 
 Relevant files: `src/lib/contacts.js`, `src/components/ContactsModal.jsx`,
 `src/components/HardAnchorRadar.jsx`, `src/App.jsx`,
 `src/lib/cartridgeValidation.js`, `src/lib/cartridgeImporter.js`,
-`src/components/CartridgeImporter.jsx`, `schema/wedding-schema-v1.1.json`,
-`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
+`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-cartridge.example.json`.
 
 ### 19. Music policy: requests, blacklist and licensing (issue #45 / TODO 2)
 
@@ -600,17 +598,15 @@ The cartridge now carries the full guest-music policy:
   Key Songs card: the Key Songs title wins and a differing stored `track` is
   flagged (never two conflicting first-dance titles).
 - Validation rejects duplicate must-play/do-not-play ids and a
-  `requestWindow.end` that is not after `start`. The importer preview shows the
-  must-play / do-not-play counts and clean-version flag.
+  `requestWindow.end` that is not after `start`.
 - The AI converter prompt maps `## MUSIC POLICY` / `## GUEST REQUESTS` to this
   block and forbids inventing songs, reasons or licensing details.
 
 Relevant files: `src/lib/musicPolicy.js`, `src/components/MusicPolicyCard.jsx`,
 `src/components/DjBoothView.jsx`, `src/components/PocketRemoteView.jsx`,
 `src/App.jsx`, `src/lib/cartridgeValidation.js`,
-`src/lib/cartridgeImporter.js`, `src/components/CartridgeImporter.jsx`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
-`schema/wedding-cartridge.example.json`.
+`src/lib/cartridgeImporter.js`, `schema/wedding-schema-v1.1.json`,
+`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
 
 ### 20. Room identity and production role PINs (issue #38 / P0.2)
 
@@ -619,8 +615,8 @@ PIN. `App.jsx` passes `roomId: WEDDING.weddingId`; the DDMM `syncPin` stays a
 local/display gate only. Two weddings on the same date — or with the same DDMM
 PIN — no longer collide or inherit each other's state. The pairing record is
 bound to the `weddingId`, and legacy PIN-only records are treated as unpaired.
-The importer warns when a new cartridge reuses the current cartridge's display
-PIN.
+PIN collisions no longer select a local cartridge: the room is keyed by
+`weddingId`, and role devices render only the server-published snapshot.
 
 **Production per-role PINs (`VITE_DECK_MODE=production`).**
 - The `/deck/` gate is `RoleJoinScreen`: room code + role (`mc`, `dj`, `pocket`,
@@ -699,8 +695,7 @@ Relevant files: `src/App.jsx`, `src/lib/pairing.js`, `src/hooks/usePairing.js`,
 `src/lib/sync/syncConfig.js`, `src/lib/sync/roleSession.js`,
 `src/lib/sync/joinRoom.js`, `src/components/RoleJoinScreen.jsx`,
 `src/lib/sync/supabaseSyncClient.js`, `src/hooks/useLiveStageState.js`,
-`src/components/CartridgeImporter.jsx`, `supabase/schema.sql`,
-`supabase/functions/join_room/index.ts`,
+`supabase/schema.sql`, `supabase/functions/join_room/index.ts`,
 `supabase/functions/publish_room/index.ts`.
 
 ### 21. Night Stage / Daylight theming (issue #69 / TODO 27)
@@ -872,7 +867,7 @@ The speeches module is finalised for the v1.1 cartridge.
   (`PHONE`/`TABLET`/`PAPER`/`MEMORY`/`OTHER`), MC-intro flag, `visibleToRoles`,
   `consent`, `teleprompterRef` and `script: { text, format, ready, source }`.
 - Script text is stored **verbatim** (paragraph breaks preserved). A missing
-  COMPLEX script warns and remains editable; it never blocks the import.
+  COMPLEX script warns and remains editable; it never blocks admin publishing.
 - Consent defaults to granted for older records; `consent.storeScript: false`
   locks the script on the speaker device.
 - Validation rejects duplicate speech IDs/order and an `active_speech_id` that
@@ -970,7 +965,7 @@ converter prompt (the `games` schema is still awaiting approval):
   `UNDECIDED`) and game metadata.
 - **Not added** to `schema/ai-converter-prompt.md` or the cartridge validator on
   purpose. Once the `games` schema is approved, wire these banks into the
-  schema, parser and importer.
+  schema, parser and admin publishing flow.
 
 ### 28. DJ track cutoff stopwatches (issue #47 / TODO 4)
 
@@ -1020,8 +1015,8 @@ The couple's Google Doc is now a deterministic input, not only an AI prompt:
   `## MC CUES` and `## SUBTASKS` attach by `Step ID`, `## VIEW VISIBILITY` to
   the D1 matrix, `## PHOTO PLAN` to the D6 online-sunset plan, and so on.
 - **Provisional:** generated from the v1.2 proposal; the AI converter prompt,
-  v1.1 schema and runtime importer are unchanged until v1.2 is approved. The
-  parser is additive and ready to wire in after approval.
+  v1.1 schema and runtime cartridge handling are unchanged until v1.2 is
+  approved. The parser is additive and ready to wire in after approval.
 
 ### 30. Error boundaries, last-known step and local error log (issue #66 / TODO 24)
 
@@ -1071,8 +1066,8 @@ refactor with no behavior change:
   The class strings are unchanged.
 - The per-view error boundary still wraps `McMasterView`, so a crash in the MC
   view keeps the last-known-step fallback and local error log.
-- Demo data remains demo-only: an imported cartridge still replaces it, and no
-  new data reaches the server.
+- Demo data remains demo-only: local/demo mode uses it, while production never
+  substitutes it for a missing server cartridge.
 
 ### 32. ISO actual timestamps and migration (issue #65 / TODO 23)
 
@@ -1108,7 +1103,7 @@ display format only:
 - [`src/components/ModalShell.jsx`](src/components/ModalShell.jsx) now traps
   `Tab` / `Shift+Tab` inside the dialog, closes on `Escape`, focuses the close
   button on open and restores focus to the trigger on close. This covers the
-  teleprompter, game clicker, VIP alerts, contacts and cartridge importer.
+  teleprompter, game clicker, VIP alerts and contacts.
 - Stage pings and hard-anchor warnings are assertive live regions; drift pills
   and the pocket drift strip are polite live regions, all atomic.
 - The Night theme's `slate-500`/`slate-600` steps were raised to meet WCAG AA on
@@ -1159,8 +1154,8 @@ The project now has a repeatable test suite and a fixture contract:
 - `npm run validate:fixtures` checks every fixture and enforces the
   `valid-`/`real-`/`invalid-` naming contract.
 - [`schema/validate-lib.mjs`](schema/validate-lib.mjs) shares the Ajv + semantic
-  validation between the CLI, fixture suite and Vitest; the browser importer
-  still uses the same semantic rules.
+  validation between the CLI, fixture suite and Vitest; admin publishing and the
+  role-device cache validation use the same semantic rules.
 - Tests:
   - `tests/schema-fixtures.test.js` — fixture expectations and expected error
     reasons,

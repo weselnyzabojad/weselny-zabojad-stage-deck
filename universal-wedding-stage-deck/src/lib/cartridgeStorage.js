@@ -1,12 +1,15 @@
-// Persistence for an imported wedding cartridge. Imported cartridges replace
-// the built-in demo until cleared. Deprecated D10 arrays are stripped on load
-// and save so they never reach the app or the cloud again.
+// Read-only cache for the server-published wedding cartridge.
+//
+// A production role device may keep the last snapshot it downloaded for the
+// wedding it joined, so the deck still works offline. This module deliberately
+// exposes no activation, import, edit or reset API: only the admin surface may
+// publish a cartridge, and only the server may decide which snapshot is current.
+// Deprecated D10 arrays are stripped on save so they never return to the app.
 
 import { dropDeprecatedCartridgeFields } from './cartridgeCompat.js';
 
-const STORAGE_VERSION = 1;
-
-export const CARTRIDGE_STORAGE_KEY = `wzsd:v${STORAGE_VERSION}:cartridge`;
+const STORAGE_VERSION = 2;
+export const CARTRIDGE_CACHE_PREFIX = `wzsd:v${STORAGE_VERSION}:cartridge:`;
 
 function getStorage(storage) {
   if (storage) return storage;
@@ -16,6 +19,10 @@ function getStorage(storage) {
   } catch {
     return null;
   }
+}
+
+function cacheKey(weddingId) {
+  return `${CARTRIDGE_CACHE_PREFIX}${weddingId}`;
 }
 
 export function isCartridgeLike(value) {
@@ -33,40 +40,70 @@ export function isCartridgeLike(value) {
   );
 }
 
-export function loadActiveCartridge(storage) {
+function normalizeRevision(value) {
+  return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+export function loadCachedCartridge(weddingId, storage) {
+  if (typeof weddingId !== 'string' || weddingId.length === 0) return null;
   const store = getStorage(storage);
   if (!store) return null;
 
   try {
-    const raw = store.getItem(CARTRIDGE_STORAGE_KEY);
+    const raw = store.getItem(cacheKey(weddingId));
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    return isCartridgeLike(parsed) ? dropDeprecatedCartridgeFields(parsed) : null;
+    if (!parsed || parsed.weddingId !== weddingId) return null;
+    if (!isCartridgeLike(parsed.cartridge)) return null;
+    // A cache entry for another wedding must never be rendered here.
+    if (parsed.cartridge.weddingId !== weddingId) return null;
+
+    return {
+      cartridge: dropDeprecatedCartridgeFields(parsed.cartridge),
+      revision: normalizeRevision(parsed.revision),
+      fetchedAt: normalizeRevision(parsed.fetchedAt),
+    };
   } catch {
-    // Corrupt or blocked storage: fall back to the built-in demo.
     return null;
   }
 }
 
-export function saveActiveCartridge(cartridge, storage) {
-  const store = getStorage(storage);
+export function saveCachedCartridge(
+  { weddingId, cartridge, revision = null, fetchedAt = null } = {},
+  storage,
+) {
+  if (typeof weddingId !== 'string' || weddingId.length === 0) return false;
+  if (!cartridge || cartridge.weddingId !== weddingId) return false;
+
   const cleaned = dropDeprecatedCartridgeFields(cartridge);
-  if (!store || !isCartridgeLike(cleaned)) return false;
+  if (!isCartridgeLike(cleaned)) return false;
+
+  const store = getStorage(storage);
+  if (!store) return false;
 
   try {
-    store.setItem(CARTRIDGE_STORAGE_KEY, JSON.stringify(cleaned));
+    store.setItem(
+      cacheKey(weddingId),
+      JSON.stringify({
+        weddingId,
+        revision: normalizeRevision(revision),
+        fetchedAt: normalizeRevision(fetchedAt) ?? new Date().toISOString(),
+        cartridge: cleaned,
+      }),
+    );
     return true;
   } catch {
     return false;
   }
 }
 
-export function clearActiveCartridge(storage) {
+export function clearCachedCartridge(weddingId, storage) {
+  if (typeof weddingId !== 'string' || weddingId.length === 0) return false;
   const store = getStorage(storage);
   if (!store) return false;
 
   try {
-    store.removeItem(CARTRIDGE_STORAGE_KEY);
+    store.removeItem(cacheKey(weddingId));
     return true;
   } catch {
     return false;
