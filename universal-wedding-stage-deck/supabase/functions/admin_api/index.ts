@@ -229,7 +229,7 @@ Deno.serve(async (req) => {
       const [weddings, roles, sessions, presence, audit] = await Promise.all([
         admin
           .from('weddings')
-          .select('wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at')
+          .select('wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge')
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
         admin
@@ -255,10 +255,18 @@ Deno.serve(async (req) => {
       }
 
       return json({
-        weddings: (weddings.data ?? []).map((row: any) => ({
-          ...row,
-          roles: (rolesByWedding[row.wedding_id] ?? []).sort(),
-        })),
+        weddings: (weddings.data ?? []).map((row: any) => {
+          const venue =
+            typeof row.cartridge?.venue === 'string'
+              ? row.cartridge.venue
+              : row.cartridge?.venue?.name ?? '';
+          const { cartridge: _cartridge, ...summary } = row;
+          return {
+            ...summary,
+            venue,
+            roles: (rolesByWedding[row.wedding_id] ?? []).sort(),
+          };
+        }),
         sessions: sessions.data ?? [],
         presence: presence.data ?? [],
         audit: audit.data ?? [],
