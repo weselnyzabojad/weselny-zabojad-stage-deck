@@ -408,6 +408,7 @@ export default function McMasterView({ model }) {
           ) : null}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          <PhoneQRCode />
         </div>
       </header>
 
