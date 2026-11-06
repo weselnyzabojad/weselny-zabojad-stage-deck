@@ -1,18 +1,14 @@
-import { useLocation } from 'react-router-dom';
-
 /**
  * QR code displayed in the top bar when the view is on a laptop/desktop width.
  * Scanning the QR opens the same view on the phone (the deck URL with a phone-
  *–optimized query parameter).
  */
 export default function PhoneQRCode() {
-  const { pathname } = useLocation();
   const isLaptop = window.innerWidth >= 1024;
 
   if (!isLaptop) return null;
 
-  // Build the phone URL by replacing the current hostname with a phone-friendly
-  // path, or just use the same base with a phone parameter.
+  // Build the phone URL using the current origin.
   const phoneUrl = `${window.location.origin}/?phone=true`;
 
   return (
