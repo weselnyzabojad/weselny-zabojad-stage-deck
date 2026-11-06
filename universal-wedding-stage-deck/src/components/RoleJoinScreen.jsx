@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import { ROLES, roleShort } from '../lib/roles';
 import { joinRoom } from '../lib/sync/joinRoom';
@@ -20,6 +20,15 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
   const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [showPin, setShowPin] = useState(false);
+  const [capsLock, setCapsLock] = useState(false);
+  const roomRef = useRef(null);
+  const pinRef = useRef(null);
+
+  useEffect(() => {
+    if (intent?.roomCode && intent?.role) pinRef.current?.focus();
+    else roomRef.current?.focus();
+  }, [intent?.roomCode, intent?.role]);
 
   const submit = async (event) => {
     event?.preventDefault();
@@ -86,6 +95,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             {t('join.roomCode')}
           </label>
           <input
+            ref={roomRef}
             id="join-room-code"
             value={roomCode}
             onChange={(event) => {
@@ -144,20 +154,42 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           >
             {t('join.pin', { role: roleShort(role) })}
           </label>
-          <input
-            id="join-role-pin"
-            value={pin}
-            onChange={(event) => {
-              setPin(event.target.value.replace(/\D/g, '').slice(0, 6));
-              setError(null);
-            }}
-            type="password"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            placeholder={t('join.pinPlaceholder')}
-            aria-invalid={Boolean(error)}
-            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-brand-strong"
-          />
+          <div className="relative">
+            <input
+              ref={pinRef}
+              id="join-role-pin"
+              value={pin}
+              onChange={(event) => {
+                setPin(event.target.value.replace(/\D/g, '').slice(0, 6));
+                setError(null);
+              }}
+              onKeyDown={(event) => setCapsLock(event.getModifierState?.('CapsLock') ?? false)}
+              onKeyUp={(event) => setCapsLock(event.getModifierState?.('CapsLock') ?? false)}
+              onBlur={() => setCapsLock(false)}
+              type={showPin ? 'text' : 'password'}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              placeholder={t('join.pinPlaceholder')}
+              aria-invalid={Boolean(error)}
+              className="w-full rounded-lg border border-line bg-page px-3 py-3 pr-16 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-brand-strong"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPin((value) => !value)}
+              aria-pressed={showPin}
+              className="absolute right-2 top-1/2 min-h-11 -translate-y-1/2 rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+            >
+              {showPin ? t('join.hidePin') : t('join.showPin')}
+            </button>
+          </div>
+          {capsLock ? (
+            <p role="status" className="mt-1 text-center font-mono text-[10px] text-amber-300">
+              {t('join.capsLock')}
+            </p>
+          ) : null}
+          {intent?.roomCode ? (
+            <p className="mt-1 text-center text-[10px] text-slate-500">{t('join.qrHint')}</p>
+          ) : null}
         </div>
 
         <div className="mt-2 min-h-[1.25rem] text-center" aria-live="polite">

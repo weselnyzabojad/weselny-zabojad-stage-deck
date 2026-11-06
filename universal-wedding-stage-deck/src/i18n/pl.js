@@ -86,6 +86,10 @@ const pl = {
   'join.deviceRole': 'Rola urządzenia',
   'join.pin': '6-cyfrowy PIN roli {role}',
   'join.pinPlaceholder': '••••••',
+  'join.showPin': 'Pokaż PIN',
+  'join.hidePin': 'Ukryj PIN',
+  'join.capsLock': 'Caps Lock jest włączony.',
+  'join.qrHint': 'Otwarte z linku QR? Pokój i rola są już wypełnione.',
   'join.submit': '🔐 Dołącz do pokoju',
   'join.checking': 'Sprawdzanie PIN-u…',
   'join.footnote':

@@ -86,6 +86,10 @@ const en = {
   'join.deviceRole': 'Device role',
   'join.pin': '6-digit {role} PIN',
   'join.pinPlaceholder': '••••••',
+  'join.showPin': 'Show PIN',
+  'join.hidePin': 'Hide PIN',
+  'join.capsLock': 'Caps Lock is on.',
+  'join.qrHint': 'Opened from a QR link? The room and role are already filled in.',
   'join.submit': '🔐 Join room',
   'join.checking': 'Checking PIN…',
   'join.footnote':
