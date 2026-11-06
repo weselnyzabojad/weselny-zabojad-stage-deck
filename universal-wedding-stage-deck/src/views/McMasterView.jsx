@@ -14,7 +14,6 @@ import ContactsModal from '../components/ContactsModal';
 import CoupleIdentity from '../components/CoupleIdentity';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
-import EventAdminCard from '../components/EventAdminCard';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HardAnchorRadar from '../components/HardAnchorRadar';
@@ -77,8 +76,6 @@ export default function McMasterView({ model }) {
   nextEntry,
   cakeProtocol,
   musicPolicy,
-  sensitiveNotes,
-  handleWipeEvent,
   speechMode,
   speeches,
   selectSpeech,
@@ -443,14 +440,6 @@ export default function McMasterView({ model }) {
               tasks={WEDDING.preWeddingTodos ?? []}
               checked={liveState.checked_subtasks}
               onToggle={toggleSubtask}
-            />
-
-            <EventAdminCard
-              wedding={WEDDING}
-              isProduction={IS_PRODUCTION}
-              hostKey={sensitiveNotes.hostKey}
-              sensitiveStatus={sensitiveNotes.status}
-              onWipe={handleWipeEvent}
             />
 
             <SpeechesCard
