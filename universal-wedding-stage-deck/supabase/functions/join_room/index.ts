@@ -11,13 +11,13 @@
 //   ALLOWED_ORIGIN (optional, default *)
 //
 // The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
-// and a separate `app_role` claim for the device role (mc/dj/pocket/photo/...).
+// and a separate `app_role` claim for the device role (mc/dj/photo/speaker).
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
 import { SignJWT } from 'npm:jose@5';
 
-const ALLOWED_ROLES = new Set(['mc', 'dj', 'pocket', 'photo', 'speaker']);
+const ALLOWED_ROLES = new Set(['mc', 'dj', 'photo', 'speaker']);
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_FAILURES = 5;
 const TOKEN_TTL_SECONDS = 24 * 60 * 60;

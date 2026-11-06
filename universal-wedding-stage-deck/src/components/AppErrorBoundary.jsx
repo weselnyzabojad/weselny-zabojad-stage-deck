@@ -12,7 +12,7 @@ const SCOPE_LABEL_KEY = {
   app: 'error.scope.app',
   mc: 'error.scope.mc',
   dj: 'error.scope.dj',
-  pocket: 'error.scope.pocket',
+
   photo: 'error.scope.photo',
   speaker: 'error.scope.speaker',
   pairing: 'error.scope.pairing',

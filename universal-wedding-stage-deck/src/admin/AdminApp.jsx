@@ -344,7 +344,7 @@ function CreateWeddingForm({ onCreated, onCancel }) {
   const [couple, setCouple] = useState('');
   const [date, setDate] = useState('');
   const [roomCode, setRoomCode] = useState('');
-  const [roles, setRoles] = useState(['mc', 'dj', 'pocket']);
+  const [roles, setRoles] = useState(['mc', 'dj']);
   const [cartridgeJson, setCartridgeJson] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');

@@ -1,9 +1,13 @@
 // Device roles for the stage deck. The role is a per-device UI choice stored in
 // localStorage; it is never part of the synced live-state payload, so a tablet
-// can stay on MC Master while a phone follows the same room in Pocket Remote.
+// can stay on MC Master while another device follows the same room in the DJ,
+// Photographer or Speaker view.
 //
 // Role separation is currently a UX boundary, not an auth boundary: every
 // paired device uses the same room PIN. Split role PINs are tracked separately.
+//
+// The Pocket role was removed (issue #109): unknown or legacy `pocket` values
+// normalize to `mc`, so a previously paired device is not stranded.
 
 import { t } from '../i18n/index.js';
 
@@ -26,13 +30,6 @@ export const ROLES = {
     icon: '🎧',
     blurb: 'Read-only timeline, playlists and hard cutoffs.',
   },
-  pocket: {
-    id: 'pocket',
-    label: 'Pocket Remote',
-    short: 'Pocket',
-    icon: '📱',
-    blurb: 'Compact advance and drift check for walking segments.',
-  },
   photo: {
     id: 'photo',
     label: 'Photographer',
@@ -49,7 +46,7 @@ export const ROLES = {
   },
 };
 
-export const ROLE_ORDER = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
+export const ROLE_ORDER = ['mc', 'dj', 'photo', 'speaker'];
 
 export function normalizeRole(value) {
   return typeof value === 'string' && ROLES[value] ? value : 'mc';

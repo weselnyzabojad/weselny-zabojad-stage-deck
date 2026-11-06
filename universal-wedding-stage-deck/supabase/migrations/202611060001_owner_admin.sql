@@ -80,7 +80,7 @@ alter table public.weddings add column if not exists archived_at timestamptz;
 create table if not exists public.role_sessions (
   jti           uuid primary key,
   wedding_id    text not null references public.weddings(wedding_id) on delete cascade,
-  role          text not null check (role in ('mc', 'dj', 'pocket', 'photo', 'speaker')),
+  role          text not null check (role in ('mc', 'dj', 'photo', 'speaker')),
   device_id     text not null default 'unknown',
   device_label  text,
   issued_at     timestamptz not null default now(),
@@ -132,7 +132,7 @@ grant execute on function public.current_session_active() to authenticated;
 
 create table if not exists public.role_presence (
   wedding_id      text not null references public.weddings(wedding_id) on delete cascade,
-  role            text not null check (role in ('mc', 'dj', 'pocket', 'photo', 'speaker')),
+  role            text not null check (role in ('mc', 'dj', 'photo', 'speaker')),
   device_id       text not null,
   session_jti     uuid references public.role_sessions(jti) on delete set null,
   device_label    text,
@@ -206,7 +206,7 @@ create policy "room read"
   to authenticated
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
     and public.current_session_active()
   );
 
@@ -216,7 +216,7 @@ create policy "room insert"
   to authenticated
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and public.current_session_active()
     and exists (
       select 1 from public.weddings w where w.wedding_id = public.current_wedding_id()
@@ -229,7 +229,7 @@ create policy "room update"
   to authenticated
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and public.current_session_active()
     and exists (
       select 1 from public.weddings w where w.wedding_id = public.current_wedding_id()
@@ -237,7 +237,7 @@ create policy "room update"
   )
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and public.current_session_active()
     and exists (
       select 1 from public.weddings w where w.wedding_id = public.current_wedding_id()
@@ -250,7 +250,7 @@ create policy "wedding read"
   to authenticated
   using (
     wedding_id = public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
     and public.current_session_active()
   );
 
