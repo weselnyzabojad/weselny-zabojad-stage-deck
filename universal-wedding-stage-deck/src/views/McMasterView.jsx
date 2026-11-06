@@ -343,7 +343,7 @@ export default function McMasterView({ model }) {
             />
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
-          <span className="bg-raised px-3 py-1.5 rounded text-white font-mono font-semibold border border-line-strong text-sm">{realStart ?? "—"}</span>
+          <ReelClock clock={driftReport.clock} compact />
           <DriftPill drift={driftReport.drift} />
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>

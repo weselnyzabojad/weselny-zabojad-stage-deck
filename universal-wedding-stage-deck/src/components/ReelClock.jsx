@@ -75,9 +75,6 @@ export default function ReelClock({ clock, compact = false }) {
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="font-heading text-[9px] font-semibold uppercase tracking-widest text-brand-soft">
-              ⏱ Reel clock
-            </span>
             <span className="font-mono text-2xl font-bold tabular-nums text-white">
               {clock.nowClock}
             </span>
@@ -112,9 +109,6 @@ export default function ReelClock({ clock, compact = false }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-            ⏱ Reel clock
-          </div>
           <div className="font-mono text-4xl font-bold leading-none tabular-nums text-white">
             {clock.nowClock}
           </div>
@@ -122,6 +116,7 @@ export default function ReelClock({ clock, compact = false }) {
             {active ? active.title : clock.isComplete ? 'Event complete' : 'Event in progress'}
           </div>
         </div>
+
         <span className="rounded border border-line-strong bg-raised px-2 py-0.5 font-mono text-[9px] text-slate-400">
           {clock.timeZone}
         </span>
@@ -153,8 +148,8 @@ export default function ReelClock({ clock, compact = false }) {
             clock.nextAnchor && clock.nextAnchor.inSec <= 0
               ? 'bad'
               : clock.nextAnchor && clock.nextAnchor.inSec <= 600
-                ? 'warn'
-                : 'normal'
+                  ? 'warn'
+                  : 'normal'
           }
           title={clock.nextAnchor?.label ?? 'No upcoming hard anchor'}
         />
