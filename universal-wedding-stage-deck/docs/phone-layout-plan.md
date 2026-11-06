@@ -10,6 +10,11 @@ Each `P-NN` section below maps to one GitHub issue. Suggested branch names:
 `p-01-remove-pocket-role`, `p-02-responsive-role-shell`, `p-03-mc-phone-layout`,
 `p-04-dj-phone-layout`, `p-05-photo-phone-layout`, `p-06-speaker-phone-polish`.
 
+> Desktop MC uses the shared **Stage Rail** (completed / current hero / upcoming)
+> described in [`mc-stage-rail-plan.md`](mc-stage-rail-plan.md). The phone layouts
+> below reuse the same `RoleShell` and bottom navigation, and the rail collapses
+> to a single hero-first column on phones.
+
 ---
 
 ## P-01 — Remove the Pocket role entirely

@@ -6,22 +6,22 @@ import { stageRailSummary } from '../lib/stageRail.js';
 // lives in the component; SR-04 tunes these theme tokens.
 const VARIANTS = {
   done: {
-    card: 'border-emerald-800/60 bg-emerald-950/30 opacity-90',
-    chip: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
+    card: 'border-line border-l-4 border-l-emerald-500/70 bg-card/70 opacity-90',
+    chip: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600',
     status: 'done',
   },
   current: {
     card: 'border-brand-strong bg-card ring-2 ring-brand-strong shadow-2xl',
-    chip: 'border-brand-strong bg-brand/40 text-brand-tint',
+    chip: 'border-brand-strong bg-brand/30 text-brand-soft',
     status: 'active',
   },
   next: {
-    card: 'border-amber-800/60 bg-amber-950/30',
-    chip: 'border-amber-800 bg-amber-950/60 text-amber-200',
+    card: 'border-line border-l-4 border-l-amber-500/80 bg-card',
+    chip: 'border-amber-500/40 bg-amber-500/10 text-amber-600',
     status: 'next',
   },
   later: {
-    card: 'border-line bg-card/70',
+    card: 'border-line border-l-4 border-l-transparent bg-card/60',
     chip: 'border-line-strong bg-raised text-slate-400',
     status: 'planned',
   },
@@ -30,7 +30,7 @@ const VARIANTS = {
 function driftTone(minutes) {
   return minutes > 0
     ? 'border-alert/60 bg-alert/20 text-alert-soft'
-    : 'border-emerald-700 bg-emerald-950/60 text-emerald-300';
+    : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600';
 }
 
 function driftLabel(minutes) {
@@ -129,7 +129,7 @@ export default function StageStepCard({
               </span>
             ) : null}
             {variant === 'done' ? (
-              <span className="font-mono text-[10px] text-emerald-300">{t('mc.rail.completed')}</span>
+              <span className="font-mono text-[10px] text-emerald-600">{t('mc.rail.completed')}</span>
             ) : null}
           </div>
         </div>

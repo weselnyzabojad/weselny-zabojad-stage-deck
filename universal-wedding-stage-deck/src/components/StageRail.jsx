@@ -50,7 +50,7 @@ function RailZone({
         </p>
       ) : (
         <ol
-          className="flex flex-col gap-2"
+          className="stage-rail-scroll flex flex-col gap-2"
           onKeyDown={(event) => handleRailKeyDown(event, onCollapse)}
         >
           {entries.map((entry) => {
@@ -114,7 +114,7 @@ export default function StageRail({
     <section
       aria-label={copy.rail}
       data-testid="stage-rail"
-      className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start"
+      className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start"
     >
       <div className="order-2 min-w-0 lg:order-1">
         <RailZone
@@ -129,7 +129,7 @@ export default function StageRail({
         />
       </div>
 
-      <div className="order-1 min-w-0 lg:order-2">
+      <div className="order-1 min-w-0 md:col-span-2 lg:col-span-1 lg:order-2">
         <section aria-label={copy.current} className="flex flex-col gap-2">
           <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
             {copy.current}
