@@ -40,16 +40,16 @@ describe('issue #157 MC top bar simplification', () => {
     expect(header).not.toContain('setImporterOpen(true)');
   });
 
-  it('retains the preserved modal functionality and records the relocation TODO', () => {
+  it('retains the preserved VIP and Contacts modals and records the relocation TODO', () => {
     expect(mc).toContain('<VipAlertsModal');
     expect(mc).toContain('<ContactsModal');
-    expect(mc).toContain('<CartridgeImporter');
+    expect(mc).not.toContain('<CartridgeImporter');
     expect(mc).toContain('TODO(top-bar rework)');
 
     const project = read('project.md');
     expect(project).toContain('Top-bar relocation TODO');
     expect(project).toContain('VIP Radar');
     expect(project).toContain('vendor Contacts');
-    expect(project).toContain('cartridge Import');
+    expect(project).not.toContain('cartridge Import');
   });
 });

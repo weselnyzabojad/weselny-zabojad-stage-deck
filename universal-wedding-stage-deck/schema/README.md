@@ -19,7 +19,7 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | `fixtures/` | One fixture per edge case, one per real wedding, one per invalid rule. |
 
 The Google Doc template is generated from the v1.2 proposal and is not wired
-into the importer until v1.2 is approved. Its conventions and field map live in
+into the admin publishing flow until v1.2 is approved. Its conventions and field map live in
 [`docs/google-doc-template-conventions.md`](../docs/google-doc-template-conventions.md);
 check it with `npm run validate:template`.
 
@@ -32,17 +32,16 @@ npm run validate:fixtures
 npm test
 ```
 
-The same schema and semantic checks run in the browser importer, so pasted
-cartridges are validated against the exact same contract before they replace
-the active wedding.
+The same schema and semantic checks run in the admin publishing flow and in the
+role-device cache, so a cartridge is validated against the exact same contract
+before it is published or cached.
 
 ## AI conversion workflow
 
-1. Open **Import** from the pairing screen or the MC header.
-2. Paste raw Google Doc notes into the importer.
-3. Copy **prompt + notes** into your AI.
-4. Paste the returned JSON into the importer.
-5. **Validate JSON** → **Import & reload**.
+1. Open `/deck/admin` and sign in as an allowlisted owner.
+2. Copy `ai-converter-prompt.md` (plus your raw Google Doc notes) into your AI.
+3. Paste the returned JSON into **Create / publish wedding**.
+4. Validate and publish; the server snapshot becomes the source for role devices.
 
 The prompt at `ai-converter-prompt.md` uses this schema's canonical camelCase
 shape and also extracts `preWeddingTodos`, which render in the MC
@@ -90,8 +89,8 @@ rejected; put app-specific data under `extensions`.
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
 | `vipRadarCount` | no | Should equal `tact_and_vip_alerts.length`. |
 | `tact_and_vip_alerts` | no | Sensitive family / care notes. |
-| `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
-| `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
+| `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
+| `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
 | `contacts` | no | Vendor and family contacts. |
@@ -198,7 +197,8 @@ Each rule accepts an optional `note`.
 `coHosts` and `contentCreators` belonged to the removed Issue #16 module. They
 remain defined only so older v1.1 cartridges still pass structural validation.
 The app no longer renders them, the AI converter prompt no longer emits them,
-and the importer drops both arrays when a cartridge is stored (D10 / TODO 20).
+and the shared validator drops both arrays when a cartridge is published or
+cached (D10 / TODO 20).
 Use `contacts` for the vendor directory.
 
 ```json
@@ -237,7 +237,8 @@ Use `contacts` for the vendor directory.
 - `delivery` is `READ`, `MEMORIZE` or `NOTES`; `readFrom` is `PHONE`, `TABLET`,
   `PAPER`, `MEMORY` or `OTHER`.
 - `liveSyncState.active_speech_id` selects the live speech (synced to the
-  speaker device). A missing COMPLEX script warns; it does not block import.
+  speaker device). A missing COMPLEX script warns; it does not block admin
+  publishing.
 
 ## Hard anchors
 
@@ -304,9 +305,9 @@ display rules and edge cases.
 - `schemaVersion` is a required literal for each release.
 - Additive fields can ship within v1.1 as optional; breaking changes (renames,
   removed fields, changed semantics) require v1.2+.
-- The importer (issue #15) is responsible for mapping legacy snake_case Google
-  Docs exports into this canonical camelCase shape. The schema itself rejects
-  unknown top-level keys; use `extensions` for temporary extras.
+- The shared admin converter (issue #15) is responsible for mapping legacy
+  snake_case Google Docs exports into this canonical camelCase shape. The schema
+  itself rejects unknown top-level keys; use `extensions` for temporary extras.
 
 ## Compatibility with the roadmap
 
@@ -314,5 +315,5 @@ The product roadmap sketched v1.1 with snake_case examples (`wedding_id`,
 `sync_pin`, `hard_anchors`, `live_sync_state`). This implementation adopts the
 app's canonical camelCase names and formalizes the controls added in Sprint 3
 (`step_order`, `stage_ping`).
-The AI importer will translate raw documents and legacy snake_case keys into
-this schema.
+The AI converter and admin publishing flow translate raw documents and legacy
+snake_case keys into this schema.

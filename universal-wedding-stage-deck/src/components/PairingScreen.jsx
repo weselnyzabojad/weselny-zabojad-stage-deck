@@ -12,7 +12,6 @@ export default function PairingScreen({
   wedding,
   onPair,
   cloudConfigured = false,
-  onImport,
   theme = 'night',
   onToggleTheme,
 }) {
@@ -228,17 +227,6 @@ export default function PairingScreen({
           >
             🔓 Pair this device
           </button>
-
-          {onImport ? (
-            <button
-              type="button"
-              onClick={onImport}
-              title="Import a WeddingSchema v1.1 cartridge"
-              className="w-full mt-2 py-2.5 rounded-xl font-heading font-semibold text-xs transition border border-line-strong bg-raised text-slate-200 hover:bg-line"
-            >
-              📥 Import wedding cartridge
-            </button>
-          ) : null}
 
           <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-mono text-slate-400">
             <span

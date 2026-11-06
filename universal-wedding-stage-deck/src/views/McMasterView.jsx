@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import BufferAccordionCard from '../components/BufferAccordionCard';
 import CakeCard from '../components/CakeCard';
-import CartridgeImporter from '../components/CartridgeImporter';
 import ContactsModal from '../components/ContactsModal';
 import CoupleIdentity from '../components/CoupleIdentity';
 import CulturalRulesBar from '../components/CulturalRulesBar';
@@ -46,7 +45,6 @@ export default function McMasterView({ model }) {
   realStart,
   driftReport,
   vipAlerts,
-  setImporterOpen,
   setContactsOpen,
   contacts,
   handleUnpair,
@@ -96,7 +94,6 @@ export default function McMasterView({ model }) {
   closeOverlay,
   undoToast,
   setUndoToast,
-  importerOpen,
   contactsOpen,
   handleOpenAnchor,
 } = model;
@@ -387,9 +384,9 @@ export default function McMasterView({ model }) {
         </div>
       </header>
 
-      {/* TODO(top-bar rework): ask the owner where to surface VIP Radar, vendor
-          Contacts and cartridge Import. Their modals and data flow stay wired
-          below; only the top-bar buttons were removed. */}
+      {/* TODO(top-bar rework): ask the owner where to surface VIP Radar and
+          vendor Contacts. Their modals and data flow stay wired below; only the
+          top-bar buttons were removed. Cartridge import is admin-only. */}
 
       {driftReport.hardAnchorRadar.hasWarning ? (
         <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
@@ -524,13 +521,6 @@ export default function McMasterView({ model }) {
       />
 
       </div>
-
-      <CartridgeImporter
-        key={importerOpen ? 'importer-open' : 'importer-closed'}
-        open={importerOpen}
-        onClose={() => setImporterOpen(false)}
-        currentCartridge={WEDDING}
-      />
 
       <ContactsModal
         open={contactsOpen}

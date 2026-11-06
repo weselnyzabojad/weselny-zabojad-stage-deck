@@ -119,9 +119,10 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
 6. **QR to open on a phone.** When the view is a laptop/desktop width, display
    a QR code that opens the same view on a phone (scan to open the deck URL on
    the device).
-7. **Top-bar relocation TODO.** The MC top bar no longer exposes VIP Radar,
-   vendor Contacts or cartridge Import. Keep their functionality intact and ask
-   the owner in a future pass where these controls should be surfaced.
+7. **Top-bar relocation TODO.** The MC top bar no longer exposes VIP Radar or
+   vendor Contacts. Keep their functionality intact and ask the owner in a
+   future pass where these controls should be surfaced. Cartridge import is
+   admin-only through `/deck/admin` and is not part of this relocation.
 
 ---
 
@@ -250,9 +251,12 @@ npm run validate:i18n
   venue access;
 - Speaker: assigned-speech teleprompter with cached fallback.
 
-### Content and import
+### Content publishing
 
-- cartridge importer with Ajv + semantic validation and preview;
+- admin-only JSON publishing through `/deck/admin` with Ajv + semantic
+  validation;
+- read-only server-snapshot cache on role devices (no import, activation or
+  reset path);
 - Google Doc template conventions and validator;
 - example cartridge, real wedding fixture and edge-case fixtures;
 - prepared optional-game content in `src/content/games/` (schema/UI deferred).
@@ -306,8 +310,8 @@ Removed by issue #75:
 - related UI, schema fields, fixtures, template columns, AI-prompt sections and
   docs.
 
-The importer strips legacy copies of these fields before validation instead of
-migrating them.
+The shared admin/server cartridge validator strips legacy copies of these
+fields before validation instead of migrating them.
 
 ---
 
@@ -380,8 +384,8 @@ CI runs the same checks on pushes and pull requests to `master`.
   admin-adjacent components. Cartridge content remains in its authored
   language; some role-view domain strings are still English.
 - Optional games content exists but is not in the schema or UI (deferred).
-- Google Docs-first import (#82) is not implemented; the manual JSON/AI-prompt
-  path remains.
+- Google Docs-first import (#82) is not implemented; admin JSON/AI-prompt
+  publishing remains, but role devices no longer import cartridges.
 - The Pocket role removal and per-role phone layouts shipped in #109–#114.
 - The MC Stage Rail (current-step hero with done/upcoming accordions) is planned
   in #118–#121; see `docs/mc-stage-rail-plan.md`.
@@ -405,7 +409,8 @@ CI runs the same checks on pushes and pull requests to `master`.
 | Owner admin | `src/admin/`, `supabase/functions/admin_api`, `supabase/migrations/` |
 | i18n | `src/i18n/`, `scripts/check-i18n.mjs` |
 | PWA | `vite.config.js`, `src/components/PwaUpdatePrompt.jsx`, `public/` |
-| Importer | `src/lib/cartridgeImporter.js`, `src/components/CartridgeImporter.jsx` |
+| Admin cartridge publishing | `src/lib/cartridgeImporter.js` (shared validation), `src/admin/AdminApp.jsx` |
+| Role cartridge cache | `src/lib/cartridgeStorage.js`, `src/App.jsx`, `src/StageDeck.jsx` |
 | Google Doc template | `src/lib/googleDocTemplate.js`, `schema/google-doc-template.md` |
 | Tests | `tests/`, `docs/testing.md` |
 | Accessibility | `docs/accessibility-audit.md` |

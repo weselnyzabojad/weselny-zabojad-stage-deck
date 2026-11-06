@@ -107,8 +107,14 @@ const en = {
   'app.loadingWedding': 'Loading wedding…',
   'app.errorWedding': 'Could not load this wedding',
   'app.loadingWeddingBody':
-    'Fetching the role-scoped cartridge for this room. No wedding data is cached until it arrives.',
+    'Fetching the server-published cartridge for this room. A cached copy is used only for this same wedding.',
   'app.retry': 'Retry',
+  'app.noPublishedCartridge':
+    'No cartridge has been published for this wedding yet. Ask the owner to publish one from /deck/admin.',
+  'app.invalidPublishedCartridge':
+    'The published cartridge is invalid. Retry, or ask the owner to publish it again from /deck/admin.',
+  'app.offlineCartridge':
+    'Offline — showing the last published cartridge for this wedding. Read-only until the server is reachable.',
 
   'error.recovered': 'RECOVERED',
   'error.scope.app': 'the deck',

@@ -1,8 +1,8 @@
 // Demo wedding cartridge and stage content (project.md TODO 22).
 //
 // Extracted verbatim from App.jsx as a pure refactor. This is demo/test data
-// only: imported cartridges replace it at runtime and it is never sent to the
-// server unless the host explicitly publishes a cartridge.
+// only: it is used by local/demo mode and tests, never as a production fallback
+// when the server-published cartridge is missing.
 
 export const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
