@@ -22,7 +22,6 @@ Date ISO: 2026-08-20
 Sync PIN: 2008
 Service package: HOST_AND_DJ_VIP
 Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
-Weather variants: DEFAULT, RAIN, HEATWAVE
 
 ## COUPLE IDENTITY
 
@@ -75,13 +74,13 @@ Props: Veil, Bow ties, Test cards
 
 ## TIMELINE
 
-| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Weather | Deferable | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:30 | 30 | Aperitif in Garden | BUFFER | Garden |  | DEFAULT | true |  |
-| step_02 | 17:00 | 60 | Outdoor Civil Ceremony | ELASTIC | Garden Gazebo |  | DEFAULT | false |  |
-| step_03 | 18:00 | 90 | Hall Entrance, Toast & Dinner Start | ELASTIC | Main Hall |  | DEFAULT | false | Planned 18:00; actual start logged live. |
-| step_04 | 19:30 | 30 | Buffets Open & Dance Floor | BUFFER | Main Hall |  | DEFAULT | true |  |
-| step_05 | 20:30 | 30 | Cake & Sparklers | HARD_ANCHOR | Terrace | cake_midnight | DEFAULT | false |  |
+| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| step_01 | 16:30 | 30 | Aperitif in Garden | BUFFER | Garden |  |  |
+| step_02 | 17:00 | 60 | Outdoor Civil Ceremony | ELASTIC | Garden Gazebo |  |  |
+| step_03 | 18:00 | 90 | Hall Entrance, Toast & Dinner Start | ELASTIC | Main Hall |  | Planned 18:00; actual start logged live. |
+| step_04 | 19:30 | 30 | Buffets Open & Dance Floor | BUFFER | Main Hall |  |  |
+| step_05 | 20:30 | 30 | Cake & Sparklers | HARD_ANCHOR | Terrace | cake_midnight |  |
 
 ## DJ CUES
 
@@ -320,12 +319,6 @@ plaintext.
 | --- | --- | --- | --- | --- | --- |
 | divorce | critical | FAMILY | Do not seat X and Y together | Sensitive family context. | mc |
 
-## JOKER GAMES
-
-| Game ID | Title | Duration (min) | Props | Notes |
-| --- | --- | --- | --- | --- |
-| shoe_game | Shoe game | 10 | Two chairs | Fallback for a lull. |
-
 ## PRE-WEDDING TODOS
 
 | Todo ID | Task | Done | Due date | Owner |
@@ -354,8 +347,6 @@ Encryption version: 1
 Active step ID: step_03
 Completed step IDs: step_01, step_02
 Actual timestamps: step_01=2026-08-20T16:31:00+02:00, step_02=2026-08-20T17:00:00+02:00, step_03=2026-08-20T18:25:00+02:00
-Manual offset minutes: 0
-Active weather variant: DEFAULT
 
 ## EXTENSIONS
 

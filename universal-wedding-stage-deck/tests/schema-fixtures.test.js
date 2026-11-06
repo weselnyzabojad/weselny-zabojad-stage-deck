@@ -14,7 +14,6 @@ const fixtureFiles = readdirSync(FIXTURES_DIR)
 const EXPECTED_INVALID_REASONS = {
   'invalid-buffer-range.json': 'minDurationMin cannot exceed maxDurationMin',
   'invalid-cake-serve-time.json': 'serveTime cannot be before the cake cutting time',
-  'invalid-deferred-completed.json': 'deferred step cannot be completed',
   'invalid-duplicate-step-id.json': 'duplicate step id',
   'invalid-fire-safety.json': 'fire effects require a permit requirement',
   'invalid-iso-timestamp.json': 'must match pattern',

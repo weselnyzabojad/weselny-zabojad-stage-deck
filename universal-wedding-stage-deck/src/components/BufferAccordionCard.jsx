@@ -9,16 +9,6 @@ const STATUS_META = {
     chip: 'border-cyan-800 bg-cyan-950/60 text-cyan-200',
     border: 'border-cyan-900/70',
   },
-  'extend-and-joker': {
-    label: 'AHEAD · EXTEND + JOKER',
-    chip: 'border-amber-700 bg-amber-950/60 text-amber-200',
-    border: 'border-amber-800/70',
-  },
-  joker: {
-    label: 'AHEAD · JOKER',
-    chip: 'border-amber-700 bg-amber-950/60 text-amber-200',
-    border: 'border-amber-800/70',
-  },
   blocked: {
     label: 'NO FLEX',
     chip: 'border-alert/60 bg-alert/20 text-alert-soft',
@@ -129,11 +119,6 @@ export default function BufferAccordionCard({ accordion }) {
         {finishChanged ? (
           <span className="font-mono text-slate-400">
             Finish {accordion.baselineProjectedFinish} → {accordion.accordionProjectedFinish}
-          </span>
-        ) : null}
-        {accordion.suggestJoker ? (
-          <span className="rounded border border-amber-700 bg-amber-950/60 px-1.5 py-0.5 font-heading font-semibold text-amber-200">
-            🃏 Pull a Joker Game
           </span>
         ) : null}
       </div>

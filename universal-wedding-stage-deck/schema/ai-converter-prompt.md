@@ -115,13 +115,10 @@ Each step uses this shape:
   "title": "Aperitif in Garden",
   "type": "BUFFER",
   "location": "Garden",
-  "deferable": false,
   "buffer": { "minDurationMin": 15, "maxDurationMin": 45, "danceBlock": false },
   "dj": { "playlist": "", "track": "", "cutoff": "18:20" },
   "teleprompter": { "has_script": false, "type": "SPEECH", "title": "", "items": [] },
-  "cateringNotes": "",
-  "subTasks": [],
-  "propsAndFx": []
+  "subTasks": []
 }
 ```
 
@@ -144,8 +141,6 @@ For every `BUFFER` step, provide a realistic range:
 - `maxDurationMin`: 100–200% of the planned duration, rounded to 5 minutes.
 - The planned `durationMin` must lie between those bounds.
 - Set `danceBlock: true` for musical/dance buffers.
-- Set `deferable: true` only for non-essential games, dance blocks or crates
-  that can safely move to the Joker Drawer.
 
 ## Hard anchors
 
@@ -434,20 +429,14 @@ Extract sensitive family/care notes into `tact_and_vip_alerts`:
 
 `tone` is one of `critical`, `celebrate`, `care`, `info`, `warning`.
 
-## Joker games
+## Removed: joker games, manual offset and weather variants
 
-Extract games / crates that are not fixed into:
-
-```json
-"jokersCount": 2,
-"jokerGames": [
-  { "id": "joker_1", "category": "GAME", "title": "Musical Chairs", "content": "..." },
-  { "id": "joker_2", "category": "MUSIC_CRATE", "title": "Polish Disco", "content": "..." }
-]
-```
-
-`jokersCount` must equal `jokerGames.length`. `category` is `GAME`,
-`ANECDOTE` or `MUSIC_CRATE`.
+The joker-drawer game feature, the kitchen/vendor 15-minute manual offset and
+weather scenario branching were removed (P0 item 4 / issue #75). **Do not emit
+`jokersCount`, `jokerGames`, `weatherVariants`, `step.weatherOption`,
+`step.deferable`, `step.cateringNotes`, `step.propsAndFx`,
+`liveSyncState.manual_offset_minutes` or `liveSyncState.deferred_step_ids`** in
+new cartridges. The importer strips legacy copies of those fields.
 
 ## Removed: co-hosts and content creators
 
@@ -480,7 +469,6 @@ Include when present in the source:
 - `venue`
 - `demographics` (`total`, `pl`, `fr`, `other`, `languages`, `notes`)
 - `contacts` (`id`, `role`, `name`, `phone`, `email`, `leavesAt`, `notes`)
-- `weatherVariants` (`DEFAULT`, `RAIN`, `HEATWAVE`)
 - `vipRadarCount` (must equal `tact_and_vip_alerts.length`)
 
 ## Live sync state
@@ -494,9 +482,7 @@ Add a seed state:
   "actual_timestamps": {},
   "checked_subtasks": {},
   "stage_ping": null,
-  "step_order": ["step_01", "step_02"],
-  "deferred_step_ids": [],
-  "manual_offset_minutes": 0
+  "step_order": ["step_01", "step_02"]
 }
 ```
 
@@ -517,12 +503,11 @@ Before returning JSON, verify:
 3. All step ids are unique and `step_order` matches the step list.
 4. All times are `HH:MM`; all durations are positive integers.
 5. `BUFFER` ranges contain the planned duration.
-6. `jokersCount === jokerGames.length`.
-7. `vipRadarCount === tact_and_vip_alerts.length`.
-8. No MC scripts or VIP details are inside `dj`.
-9. No markdown fences or commentary surround the JSON.
-10. Any assumptions are listed in `extensions.warnings`.
-11. `cake.serveTime` is not before `cake.time`, and the cake song matches the
+6. `vipRadarCount === tact_and_vip_alerts.length`.
+7. No MC scripts or VIP details are inside `dj`.
+8. No markdown fences or commentary surround the JSON.
+9. Any assumptions are listed in `extensions.warnings`.
+10. `cake.serveTime` is not before `cake.time`, and the cake song matches the
     `CAKE` row in `musicPolicy.importantSongs[]`.
 
 ## Raw wedding notes

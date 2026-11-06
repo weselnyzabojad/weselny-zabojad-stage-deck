@@ -225,16 +225,15 @@ buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }
   delay is recovered or every buffer reaches `minDurationMin`. It reports the
   recovered minutes and any remaining delay.
 - **Ahead** — recommends extending upcoming buffers up to `maxDurationMin` to
-  absorb the lead. If the flex is exhausted, it prompts to pull a Joker Game
-  from the drawer (when one is available).
+  absorb the lead. If the flex is exhausted, it protects the next fixed anchor.
 - **On time** — leaves the planned buffer lengths untouched.
 
 `buildDriftReport` exposes the plan as `bufferAccordion` and also returns
 `accordionEntries` / `accordionProjectedFinish`, which project the recommended
 durations without mutating the original cartridge. The MC dashboard shows the
 recommendation in the **🪗 Buffer Accordion** card, including per-buffer
-`30 → 10 min` changes, recovered minutes and the Joker prompt. Applying the
-recommended duration with a one-tap control belongs to issue #13.
+`30 → 10 min` changes and recovered minutes. Applying the recommended duration
+with a one-tap control belongs to issue #13.
 
 The demo cartridge marks *Buffets Open & Dance Floor* as a 30-minute dance
 buffer with a 10–60 minute range, so the card reacts to late and ahead drift.
@@ -259,7 +258,7 @@ and compares its projected end with the anchor time:
 - **Collision** — projected work overruns the anchor. A red MC banner appears
   with the overrun and the blocking step.
 - **Compression / WATCH** — work leaves 10 minutes or less of slack. An amber
-  banner appears and advises swapping or deferring a block.
+  banner appears and advises swapping a block.
 - **Approaching** — the anchor is inside its `alertBeforeMin` window but still
   has healthy slack; it appears as a cyan notice in the radar.
 - **Safe** — the anchor has comfortable slack.
@@ -278,29 +277,18 @@ Relevant files: `src/lib/hardAnchorRadar.js`, `src/lib/clockMath.js`,
 
 ### 10. One-tap on-stage controls (issue #13)
 
-The MC footer now has three live controls backed by the synced live state:
+The MC footer has one live control backed by the synced live state:
 
-- **⏱️ Kitchen / Vendor +15m** — adds a manual offset to
-  `manual_offset_minutes`. The active block keeps its real start but gains 15
-  minutes, future non-anchor blocks shift by the same amount, and
-  `HARD_ANCHOR`s stay pinned so the radar immediately shows any new
-  compression. The footer displays the accumulated offset with a `×` reset.
 - **🔀 Swap w/ Next** — swaps the active block with the next block in
   `step_order`, moves the active marker to the swapped-in block, and keeps
   advance/undo working in the new order.
-- **🃏 Defer to Joker Drawer** — removes the first upcoming `deferable: true`
-  block from the active sequence, stores it in `deferred_step_ids`, and shows
-  it in the **Joker Drawer** card. **Restore** inserts it back immediately
-  after the current block.
 
-The demo marks *Buffets Open & Dance Floor* as deferable. All three controls
-update the same `live_sync_state` payload used by cloud sync and offline
-storage, so the DJ Booth and Pocket Remote see the shifted timeline/order
+The control updates the same `live_sync_state` payload used by cloud sync and
+offline storage, so the DJ Booth and Pocket Remote see the shifted order
 immediately.
 
 Relevant files: `src/lib/liveStageState.js`,
-`src/hooks/useLiveStageState.js`, `src/components/JokerDrawerCard.jsx`,
-`src/App.jsx`.
+`src/hooks/useLiveStageState.js`, `src/App.jsx`.
 
 ### 11. WeddingSchema v1.1 specification (issue #14)
 
@@ -309,7 +297,7 @@ The portable cartridge format is now defined in `schema/`:
 - `schema/wedding-schema-v1.1.json` — Draft 2020-12 JSON Schema.
 - `schema/wedding-cartridge.example.json` — complete demo cartridge.
 - `schema/validate-cartridge.mjs` — structural validation plus cross-field
-  checks (unique IDs, live-state references, buffer bounds, joker/VIP counts).
+  checks (unique IDs, live-state references, buffer bounds, VIP counts).
 - `schema/README.md` — field reference, step types, teleprompter shapes,
   hard anchors, live-state defaults and versioning rules.
 
@@ -321,9 +309,8 @@ npm run validate:schema -- path/to/cartridge.json
 ```
 
 The schema uses the app's canonical camelCase shape (`weddingId`, `syncPin`,
-`hostingMode`, `hardAnchors`, `durationMin`, `buffer`, `step_order`,
-`deferred_step_ids`, `manual_offset_minutes`) and rejects unknown top-level
-keys; use `extensions` for forward-compatible extras. Legacy snake_case Google
+`hostingMode`, `hardAnchors`, `durationMin`, `buffer`, `step_order`) and
+rejects unknown top-level keys; use `extensions` for forward-compatible extras. Legacy snake_case Google
 Docs imports will be mapped by the issue #15 importer.
 
 ### 12. AI converter prompt and in-app importer (issue #15)
@@ -332,8 +319,7 @@ The ingestion pipeline is now wired end-to-end:
 
 - `schema/ai-converter-prompt.md` is the copy-paste AI prompt. It defines the
   exact v1.1 shape, ELASTIC/BUFFER/HARD_ANCHOR classification, buffer ranges,
-  hard anchors, teleprompter shapes, Joker games and pre-wedding task
-  extraction.
+  hard anchors, teleprompter shapes and pre-wedding task extraction.
 - **Import** is available from the pairing screen (so a different wedding can
   be loaded before entering its PIN) and from the MC header.
 - The importer combines the prompt with an optional raw-notes textarea, lets
@@ -826,8 +812,7 @@ the buffer advice.
 - `startDriftMinutes` — newest actual start vs planned start.
 - `projectedDriftMinutes` — projected start vs planned.
 - `liveOverrunMinutes` — now vs the projected end of the active step (live clock).
-- `manualOffsetMinutes` — explicit kitchen/vendor adjustment.
-- **`canonicalDriftMinutes` = (startDrift ?? projectedDrift) + manualOffset**, with
+- **`canonicalDriftMinutes` = the newest actual start drift**, with
   `canonicalDriftLabel`, `canonicalDriftTone`, `canonicalDriftSource` and a
   `detail` string for the tooltip.
 

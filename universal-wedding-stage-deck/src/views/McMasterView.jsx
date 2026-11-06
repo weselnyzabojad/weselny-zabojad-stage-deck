@@ -18,7 +18,6 @@ import GameClickerOverlay from '../components/GameClickerOverlay';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HardAnchorRadar from '../components/HardAnchorRadar';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
-import JokerDrawerCard from '../components/JokerDrawerCard';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import ReelClock from '../components/ReelClock';
@@ -40,7 +39,6 @@ export default function McMasterView({ model }) {
   realStart,
   driftReport,
   vipAlerts,
-  jokerCount,
   setImporterOpen,
   setContactsOpen,
   contacts,
@@ -73,22 +71,15 @@ export default function McMasterView({ model }) {
   nextEntry,
   cakeProtocol,
   musicPolicy,
-  deferredSteps,
-  handleRestore,
   sensitiveNotes,
   handleWipeEvent,
   speechMode,
   speeches,
   selectSpeech,
   sendStagePing,
-  handleAddOffset,
   isComplete,
-  manualOffset,
-  handleClearOffset,
   handleSwap,
   swapBlock,
-  handleDefer,
-  deferTarget,
   controlNotice,
   savedLocally,
   handleUndo,
@@ -144,7 +135,6 @@ export default function McMasterView({ model }) {
           >
             🚨 VIP Radar ({vipAlerts.length})
           </button>
-          <span className="bg-brand/40 border border-brand-strong text-brand-soft px-2.5 py-1 rounded cursor-pointer hover:bg-brand/60 transition">🃏 Jokers ({jokerCount})</span>
           <button
             type="button"
             onClick={() => setImporterOpen(true)}
@@ -374,8 +364,6 @@ export default function McMasterView({ model }) {
 
           <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
-          <JokerDrawerCard steps={deferredSteps} onRestore={handleRestore} />
-
           <PreWeddingChecklistCard
             tasks={WEDDING.preWeddingTodos ?? []}
             checked={liveState.checked_subtasks}
@@ -422,36 +410,6 @@ export default function McMasterView({ model }) {
           <span className="text-xs font-heading font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
           <button
             type="button"
-            onClick={handleAddOffset}
-            disabled={isComplete}
-            title="Add 15 minutes to the upcoming kitchen / vendor block"
-            className={`${CONTROL_BUTTON_BASE} ${
-              isComplete
-                ? CONTROL_BUTTON_DISABLED
-                : "bg-raised hover:bg-line border-line-strong text-white"
-            }`}
-          >
-            ⏱️ Kitchen / Vendor +15m
-          </button>
-          {manualOffset > 0 ? (
-            <span
-              title="Manual kitchen / vendor offset applied to upcoming blocks"
-              className="flex items-center gap-1 rounded-lg border border-amber-800 bg-amber-950/70 px-2.5 py-1.5 font-mono text-[10px] whitespace-nowrap text-amber-200"
-            >
-              +{manualOffset}m offset
-              <button
-                type="button"
-                onClick={handleClearOffset}
-                title="Clear manual offset"
-                aria-label="Clear manual offset"
-                className="rounded px-1 text-sm leading-none text-amber-300 hover:bg-amber-900/60 hover:text-white"
-              >
-                ×
-              </button>
-            </span>
-          ) : null}
-          <button
-            type="button"
             onClick={handleSwap}
             disabled={!nextEntry || Boolean(swapBlock)}
             title={
@@ -465,25 +423,6 @@ export default function McMasterView({ model }) {
             }`}
           >
             🔀 Swap w/ Next
-          </button>
-          <button
-            type="button"
-            onClick={handleDefer}
-            disabled={!deferTarget}
-            title={
-              deferTarget
-                ? `Defer ${deferTarget.title} to the Joker Drawer`
-                : "No safe deferable block (anchors and photographer-cue steps are protected)"
-            }
-            className={`${CONTROL_BUTTON_BASE} ${
-              !deferTarget
-                ? CONTROL_BUTTON_DISABLED
-                : driftReport.canonicalDriftMinutes >= 45
-                  ? "bg-amber-950/60 hover:bg-amber-900/60 border-amber-700 text-amber-200"
-                  : "bg-raised hover:bg-line border-line-strong text-brand-soft"
-            }`}
-          >
-            🃏 Defer to Joker Drawer
           </button>
           {controlNotice ? (
             <span

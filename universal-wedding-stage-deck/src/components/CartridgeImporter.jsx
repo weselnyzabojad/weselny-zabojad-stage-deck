@@ -86,7 +86,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
       setErrors(result.errors);
       return;
     }
-    setPreview(parsed.value);
+    setPreview(result.cartridge);
   };
 
   const importCartridge = () => {
@@ -279,8 +279,7 @@ export default function CartridgeImporter({ open, onClose, currentCartridge }) {
                   {summary.bufferCount} buffers · {summary.hardAnchorCount} anchors
                 </div>
                 <div className="mt-1 font-mono text-[10px] text-slate-400">
-                  {summary.vipAlertCount} VIP alerts · {summary.jokerCount} jokers ·{' '}
-                  {summary.preWeddingCount} pre-wedding tasks
+                  {summary.vipAlertCount} VIP alerts · {summary.preWeddingCount} pre-wedding tasks
                 </div>
                 <div className="mt-0.5 font-mono text-[10px] text-slate-400">
                   {summary.keySongCount} key songs (DJ Booth)

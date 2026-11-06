@@ -65,8 +65,6 @@
       "step_01",
       "step_02",
       "step_03"
-    ],
-    "deferred_step_ids": [],
-    "manual_offset_minutes": 0
+    ]
   }
 }

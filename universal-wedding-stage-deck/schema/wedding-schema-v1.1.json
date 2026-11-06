@@ -43,12 +43,19 @@
     },
     "role": {
       "type": "string",
-      "enum": ["MC", "DJ", "POCKET"],
+      "enum": [
+        "MC",
+        "DJ",
+        "POCKET"
+      ],
       "description": "Optional legacy display hint. Device role is normally a per-device UI choice, not cartridge data."
     },
     "hostingMode": {
       "type": "string",
-      "enum": ["HOST_AND_DJ", "HOST_ONLY"],
+      "enum": [
+        "HOST_AND_DJ",
+        "HOST_ONLY"
+      ],
       "description": "HOST_AND_DJ enables DJ cues, stage pings and the DJ Booth role; HOST_ONLY hides them."
     },
     "venue": {
@@ -60,7 +67,11 @@
     },
     "culturalRules": {
       "type": "object",
-      "required": ["sto_lat", "gorzko", "bread_salt"],
+      "required": [
+        "sto_lat",
+        "gorzko",
+        "bread_salt"
+      ],
       "additionalProperties": false,
       "properties": {
         "sto_lat": {
@@ -83,17 +94,6 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/vipAlert"
-      }
-    },
-    "jokersCount": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Number of Joker Drawer games available. Should match jokerGames.length when both are present."
-    },
-    "jokerGames": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/jokerGame"
       }
     },
     "coHosts": {
@@ -140,14 +140,6 @@
         "$ref": "#/$defs/preWeddingTodo"
       }
     },
-    "weatherVariants": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "enum": ["DEFAULT", "RAIN", "HEATWAVE"]
-      }
-    },
     "musicPolicy": {
       "type": "object",
       "description": "Music requests, blacklist and the key songs pinned in the DJ Booth (project.md TODO 2 / TODO 18 / Phase 1.5d). v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
@@ -179,7 +171,10 @@
         },
         "requestWindow": {
           "type": "object",
-          "required": ["start", "end"],
+          "required": [
+            "start",
+            "end"
+          ],
           "additionalProperties": false,
           "properties": {
             "start": {
@@ -246,7 +241,11 @@
     },
     "speechMode": {
       "type": "string",
-      "enum": ["OFF", "LIGHT", "COMPLEX"],
+      "enum": [
+        "OFF",
+        "LIGHT",
+        "COMPLEX"
+      ],
       "description": "Wedding-level speech mode (TODO 8); per-speech `mode` may override LIGHT/COMPLEX."
     },
     "speeches": {
@@ -287,7 +286,10 @@
     },
     "coupleProfile": {
       "type": "object",
-      "required": ["bride", "groom"],
+      "required": [
+        "bride",
+        "groom"
+      ],
       "additionalProperties": false,
       "description": "Optional v1.2 couple identity for the top bar (project.md TODO 15 / Phase 1.5c). Both first names are required; nationalities are ISO 3166-1 alpha-2 and may be empty. `couple` remains the display fallback.",
       "properties": {
@@ -310,7 +312,9 @@
     },
     "couplePerson": {
       "type": "object",
-      "required": ["firstName"],
+      "required": [
+        "firstName"
+      ],
       "additionalProperties": false,
       "properties": {
         "firstName": {
@@ -372,7 +376,11 @@
     },
     "language": {
       "type": "string",
-      "enum": ["PL", "FR", "EN"]
+      "enum": [
+        "PL",
+        "FR",
+        "EN"
+      ]
     },
     "localizedText": {
       "type": "object",
@@ -392,12 +400,19 @@
     },
     "stoLatRule": {
       "type": "object",
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "additionalProperties": false,
       "properties": {
         "status": {
           "type": "string",
-          "enum": ["YES", "YES_EXPLAIN", "STRICT_NO", "TBC"]
+          "enum": [
+            "YES",
+            "YES_EXPLAIN",
+            "STRICT_NO",
+            "TBC"
+          ]
         },
         "note": {
           "type": "string"
@@ -406,12 +421,19 @@
     },
     "gorzkoRule": {
       "type": "object",
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "additionalProperties": false,
       "properties": {
         "status": {
           "type": "string",
-          "enum": ["YES", "IF_GUESTS_START", "STRICT_NO", "TBC"]
+          "enum": [
+            "YES",
+            "IF_GUESTS_START",
+            "STRICT_NO",
+            "TBC"
+          ]
         },
         "note": {
           "type": "string"
@@ -420,12 +442,18 @@
     },
     "breadSaltRule": {
       "type": "object",
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "additionalProperties": false,
       "properties": {
         "status": {
           "type": "string",
-          "enum": ["YES", "NO", "TBC"]
+          "enum": [
+            "YES",
+            "NO",
+            "TBC"
+          ]
         },
         "note": {
           "type": "string"
@@ -434,7 +462,14 @@
     },
     "vipAlert": {
       "type": "object",
-      "required": ["id", "tone", "icon", "tag", "title", "detail"],
+      "required": [
+        "id",
+        "tone",
+        "icon",
+        "tag",
+        "title",
+        "detail"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -442,7 +477,13 @@
         },
         "tone": {
           "type": "string",
-          "enum": ["critical", "celebrate", "care", "info", "warning"]
+          "enum": [
+            "critical",
+            "celebrate",
+            "care",
+            "info",
+            "warning"
+          ]
         },
         "icon": {
           "type": "string"
@@ -460,7 +501,11 @@
     },
     "hardAnchor": {
       "type": "object",
-      "required": ["id", "time", "label"],
+      "required": [
+        "id",
+        "time",
+        "label"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -481,36 +526,22 @@
         },
         "kind": {
           "type": "string",
-          "enum": ["VENDOR", "SUNSET", "TRANSPORT", "FAMILY", "OTHER"]
-        }
-      }
-    },
-    "jokerGame": {
-      "type": "object",
-      "required": ["id", "category", "title", "content"],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "category": {
-          "type": "string",
-          "enum": ["GAME", "ANECDOTE", "MUSIC_CRATE"]
-        },
-        "title": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "notes": {
-          "type": "string"
+          "enum": [
+            "VENDOR",
+            "SUNSET",
+            "TRANSPORT",
+            "FAMILY",
+            "OTHER"
+          ]
         }
       }
     },
     "coHost": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": [
+        "id",
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -540,7 +571,10 @@
     },
     "contentCreator": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": [
+        "id",
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -552,7 +586,13 @@
         },
         "platform": {
           "type": "string",
-          "enum": ["INSTAGRAM", "TIKTOK", "YOUTUBE", "FACEBOOK", "OTHER"]
+          "enum": [
+            "INSTAGRAM",
+            "TIKTOK",
+            "YOUTUBE",
+            "FACEBOOK",
+            "OTHER"
+          ]
         },
         "handle": {
           "type": "string"
@@ -587,7 +627,10 @@
     },
     "contact": {
       "type": "object",
-      "required": ["role", "name"],
+      "required": [
+        "role",
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -648,7 +691,10 @@
     },
     "preWeddingTodo": {
       "type": "object",
-      "required": ["task", "done"],
+      "required": [
+        "task",
+        "done"
+      ],
       "additionalProperties": false,
       "properties": {
         "task": {
@@ -662,7 +708,10 @@
     },
     "buffer": {
       "type": "object",
-      "required": ["minDurationMin", "maxDurationMin"],
+      "required": [
+        "minDurationMin",
+        "maxDurationMin"
+      ],
       "additionalProperties": false,
       "properties": {
         "minDurationMin": {
@@ -706,7 +755,11 @@
     },
     "speechItem": {
       "type": "object",
-      "required": ["id", "heading", "lines"],
+      "required": [
+        "id",
+        "heading",
+        "lines"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -720,7 +773,10 @@
           "minItems": 1,
           "items": {
             "type": "object",
-            "required": ["lang", "text"],
+            "required": [
+              "lang",
+              "text"
+            ],
             "additionalProperties": false,
             "properties": {
               "lang": {
@@ -736,7 +792,11 @@
     },
     "gameQuestion": {
       "type": "object",
-      "required": ["id", "question", "answer"],
+      "required": [
+        "id",
+        "question",
+        "answer"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -752,7 +812,12 @@
     },
     "teleprompter": {
       "type": "object",
-      "required": ["has_script", "type", "title", "items"],
+      "required": [
+        "has_script",
+        "type",
+        "title",
+        "items"
+      ],
       "additionalProperties": false,
       "properties": {
         "has_script": {
@@ -760,7 +825,10 @@
         },
         "type": {
           "type": "string",
-          "enum": ["SPEECH", "GAME_QUESTIONS"]
+          "enum": [
+            "SPEECH",
+            "GAME_QUESTIONS"
+          ]
         },
         "title": {
           "type": "string"
@@ -777,7 +845,9 @@
                 "const": "SPEECH"
               }
             },
-            "required": ["type"]
+            "required": [
+              "type"
+            ]
           },
           "then": {
             "properties": {
@@ -797,7 +867,9 @@
                 "const": "GAME_QUESTIONS"
               }
             },
-            "required": ["type"]
+            "required": [
+              "type"
+            ]
           },
           "then": {
             "properties": {
@@ -817,7 +889,9 @@
                 "minItems": 1
               }
             },
-            "required": ["items"]
+            "required": [
+              "items"
+            ]
           },
           "then": {
             "properties": {
@@ -831,7 +905,14 @@
     },
     "step": {
       "type": "object",
-      "required": ["id", "time", "durationMin", "title", "type", "location"],
+      "required": [
+        "id",
+        "time",
+        "durationMin",
+        "title",
+        "type",
+        "location"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -860,19 +941,14 @@
         },
         "type": {
           "type": "string",
-          "enum": ["ELASTIC", "BUFFER", "HARD_ANCHOR"]
+          "enum": [
+            "ELASTIC",
+            "BUFFER",
+            "HARD_ANCHOR"
+          ]
         },
         "location": {
           "type": "string"
-        },
-        "deferable": {
-          "type": "boolean",
-          "default": false,
-          "description": "Eligible for Defer to Joker Drawer."
-        },
-        "weatherOption": {
-          "type": "string",
-          "enum": ["DEFAULT", "RAIN", "HEATWAVE"]
         },
         "buffer": {
           "$ref": "#/$defs/buffer"
@@ -883,20 +959,11 @@
         "teleprompter": {
           "$ref": "#/$defs/teleprompter"
         },
-        "cateringNotes": {
-          "type": "string"
-        },
         "subTasks": {
           "type": "array",
           "items": {
             "type": "string",
             "minLength": 1
-          }
-        },
-        "propsAndFx": {
-          "type": "array",
-          "items": {
-            "type": "string"
           }
         },
         "photographerCue": {
@@ -907,7 +974,12 @@
     },
     "stagePing": {
       "type": "object",
-      "required": ["id", "type", "sent_at", "step_id"],
+      "required": [
+        "id",
+        "type",
+        "sent_at",
+        "step_id"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -917,7 +989,12 @@
         },
         "type": {
           "type": "string",
-          "enum": ["drop_track", "fade_music", "hold_2m", "ready"]
+          "enum": [
+            "drop_track",
+            "fade_music",
+            "hold_2m",
+            "ready"
+          ]
         },
         "sent_at": {
           "$ref": "#/$defs/isoTimestamp"
@@ -929,13 +1006,21 @@
     },
     "songSource": {
       "type": "object",
-      "required": ["type"],
+      "required": [
+        "type"
+      ],
       "additionalProperties": false,
       "description": "Where a key song comes from. Customer files keep a stable fileRef (never audio bytes); streaming sources keep the exact customer URL. shortUrl is an optional pre-approved stable redirect for the QR.",
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["CUSTOMER_FILE", "YOUTUBE", "SPOTIFY", "DEEZER", "OTHER"]
+          "enum": [
+            "CUSTOMER_FILE",
+            "YOUTUBE",
+            "SPOTIFY",
+            "DEEZER",
+            "OTHER"
+          ]
         },
         "url": {
           "type": "string",
@@ -965,7 +1050,10 @@
         },
         "availability": {
           "type": "string",
-          "enum": ["LOCAL", "MISSING"]
+          "enum": [
+            "LOCAL",
+            "MISSING"
+          ]
         },
         "label": {
           "type": "string",
@@ -1108,7 +1196,11 @@
         },
         "cloudSync": {
           "type": "string",
-          "enum": ["ENCRYPTED_HOST_KEY", "LOCAL_ONLY", "SERVER_MANAGED"]
+          "enum": [
+            "ENCRYPTED_HOST_KEY",
+            "LOCAL_ONLY",
+            "SERVER_MANAGED"
+          ]
         },
         "encryption": {
           "type": "object",
@@ -1119,7 +1211,10 @@
             },
             "keyHolder": {
               "type": "string",
-              "enum": ["HOST", "SERVER"]
+              "enum": [
+                "HOST",
+                "SERVER"
+              ]
             },
             "version": {
               "type": "integer",
@@ -1131,7 +1226,11 @@
     },
     "mediaMember": {
       "type": "object",
-      "required": ["id", "role", "name"],
+      "required": [
+        "id",
+        "role",
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -1139,7 +1238,11 @@
         },
         "role": {
           "type": "string",
-          "enum": ["PHOTO", "VIDEO", "DRONE"]
+          "enum": [
+            "PHOTO",
+            "VIDEO",
+            "DRONE"
+          ]
         },
         "name": {
           "type": "string"
@@ -1202,7 +1305,11 @@
             },
             "status": {
               "type": "string",
-              "enum": ["LIVE", "STALE", "UNAVAILABLE"]
+              "enum": [
+                "LIVE",
+                "STALE",
+                "UNAVAILABLE"
+              ]
             }
           }
         },
@@ -1240,7 +1347,10 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "required": ["id", "label"],
+                "required": [
+                  "id",
+                  "label"
+                ],
                 "additionalProperties": false,
                 "properties": {
                   "id": {
@@ -1339,18 +1449,30 @@
         },
         "order": {
           "type": "string",
-          "enum": ["MIDNIGHT", "AFTER_CAKE", "CUSTOM"]
+          "enum": [
+            "MIDNIGHT",
+            "AFTER_CAKE",
+            "CUSTOM"
+          ]
         },
         "anchorId": {
           "$ref": "#/$defs/id"
         },
         "toss": {
           "type": "string",
-          "enum": ["VEIL", "BOUQUET", "OFF"]
+          "enum": [
+            "VEIL",
+            "BOUQUET",
+            "OFF"
+          ]
         },
         "ties": {
           "type": "string",
-          "enum": ["BOW_TIE", "TIE", "OFF"]
+          "enum": [
+            "BOW_TIE",
+            "TIE",
+            "OFF"
+          ]
         },
         "testZgodnosci": {
           "type": "object",
@@ -1411,7 +1533,10 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "title"],
+            "required": [
+              "id",
+              "title"
+            ],
             "additionalProperties": true,
             "properties": {
               "id": {
@@ -1437,7 +1562,11 @@
     },
     "mutationEntry": {
       "type": "object",
-      "required": ["id", "op", "timestamp"],
+      "required": [
+        "id",
+        "op",
+        "timestamp"
+      ],
       "additionalProperties": true,
       "description": "One append-only audit entry for a stage mutation (P0.7).",
       "properties": {
@@ -1461,7 +1590,9 @@
     },
     "speech": {
       "type": "object",
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "additionalProperties": true,
       "description": "Speech record (TODO 8). Script text is stored verbatim; consent and visibility gate the speaker view.",
       "properties": {
@@ -1470,7 +1601,10 @@
         },
         "mode": {
           "type": "string",
-          "enum": ["LIGHT", "COMPLEX"]
+          "enum": [
+            "LIGHT",
+            "COMPLEX"
+          ]
         },
         "speaker": {
           "anyOf": [
@@ -1479,7 +1613,9 @@
             },
             {
               "type": "object",
-              "required": ["name"],
+              "required": [
+                "name"
+              ],
               "additionalProperties": true,
               "properties": {
                 "name": {
@@ -1534,11 +1670,21 @@
         },
         "delivery": {
           "type": "string",
-          "enum": ["READ", "MEMORIZE", "NOTES"]
+          "enum": [
+            "READ",
+            "MEMORIZE",
+            "NOTES"
+          ]
         },
         "readFrom": {
           "type": "string",
-          "enum": ["PHONE", "TABLET", "PAPER", "MEMORY", "OTHER"],
+          "enum": [
+            "PHONE",
+            "TABLET",
+            "PAPER",
+            "MEMORY",
+            "OTHER"
+          ],
           "description": "Where the speaker reads from: phone/tablet, printed paper or memory."
         },
         "consent": {
@@ -1576,7 +1722,10 @@
     },
     "mustPlayTrack": {
       "type": "object",
-      "required": ["id", "track"],
+      "required": [
+        "id",
+        "track"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -1593,7 +1742,10 @@
     },
     "doNotPlayTrack": {
       "type": "object",
-      "required": ["id", "track"],
+      "required": [
+        "id",
+        "track"
+      ],
       "additionalProperties": false,
       "properties": {
         "id": {
@@ -1610,7 +1762,10 @@
     },
     "importantSong": {
       "type": "object",
-      "required": ["id", "moment"],
+      "required": [
+        "id",
+        "moment"
+      ],
       "additionalProperties": false,
       "description": "One key moment pinned in the DJ Booth. title/artist/source may be missing at import time (warn, do not block); the UI shows TBC and keeps the row editable.",
       "properties": {
@@ -1619,7 +1774,14 @@
         },
         "moment": {
           "type": "string",
-          "enum": ["GRAND_ENTRANCE", "CAKE", "FIRST_DANCE", "PARENTS_DANCE", "LAST_DANCE", "CUSTOM"]
+          "enum": [
+            "GRAND_ENTRANCE",
+            "CAKE",
+            "FIRST_DANCE",
+            "PARENTS_DANCE",
+            "LAST_DANCE",
+            "CUSTOM"
+          ]
         },
         "title": {
           "type": "string"
@@ -1701,18 +1863,6 @@
           "items": {
             "$ref": "#/$defs/id"
           }
-        },
-        "deferred_step_ids": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/id"
-          }
-        },
-        "manual_offset_minutes": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 720
         },
         "active_speech_id": {
           "$ref": "#/$defs/nullableId"

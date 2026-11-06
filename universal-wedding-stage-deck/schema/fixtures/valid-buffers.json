@@ -28,8 +28,7 @@
         "minDurationMin": 15,
         "maxDurationMin": 45,
         "danceBlock": true
-      },
-      "deferable": true
+      }
     },
     {
       "id": "step_02",

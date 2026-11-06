@@ -35,7 +35,6 @@ export function collectSemanticErrors(cartridge) {
     };
 
     checkRefs(live.completed_step_ids, '/liveSyncState/completed_step_ids');
-    checkRefs(live.deferred_step_ids, '/liveSyncState/deferred_step_ids');
     checkRefs(live.step_order, '/liveSyncState/step_order');
 
     if (live.active_step_id != null && !known.has(live.active_step_id)) {
@@ -43,14 +42,6 @@ export function collectSemanticErrors(cartridge) {
     }
     if (live.active_step_id != null && live.completed_step_ids?.includes(live.active_step_id)) {
       pushError('/liveSyncState/active_step_id', 'active step cannot also be completed');
-    }
-    if (live.active_step_id != null && live.deferred_step_ids?.includes(live.active_step_id)) {
-      pushError('/liveSyncState/active_step_id', 'active step cannot also be deferred');
-    }
-    for (const [index, id] of (live.deferred_step_ids ?? []).entries()) {
-      if (live.completed_step_ids?.includes(id)) {
-        pushError(`/liveSyncState/deferred_step_ids/${index}`, 'deferred step cannot be completed');
-      }
     }
 
     const pingStep = live.stage_ping?.step_id;
@@ -82,7 +73,6 @@ export function collectSemanticErrors(cartridge) {
 
   uniqueList(cartridge?.hardAnchors, '/hardAnchors', 'hard anchor');
   uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
-  uniqueList(cartridge?.jokerGames, '/jokerGames', 'joker');
   uniqueList(cartridge?.contacts, '/contacts', 'contact');
 
   // Speeches (TODO 8): ids and explicit order values must be unique. A missing
@@ -198,16 +188,6 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
-  if (
-    Number.isInteger(cartridge?.jokersCount) &&
-    Array.isArray(cartridge?.jokerGames) &&
-    cartridge.jokersCount !== cartridge.jokerGames.length
-  ) {
-    pushError(
-      '/jokersCount',
-      `jokersCount ${cartridge.jokersCount} does not match jokerGames.length ${cartridge.jokerGames.length}`,
-    );
-  }
   if (
     Number.isInteger(cartridge?.vipRadarCount) &&
     Array.isArray(cartridge?.tact_and_vip_alerts) &&

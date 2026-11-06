@@ -51,8 +51,6 @@
       "step_01",
       "step_02"
     ],
-    "deferred_step_ids": [],
-    "manual_offset_minutes": 0,
     "active_speech_id": null
   }
 }
