@@ -45,8 +45,7 @@
       "type": "string",
       "enum": [
         "MC",
-        "DJ",
-        "POCKET"
+        "DJ"
       ],
       "description": "Optional legacy display hint. Device role is normally a per-device UI choice, not cartridge data."
     },
@@ -1164,9 +1163,6 @@
           "$ref": "#/$defs/visibilityMatrix"
         },
         "dj": {
-          "$ref": "#/$defs/visibilityMatrix"
-        },
-        "pocket": {
           "$ref": "#/$defs/visibilityMatrix"
         },
         "photo": {

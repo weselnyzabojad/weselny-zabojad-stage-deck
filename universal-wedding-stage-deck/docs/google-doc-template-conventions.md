@@ -252,7 +252,7 @@ Key/value fields map to `oczepiny.*`; the `### Sub-events` table maps to
 
 Only override rows. Each row maps to `viewVisibility[<role>][<section>]`.
 Omit the whole section to keep the D1 defaults. All four roles
-(`mc`, `pocket`, `dj`, `photo`) must exist in the final object; missing roles
+(`mc`, `dj`, `photo`) must exist in the final object; missing roles
 default to all-false.
 
 ### MEDIA TEAM / PHOTO PLAN

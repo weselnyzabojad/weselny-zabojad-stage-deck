@@ -37,7 +37,7 @@ create index if not exists weddings_expires_idx on public.weddings (expires_at);
 
 create table if not exists public.wedding_roles (
   wedding_id  text not null references public.weddings(wedding_id) on delete cascade,
-  role        text not null check (role in ('mc', 'dj', 'pocket', 'photo', 'speaker')),
+  role        text not null check (role in ('mc', 'dj', 'photo', 'speaker')),
   pin_hash    text not null,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
@@ -148,14 +148,14 @@ drop policy if exists "room update"       on public.live_sync_state;
 drop policy if exists "wedding read"      on public.weddings;
 
 -- A room token may only touch its own room key (wzsd:<weddingId>). Reads are
--- open to every joined role; writes are limited to the host roles (MC/Pocket).
+-- open to every joined role; writes are limited to the host role (MC).
 -- The role claim must be one of the roles issued by join_room.
 create policy "room read"
   on public.live_sync_state for select
   to authenticated
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
   );
 
 create policy "room insert"
@@ -163,7 +163,7 @@ create policy "room insert"
   to authenticated
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and exists (
       select 1 from public.weddings w
       where w.wedding_id = public.current_wedding_id()
@@ -175,7 +175,7 @@ create policy "room update"
   to authenticated
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and exists (
       select 1 from public.weddings w
       where w.wedding_id = public.current_wedding_id()
@@ -183,7 +183,7 @@ create policy "room update"
   )
   with check (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'pocket')
+    and public.current_app_role() in ('mc')
     and exists (
       select 1 from public.weddings w
       where w.wedding_id = public.current_wedding_id()
@@ -197,7 +197,7 @@ create policy "wedding read"
   to authenticated
   using (
     wedding_id = public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'pocket', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
   );
 
 -- D4: encrypted sensitive notes are MC-only, and only for the joined room.

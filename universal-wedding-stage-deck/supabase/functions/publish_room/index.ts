@@ -15,8 +15,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
 
-const ALLOWED_ROLES = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
-const DEFAULT_ROLES = ['mc', 'dj', 'pocket'];
+const ALLOWED_ROLES = ['mc', 'dj', 'photo', 'speaker'];
+const DEFAULT_ROLES = ['mc', 'dj'];
 const ROOM_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;

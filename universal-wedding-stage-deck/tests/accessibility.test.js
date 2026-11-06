@@ -6,7 +6,6 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const ROLE_VIEWS = [
   'src/views/McMasterView.jsx',
   'src/components/DjBoothView.jsx',
-  'src/components/PocketRemoteView.jsx',
   'src/components/PhotographerView.jsx',
   'src/components/SpeakerView.jsx',
 ];

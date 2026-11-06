@@ -4,7 +4,6 @@ import CartridgeImporter from './components/CartridgeImporter';
 import DjBoothView from './components/DjBoothView';
 import PairingScreen from './components/PairingScreen';
 import PhotographerView from './components/PhotographerView';
-import PocketRemoteView from './components/PocketRemoteView';
 import RoleJoinScreen from './components/RoleJoinScreen';
 import SpeakerView from './components/SpeakerView';
 import TeleprompterOverlay from './components/TeleprompterOverlay';
@@ -530,50 +529,6 @@ export default function App() {
           canExit={!IS_PRODUCTION}
           onExit={() => handleRoleChange("mc")}
         />
-      </AppErrorBoundary>
-    );
-  }
-
-  if (currentRole === "pocket") {
-    return (
-      <AppErrorBoundary
-        scope="pocket"
-        weddingId={WEDDING.weddingId}
-        role={currentRole}
-        resetKey={currentRole}
-        lastKnownStep={lastKnownStep}
-      >
-        <>
-          <PocketRemoteView
-            wedding={WEDDING}
-            timeline={timeline}
-            clock={driftReport.clock}
-            drift={driftReport.drift}
-            cake={cakeProtocol}
-            musicPolicy={musicPolicy}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-            onAdvance={handleAdvance}
-            onUndo={handleUndo}
-            canUndo={canUndo}
-            canAdvance={!isComplete}
-            onOpenScript={() => setOverlay("teleprompter")}
-            hasScript={Boolean(script)}
-            syncStatus={syncStatus}
-            syncError={syncError}
-            remoteUpdatedAt={remoteUpdatedAt}
-            outbox={outbox}
-            {...roleProps}
-          />
-          {overlay === "teleprompter" && (
-            <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
-          )}
-          <UndoToast
-            toast={undoToast}
-            onUndo={handleUndo}
-            onDismiss={() => setUndoToast(null)}
-          />
-        </>
       </AppErrorBoundary>
     );
   }

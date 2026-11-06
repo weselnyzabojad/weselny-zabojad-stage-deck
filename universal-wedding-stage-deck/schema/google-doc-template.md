@@ -163,7 +163,6 @@ proposal.
 | Role | Section | Visible |
 | --- | --- | --- |
 | dj | vipAlerts | false |
-| pocket | venueInstallation | false |
 | photo | music | false |
 | mc | venueAccommodation | true |
 

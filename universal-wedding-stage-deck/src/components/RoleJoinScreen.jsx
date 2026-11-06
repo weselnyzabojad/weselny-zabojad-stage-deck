@@ -6,7 +6,7 @@ import { useI18n } from '../i18n/useI18n';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 
-const JOIN_ROLES = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
+const JOIN_ROLES = ['mc', 'dj', 'photo', 'speaker'];
 
 // Production `/deck/` gate: per-role PIN validated server-side by the
 // `join_room` Edge Function. No couple names or cartridge data are rendered

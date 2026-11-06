@@ -4,7 +4,7 @@ import { useI18n } from '../i18n/useI18n';
 
 // Compact header control that switches this device between the three role
 // views. The choice is local to the device and never leaves the room.
-export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj', 'pocket'] }) {
+export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
