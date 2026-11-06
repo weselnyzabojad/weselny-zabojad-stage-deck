@@ -2,6 +2,7 @@ import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import CutoffStopwatchCard from './CutoffStopwatchCard';
+import DjSetHealthCard from './DjSetHealthCard';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -132,6 +133,10 @@ export default function DjBoothView({
           {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
         </div>
       </section>
+
+      {isVip ? (
+        <DjSetHealthCard wedding={wedding} timeline={timeline} compact />
+      ) : null}
 
       {showKeySongs ? (
         <KeySongsCard
@@ -382,6 +387,10 @@ export default function DjBoothView({
 
             <aside className="space-y-4">
               <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
+
+              {isVip ? (
+                <DjSetHealthCard wedding={wedding} timeline={timeline} />
+              ) : null}
 
               <MusicPolicyCard policy={musicPolicy} />
 
