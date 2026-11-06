@@ -450,6 +450,8 @@ export default function App() {
           viewVisibility={WEDDING.viewVisibility?.dj}
           theme={theme}
           onToggleTheme={toggleTheme}
+          songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
+          songRequestRoomCode={DECK_INTENT.roomCode}
           {...roleProps}
         />
       </AppErrorBoundary>
