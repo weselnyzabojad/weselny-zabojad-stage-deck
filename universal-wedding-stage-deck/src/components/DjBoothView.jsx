@@ -5,6 +5,7 @@ import CutoffStopwatchCard from './CutoffStopwatchCard';
 import DjExportPack from './DjExportPack';
 import DjNowPlayingOverlay from './DjNowPlayingOverlay';
 import DjSetHealthCard from './DjSetHealthCard';
+import DjSongRequestQueue from './DjSongRequestQueue';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -59,6 +60,8 @@ export default function DjBoothView({
   viewVisibility,
   theme = 'night',
   onToggleTheme,
+  songRequestAccessToken = null,
+  songRequestRoomCode = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -454,6 +457,15 @@ export default function DjBoothView({
                     </p>
                   ) : null}
                 </section>
+              ) : null}
+
+              {isVip ? (
+                <DjSongRequestQueue
+                  enabled={isVip}
+                  role={role}
+                  accessToken={songRequestAccessToken}
+                  roomCode={songRequestRoomCode}
+                />
               ) : null}
 
               <DjExportPack enabled={isVip} wedding={wedding} timeline={timeline} />
