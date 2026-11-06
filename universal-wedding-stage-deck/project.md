@@ -36,7 +36,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 
 | Area | Status |
 | --- | --- |
-| Stage deck views (MC/DJ/Pocket/Photo/Speaker) | Complete |
+| Stage deck views (MC/DJ/Photo/Speaker) | Complete |
+| Responsive phone layouts for every role | Decided; implementation issues #109–#114 |
 | Drift engine, elastic schedule, buffer accordion, hard-anchor radar | Complete |
 | Cake, speeches, key songs, music policy, contacts, photo plan | Complete |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
@@ -55,6 +56,21 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#79](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/79) | Multi-wedding library and importer safety |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) |
 | [#82](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/82) | Google Docs-first import (remove the AI-prompt path) |
+
+### Responsive phone / pocket plan
+
+Decision (2026-11-06, confirmed with the owner): remove the separate **Pocket**
+role and give every role a classy, phone-first layout on small screens. The full
+view remains on laptop/tablet. Work items are tracked as GitHub issues
+(P-01–P-06; links added after creation):
+
+- **P-01 / #109** Remove the Pocket role entirely (`pocket` in roles, join
+  screen, admin, sessions, RLS, i18n and docs).
+- **P-02 / #110** Shared responsive role shell + phone bottom navigation pattern.
+- **P-03 / #111** MC phone layout: advance, undo and drift check.
+- **P-04 / #112** DJ phone layout (read-only, large cutoff display).
+- **P-05 / #113** Photographer phone layout (read-only, shot list).
+- **P-06 / #114** Speaker phone layout polish (teleprompter, single column).
 
 ---
 
@@ -106,13 +122,25 @@ tests/              Vitest suites and smoke tests
 | --- | --- | --- |
 | `mc` | MC Master | Full deck, drift controls, scripts, VIP radar, stage pings |
 | `dj` | DJ Booth | Read-only timeline, playlists, hard cutoffs |
-| `pocket` | Pocket Remote | Compact advance/undo and drift check |
 | `photo` | Photographer | Shot lists, sunset windows, Oczepiny cues |
 | `speaker` | Speaker | Read-only teleprompter for the assigned speech |
 
 Role choice is per device and never part of the synced live state. In
 production the role is fixed by the join token. `/deck/` never lists weddings;
 devices join with a room code or a QR deep link, then enter the role PIN.
+
+### Phone layouts (decision, 2026-11-06)
+
+The separate **Pocket** role is removed. Each role keeps one responsive view:
+- laptop/tablet shows the full layout;
+- small/phone screens get a dedicated pocket layout optimized for one-handed,
+  outdoor use (larger touch targets, fewer simultaneous panels, high contrast);
+- the **MC phone layout** allows **advance, undo and drift check** only; DJ,
+  Photographer and Speaker stay read-only;
+- a shared bottom navigation bar keeps the current role and its phone controls
+  consistent across views.
+
+Owner admin (`/deck/admin`) remains desktop-first.
 
 ---
 
@@ -165,7 +193,6 @@ npm run validate:i18n
 - MC Master: header identity, drift, controls, timeline, cake, music policy,
   buffer accordion, pre-wedding checklist, speeches, radar, stage pings;
 - DJ Booth: read-only timeline, key songs and cutoffs;
-- Pocket Remote: compact advance/undo, drift, script launcher;
 - Photographer: shot lists, sunset/golden-hour, Oczepiny cues, media team,
   venue access;
 - Speaker: assigned-speech teleprompter with cached fallback.
@@ -302,6 +329,8 @@ CI runs the same checks on pushes and pull requests to `master`.
 - Optional games content exists but is not in the schema or UI (deferred).
 - Google Docs-first import (#82) is not implemented; the manual JSON/AI-prompt
   path remains.
+- The Pocket role removal and per-role phone layouts are planned (#109–#114)
+  but not implemented yet.
 - v1.2 schema freeze (#77), multi-wedding library (#79) and MC cue cleanup
   (#80) remain open.
 - `/deck/` static hosting still needs an Apache/SPA rewrite for deep links such
