@@ -2,6 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { AdminConfirmDialog, AdminMfaDialog } from '../src/admin/AdminDialogs.jsx';
+import AdminToast from '../src/admin/AdminToast.jsx';
 import {
   ADMIN_ABSOLUTE_MS,
   ADMIN_IDLE_MS,
@@ -151,6 +152,25 @@ describe('issue #76 owner admin panel', () => {
     expect(filterWeddings(rows, { query: 'ABC123', status: 'all' })[0].couple).toBe('Anna & Tomek');
     expect(filterWeddings(rows, { status: 'all', role: 'photo' })).toHaveLength(1);
     expect(filterWeddings(rows, { status: 'all', role: 'dj' })).toHaveLength(1);
+  });
+
+  it('renders admin success and error toasts with live roles', () => {
+    const success = renderToStaticMarkup(
+      createElement(AdminToast, {
+        toasts: [{ id: 1, tone: 'success', message: 'Wedding archived.' }],
+        onDismiss: () => {},
+      }),
+    );
+    expect(success).toContain('Wedding archived.');
+    expect(success).toContain('role="status"');
+
+    const error = renderToStaticMarkup(
+      createElement(AdminToast, {
+        toasts: [{ id: 2, tone: 'error', message: 'Request failed.' }],
+        onDismiss: () => {},
+      }),
+    );
+    expect(error).toContain('role="alert"');
   });
 
   it('normalizes a wedding row for the admin list', () => {
