@@ -16,7 +16,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // Issue #81: never reload the live stage silently. A new service worker
+      // waits until the user accepts the deferred "Update available" prompt.
+      registerType: 'prompt',
+      injectRegister: null,
       // The couple-identity flags are self-hosted SVGs; precache them so the
       // header still renders offline for any cartridge.
       workbox: {

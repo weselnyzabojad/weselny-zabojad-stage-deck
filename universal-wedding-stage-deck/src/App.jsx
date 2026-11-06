@@ -33,6 +33,9 @@ import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { getSyncConfig, syncRoomKey } from './lib/sync/syncConfig';
 import { clearOutbox as clearSyncOutbox } from './lib/sync/outbox';
+import { clearReloadState, loadReloadState } from './lib/reloadState';
+import { resolvePwaReloadBlock } from './lib/pwaUpdate';
+import { setPwaReloadContext } from './lib/pwaUpdateState';
 import {
   clearRoleSession,
   isRoleSessionValid,
@@ -156,7 +159,7 @@ export default function App() {
     lastKnownStep.completedCount,
     lastKnownStep.totalSteps,
   ]);
-  const [overlay, setOverlay] = useState(null);
+  const [overlay, setOverlay] = useState(() => loadReloadState()?.overlay ?? null);
   const [controlNotice, setControlNotice] = useState('');
   const [undoToast, setUndoToast] = useState(null);
   const [importerOpen, setImporterOpen] = useState(false);
@@ -169,6 +172,35 @@ export default function App() {
     setOverlay(null);
     setRole(next);
   };
+
+  // Issue #81: restore the overlay/scroll saved before an accepted PWA reload.
+  useEffect(() => {
+    const state = loadReloadState();
+    if (!state) return undefined;
+    clearReloadState();
+    if (state.scrollY > 0) {
+      const frame = window.requestAnimationFrame(() => window.scrollTo(0, state.scrollY));
+      return () => window.cancelAnimationFrame(frame);
+    }
+    return undefined;
+  }, []);
+
+  // Issue #81: tell the global update prompt when a reload is unsafe.
+  useEffect(() => {
+    setPwaReloadContext({
+      overlay,
+      blockedReason: resolvePwaReloadBlock({
+        overlay,
+        activeSpeech: Boolean(liveState.active_speech_id),
+        activeStepId: liveState.active_step_id ?? null,
+      }),
+    });
+  }, [overlay, liveState.active_speech_id, liveState.active_step_id]);
+
+  useEffect(
+    () => () => setPwaReloadContext({ overlay: null, blockedReason: null }),
+    [],
+  );
 
   // Production: after the role PIN is accepted, fetch the role-scoped cartridge
   // from the room. A cartridge cached for another wedding does not count.
