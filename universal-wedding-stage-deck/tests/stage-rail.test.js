@@ -146,4 +146,28 @@ describe('stage rail rendering', () => {
   it('renders nothing for a missing step', () => {
     expect(renderToStaticMarkup(createElement(StageStepCard, { entry: {}, variant: 'done' }))).toBe('');
   });
+
+  it('renders the current body inside the hero card', () => {
+    const html = renderToStaticMarkup(
+      createElement(StageRail, {
+        current: entry(1),
+        currentBody: createElement('p', null, 'Hero cue content'),
+      }),
+    );
+    expect(html).toContain('Hero cue content');
+  });
+});
+
+describe('MC dashboard rail integration (#119)', () => {
+  it('derives the rail from drift entries and passes the hero body', async () => {
+    const { readFileSync } = await import('node:fs');
+    const source = readFileSync(new URL('../src/views/McMasterView.jsx', import.meta.url), 'utf8');
+
+    expect(source).toContain('driftReport.entries');
+    expect(source).toContain('buildStageRail(');
+    expect(source).toContain('<StageRail');
+    expect(source).toContain('currentBody={heroBody}');
+    expect(source).toContain('Catering & Sub-Tasks');
+    expect(source).not.toContain('MAIN DASHBOARD (70% / 30% SPLIT)');
+  });
 });

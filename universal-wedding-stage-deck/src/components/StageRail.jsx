@@ -47,6 +47,7 @@ export default function StageRail({
   done = [],
   current = null,
   upcoming = [],
+  currentBody = null,
   labels = {},
 }) {
   const copy = { ...DEFAULT_LABELS, ...labels };
@@ -72,7 +73,7 @@ export default function StageRail({
             {copy.current}
           </h2>
           {current ? (
-            <StageStepCard entry={current} variant="current" />
+            <StageStepCard entry={current} variant="current">{currentBody}</StageStepCard>
           ) : (
             <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-slate-500">
               {copy.noCurrent}
