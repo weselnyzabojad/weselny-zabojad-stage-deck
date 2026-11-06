@@ -11,6 +11,7 @@ import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import { useI18n } from '../i18n/useI18n';
 import {
   djDetailTier,
   getImportantSongs,
@@ -54,6 +55,7 @@ export default function DjBoothView({
   theme = 'night',
   onToggleTheme,
 }) {
+  const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
   const completedCount = timeline.filter((entry) => entry.isDone).length;
@@ -134,7 +136,7 @@ export default function DjBoothView({
         <div className="mx-auto max-w-5xl space-y-4">
           {isSolo ? (
             <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
-              <strong className="font-heading">Solo package.</strong> Host and DJ run from one
+              <strong className="font-heading">{t('dj.soloTitle')}</strong> {t('dj.soloBody')}
               device — open the MC view for scripts and drift controls. Song detail stays at the
               Standard level.
             </div>
@@ -146,29 +148,29 @@ export default function DjBoothView({
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">
-                  {activeEntry ? 'Now on stage' : 'Event complete'}
+                  {activeEntry ? t('dj.nowOnStage') : t('dj.eventComplete')}
                 </span>
                 <h1 className="mt-1 font-heading text-2xl font-bold text-white">
-                  {activeEntry ? activeEntry.step.title : 'All steps complete'}
+                  {activeEntry ? activeEntry.step.title : t('dj.allComplete')}
                 </h1>
                 <div className="mt-1 text-xs text-slate-400">
-                  📍 {activeEntry?.step.location ?? '—'} · {completedCount}/{timeline.length} steps done
+                  📍 {activeEntry?.step.location ?? '—'} · {t('dj.stepsDone', { done: completedCount, total: timeline.length })}
                 </div>
               </div>
 
               <div className="rounded-lg border border-line bg-page/80 p-3 text-right font-mono">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400">Projected</div>
+                <div className="text-[10px] uppercase tracking-wider text-slate-400">{t('dj.projected')}</div>
                 <div className="text-lg font-semibold text-white">
                   {activeEntry
                     ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
                     : '—'}
                 </div>
                 <div className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
-                  Finish <span className="text-slate-200">{projectedFinish ?? '—'}</span>
+                  {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
                 </div>
                 {activeEntry?.step.dj?.cutoff || Number.isFinite(activeEntry?.step.dj?.cutoffSec) ? (
                   <div className="mt-1 rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
-                    CUTOFF{' '}
+                    {t('dj.cutoff')}{' '}
                     {activeEntry.step.dj.cutoff ??
                       `start + ${activeEntry.step.dj.cutoffSec}s`}
                   </div>
@@ -272,7 +274,7 @@ export default function DjBoothView({
                         ) : null}
                         {entry.step.dj?.cutoff || Number.isFinite(entry.step.dj?.cutoffSec) ? (
                           <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono font-bold text-alert-soft">
-                            CUTOFF{' '}
+                            {t('dj.cutoff')}{' '}
                             {entry.step.dj.cutoff ?? `start + ${entry.step.dj.cutoffSec}s`}
                           </span>
                         ) : null}

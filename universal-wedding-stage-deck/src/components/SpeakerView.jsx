@@ -4,6 +4,7 @@ import CoupleIdentity from './CoupleIdentity';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import { useI18n } from '../i18n/useI18n';
 import {
   formatDuration,
   resolveEventDateISO,
@@ -27,7 +28,7 @@ function TimerChip({ value, tone }) {
 
 const FALLBACK_NOW = new Date(0);
 
-// Dedicated "Speech text - script" view (TODO 8). Read-only, high-contrast and
+              {t('speaker.title')}
 // large-text; it shows only the speech the MC has made live, never the timeline
 // controls, VIP alerts or other speeches.
 export default function SpeakerView({
@@ -47,6 +48,7 @@ export default function SpeakerView({
   onExit,
   canExit = false,
 }) {
+  const { t } = useI18n();
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
   const timeZone = resolveVenueTimeZone(wedding);
@@ -83,7 +85,7 @@ export default function SpeakerView({
           </div>
           <div>
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-              🗣️ Speaker · Speech text — script
+              {t('speaker.title')}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <CoupleIdentity wedding={wedding} className="text-sm" />
@@ -100,7 +102,7 @@ export default function SpeakerView({
               onClick={onExit}
               className="rounded border border-line bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-line-strong"
             >
-              Exit
+              {t('speaker.exit')}
             </button>
           ) : null}
           <LanguageToggle />
@@ -114,9 +116,9 @@ export default function SpeakerView({
             <div className="text-4xl" aria-hidden="true">
               🔇
             </div>
-            <h1 className="mt-2 font-heading text-xl font-bold text-ink">Speeches are off</h1>
+            <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.offTitle')}</h1>
             <p className="mt-1 text-sm text-slate-400">
-              This wedding cartridge has <span className="font-mono">speechMode: OFF</span>.
+              {t('speaker.offBody')}
             </p>
           </section>
         ) : speechCount === 0 ? (
@@ -124,9 +126,9 @@ export default function SpeakerView({
             <div className="text-4xl" aria-hidden="true">
               📝
             </div>
-            <h1 className="mt-2 font-heading text-xl font-bold text-ink">No speeches yet</h1>
+            <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.noneTitle')}</h1>
             <p className="mt-1 text-sm text-slate-400">
-              The cartridge does not contain any speech scripts.
+              {t('speaker.noneBody')}
             </p>
           </section>
         ) : !activeSpeech ? (
@@ -135,11 +137,10 @@ export default function SpeakerView({
               ⏳
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
-              Waiting for the MC
+              {t('speaker.waitTitle')}
             </h1>
             <p className="mt-1 text-sm text-slate-400">
-              Your speech will appear here when the MC makes it live. Only the assigned script is
-              shown on this device.
+              {t('speaker.waitBody')}
             </p>
           </section>
         ) : !activeSpeech.speakerVisible ? (
@@ -148,11 +149,10 @@ export default function SpeakerView({
               🔒
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
-              Script not shared
+              {t('speaker.notSharedTitle')}
             </h1>
             <p className="mt-1 text-sm text-slate-400">
-              This speech is not visible to the speaker role. Ask the MC to share it with
-              <span className="font-mono"> speaker</span>.
+              {t('speaker.notSharedBody')}
             </p>
           </section>
         ) : !activeSpeech.scriptAllowed ? (
@@ -161,11 +161,10 @@ export default function SpeakerView({
               🔒
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
-              Script not stored
+              {t('speaker.notStoredTitle')}
             </h1>
             <p className="mt-1 text-sm text-slate-400">
-              The couple has not consented to storing this script on the speaker device. Ask
-              the MC for a printed copy.
+              {t('speaker.notStoredBody')}
             </p>
           </section>
         ) : (
