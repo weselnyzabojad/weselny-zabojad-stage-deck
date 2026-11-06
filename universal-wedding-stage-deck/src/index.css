@@ -205,3 +205,28 @@ input[type="checkbox"] {
     background-color: #b91c1c;
   }
 }
+
+/* Admin QR cards (issue #76): print only the cards, never the PIN list. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .admin-print-grid,
+  .admin-print-grid * {
+    visibility: visible;
+  }
+
+  .admin-print-grid {
+    position: absolute;
+    inset: 0 auto auto 0;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .admin-qr-card {
+    break-inside: avoid;
+  }
+}

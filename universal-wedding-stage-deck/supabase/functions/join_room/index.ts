@@ -68,6 +68,14 @@ Deno.serve(async (req) => {
     const roomCode = typeof body?.roomCode === 'string' ? body.roomCode.trim() : '';
     const role = typeof body?.role === 'string' ? body.role.trim() : '';
     const pin = typeof body?.pin === 'string' ? body.pin.trim() : '';
+    const deviceId =
+      typeof body?.deviceId === 'string' && body.deviceId.trim()
+        ? body.deviceId.trim().slice(0, 120)
+        : 'unknown';
+    const deviceLabel =
+      typeof body?.deviceLabel === 'string' && body.deviceLabel.trim()
+        ? body.deviceLabel.trim().slice(0, 120)
+        : deviceId;
 
     if (!roomCode || !ALLOWED_ROLES.has(role) || !/^\d{6}$/.test(pin)) {
       return json({ error: 'Enter the room code and the 6-digit PIN for this role.' }, 400);
@@ -96,13 +104,16 @@ Deno.serve(async (req) => {
 
     const { data: wedding, error: weddingError } = await admin
       .from('weddings')
-      .select('wedding_id, room_code, expires_at')
+      .select('wedding_id, room_code, expires_at, archived_at')
       .eq('room_code', roomCode)
       .maybeSingle();
 
     if (weddingError) throw weddingError;
     if (!wedding) {
       return json({ error: 'Room not found. Check the share link.' }, 404);
+    }
+    if (wedding.archived_at) {
+      return json({ error: 'This room has been archived. Ask the owner for access.' }, 410);
     }
     if (wedding.expires_at && Date.parse(wedding.expires_at) < Date.now()) {
       return json({ error: 'This room has ended. Ask the MC for a new share link.' }, 410);
@@ -140,6 +151,36 @@ Deno.serve(async (req) => {
 
     const roomId = `wzsd:${wedding.wedding_id}`;
     const expiry = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS;
+    const sessionId = crypto.randomUUID();
+    const expiresAt = new Date(expiry * 1000).toISOString();
+
+    // Register this device session so the owner can audit and revoke it.
+    // The RLS policies check `current_session_active()` on every room request.
+    const { error: sessionError } = await admin.from('role_sessions').insert({
+      jti: sessionId,
+      wedding_id: wedding.wedding_id,
+      role,
+      device_id: deviceId,
+      device_label: deviceLabel,
+      issued_at: new Date().toISOString(),
+      expires_at: expiresAt,
+    });
+    if (sessionError) throw sessionError;
+
+    await admin.from('role_presence').upsert(
+      {
+        wedding_id: wedding.wedding_id,
+        role,
+        device_id: deviceId,
+        session_jti: sessionId,
+        device_label: deviceLabel,
+        status: 'online',
+        current_view: role,
+        last_seen: new Date().toISOString(),
+        token_expires_at: expiresAt,
+      },
+      { onConflict: 'wedding_id,role,device_id' },
+    );
 
     const token = await new SignJWT({
       // Reserved Supabase/PostgREST claim: the Postgres role, not the device role.
@@ -153,16 +194,18 @@ Deno.serve(async (req) => {
       .setAudience('authenticated')
       .setIssuer('supabase')
       .setIssuedAt()
-      .setJti(crypto.randomUUID())
+      .setJti(sessionId)
       .setExpirationTime(expiry)
       .sign(new TextEncoder().encode(serverEnv('SUPABASE_JWT_SECRET')));
 
     return json({
       token,
+      sessionId,
       weddingId: wedding.wedding_id,
       roomId,
       role,
-      expiresAt: new Date(expiry * 1000).toISOString(),
+      deviceId,
+      expiresAt,
     });
   } catch (error) {
     console.error('join_room failed', error);
