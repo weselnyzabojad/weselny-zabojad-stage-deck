@@ -2,6 +2,7 @@ import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import CutoffStopwatchCard from './CutoffStopwatchCard';
+import DjNowPlayingOverlay from './DjNowPlayingOverlay';
 import DjSetHealthCard from './DjSetHealthCard';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
@@ -61,6 +62,10 @@ export default function DjBoothView({
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
+  const nextEntry =
+    activeIndex >= 0
+      ? timeline[activeIndex + 1] ?? null
+      : timeline.find((entry) => !entry.isDone) ?? null;
   const completedCount = timeline.filter((entry) => entry.isDone).length;
   const pingStep =
     timeline.find((entry) => entry.step.id === stagePing?.step_id)?.step ?? activeEntry?.step ?? null;
@@ -76,6 +81,7 @@ export default function DjBoothView({
   const keySongs = getImportantSongs(wedding);
   const showKeySongs = viewVisibility?.music !== false && keySongs.length > 0;
   const [copyNotice, setCopyNotice] = useState('');
+  const [nowPlayingOpen, setNowPlayingOpen] = useState(false);
 
   const copySetList = async () => {
     const lines = timeline.map((entry) => {
@@ -135,6 +141,16 @@ export default function DjBoothView({
       </section>
 
       {isVip ? (
+        <button
+          type="button"
+          onClick={() => setNowPlayingOpen(true)}
+          className="w-full rounded-xl border border-brand-strong bg-brand/30 px-3 py-2.5 font-heading text-sm font-bold text-brand-tint transition hover:bg-brand/50"
+        >
+          ⛶ Fullscreen now playing
+        </button>
+      ) : null}
+
+      {isVip ? (
         <DjSetHealthCard wedding={wedding} timeline={timeline} compact />
       ) : null}
 
@@ -179,6 +195,15 @@ export default function DjBoothView({
       <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
 
       <MusicPolicyCard policy={musicPolicy} />
+
+      <DjNowPlayingOverlay
+        enabled={isVip}
+        open={nowPlayingOpen}
+        onClose={() => setNowPlayingOpen(false)}
+        activeEntry={activeEntry}
+        nextEntry={nextEntry}
+        keySongs={keySongs}
+      />
     </div>
   );
 
@@ -400,13 +425,22 @@ export default function DjBoothView({
                     <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
                       🎛️ VIP booth cues
                     </h2>
-                    <button
-                      type="button"
-                      onClick={copySetList}
-                      className="rounded border border-brand-strong bg-brand/30 px-2 py-0.5 text-[10px] font-semibold text-brand-tint transition hover:bg-brand/50"
-                    >
-                      Copy set list
-                    </button>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setNowPlayingOpen(true)}
+                        className="rounded border border-brand-strong bg-brand/30 px-2 py-0.5 text-[10px] font-semibold text-brand-tint transition hover:bg-brand/50"
+                      >
+                        ⛶ Fullscreen
+                      </button>
+                      <button
+                        type="button"
+                        onClick={copySetList}
+                        className="rounded border border-brand-strong bg-brand/30 px-2 py-0.5 text-[10px] font-semibold text-brand-tint transition hover:bg-brand/50"
+                      >
+                        Copy set list
+                      </button>
+                    </div>
                   </div>
                   <ul className="mt-2 space-y-1.5 text-[11px] text-slate-400">
                     <li>Playlist, track, notes and cutoff details are unlocked.</li>
@@ -439,6 +473,15 @@ export default function DjBoothView({
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
         Read-only DJ view · no step controls · syncs with the host over the room PIN
       </footer>
+
+      <DjNowPlayingOverlay
+        enabled={isVip}
+        open={nowPlayingOpen}
+        onClose={() => setNowPlayingOpen(false)}
+        activeEntry={activeEntry}
+        nextEntry={nextEntry}
+        keySongs={keySongs}
+      />
     </div>
   );
 
