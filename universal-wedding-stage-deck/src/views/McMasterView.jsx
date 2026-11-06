@@ -24,6 +24,8 @@ import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import ReelClock from '../components/ReelClock';
 import RoleShell from '../components/RoleShell';
 import RoleSwitcher from '../components/RoleSwitcher';
+import StageRail from '../components/StageRail';
+import { buildStageRail } from '../lib/stageRail.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import SpeechesCard from '../components/SpeechesCard';
 import StagePingControls from '../components/StagePingControls';
@@ -199,6 +201,132 @@ export default function McMasterView({ model }) {
     </div>
   );
 
+  const railEntries = driftReport.entries ?? [];
+  const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
+  const stageRail = buildStageRail(railEntries, railActiveIndex);
+
+  // Hero body: the current step's cues, sub-tasks and launchers live inside the
+  // centre card of the Stage Rail.
+  const heroBody = currentStep ? (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/70 pb-2 text-[11px] text-slate-400">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span>
+            Planned:{' '}
+            <span className="line-through text-slate-500">
+              {currentStep.planned || currentStep.time}
+            </span>
+          </span>
+          <span className="text-slate-600">·</span>
+          <span>
+            Real start: <span className="font-mono text-white">{realStart}</span>
+          </span>
+          <span className="text-slate-600">·</span>
+          <span>
+            Est. end: <span className="font-mono text-white">{estimatedEnd ?? '—'}</span>
+          </span>
+        </div>
+        <span className="font-mono text-[10px] text-slate-500">
+          Step {currentEntry.index + 1} of {steps.length}
+        </span>
+      </div>
+
+      <div className={`grid grid-cols-1 gap-3 ${showDjCues ? 'md:grid-cols-2' : ''}`}>
+        {/* MC Cues */}
+        <div className="bg-page/60 p-3 rounded-lg border border-line">
+          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
+            <span>🗣️ MC Cues (FR / PL / EN)</span>
+          </h3>
+          <ul className="space-y-2 text-sm text-slate-300">
+            <li className="flex items-start space-x-2">
+              <span className="text-brand-soft font-mono text-xs mt-0.5">[FR/PL]</span>
+              <span>Inform guests: NO Sto Lat tonight!</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-brand-soft font-mono text-xs mt-0.5">[FR]</span>
+              <span>Explain Polish Steak Tartare + Vodka tradition.</span>
+            </li>
+            <li className="flex items-start space-x-2">
+              <span className="text-brand-soft font-mono text-xs mt-0.5">[ALL]</span>
+              <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
+        {showDjCues && (
+          <div className="bg-page/60 p-3 rounded-lg border border-line">
+            <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
+              <span>🎧 DJ / Audio Cues</span>
+            </h3>
+            <ul className="space-y-2 text-sm text-slate-300">
+              <li className="flex items-start space-x-2">
+                <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
+                <span>{currentStep.dj?.playlist ?? 'Background dinner music'} ({currentStep.dj?.track ?? 'playlist active'}).</span>
+              </li>
+              <li className="text-xs text-slate-400 bg-card p-2 rounded border border-line mt-2">
+                ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {stepSubtasks.length > 0 ? (
+        <div className="bg-page/70 p-3 rounded-lg border border-line">
+          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks</h3>
+          <div className="space-y-2">
+            {stepSubtasks.map((task) => {
+              const checked = Boolean(liveState.checked_subtasks[task]);
+              return (
+                <label
+                  key={task}
+                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => toggleSubtask(task)}
+                    className="w-4 h-4 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
+                  />
+                  <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {script && (
+            <button
+              type="button"
+              onClick={() => setOverlay('teleprompter')}
+              className="bg-raised hover:bg-line text-slate-200 px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
+            >
+              📖 Open Teleprompter / Script
+            </button>
+          )}
+          {game && (
+            <button
+              type="button"
+              onClick={() => setOverlay('game')}
+              className="bg-brand/40 hover:bg-brand/70 text-white px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
+            >
+              🎮 Game Clicker ({game.items.length} Qs)
+            </button>
+          )}
+          {!script && !game && (
+            <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
+          )}
+        </div>
+      </div>
+    </div>
+  ) : null;
+
   const wideContent = (
     <>
       <SkipLink />
@@ -288,216 +416,63 @@ export default function McMasterView({ model }) {
         <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
 
-      {/* ================= MAIN DASHBOARD (70% / 30% SPLIT) ================= */}
-      <main id="main-content" tabIndex={-1} className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-10 gap-4 p-4 overflow-y-auto">
-        
-        {/* ACTIVE STEP (70% Width -> 7 cols on lg) */}
-        <section className="lg:col-span-7 bg-card/95 border border-line rounded-xl p-4 flex flex-col justify-between shadow-xl relative">
-          {currentStep ? (
-            <div className="flex-1 min-h-0 flex flex-col justify-between">
-              <div>
-                {/* Step Header & Timing */}
-                <div className="flex items-center justify-between border-b border-line pb-2.5 mb-3">
-                  <div>
-                    <span className={`text-xs uppercase tracking-wider font-heading font-semibold px-2.5 py-1 rounded border ${stepTypeClass}`}>
-                      {currentStep.type.replace("_", " ")} STEP
-                    </span>
-                    <h1 className="text-2xl font-heading font-bold text-white mt-2">{currentStep.title}</h1>
-                    <div className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
-                      <span>📍 Location: <strong className="text-slate-200">{currentStep.location}</strong></span>
-                    </div>
-                  </div>
-                  <div className="text-right bg-page/80 p-3 rounded-lg border border-line">
-                    <div className="text-xs text-slate-400">Planned: <span className="line-through text-slate-500">{currentStep.planned || currentStep.time}</span></div>
-                    <div className="text-sm font-mono text-white font-semibold mt-0.5">Real Start: {realStart}</div>
-                    <div className="text-xs text-slate-300 mt-0.5">Est. End: {estimatedEnd ?? "—"}</div>
-                  </div>
-                </div>
-
-                <div className={`grid grid-cols-1 gap-4 my-3 ${showDjCues ? "md:grid-cols-2" : ""}`}>
-                  {/* MC Cues */}
-                  <div className="bg-page/60 p-3.5 rounded-lg border border-line">
-                    <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
-                      <span>🗣️ MC Cues (FR / PL / EN)</span>
-                    </h3>
-                    <ul className="space-y-2 text-sm text-slate-300">
-                      <li className="flex items-start space-x-2">
-                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR/PL]</span>
-                        <span>Inform guests: NO Sto Lat tonight!</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <span className="text-brand-soft font-mono text-xs mt-0.5">[FR]</span>
-                        <span>Explain Polish Steak Tartare + Vodka tradition.</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <span className="text-brand-soft font-mono text-xs mt-0.5">[ALL]</span>
-                        <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
-                  {showDjCues && (
-                    <div className="bg-page/60 p-3.5 rounded-lg border border-line">
-                      <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
-                        <span>🎧 DJ / Audio Cues</span>
-                      </h3>
-                      <ul className="space-y-2 text-sm text-slate-300">
-                        <li className="flex items-start space-x-2">
-                          <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
-                          <span>{currentStep.dj?.playlist ?? "Background dinner music"} ({currentStep.dj?.track ?? "playlist active"}).</span>
-                        </li>
-                        <li className="text-xs text-slate-400 bg-card p-2 rounded border border-line mt-2">
-                          ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                {/* Catering & Sub-Tasks */}
-                {stepSubtasks.length > 0 ? (
-                  <div className="mt-4 bg-page/70 p-3.5 rounded-lg border border-line">
-                  <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks</h3>
-                  <div className="space-y-2">
-                    {stepSubtasks.map((task) => {
-                      const checked = Boolean(liveState.checked_subtasks[task]);
-                      return (
-                        <label
-                          key={task}
-                          className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => toggleSubtask(task)}
-                            className="w-4 h-4 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
-                          />
-                          <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-                ) : null}
-              </div>
-
-              {/* Launch overlays for the active step */}
-              <div className="mt-4 pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  {script && (
-                    <button
-                      type="button"
-                      onClick={() => setOverlay("teleprompter")}
-                      className="bg-raised hover:bg-line text-slate-200 px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
-                    >
-                      📖 Open Teleprompter / Script
-                    </button>
-                  )}
-                  {game && (
-                    <button
-                      type="button"
-                      onClick={() => setOverlay("game")}
-                      className="bg-brand/40 hover:bg-brand/70 text-white px-4 py-2 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
-                    >
-                      🎮 Game Clicker ({game.items.length} Qs)
-                    </button>
-                  )}
-                  {!script && !game && (
-                    <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
-                  )}
-                </div>
-                <span className="text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center py-10">
-              <div className="text-5xl mb-3">🎉</div>
-              <span className="text-xs uppercase tracking-widest text-emerald-300 font-heading font-semibold">Event complete</span>
-              <h1 className="text-2xl font-heading font-bold text-white mt-2">All {steps.length} steps marked done</h1>
-              <p className="text-sm text-slate-400 mt-2 max-w-md">
-                Progress is saved on this device. Use Undo in the footer if you advanced by mistake.
-              </p>
-              <div className="mt-4 text-xs font-mono text-slate-400">{completedCount} / {steps.length} completed</div>
-            </div>
-          )}
-        </section>
-
-        {/* PEEK NEXT & HARD ANCHOR RADAR (30% Width -> 3 cols on lg) */}
-        <section className="lg:col-span-3 flex flex-col space-y-4">
-          
-          <ReelClock clock={driftReport.clock} />
-
-          {/* Peek Next */}
-          <div className="bg-card/95 border border-line rounded-xl p-4 shadow-lg">
-            <span className="text-[10px] uppercase tracking-wider text-slate-400 font-heading font-semibold">PEEK NEXT</span>
-            {nextEntry ? (
-              <>
-                <div className="text-lg font-heading font-bold text-white mt-1">{nextEntry.step.title}</div>
-                <div className="text-xs font-mono mt-1">
-                  <span className="text-slate-500 line-through">{nextEntry.plannedStart}</span>
-                  <span className="mx-1 text-slate-500">→</span>
-                  <span className="text-white">{nextEntry.projectedStart}</span>
-                  {nextEntry.projectedDriftMinutes ? (
-                    <span
-                      className={`ml-2 font-semibold ${
-                        nextEntry.projectedDriftMinutes > 0 ? 'text-alert-soft' : 'text-emerald-300'
-                      }`}
-                    >
-                      {nextEntry.driftLabel}
-                    </span>
-                  ) : null}
-                </div>
-              </>
-            ) : (
-              <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
-            )}
-          </div>
-
-          <CakeCard cake={cakeProtocol} />
-
-          <MusicPolicyCard policy={musicPolicy} compact />
-
-          <BufferAccordionCard accordion={driftReport.bufferAccordion} />
-
-          <PreWeddingChecklistCard
-            tasks={WEDDING.preWeddingTodos ?? []}
-            checked={liveState.checked_subtasks}
-            onToggle={toggleSubtask}
+      {/* ================= STAGE RAIL + DETAILS ================= */}
+      <main id="main-content" tabIndex={-1} className="flex-1 min-h-0 overflow-y-auto p-4">
+        <div className="flex flex-col gap-4">
+          <StageRail
+            done={stageRail.done}
+            current={stageRail.current}
+            upcoming={stageRail.upcoming}
+            currentBody={heroBody}
           />
 
-          <EventAdminCard
-            wedding={WEDDING}
-            isProduction={IS_PRODUCTION}
-            hostKey={sensitiveNotes.hostKey}
-            sensitiveStatus={sensitiveNotes.status}
-            onWipe={handleWipeEvent}
-          />
+          <section
+            aria-label="Stage details"
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
+          >
+            <ReelClock clock={driftReport.clock} />
 
-          <SpeechesCard
-            wedding={WEDDING}
-            mode={speechMode}
-            speeches={speeches}
-            activeSpeechId={liveState.active_speech_id}
-            onSelect={selectSpeech}
-            clock={driftReport.clock}
-          />
+            <CakeCard cake={cakeProtocol} />
 
-          <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
+            <MusicPolicyCard policy={musicPolicy} compact />
 
-          {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
-          {showDjCues && (
-            <StagePingControls
-              onSend={sendStagePing}
-              lastPing={liveState.stage_ping}
-              syncStatus={syncStatus}
+            <BufferAccordionCard accordion={driftReport.bufferAccordion} />
+
+            <PreWeddingChecklistCard
+              tasks={WEDDING.preWeddingTodos ?? []}
+              checked={liveState.checked_subtasks}
+              onToggle={toggleSubtask}
             />
-          )}
 
-        </section>
+            <EventAdminCard
+              wedding={WEDDING}
+              isProduction={IS_PRODUCTION}
+              hostKey={sensitiveNotes.hostKey}
+              sensitiveStatus={sensitiveNotes.status}
+              onWipe={handleWipeEvent}
+            />
 
+            <SpeechesCard
+              wedding={WEDDING}
+              mode={speechMode}
+              speeches={speeches}
+              activeSpeechId={liveState.active_speech_id}
+              onSelect={selectSpeech}
+              clock={driftReport.clock}
+            />
+
+            <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
+
+            {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
+            {showDjCues && (
+              <StagePingControls
+                onSend={sendStagePing}
+                lastPing={liveState.stage_ping}
+                syncStatus={syncStatus}
+              />
+            )}
+          </section>
+        </div>
       </main>
 
       {/* ================= BOTTOM BAR (DRIFT CONTROLS & PRIMARY ACTION) ================= */}

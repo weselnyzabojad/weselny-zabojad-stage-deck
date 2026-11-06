@@ -42,7 +42,7 @@ function driftLabel(entry, minutes) {
  * Presentational only: the parent decides `variant` from
  * `buildStageRail`; SR-03 adds the expand/collapse header.
  */
-export default function StageStepCard({ entry, variant = 'later' }) {
+export default function StageStepCard({ entry, variant = 'later', children }) {
   const step = entry?.step;
   if (!step) return null;
 
@@ -90,6 +90,10 @@ export default function StageStepCard({ entry, variant = 'later' }) {
           ) : null}
         </div>
       </div>
+
+      {children ? (
+        <div className="mt-3 border-t border-line/70 pt-3">{children}</div>
+      ) : null}
     </article>
   );
 }
