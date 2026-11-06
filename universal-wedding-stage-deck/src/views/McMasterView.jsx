@@ -334,53 +334,27 @@ export default function McMasterView({ model }) {
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
-      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between text-xs font-heading tracking-wide">
-        <div className="flex items-center space-x-4">
+      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-heading tracking-wide">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
-            <img 
-              src={logo} 
-              alt="Weselny Żabojad" 
-              className="h-20 w-auto object-contain max-w-[260px]" 
+            <img
+              src={logo}
+              alt="Weselny Żabojad"
+              className="h-20 w-auto object-contain max-w-[260px]"
             />
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
           <TopBarClock clock={driftReport.clock} />
           <TopBarRoleLabel role="mc" />
-          <DriftPill drift={driftReport.drift} />
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 my-2 sm:my-0">
+        <div className="flex flex-wrap items-center justify-end gap-2 my-2 sm:my-0">
           <CulturalRulesBar
             rules={WEDDING.culturalRules}
             oczepinyStatus={oczepinyStatus}
           />
-          <button
-            type="button"
-            onClick={() => setOverlay("vip")}
-            title="Open confidential VIP & tactful family alerts"
-            className="bg-alert/20 border border-alert/60 text-alert-soft px-2.5 py-1 rounded font-semibold cursor-pointer hover:bg-alert/30 active:bg-alert/40 transition"
-          >
-            🚨 VIP Radar ({vipAlerts.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setImporterOpen(true)}
-            title="Import a WeddingSchema v1.1 cartridge"
-            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
-          >
-          </button>
-          <button
-            type="button"
-            onClick={() => setContactsOpen(true)}
-            title="Open the vendor contacts directory"
-            className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 transition hover:bg-line"
-          >
-            📇 Contacts ({contacts.length})
-          </button>
-        </div>
-
-        <div className="flex items-center space-x-3 font-mono">
+          <DriftPill drift={driftReport.drift} />
           <button
             type="button"
             onClick={handleUnpair}
@@ -403,16 +377,19 @@ export default function McMasterView({ model }) {
               </>
             )}
           </button>
-          <span className="text-slate-500">•</span>
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           {roleIds.length > 1 ? (
             <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
           ) : null}
+          <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
         </div>
       </header>
+
+      {/* TODO(top-bar rework): ask the owner where to surface VIP Radar, vendor
+          Contacts and cartridge Import. Their modals and data flow stay wired
+          below; only the top-bar buttons were removed. */}
 
       {driftReport.hardAnchorRadar.hasWarning ? (
         <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
