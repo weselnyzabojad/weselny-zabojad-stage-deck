@@ -2,6 +2,7 @@ import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import CutoffStopwatchCard from './CutoffStopwatchCard';
+import DjExportPack from './DjExportPack';
 import DjNowPlayingOverlay from './DjNowPlayingOverlay';
 import DjSetHealthCard from './DjSetHealthCard';
 import DriftPill from './DriftPill';
@@ -454,6 +455,8 @@ export default function DjBoothView({
                   ) : null}
                 </section>
               ) : null}
+
+              <DjExportPack enabled={isVip} wedding={wedding} timeline={timeline} />
 
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
