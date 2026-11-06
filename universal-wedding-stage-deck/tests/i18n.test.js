@@ -159,12 +159,14 @@ describe('issue #78 per-device i18n', () => {
     const french = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connected' }),
     );
+    expect(french).toContain('>Sync<');
     expect(french).toContain('Synchronisé');
 
     setLocale('en', { persist: false });
     const english = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connected' }),
     );
+    expect(english).toContain('>Sync<');
     expect(english).toContain('Cloud synced');
   });
 });

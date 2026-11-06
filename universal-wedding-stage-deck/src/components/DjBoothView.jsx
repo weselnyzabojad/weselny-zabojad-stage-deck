@@ -14,6 +14,8 @@ import RoleShell from './RoleShell';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
+import TopBarClock from './TopBarClock';
+import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
@@ -219,22 +221,10 @@ export default function DjBoothView({
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
+          <TopBarClock clock={clock} />
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-                🎧 DJ Booth · read-only
-              </div>
-              <span
-                className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${
-                  isVip
-                    ? 'border-alert/60 bg-alert/20 text-alert-tint'
-                    : isSolo
-                      ? 'border-brand-strong bg-brand/30 text-brand-tint'
-                      : 'border-line bg-raised text-slate-400'
-                }`}
-              >
-                {tierLabel}
-              </span>
+              <TopBarRoleLabel role={role} tier={tierLabel} />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <CoupleIdentity wedding={wedding} className="text-sm" />

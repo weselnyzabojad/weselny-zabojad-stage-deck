@@ -1,8 +1,43 @@
 import { useI18n } from '../i18n/useI18n';
 
-// Sun/moon theme switch (TODO 27). Accessible toggle that only changes this
-// device's theme; it is never synced to other roles.
-export default function ThemeToggle({ theme = 'night', onToggle, compact = false, className = '' }) {
+function SunIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  );
+}
+
+// Icon-only theme switch. The accessible label/tooltip explains the action.
+export default function ThemeToggle({ theme = 'night', onToggle, className = '' }) {
   const { t } = useI18n();
   const isDay = theme === 'day';
   const label = isDay ? t('theme.toNight') : t('theme.toDay');
@@ -14,16 +49,9 @@ export default function ThemeToggle({ theme = 'night', onToggle, compact = false
       aria-pressed={isDay}
       aria-label={label}
       title={label}
-      className={`inline-flex items-center gap-1.5 rounded border border-line bg-raised px-2.5 py-1 text-xs text-ink transition hover:border-line-strong ${className}`}
+      className={`inline-flex h-8 w-8 items-center justify-center rounded border border-line bg-raised text-ink transition hover:border-line-strong ${className}`}
     >
-      <span aria-hidden="true" className="text-sm leading-none">
-        {isDay ? '☀️' : '🌙'}
-      </span>
-      {compact ? null : (
-        <span className="font-heading font-semibold">
-          {isDay ? t('theme.day') : t('theme.night')}
-        </span>
-      )}
+      {isDay ? <SunIcon /> : <MoonIcon />}
     </button>
   );
 }

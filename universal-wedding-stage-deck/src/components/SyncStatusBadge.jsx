@@ -1,37 +1,46 @@
 import { useI18n } from '../i18n/useI18n.js';
 
 const SYNC_STATUS_STYLES = {
-  disabled: { key: 'status.localOnly', dot: 'bg-slate-500', chip: 'bg-raised border-line-strong text-slate-300' },
-  connecting: { key: 'status.connecting', dot: 'bg-amber-400 animate-pulse', chip: 'bg-amber-950/60 border-amber-800 text-amber-200' },
-  connected: { key: 'status.connected', dot: 'bg-emerald-400', chip: 'bg-emerald-950/60 border-emerald-800 text-emerald-200' },
-  disconnected: { key: 'status.disconnected', dot: 'bg-amber-500', chip: 'bg-amber-950/60 border-amber-800 text-amber-200' },
-  offline: { key: 'status.offline', dot: 'bg-slate-400', chip: 'bg-slate-900 border-slate-700 text-slate-300' },
-  error: { key: 'status.syncError', dot: 'bg-alert', chip: 'bg-alert/20 border-alert/60 text-alert-soft' },
+  disabled: 'border-alert/60 bg-alert/20 text-alert-soft',
+  connecting: 'border-amber-700 bg-amber-950/70 text-amber-200',
+  connected: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
+  disconnected: 'border-alert/60 bg-alert/20 text-alert-soft',
+  offline: 'border-alert/60 bg-alert/20 text-alert-soft',
+  error: 'border-alert/60 bg-alert/20 text-alert-soft',
 };
 
 // TODO 25: an outbox entry overrides the ordinary status. It stays visible
 // until the cloud confirms the latest snapshot, so a failed publish cannot be
 // mistaken for a clean sync.
-const OUTBOX_STYLE = {
-  key: 'status.pendingSync',
-  dot: 'bg-amber-400 animate-pulse',
-  chip: 'bg-amber-950/70 border-amber-700 text-amber-200',
+const OUTBOX_STYLE = 'border-amber-700 bg-amber-950/70 text-amber-200';
+
+const STATUS_KEY = {
+  disabled: 'status.localOnly',
+  connecting: 'status.connecting',
+  connected: 'status.connected',
+  disconnected: 'status.disconnected',
+  offline: 'status.offline',
+  error: 'status.syncError',
 };
 
 export default function SyncStatusBadge({ status, error, remoteUpdatedAt, outbox = null }) {
   const { t, tp, formatTime } = useI18n();
   const pending = Boolean(outbox);
   const attempts = pending ? outbox.attempts ?? 0 : 0;
-  const meta = pending ? OUTBOX_STYLE : SYNC_STATUS_STYLES[status] ?? SYNC_STATUS_STYLES.disabled;
+  const tone = pending
+    ? OUTBOX_STYLE
+    : SYNC_STATUS_STYLES[status] ?? SYNC_STATUS_STYLES.disabled;
   const nextRetry = pending
     ? outbox.nextAttemptAt && Number.isFinite(new Date(outbox.nextAttemptAt).getTime())
       ? formatTime(outbox.nextAttemptAt, { seconds: true })
       : null
     : null;
+
+  const statusKey = STATUS_KEY[status] ?? STATUS_KEY.disabled;
   const label =
     pending && attempts > 0
       ? t('status.pendingSyncCount', { count: attempts })
-      : t(meta.key);
+      : t(statusKey);
 
   const title = pending
     ? [
@@ -53,11 +62,11 @@ export default function SyncStatusBadge({ status, error, remoteUpdatedAt, outbox
       role="status"
       aria-live="polite"
       aria-atomic="true"
+      aria-label={`Sync: ${label}`}
       title={title}
-      className={`flex items-center gap-1.5 rounded px-2.5 py-1 text-xs border ${meta.chip}`}
+      className={`inline-flex items-center rounded border px-2.5 py-1 text-xs font-semibold ${tone}`}
     >
-      <span aria-hidden="true" className={`flex h-2 w-2 rounded-full ${meta.dot}`} />
-      <span>{label}</span>
+      Sync
     </span>
   );
 }
