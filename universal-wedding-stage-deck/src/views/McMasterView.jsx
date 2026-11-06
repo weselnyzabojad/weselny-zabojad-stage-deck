@@ -5,6 +5,7 @@
 // layer for the MC role. The `model` object carries the already-derived values
 // and callbacks so there is exactly one place to wire a future routed shell.
 
+import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import BufferAccordionCard from '../components/BufferAccordionCard';
 import CakeCard from '../components/CakeCard';
@@ -104,12 +105,12 @@ export default function McMasterView({ model }) {
     timeZone: driftReport?.clock?.timeZone ?? null,
   });
 
-  const [isCompact, setIsCompact] = React.useState(
+  const [isCompact, setIsCompact] = useState(
     typeof window !== 'undefined' && window.matchMedia
       ? window.matchMedia('(max-width: 639px)').matches
       : false,
   );
-  React.useEffect(() => {
+  useEffect(() => {
     const mq = window.matchMedia('(max-width: 639px)');
     setIsCompact(mq.matches);
     const listener = () => setIsCompact(mq.matches);

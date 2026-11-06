@@ -61,4 +61,20 @@ describe('responsive phone role shell', () => {
       expect(source, path).not.toContain('handleAdvance');
     }
   });
+
+  it('never references the React global without importing it', () => {
+    for (const path of [
+      'src/views/McMasterView.jsx',
+      'src/components/DjBoothView.jsx',
+      'src/components/PhotographerView.jsx',
+      'src/components/SpeakerView.jsx',
+      'src/components/RoleShell.jsx',
+      'src/components/BottomNav.jsx',
+    ]) {
+      const source = read(path);
+      if (/\bReact\./.test(source)) {
+        expect(source, path).toMatch(/import\s+React\b/);
+      }
+    }
+  });
 });
