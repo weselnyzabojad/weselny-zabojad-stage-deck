@@ -4,7 +4,6 @@ import { validateCartridge } from '../lib/cartridgeImporter';
 import {
   adminConfigured,
   archiveWedding,
-  challengeExistingFactor,
   deleteWedding,
   duplicateWedding,
   enrollTotp,
@@ -32,6 +31,12 @@ import {
   ROLE_IDS,
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
+import {
+  AdminConfirmDialog,
+  AdminDuplicateDialog,
+  AdminMfaDialog,
+  AdminPinDialog,
+} from './AdminDialogs';
 
 function ErrorLine({ children }) {
   if (!children) return null;
@@ -433,6 +438,12 @@ export default function AdminApp() {
   const [pinResult, setPinResult] = useState(null);
   const [pinWedding, setPinWedding] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [pinDialog, setPinDialog] = useState(null);
+  const [duplicateDialog, setDuplicateDialog] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
+  const [mfaAction, setMfaAction] = useState(null);
+  const [dialogBusy, setDialogBusy] = useState(false);
+  const [dialogError, setDialogError] = useState('');
   const [clock, setClock] = useState(() => createAdminSession());
   const clockRef = useRef(clock);
 
@@ -528,95 +539,129 @@ export default function AdminApp() {
     if (session && mfa?.currentLevel === 'aal2') load();
   }, [session, mfa?.currentLevel]);
 
-  const requireReauth = async () => {
-    const code = window.prompt('Enter your 6-digit TOTP code to confirm this action.');
-    if (!code) return false;
+  const closeDialogs = () => {
+    setDialogError('');
+    setDialogBusy(false);
+  };
+
+  const askMfa = (action) => {
+    setDialogError('');
+    setMfaAction(() => action);
+  };
+
+  const handleMfaVerified = async () => {
+    const action = mfaAction;
+    setMfaAction(null);
+    if (!action) return;
     try {
-      await challengeExistingFactor(code);
-      return true;
+      await action();
     } catch (err) {
-      setError(err.message ?? 'TOTP verification failed.');
-      return false;
+      setError(err.message ?? 'Admin action failed.');
     }
   };
 
-  const handleRotate = async (wedding) => {
-    const requested = window.prompt(
-      'Optional custom PINs as role=6digits, comma-separated (blank rotates all). Example: mc=123456,dj=654321',
-      '',
+  const handleRotate = (wedding) => {
+    setDialogError('');
+    setPinDialog(wedding);
+  };
+
+  const handlePinSubmit = (pins) => {
+    const wedding = pinDialog;
+    setPinDialog(null);
+    if (!wedding) return;
+    const normalized = Object.fromEntries(
+      Object.entries(pins).filter(([, pin]) => /^\d{6}$/.test(pin)),
     );
-    const pins = requested
-      ? Object.fromEntries(
-          requested
-            .split(',')
-            .map((entry) => entry.split('=').map((part) => part.trim()))
-            .filter(([role, pin]) => role && /^\d{6}$/.test(pin ?? '')),
-        )
-      : null;
-    if (!(await requireReauth())) return;
-    try {
-      const result = await rotatePins(wedding.wedding_id, wedding.roles, pins);
+    askMfa(async () => {
+      const result = await rotatePins(
+        wedding.wedding_id,
+        wedding.roles,
+        Object.keys(normalized).length > 0 ? normalized : null,
+      );
       setPinWedding(wedding);
       setPinResult(result);
       await load();
-    } catch (err) {
-      setError(err.message ?? 'Could not rotate PINs.');
-    }
+    });
   };
 
-  const handleDuplicate = async (wedding) => {
-    const weddingId = window.prompt(
-      'New wedding id (YYYY-MM-DD_bride_groom)',
-      `${wedding.wedding_id}_copy`,
-    );
-    if (!weddingId) return;
+  const handleDuplicate = (wedding) => {
+    setDialogError('');
+    setDuplicateDialog(wedding);
+  };
+
+  const handleDuplicateSubmit = async ({ weddingId, couple, date }) => {
+    const wedding = duplicateDialog;
+    if (!wedding) return;
+    setDialogBusy(true);
+    setDialogError('');
     try {
       const result = await duplicateWedding({
         sourceWeddingId: wedding.wedding_id,
         weddingId,
-        couple: wedding.couple,
-        date: wedding.date,
+        couple,
+        date,
       });
+      setDuplicateDialog(null);
       setPinWedding({ ...wedding, wedding_id: result.weddingId, room_code: result.roomCode });
       setPinResult(result);
       await load();
     } catch (err) {
-      setError(err.message ?? 'Could not duplicate the wedding.');
+      setDialogError(err.message ?? 'Could not duplicate the wedding.');
+    } finally {
+      setDialogBusy(false);
     }
   };
 
-  const handleArchive = async (wedding) => {
-    if (!window.confirm(`Archive ${wedding.couple}? Devices will no longer be able to join.`)) return;
-    if (!(await requireReauth())) return;
-    try {
-      await archiveWedding(wedding.wedding_id);
-      await load();
-    } catch (err) {
-      setError(err.message ?? 'Could not archive the wedding.');
-    }
+  const handleArchive = (wedding) => {
+    setDialogError('');
+    setConfirmDialog({
+      title: 'Archive wedding',
+      description: `Archive ${wedding.couple}? Devices will no longer be able to join until it is restored in the database.`,
+      confirmLabel: 'Archive',
+      tone: 'danger',
+      onConfirm: () => {
+        setConfirmDialog(null);
+        askMfa(async () => {
+          await archiveWedding(wedding.wedding_id);
+          await load();
+        });
+      },
+    });
   };
 
-  const handleDelete = async (wedding) => {
-    const typed = window.prompt(`Type ${wedding.wedding_id} to permanently delete this wedding.`);
-    if (typed !== wedding.wedding_id) return;
-    if (!(await requireReauth())) return;
-    try {
-      await deleteWedding(wedding.wedding_id);
-      await load();
-    } catch (err) {
-      setError(err.message ?? 'Could not delete the wedding.');
-    }
+  const handleDelete = (wedding) => {
+    setDialogError('');
+    setConfirmDialog({
+      title: 'Delete wedding permanently',
+      description: 'This removes the wedding, roles, sessions and presence. It cannot be undone.',
+      confirmLabel: 'Delete permanently',
+      tone: 'danger',
+      requireText: wedding.wedding_id,
+      onConfirm: () => {
+        setConfirmDialog(null);
+        askMfa(async () => {
+          await deleteWedding(wedding.wedding_id);
+          await load();
+        });
+      },
+    });
   };
 
-  const handleRevoke = async (entry) => {
-    if (!window.confirm('Revoke this device session? The device must join again.')) return;
-    if (!(await requireReauth())) return;
-    try {
-      await revokeSession(entry.jti);
-      await load();
-    } catch (err) {
-      setError(err.message ?? 'Could not revoke the session.');
-    }
+  const handleRevoke = (entry) => {
+    setDialogError('');
+    setConfirmDialog({
+      title: 'Revoke device session',
+      description: `${roleLabel(entry.role)} on ${entry.device_label || entry.device_id} must join again with its PIN.`,
+      confirmLabel: 'Revoke session',
+      tone: 'danger',
+      onConfirm: () => {
+        setConfirmDialog(null);
+        askMfa(async () => {
+          await revokeSession(entry.jti);
+          await load();
+        });
+      },
+    });
   };
 
   const showQr = (wedding) => {
@@ -929,6 +974,57 @@ export default function AdminApp() {
           </section>
         ) : null}
       </main>
+
+      <AdminConfirmDialog
+        open={Boolean(confirmDialog)}
+        title={confirmDialog?.title ?? ''}
+        description={confirmDialog?.description}
+        confirmLabel={confirmDialog?.confirmLabel}
+        tone={confirmDialog?.tone}
+        requireText={confirmDialog?.requireText}
+        busy={dialogBusy}
+        error={dialogError}
+        onConfirm={confirmDialog?.onConfirm}
+        onCancel={() => {
+          setConfirmDialog(null);
+          closeDialogs();
+        }}
+      />
+
+      <AdminMfaDialog
+        open={Boolean(mfaAction)}
+        title="Confirm with TOTP"
+        description="Destructive owner actions require a fresh authenticator code."
+        onVerified={handleMfaVerified}
+        onCancel={() => {
+          setMfaAction(null);
+          closeDialogs();
+        }}
+      />
+
+      <AdminPinDialog
+        open={Boolean(pinDialog)}
+        roles={pinDialog?.roles ?? []}
+        onSubmit={handlePinSubmit}
+        onCancel={() => {
+          setPinDialog(null);
+          closeDialogs();
+        }}
+        busy={dialogBusy}
+        error={dialogError}
+      />
+
+      <AdminDuplicateDialog
+        open={Boolean(duplicateDialog)}
+        wedding={duplicateDialog}
+        onSubmit={handleDuplicateSubmit}
+        onCancel={() => {
+          setDuplicateDialog(null);
+          closeDialogs();
+        }}
+        busy={dialogBusy}
+        error={dialogError}
+      />
 
       <PinResult
         result={pinResult}
