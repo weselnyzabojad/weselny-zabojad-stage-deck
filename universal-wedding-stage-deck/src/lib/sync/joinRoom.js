@@ -5,6 +5,12 @@
 // stored locally or in the cartridge.
 
 import { getSyncConfig } from './syncConfig.js';
+import { getDeviceId } from '../deviceId.js';
+
+function deviceLabel() {
+  if (typeof navigator === 'undefined') return 'Unknown device';
+  return (navigator.userAgent || navigator.platform || 'Unknown device').slice(0, 120);
+}
 
 const STATUS_MESSAGES = {
   400: 'Enter the 6-digit PIN for this role.',
@@ -35,7 +41,13 @@ export async function joinRoom({ roomCode, role, pin }) {
         apikey: config.anonKey,
         Authorization: `Bearer ${config.anonKey}`,
       },
-      body: JSON.stringify({ roomCode, role, pin }),
+      body: JSON.stringify({
+        roomCode,
+        role,
+        pin,
+        deviceId: getDeviceId(),
+        deviceLabel: deviceLabel(),
+      }),
     });
 
     const data = await response.json().catch(() => ({}));

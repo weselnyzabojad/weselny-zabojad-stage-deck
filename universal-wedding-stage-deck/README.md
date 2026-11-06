@@ -644,15 +644,30 @@ PIN.
 1. Run [`supabase/schema.sql`](supabase/schema.sql): creates `weddings`,
    `wedding_roles`, `join_attempts`, removes the plaintext `pin` column and
    replaces the permissive policies with claim-scoped RLS.
-2. Deploy the functions:
-   `supabase functions deploy join_room` and
-   `supabase functions deploy publish_room`.
-3. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
+2. Apply [`supabase/migrations/202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql):
+   adds `app_admins`, the audit log, per-device `role_sessions` /
+   `role_presence`, and enforces revoked sessions in RLS.
+3. Deploy the functions: `supabase functions deploy join_room`,
+   `supabase functions deploy publish_room` and
+   `supabase functions deploy admin_api`.
+4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
    `DECK_PUBLISH_SECRET`, and optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
-4. Publish a room with `publish_room` (admin only, `x-publish-secret`). It
-   returns the 6-digit PINs and share links **once**; only hashes are stored.
-5. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
+5. Insert the owner account into `app_admins` (no self-signup):
+   `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`
+6. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
    key. Never ship the service-role key.
+
+**Owner admin (`/deck/admin`)**
+- Supabase Auth email/password + verified TOTP MFA. The account must exist in
+  `app_admins`; sign-up is disabled.
+- Create/publish, duplicate, archive and delete weddings; rotate per-role
+  6-digit PINs (shown once, hashed server-side); print QR cards that contain the
+  role deep link but never the PIN.
+- Live presence and per-session revoke; revoked sessions stop working
+  immediately through `current_session_active()` in RLS.
+- 30-minute idle / 8-hour absolute session plus TOTP re-auth for destructive
+  actions; every mutation is written to `admin_audit_log`.
+- `/deck/` never lists weddings; devices join with a room code or QR link.
 
 Local/demo mode still runs entirely offline (localStorage + cross-tab events).
 If a local-mode build is pointed at the hardened schema, cloud sync is denied

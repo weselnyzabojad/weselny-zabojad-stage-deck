@@ -80,6 +80,30 @@ export function useLiveStageState({
   );
   const roomKey = client ? syncRoomKey(syncConfig.roomPrefix, roomId) : '';
 
+  // Presence heartbeat for the owner admin panel (issue #76). Production role
+  // tokens carry the session jti; revoked sessions stop updating immediately.
+  useEffect(() => {
+    if (!client || !accessToken || typeof document === 'undefined') return undefined;
+    let disposed = false;
+    const beat = () => {
+      if (disposed) return;
+      client.touchPresence(liveState.active_step_id ?? null).catch(() => {
+        // A revoked/expired session must not interrupt the live stage.
+      });
+    };
+    beat();
+    const interval = setInterval(beat, 60_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') beat();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      disposed = true;
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [client, accessToken, liveState.active_step_id]);
+
   const [syncStatus, setSyncStatus] = useState(() => {
     if (!syncConfig.enabled) return 'disabled';
     return typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'connecting';
