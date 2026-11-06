@@ -27,11 +27,10 @@ import {
   resolveSpeechMode,
   resolveSpeeches,
 } from './lib/speeches';
-import { clearSpeakerScript, loadSpeakerScript } from './lib/speakerCache';
+import { loadSpeakerScript } from './lib/speakerCache';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
-import { getSyncConfig, syncRoomKey } from './lib/sync/syncConfig';
-import { clearOutbox as clearSyncOutbox } from './lib/sync/outbox';
+import { getSyncConfig } from './lib/sync/syncConfig';
 import { clearReloadState, loadReloadState } from './lib/reloadState';
 import { resolvePwaReloadBlock } from './lib/pwaUpdate';
 import { setPwaReloadContext } from './lib/pwaUpdateState';
@@ -43,10 +42,9 @@ import {
   saveRoleSession,
 } from './lib/sync/roleSession';
 import { activeSteps } from './lib/liveStageState';
-import { deriveLastKnownStep, saveLastKnownStep, clearLastKnownStep } from './lib/lastKnownStep';
-import { loadActiveCartridge, saveActiveCartridge, clearActiveCartridge } from './lib/cartridgeStorage';
+import { deriveLastKnownStep, saveLastKnownStep } from './lib/lastKnownStep';
+import { loadActiveCartridge, saveActiveCartridge } from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
-import { clearStoredHostKey } from './lib/sensitiveNotes';
 import { useI18n } from './i18n/useI18n';
 
 const STORED_CARTRIDGE = loadActiveCartridge();
@@ -421,24 +419,6 @@ export default function App() {
     }, 80);
   };
 
-  const handleWipeEvent = async () => {
-    if (IS_PRODUCTION && roleSession?.role === 'mc') {
-      const client = createSupabaseSyncClient(SYNC_CONFIG, {
-        accessToken: roleSession.token,
-      });
-      await client.wipeRoom();
-    }
-    clearActiveCartridge();
-    clearLastKnownStep(WEDDING.weddingId);
-    const roomId = IS_PRODUCTION ? roleSession?.weddingId ?? WEDDING.weddingId : WEDDING.weddingId;
-    clearSyncOutbox(syncRoomKey(SYNC_CONFIG.roomPrefix, roomId));
-    pairing.unpair();
-    clearRoleSession();
-    clearStoredHostKey();
-    clearSpeakerScript(WEDDING.weddingId);
-    window.location.reload();
-  };
-
   const roleProps = {
     role: currentRole,
     roles: roleIds,
@@ -570,8 +550,6 @@ export default function App() {
     nextEntry,
     cakeProtocol,
     musicPolicy,
-    sensitiveNotes,
-    handleWipeEvent,
     speechMode,
     speeches,
     selectSpeech,

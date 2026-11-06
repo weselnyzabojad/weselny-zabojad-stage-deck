@@ -791,8 +791,6 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
 - The MC loads and decrypts the bundle at runtime; the VIP Radar and Contacts
   directory then use the decrypted data. If the bundle exists but this device
   has no host key, the view shows a locked state.
-- Recovery/handoff: the **Event data** card (MC only) can copy the host key to
-  another host device, import a key, export the cartridge, and wipe the event.
 
 **Role-scoped RLS.**
 - `live_sync_state`: reads for any joined role in its room; inserts/updates only
@@ -810,9 +808,7 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
 - `stage_deck_purge_expired()` deletes expired rooms (state, wedding, roles,
   notes), orphaned room state and old `join_attempts`. Schedule it daily with
   pg_cron (commented example in `schema.sql`).
-- `stage_deck_wipe_my_room()` lets the MC token wipe its own room immediately;
-  the **Event data** card calls it and then clears the local cartridge, pairing,
-  role session and host key.
+- `stage_deck_wipe_my_room()` lets the MC token wipe its own room immediately.
 - The service-role `stage_deck_wipe_room(wedding_id)` remains for admin use.
 
 After pulling this change, re-run [`supabase/schema.sql`](supabase/schema.sql)
@@ -820,7 +816,7 @@ and redeploy `publish_room` (it now redacts sensitive fields and sets
 `expires_at`).
 
 Relevant files: `src/lib/sensitiveNotes.js`,
-`src/hooks/useSensitiveNotes.js`, `src/components/EventAdminCard.jsx`,
+`src/hooks/useSensitiveNotes.js`,
 `src/App.jsx`, `src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
 `supabase/functions/publish_room/index.ts`.
 
