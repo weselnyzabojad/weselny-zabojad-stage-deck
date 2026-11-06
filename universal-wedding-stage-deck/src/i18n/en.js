@@ -177,6 +177,21 @@ const en = {
   'pwa.blockedOverlay': 'Close the open panel before reloading the deck.',
   'pwa.blockedSpeech': 'A speech is live. Reload after the speech ends.',
   'pwa.blockedStep': 'A step is live. Reload after the event or in a safe gap.',
+  'mc.rail.rail': 'Stage rail',
+  'mc.rail.done': 'Completed steps',
+  'mc.rail.upcoming': 'Upcoming steps',
+  'mc.rail.now': 'Current step',
+  'mc.rail.status.done': 'DONE',
+  'mc.rail.status.active': 'ON AIR',
+  'mc.rail.status.next': 'NEXT',
+  'mc.rail.status.planned': 'PLANNED',
+  'mc.rail.completed': 'Completed',
+  'mc.rail.noSteps': 'No steps in this cartridge.',
+  'mc.rail.noDone': 'No steps completed yet.',
+  'mc.rail.noUpcoming': 'No further steps — event complete.',
+  'mc.rail.noCurrent': 'No active step.',
+  'mc.rail.expand': 'Expand {title}',
+  'mc.rail.collapse': 'Collapse {title}',
 };
 
 export default en;

@@ -1,9 +1,19 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
-import { buildStageRail, stageRailSummary } from '../src/lib/stageRail.js';
+import { afterEach, describe, expect, it } from 'vitest';
+import {
+  buildStageRail,
+  nextFocusIndex,
+  stageRailSummary,
+  toggleRailOpen,
+} from '../src/lib/stageRail.js';
+import { setLocale } from '../src/i18n/index.js';
 import StageRail from '../src/components/StageRail.jsx';
 import StageStepCard from '../src/components/StageStepCard.jsx';
+
+afterEach(() => {
+  setLocale('en', { persist: false });
+});
 
 function entry(index, overrides = {}) {
   return {
@@ -155,6 +165,87 @@ describe('stage rail rendering', () => {
       }),
     );
     expect(html).toContain('Hero cue content');
+  });
+});
+
+describe('rail accordion behaviour (#120)', () => {
+  it('keeps one open card per rail and toggles closed', () => {
+    let state = toggleRailOpen({}, 'done', 'a');
+    expect(state.done).toBe('a');
+    state = toggleRailOpen(state, 'done', 'b');
+    expect(state.done).toBe('b');
+    state = toggleRailOpen(state, 'done', 'b');
+    expect(state.done).toBeNull();
+  });
+
+  it('keeps the done and upcoming zones independent', () => {
+    let state = toggleRailOpen({}, 'done', 'a');
+    state = toggleRailOpen(state, 'upcoming', 'z');
+    expect(state.done).toBe('a');
+    expect(state.upcoming).toBe('z');
+  });
+});
+
+describe('rail keyboard roving (#120)', () => {
+  it('wraps ArrowDown/ArrowUp and handles Home/End', () => {
+    expect(nextFocusIndex('ArrowDown', 2, 3)).toBe(0);
+    expect(nextFocusIndex('ArrowUp', 0, 3)).toBe(2);
+    expect(nextFocusIndex('Home', 2, 3)).toBe(0);
+    expect(nextFocusIndex('End', 0, 3)).toBe(2);
+  });
+
+  it('ignores non-navigation keys and invalid indexes', () => {
+    expect(nextFocusIndex('Tab', 0, 3)).toBe(-1);
+    expect(nextFocusIndex('ArrowDown', -1, 3)).toBe(-1);
+    expect(nextFocusIndex('ArrowDown', 0, 0)).toBe(-1);
+  });
+});
+
+describe('rail accessibility and i18n (#120)', () => {
+  it('renders disclosure buttons for side rails only', () => {
+    const rail = buildStageRail(timeline(3, 1), 1);
+    const html = renderToStaticMarkup(
+      createElement(StageRail, {
+        done: rail.done,
+        current: rail.current,
+        upcoming: rail.upcoming,
+      }),
+    );
+    expect(html.match(/aria-expanded/g)?.length).toBe(2);
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain('aria-controls');
+    expect(html).toContain('data-rail-card');
+    expect(html).toContain('motion-reduce:transition-none');
+  });
+
+  it('localises the rail in French', () => {
+    setLocale('fr', { persist: false });
+    const rail = buildStageRail(timeline(2, 0), 0);
+    const html = renderToStaticMarkup(
+      createElement(StageRail, {
+        done: rail.done,
+        current: rail.current,
+        upcoming: rail.upcoming,
+      }),
+    );
+    expect(html).toContain('Étapes terminées');
+    expect(html).toContain('Étape en cours');
+    expect(html).toContain('EN DIRECT');
+  });
+
+  it('localises the rail in Polish', () => {
+    setLocale('pl', { persist: false });
+    const rail = buildStageRail(timeline(2, 0), 0);
+    const html = renderToStaticMarkup(
+      createElement(StageRail, {
+        done: rail.done,
+        current: rail.current,
+        upcoming: rail.upcoming,
+      }),
+    );
+    expect(html).toContain('Ukończone kroki');
+    expect(html).toContain('Bieżący krok');
+    expect(html).toContain('NA ANTENIE');
   });
 });
 
