@@ -34,6 +34,7 @@ import {
   ROLE_IDS,
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
+import AdminToast from './AdminToast';
 import {
   AdminConfirmDialog,
   AdminDuplicateDialog,
@@ -492,7 +493,8 @@ export default function AdminApp() {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
   const [roleFilter, setRoleFilter] = useState('');
-  const [copyNotice, setCopyNotice] = useState('');
+  const [toasts, setToasts] = useState([]);
+  const toastIdRef = useRef(0);
   const [pinResult, setPinResult] = useState(null);
   const [pinWedding, setPinWedding] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -557,6 +559,18 @@ export default function AdminApp() {
   useEffect(() => {
     clockRef.current = clock;
   }, [clock]);
+
+  const pushToast = (message, tone = 'info') => {
+    const id = ++toastIdRef.current;
+    setToasts((current) => [...current, { id, message, tone }]);
+    if (tone !== 'error') {
+      setTimeout(() => setToasts((current) => current.filter((toast) => toast.id !== id)), 4000);
+    }
+  };
+
+  const dismissToast = (id) => {
+    setToasts((current) => current.filter((toast) => toast.id !== id));
+  };
 
   const staySignedIn = () => {
     setClock((current) => touchAdminSession(current));
@@ -646,7 +660,7 @@ export default function AdminApp() {
     try {
       await action();
     } catch (err) {
-      setError(err.message ?? 'Admin action failed.');
+      pushToast(err.message ?? 'Admin action failed.', 'error');
     }
   };
 
@@ -671,6 +685,7 @@ export default function AdminApp() {
       setPinWedding(wedding);
       setPinResult(result);
       await load();
+      pushToast('PINs rotated. Old PINs are now invalid.', 'success');
     });
   };
 
@@ -695,6 +710,7 @@ export default function AdminApp() {
       setPinWedding({ ...wedding, wedding_id: result.weddingId, room_code: result.roomCode });
       setPinResult(result);
       await load();
+      pushToast('Wedding duplicated.', 'success');
     } catch (err) {
       setDialogError(err.message ?? 'Could not duplicate the wedding.');
     } finally {
@@ -714,6 +730,7 @@ export default function AdminApp() {
         askMfa(async () => {
           await archiveWedding(wedding.wedding_id);
           await load();
+          pushToast('Wedding archived.', 'success');
         });
       },
     });
@@ -732,6 +749,7 @@ export default function AdminApp() {
         askMfa(async () => {
           await deleteWedding(wedding.wedding_id);
           await load();
+          pushToast('Wedding deleted.', 'success');
         });
       },
     });
@@ -749,6 +767,7 @@ export default function AdminApp() {
         askMfa(async () => {
           await revokeSession(entry.jti);
           await load();
+          pushToast('Device session revoked.', 'success');
         });
       },
     });
@@ -784,10 +803,9 @@ export default function AdminApp() {
   const copyRoomCode = async (roomCode) => {
     try {
       await navigator.clipboard.writeText(roomCode);
-      setCopyNotice(`Room code ${roomCode} copied.`);
-      setTimeout(() => setCopyNotice(''), 3000);
+      pushToast(`Room code ${roomCode} copied.`, 'success');
     } catch {
-      setCopyNotice('Could not copy the room code.');
+      pushToast('Could not copy the room code.', 'error');
     }
   };
 
@@ -976,11 +994,6 @@ export default function AdminApp() {
                   ))}
                 </select>
               </label>
-              {copyNotice ? (
-                <span role="status" className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] text-slate-300">
-                  {copyNotice}
-                </span>
-              ) : null}
             </div>
 
             {showCreate ? (
@@ -1197,6 +1210,8 @@ export default function AdminApp() {
           </section>
         ) : null}
       </main>
+
+      <AdminToast toasts={toasts} onDismiss={dismissToast} />
 
       <AdminConfirmDialog
         open={Boolean(confirmDialog)}
