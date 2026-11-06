@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
 import ReelClock from './ReelClock';
+import RoleShell from './RoleShell';
 import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -138,7 +140,131 @@ export default function PhotographerView({
   const goldenSeconds = secondsUntil(countdowns.goldenHourAt, now);
   const latestStartSeconds = secondsUntil(countdowns.latestMiniStartAt, now);
 
-  return (
+  const [isCompact, setIsCompact] = useState(
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 639px)').matches
+      : false,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)');
+    setIsCompact(mq.matches);
+    const listener = () => setIsCompact(mq.matches);
+    mq.addEventListener('change', listener);
+    return () => mq.removeEventListener('change', listener);
+  }, []);
+
+  // Compact (phone) read-only content: light windows, Oczepini cue, contacts.
+  const compactContent = (
+    <div id="main-content" tabIndex={-1} className="space-y-4">
+      <SkipLink />
+      <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
+      <ReelClock clock={clock} compact />
+
+      {visibility.sunset && sunset?.usable ? (
+        <Card title="Light windows" icon="🌅">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="rounded-lg border border-line bg-page p-2.5">
+              <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? '—'}</div>
+            </div>
+            <div className="rounded-lg border border-line bg-page p-2.5">
+              <div className="text-[9px] uppercase tracking-wider text-slate-500">Golden hour</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? '—'}</div>
+            </div>
+            <div className="rounded-lg border border-line bg-page p-2.5">
+              <div className="text-[9px] uppercase tracking-wider text-slate-500">Civil twilight</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
+            </div>
+            <div className="rounded-lg border border-line bg-page p-2.5">
+              <div className="text-[9px] uppercase tracking-wider text-slate-500">Mini latest start</div>
+              <div className="font-mono text-xl font-bold text-ink">
+                {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
+              </div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? '—'}</div>
+            </div>
+          </div>
+        </Card>
+      ) : null}
+
+      {oczepiny ? (
+        <Card
+          title="Oczepini cue"
+          icon="💃"
+          aside={
+            anchorSeconds != null ? (
+              <span className="font-mono text-[10px] text-brand-soft">{formatCountdown(anchorSeconds)}</span>
+            ) : null
+          }
+        >
+          {oczepiny.winnerPhotoWarning ? (
+            <p role="alert" className="mb-2 rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-2 py-1.5 text-[11px] text-alert-tint">
+              ⚠ Media team leaves before the Oczepini anchor — they would miss the winner photo.
+            </p>
+          ) : null}
+          <div className="grid gap-1.5 text-[11px]">
+            <Row label="Anchor" value={oczepiny.anchor ? `${oczepiny.anchor.label} · ${oczepiny.anchor.time ?? '—'}` : 'No anchor'} />
+            <Row
+              label="Briefed"
+              value={oczepiny.photographerBriefed?.confirmed ? 'Confirmed' : 'Not confirmed'}
+              tone={oczepiny.photographerBriefed?.confirmed ? 'text-emerald-300' : 'text-amber-200'}
+            />
+          </div>
+          {oczepiny.winnerPhoto.enabled && oczepiny.winnerPhoto.photographerCue ? (
+            <p className="mt-2 text-xs text-slate-300">📷 {oczepiny.winnerPhoto.photographerCue}</p>
+          ) : null}
+        </Card>
+      ) : null}
+
+      {mediaTeam.length > 0 ? (
+        <Card title="Media team" icon="🎥">
+          <div className="space-y-2">
+            {mediaTeam.map((member) => {
+              const meta = MEDIA_ROLE_META[member.role] ?? MEDIA_ROLE_META.PHOTO;
+              return (
+                <div key={member.id} className="flex items-center justify-between gap-2 rounded-lg border border-line bg-page p-2.5">
+                  <div className="min-w-0">
+                    <div className="font-mono text-[9px] uppercase tracking-widest text-brand-soft">{meta.icon} {meta.label}</div>
+                    <div className="truncate font-heading text-sm font-semibold text-ink">{member.name}</div>
+                  </div>
+                  {member.phoneHref ? (
+                    <a href={member.phoneHref} className="shrink-0 rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
+                      📞 Call
+                    </a>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      ) : null}
+
+      {showVenue && venue ? (
+        <Card title="Venue access" icon="📍">
+          <div className="space-y-1.5 text-[11px]">
+            {visibility.venueAddress && venue.address ? <Row label="Address" value={venue.address} /> : null}
+            {visibility.venueManager && venue.manager?.name ? <Row label="Manager" value={venue.manager.name} /> : null}
+            {visibility.venueParking && venue.installation?.parking ? <Row label="Parking" value={venue.installation.parking} /> : null}
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {visibility.venueMaps && venue.mapsUrl ? (
+              <a href={venue.mapsUrl} target="_blank" rel="noreferrer noopener" className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
+                Open in Maps
+              </a>
+            ) : null}
+            {visibility.venueManager && venue.manager?.phoneHref ? (
+              <a href={venue.manager.phoneHref} className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
+                📞 Call venue
+              </a>
+            ) : null}
+          </div>
+        </Card>
+      ) : null}
+    </div>
+  );
+
+  const wideContent = (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
       <SkipLink />
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
@@ -700,5 +826,26 @@ export default function PhotographerView({
         Read-only photographer view · shot plans, light windows and Oczepini cues
       </footer>
     </div>
+  );
+
+  if (!isCompact) {
+    return wideContent;
+  }
+
+  return (
+    <RoleShell
+      compact
+      role={role}
+      roles={roles}
+      syncStatus={syncStatus}
+      syncError={syncError}
+      remoteUpdatedAt={remoteUpdatedAt}
+      outbox={outbox}
+      onToggleTheme={onToggleTheme}
+      theme={theme}
+      onRoleChange={onRoleChange}
+    >
+      {compactContent}
+    </RoleShell>
   );
 }
