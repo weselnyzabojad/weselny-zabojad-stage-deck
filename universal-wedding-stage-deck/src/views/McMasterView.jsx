@@ -33,8 +33,8 @@ import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
-import PhoneQRCode from '../components/PhoneQRCode';
 import LanguageToggle from '../components/LanguageToggle';
+import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
 import VipAlertsModal from '../components/VipAlertsModal';
@@ -56,6 +56,7 @@ export default function McMasterView({ model }) {
   roleIds,
   currentRole,
   handleRoleChange,
+  roomCode,
   theme,
   toggleTheme,
   syncStatus,
@@ -409,7 +410,7 @@ export default function McMasterView({ model }) {
           ) : null}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          <PhoneQRCode />
+          <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
         </div>
       </header>
 

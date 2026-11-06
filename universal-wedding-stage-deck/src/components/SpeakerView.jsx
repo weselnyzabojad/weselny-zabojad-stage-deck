@@ -7,6 +7,7 @@ import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import {
@@ -51,6 +52,7 @@ export default function SpeakerView({
   onToggleTheme,
   onExit,
   canExit = false,
+  roomCode = null,
 }) {
   const { t } = useI18n();
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
@@ -312,6 +314,7 @@ export default function SpeakerView({
 
         <div className="flex flex-wrap items-center gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+          <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
           {canExit ? (
             <button
               type="button"

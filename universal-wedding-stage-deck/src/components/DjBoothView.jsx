@@ -9,6 +9,7 @@ import DjSongRequestQueue from './DjSongRequestQueue';
 import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
+import OpenOnPhoneButton from './OpenOnPhoneButton';
 import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import RoleSwitcher from './RoleSwitcher';
@@ -64,6 +65,7 @@ export default function DjBoothView({
   onToggleTheme,
   songRequestAccessToken = null,
   songRequestRoomCode = null,
+  roomCode = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -236,6 +238,7 @@ export default function DjBoothView({
         <div className="flex flex-wrap items-center gap-2">
           <DriftPill drift={drift} size="sm" />
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+          <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}
