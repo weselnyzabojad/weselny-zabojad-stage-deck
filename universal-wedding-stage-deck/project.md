@@ -90,6 +90,36 @@ Design and implementation plan: [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rai
 - **SR-04 / [#121](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/121)**
   Responsive rail, themes and final polish.
 
+### MC top bar and Stage Rail refinements (decision, 2026-11-06)
+
+Planned refinements to the MC Master experience. These are documented decisions
+only; no implementation has been scheduled yet and no tracking issues were
+created at this time. Item 5 supersedes the "up to 3 visible cards per rail"
+guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
+
+1. **Cultural chips keep only icon, label and status.** The top-bar **Sto Lat**,
+   **Gorzko** and **Oczepiny** chips no longer show descriptive note text. Remove
+   the notes "Inform guests: NO Sto Lat tonight", "No gorzko" and "Scheduled for
+   the midnight block"; everything else on those chips stays.
+2. **Live clock in the top bar.** Remove the "REEL CLOCK" label and its small
+   clock icon from the ReelClock card. The live clock (the current time of day,
+   `clock.nowClock`) moves into the top bar, in place of the current fixed
+   real-start chip. The header groups get consistent spacing between all
+   elements (the current top-bar layout is too cramped).
+3. **Every UI element is FR/PL/EN switchable.** All pages and views (MC, DJ,
+   Photographer, Speaker, join screen, admin and the Stage Rail) must be fully
+   localisable. Only cartridge content is exempt (it keeps its authored
+   language).
+4. **No Import button in the header.** Remove the Import button from the MC top
+   bar.
+5. **Rail shows only the immediate neighbours.** The Stage Rail displays at
+   most three cards: the previous step on the left, the current step in the
+   centre and the next step on the right. Older completed steps and later
+   upcoming steps are not shown.
+6. **QR to open on a phone.** When the view is a laptop/desktop width, display
+   a QR code that opens the same view on a phone (scan to open the deck URL on
+   the device).
+
 ---
 
 ## 3. Architecture
