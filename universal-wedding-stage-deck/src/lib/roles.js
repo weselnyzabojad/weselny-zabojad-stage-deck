@@ -77,6 +77,11 @@ export function availableRoleIds(hostingMode) {
   return ROLE_ORDER;
 }
 
+// Only MC Master may switch views; companion roles are locked to their own view.
+export function roleOptionsFor(role, roles = ROLE_ORDER) {
+  return role === 'mc' ? roles : [];
+}
+
 function getStorage(storage) {
   if (storage) return storage;
   if (typeof window === 'undefined') return null;
