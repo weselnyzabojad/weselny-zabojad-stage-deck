@@ -90,15 +90,12 @@ rejected; put app-specific data under `extensions`.
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
 | `vipRadarCount` | no | Should equal `tact_and_vip_alerts.length`. |
 | `tact_and_vip_alerts` | no | Sensitive family / care notes. |
-| `jokersCount` | no | Should equal `jokerGames.length` when both exist. |
-| `jokerGames` | no | Joker Drawer games / crates. |
 | `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
 | `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped on import. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
 | `contacts` | no | Vendor and family contacts. |
 | `preWeddingTodos` | no | Pre-flight checklist. |
-| `weatherVariants` | no | `DEFAULT`, `RAIN`, `HEATWAVE`. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
@@ -114,7 +111,6 @@ rejected; put app-specific data under `extensions`.
   "title": "Buffets Open & Dance Floor",
   "type": "BUFFER",
   "location": "Main Hall",
-  "deferable": true,
   "buffer": { "minDurationMin": 10, "maxDurationMin": 60, "danceBlock": true },
   "dj": { "playlist": "Dance Floor Block", "track": "September — Earth, Wind & Fire" }
 }
@@ -132,8 +128,6 @@ Notes:
 - `realStart` is only a demo/test seed; live actual starts are logged on transitions.
 - `durationMin` should sit between `buffer.minDurationMin` and
   `buffer.maxDurationMin` when a buffer range is present.
-- `deferable: true` makes the step eligible for **Defer to Joker Drawer**.
-- `weatherOption` can scope a step to `DEFAULT`, `RAIN` or `HEATWAVE`.
 
 ### DJ cue
 
@@ -277,8 +271,6 @@ object is stored in `localStorage` and in the Supabase
   "checked_subtasks": { "Speeches": false },
   "stage_ping": null,
   "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
-  "deferred_step_ids": [],
-  "manual_offset_minutes": 0,
   "active_speech_id": "speech_witness",
   "mutation_log": []
 }
@@ -287,14 +279,11 @@ object is stored in `localStorage` and in the Supabase
 Missing fields are filled with safe defaults by `normalizeLiveState`:
 
 - `step_order` -> cartridge order
-- `deferred_step_ids` -> `[]`
-- `manual_offset_minutes` -> `0`
 - `stage_ping` -> `null`
 - `active_speech_id` -> `null` (the MC selects the live speech)
 - `mutation_log` -> `[]` (append-only audit entries)
 
 `stage_ping.type` is one of `drop_track`, `fade_music`, `hold_2m`, `ready`.
-`manual_offset_minutes` is capped at 720 (12 hours).
 
 ## Actual timestamp migration
 
@@ -324,6 +313,6 @@ display rules and edge cases.
 The product roadmap sketched v1.1 with snake_case examples (`wedding_id`,
 `sync_pin`, `hard_anchors`, `live_sync_state`). This implementation adopts the
 app's canonical camelCase names and formalizes the controls added in Sprint 3
-(`step_order`, `deferred_step_ids`, `manual_offset_minutes`, `stage_ping`).
+(`step_order`, `stage_ping`).
 The AI importer will translate raw documents and legacy snake_case keys into
 this schema.

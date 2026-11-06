@@ -43,7 +43,7 @@ Valid edge cases:
 - `valid-minimal.json` — only required top-level fields.
 - `valid-midnight.json` — steps after midnight, a `00:00` hard anchor and ISO
   actual timestamps.
-- `valid-buffers.json` — buffer bounds, `deferable`, and a hard-anchor step.
+- `valid-buffers.json` — buffer bounds and a hard-anchor step.
 - `valid-speeches.json` — `speechMode`, unique speech order, complex/light
   scripts.
 - `valid-music.json` — important songs, must/do-not-play, request window,

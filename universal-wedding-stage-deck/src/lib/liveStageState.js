@@ -6,10 +6,9 @@
 
 import { normalizeStagePing } from './stagePings.js';
 import { migrateActualTimestamps } from './eventTime.js';
-import { isProtectedStep, swapBlockReason } from './stepGuards.js';
+import { swapBlockReason } from './stepGuards.js';
 
 const STORAGE_VERSION = 1;
-const MAX_MANUAL_OFFSET_MINUTES = 12 * 60;
 
 export function storageKey(weddingId) {
   return `wzsd:v${STORAGE_VERSION}:${weddingId}:live_sync_state`;
@@ -60,27 +59,9 @@ export function orderedSteps(steps = [], state = {}) {
     .filter(Boolean);
 }
 
-// Deferred blocks stay in `step_order` so they can be restored later, but they
-// are removed from the active on-stage sequence.
+// Blocks in the active on-stage sequence, in persisted order.
 export function activeSteps(steps = [], state = {}) {
-  const deferred = new Set(state?.deferred_step_ids ?? []);
-  return orderedSteps(steps, state).filter((step) => !deferred.has(step.id));
-}
-
-export function findDeferTarget(steps = [], state = {}) {
-  const ordered = activeSteps(steps, state);
-  const completed = new Set(state?.completed_step_ids ?? []);
-  const activeIndex = ordered.findIndex((step) => step.id === state?.active_step_id);
-  const candidates = activeIndex >= 0 ? ordered.slice(activeIndex + 1) : ordered;
-  return (
-    candidates.find(
-      (step) =>
-        step?.deferable === true &&
-        !completed.has(step.id) &&
-        // Never silently defer a hard anchor or a photographer-cue step (P0.7).
-        !isProtectedStep(step),
-    ) ?? null
-  );
+  return orderedSteps(steps, state);
 }
 
 // Union two append-only logs by entry id so adopting remote state never drops
@@ -129,10 +110,6 @@ export function undoSnapshot(
     actual_timestamps: { ...(snapshot.actual_timestamps ?? {}) },
     checked_subtasks: { ...(snapshot.checked_subtasks ?? {}) },
     step_order: [...(snapshot.step_order ?? current.step_order ?? [])],
-    deferred_step_ids: [...(snapshot.deferred_step_ids ?? [])],
-    manual_offset_minutes: Number.isFinite(snapshot.manual_offset_minutes)
-      ? snapshot.manual_offset_minutes
-      : 0,
     active_speech_id: snapshot.active_speech_id ?? null,
   };
 
@@ -147,8 +124,6 @@ export function createLiveState(steps, overrides = {}) {
     checked_subtasks: {},
     stage_ping: null,
     step_order: steps.map((step) => step.id),
-    deferred_step_ids: [],
-    manual_offset_minutes: 0,
     active_speech_id: null,
     mutation_log: [],
     ...overrides,
@@ -164,17 +139,12 @@ export function normalizeLiveState(raw, steps, context = {}) {
   const rawCompleted = Array.isArray(raw.completed_step_ids) ? raw.completed_step_ids : [];
   const completed = order.filter((id) => rawCompleted.includes(id));
 
-  const rawDeferred = Array.isArray(raw.deferred_step_ids) ? raw.deferred_step_ids : [];
-  const deferred = order.filter(
-    (id) => rawDeferred.includes(id) && !completed.includes(id),
-  );
-
   let active = order.includes(raw.active_step_id) ? raw.active_step_id : null;
-  if (active && (completed.includes(active) || deferred.includes(active))) active = null;
+  if (active && completed.includes(active)) active = null;
 
   const eventFinished = raw.active_step_id === null && completed.length === order.length;
   if (!active && !eventFinished) {
-    active = order.find((id) => !completed.includes(id) && !deferred.includes(id)) ?? null;
+    active = order.find((id) => !completed.includes(id)) ?? null;
   }
 
   const actual = migrateActualTimestamps(raw.actual_timestamps, {
@@ -188,11 +158,6 @@ export function normalizeLiveState(raw, steps, context = {}) {
       if (typeof value === 'boolean') checked[task] = value;
     }
   }
-
-  const rawOffset = raw.manual_offset_minutes;
-  const manualOffset = Number.isFinite(rawOffset)
-    ? Math.max(0, Math.min(MAX_MANUAL_OFFSET_MINUTES, Math.round(rawOffset)))
-    : 0;
 
   const activeSpeech =
     typeof raw.active_speech_id === 'string' && raw.active_speech_id.trim()
@@ -223,8 +188,6 @@ export function normalizeLiveState(raw, steps, context = {}) {
     checked_subtasks: checked,
     stage_ping: normalizeStagePing(raw.stage_ping),
     step_order: order,
-    deferred_step_ids: deferred,
-    manual_offset_minutes: manualOffset,
     active_speech_id: activeSpeech,
     mutation_log: mutationLog,
   };
@@ -275,7 +238,6 @@ export function undoStep(state) {
     active_step_id: restoredId,
     completed_step_ids: completed,
     actual_timestamps: actual,
-    deferred_step_ids: (state.deferred_step_ids ?? []).filter((id) => id !== restoredId),
   };
 }
 
@@ -290,29 +252,6 @@ export function toggleSubtask(state, task, actor = {}) {
     },
   };
   return appendMutation(next, actor, 'toggle_subtask', { task, checked });
-}
-
-export function addManualOffset(state, minutes, actor = {}) {
-  const delta = Number(minutes);
-  if (!Number.isFinite(delta) || delta === 0) return state;
-
-  const current = Number.isFinite(state.manual_offset_minutes)
-    ? state.manual_offset_minutes
-    : 0;
-  const nextValue = Math.max(
-    0,
-    Math.min(MAX_MANUAL_OFFSET_MINUTES, Math.round(current + delta)),
-  );
-
-  if (nextValue === current) return state;
-  const next = { ...state, manual_offset_minutes: nextValue };
-  return appendMutation(next, actor, 'offset', { from: current, to: nextValue, delta });
-}
-
-export function clearManualOffset(state, actor = {}) {
-  if (!state.manual_offset_minutes) return state;
-  const next = { ...state, manual_offset_minutes: 0 };
-  return appendMutation(next, actor, 'clear_offset', { from: state.manual_offset_minutes });
 }
 
 // MC-only selection of the live speech; synced so the speaker device receives
@@ -365,68 +304,6 @@ export function swapStepWithNext(state, steps, now = new Date(), actor = {}) {
     { stepId: current.id, nextStepId: next.id },
     now,
   );
-}
-
-export function deferStepToJoker(state, steps, now = new Date(), actor = {}) {
-  const target = findDeferTarget(steps, state);
-  if (!target) return state;
-
-  const ordered = activeSteps(steps, state);
-  const targetIndex = ordered.findIndex((step) => step.id === target.id);
-  const wasActive = state.active_step_id === target.id;
-
-  const actual = { ...state.actual_timestamps };
-  delete actual[target.id];
-
-  let active = state.active_step_id;
-  if (wasActive) {
-    const next = ordered.slice(targetIndex + 1).find((step) => !state.completed_step_ids.includes(step.id)) ?? null;
-    active = next?.id ?? null;
-    if (next && !actual[next.id]) actual[next.id] = now.toISOString();
-  }
-
-  const deferred = state.deferred_step_ids ?? [];
-  const nextState = {
-    ...state,
-    active_step_id: active,
-    deferred_step_ids: deferred.includes(target.id) ? deferred : [...deferred, target.id],
-    actual_timestamps: actual,
-  };
-  return appendMutation(
-    nextState,
-    actor,
-    'defer',
-    { stepId: target.id, wasActive },
-    now,
-  );
-}
-
-export function restoreDeferredStep(state, stepId, steps = [], actor = {}) {
-  const deferred = state.deferred_step_ids ?? [];
-  if (!deferred.includes(stepId)) return state;
-
-  const nextDeferred = deferred.filter((id) => id !== stepId);
-  let stepOrder = state.step_order;
-
-  // Re-insert the restored block immediately after the active block so it is
-  // launchable now, rather than appearing before the current step.
-  if (steps.length > 0) {
-    const without = normalizeStepOrder(state.step_order, steps).filter((id) => id !== stepId);
-    const activeIndex = without.indexOf(state.active_step_id);
-    stepOrder = [...without];
-    stepOrder.splice(activeIndex >= 0 ? activeIndex + 1 : without.length, 0, stepId);
-  }
-
-  const nextActive =
-    state.active_step_id ?? (state.completed_step_ids.includes(stepId) ? null : stepId);
-
-  const nextState = {
-    ...state,
-    active_step_id: nextActive,
-    step_order: stepOrder,
-    deferred_step_ids: nextDeferred,
-  };
-  return appendMutation(nextState, actor, 'restore', { stepId });
 }
 
 export function loadLiveState(key, steps, context = {}) {

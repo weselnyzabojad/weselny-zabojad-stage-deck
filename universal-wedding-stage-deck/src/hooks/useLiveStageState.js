@@ -1,13 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  addManualOffset as addManualOffsetState,
-  clearManualOffset as clearManualOffsetState,
-  deferStepToJoker,
   loadLiveState,
   markStepDone,
   mergeMutationLogs,
   normalizeLiveState,
-  restoreDeferredStep as restoreDeferredStepState,
   saveLiveState,
   setActiveSpeech as setActiveSpeechState,
   storageKey,
@@ -382,8 +378,8 @@ export function useLiveStageState({
     });
   }, [apply, steps, actor]);
 
-  // Generic undo: covers completion, swap, defer, restore, offset, subtask and
-  // speech selection. Each snapshot is the exact previous state.
+  // Generic undo: covers completion, swap, subtask and speech selection. Each
+  // snapshot is the exact previous state.
   const undoLastStep = useCallback(() => {
     setModel((current) => {
       if (current.undo.length === 0) return current;
@@ -415,46 +411,12 @@ export function useLiveStageState({
     }));
   }, []);
 
-  const addManualOffset = useCallback(
-    (minutes = 15) => {
-      apply((state) => addManualOffsetState(state, minutes, actor), {
-        op: 'offset',
-        label: 'Manual offset',
-      });
-    },
-    [apply, actor],
-  );
-
-  const clearManualOffset = useCallback(() => {
-    apply((state) => clearManualOffsetState(state, actor), {
-      op: 'clear_offset',
-      label: 'Offset cleared',
-    });
-  }, [apply, actor]);
-
   const swapWithNext = useCallback(() => {
     apply((state) => swapStepWithNext(state, steps, new Date(), actor), {
       op: 'swap',
       label: 'Swapped steps',
     });
   }, [apply, steps, actor]);
-
-  const deferToJokerDrawer = useCallback(() => {
-    apply((state) => deferStepToJoker(state, steps, new Date(), actor), {
-      op: 'defer',
-      label: 'Deferred to Joker Drawer',
-    });
-  }, [apply, steps, actor]);
-
-  const restoreDeferredStep = useCallback(
-    (stepId) => {
-      apply((state) => restoreDeferredStepState(state, stepId, steps, actor), {
-        op: 'restore',
-        label: 'Restored block',
-      });
-    },
-    [apply, steps, actor],
-  );
 
   const selectSpeech = useCallback(
     (speechId) => {
@@ -476,11 +438,7 @@ export function useLiveStageState({
     lastUndo,
     toggleSubtask,
     sendStagePing,
-    addManualOffset,
-    clearManualOffset,
     swapWithNext,
-    deferToJokerDrawer,
-    restoreDeferredStep,
     selectSpeech,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',

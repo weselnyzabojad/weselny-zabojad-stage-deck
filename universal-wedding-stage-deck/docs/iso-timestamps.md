@@ -79,7 +79,6 @@ Every transition writes ISO, never a clock string:
 
 - `markStepDone` → actual start of the next step,
 - `swapStepWithNext` → swapped-in step start,
-- `deferStepToJoker` / restore,
 - live-state seeds using `now.toISOString()`.
 
 Undo deletes the affected timestamp, so the next start is recorded cleanly.

@@ -53,7 +53,7 @@ Canonical order and mapping:
 
 | # | Marker | Required | Maps to |
 | --- | --- | --- | --- |
-| 1 | `## EVENT` | yes | `weddingId`, `couple`, `date`, `dateISO`, `syncPin`, `servicePackage`, `venue`, `weatherVariants` |
+| 1 | `## EVENT` | yes | `weddingId`, `couple`, `date`, `dateISO`, `syncPin`, `servicePackage`, `venue` |
 | 2 | `## COUPLE IDENTITY` | yes | `couple`, `coupleProfile` |
 | 3 | `## LANGUAGES` | yes | `languages` |
 | 4 | `## CULTURAL RULES` | yes | `culturalRules` |
@@ -76,11 +76,10 @@ Canonical order and mapping:
 | 21 | `## VENDOR CONTACTS` | no | `contacts` |
 | 22 | `## KITCHEN` | no | `kitchen` |
 | 23 | `## VIP ALERTS` | no | `vipAlerts` (encrypted) |
-| 24 | `## JOKER GAMES` | no | `jokerGames` |
-| 25 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
-| 26 | `## PRIVACY` | no | `privacy` |
-| 27 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
-| 28 | `## EXTENSIONS` | no | `extensions` |
+| 24 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
+| 25 | `## PRIVACY` | no | `privacy` |
+| 26 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
+| 27 | `## EXTENSIONS` | no | `extensions` |
 
 The machine-readable source of truth is `SECTION_MANIFEST` in
 `src/lib/googleDocTemplate.js`. The template validator fails if a marker is
@@ -282,10 +281,10 @@ Direct table/key mapping to `cake`, `games`, `contacts[]` and `kitchen.*`.
 `GAMES` writes only `YES`, `NO` or `UNDECIDED`; never infer consent from a
 mention elsewhere (see `docs/optional-games.md`).
 
-### VIP ALERTS / JOKER GAMES / PRE-WEDDING TODOS / PRIVACY
+### VIP ALERTS / PRE-WEDDING TODOS / PRIVACY
 
-Direct mapping to `vipAlerts[]`, `jokerGames[]`, `preWeddingTodos[]` and
-`privacy.*`. Every row needs a stable ID.
+Direct mapping to `vipAlerts[]`, `preWeddingTodos[]` and `privacy.*`. Every row
+needs a stable ID.
 
 ### LIVE SYNC STATE / EXTENSIONS
 

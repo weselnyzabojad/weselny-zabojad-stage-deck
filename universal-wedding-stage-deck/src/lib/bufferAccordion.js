@@ -7,7 +7,7 @@
 // When the show is late the engine recommends shaving those buffers down;
 // when it is ahead it recommends extending them so the kitchen / next fixed
 // anchor is not hit early. If the flex is exhausted while ahead, it prompts for
-// a Joker Game. Applying the recommended durations is left to issue #13.
+// Applying the recommended durations is left to issue #13.
 
 import { addMinutesToClock } from './liveStageState.js';
 
@@ -72,11 +72,7 @@ function buildItem(entry, flex, action, adjustedDurationMin, deltaMinutes) {
   };
 }
 
-export function buildBufferAccordion(
-  entries = [],
-  driftMinutes = null,
-  { jokerAvailable = true } = {},
-) {
+export function buildBufferAccordion(entries = [], driftMinutes = null) {
   const candidates = entries
     .filter((entry) => !entry.isDone && entry.step?.type === 'BUFFER')
     .map((entry) => ({ entry, flex: getBufferFlex(entry.step) }))
@@ -101,8 +97,6 @@ export function buildBufferAccordion(
     hasChanges: false,
     recoveredMinutes: 0,
     remainingMinutes: 0,
-    suggestJoker: false,
-    jokerAvailable,
     totalShortenAvailableMinutes,
     totalExtendAvailableMinutes,
   };
@@ -181,26 +175,14 @@ export function buildBufferAccordion(
   }
 
   const recoveredMinutes = lead - remaining;
-  const suggestJoker = remaining > 0 && jokerAvailable;
   const names = formatNames(items);
-  const status =
-    recoveredMinutes > 0
-      ? suggestJoker
-        ? 'extend-and-joker'
-        : 'extend'
-      : suggestJoker
-        ? 'joker'
-        : 'blocked';
+  const status = recoveredMinutes > 0 ? 'extend' : 'blocked';
   const message =
     recoveredMinutes > 0 && remaining === 0
       ? `Extend ${names} by ${recoveredMinutes}m to absorb the ${lead}m lead.`
       : recoveredMinutes > 0
-        ? jokerAvailable
-          ? `Extend ${names} by ${recoveredMinutes}m; still ${remaining}m ahead — pull a Joker Game from the drawer.`
-          : `Extend ${names} by ${recoveredMinutes}m; still ${remaining}m ahead and no Joker is available.`
-        : jokerAvailable
-          ? `Running ${lead}m ahead — pull a Joker Game from the drawer.`
-          : `Running ${lead}m ahead — no flexible buffer or Joker is available.`;
+        ? `Extend ${names} by ${recoveredMinutes}m; still ${remaining}m ahead — protect the next fixed anchor.`
+        : `Running ${lead}m ahead — no flexible buffer is available.`;
 
   return {
     ...base,
@@ -212,6 +194,5 @@ export function buildBufferAccordion(
     hasChanges: items.length > 0,
     recoveredMinutes,
     remainingMinutes: remaining,
-    suggestJoker,
   };
 }

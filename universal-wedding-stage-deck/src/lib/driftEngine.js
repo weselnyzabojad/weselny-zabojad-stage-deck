@@ -79,7 +79,7 @@ function projectionSource(step, actualStart) {
 export function buildTimeline(
   steps = [],
   liveState = {},
-  { durationOverrides = null, manualOffsetMinutes = 0, eventContext = {} } = {},
+  { durationOverrides = null, eventContext = {} } = {},
 ) {
   const { eventDateISO = null, timeZone = 'UTC' } = eventContext;
   const completed = new Set(liveState?.completed_step_ids ?? []);
@@ -179,53 +179,15 @@ export function buildTimeline(
     };
   });
 
-  const offset = Number.isFinite(manualOffsetMinutes)
-    ? Math.max(0, Math.min(12 * 60, Math.round(manualOffsetMinutes)))
-    : 0;
-  const activeIndex = steps.findIndex((step) => step.id === liveState?.active_step_id);
-  if (offset <= 0 || activeIndex < 0) return entries;
-
-  // Apply the manual kitchen/vendor offset after the base projection: the
-  // active block keeps its real start but ends later, future blocks shift by
-  // the same amount, and HARD_ANCHORs stay pinned.
-  return entries.map((entry, index) => {
-    if (index < activeIndex || entry.isHardAnchor) return entry;
-
-    const isActive = index === activeIndex;
-    const startShift = isActive ? 0 : offset;
-    const projectedStart =
-      entry.projectedStart && startShift
-        ? addMinutesToClock(entry.projectedStart, startShift)
-        : entry.projectedStart;
-    const projectedEnd = entry.projectedEnd
-      ? addMinutesToClock(entry.projectedEnd, offset)
-      : entry.projectedEnd;
-    const projectedDriftMinutes = projectedStart
-      ? clockDeltaMinutes(entry.plannedStart, projectedStart)
-      : null;
-    const driftMinutes = entry.actualDriftMinutes ?? projectedDriftMinutes ?? null;
-
-    return {
-      ...entry,
-      projectedStart,
-      projectedEnd,
-      projectedDriftMinutes,
-      driftMinutes,
-      driftLabel: driftLabel(driftMinutes),
-      driftTone: driftTone(driftMinutes),
-      manualOffsetMinutes: offset,
-    };
-  });
+  return entries;
 }
 
 export function buildDriftReport(
   steps = [],
   liveState = {},
   {
-    jokerAvailable = true,
     hardAnchors = [],
     compressionSlackMinutes = 10,
-    manualOffsetMinutes = 0,
     now = new Date(),
     eventDateISO = null,
     timeZone = 'UTC',
@@ -234,7 +196,7 @@ export function buildDriftReport(
   } = {},
 ) {
   const eventContext = { eventDateISO, timeZone };
-  const entries = buildTimeline(steps, liveState, { manualOffsetMinutes, eventContext });
+  const entries = buildTimeline(steps, liveState, { eventContext });
   const activeIndex = entries.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? entries[activeIndex] : null;
   const nextEntry = activeIndex >= 0 ? entries[activeIndex + 1] ?? null : null;
@@ -246,39 +208,25 @@ export function buildDriftReport(
   const currentEntry = activeEntry ?? lastCompletedEntry;
 
   // P0.5: one canonical drift value for the header, buffer advice, radar,
-  // Pocket and DJ. `startDrift` is the newest actual-vs-planned sample;
-  // `projectedDrift` is the projected start vs plan; the explicit manual offset
-  // shifts the rest of the segment. The live overrun is a separate live-clock
-  // metric and never replaces the schedule drift.
+  // Pocket and DJ. `startDrift` is the newest actual-vs-planned sample; the
+  // projected start is reported separately. The live overrun is a separate
+  // live-clock metric and never replaces the schedule drift.
   const startDriftMinutes = currentEntry?.actualDriftMinutes ?? null;
   const projectedDriftMinutes = currentEntry?.projectedDriftMinutes ?? null;
-  const canonicalDriftMinutes =
-    startDriftMinutes == null && !manualOffsetMinutes
-      ? null
-      : (startDriftMinutes ?? projectedDriftMinutes ?? 0) + manualOffsetMinutes;
+  const canonicalDriftMinutes = startDriftMinutes;
   const canonicalDriftLabel = driftLabel(canonicalDriftMinutes);
   const canonicalDriftTone = driftTone(canonicalDriftMinutes);
-  const canonicalDriftSource =
-    startDriftMinutes != null
-      ? 'actual'
-      : projectedDriftMinutes != null
-        ? 'projected'
-        : manualOffsetMinutes
-          ? 'manualOffset'
-          : 'none';
+  const canonicalDriftSource = startDriftMinutes != null ? 'actual' : 'none';
 
   const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
     currentEntry,
     compressionSlackMinutes,
   });
 
-  const bufferAccordion = buildBufferAccordion(entries, canonicalDriftMinutes, {
-    jokerAvailable,
-  });
+  const bufferAccordion = buildBufferAccordion(entries, canonicalDriftMinutes);
   const accordionEntries = bufferAccordion.hasChanges
     ? buildTimeline(steps, liveState, {
         durationOverrides: bufferAccordion.durationByStepId,
-        manualOffsetMinutes,
         eventContext,
       })
     : entries;
@@ -315,7 +263,6 @@ export function buildDriftReport(
     projectedDriftMinutes,
     liveOverrunMinutes,
     liveRemainingMinutes,
-    manualOffsetMinutes,
     canonicalDriftMinutes,
     canonicalDriftLabel,
     canonicalDriftTone,
@@ -327,7 +274,6 @@ export function buildDriftReport(
       projectedDriftMinutes != null
         ? t('drift.projected', { label: driftLabel(projectedDriftMinutes) })
         : null,
-      manualOffsetMinutes ? `manual +${manualOffsetMinutes}m` : null,
       clock.active
         ? liveOverrunMinutes > 0
           ? t('drift.liveOver', { minutes: Math.round(liveOverrunMinutes) })
@@ -360,7 +306,6 @@ export function buildDriftReport(
     canonicalDriftTone,
     canonicalDriftSource,
     drift,
-    manualOffsetMinutes,
     clock,
     liveOverrunMinutes,
     liveRemainingMinutes: liveRemainingMinutes,
@@ -384,7 +329,6 @@ export function buildDriftReport(
         : null,
     bufferAccordion: {
       ...bufferAccordion,
-      manualOffsetMinutes,
       baselineProjectedFinish: projectedFinish,
       accordionProjectedFinish,
       accordionFinishDeltaMinutes:

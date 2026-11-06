@@ -50,18 +50,6 @@ describe('semantic validation rules', () => {
     expect(messages(errors)).toContain('active step cannot also be completed');
   });
 
-  it('rejects a step that is both deferred and completed', () => {
-    const errors = errorsFor((cartridge) => {
-      cartridge.liveSyncState = {
-        active_step_id: 'step_02',
-        completed_step_ids: ['step_01'],
-        deferred_step_ids: ['step_01'],
-        step_order: ['step_01', 'step_02'],
-      };
-    });
-    expect(messages(errors)).toContain('deferred step cannot be completed');
-  });
-
   it('rejects an inverted buffer range and out-of-range duration', () => {
     const errors = errorsFor((cartridge) => {
       cartridge.steps[0].durationMin = 70;
@@ -154,14 +142,11 @@ describe('semantic validation rules', () => {
     expect(messages(errors)).toContain('CUSTOMER_FILE requires a fileRef');
   });
 
-  it('checks joker and VIP counts against their lists', () => {
+  it('checks VIP counts against their lists', () => {
     const errors = errorsFor((cartridge) => {
-      cartridge.jokersCount = 2;
-      cartridge.jokerGames = [{ id: 'one', category: 'GAME', title: 'One', content: 'x' }];
       cartridge.vipRadarCount = 2;
       cartridge.tact_and_vip_alerts = [];
     });
-    expect(messages(errors)).toContain('jokersCount 2 does not match jokerGames.length 1');
     expect(messages(errors)).toContain('vipRadarCount 2 does not match tact_and_vip_alerts.length 0');
   });
 

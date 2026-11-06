@@ -4,9 +4,23 @@
   "weddingId": "2026-08-20_jennifer_guillaume",
   "couple": "Jennifer & Guillaume",
   "coupleProfile": {
-    "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
-    "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
-    "commonLanguages": ["FR", "PL", "EN"]
+    "bride": {
+      "firstName": "Jennifer",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "groom": {
+      "firstName": "Guillaume",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "commonLanguages": [
+      "FR",
+      "PL",
+      "EN"
+    ]
   },
   "date": "20.08.2026",
   "syncPin": "2008",
@@ -46,28 +60,17 @@
       "detail": "Keep walkways clear and warn before loud moments."
     }
   ],
-  "jokersCount": 2,
-  "jokerGames": [
-    {
-      "id": "joker_musical_chairs",
-      "category": "GAME",
-      "title": "Musical Chairs",
-      "content": "Classic musical chairs with a short 3-minute round."
-    },
-    {
-      "id": "joker_music_crate",
-      "category": "MUSIC_CRATE",
-      "title": "Polish Disco Crate",
-      "content": "Five safe dance-floor tracks to pull if the floor needs a lift."
-    }
-  ],
   "coHosts": [
     {
       "id": "zuzia",
       "name": "Zuzia",
       "role": "Co-MC",
       "phone": "+48 600 111 222",
-      "responsibilities": ["Bread & Salt", "Games pool", "Second microphone"],
+      "responsibilities": [
+        "Bread & Salt",
+        "Games pool",
+        "Second microphone"
+      ],
       "notes": "Shares the stage with the MC during the entrance and games."
     },
     {
@@ -75,7 +78,10 @@
       "name": "Val",
       "role": "Co-host",
       "phone": "+33 6 11 22 33 44",
-      "responsibilities": ["Guest wrangling", "Vendor coordination"]
+      "responsibilities": [
+        "Guest wrangling",
+        "Vendor coordination"
+      ]
     }
   ],
   "contentCreators": [
@@ -87,7 +93,11 @@
       "phone": "+48 600 333 444",
       "arrivalTime": "16:00",
       "departureTime": "22:00",
-      "deliverables": ["Behind-the-scenes reel", "Stories", "Couple interviews"],
+      "deliverables": [
+        "Behind-the-scenes reel",
+        "Stories",
+        "Couple interviews"
+      ],
       "boundaries": [
         "Do not block the official photographer or videographer",
         "No flash during the ceremony",
@@ -121,9 +131,16 @@
   ],
   "venueLogistics": {
     "address": "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
-    "coordinates": { "latitude": 51.05, "longitude": 16.19 },
+    "coordinates": {
+      "latitude": 51.05,
+      "longitude": 16.19
+    },
     "timezone": "Europe/Warsaw",
-    "manager": { "name": "Anna Kowalska", "phone": "+48 600 111 111", "email": "anna@venue.example" },
+    "manager": {
+      "name": "Anna Kowalska",
+      "phone": "+48 600 111 111",
+      "email": "anna@venue.example"
+    },
     "installation": {
       "windowStart": "12:00",
       "windowEnd": "16:00",
@@ -143,7 +160,12 @@
       "phone": "+48 600 000 000",
       "startTime": "14:00",
       "endTime": "21:30",
-      "deliverables": ["Ceremony", "Group photos", "First dance", "Oczepiny"],
+      "deliverables": [
+        "Ceremony",
+        "Group photos",
+        "First dance",
+        "Oczepiny"
+      ],
       "notes": "Leaves after the winner photo."
     },
     {
@@ -153,7 +175,9 @@
       "phone": "+48 600 333 333",
       "startTime": "14:30",
       "endTime": "00:30",
-      "deliverables": ["Highlight film"],
+      "deliverables": [
+        "Highlight film"
+      ],
       "notes": "Needs a clean feed from the DJ booth."
     }
   ],
@@ -180,9 +204,18 @@
     "groupPhotos": {
       "location": "OUTDOOR",
       "groups": [
-        { "id": "bride_family", "label": "Bride's family" },
-        { "id": "groom_family", "label": "Groom's family" },
-        { "id": "friends", "label": "Friends" }
+        {
+          "id": "bride_family",
+          "label": "Bride's family"
+        },
+        {
+          "id": "groom_family",
+          "label": "Groom's family"
+        },
+        {
+          "id": "friends",
+          "label": "Friends"
+        }
       ],
       "minGroupSize": 5,
       "durationMin": 25
@@ -226,13 +259,44 @@
       "confirmedBy": "MC",
       "notes": "Cameraman confirmed the midnight window."
     },
-    "props": ["Veil", "Bow ties", "Test cards"],
-    "music": { "track": "Oczepiny mix", "playlist": "Midnight" },
+    "props": [
+      "Veil",
+      "Bow ties",
+      "Test cards"
+    ],
+    "music": {
+      "track": "Oczepiny mix",
+      "playlist": "Midnight"
+    },
     "subEvents": [
-      { "id": "toss", "title": "Veil toss", "durationMin": 10, "deferable": false, "skippable": true },
-      { "id": "ties", "title": "Bow-tie game", "durationMin": 10, "deferable": true, "skippable": true },
-      { "id": "test", "title": "Test Zgodności", "durationMin": 15, "deferable": true, "skippable": true },
-      { "id": "winner_photo", "title": "Winner photo", "durationMin": 5, "deferable": false, "skippable": false }
+      {
+        "id": "toss",
+        "title": "Veil toss",
+        "durationMin": 10,
+        "deferable": false,
+        "skippable": true
+      },
+      {
+        "id": "ties",
+        "title": "Bow-tie game",
+        "durationMin": 10,
+        "deferable": true,
+        "skippable": true
+      },
+      {
+        "id": "test",
+        "title": "Test Zgodności",
+        "durationMin": 15,
+        "deferable": true,
+        "skippable": true
+      },
+      {
+        "id": "winner_photo",
+        "title": "Winner photo",
+        "durationMin": 5,
+        "deferable": false,
+        "skippable": false
+      }
     ]
   },
   "steps": [
@@ -319,7 +383,6 @@
       "title": "Buffets Open & Dance Floor",
       "type": "BUFFER",
       "location": "Main Hall",
-      "deferable": true,
       "buffer": {
         "minDurationMin": 10,
         "maxDurationMin": 60,
@@ -375,13 +438,24 @@
     "pl": 50,
     "fr": 40,
     "other": 10,
-    "languages": ["PL", "FR", "EN"],
+    "languages": [
+      "PL",
+      "FR",
+      "EN"
+    ],
     "notes": "10–15 kids; most guests understand English."
   },
   "privacy": {
-    "sensitiveFields": ["vipAlerts", "contacts[].phone"],
+    "sensitiveFields": [
+      "vipAlerts",
+      "contacts[].phone"
+    ],
     "cloudSync": "ENCRYPTED_HOST_KEY",
-    "encryption": { "alg": "AES-GCM", "keyHolder": "HOST", "version": 1 }
+    "encryption": {
+      "alg": "AES-GCM",
+      "keyHolder": "HOST",
+      "version": 1
+    }
   },
   "contacts": [
     {
@@ -412,7 +486,6 @@
       "done": false
     }
   ],
-  "weatherVariants": ["DEFAULT", "RAIN", "HEATWAVE"],
   "musicPolicy": {
     "mustPlay": [
       {
@@ -550,7 +623,10 @@
         "confirmedAt": "2026-08-19T18:00:00.000Z"
       },
       "mcIntro": true,
-      "visibleToRoles": ["mc", "speaker"]
+      "visibleToRoles": [
+        "mc",
+        "speaker"
+      ]
     },
     {
       "id": "speech_father",
@@ -579,13 +655,19 @@
         "confirmedAt": "2026-08-19T18:00:00.000Z"
       },
       "mcIntro": true,
-      "visibleToRoles": ["mc", "speaker"]
+      "visibleToRoles": [
+        "mc",
+        "speaker"
+      ]
     }
   ],
   "liveSyncState": {
     "active_step_id": "step_03",
     "active_speech_id": "speech_witness",
-    "completed_step_ids": ["step_01", "step_02"],
+    "completed_step_ids": [
+      "step_01",
+      "step_02"
+    ],
     "actual_timestamps": {
       "step_01": "2026-08-20T16:31:00+02:00",
       "step_02": "2026-08-20T17:00:00+02:00",
@@ -597,9 +679,13 @@
       "Speeches between starter and main course": false
     },
     "stage_ping": null,
-    "step_order": ["step_01", "step_02", "step_03", "step_04", "step_05"],
-    "deferred_step_ids": [],
-    "manual_offset_minutes": 0,
+    "step_order": [
+      "step_01",
+      "step_02",
+      "step_03",
+      "step_04",
+      "step_05"
+    ],
     "mutation_log": []
   }
 }

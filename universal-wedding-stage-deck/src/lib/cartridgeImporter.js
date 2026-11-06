@@ -27,7 +27,35 @@ export function parseCartridgeJson(text) {
   }
 }
 
-export async function validateCartridge(cartridge) {
+const DEPRECATED_TOP_LEVEL_FIELDS = ['jokersCount', 'jokerGames', 'weatherVariants'];
+const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', 'propsAndFx'];
+
+// Issue #75: delete, do not migrate. Old v1.1 cartridges may still contain the
+// retired fields; strip them before validation so the importer accepts the
+// cartridge and saves a clean object without those keys.
+export function sanitizeCartridge(cartridge) {
+  if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
+    return cartridge;
+  }
+
+  const clean = JSON.parse(JSON.stringify(cartridge));
+  for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
+
+  for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
+    if (!step || typeof step !== 'object') continue;
+    for (const field of DEPRECATED_STEP_FIELDS) delete step[field];
+  }
+
+  if (clean.liveSyncState && typeof clean.liveSyncState === 'object') {
+    delete clean.liveSyncState.deferred_step_ids;
+    delete clean.liveSyncState.manual_offset_minutes;
+  }
+
+  return clean;
+}
+
+export async function validateCartridge(input) {
+  const cartridge = sanitizeCartridge(input);
   const errors = [];
 
   try {
@@ -48,7 +76,7 @@ export async function validateCartridge(cartridge) {
   }
 
   errors.push(...collectSemanticErrors(cartridge));
-  return { valid: errors.length === 0, errors };
+  return { valid: errors.length === 0, errors, cartridge };
 }
 
 export function summarizeCartridge(cartridge) {
@@ -61,7 +89,6 @@ export function summarizeCartridge(cartridge) {
   const preWedding = Array.isArray(cartridge?.preWeddingTodos)
     ? cartridge.preWeddingTodos
     : [];
-  const jokers = Array.isArray(cartridge?.jokerGames) ? cartridge.jokerGames : [];
   const keySongs = Array.isArray(cartridge?.musicPolicy?.importantSongs)
     ? cartridge.musicPolicy.importantSongs
     : [];
@@ -81,7 +108,6 @@ export function summarizeCartridge(cartridge) {
     hardAnchorCount: anchors.length,
     vipAlertCount: vipAlerts.length,
     preWeddingCount: preWedding.length,
-    jokerCount: jokers.length,
     keySongCount: keySongs.length,
     hasCake: Boolean(cake),
     cakeTime: cake?.time ?? null,

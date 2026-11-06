@@ -21,10 +21,6 @@ export function isAnchorStep(step) {
   );
 }
 
-export function isProtectedStep(step) {
-  return isAnchorStep(step) || stepHasPhotographerCue(step);
-}
-
 // A hard anchor cannot be swapped in either direction. Photographer cues are a
 // warning (handled by the UI confirm), not a hard block.
 export function swapBlockReason(currentStep, nextStep) {

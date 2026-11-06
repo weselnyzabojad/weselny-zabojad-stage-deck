@@ -43,7 +43,7 @@ import {
   parseDeckIntent,
   saveRoleSession,
 } from './lib/sync/roleSession';
-import { activeSteps, findDeferTarget } from './lib/liveStageState';
+import { activeSteps } from './lib/liveStageState';
 import { deriveLastKnownStep, saveLastKnownStep, clearLastKnownStep } from './lib/lastKnownStep';
 import { loadActiveCartridge, saveActiveCartridge, clearActiveCartridge } from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
@@ -88,11 +88,7 @@ export default function App() {
     lastUndo,
     toggleSubtask,
     sendStagePing,
-    addManualOffset,
-    clearManualOffset,
     swapWithNext,
-    deferToJokerDrawer,
-    restoreDeferredStep,
     selectSpeech,
     savedLocally,
     syncStatus,
@@ -345,18 +341,14 @@ export default function App() {
   const showDjCues = availableRoles.includes("dj");
 
   const steps = activeSteps(WEDDING.steps, liveState);
-  const manualOffset = liveState.manual_offset_minutes ?? 0;
   const vipAlerts =
     sensitiveNotes.payload?.vipAlerts ?? WEDDING.tact_and_vip_alerts ?? [];
-  const jokerCount = WEDDING.jokersCount ?? WEDDING.jokerGames?.length ?? 0;
   const contacts = resolveContacts({
     ...WEDDING,
     contacts: sensitiveNotes.payload?.contacts ?? WEDDING.contacts,
   });
   const driftReport = buildDriftReport(steps, liveState, {
-    jokerAvailable: jokerCount > 0,
     hardAnchors: WEDDING.hardAnchors,
-    manualOffsetMinutes: manualOffset,
     now,
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
@@ -389,26 +381,12 @@ export default function App() {
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
   const stepSubtasks = currentStep?.subTasks ?? [];
-  const deferTarget = findDeferTarget(WEDDING.steps, liveState);
-  const deferredSteps = WEDDING.steps.filter((step) =>
-    liveState.deferred_step_ids?.includes(step.id),
-  );
 
   // P0.7: block hard anchors, warn on photographer cues.
   const swapBlock = swapBlockReason(currentStep, nextEntry?.step ?? null);
   const swapWarn = swapNeedsWarning(currentStep, nextEntry?.step ?? null);
   const notifyUndo = (label) => setUndoToast({ id: Date.now(), label });
 
-  const handleAddOffset = () => {
-    addManualOffset(15);
-    setControlNotice("Kitchen / vendor +15m offset applied.");
-    notifyUndo('Manual offset +15m');
-  };
-  const handleClearOffset = () => {
-    clearManualOffset();
-    setControlNotice("Manual offset cleared.");
-    notifyUndo('Manual offset cleared');
-  };
   const handleSwap = () => {
     if (!currentStep || !nextEntry || swapBlock) return;
     if (
@@ -422,18 +400,6 @@ export default function App() {
     setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
     swapWithNext();
     notifyUndo('Swapped steps');
-  };
-  const handleDefer = () => {
-    if (!deferTarget) return;
-    setControlNotice(`Deferred ${deferTarget.title} to the Joker Drawer.`);
-    deferToJokerDrawer();
-    notifyUndo('Deferred to Joker Drawer');
-  };
-  const handleRestore = (stepId) => {
-    const step = WEDDING.steps.find((candidate) => candidate.id === stepId);
-    restoreDeferredStep(stepId);
-    setControlNotice(`Restored ${step?.title ?? "block"} from the Joker Drawer.`);
-    notifyUndo('Restored block');
   };
   const handleAdvance = () => {
     markCurrentDone();
@@ -616,7 +582,6 @@ export default function App() {
     realStart,
     driftReport,
     vipAlerts,
-    jokerCount,
     setImporterOpen,
     setContactsOpen,
     contacts,
@@ -649,22 +614,15 @@ export default function App() {
     nextEntry,
     cakeProtocol,
     musicPolicy,
-    deferredSteps,
-    handleRestore,
     sensitiveNotes,
     handleWipeEvent,
     speechMode,
     speeches,
     selectSpeech,
     sendStagePing,
-    handleAddOffset,
     isComplete,
-    manualOffset,
-    handleClearOffset,
     handleSwap,
     swapBlock,
-    handleDefer,
-    deferTarget,
     controlNotice,
     savedLocally,
     handleUndo,
