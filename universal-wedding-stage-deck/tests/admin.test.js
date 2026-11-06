@@ -57,7 +57,11 @@ describe('issue #76 owner admin panel', () => {
   it('derives online / idle / offline presence from the last heartbeat', () => {
     const now = Date.parse('2026-11-06T12:00:00Z');
     expect(presenceStatus({ lastSeen: new Date(now - 30_000).toISOString(), now })).toBe('online');
+    expect(presenceStatus({ lastSeen: new Date(now - 2 * 60_000).toISOString(), now })).toBe('online');
+    expect(presenceStatus({ lastSeen: new Date(now - 2 * 60_000 - 1).toISOString(), now })).toBe('idle');
     expect(presenceStatus({ lastSeen: new Date(now - 5 * 60_000).toISOString(), now })).toBe('idle');
+    expect(presenceStatus({ lastSeen: new Date(now - 10 * 60_000).toISOString(), now })).toBe('idle');
+    expect(presenceStatus({ lastSeen: new Date(now - 10 * 60_000 - 1).toISOString(), now })).toBe('offline');
     expect(presenceStatus({ lastSeen: new Date(now - 30 * 60_000).toISOString(), now })).toBe('offline');
     expect(
       presenceStatus({

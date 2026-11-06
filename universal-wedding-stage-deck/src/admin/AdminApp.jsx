@@ -444,8 +444,11 @@ export default function AdminApp() {
   const [mfaAction, setMfaAction] = useState(null);
   const [dialogBusy, setDialogBusy] = useState(false);
   const [dialogError, setDialogError] = useState('');
+  const [nowTick, setNowTick] = useState(() => Date.now());
+  const [lastLoadedAt, setLastLoadedAt] = useState(null);
   const [clock, setClock] = useState(() => createAdminSession());
   const clockRef = useRef(clock);
+  const loadingRef = useRef(false);
 
   const configured = adminConfigured();
 
@@ -523,21 +526,44 @@ export default function AdminApp() {
     };
   }, [session, mfa?.currentLevel]);
 
-  const load = async () => {
-    setLoading(true);
-    setError('');
+  const load = async (silent = false) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    if (!silent) setLoading(true);
+    if (!silent) setError('');
     try {
-      setData(await listAdminData());
+      const next = await listAdminData();
+      setData(next);
+      setLastLoadedAt(Date.now());
     } catch (err) {
       setError(err.message ?? 'Could not load the admin library.');
     } finally {
-      setLoading(false);
+      loadingRef.current = false;
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     if (session && mfa?.currentLevel === 'aal2') load();
   }, [session, mfa?.currentLevel]);
+
+  // Presence is a live view: refresh while visible, pause in a hidden tab and
+  // never overlap an in-flight request.
+  useEffect(() => {
+    if (tab !== 'presence' || !session || mfa?.currentLevel !== 'aal2') return undefined;
+
+    const tick = () => {
+      if (document.visibilityState !== 'visible') return;
+      setNowTick(Date.now());
+      load(true);
+    };
+    const interval = setInterval(tick, 20_000);
+    document.addEventListener('visibilitychange', tick);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', tick);
+    };
+  }, [tab, session, mfa?.currentLevel]);
 
   const closeDialogs = () => {
     setDialogError('');
@@ -877,6 +903,15 @@ export default function AdminApp() {
         ) : null}
 
         {tab === 'presence' ? (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-heading text-sm font-bold text-white">Live presence</h2>
+              <span className="inline-flex items-center gap-1.5 rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-slate-400">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
+                Live · updated{' '}
+                {lastLoadedAt ? `${Math.max(0, Math.round((nowTick - lastLoadedAt) / 1000))}s ago` : '—'}
+              </span>
+            </div>
           <section className="overflow-x-auto rounded-xl border border-line bg-card">
             <table className="min-w-full text-left text-xs">
               <thead className="border-b border-line font-heading text-[9px] uppercase tracking-widest text-slate-400">
@@ -898,6 +933,7 @@ export default function AdminApp() {
                     : presenceStatus({
                         lastSeen: presence?.last_seen ?? entry.issued_at,
                         tokenExpiresAt: entry.expires_at,
+                        now: nowTick,
                       });
                   return (
                     <tr key={entry.jti} className="border-b border-line/60">
@@ -949,6 +985,7 @@ export default function AdminApp() {
               </tbody>
             </table>
           </section>
+          </>
         ) : null}
 
         {tab === 'audit' ? (
