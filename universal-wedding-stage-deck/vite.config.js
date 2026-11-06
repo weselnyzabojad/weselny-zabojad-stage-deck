@@ -25,19 +25,30 @@ export default defineConfig({
       manifest: {
         name: 'Universal Wedding Stage Deck',
         short_name: 'StageDeck',
+        description: 'Offline-first wedding stage deck for the MC, DJ and crew.',
+        lang: 'en',
         theme_color: '#070b19',
         background_color: '#070b19',
         display: 'standalone',
+        orientation: 'landscape',
+        // Relative URLs make the manifest install from whatever directory serves
+        // it: `/` in local/demo mode and `/deck/` in the production deployment.
+        // This keeps a single build valid for both without hard-coding a scope.
+        id: './',
+        scope: './',
+        start_url: './',
         icons: [
           {
-            src: '/pwa-192x192.png',
+            src: 'pwa-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            src: '/pwa-512x512.png',
+            src: 'pwa-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
           }
         ]
       }
