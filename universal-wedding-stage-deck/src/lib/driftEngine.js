@@ -10,6 +10,7 @@
 
 import { addMinutesToClock } from './liveStageState.js';
 import { buildBufferAccordion } from './bufferAccordion.js';
+import { t } from '../i18n/index.js';
 import { clockDeltaMinutes, clockToMinutes } from './clockMath.js';
 import { clockToEventDate, formatClockInZone, isIsoTimestamp } from './eventTime.js';
 import { buildHardAnchorRadar } from './hardAnchorRadar.js';
@@ -51,8 +52,10 @@ export function computeDriftMinutes(step, liveState, context = {}) {
 
 export function driftLabel(drift) {
   if (drift == null) return null;
-  if (drift === 0) return 'ON TIME';
-  return drift > 0 ? `+${drift}m LATE` : `${Math.abs(drift)}m AHEAD`;
+  if (drift === 0) return t('drift.onTime');
+  return drift > 0
+    ? t('drift.late', { minutes: drift })
+    : t('drift.ahead', { minutes: Math.abs(drift) });
 }
 
 export function driftTone(drift) {
@@ -318,12 +321,16 @@ export function buildDriftReport(
     canonicalDriftTone,
     canonicalDriftSource,
     detail: [
-      startDriftMinutes != null ? `start ${driftLabel(startDriftMinutes)}` : null,
-      projectedDriftMinutes != null ? `projected ${driftLabel(projectedDriftMinutes)}` : null,
+      startDriftMinutes != null
+        ? t('drift.start', { label: driftLabel(startDriftMinutes) })
+        : null,
+      projectedDriftMinutes != null
+        ? t('drift.projected', { label: driftLabel(projectedDriftMinutes) })
+        : null,
       manualOffsetMinutes ? `manual +${manualOffsetMinutes}m` : null,
       clock.active
         ? liveOverrunMinutes > 0
-          ? `live +${Math.round(liveOverrunMinutes)}m over`
+          ? t('drift.liveOver', { minutes: Math.round(liveOverrunMinutes) })
           : `live ${Math.abs(Math.round(liveRemainingMinutes ?? 0))}m left`
         : null,
     ]

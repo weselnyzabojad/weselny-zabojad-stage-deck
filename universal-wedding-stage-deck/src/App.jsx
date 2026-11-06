@@ -48,6 +48,7 @@ import { deriveLastKnownStep, saveLastKnownStep, clearLastKnownStep } from './li
 import { loadActiveCartridge, saveActiveCartridge, clearActiveCartridge } from './lib/cartridgeStorage';
 import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
 import { clearStoredHostKey } from './lib/sensitiveNotes';
+import { useI18n } from './i18n/useI18n';
 
 const STORED_CARTRIDGE = loadActiveCartridge();
 const ACTIVE_WEDDING = STORED_CARTRIDGE ?? DEFAULT_WEDDING;
@@ -67,6 +68,9 @@ const DECK_INTENT =
     : { roomCode: null, role: null };
 
 export default function App() {
+  // Subscribing here makes every locale change re-render the tree, including
+  // the schedule labels computed by the pure drift engine (issue #78).
+  const { t } = useI18n();
   const WEDDING = ACTIVE_WEDDING;
   const [roleSession, setRoleSession] = useState(() =>
     IS_PRODUCTION ? loadRoleSession() : null,
@@ -268,11 +272,10 @@ export default function App() {
               {cartridgeError ? '⚠️' : '🎧'}
             </div>
             <h1 className="mt-2 font-heading text-lg font-bold text-white">
-              {cartridgeError ? 'Could not load this wedding' : 'Loading wedding…'}
+              {cartridgeError ? t('app.errorWedding') : t('app.loadingWedding')}
             </h1>
             <p className="mt-2 text-xs leading-relaxed text-slate-400">
-              {cartridgeError ??
-                'Fetching the role-scoped cartridge for this room. No wedding data is cached until it arrives.'}
+              {cartridgeError ?? t('app.loadingWeddingBody')}
             </p>
             {cartridgeError ? (
               <button
@@ -280,7 +283,7 @@ export default function App() {
                 onClick={() => window.location.reload()}
                 className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
               >
-                Retry
+                {t('app.retry')}
               </button>
             ) : null}
           </div>

@@ -5,6 +5,7 @@ import {
   isStagePingFresh,
   stagePingVisibleMs,
 } from '../lib/stagePings';
+import { useI18n } from '../i18n/useI18n';
 
 function formatRemaining(ms) {
   const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
@@ -13,18 +14,13 @@ function formatRemaining(ms) {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-function formatSentTime(value) {
-  const date = new Date(value);
-  if (!Number.isFinite(date.getTime())) return '';
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
 // Full-width flashing banner on the DJ device. It is intentionally loud enough
 // to read from across a noisy room, and auto-clears so it cannot linger.
 //
 // The parent keys this component by `ping.id`, so every new cue remounts it
 // with a fresh countdown and a clean dismissed flag.
 export default function StagePingBanner({ ping, step }) {
+  const { t, formatTime } = useI18n();
   const [dismissed, setDismissed] = useState(false);
   const [now, setNow] = useState(() => Date.now());
 
@@ -64,7 +60,7 @@ export default function StagePingBanner({ ping, step }) {
         </span>
         <div className="min-w-0">
           <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80">
-            Stage ping · MC
+            {t('ping.header')}
           </div>
           <div className="font-heading text-2xl font-black leading-tight tracking-wide">
             {meta.banner}
@@ -74,15 +70,15 @@ export default function StagePingBanner({ ping, step }) {
           ) : null}
           {remaining != null ? (
             <div className="mt-0.5 font-mono text-sm font-bold">
-              {formatRemaining(remaining)} remaining
+              {t('ping.remaining', { time: formatRemaining(remaining) })}
             </div>
           ) : null}
         </div>
       </div>
 
       <div className="text-right font-mono text-xs text-white/80">
-        <div>{formatSentTime(ping.sent_at)}</div>
-        <div className="text-[10px] uppercase tracking-wider">Auto-clears</div>
+        <div>{formatTime(ping.sent_at)}</div>
+        <div className="text-[10px] uppercase tracking-wider">{t('ping.autoClears')}</div>
       </div>
     </section>
   );

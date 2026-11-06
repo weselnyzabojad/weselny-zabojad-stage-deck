@@ -1,7 +1,10 @@
+import { useI18n } from '../i18n/useI18n';
+
 // Full-width collision / compression banner for the MC dashboard. It only
 // renders for real warnings (collision or compression), not for the earlier
 // "approaching" notice shown in the radar card.
 export default function HardAnchorAlertBanner({ radar }) {
+  const { t } = useI18n();
   const warning = radar?.primary;
   if (!warning) return null;
 
@@ -23,12 +26,14 @@ export default function HardAnchorAlertBanner({ radar }) {
         </span>
         <div className="min-w-0">
           <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] opacity-80">
-            {collision ? 'Hard anchor collision' : 'Hard anchor compression'}
+            {collision ? t('anchor.collision') : t('anchor.compression')}
           </div>
           <div className="font-heading text-sm font-bold text-white">
-            {warning.label} at {warning.time}
+            {warning.label} · {warning.time}
             <span className="ml-2 font-mono text-xs font-semibold">
-              {collision ? `${warning.overrunMinutes}m over` : `${warning.slackMinutes}m slack`}
+              {collision
+                ? t('anchor.overBy', { minutes: warning.overrunMinutes })
+                : t('anchor.slack', { minutes: warning.slackMinutes })}
             </span>
           </div>
         </div>
@@ -37,10 +42,13 @@ export default function HardAnchorAlertBanner({ radar }) {
       <div className="min-w-0 text-xs opacity-90">
         {warning.workEntry ? (
           <>
-            {warning.workEntry.step.title} ends {warning.workEntry.projectedEnd}.{' '}
+            {t('anchor.ends', {
+              title: warning.workEntry.step.title,
+              time: warning.workEntry.projectedEnd,
+            })}{' '}
           </>
         ) : null}
-        Swap or defer a block.
+        {t('anchor.swapOrDefer')}
       </div>
     </section>
   );

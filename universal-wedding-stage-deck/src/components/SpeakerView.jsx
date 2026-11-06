@@ -3,6 +3,7 @@ import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
+import LanguageToggle from './LanguageToggle';
 import {
   formatDuration,
   resolveEventDateISO,
@@ -102,6 +103,7 @@ export default function SpeakerView({
               Exit
             </button>
           ) : null}
+          <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>

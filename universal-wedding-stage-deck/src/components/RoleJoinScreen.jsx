@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import logo from '../assets/img/logo.png';
-import { ROLES } from '../lib/roles';
+import { ROLES, roleShort } from '../lib/roles';
 import { joinRoom } from '../lib/sync/joinRoom';
+import { useI18n } from '../i18n/useI18n';
+import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 
 const JOIN_ROLES = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
@@ -10,13 +12,14 @@ const JOIN_ROLES = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
 // `join_room` Edge Function. No couple names or cartridge data are rendered
 // before the server returns a role token.
 export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onToggleTheme }) {
+  const { t } = useI18n();
   const [roomCode, setRoomCode] = useState(intent?.roomCode ?? '');
   const [role, setRole] = useState(
     intent?.role && JOIN_ROLES.includes(intent.role) ? intent.role : 'mc',
   );
   const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
 
   const submit = async (event) => {
     event?.preventDefault();
@@ -24,21 +27,23 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
 
     const cleanRoom = roomCode.trim();
     if (!cleanRoom) {
-      setError('Enter the room code from your share link.');
+      setError({ key: 'join.errors.roomRequired' });
       return;
     }
     if (!/^\d{6}$/.test(pin)) {
-      setError('Enter the 6-digit PIN for this role.');
+      setError({ key: 'join.errors.pinRequired' });
       return;
     }
 
     setBusy(true);
-    setError('');
+    setError(null);
     const result = await joinRoom({ roomCode: cleanRoom, role, pin });
     setBusy(false);
 
     if (!result.ok) {
-      setError(result.error);
+      const key = result.code ? `join.errors.${result.code}` : null;
+      const translated = key ? t(key) : null;
+      setError(translated && translated !== key ? { key } : { text: result.error });
       setPin('');
       return;
     }
@@ -46,11 +51,14 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
     onJoined(result.session);
   };
 
+  const errorText = error?.key ? t(error.key) : error?.text ?? '';
+
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-slate-100 select-none">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
-      <div className="absolute right-4 top-4 z-10">
+      <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+        <LanguageToggle />
         <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
       </div>
 
@@ -64,12 +72,10 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
 
         <div className="text-center">
           <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-            Production stage deck
+            {t('join.production')}
           </span>
-          <h1 className="mt-2 font-heading text-2xl font-bold text-white">Join this room</h1>
-          <p className="mt-1 font-mono text-xs text-slate-400">
-            Per-role access · validated on the server
-          </p>
+          <h1 className="mt-2 font-heading text-2xl font-bold text-white">{t('join.title')}</h1>
+          <p className="mt-1 font-mono text-xs text-slate-400">{t('join.subtitle')}</p>
         </div>
 
         <div className="mt-5">
@@ -77,28 +83,28 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             htmlFor="join-room-code"
             className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400"
           >
-            Room code
+            {t('join.roomCode')}
           </label>
           <input
             id="join-room-code"
             value={roomCode}
             onChange={(event) => {
               setRoomCode(event.target.value.replace(/\s/g, ''));
-              setError('');
+              setError(null);
             }}
             autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
-            placeholder="e.g. 8f3k2q"
+            placeholder={t('join.roomPlaceholder')}
             className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-brand-strong"
           />
         </div>
 
         <div className="mt-4">
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            Your role
+            {t('join.role')}
           </span>
-          <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Device role">
+          <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('join.deviceRole')}>
             {JOIN_ROLES.map((id) => {
               const meta = ROLES[id];
               const active = role === id;
@@ -111,7 +117,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
                   onClick={() => {
                     setRole(id);
                     setPin('');
-                    setError('');
+                    setError(null);
                   }}
                   className={`rounded-lg border px-2 py-2.5 text-center transition ${
                     active
@@ -123,7 +129,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
                     {meta.icon}
                   </span>
                   <span className="mt-1 block font-heading text-[10px] font-bold uppercase tracking-wide">
-                    {meta.short}
+                    {roleShort(id)}
                   </span>
                 </button>
               );
@@ -136,26 +142,26 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             htmlFor="join-role-pin"
             className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400"
           >
-            6-digit {ROLES[role]?.short ?? ''} PIN
+            {t('join.pin', { role: roleShort(role) })}
           </label>
           <input
             id="join-role-pin"
             value={pin}
             onChange={(event) => {
               setPin(event.target.value.replace(/\D/g, '').slice(0, 6));
-              setError('');
+              setError(null);
             }}
             type="password"
             inputMode="numeric"
             autoComplete="one-time-code"
-            placeholder="••••••"
+            placeholder={t('join.pinPlaceholder')}
             aria-invalid={Boolean(error)}
             className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-brand-strong"
           />
         </div>
 
         <div className="mt-2 min-h-[1.25rem] text-center" aria-live="polite">
-          {error ? <span className="text-xs font-mono text-alert-soft">{error}</span> : null}
+          {errorText ? <span className="text-xs font-mono text-alert-soft">{errorText}</span> : null}
         </div>
 
         <button
@@ -163,13 +169,11 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           disabled={busy}
           className="mt-2 w-full rounded-xl border border-brand-strong bg-brand py-3.5 font-heading text-sm font-bold text-white shadow-lg shadow-blue-950/60 transition hover:bg-brand-hover active:bg-brand-active disabled:cursor-wait disabled:opacity-60"
         >
-          {busy ? 'Checking PIN…' : '🔐 Join room'}
+          {busy ? t('join.checking') : t('join.submit')}
         </button>
 
         <p className="mt-4 text-center text-[11px] leading-relaxed text-slate-500">
-          No wedding data is shown until the server verifies the PIN. Ask the MC for a
-          role link and PIN. Switching roles requires signing out and joining with the
-          other role&apos;s PIN.
+          {t('join.footnote')}
         </p>
       </form>
     </div>

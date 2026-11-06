@@ -10,6 +10,7 @@ import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
+import LanguageToggle from './LanguageToggle';
 import {
   djDetailTier,
   getImportantSongs,
@@ -122,6 +123,7 @@ export default function DjBoothView({
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}
+          <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>

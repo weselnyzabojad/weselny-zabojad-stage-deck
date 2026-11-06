@@ -8,6 +8,8 @@
 // Everything here is pure and uses the built-in Intl API, so it works offline
 // and with any IANA timezone.
 
+import { getLocale } from '../i18n/index.js';
+
 export const SERVICE_DAY_ROLLOVER_HOUR = 6;
 
 const DATE_ISO_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -200,7 +202,7 @@ export function formatClockInZone(value, timeZone) {
 
   const date = value instanceof Date ? value : new Date(value);
   if (!Number.isFinite(date.getTime())) return '—';
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(getLocale(), {
     timeZone: isValidTimeZone(timeZone) ? timeZone : 'UTC',
     hourCycle: 'h23',
     hour: '2-digit',
@@ -208,10 +210,10 @@ export function formatClockInZone(value, timeZone) {
   }).format(date);
 }
 
-export function formatTimeOfDay(value, timeZone, { seconds = false } = {}) {
+export function formatTimeOfDay(value, timeZone, { seconds = false, locale = null } = {}) {
   const date = value instanceof Date ? value : new Date(value);
   if (!Number.isFinite(date.getTime())) return '—';
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(locale ?? getLocale(), {
     timeZone: isValidTimeZone(timeZone) ? timeZone : 'UTC',
     hourCycle: 'h23',
     hour: '2-digit',
