@@ -669,6 +669,15 @@ PIN.
   actions; every mutation is written to `admin_audit_log`.
 - `/deck/` never lists weddings; devices join with a room code or QR link.
 
+**Local admin preview (dev only, no backend)**
+- Set `VITE_ADMIN_DEMO=1` in `.env.local` (already set for local development) and
+  run `npm run dev`.
+- Open `http://localhost:5173/deck/admin` to see the admin UI with sample data.
+- The preview never contacts Supabase; mutations are disabled and a banner says
+  so. `import.meta.env.DEV` guards it, so production builds exclude the demo
+  module entirely.
+- Remove `VITE_ADMIN_DEMO` (or set it to `0`) to use the real Supabase login.
+
 Local/demo mode still runs entirely offline (localStorage + cross-tab events).
 If a local-mode build is pointed at the hardened schema, cloud sync is denied
 because there is no role token — use `VITE_DECK_MODE=production` for cloud
