@@ -21,6 +21,7 @@ import {
 import {
   buildQrCards,
   createAdminSession,
+  filterWeddings,
   formatAdminTime,
   getAdminSessionState,
   presenceStatus,
@@ -435,6 +436,10 @@ export default function AdminApp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [tab, setTab] = useState('weddings');
+  const [query, setQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('active');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [copyNotice, setCopyNotice] = useState('');
   const [pinResult, setPinResult] = useState(null);
   const [pinWedding, setPinWedding] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -702,6 +707,26 @@ export default function AdminApp() {
     setPinResult({ weddingId: wedding.wedding_id, roomCode: wedding.room_code, roles: {}, qrOnly: true, cards });
   };
 
+  const filteredWeddings = useMemo(
+    () =>
+      filterWeddings(data?.weddings ?? [], {
+        query,
+        status: statusFilter,
+        role: roleFilter || null,
+      }),
+    [data, query, statusFilter, roleFilter],
+  );
+
+  const copyRoomCode = async (roomCode) => {
+    try {
+      await navigator.clipboard.writeText(roomCode);
+      setCopyNotice(`Room code ${roomCode} copied.`);
+      setTimeout(() => setCopyNotice(''), 3000);
+    } catch {
+      setCopyNotice('Could not copy the room code.');
+    }
+  };
+
   const presenceByJti = useMemo(() => {
     const map = new Map();
     for (const entry of data?.presence ?? []) {
@@ -803,7 +828,7 @@ export default function AdminApp() {
           <>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-heading text-sm font-bold text-white">
-                {data?.weddings?.length ?? 0} weddings
+                {filteredWeddings.length} of {data?.weddings?.length ?? 0} weddings
               </h2>
               <button
                 type="button"
@@ -812,6 +837,48 @@ export default function AdminApp() {
               >
                 {showCreate ? 'Close form' : 'New wedding'}
               </button>
+            </div>
+
+            <div className="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-card p-3">
+              <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                Search
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Couple, wedding id or room code"
+                  className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                />
+              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                Status
+                <select
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                >
+                  <option value="active">Active</option>
+                  <option value="archived">Archived</option>
+                  <option value="all">All</option>
+                </select>
+              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                Role
+                <select
+                  value={roleFilter}
+                  onChange={(event) => setRoleFilter(event.target.value)}
+                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                >
+                  <option value="">All roles</option>
+                  {ROLE_IDS.map((role) => (
+                    <option key={role} value={role}>{roleShort(role)}</option>
+                  ))}
+                </select>
+              </label>
+              {copyNotice ? (
+                <span role="status" className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] text-slate-300">
+                  {copyNotice}
+                </span>
+              ) : null}
             </div>
 
             {showCreate ? (
@@ -827,7 +894,12 @@ export default function AdminApp() {
             ) : null}
 
             <div className="space-y-3">
-              {(data?.weddings ?? []).map((wedding) => (
+              {filteredWeddings.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
+                  No weddings match this filter. Create one or switch to All.
+                </p>
+              ) : null}
+              {filteredWeddings.map((wedding) => (
                 <article
                   key={wedding.wedding_id}
                   className={`rounded-xl border p-4 ${
@@ -844,8 +916,15 @@ export default function AdminApp() {
                           </span>
                         ) : null}
                       </div>
-                      <div className="mt-1 font-mono text-[10px] text-slate-400">
-                        {wedding.wedding_id} · {wedding.date || '—'} · room {wedding.room_code}
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-slate-400">
+                        <span>{wedding.wedding_id} · {wedding.date || '—'} · room {wedding.room_code}</span>
+                        <button
+                          type="button"
+                          onClick={() => copyRoomCode(wedding.room_code)}
+                          className="rounded border border-line px-1.5 py-0.5 text-[9px] font-semibold text-slate-300 hover:bg-line"
+                        >
+                          Copy code
+                        </button>
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {(wedding.roles ?? []).map((role) => (
