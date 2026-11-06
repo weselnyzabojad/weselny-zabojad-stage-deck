@@ -20,11 +20,13 @@ import {
 } from './adminApi';
 import {
   buildQrCards,
+  ADMIN_WARNING_MS,
   createAdminSession,
   filterWeddings,
   formatAdminTime,
   getAdminSessionState,
   presenceStatus,
+  shouldWarnAdminSession,
   touchAdminSession,
   validateRoomCode,
   validateRoles,
@@ -502,6 +504,7 @@ export default function AdminApp() {
   const [dialogError, setDialogError] = useState('');
   const [nowTick, setNowTick] = useState(() => Date.now());
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
+  const [warningDismissed, setWarningDismissed] = useState(false);
   const [clock, setClock] = useState(() => createAdminSession());
   const clockRef = useRef(clock);
   const loadingRef = useRef(false);
@@ -554,6 +557,11 @@ export default function AdminApp() {
   useEffect(() => {
     clockRef.current = clock;
   }, [clock]);
+
+  const staySignedIn = () => {
+    setClock((current) => touchAdminSession(current));
+    setWarningDismissed(true);
+  };
 
   const signOut = async () => {
     try {
@@ -792,6 +800,13 @@ export default function AdminApp() {
   }, [data]);
 
   const sessionState = getAdminSessionState({ session: clock });
+  const showIdleWarning = shouldWarnAdminSession({ session: clock }) && !warningDismissed;
+
+  useEffect(() => {
+    if (getAdminSessionState({ session: clock }).idleRemainingMs > ADMIN_WARNING_MS) {
+      setWarningDismissed(false);
+    }
+  }, [clock]);
 
   if (!configured) {
     return (
@@ -878,6 +893,37 @@ export default function AdminApp() {
 
       <main className="mx-auto max-w-6xl space-y-4 px-4 py-4">
         {authError || error ? <ErrorLine>{authError || error}</ErrorLine> : null}
+
+        {showIdleWarning ? (
+          <div
+            role="alert"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-700 bg-amber-950/70 px-4 py-3 text-xs text-amber-100"
+          >
+            <span>
+              Your admin session expires in{' '}
+              <strong className="font-mono">
+                {Math.max(1, Math.ceil(sessionState.idleRemainingMs / 60000))}m
+              </strong>{' '}
+              due to inactivity.
+            </span>
+            <span className="flex gap-2">
+              <button
+                type="button"
+                onClick={staySignedIn}
+                className="rounded border border-amber-600 bg-amber-900/60 px-3 py-1.5 font-semibold text-amber-100"
+              >
+                Stay signed in
+              </button>
+              <button
+                type="button"
+                onClick={signOut}
+                className="rounded border border-line px-3 py-1.5 text-slate-300"
+              >
+                Sign out now
+              </button>
+            </span>
+          </div>
+        ) : null}
         {loading ? <p className="text-xs text-slate-400">Loading…</p> : null}
 
         {tab === 'weddings' ? (

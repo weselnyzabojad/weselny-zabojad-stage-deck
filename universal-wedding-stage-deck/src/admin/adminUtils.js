@@ -4,6 +4,7 @@
 export const ADMIN_PATH = '/deck/admin';
 export const ADMIN_IDLE_MS = 30 * 60 * 1000;
 export const ADMIN_ABSOLUTE_MS = 8 * 60 * 60 * 1000;
+export const ADMIN_WARNING_MS = 5 * 60 * 1000;
 export const MFA_REAUTH_WINDOW_MS = 5 * 60 * 1000;
 
 export const ROLE_IDS = ['mc', 'dj', 'pocket', 'photo', 'speaker'];
@@ -35,6 +36,11 @@ export function getAdminSessionState({ session, now = Date.now() } = {}) {
     return { expired: true, reason: 'idle', idleRemainingMs: 0, absoluteRemainingMs };
   }
   return { expired: false, reason: null, idleRemainingMs, absoluteRemainingMs };
+}
+
+export function shouldWarnAdminSession({ session, now = Date.now() } = {}) {
+  const state = getAdminSessionState({ session, now });
+  return !state.expired && state.idleRemainingMs <= ADMIN_WARNING_MS;
 }
 
 // Supabase `amr` entries are `{ method, timestamp }` with a Unix-seconds

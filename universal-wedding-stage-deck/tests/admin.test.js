@@ -5,6 +5,7 @@ import { AdminConfirmDialog, AdminMfaDialog } from '../src/admin/AdminDialogs.js
 import {
   ADMIN_ABSOLUTE_MS,
   ADMIN_IDLE_MS,
+  ADMIN_WARNING_MS,
   buildQrCards,
   buildRoleLink,
   createAdminSession,
@@ -12,6 +13,7 @@ import {
   getAdminSessionState,
   hasFreshMfa,
   isAdminPath,
+  shouldWarnAdminSession,
   presenceStatus,
   summarizeWedding,
   touchAdminSession,
@@ -43,6 +45,13 @@ describe('issue #76 owner admin panel', () => {
     expect(
       getAdminSessionState({ session: active, now: started + ADMIN_ABSOLUTE_MS + 1 }),
     ).toMatchObject({ expired: true, reason: 'absolute' });
+
+    expect(
+      shouldWarnAdminSession({ session, now: started + ADMIN_IDLE_MS - ADMIN_WARNING_MS + 1 }),
+    ).toBe(true);
+    expect(
+      shouldWarnAdminSession({ session, now: started + ADMIN_IDLE_MS - ADMIN_WARNING_MS - 1 }),
+    ).toBe(false);
   });
 
   it('requires aal2 and a recent TOTP re-auth for destructive actions', () => {
