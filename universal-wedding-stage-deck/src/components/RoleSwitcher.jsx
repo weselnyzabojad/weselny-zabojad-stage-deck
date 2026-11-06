@@ -36,6 +36,9 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
     setOpen(false);
   };
 
+  // The DJ Booth is read-only and locked to its view (issue #139).
+  if (role === 'dj') return null;
+
   return (
     <div ref={rootRef} className="relative">
       <button
