@@ -10,6 +10,7 @@ import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import {
   clockToEventDate,
@@ -108,6 +109,7 @@ export default function PhotographerView({
   onRoleChange,
   theme = 'night',
   onToggleTheme,
+  roomCode = null,
 }) {
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
@@ -288,6 +290,7 @@ export default function PhotographerView({
 
         <div className="flex flex-wrap items-center gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+          <OpenOnPhoneButton role={role} roomCode={roomCode} />
           {roles.length > 1 ? (
             <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
           ) : null}

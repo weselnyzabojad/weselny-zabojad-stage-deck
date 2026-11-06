@@ -75,6 +75,11 @@ export default function App() {
   const sessionValid = IS_PRODUCTION && isRoleSessionValid(roleSession);
   const pairing = usePairing({ expectedPin: WEDDING.syncPin, weddingId: WEDDING.weddingId });
   const { role, setRole } = useRole();
+  // Local pocket deep links use `?role=...`; apply the intent once on mount so
+  // an Open on phone QR can select the same role on a fresh device.
+  useEffect(() => {
+    if (!IS_PRODUCTION && DECK_INTENT.role) setRole(DECK_INTENT.role);
+  }, [setRole]);
   // The actor role is logged in mutation entries; production uses the token role.
   const actorRole = IS_PRODUCTION ? roleSession?.role ?? 'mc' : role;
   const {
@@ -452,6 +457,7 @@ export default function App() {
           onToggleTheme={toggleTheme}
           songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
           songRequestRoomCode={DECK_INTENT.roomCode}
+          roomCode={DECK_INTENT.roomCode}
           {...roleProps}
         />
       </AppErrorBoundary>
@@ -479,6 +485,7 @@ export default function App() {
           outbox={outbox}
           theme={theme}
           onToggleTheme={toggleTheme}
+          roomCode={DECK_INTENT.roomCode}
           {...roleProps}
         />
       </AppErrorBoundary>
@@ -510,6 +517,7 @@ export default function App() {
           onToggleTheme={toggleTheme}
           canExit={!IS_PRODUCTION}
           onExit={() => handleRoleChange("mc")}
+          roomCode={DECK_INTENT.roomCode}
         />
       </AppErrorBoundary>
     );
@@ -530,6 +538,7 @@ export default function App() {
     roleIds,
     currentRole,
     handleRoleChange,
+    roomCode: DECK_INTENT.roomCode,
     theme,
     toggleTheme,
     syncStatus,
