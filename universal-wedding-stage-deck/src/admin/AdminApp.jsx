@@ -213,8 +213,20 @@ function MfaGate({ mfa, onVerified }) {
 }
 
 function PinResult({ result, wedding, publicDeckUrl, onClose }) {
+  const [revealed, setRevealed] = useState(true);
+  const [copyNotice, setCopyNotice] = useState('');
   if (!result) return null;
   const rows = Object.entries(result.roles ?? {});
+
+  const copy = async (text, label) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyNotice(label);
+      setTimeout(() => setCopyNotice(''), 2500);
+    } catch {
+      setCopyNotice('Could not copy to the clipboard.');
+    }
+  };
   const cards = result.cards ?? buildQrCards({
     baseUrl: publicDeckUrl,
     roomCode: result.roomCode ?? wedding?.room_code,
@@ -242,15 +254,54 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
           </button>
         </div>
 
-        <div className={result.qrOnly ? 'hidden' : 'mt-4 grid gap-2 sm:grid-cols-2'}>
-          {rows.map(([role, pin]) => (
-            <div key={role} className="rounded-lg border border-line bg-page p-3">
-              <div className="font-heading text-[10px] uppercase tracking-widest text-slate-400">
-                {roleLabel(role)}
-              </div>
-              <div className="mt-1 font-mono text-2xl font-bold tracking-[0.3em] text-white">{pin}</div>
+        <div className={result.qrOnly ? 'hidden' : 'mt-4'}>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[10px] text-slate-500">
+              Re-publishing rotates these PINs and invalidates old cards.
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setRevealed((value) => !value)}
+                className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+              >
+                {revealed ? 'Hide PINs' : 'Reveal PINs'}
+              </button>
+              <button
+                type="button"
+                onClick={() => copy(rows.map(([role, pin]) => `${role}: ${pin}`).join('\n'), 'All PINs copied.')}
+                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200"
+              >
+                Copy all PINs
+              </button>
             </div>
-          ))}
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {rows.map(([role, pin]) => (
+              <div key={role} className="rounded-lg border border-line bg-page p-3">
+                <div className="font-heading text-[10px] uppercase tracking-widest text-slate-400">
+                  {roleLabel(role)}
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-2">
+                  <span className="font-mono text-2xl font-bold tracking-[0.3em] text-white">
+                    {revealed ? pin : '••••••'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copy(pin, `${roleLabel(role)} PIN copied.`)}
+                    className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {copyNotice ? (
+            <p role="status" className="mt-2 font-mono text-[10px] text-emerald-300">
+              {copyNotice}
+            </p>
+          ) : null}
         </div>
 
         <div className="mt-5">
@@ -328,7 +379,7 @@ function CreateWeddingForm({ onCreated, onCancel }) {
         roles,
         cartridge: validation.cartridge,
       });
-      onCreated(result);
+      onCreated(result, { couple: couple.trim(), date: date.trim() });
     } catch (err) {
       setError(err.message ?? 'Could not create the wedding.');
     } finally {
@@ -699,7 +750,12 @@ export default function AdminApp() {
     const cards = buildQrCards({
       baseUrl: data?.publicDeckUrl,
       roomCode: wedding.room_code,
-      wedding: { weddingId: wedding.wedding_id, couple: wedding.couple, date: wedding.date },
+      wedding: {
+        weddingId: wedding.wedding_id,
+        couple: wedding.couple,
+        date: wedding.date,
+        venue: wedding.venue,
+      },
       roles: wedding.roles,
       labels: Object.fromEntries(ROLE_IDS.map((role) => [role, roleLabel(role)])),
     });
@@ -884,10 +940,15 @@ export default function AdminApp() {
             {showCreate ? (
               <CreateWeddingForm
                 onCancel={() => setShowCreate(false)}
-                onCreated={(result) => {
+                onCreated={(result, meta) => {
                   setShowCreate(false);
                   setPinResult(result);
-                  setPinWedding({ wedding_id: result.weddingId, room_code: result.roomCode });
+                  setPinWedding({
+                    wedding_id: result.weddingId,
+                    room_code: result.roomCode,
+                    couple: meta?.couple,
+                    date: meta?.date,
+                  });
                   load();
                 }}
               />
