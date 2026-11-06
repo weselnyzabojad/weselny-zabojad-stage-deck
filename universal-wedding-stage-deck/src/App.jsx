@@ -444,7 +444,6 @@ export default function App() {
           timeline={timeline}
           projectedFinish={driftReport.projectedFinish}
           clock={driftReport.clock}
-          drift={driftReport.drift}
           musicPolicy={musicPolicy}
           stagePing={liveState.stage_ping}
           syncStatus={syncStatus}
@@ -515,8 +514,6 @@ export default function App() {
           outbox={outbox}
           theme={theme}
           onToggleTheme={toggleTheme}
-          canExit={!IS_PRODUCTION}
-          onExit={() => handleRoleChange("mc")}
           roomCode={DECK_INTENT.roomCode}
         />
       </AppErrorBoundary>

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
-import CoupleIdentity from './CoupleIdentity';
 import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarClock from './TopBarClock';
@@ -50,8 +49,6 @@ export default function SpeakerView({
   outbox = null,
   theme = 'night',
   onToggleTheme,
-  onExit,
-  canExit = false,
   roomCode = null,
 }) {
   const { t } = useI18n();
@@ -301,29 +298,12 @@ export default function SpeakerView({
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <TopBarRoleLabel role="speaker" />
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <CoupleIdentity wedding={wedding} className="text-sm" />
-              <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
-            </div>
-          </div>
+          <TopBarRoleLabel role="speaker" />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
-          {canExit ? (
-            <button
-              type="button"
-              onClick={onExit}
-              className="rounded border border-line bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-line-strong"
-            >
-              {t('speaker.exit')}
-            </button>
-          ) : null}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>

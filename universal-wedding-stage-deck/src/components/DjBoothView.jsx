@@ -6,13 +6,11 @@ import DjExportPack from './DjExportPack';
 import DjNowPlayingOverlay from './DjNowPlayingOverlay';
 import DjSetHealthCard from './DjSetHealthCard';
 import DjSongRequestQueue from './DjSongRequestQueue';
-import DriftPill from './DriftPill';
 import KeySongsCard from './KeySongsCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
-import RoleSwitcher from './RoleSwitcher';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarClock from './TopBarClock';
@@ -49,7 +47,6 @@ export default function DjBoothView({
   timeline,
   projectedFinish,
   clock,
-  drift,
   musicPolicy,
   stagePing,
   syncStatus,
@@ -228,20 +225,18 @@ export default function DjBoothView({
             <div className="flex flex-wrap items-center gap-2">
               <TopBarRoleLabel role={role} tier={tierLabel} />
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <CoupleIdentity wedding={wedding} className="text-sm" />
-              <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
-            </div>
+            {isVip ? (
+              <div className="flex flex-wrap items-center gap-2">
+                <CoupleIdentity wedding={wedding} className="text-sm" />
+                <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
+              </div>
+            ) : null}
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <DriftPill drift={drift} size="sm" />
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-          {roles.length > 1 ? (
-            <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
-          ) : null}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
