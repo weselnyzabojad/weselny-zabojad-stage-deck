@@ -144,6 +144,50 @@ const en = {
   'error.cleared': 'Local error log cleared.',
   'error.reference': 'Reference: {id}',
 
+  'pocket.drift': 'Drift',
+  'pocket.allComplete': 'All steps complete',
+  'pocket.allCompleteBody':
+    '{done} / {total} steps marked done. Use Undo if you advanced by mistake.',
+  'pocket.stepOf': 'Step {current} of {total}',
+  'pocket.realStart': 'Real start',
+  'pocket.estEnd': 'Est. end',
+  'pocket.openScript': 'Open script / teleprompter',
+  'pocket.peekNext': 'Peek next',
+  'pocket.noFurther': 'No further steps — event complete.',
+  'pocket.eventComplete': 'EVENT COMPLETE',
+  'pocket.holdAdvance': 'HOLD TO ADVANCE',
+  'pocket.hold': 'hold 1.2s',
+  'pocket.undo': 'Undo last action',
+  'pocket.undoTitle': 'Undo the last stage action',
+  'pocket.nothingUndo': 'Nothing to undo',
+
+  'dj.soloTitle': 'Solo package.',
+  'dj.soloBody':
+    'Host and DJ run from one device — open the MC view for scripts and drift controls. Song detail stays at the Standard level.',
+  'dj.nowOnStage': 'Now on stage',
+  'dj.eventComplete': 'Event complete',
+  'dj.allComplete': 'All steps complete',
+  'dj.stepsDone': '{done}/{total} steps done',
+  'dj.projected': 'Projected',
+  'dj.finish': 'Finish',
+  'dj.cutoff': 'CUTOFF',
+
+  'speaker.title': 'Speaker · Speech script',
+  'speaker.exit': 'Exit',
+  'speaker.offTitle': 'Speeches are off',
+  'speaker.offBody': 'This wedding cartridge has speechMode: OFF.',
+  'speaker.noneTitle': 'No speeches yet',
+  'speaker.noneBody': 'The cartridge does not contain any speech scripts.',
+  'speaker.waitTitle': 'Waiting for the MC',
+  'speaker.waitBody':
+    'Your speech will appear here when the MC makes it live. Only the assigned script is shown on this device.',
+  'speaker.notSharedTitle': 'Script not shared',
+  'speaker.notSharedBody':
+    'This speech is not visible to the speaker role. Ask the MC to share it with speaker.',
+  'speaker.notStoredTitle': 'Script not stored',
+  'speaker.notStoredBody':
+    'The couple has not consented to storing this script on the speaker device. Ask the MC for a printed copy.',
+
   'pwa.title': 'Update available',
   'pwa.body': 'A new deck version is ready. Reload when the stage is safe.',
   'pwa.later': 'Later',

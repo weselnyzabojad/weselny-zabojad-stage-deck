@@ -145,6 +145,50 @@ const fr = {
   'error.cleared': "Journal local d'erreurs effacé.",
   'error.reference': 'Référence : {id}',
 
+  'pocket.drift': 'Décalage',
+  'pocket.allComplete': 'Toutes les étapes sont terminées',
+  'pocket.allCompleteBody':
+    '{done} / {total} étapes marquées terminées. Utilisez Annuler si vous avez avancé par erreur.',
+  'pocket.stepOf': 'Étape {current} sur {total}',
+  'pocket.realStart': 'Départ réel',
+  'pocket.estEnd': 'Fin estimée',
+  'pocket.openScript': 'Ouvrir le script / téléprompteur',
+  'pocket.peekNext': 'Aperçu suivant',
+  'pocket.noFurther': 'Aucune étape suivante — événement terminé.',
+  'pocket.eventComplete': 'ÉVÉNEMENT TERMINÉ',
+  'pocket.holdAdvance': 'MAINTENIR POUR AVANCER',
+  'pocket.hold': 'maintenir 1,2 s',
+  'pocket.undo': 'Annuler la dernière action',
+  'pocket.undoTitle': "Annuler la dernière action de scène",
+  'pocket.nothingUndo': 'Rien à annuler',
+
+  'dj.soloTitle': 'Formule solo.',
+  'dj.soloBody':
+    "L'hôte et le DJ utilisent un seul appareil — ouvrez la vue MC pour les scripts et le contrôle du décalage. Le détail des morceaux reste au niveau Standard.",
+  'dj.nowOnStage': 'Sur scène maintenant',
+  'dj.eventComplete': 'Événement terminé',
+  'dj.allComplete': 'Toutes les étapes sont terminées',
+  'dj.stepsDone': '{done}/{total} étapes terminées',
+  'dj.projected': 'Projection',
+  'dj.finish': 'Fin',
+  'dj.cutoff': 'COUPURE',
+
+  'speaker.title': 'Orateur · Script du discours',
+  'speaker.exit': 'Quitter',
+  'speaker.offTitle': 'Les discours sont désactivés',
+  'speaker.offBody': 'Cette cartouche a speechMode : OFF.',
+  'speaker.noneTitle': 'Aucun discours pour le moment',
+  'speaker.noneBody': 'La cartouche ne contient aucun script de discours.',
+  'speaker.waitTitle': "En attente du MC",
+  'speaker.waitBody':
+    "Votre discours apparaîtra ici lorsque le MC le rendra actif. Seul le script assigné est affiché sur cet appareil.",
+  'speaker.notSharedTitle': 'Script non partagé',
+  'speaker.notSharedBody':
+    "Ce discours n'est pas visible pour le rôle orateur. Demandez au MC de le partager avec speaker.",
+  'speaker.notStoredTitle': 'Script non stocké',
+  'speaker.notStoredBody':
+    "Les mariés n'ont pas consenti à stocker ce script sur l'appareil de l'orateur. Demandez une copie papier au MC.",
+
   'pwa.title': 'Mise à jour disponible',
   'pwa.body': 'Une nouvelle version du deck est prête. Rechargez quand la scène est sûre.',
   'pwa.later': 'Plus tard',

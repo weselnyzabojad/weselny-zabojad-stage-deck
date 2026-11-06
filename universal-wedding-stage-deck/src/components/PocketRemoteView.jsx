@@ -87,23 +87,28 @@ export default function PocketRemoteView({
           aria-atomic="true"
           className={`flex items-center justify-between rounded-xl border px-3 py-2 font-mono ${driftClass}`}
         >
-          <span className="text-[10px] uppercase tracking-widest">Drift</span>
+          <span className="text-[10px] uppercase tracking-widest">{t('pocket.drift')}</span>
           <span className="text-sm font-bold">{driftText ?? t('drift.noActual')}</span>
         </div>
 
         {isComplete ? (
           <section className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl">🎉</div>
-            <h1 className="mt-2 font-heading text-xl font-bold text-white">All steps complete</h1>
+            <h1 className="mt-2 font-heading text-xl font-bold text-white">
+              {t('pocket.allComplete')}
+            </h1>
             <p className="mt-1 text-xs text-slate-400">
-              {completedCount} / {timeline.length} steps marked done. Use Undo if you advanced by mistake.
+              {t('pocket.allCompleteBody', {
+                done: completedCount,
+                total: timeline.length,
+              })}
             </p>
           </section>
         ) : (
           <>
             <section className="rounded-2xl border border-line bg-card p-4 shadow-xl">
               <div className="flex items-center justify-between text-[10px] uppercase tracking-widest text-slate-400">
-                <span>Step {activeIndex + 1} of {timeline.length}</span>
+                <span>{t('pocket.stepOf', { current: activeIndex + 1, total: timeline.length })}</span>
                 <span>{activeEntry.step.type.replaceAll('_', ' ')}</span>
               </div>
               <h1 className="mt-1 font-heading text-2xl font-bold leading-tight text-white">
@@ -113,11 +118,11 @@ export default function PocketRemoteView({
 
               <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-xs">
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Real start</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">{t('pocket.realStart')}</div>
                   <div className="text-base font-semibold text-white">{activeEntry.projectedStart ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[10px] uppercase tracking-wider text-slate-500">Est. end</div>
+                  <div className="text-[10px] uppercase tracking-wider text-slate-500">{t('pocket.estEnd')}</div>
                   <div className="text-base font-semibold text-white">{activeEntry.projectedEnd ?? '—'}</div>
                 </div>
               </div>
@@ -128,7 +133,7 @@ export default function PocketRemoteView({
                   onClick={onOpenScript}
                   className="mt-3 w-full rounded-lg border border-line-strong bg-raised px-3 py-2.5 text-xs font-heading font-semibold text-slate-200 transition hover:bg-line"
                 >
-                  📖 Open script / teleprompter
+                  {t('pocket.openScript')}
                 </button>
               ) : null}
             </section>
@@ -139,7 +144,7 @@ export default function PocketRemoteView({
 
             <section className="rounded-xl border border-line bg-card/80 p-3">
               <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-                Peek next
+                {t('pocket.peekNext')}
               </div>
               {nextEntry ? (
                 <div className="mt-1 flex items-center justify-between gap-2">
@@ -147,7 +152,7 @@ export default function PocketRemoteView({
                   <span className="shrink-0 font-mono text-xs text-brand-soft">{nextEntry.projectedStart}</span>
                 </div>
               ) : (
-                <div className="mt-1 text-xs text-slate-400">No further steps — event complete.</div>
+                <div className="mt-1 text-xs text-slate-400">{t('pocket.noFurther')}</div>
               )}
             </section>
           </>
@@ -157,8 +162,8 @@ export default function PocketRemoteView({
           <HoldToConfirmButton
             onConfirm={onAdvance}
             disabled={isComplete || !canAdvance}
-            label={isComplete ? 'EVENT COMPLETE ✓' : 'HOLD TO ADVANCE ➔'}
-            holdLabel="hold 1.2s"
+            label={isComplete ? t('pocket.eventComplete') : t('pocket.holdAdvance')}
+            holdLabel={t('pocket.hold')}
             className={`w-full rounded-2xl border px-5 py-4 text-base font-heading font-bold transition ${
               isComplete || !canAdvance
                 ? 'border-line bg-card text-slate-500'
@@ -171,17 +176,17 @@ export default function PocketRemoteView({
               type="button"
               onClick={onUndo}
               disabled={!canUndo}
-              title={canUndo ? 'Undo the last stage action' : 'Nothing to undo'}
+              title={canUndo ? t('pocket.undoTitle') : t('pocket.nothingUndo')}
               className={`flex-1 rounded-xl border px-4 py-3 text-sm font-heading font-semibold transition ${
                 !canUndo
                   ? 'cursor-not-allowed border-line bg-card text-slate-600'
                   : 'border-line-strong bg-raised text-slate-200 hover:bg-line'
               }`}
             >
-              ↩ Undo last action
+              {t('pocket.undo')}
             </button>
             <span className="flex items-center rounded-xl border border-line bg-card px-3 font-mono text-[10px] text-slate-400">
-              {completedCount}/{timeline.length} done
+              {t('dj.stepsDone', { done: completedCount, total: timeline.length })}
             </span>
           </div>
         </div>

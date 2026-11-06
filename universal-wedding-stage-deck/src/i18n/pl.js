@@ -144,6 +144,50 @@ const pl = {
   'error.cleared': 'Lokalny dziennik błędów wyczyszczony.',
   'error.reference': 'Referencja: {id}',
 
+  'pocket.drift': 'Opóźnienie',
+  'pocket.allComplete': 'Wszystkie kroki zakończone',
+  'pocket.allCompleteBody':
+    '{done} / {total} kroków oznaczono jako wykonane. Użyj Cofnij, jeśli pomyłkowo przeszedłeś dalej.',
+  'pocket.stepOf': 'Krok {current} z {total}',
+  'pocket.realStart': 'Rzeczywisty start',
+  'pocket.estEnd': 'Szacowany koniec',
+  'pocket.openScript': 'Otwórz skrypt / teleprompter',
+  'pocket.peekNext': 'Podejrzyj następny',
+  'pocket.noFurther': 'Brak dalszych kroków — wydarzenie zakończone.',
+  'pocket.eventComplete': 'WYDARZENIE ZAKOŃCZONE',
+  'pocket.holdAdvance': 'PRZYTRZYMAJ, ABY PRZEJŚĆ DALEJ',
+  'pocket.hold': 'przytrzymaj 1,2 s',
+  'pocket.undo': 'Cofnij ostatnią akcję',
+  'pocket.undoTitle': 'Cofnij ostatnią akcję sceny',
+  'pocket.nothingUndo': 'Nie ma czego cofać',
+
+  'dj.soloTitle': 'Pakiet solo.',
+  'dj.soloBody':
+    'Host i DJ działają z jednego urządzenia — otwórz widok MC, aby uzyskać skrypty i kontrolę opóźnienia. Szczegóły utworów pozostają na poziomie Standard.',
+  'dj.nowOnStage': 'Teraz na scenie',
+  'dj.eventComplete': 'Wydarzenie zakończone',
+  'dj.allComplete': 'Wszystkie kroki zakończone',
+  'dj.stepsDone': '{done}/{total} kroków wykonanych',
+  'dj.projected': 'Prognoza',
+  'dj.finish': 'Koniec',
+  'dj.cutoff': 'ODCIĘCIE',
+
+  'speaker.title': 'Mówca · Skrypt mowy',
+  'speaker.exit': 'Wyjdź',
+  'speaker.offTitle': 'Mowy są wyłączone',
+  'speaker.offBody': 'Ten kartridż ma speechMode: OFF.',
+  'speaker.noneTitle': 'Brak mów',
+  'speaker.noneBody': 'Kartridż nie zawiera żadnych skryptów mów.',
+  'speaker.waitTitle': 'Oczekiwanie na MC',
+  'speaker.waitBody':
+    'Twoja mowa pojawi się tutaj, gdy MC ją uruchomi. Na tym urządzeniu wyświetlany jest tylko przypisany skrypt.',
+  'speaker.notSharedTitle': 'Skrypt nieudostępniony',
+  'speaker.notSharedBody':
+    'Ta mowa nie jest widoczna dla roli mówcy. Poproś MC o udostępnienie jej roli speaker.',
+  'speaker.notStoredTitle': 'Skrypt niezapisany',
+  'speaker.notStoredBody':
+    'Para nie wyraziła zgody na przechowywanie tego skryptu na urządzeniu mówcy. Poproś MC o wydruk.',
+
   'pwa.title': 'Dostępna aktualizacja',
   'pwa.body': 'Nowa wersja decku jest gotowa. Odśwież, gdy scena będzie bezpieczna.',
   'pwa.later': 'Później',
