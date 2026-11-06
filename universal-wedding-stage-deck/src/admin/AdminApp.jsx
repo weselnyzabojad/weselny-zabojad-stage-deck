@@ -42,6 +42,20 @@ import {
   AdminPinDialog,
 } from './AdminDialogs';
 
+function AdminSkeleton({ rows = 3 }) {
+  return (
+    <div className="space-y-2" aria-hidden="true">
+      {Array.from({ length: rows }, (_, index) => (
+        <div key={index} className="animate-pulse rounded-xl border border-line bg-card p-4">
+          <div className="h-3 w-1/3 rounded bg-raised" />
+          <div className="mt-2 h-2 w-2/3 rounded bg-raised" />
+          <div className="mt-2 h-2 w-1/2 rounded bg-raised" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ErrorLine({ children }) {
   if (!children) return null;
   return (
@@ -873,8 +887,9 @@ export default function AdminApp() {
             </span>
             <button
               type="button"
-              onClick={load}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200"
+              onClick={() => load()}
+              disabled={loading}
+              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 disabled:opacity-50"
             >
               Refresh
             </button>
@@ -942,7 +957,7 @@ export default function AdminApp() {
             </span>
           </div>
         ) : null}
-        {loading ? <p className="text-xs text-slate-400">Loading…</p> : null}
+        {loading ? <AdminSkeleton rows={3} /> : null}
 
         {tab === 'weddings' ? (
           <>
@@ -1015,9 +1030,16 @@ export default function AdminApp() {
 
             <div className="space-y-3">
               {filteredWeddings.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
-                  No weddings match this filter. Create one or switch to All.
-                </p>
+                <div className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
+                  <p>No weddings match this filter. Create one or switch to All.</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreate(true)}
+                    className="mt-3 rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white"
+                  >
+                    New wedding
+                  </button>
+                </div>
               ) : null}
               {filteredWeddings.map((wedding) => (
                 <article
@@ -1112,6 +1134,11 @@ export default function AdminApp() {
               </span>
             </div>
           <section className="overflow-x-auto rounded-xl border border-line bg-card">
+            {(data?.sessions ?? []).length === 0 ? (
+              <p className="p-6 text-center text-xs text-slate-400">
+                No devices have joined yet. Share a QR card or room code.
+              </p>
+            ) : (
             <table className="min-w-full text-left text-xs">
               <thead className="border-b border-line font-heading text-[9px] uppercase tracking-widest text-slate-400">
                 <tr>
@@ -1183,12 +1210,18 @@ export default function AdminApp() {
                 })}
               </tbody>
             </table>
+            )}
           </section>
           </>
         ) : null}
 
         {tab === 'audit' ? (
           <section className="space-y-2">
+            {(data?.audit ?? []).length === 0 ? (
+              <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
+                No admin actions recorded on this deployment.
+              </p>
+            ) : null}
             {(data?.audit ?? []).map((entry) => (
               <article key={entry.id} className="rounded-lg border border-line bg-card p-3">
                 <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-slate-500">
