@@ -1,4 +1,7 @@
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import { AdminConfirmDialog, AdminMfaDialog } from '../src/admin/AdminDialogs.jsx';
 import {
   ADMIN_ABSOLUTE_MS,
   ADMIN_IDLE_MS,
@@ -95,6 +98,31 @@ describe('issue #76 owner admin panel', () => {
     expect(validateRoomCode('8f3k2q')).toBe(true);
     expect(validateRoomCode('NO SPACES')).toBe(false);
     expect(validateRoles(['mc', 'dj', 'mc', 'bogus'])).toEqual(['mc', 'dj']);
+  });
+
+  it('renders accessible admin dialogs without native prompts', () => {
+    const mfa = renderToStaticMarkup(
+      createElement(AdminMfaDialog, {
+        open: true,
+        onVerified: () => {},
+        onCancel: () => {},
+      }),
+    );
+    expect(mfa).toContain('6-digit code');
+    expect(mfa).toContain('Verify');
+    expect(mfa).toContain('role="dialog"');
+
+    const confirm = renderToStaticMarkup(
+      createElement(AdminConfirmDialog, {
+        open: true,
+        title: 'Delete wedding',
+        requireText: '2026-08-20_x',
+        onConfirm: () => {},
+        onCancel: () => {},
+      }),
+    );
+    expect(confirm).toContain('Delete wedding');
+    expect(confirm).toContain('2026-08-20_x');
   });
 
   it('normalizes a wedding row for the admin list', () => {

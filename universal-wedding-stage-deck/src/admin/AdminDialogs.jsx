@@ -1,0 +1,273 @@
+import { useEffect, useState } from 'react';
+import ModalShell from '../components/ModalShell';
+import { challengeExistingFactor } from './adminApi';
+import { roleShort } from '../lib/roles';
+
+function DialogBody({ title, description, children }) {
+  return (
+    <>
+      <div className="border-b border-line px-5 py-4 pr-14">
+        <h2 className="font-heading text-base font-bold text-white">{title}</h2>
+        {description ? <p className="mt-1 text-xs leading-relaxed text-slate-400">{description}</p> : null}
+      </div>
+      <div className="max-h-[55vh] overflow-y-auto px-5 py-4">{children}</div>
+    </>
+  );
+}
+
+export function AdminConfirmDialog({
+  open,
+  title,
+  description,
+  confirmLabel = 'Confirm',
+  tone = 'primary',
+  requireText = null,
+  busy = false,
+  error = '',
+  onConfirm,
+  onCancel,
+  children,
+}) {
+  const [typed, setTyped] = useState('');
+
+  useEffect(() => {
+    if (open) setTyped('');
+  }, [open, requireText]);
+
+  const blocked = Boolean(requireText) && typed !== requireText;
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody title={title} description={description}>
+        {children}
+        {requireText ? (
+          <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            Type <span className="font-mono text-slate-200">{requireText}</span> to confirm
+            <input
+              value={typed}
+              onChange={(event) => setTyped(event.target.value)}
+              className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-white"
+              autoComplete="off"
+              spellCheck={false}
+            />
+          </label>
+        ) : null}
+        {error ? (
+          <p role="alert" className="mt-3 rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={onConfirm}
+          disabled={blocked || busy}
+          className={`rounded border px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 ${
+            tone === 'danger'
+              ? 'border-alert/60 bg-alert/40 hover:bg-alert/60'
+              : 'border-brand-strong bg-brand hover:bg-brand-hover'
+          }`}
+        >
+          {busy ? 'Working…' : confirmLabel}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description, onVerified, onCancel }) {
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (open) {
+      setCode('');
+      setBusy(false);
+      setError('');
+    }
+  }, [open]);
+
+  const submit = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      await challengeExistingFactor(code);
+      onVerified();
+    } catch (err) {
+      setError(err.message ?? 'TOTP verification failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title={title}
+        description={description ?? 'Enter the 6-digit code from your authenticator app.'}
+      >
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          6-digit code
+          <input
+            value={code}
+            onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            autoFocus
+            placeholder="••••••"
+            className="mt-1 w-full rounded border border-line bg-card px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white"
+          />
+        </label>
+        {error ? (
+          <p role="alert" className="mt-3 rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || code.length !== 6}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+        >
+          {busy ? 'Verifying…' : 'Verify'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = false, error = '' }) {
+  const [pins, setPins] = useState({});
+
+  useEffect(() => {
+    if (open) setPins({});
+  }, [open]);
+
+  const update = (role, value) => {
+    setPins((current) => ({ ...current, [role]: value.replace(/\D/g, '').slice(0, 6) }));
+  };
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title="Rotate role PINs"
+        description="Leave a field blank to auto-generate that role's PIN. All PINs are shown once, then stored as hashes."
+      >
+        <div className="grid gap-2 sm:grid-cols-2">
+          {roles.map((role) => (
+            <label key={role} className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              {roleShort(role)}
+              <input
+                value={pins[role] ?? ''}
+                onChange={(event) => update(role, event.target.value)}
+                inputMode="numeric"
+                placeholder="auto"
+                className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-sm tracking-[0.25em] text-white"
+              />
+            </label>
+          ))}
+        </div>
+        {error ? (
+          <p role="alert" className="mt-3 rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSubmit(pins)}
+          disabled={busy}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+        >
+          {busy ? 'Rotating…' : 'Continue'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function AdminDuplicateDialog({ open, wedding, onSubmit, onCancel, busy = false, error = '' }) {
+  const [weddingId, setWeddingId] = useState('');
+  const [couple, setCouple] = useState('');
+  const [date, setDate] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    setWeddingId(`${wedding?.wedding_id ?? ''}_copy`);
+    setCouple(wedding?.couple ?? '');
+    setDate(wedding?.date ?? '');
+  }, [open, wedding]);
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title="Duplicate wedding"
+        description="Copies the cartridge into a new wedding, generates a fresh room code and new PINs."
+      >
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          New wedding id
+          <input
+            value={weddingId}
+            onChange={(event) => setWeddingId(event.target.value)}
+            className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-white"
+          />
+        </label>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            Couple
+            <input
+              value={couple}
+              onChange={(event) => setCouple(event.target.value)}
+              className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 text-xs text-white"
+            />
+          </label>
+          <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            Date
+            <input
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-white"
+            />
+          </label>
+        </div>
+        {error ? (
+          <p role="alert" className="mt-3 rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSubmit({ weddingId, couple, date })}
+          disabled={busy}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+        >
+          {busy ? 'Duplicating…' : 'Duplicate'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
