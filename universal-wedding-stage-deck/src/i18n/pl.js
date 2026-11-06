@@ -177,6 +177,21 @@ const pl = {
   'pwa.blockedOverlay': 'Zamknij otwarty panel przed odświeżeniem decku.',
   'pwa.blockedSpeech': 'Trwa mowa. Odśwież po jej zakończeniu.',
   'pwa.blockedStep': 'Trwa krok. Odśwież po wydarzeniu lub w bezpiecznej przerwie.',
+  'mc.rail.rail': 'Szyna sceny',
+  'mc.rail.done': 'Ukończone kroki',
+  'mc.rail.upcoming': 'Nadchodzące kroki',
+  'mc.rail.now': 'Bieżący krok',
+  'mc.rail.status.done': 'GOTOWE',
+  'mc.rail.status.active': 'NA ANTENIE',
+  'mc.rail.status.next': 'NASTĘPNY',
+  'mc.rail.status.planned': 'PLANOWANY',
+  'mc.rail.completed': 'Ukończono',
+  'mc.rail.noSteps': 'Brak kroków w tej kasecie.',
+  'mc.rail.noDone': 'Nie ukończono jeszcze żadnego kroku.',
+  'mc.rail.noUpcoming': 'Brak kolejnych kroków — wydarzenie zakończone.',
+  'mc.rail.noCurrent': 'Brak aktywnego kroku.',
+  'mc.rail.expand': 'Rozwiń {title}',
+  'mc.rail.collapse': 'Zwiń {title}',
 };
 
 export default pl;

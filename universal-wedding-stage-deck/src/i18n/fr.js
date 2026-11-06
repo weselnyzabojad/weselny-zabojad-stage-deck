@@ -178,6 +178,21 @@ const fr = {
   'pwa.blockedOverlay': 'Fermez le panneau ouvert avant de recharger le deck.',
   'pwa.blockedSpeech': 'Un discours est en cours. Rechargez après la fin du discours.',
   'pwa.blockedStep': 'Une étape est en cours. Rechargez après l’événement ou dans une pause sûre.',
+  'mc.rail.rail': 'Rail de scène',
+  'mc.rail.done': 'Étapes terminées',
+  'mc.rail.upcoming': 'Étapes à venir',
+  'mc.rail.now': 'Étape en cours',
+  'mc.rail.status.done': 'TERMINÉ',
+  'mc.rail.status.active': 'EN DIRECT',
+  'mc.rail.status.next': 'SUIVANT',
+  'mc.rail.status.planned': 'PRÉVU',
+  'mc.rail.completed': 'Terminé',
+  'mc.rail.noSteps': 'Aucune étape dans cette cartouche.',
+  'mc.rail.noDone': 'Aucune étape terminée pour le moment.',
+  'mc.rail.noUpcoming': 'Aucune étape suivante — événement terminé.',
+  'mc.rail.noCurrent': 'Aucune étape active.',
+  'mc.rail.expand': 'Développer {title}',
+  'mc.rail.collapse': 'Réduire {title}',
 };
 
 export default fr;

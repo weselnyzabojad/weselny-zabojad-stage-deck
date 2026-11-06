@@ -57,3 +57,42 @@ export function stageRailSummary(entry) {
   if (start) return String(start);
   return '—';
 }
+
+/**
+ * One-open-per-rail reducer. Opening the already-open card closes it.
+ *
+ * @param {Record<string, string|null>} state
+ * @param {'done'|'upcoming'} zone
+ * @param {string} key
+ */
+export function toggleRailOpen(state, zone, key) {
+  const current = state?.[zone] ?? null;
+  return { ...(state ?? {}), [zone]: current === key ? null : key };
+}
+
+/**
+ * Next focus index for roving keyboard navigation within a rail.
+ * Returns -1 for keys that are not navigation keys.
+ *
+ * @param {string} key keyboard event key
+ * @param {number} index current card index
+ * @param {number} length number of cards in the rail
+ */
+export function nextFocusIndex(key, index, length) {
+  if (!Number.isInteger(index) || index < 0 || !Number.isInteger(length) || length <= 0) {
+    return -1;
+  }
+
+  switch (key) {
+    case 'ArrowDown':
+      return (index + 1) % length;
+    case 'ArrowUp':
+      return (index - 1 + length) % length;
+    case 'Home':
+      return 0;
+    case 'End':
+      return length - 1;
+    default:
+      return -1;
+  }
+}

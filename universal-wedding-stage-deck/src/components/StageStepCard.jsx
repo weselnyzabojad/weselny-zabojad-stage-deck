@@ -1,27 +1,29 @@
+import { useId } from 'react';
+import { useI18n } from '../i18n/useI18n';
 import { stageRailSummary } from '../lib/stageRail.js';
 
-// Visual + label tokens per rail variant. Kept local so SR-01 stays purely
-// presentational; SR-04 can tune theme tokens without touching behaviour.
+// Visual tokens per rail variant. Behaviour (expand/collapse, keyboard, i18n)
+// lives in the component; SR-04 tunes these theme tokens.
 const VARIANTS = {
   done: {
     card: 'border-emerald-800/60 bg-emerald-950/30 opacity-90',
     chip: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
-    label: 'DONE',
+    status: 'done',
   },
   current: {
     card: 'border-brand-strong bg-card ring-2 ring-brand-strong shadow-2xl',
     chip: 'border-brand-strong bg-brand/40 text-brand-tint',
-    label: 'ON AIR',
+    status: 'active',
   },
   next: {
     card: 'border-amber-800/60 bg-amber-950/30',
     chip: 'border-amber-800 bg-amber-950/60 text-amber-200',
-    label: 'NEXT',
+    status: 'next',
   },
   later: {
     card: 'border-line bg-card/70',
     chip: 'border-line-strong bg-raised text-slate-400',
-    label: 'PLANNED',
+    status: 'planned',
   },
 };
 
@@ -31,7 +33,7 @@ function driftTone(minutes) {
     : 'border-emerald-700 bg-emerald-950/60 text-emerald-300';
 }
 
-function driftLabel(entry, minutes) {
+function driftLabel(minutes) {
   if (!minutes) return null;
   return minutes > 0 ? `+${minutes}m` : `${Math.abs(minutes)}m ahead`;
 }
@@ -39,65 +41,103 @@ function driftLabel(entry, minutes) {
 /**
  * One step in the MC Stage Rail.
  *
- * Presentational only: the parent decides `variant` from
- * `buildStageRail`; SR-03 adds the expand/collapse header.
+ * The current step is always expanded. Completed and upcoming cards are
+ * accessible disclosure widgets: a header button toggles a labelled body, with
+ * `aria-expanded` / `aria-controls`, a reduced-motion-safe chevron and i18n
+ * labels.
  */
-export default function StageStepCard({ entry, variant = 'later', children }) {
+export default function StageStepCard({
+  entry,
+  variant = 'later',
+  expanded = true,
+  onToggle,
+  collapsible = false,
+  children,
+}) {
+  const { t } = useI18n();
+  const bodyId = useId();
   const step = entry?.step;
   if (!step) return null;
 
   const meta = VARIANTS[variant] ?? VARIANTS.later;
+  const statusLabel = t(`mc.rail.status.${meta.status}`);
   const summary = stageRailSummary(entry);
   const drift = entry?.projectedDriftMinutes;
+  const title = step.title ?? '—';
+  const isOpen = collapsible ? Boolean(expanded) : true;
 
-  return (
-    <article
-      aria-label={`${userFacingLabel(variant)}: ${step.title ?? 'Step'}`}
-      className={`rounded-xl border p-3 ${meta.card}`}
-    >
-      <div className="flex items-start justify-between gap-2">
+  const header = (
+    <>
+      <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}>
-              {meta.label}
+              {statusLabel}
             </span>
             <span className="font-mono text-[10px] text-slate-500">
               Step {typeof entry.index === 'number' ? entry.index + 1 : '—'}
             </span>
           </div>
-          <h3 className="mt-1 truncate font-heading text-sm font-semibold text-white">
-            {step.title ?? '—'}
-          </h3>
-          <div className="mt-0.5 truncate text-[11px] text-slate-400">
-            📍 {step.location ?? '—'}
+          <div className="mt-1 truncate font-heading text-sm font-semibold text-white">
+            {title}
           </div>
         </div>
+        <span className="shrink-0 font-mono text-[11px] text-slate-300">{summary}</span>
       </div>
-
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5 font-mono text-[11px]">
-        <span className="text-slate-300">{summary}</span>
-        <div className="flex items-center gap-1.5">
-          {typeof step.durationMin === 'number' ? (
-            <span className="text-slate-500">{step.durationMin} min</span>
-          ) : null}
-          {drift ? (
-            <span
-              title={entry.driftLabel ?? 'Projected drift vs plan'}
-              className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${driftTone(drift)}`}
-            >
-              {driftLabel(entry, drift)}
-            </span>
-          ) : null}
-        </div>
-      </div>
-
-      {children ? (
-        <div className="mt-3 border-t border-line/70 pt-3">{children}</div>
+      {collapsible ? (
+        <span
+          aria-hidden="true"
+          className={`ml-2 mt-0.5 shrink-0 text-slate-400 transition-transform duration-150 motion-reduce:transition-none ${isOpen ? 'rotate-90' : ''}`}
+        >
+          ▸
+        </span>
       ) : null}
+    </>
+  );
+
+  return (
+    <article className={`rounded-xl border p-3 ${meta.card}`}>
+      {collapsible ? (
+        <button
+          type="button"
+          data-rail-card
+          aria-expanded={isOpen}
+          aria-controls={bodyId}
+          aria-label={t(isOpen ? 'mc.rail.collapse' : 'mc.rail.expand', { title })}
+          onClick={onToggle}
+          className="flex w-full items-start gap-1 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft"
+        >
+          {header}
+        </button>
+      ) : (
+        <div className="flex items-start gap-1">{header}</div>
+      )}
+
+      <div id={bodyId} hidden={!isOpen} className="mt-2">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line/60 pt-2 text-[11px] text-slate-400">
+          <span className="truncate">📍 {step.location ?? '—'}</span>
+          <div className="flex items-center gap-1.5 font-mono">
+            {typeof step.durationMin === 'number' ? (
+              <span className="text-slate-500">{step.durationMin} min</span>
+            ) : null}
+            {drift ? (
+              <span
+                title={entry.driftLabel ?? 'Projected drift vs plan'}
+                className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${driftTone(drift)}`}
+              >
+                {driftLabel(drift)}
+              </span>
+            ) : null}
+            {variant === 'done' ? (
+              <span className="font-mono text-[10px] text-emerald-300">{t('mc.rail.completed')}</span>
+            ) : null}
+          </div>
+        </div>
+
+        {children ? (
+          <div className="mt-3 border-t border-line/70 pt-3">{children}</div>
+        ) : null}
+      </div>
     </article>
   );
-}
-
-function userFacingLabel(variant) {
-  return VARIANTS[variant]?.label ?? VARIANTS.later.label;
 }
