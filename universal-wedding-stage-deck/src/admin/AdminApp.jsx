@@ -814,6 +814,11 @@ export default function AdminApp() {
     [data, query, statusFilter, roleFilter],
   );
 
+  const changeTab = (id) => {
+    setTab(id);
+    window.setTimeout(() => document.getElementById('admin-tab-panel')?.focus(), 0);
+  };
+
   const copyRoomCode = async (roomCode) => {
     try {
       await navigator.clipboard.writeText(roomCode);
@@ -911,7 +916,7 @@ export default function AdminApp() {
             <button
               key={id}
               type="button"
-              onClick={() => setTab(id)}
+              onClick={() => changeTab(id)}
               className={`rounded border px-3 py-1.5 font-semibold ${
                 tab === id
                   ? 'border-brand-strong bg-brand/40 text-white'
@@ -924,7 +929,7 @@ export default function AdminApp() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-4 px-4 py-4">
+      <main id="admin-tab-panel" tabIndex={-1} className="mx-auto max-w-6xl space-y-4 px-4 py-4">
         {authError || error ? <ErrorLine>{authError || error}</ErrorLine> : null}
 
         {showIdleWarning ? (

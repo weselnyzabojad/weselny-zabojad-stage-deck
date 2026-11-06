@@ -4,6 +4,7 @@ import CoupleIdentity from './CoupleIdentity';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import {
   formatDuration,
@@ -78,6 +79,7 @@ export default function SpeakerView({
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+      <SkipLink />
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
@@ -110,7 +112,7 @@ export default function SpeakerView({
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
+      <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
         {speechMode === 'OFF' ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">

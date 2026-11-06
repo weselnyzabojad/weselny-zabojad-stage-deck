@@ -144,6 +144,7 @@ const pl = {
   'error.cleared': 'Lokalny dziennik błędów wyczyszczony.',
   'error.reference': 'Referencja: {id}',
 
+  'a11y.skipToContent': 'Przejdź do głównej treści',
   'pocket.drift': 'Opóźnienie',
   'pocket.allComplete': 'Wszystkie kroki zakończone',
   'pocket.allCompleteBody':

@@ -144,6 +144,7 @@ const en = {
   'error.cleared': 'Local error log cleared.',
   'error.reference': 'Reference: {id}',
 
+  'a11y.skipToContent': 'Skip to main content',
   'pocket.drift': 'Drift',
   'pocket.allComplete': 'All steps complete',
   'pocket.allCompleteBody':

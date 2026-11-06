@@ -171,6 +171,7 @@ export default function App() {
   const handleRoleChange = (next) => {
     setOverlay(null);
     setRole(next);
+    window.setTimeout(() => document.getElementById('main-content')?.focus(), 50);
   };
 
   // Issue #81: restore the overlay/scroll saved before an accepted PWA reload.

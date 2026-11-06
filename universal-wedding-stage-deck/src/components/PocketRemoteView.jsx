@@ -3,6 +3,7 @@ import CakeCard from './CakeCard';
 import CoupleIdentity from './CoupleIdentity';
 import HoldToConfirmButton from './HoldToConfirmButton';
 import LanguageToggle from './LanguageToggle';
+import SkipLink from './SkipLink';
 import MusicPolicyCard from './MusicPolicyCard';
 import ReelClock from './ReelClock';
 import RoleSwitcher from './RoleSwitcher';
@@ -54,6 +55,7 @@ export default function PocketRemoteView({
 
   return (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+      <SkipLink />
       <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-card px-3 py-2.5">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1">
@@ -77,7 +79,7 @@ export default function PocketRemoteView({
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 p-3">
+      <main id="main-content" tabIndex={-1} className="mx-auto flex w-full max-w-md flex-1 flex-col gap-3 p-3">
         <ReelClock clock={clock} compact />
 
         <div
