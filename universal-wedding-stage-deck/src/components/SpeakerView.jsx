@@ -29,8 +29,8 @@ function TimerChip({ value, tone }) {
 
 const FALLBACK_NOW = new Date(0);
 
-              {t('speaker.title')}
-// large-text; it shows only the speech the MC has made live, never the timeline
+// Read-only speaker teleprompter. It uses large text and shows only the speech
+// the MC has made live, never the timeline
 // controls, VIP alerts or other speeches.
 export default function SpeakerView({
   wedding,
