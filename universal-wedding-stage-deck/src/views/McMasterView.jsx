@@ -24,6 +24,8 @@ import ReelClock from '../components/ReelClock';
 import RoleShell from '../components/RoleShell';
 import RoleSwitcher from '../components/RoleSwitcher';
 import StageRail from '../components/StageRail';
+import TopBarClock from '../components/TopBarClock';
+import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import { buildStageRail } from '../lib/stageRail.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import SpeechesCard from '../components/SpeechesCard';
@@ -341,7 +343,8 @@ export default function McMasterView({ model }) {
             />
           </div>
           <span className="text-slate-500 hidden sm:inline">|</span>
-          <ReelClock clock={driftReport.clock} compact />
+          <TopBarClock clock={driftReport.clock} />
+          <TopBarRoleLabel role="mc" />
           <DriftPill drift={driftReport.drift} />
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>

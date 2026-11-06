@@ -3,6 +3,8 @@ import logo from '../assets/img/logo.png';
 import CoupleIdentity from './CoupleIdentity';
 import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
+import TopBarClock from './TopBarClock';
+import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
@@ -296,9 +298,10 @@ export default function SpeakerView({
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
+          <TopBarClock clock={clock} />
           <div>
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-              {t('speaker.title')}
+            <div className="flex flex-wrap items-center gap-2">
+              <TopBarRoleLabel role="speaker" />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <CoupleIdentity wedding={wedding} className="text-sm" />
