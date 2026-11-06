@@ -32,6 +32,7 @@ import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
+import PhoneQRCode from '../components/PhoneQRCode';
 import LanguageToggle from '../components/LanguageToggle';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
