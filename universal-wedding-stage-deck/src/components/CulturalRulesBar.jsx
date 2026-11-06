@@ -79,14 +79,16 @@ function RuleChip({ ruleKey, label, icon, status, statusLabels = {}, note = null
   const colors = TONES[toneFor(normalizedStatus)];
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
+  // Keep aria-label/title without the note suffix so screen readers still
+  // announce the rule state, but the visible note is removed per SR refine.
   const description = `${label}: ${statusLabel}${cleanNote ? ` — ${cleanNote}` : ''}`;
 
   return (
     <div
       key={ruleKey}
       role="note"
-      aria-label={description}
-      title={description}
+      aria-label={statusLabel}
+      title={statusLabel}
       className={`flex items-start gap-2 rounded-lg border px-2.5 py-1.5 ${colors.chip}`}
     >
       <span aria-hidden="true" className="mt-0.5 text-sm leading-none">
@@ -105,11 +107,7 @@ function RuleChip({ ruleKey, label, icon, status, statusLabels = {}, note = null
             {statusLabel}
           </span>
         </div>
-        {cleanNote ? (
-          <p className="mt-0.5 hidden max-w-[190px] truncate text-[10px] leading-tight text-slate-400 sm:block">
-            {cleanNote}
-          </p>
-        ) : null}
+        {/* Note text removed per MC top-bar refinement (project.md, 2026-11-06) */}
       </div>
     </div>
   );
