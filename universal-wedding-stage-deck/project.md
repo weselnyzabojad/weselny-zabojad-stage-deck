@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-06
 
-**Aligned with:** `master` @ `1ad2448` (merge of issue #76)
+**Aligned with:** `master` @ `1ad7de9` (phone layout fix #117)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -37,7 +37,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | Area | Status |
 | --- | --- |
 | Stage deck views (MC/DJ/Photo/Speaker) | Complete |
-| Responsive phone layouts for every role | Decided; implementation issues #109–#114 |
+| Responsive phone layouts for every role | Complete (#109–#114) |
 | Drift engine, elastic schedule, buffer accordion, hard-anchor radar | Complete |
 | Cake, speeches, key songs, music policy, contacts, photo plan | Complete |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
@@ -61,16 +61,34 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 
 Decision (2026-11-06, confirmed with the owner): remove the separate **Pocket**
 role and give every role a classy, phone-first layout on small screens. The full
-view remains on laptop/tablet. Work items are tracked as GitHub issues
-(P-01–P-06; links added after creation):
+view remains on laptop/tablet. **Shipped** (#109–#114):
 
-- **P-01 / #109** Remove the Pocket role entirely (`pocket` in roles, join
-  screen, admin, sessions, RLS, i18n and docs).
+- **P-01 / #109** Remove the Pocket role entirely.
 - **P-02 / #110** Shared responsive role shell + phone bottom navigation pattern.
 - **P-03 / #111** MC phone layout: advance, undo and drift check.
 - **P-04 / #112** DJ phone layout (read-only, large cutoff display).
 - **P-05 / #113** Photographer phone layout (read-only, shot list).
-- **P-06 / #114** Speaker phone layout polish (teleprompter, single column).
+- **P-06 / #114** Speaker phone layout (teleprompter, single column).
+
+### MC Stage Rail (current-step hero)
+
+UX decision (2026-11-06): the MC main dashboard should lead with the timeline
+itself — the **current step as a large hero card in the centre**, **completed
+steps as collapsed accordions on the left**, and **upcoming steps as collapsed
+accordions on the right**, joined by a connective timeline spine. This replaces
+the current active-step card and the small “PEEK NEXT” box. The phone layout,
+other roles, the drift engine and sync are unchanged.
+
+Design and implementation plan: [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
+
+- **SR-01 / [#118](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/118)**
+  Stage rail data helper and presentational component.
+- **SR-02 / [#119](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/119)**
+  Integrate the rail into the MC desktop dashboard.
+- **SR-03 / [#120](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/120)**
+  Accordion interaction, keyboard support and i18n.
+- **SR-04 / [#121](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/121)**
+  Responsive rail, themes and final polish.
 
 ---
 
@@ -192,6 +210,8 @@ npm run validate:i18n
 
 - MC Master: header identity, drift, controls, timeline, cake, music policy,
   buffer accordion, pre-wedding checklist, speeches, radar, stage pings;
+  the **Stage Rail** (current-step hero with done/upcoming accordions) is
+  planned in #118–#121;
 - DJ Booth: read-only timeline, key songs and cutoffs;
 - Photographer: shot lists, sunset/golden-hour, Oczepiny cues, media team,
   venue access;
@@ -329,8 +349,9 @@ CI runs the same checks on pushes and pull requests to `master`.
 - Optional games content exists but is not in the schema or UI (deferred).
 - Google Docs-first import (#82) is not implemented; the manual JSON/AI-prompt
   path remains.
-- The Pocket role removal and per-role phone layouts are planned (#109–#114)
-  but not implemented yet.
+- The Pocket role removal and per-role phone layouts shipped in #109–#114.
+- The MC Stage Rail (current-step hero with done/upcoming accordions) is planned
+  in #118–#121; see `docs/mc-stage-rail-plan.md`.
 - v1.2 schema freeze (#77), multi-wedding library (#79) and MC cue cleanup
   (#80) remain open.
 - `/deck/` static hosting still needs an Apache/SPA rewrite for deep links such
@@ -355,3 +376,4 @@ CI runs the same checks on pushes and pull requests to `master`.
 | Google Doc template | `src/lib/googleDocTemplate.js`, `schema/google-doc-template.md` |
 | Tests | `tests/`, `docs/testing.md` |
 | Accessibility | `docs/accessibility-audit.md` |
+| MC Stage Rail plan | `docs/mc-stage-rail-plan.md`, `scripts/create-stage-rail-issues.mjs` |
