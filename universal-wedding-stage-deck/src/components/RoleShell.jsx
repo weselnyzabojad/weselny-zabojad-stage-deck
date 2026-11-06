@@ -1,7 +1,6 @@
 import logo from '../assets/img/logo.png';
 import { useI18n } from '../i18n/useI18n';
 import SyncStatusBadge from './SyncStatusBadge';
-import RoleSwitcher from './RoleSwitcher';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
@@ -22,14 +21,12 @@ export default function RoleShell({
   compact,
   children,
   role,
-  roles,
   syncStatus,
   syncError,
   remoteUpdatedAt,
   outbox,
   onToggleTheme,
   theme,
-  onRoleChange,
   onUndo,
   canUndo,
   lastUndoLabel,
@@ -61,11 +58,8 @@ export default function RoleShell({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          {roles && roles.length > 1 ? (
-            <RoleSwitcher role={role} roles={roles} onChange={onRoleChange} />
-          ) : null}
           <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
       </header>
 
