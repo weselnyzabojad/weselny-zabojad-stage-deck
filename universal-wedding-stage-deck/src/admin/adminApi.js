@@ -6,6 +6,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
 
+// Inlined (not imported) so Vite/Rollup can statically remove the demo branches
+// and the dynamic import entirely from production builds.
+const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
+
 const AUTH_STORAGE_KEY = 'wzsd:v1:admin-auth';
 
 let client = null;
@@ -20,6 +24,7 @@ export function getAdminConfig(env = import.meta.env) {
 }
 
 export function adminConfigured(env = import.meta.env) {
+  if (ADMIN_DEMO) return true;
   return getAdminConfig(env).configured;
 }
 
@@ -42,6 +47,10 @@ export function getAdminClient(env = import.meta.env) {
 }
 
 export async function getAdminSession() {
+  if (ADMIN_DEMO) {
+    const { demoSession } = await import('./adminDemoApi.js');
+    return demoSession();
+  }
   const supabase = getAdminClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
@@ -49,12 +58,17 @@ export async function getAdminSession() {
 }
 
 export function onAdminAuthChange(handler) {
+  if (ADMIN_DEMO) return () => {};
   const supabase = getAdminClient();
   const { data } = supabase.auth.onAuthStateChange((_event, session) => handler(session));
   return () => data.subscription.unsubscribe();
 }
 
 export async function signInAdmin(email, password) {
+  if (ADMIN_DEMO) {
+    const { demoSession } = await import('./adminDemoApi.js');
+    return demoSession();
+  }
   const supabase = getAdminClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email: String(email).trim(),
@@ -65,12 +79,17 @@ export async function signInAdmin(email, password) {
 }
 
 export async function signOutAdmin() {
+  if (ADMIN_DEMO) return;
   const supabase = getAdminClient();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 
 export async function getMfaState() {
+  if (ADMIN_DEMO) {
+    const { demoMfaState } = await import('./adminDemoApi.js');
+    return demoMfaState();
+  }
   const supabase = getAdminClient();
   const [{ data: assurance, error: assuranceError }, { data: factors, error: factorsError }] =
     await Promise.all([
@@ -91,6 +110,7 @@ export async function getMfaState() {
 }
 
 export async function enrollTotp() {
+  if (ADMIN_DEMO) return { factorId: 'demo-factor', qrCode: null, secret: null };
   const supabase = getAdminClient();
   const { data, error } = await supabase.auth.mfa.enroll({
     factorType: 'totp',
@@ -105,6 +125,7 @@ export async function enrollTotp() {
 }
 
 export async function verifyTotp(factorId, code) {
+  if (ADMIN_DEMO) return { ok: true };
   const supabase = getAdminClient();
   const { data: challenge, error: challengeError } = await supabase.auth.mfa.challenge({
     factorId,
@@ -121,6 +142,7 @@ export async function verifyTotp(factorId, code) {
 }
 
 export async function challengeExistingFactor(code) {
+  if (ADMIN_DEMO) return { ok: true };
   const state = await getMfaState();
   const factor = state.factors[0];
   if (!factor) throw new Error('No verified TOTP factor on this account.');
@@ -156,29 +178,57 @@ export async function callAdmin(action, payload = {}) {
 }
 
 export async function listAdminData() {
+  if (ADMIN_DEMO) {
+    const { demoList } = await import('./adminDemoApi.js');
+    return demoList();
+  }
   return callAdmin('list');
 }
 
 export async function publishWedding(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('publish');
+  }
   return callAdmin('publish', payload);
 }
 
 export async function duplicateWedding(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('duplicate');
+  }
   return callAdmin('duplicate', payload);
 }
 
 export async function archiveWedding(weddingId) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('archive');
+  }
   return callAdmin('archive', { weddingId });
 }
 
 export async function deleteWedding(weddingId) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('delete');
+  }
   return callAdmin('delete', { weddingId });
 }
 
 export async function rotatePins(weddingId, roles, pins = null) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('rotate_pins');
+  }
   return callAdmin('rotate_pins', { weddingId, roles, ...(pins ? { pins } : {}) });
 }
 
 export async function revokeSession(jti) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('revoke_session');
+  }
   return callAdmin('revoke_session', { jti });
 }

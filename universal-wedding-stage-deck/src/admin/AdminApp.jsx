@@ -35,6 +35,9 @@ import {
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
+
+// Inlined so production builds drop the demo banner and never reference it.
+const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
 import {
   AdminConfirmDialog,
   AdminDuplicateDialog,
@@ -878,6 +881,11 @@ export default function AdminApp() {
   return (
     <div className="min-h-screen bg-page text-slate-100">
       <header className="sticky top-0 z-20 border-b border-line bg-card px-4 py-3">
+        {ADMIN_DEMO ? (
+          <div className="mx-auto mb-2 max-w-6xl rounded border border-amber-700 bg-amber-950/60 px-3 py-1.5 text-[11px] text-amber-200">
+            Demo preview — sample data only. Actions are disabled and nothing is sent to Supabase.
+          </div>
+        ) : null}
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2">
           <div>
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
