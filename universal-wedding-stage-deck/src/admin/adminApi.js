@@ -286,14 +286,6 @@ export async function publishWedding(payload) {
   return callAdmin('publish', payload);
 }
 
-export async function duplicateWedding(payload) {
-  if (ADMIN_DEMO) {
-    const { demoMutate } = await import('./adminDemoApi.js');
-    demoMutate('duplicate');
-  }
-  return callAdmin('duplicate', payload);
-}
-
 export async function archiveWedding(weddingId) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');

@@ -92,10 +92,11 @@ describe('issue #82 Google Docs-first parsing and AI-prompt cleanup', () => {
     }
   });
 
-  it('keeps the manual JSON paste fallback in the admin surface', () => {
-    const admin = read('src/admin/AdminApp.jsx');
-    expect(admin).toContain('JSON.parse(cartridgeJson)');
-    expect(admin).toContain('validateCartridge(cartridge)');
-    expect(admin).toContain('Cartridge JSON');
+  it('keeps the manual JSON paste fallback for publishing revisions', () => {
+    const dialogs = read('src/admin/AdminDialogs.jsx');
+    expect(dialogs).toContain('JSON.parse(cartridgeJson)');
+    expect(read('src/admin/AdminApp.jsx')).toContain('validateCartridge(cartridge)');
+    expect(dialogs).toContain('Cartridge JSON');
+    expect(read('src/admin/AdminApp.jsx')).not.toContain('CreateWeddingForm');
   });
 });
