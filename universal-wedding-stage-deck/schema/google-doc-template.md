@@ -72,16 +72,6 @@ Props: Veil, Bow ties, Test cards
 | test | Test ZgodnoĹ›ci | 15 | true | true |
 | winner_photo | Winner photo | 5 | false | false |
 
-## MANDATORY STEPS
-
-| Field | Time |
-| --- | --- |
-| First guests arrival | 15:30 |
-| Obiad weselny | 18:30 |
-| Pierwsza kolacja | 21:30 |
-| Druga kolacja | 23:30 |
-| Trzecia kolacja |  |
-
 ## TIMELINE
 
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
@@ -367,3 +357,13 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 ```json
 {}
 ```
+
+## MANDATORY STEPS
+
+| Field | Time |
+| --- | --- |
+| First guests arrival | 15:30 |
+| Obiad weselny | 18:30 |
+| Pierwsza kolacja | 21:30 |
+| Druga kolacja | 23:30 |
+| Trzecia kolacja |  |

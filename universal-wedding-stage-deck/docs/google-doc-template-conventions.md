@@ -80,6 +80,7 @@ Canonical order and mapping:
 | 25 | `## PRIVACY` | no | `privacy` |
 | 26 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
 | 27 | `## EXTENSIONS` | no | `extensions` |
+| 28 | `## MANDATORY STEPS` | no | `mandatorySteps` |
 
 The machine-readable source of truth is `SECTION_MANIFEST` in
 `src/lib/googleDocTemplate.js`. The template validator fails if a marker is

@@ -198,6 +198,13 @@ export const SECTION_MANIFEST = Object.freeze([
     schemaPath: ['extensions'],
     purpose: 'Forward-compatible JSON for app-specific additions.',
   },
+  {
+    order: 28,
+    marker: 'MANDATORY STEPS',
+    required: false,
+    schemaPath: ['mandatorySteps'],
+    purpose: 'Exact-hour first-arrival and kitchen service obligations.',
+  },
 ]);
 
 export const SECTION_ORDER = Object.freeze(SECTION_MANIFEST.map((section) => section.marker));
