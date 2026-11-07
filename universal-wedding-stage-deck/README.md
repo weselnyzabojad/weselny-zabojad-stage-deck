@@ -654,7 +654,10 @@ PIN collisions no longer select a local cartridge: the room is keyed by
    adds the public guest request queue and rate-limit log;
    [`202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql)
    adds monotonic cartridge revisions, publication metadata, safe backfill and
-   the atomic `stage_deck_publish_cartridge(...)` RPC used by `admin_api`.
+   the atomic `stage_deck_publish_cartridge(...)` RPC used by `admin_api`;
+   [`202611060004_drive_publication.sql`](supabase/migrations/202611060004_drive_publication.sql)
+   adds Drive provenance, the restorable `cartridge_revisions` history and the
+   provenance-aware publish RPC.
 3. Deploy the functions: `supabase functions deploy join_room`,
    `supabase functions deploy admin_api`,
    `supabase functions deploy admin_drive` and
@@ -722,6 +725,29 @@ curl -X POST "$SUPABASE_URL/functions/v1/admin_drive" \
 - Preview shows the file id/name/MIME/modified time/version/checksum, validation
   errors and parsed section or cartridge summary. It never publishes or mutates a
   wedding. Stage-role devices have no Drive access.
+
+**Drive publication, diff and restore (issue #170)**
+- A validated cartridge JSON preview can be published from `/deck/admin` after
+  selecting the target wedding. The owner sees identity/step/speech/role-visibility
+  changes and whether the current live step or speech would disappear.
+- Publication requires fresh TOTP re-auth and sends `expectedRevision` plus the
+  exact Drive version/checksum through `admin_api`. The server re-reads the file
+  and returns `409 drive_source_changed` instead of publishing stale preview
+  content.
+- The previous published snapshot is stored automatically in
+  `cartridge_revisions`. **Restore previous** publishes that snapshot as another
+  audited revision through the same validation/stale/audit path; it never
+  activates a local file.
+- Provenance (`driveFileId`, name, MIME type, modified time, version/checksum,
+  imported at/by) is stored in `cartridge_source_metadata`, never credentials or
+  tokens. Live state, PINs, room code and role sessions survive content-only
+  publication.
+- **Check Drive for changes** compares metadata only. There is no watcher,
+  auto-refresh or background publication during an event.
+- End-to-end smoke test: share a test JSON source → preview → inspect diff →
+  fresh-MFA publish → confirm all online roles update → take a role offline and
+  confirm catch-up after reconnect → publish **Restore previous** and confirm a
+  new audited revision.
 
 6. Insert the owner account into `app_admins` (no self-signup):
    `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`

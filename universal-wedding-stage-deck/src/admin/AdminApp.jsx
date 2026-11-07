@@ -11,6 +11,7 @@ import {
   getMfaState,
   onAdminAuthChange,
   publishWedding,
+  restorePreviousRevision,
   revokeSession,
   rotatePins,
   signInAdmin,
@@ -751,6 +752,26 @@ export default function AdminApp() {
     }
   };
 
+  const handleRestorePrevious = (wedding) => {
+    setDialogError('');
+    setConfirmDialog({
+      title: 'Restore previous cartridge revision',
+      description: `Restore the last backed-up cartridge for ${wedding.couple || wedding.wedding_id}? This creates a new audited revision and propagates through the normal role sync path.`,
+      confirmLabel: 'Restore previous revision',
+      onConfirm: () => {
+        setConfirmDialog(null);
+        askMfa(async () => {
+          const result = await restorePreviousRevision(
+            wedding.wedding_id,
+            Number(wedding.cartridge_revision ?? 0),
+          );
+          await load();
+          pushToast(`Restored backup as revision ${result.cartridgeRevision}.`, 'success');
+        });
+      },
+    });
+  };
+
   const handleDuplicateSubmit = async ({ weddingId, couple, date }) => {
     const wedding = duplicateDialog;
     if (!wedding) return;
@@ -1064,7 +1085,12 @@ export default function AdminApp() {
               </label>
             </div>
 
-            <AdminDrivePanel />
+            <AdminDrivePanel
+              weddings={data?.weddings ?? []}
+              onRequestMfa={askMfa}
+              onPublished={() => load()}
+              onNotify={pushToast}
+            />
 
             {showCreate ? (
               <CreateWeddingForm
@@ -1159,6 +1185,13 @@ export default function AdminApp() {
                         className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-white"
                       >
                         Replace cartridge
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleRestorePrevious(wedding)}
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
+                      >
+                        Restore previous
                       </button>
                       <button
                         type="button"

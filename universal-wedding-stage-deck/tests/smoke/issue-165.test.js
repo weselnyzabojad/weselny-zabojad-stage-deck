@@ -359,6 +359,7 @@ describe('issue #165 publishCartridge', () => {
       oldRevision: 2,
       newRevision: 3,
       source: 'admin_json',
+      sourceMetadata: null,
       expectedRevision: 2,
       created: false,
     });

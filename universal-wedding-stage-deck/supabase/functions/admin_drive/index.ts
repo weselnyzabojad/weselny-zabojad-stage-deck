@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const action = typeof body?.action === 'string' ? body.action : '';
-    if (!['status', 'metadata', 'list', 'preview'].includes(action)) {
+    if (!['status', 'metadata', 'list', 'preview', 'check'].includes(action)) {
       return json({ error: 'Unsupported Drive action.' }, 400);
     }
 
@@ -115,6 +115,28 @@ Deno.serve(async (req) => {
         },
         400,
       );
+    }
+
+    if (action === 'check') {
+      const file = await connector.getFileMetadata(fileId);
+      const expectedVersion =
+        typeof body?.expectedVersion === 'string' ? body.expectedVersion.trim() : '';
+      const expectedChecksum =
+        typeof body?.expectedChecksum === 'string' ? body.expectedChecksum.trim() : '';
+      const versionChanged = Boolean(expectedVersion && expectedVersion !== file.version);
+      const checksumChanged = Boolean(expectedChecksum && expectedChecksum !== file.md5Checksum);
+      return json({
+        ok: true,
+        action,
+        checkedAt: new Date().toISOString(),
+        file,
+        changed: versionChanged || checksumChanged,
+        reason: versionChanged
+          ? 'version'
+          : checksumChanged
+            ? 'checksum'
+            : 'unchanged',
+      });
     }
 
     if (action === 'preview') {

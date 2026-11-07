@@ -227,6 +227,38 @@ export async function previewDriveSource(fileId) {
   return callAdminDrive('preview', { fileId });
 }
 
+export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
+  if (ADMIN_DEMO) return { changed: false, reason: 'unchanged', file: null };
+  return callAdminDrive('check', { fileId, expectedVersion, expectedChecksum });
+}
+
+export async function getRevisionContext(weddingId) {
+  if (ADMIN_DEMO) {
+    return { wedding: null, liveState: null, history: [] };
+  }
+  return callAdmin('revision_context', { weddingId });
+}
+
+export async function publishDriveRevision(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('publish');
+  }
+  return callAdmin('publish_drive', payload);
+}
+
+export async function restorePreviousRevision(weddingId, expectedRevision, revision = null) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('publish');
+  }
+  return callAdmin('restore_revision', {
+    weddingId,
+    expectedRevision,
+    ...(Number.isInteger(revision) ? { revision } : {}),
+  });
+}
+
 export async function publishWedding(payload) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');
