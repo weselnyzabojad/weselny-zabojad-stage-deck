@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `afff23f` (DJ view rework #214–#219)
+**Aligned with:** `master` @ `4abf4c2` (DJ view rework alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -82,6 +82,15 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217) | DJ: remove unselected sections and fix scrolling |
 | [#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218) | DJ VIP: add a guest song-request bar below the top bar |
 | [#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219) | DJ view: enforce Standard vs VIP restrictions |
+| [#226](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/226) | Photographer: read-only MC-style step timeline |
+| [#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227) | Photographer: remove selected sections and keep approved UI |
+| [#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228) | Photographer: move photo-plan details into step cards |
+| [#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229) | Photographer: sunset lifecycle and shared mini-session override |
+| [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Photographer/MC: group-photo step rework TODO |
+| [#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231) | Media roles: Photographer 1, Photographer 2 and Cameraman |
+| [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) | Photographer: DJ VIP parity and feature gates |
+| [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Media team: future rework TODO |
+| [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) | DJ: remove Reel Clock from Standard and VIP |
 
 ### Responsive phone / pocket plan
 
@@ -562,6 +571,96 @@ Implementation issues:
 - [#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217) — section removal and scroll fix;
 - [#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218) — VIP guest request bar;
 - [#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219) — Standard/VIP restriction audit.
+
+### Photographer / media view rework (decision, 2026-11-07)
+
+The Photographer is treated as a **VIP companion role by default**: it gets the
+selected DJ VIP top-bar additions and VIP feature gates where role-appropriate,
+but not the DJ-specific guest request bar.
+
+**Main timeline.** Remove the Reel Clock/summary card from Photographer desktop
+and pocket. The MC-style step focus stack becomes the primary content:
+done/previous, current focal step and next/upcoming cards, read-only. The
+top-bar clock stays if present.
+([#226](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/226))
+
+**Approved UI.** Remove:
+
+- Oczepini cues card;
+- Venue access card;
+- Stage ping banner;
+- Media team card for now;
+- the "Read-only timeline" card wrapper once the main step timeline is primary.
+
+Keep the footer strip and Sunset & Golden Hour. Media-team data stays in the
+model for a future rework. Add project TODOs for the Media team and the
+group-photo step.
+([#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227),
+[#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233))
+
+**Photo plan into steps.** Delete the standalone Photo plan card and render each
+plan element inside its mapped step card: mini session, group photos, speed
+foto, special effects and guest coverage. Use an explicit `stepId` association
+when available; otherwise use a documented deterministic title/keyword mapping.
+([#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228))
+
+**Sunset & Golden Hour.** Keep the card in its current location. It disappears
+automatically once the mini session is done. The photographer can overwrite the
+chosen mini-session hour/time; the override is shared across all media
+services/devices (both photographers and cameraman), does not mutate the
+published cartridge, and writes an audit-log entry with actor, old value, new
+value and timestamp so it can be traced later.
+([#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229))
+
+**Group photo TODO.** The group-photo step is critical for the MC and
+Photographer and needs a dedicated design pass before implementation: sequencing,
+MC controls, Photographer view, group order, location, timing, minimum group
+size and multi-media assignments. This is tracked as a planning TODO.
+([#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230))
+
+**Media roles.** Support two photographers and a cameraman as separate media
+roles with their own join PINs and views: Photographer 1, Photographer 2 and
+Cameraman. All three use the same feature set; there is no photo/video
+capability difference. Update role labels, join/QR cards, role tokens, presence
+and admin PIN management. The legacy single Photographer join should map safely
+to Photographer 1.
+([#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231))
+
+**VIP parity.** Photographer gets the selected MC-derived top-bar additions:
+cultural chips, Speeches chip and the authenticated PIN/sign-out control. VIP
+feature gates treat media roles as VIP where relevant. The DJ guest request bar
+is not added to Photographer unless explicitly requested later.
+([#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232))
+
+**DJ Reel Clock removal.** Remove the Reel Clock summary card from both DJ
+Standard and DJ VIP desktop and pocket. Keep the top-bar clock, timeline and
+remaining approved DJ sections.
+([#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234))
+
+**Cross-view disposition.**
+
+| Element | Photographer | Other views |
+| --- | --- | --- |
+| Reel Clock summary | Removed | Also removed from both DJ tiers; kept where used by MC |
+| Oczepini cues | Removed | Oczepiny remains in MC cultural/timeline data |
+| Venue access | Removed | Not affected |
+| Stage ping banner | Removed | Receiving banner stays in other roles |
+| Media team card | Removed for now; TODO | Data model retained |
+| Photo plan card | Removed; details move into step cards | Cartridge data unchanged |
+| Sunset & Golden Hour | Kept with expiry + shared override | n/a |
+| Footer | Kept | n/a |
+| Media roles | Photo 1, Photo 2, Cameraman | MC/DJ back-office role management updated |
+
+Implementation issues:
+- [#226](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/226) — read-only MC-style step timeline;
+- [#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227) — remove selected sections;
+- [#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228) — photo plan into step cards;
+- [#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229) — sunset lifecycle and mini-session override;
+- [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) — group-photo TODO;
+- [#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231) — separate media roles;
+- [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) — VIP parity;
+- [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) — Media team TODO;
+- [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) — remove DJ Reel Clock.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
