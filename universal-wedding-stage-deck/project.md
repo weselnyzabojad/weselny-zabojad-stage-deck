@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `f0d1cb3` (before sunset, banner and bar refinements)
+**Aligned with:** `master` @ `0e6a473` (before the couple-language label change)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -64,6 +64,7 @@ sections below and in git history.
 | [#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390) | Keep sunset/mini-session data out of step planning | Implementation |
 | [#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391) | Secondary bar full width and edge alignment | Implementation |
 | [#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392) | Remove children notice from hard-anchor banner | Implementation |
+| [#394](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/394) | Rename couple language label to Couple common languages | Implementation |
 
 ### Planning TODO register
 
@@ -1457,7 +1458,7 @@ the EN/FR/PL UI language toggle. Redesign it so users understand these are the
 languages used to discuss with the customer/newlyweds:
 
 - use a conversational icon/logo (for example 🗣️/💬) and an explicit localized
-  label such as "Couple languages";
+  label such as "Couple common languages";
 - use a clearly different visual treatment from the segmented UI language
   switch, e.g. label + language names/pills, not a toggle;
 - keep it in the center identity block below the names and above the date row;
