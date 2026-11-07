@@ -82,6 +82,7 @@ export default function StageDeck({
     sendStagePing,
     swapWithNext,
     selectSpeech,
+    setMediaOverride,
     savedLocally,
     syncStatus,
     syncError,
@@ -476,6 +477,8 @@ export default function StageDeck({
             speechMode={speechMode}
             activeSpeechId={liveState.active_speech_id}
             authControl={authControl}
+            mediaOverrides={liveState.media_overrides}
+            onMiniSessionOverride={(time) => setMediaOverride('miniSessionTime', time)}
             {...roleProps}
           />
         </AppErrorBoundary>

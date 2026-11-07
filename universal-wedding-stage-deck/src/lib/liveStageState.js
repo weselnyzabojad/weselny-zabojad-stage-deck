@@ -125,6 +125,7 @@ export function createLiveState(steps, overrides = {}) {
     stage_ping: null,
     step_order: steps.map((step) => step.id),
     active_speech_id: null,
+    media_overrides: {},
     mutation_log: [],
     ...overrides,
   };
@@ -189,6 +190,10 @@ export function normalizeLiveState(raw, steps, context = {}) {
     stage_ping: normalizeStagePing(raw.stage_ping),
     step_order: order,
     active_speech_id: activeSpeech,
+    media_overrides:
+      raw.media_overrides && typeof raw.media_overrides === 'object'
+        ? raw.media_overrides
+        : {},
     mutation_log: mutationLog,
   };
 }
