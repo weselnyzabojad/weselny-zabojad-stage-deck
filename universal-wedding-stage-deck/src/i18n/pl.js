@@ -161,6 +161,8 @@ const pl = {
   'error.reference': 'Referencja: {id}',
 
   'a11y.skipToContent': 'Przejdź do głównej treści',
+  'dj.laptopRequiredTitle': 'DJ Standard wymaga laptopa',
+  'dj.laptopRequiredBody': 'Ten widok jest tylko na komputer. Otwórz deck na laptopie lub tablecie; DJ VIP zachowuje widok pocket.',
   'dj.soloTitle': 'Pakiet solo.',
   'dj.soloBody':
     'Host i DJ działają z jednego urządzenia — otwórz widok MC, aby uzyskać skrypty i kontrolę opóźnienia. Szczegóły utworów pozostają na poziomie Standard.',

@@ -243,6 +243,22 @@ export default function DjBoothView({
     return wideContent;
   }
 
+  if (!isVip) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+        <section className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
+          <div className="text-3xl" aria-hidden="true">💻</div>
+          <h1 className="mt-2 font-heading text-lg font-bold text-white">
+            {t('dj.laptopRequiredTitle')}
+          </h1>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            {t('dj.laptopRequiredBody')}
+          </p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <RoleShell
       compact

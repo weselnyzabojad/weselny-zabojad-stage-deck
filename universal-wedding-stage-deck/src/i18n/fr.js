@@ -163,6 +163,8 @@ const fr = {
   'error.reference': 'Référence : {id}',
 
   'a11y.skipToContent': 'Aller au contenu principal',
+  'dj.laptopRequiredTitle': 'DJ Standard nécessite un ordinateur',
+  'dj.laptopRequiredBody': 'Cette vue est réservée au bureau. Ouvrez le deck sur un ordinateur portable ou une tablette ; DJ VIP conserve une vue pocket.',
   'dj.soloTitle': 'Formule solo.',
   'dj.soloBody':
     "L'hôte et le DJ utilisent un seul appareil — ouvrez la vue MC pour les scripts et le contrôle du décalage. Le détail des morceaux reste au niveau Standard.",
