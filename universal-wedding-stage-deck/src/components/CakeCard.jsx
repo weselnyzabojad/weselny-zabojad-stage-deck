@@ -77,9 +77,6 @@ export default function CakeCard({ cake, compact = false }) {
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-amber-200">
             🎂 Cake
           </span>
-          <span className="font-mono text-[11px] text-slate-300">
-            {cake.time ?? '—'} → {cake.serveTime ?? '—'}
-          </span>
         </div>
         <div className="mt-1 font-heading text-sm font-semibold leading-tight text-white">
           {song}
@@ -131,19 +128,6 @@ export default function CakeCard({ cake, compact = false }) {
         {song}
       </div>
       <SyncNote cake={cake} />
-
-      <div className="mt-2 grid grid-cols-2 gap-2">
-        <div className="rounded-lg border border-line bg-page p-2">
-          <div className="text-[9px] uppercase tracking-wider text-slate-500">Cutting time</div>
-          <div className="font-mono text-base font-semibold text-white">{cake.time ?? '—'}</div>
-        </div>
-        <div className="rounded-lg border border-line bg-page p-2">
-          <div className="text-[9px] uppercase tracking-wider text-slate-500">Serve time</div>
-          <div className="font-mono text-base font-semibold text-white">
-            {cake.serveTime ?? '—'}
-          </div>
-        </div>
-      </div>
 
       <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
         <SparklersChip sparklers={cake.sparklers} />
