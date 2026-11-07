@@ -60,7 +60,7 @@ function CleanChip({ cleanVersions }) {
 export default function MusicPolicyCard({ policy, compact = false }) {
   if (!policy?.hasData) return null;
 
-  const { mustPlay, doNotPlay, requestStatus, cleanVersions, licensing } = policy;
+  const { mustPlay, doNotPlay, requestStatus, cleanVersions } = policy;
 
   if (compact) {
     return (
@@ -178,11 +178,6 @@ export default function MusicPolicyCard({ policy, compact = false }) {
 
       <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
         <CleanChip cleanVersions={cleanVersions} />
-        {licensing ? (
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
-            📄 {licensing}
-          </span>
-        ) : null}
       </div>
     </section>
   );
