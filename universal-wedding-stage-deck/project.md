@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `5205c4f` (mobile 3D current-step decision)
+**Aligned with:** `master` @ `0ae9630` (admin laptop-only decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -141,11 +141,12 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/329) | Localize mandatory, ceremony, games and entrance cues |
 | [#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330) | Refresh README and active technical docs |
 | [#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331) | Mobile: shared compact top bar for every role view |
-| [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332) | Mobile: admin, dev switcher and secondary panel density |
+| [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332) | Mobile: dev switcher and secondary configuration density |
 | [#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333) | Mobile: consistent cultural and speech pill grid |
 | [#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334) | Mobile: harden drawers, modals and floating panels |
 | [#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335) | Mobile: 3D current-step card across all role views |
-| [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews, admin boundary and regression coverage |
+| [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews and regression coverage |
+| [#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337) | Admin panel: restrict access to laptops/desktops only |
 
 ### Responsive phone / pocket plan
 
@@ -1255,11 +1256,11 @@ Apply the shared mobile wrapper to MC, DJ Standard, DJ VIP, Photographer 1,
 Photographer 2/Cameraman, Speaker and Venue Manager.
 ([#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335))
 
-**Secondary surfaces.** Dev role previews inherit the shared mobile effect. Any
-admin-embedded role preview or future Admin current-step card must reuse the same
-wrapper. Admin library, presence and audit cards are not step cards and stay
-flat. Add viewport regression coverage for 320×568 and 375×667, plus manual QA
-for touch scrolling, advance and reduced motion.
+**Secondary surfaces.** Dev role previews inherit the shared mobile effect. Admin
+is laptop/desktop-only and must not gain any mobile 3D preview ([#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337)).
+Admin library, presence and audit cards are not step cards and stay flat. Add
+viewport regression coverage for 320×568 and 375×667, plus manual QA for touch
+scrolling, advance and reduced motion.
 ([#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
@@ -1342,11 +1343,11 @@ identity is condensed or hidden before any control is allowed to overflow. Wide
 desktop layouts remain unchanged.
 ([#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331))
 
-**Admin, dev and secondary surfaces.** Admin, the development view switcher,
-Venue Manager configuration and other secondary panels reuse the same mobile
+**Dev and secondary surfaces.** The development view switcher, Venue Manager
+configuration and other non-admin secondary panels reuse the same mobile
 spacing, type scale, radius and touch-target contract without forcing stage-only
-clock/PIN data into admin. Admin navigation and session controls must not become
-a tall header stack.
+clock/PIN data into non-stage screens. Admin is explicitly excluded from mobile
+support and is laptop/desktop-only.
 ([#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332))
 
 **Status pills.** STO LAT, GORZKO, OCZEPINY and DISCOURS use a stable 2-column
@@ -1361,6 +1362,21 @@ mandatory-update popups, banners, bottom actions and the dev switcher use
 targets. Floating panels must not overlap each other or the bottom navigation on
 narrow screens.
 ([#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334))
+
+### Admin laptop-only access (decision, 2026-11-07)
+
+The owner admin panel (\`/deck/admin\`) is a laptop/desktop-only surface. It must
+not be accessible or operable on mobile or narrow-tablet viewports.
+
+- Show a clear accessible "laptop/desktop required" fallback instead of the
+  admin login, tabs or data.
+- Do not start admin auth, MFA or API calls while the viewport is blocked.
+- Use an explicit desktop viewport capability rather than fragile user-agent
+  sniffing.
+- Treat this as a UX access restriction; server-side auth/MFA remains the real
+  security boundary.
+- Keep every stage role view fully mobile-capable.
+([#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337))
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
@@ -1547,8 +1563,8 @@ The separate **Pocket** role is removed. Each role keeps one responsive view:
 
 The unified mobile header, status-pill grid and overlay sizing rules are defined
 in **Unified mobile layout (decision, 2026-11-07)** above. Owner admin
-(`/deck/admin`) is desktop-first but uses the same compact mobile chrome on
-narrow viewports.
+(`/deck/admin`) is laptop/desktop-only and must show a blocked-screen fallback on
+mobile ([#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337)).
 ([#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331),
 [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332),
 [#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333),
