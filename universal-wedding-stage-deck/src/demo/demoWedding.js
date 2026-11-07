@@ -247,6 +247,7 @@ export const DEMO_WEDDING = {
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
+  childrenExpected: true,
   mandatorySteps: {
     firstGuestsArrival: "15:30",
     cakeServiceMode: "KITCHEN_RETURN",

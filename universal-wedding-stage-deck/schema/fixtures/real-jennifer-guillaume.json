@@ -733,5 +733,6 @@
       "firstSupper": "21:30",
       "secondSupper": "23:30"
     }
-  }
+  },
+  "childrenExpected": true
 }

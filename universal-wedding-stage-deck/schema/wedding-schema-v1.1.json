@@ -117,6 +117,10 @@
         "$ref": "#/$defs/hardAnchor"
       }
     },
+    "childrenExpected": {
+      "type": "boolean",
+      "description": "Whether children are expected at the wedding."
+    },
     "steps": {
       "type": "array",
       "minItems": 1,
