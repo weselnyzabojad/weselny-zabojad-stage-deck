@@ -48,7 +48,7 @@ const pl = {
   'common.retry': 'Ponów',
   'common.unknown': 'Nieznane',
   'couple.wedding': 'Wesele:',
-  'couple.languages': 'Języki pary',
+  'couple.languages': 'Wspólne języki pary',
 
   'drift.onTime': 'O CZASIE',
   'drift.late': '+{minutes} min OPÓŹNIENIA',
