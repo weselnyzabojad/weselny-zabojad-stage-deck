@@ -52,8 +52,20 @@ Copy `.env.example` to `.env.local` and provide the required values:
 If the Supabase values are missing, the app stays local-only and the sync badge
 shows **Local only**.
 
+Validate the local client configuration without printing any secret values:
+
+```sh
+npm run validate:env
+```
+
+Use `npm run validate:env -- --allow-missing` for a local-only checkout. The
+script rejects missing values, malformed URLs, invalid deck modes and any
+server secret placed behind a `VITE_*` variable.
+
 Server-side Edge Function secrets are documented in `.env.example` and must never
-use the `VITE_` prefix.
+use the `VITE_` prefix. Follow
+[`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md) for the
+complete setup, deployment and troubleshooting path.
 
 ---
 
@@ -236,6 +248,8 @@ See [`project.md`](project.md) and [`docs/`](docs/) for the full decisions.
 ## Project documentation
 
 - [`project.md`](project.md) — current status, decisions and roadmap.
+- [`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md)
+  — environment variables, server secrets and full admin deployment setup.
 - [`schema/README.md`](schema/README.md) — cartridge schema and fixtures.
 - [`docs/google-doc-template-conventions.md`](docs/google-doc-template-conventions.md)
   — Google Doc template parser contract.
