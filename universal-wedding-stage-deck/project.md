@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `a87f9b2` (mandatory-data embedding and secondary control bar)
+**Aligned with:** `master` @ `f0d1cb3` (before sunset, banner and bar refinements)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -61,6 +61,9 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
+| [#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390) | Keep sunset/mini-session data out of step planning | Implementation |
+| [#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391) | Secondary bar full width and edge alignment | Implementation |
+| [#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392) | Remove children notice from hard-anchor banner | Implementation |
 
 ### Planning TODO register
 
@@ -597,8 +600,10 @@ automatically once the mini session is done. The photographer can overwrite the
 chosen mini-session hour/time; the override is shared across all media
 services/devices (both photographers and cameraman), does not mutate the
 published cartridge, and writes an audit-log entry with actor, old value, new
-value and timestamp so it can be traced later.
-([#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229))
+value and timestamp so it can be traced later. These values are photographer
+decision support only; they must not influence step planning.
+([#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229),
+[#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390))
 
 **Group-photo step (implemented).** The group-photo moment is a normal
 timeline step: it starts at its planned timeline time like every other step and
@@ -793,6 +798,27 @@ DJ VIP keeps only the mandatory data it is allowed to see, embedded the same
 way. The removed card must not be replaced by a duplicate page-level strip.
 Implemented in #384.
 ([#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384))
+
+### Sunset decision-support and bar refinements (decision, 2026-11-07)
+
+**Sunset data is decision support only.** Sunset, golden hour, civil twilight
+and mini-session latest-start values must not infer, generate, move, constrain or
+recalculate step planning, durations, hard anchors, drift or timeline order.
+They remain informational in the Photographer/Cameraman Sunset & Golden Hour
+card and the shared mini-session override.
+([#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390))
+
+**Hard-anchor banner children notice removed.** Delete the
+`Children expected — keep them clear of key moments` element from the
+collision/compression banner. The central Children expected element in the
+secondary bar remains; step-specific children cues are unchanged.
+([#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392))
+
+**Secondary bar uses full width.** The shared secondary control bar spans the
+full viewport width with the same horizontal padding as the top bar. Left-side
+controls sit flush left, right-side controls flush right, and the centre group
+stays centred. Remove the `max-w-7xl` cap.
+([#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391))
 
 ### DJ Standard laptop-only and top-bar ring size (decision, 2026-11-07)
 
@@ -1031,9 +1057,11 @@ visibility:
 
 **Photographer children text.** The Photographer/Cameraman children indicator
 shows only **"Children expected"**. Remove the longer explanatory sentence and
-align the communication with the MC pattern. MC keeps its hard-anchor-banner
-placement; no bottom-right MC badge returns.
-([#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307))
+align the communication with the MC pattern. The indicator now lives in the
+shared secondary bar/compact header; the hard-anchor-banner notice is removed and
+no bottom-right badge returns.
+([#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307),
+[#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392))
 
 **Step type model.** This supersedes the earlier ELASTIC/BUFFER/HARD_ANCHOR
 model:
