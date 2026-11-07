@@ -761,5 +761,12 @@
     "closureExtensionAllowed": true,
     "lastSong": "Perfect - Ed Sheeran"
   },
+  "ceremony": {
+    "type": "RELIGIOUS",
+    "mcSupportRequested": true,
+    "mcTranslationHelpRequested": false,
+    "location": "St. Mary Church",
+    "notes": "Full mass; MC introduces the couple at the church door."
+  },
   "childrenExpected": true
 }

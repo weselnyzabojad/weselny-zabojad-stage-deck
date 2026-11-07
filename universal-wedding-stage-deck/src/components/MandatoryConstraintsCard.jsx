@@ -1,4 +1,5 @@
 import { resolveMandatoryConstraints } from '../lib/mandatorySteps.js';
+import { firstArrivalCeremonyNote, resolveCeremony } from '../lib/ceremony.js';
 
 const CAKE_SERVICE_LABELS = {
   KITCHEN_RETURN: 'Kitchen return / plated pieces',
@@ -19,6 +20,7 @@ export default function MandatoryConstraintsCard({
   if (!isMc && !isDjVip) return null;
 
   const constraints = resolveMandatoryConstraints(wedding, override);
+  const ceremonyNote = isMc ? firstArrivalCeremonyNote(resolveCeremony(wedding)) : null;
   const hasArrival = Boolean(constraints.firstGuestsArrival);
   const hasMcDetail =
     isMc &&
@@ -47,6 +49,11 @@ export default function MandatoryConstraintsCard({
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
             Prestation ready (derived):{' '}
             <strong className="font-mono text-white">{constraints.prestationReady}</strong>
+          </span>
+        ) : null}
+        {ceremonyNote ? (
+          <span className="rounded border border-amber-700/60 bg-amber-950/40 px-1.5 py-0.5 text-amber-100">
+            {ceremonyNote}
           </span>
         ) : null}
       </div>
