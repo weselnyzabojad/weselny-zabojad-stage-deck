@@ -40,6 +40,7 @@ import { clearReloadState, loadReloadState } from './lib/reloadState';
 import { resolvePwaReloadBlock } from './lib/pwaUpdate';
 import { setPwaReloadContext } from './lib/pwaUpdateState';
 import { activeSteps } from './lib/liveStageState';
+import { applyTimeAwareStart } from './lib/timeTimeline';
 import { deriveLastKnownStep, saveLastKnownStep } from './lib/lastKnownStep';
 import { resolveEffectiveSyncStatus } from './lib/cartridgeSync';
 import { useI18n } from './i18n/useI18n';
@@ -281,8 +282,15 @@ export default function StageDeck({
     serverTimeOffsetMs,
     serverTimeAvailable,
   });
-  const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
+  const timeline = applyTimeAwareStart(driftReport.entries, {
+    now,
+    eventDateISO: EVENT_DATE_ISO,
+    timeZone: VENUE_TIME_ZONE,
+  });
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
+  const currentEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
+  const nextEntry =
+    activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : timeline.find((entry) => !entry.isDone) ?? null;
   const djOczepinyStatus = resolveOczepinyIndicator({
     wedding: WEDDING,
     now: driftReport.clock?.now ?? null,
