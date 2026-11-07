@@ -112,8 +112,9 @@ export function parseDeckIntent(pathname = '', search = '', baseUrl = '/') {
 
   const roomCode = (params.get('room') || segments[0] || '').trim() || null;
   const role = normalizeRole((params.get('role') || segments[1] || '').trim());
+  const requirePin = params.get('phone') === 'true';
 
-  return { roomCode, role };
+  return { roomCode, role, requirePin };
 }
 
 export { DEFAULT_TTL_MS };

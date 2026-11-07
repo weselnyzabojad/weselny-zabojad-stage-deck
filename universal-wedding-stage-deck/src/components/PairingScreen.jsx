@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import { useI18n } from '../i18n/useI18n';
 
 const PIN_LENGTH = 4;
 
@@ -15,6 +16,7 @@ export default function PairingScreen({
   theme = 'night',
   onToggleTheme,
 }) {
+  const { t } = useI18n();
   const [digits, setDigits] = useState(() => Array(PIN_LENGTH).fill(''));
   const [error, setError] = useState('');
   const [shake, setShake] = useState(false);
@@ -54,7 +56,7 @@ export default function PairingScreen({
   const submit = (value) => {
     if (submittingRef.current) return;
     if (!/^\d{4}$/.test(value)) {
-      setError('Enter all four digits.');
+      setError(t('pairing.errorDigits'));
       return;
     }
 
@@ -65,10 +67,10 @@ export default function PairingScreen({
     try {
       result = onPair(value);
     } catch {
-      result = { ok: false, error: 'Could not pair this device. Try again.' };
+      result = { ok: false };
     }
 
-    if (!result?.ok) fail(result?.error ?? 'Incorrect PIN.');
+    if (!result?.ok) fail(t('pairing.errorIncorrect'));
   };
 
   const handleChange = (index, rawValue) => {
@@ -168,15 +170,16 @@ export default function PairingScreen({
 
           <div className="text-center">
             <span className="text-[10px] uppercase tracking-[0.25em] text-brand-soft font-heading font-semibold">
-              Wedding Stage Deck
+              {t('pairing.stageDeck')}
             </span>
             <h1 className="text-2xl font-heading font-bold text-white mt-2">{wedding.couple}</h1>
-            <p className="text-xs text-slate-400 font-mono mt-1">{wedding.date} · Room pairing</p>
+            <p className="text-xs text-slate-400 font-mono mt-1">{wedding.date} · {t('pairing.roomPairing')}</p>
           </div>
 
           <p className="text-sm text-slate-300 text-center mt-6">
-            Enter the <strong className="text-white">4-digit display PIN</strong> to unlock this
-            device. The cloud room is keyed by the wedding ID, not the PIN.
+            {t('pairing.instructionBefore')}{' '}
+            <strong className="text-white">{t('pairing.pinLabel')}</strong>{' '}
+            {t('pairing.instructionAfter')}
           </p>
 
           <div
@@ -203,7 +206,7 @@ export default function PairingScreen({
                   inputMode="numeric"
                   autoComplete={index === 0 ? 'one-time-code' : 'off'}
                   maxLength={1}
-                  aria-label={`PIN digit ${index + 1} of ${PIN_LENGTH}`}
+                  aria-label={t('pairing.digitLabel', { index: index + 1, total: PIN_LENGTH })}
                   aria-invalid={Boolean(error)}
                   className={`w-16 h-[4.5rem] text-center text-4xl font-mono font-bold rounded-xl border-2 bg-page text-white outline-none transition focus:ring-2 focus:ring-brand/60 ${boxClass}`}
                 />
@@ -225,19 +228,18 @@ export default function PairingScreen({
                 : 'bg-raised text-slate-500 border-line cursor-not-allowed'
             }`}
           >
-            🔓 Pair this device
+            🔓 {t('pairing.submit')}
           </button>
 
           <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-mono text-slate-400">
             <span
               className={`h-2 w-2 rounded-full inline-block ${cloudConfigured ? 'bg-emerald-400' : 'bg-slate-500'}`}
             />
-            <span>{cloudConfigured ? 'Cloud sync configured' : 'Local-only mode — no cloud configured'}</span>
+            <span>{cloudConfigured ? t('pairing.cloudConfigured') : t('pairing.localOnly')}</span>
           </div>
 
           <p className="mt-2 text-center text-[11px] text-slate-500 leading-relaxed">
-            Ask the MC for the PIN. Pairing works offline, and timeline progress stays on this device until a
-            connection returns.
+            {t('pairing.helper')}
           </p>
         </div>
       </div>

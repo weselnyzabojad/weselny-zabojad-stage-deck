@@ -26,7 +26,7 @@ const IS_PRODUCTION = SYNC_CONFIG.isProduction;
 const DECK_INTENT =
   typeof window !== 'undefined'
     ? parseDeckIntent(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
-    : { roomCode: null, role: null };
+    : { roomCode: null, role: null, requirePin: false };
 
 export default function App() {
   const { t } = useI18n();
@@ -34,7 +34,10 @@ export default function App() {
   const [roleSession, setRoleSession] = useState(() =>
     IS_PRODUCTION ? loadRoleSession() : null,
   );
-  const sessionValid = IS_PRODUCTION && isRoleSessionValid(roleSession);
+  const [phoneAuthDone, setPhoneAuthDone] = useState(false);
+  const requireQrPin = DECK_INTENT.requirePin === true && !phoneAuthDone;
+  const sessionValid =
+    IS_PRODUCTION && isRoleSessionValid(roleSession) && !requireQrPin;
   const pairing = usePairing({
     expectedPin: DEFAULT_WEDDING.syncPin,
     weddingId: DEFAULT_WEDDING.weddingId,
@@ -92,6 +95,7 @@ export default function App() {
           onJoined={(session) => {
             saveRoleSession(session);
             setRoleSession(session);
+            setPhoneAuthDone(true);
           }}
         />
       </AppErrorBoundary>
@@ -134,7 +138,7 @@ export default function App() {
     );
   }
 
-  if (!IS_PRODUCTION && !pairing.isPaired) {
+  if (!IS_PRODUCTION && (!pairing.isPaired || requireQrPin)) {
     return (
       <AppErrorBoundary
         scope="pairing"
@@ -143,7 +147,11 @@ export default function App() {
       >
         <PairingScreen
           wedding={DEFAULT_WEDDING}
-          onPair={pairing.pair}
+          onPair={(pin) => {
+            const result = pairing.pair(pin);
+            if (result?.ok) setPhoneAuthDone(true);
+            return result;
+          }}
           cloudConfigured={SYNC_CONFIG.enabled}
           theme={theme}
           onToggleTheme={toggleTheme}

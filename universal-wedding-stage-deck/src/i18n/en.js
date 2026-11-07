@@ -283,6 +283,30 @@ const en = {
   'venueManager.cake.CUT_IN_PLACE': 'Cut in place / guests come',
   'venueManager.prestationHelper': 'Prestation ready is derived automatically 1 hour before first guests arrival.',
   'venueManager.saved': 'Saved',
+
+  'openOnPhone.button': 'Open on phone',
+  'openOnPhone.buttonTitle': 'Open this role on your phone',
+  'openOnPhone.pocketView': 'Pocket view',
+  'openOnPhone.title': 'Open {role} on your phone',
+  'openOnPhone.description': 'Scan this QR to open the same role’s pocket view. This device stays on the current view.',
+  'openOnPhone.qrLabel': 'QR code to open {role} on a phone',
+  'openOnPhone.close': 'Close',
+  'openOnPhone.djVip': 'DJ VIP',
+  'openOnPhone.djStandard': 'DJ Standard',
+
+  'pairing.stageDeck': 'Wedding Stage Deck',
+  'pairing.roomPairing': 'Room pairing',
+  'pairing.instructionBefore': 'Enter the',
+  'pairing.pinLabel': '4-digit display PIN',
+  'pairing.instructionAfter': 'to unlock this device. The cloud room is keyed by the wedding ID, not the PIN.',
+  'pairing.digitLabel': 'PIN digit {index} of {total}',
+  'pairing.submit': 'Pair this device',
+  'pairing.cloudConfigured': 'Cloud sync configured',
+  'pairing.localOnly': 'Local-only mode — no cloud configured',
+  'pairing.helper': 'Ask the MC for the PIN. Pairing works offline, and timeline progress stays on this device until a connection returns.',
+  'pairing.errorDigits': 'Enter all four digits.',
+  'pairing.errorGeneric': 'Could not pair this device. Try again.',
+  'pairing.errorIncorrect': 'Incorrect PIN.',
 };
 
 export default en;
