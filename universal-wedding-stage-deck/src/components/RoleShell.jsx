@@ -35,6 +35,7 @@ export default function RoleShell({
   speechMode = null,
   activeSpeechId = null,
   viewSwitch = null,
+  authControl = null,
   onUndo,
   canUndo,
   lastUndoLabel,
@@ -68,6 +69,7 @@ export default function RoleShell({
           <div className="flex flex-wrap items-center gap-2">
             <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
             {viewSwitch}
+            {authControl}
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           </div>

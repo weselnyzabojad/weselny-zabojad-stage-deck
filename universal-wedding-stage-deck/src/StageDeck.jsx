@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import DevViewSwitcher from './components/DevViewSwitcher';
 import ViewSwitchControl from './components/ViewSwitchControl';
+import RoleSignOutControl from './components/RoleSignOutControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import SpeakerView from './components/SpeakerView';
@@ -20,6 +21,7 @@ import {
 } from './lib/viewRoles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
+import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
 import { resolveContacts } from './lib/contacts';
 import { resolveMusicPolicy } from './lib/musicPolicy';
 import {
@@ -273,6 +275,20 @@ export default function StageDeck({
   });
   const { entries: timeline, activeEntry: currentEntry, nextEntry } = driftReport;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
+  const djOczepinyStatus = resolveOczepinyIndicator({
+    wedding: WEDDING,
+    now: driftReport.clock?.now ?? null,
+    eventDateISO: EVENT_DATE_ISO,
+    timeZone: VENUE_TIME_ZONE,
+  });
+  const authControl = (
+    <RoleSignOutControl
+      isProduction={isProduction}
+      role={baseRole}
+      pin={pairing?.pin ?? null}
+      onSignOut={handleUnpair}
+    />
+  );
   const cakeProtocol = resolveCakeProtocol(WEDDING, timeline, activeIndex);
   const musicPolicy = resolveMusicPolicy(WEDDING, now, {
     eventDateISO: EVENT_DATE_ISO,
@@ -420,6 +436,12 @@ export default function StageDeck({
             songRequestRoomCode={deckIntent.roomCode}
             roomCode={deckIntent.roomCode}
             viewSwitch={viewSwitch}
+            culturalRules={WEDDING.culturalRules}
+            oczepinyStatus={djOczepinyStatus}
+            speeches={speeches}
+            speechMode={speechMode}
+            activeSpeechId={liveState.active_speech_id}
+            authControl={authControl}
             {...roleProps}
           />
         </AppErrorBoundary>
