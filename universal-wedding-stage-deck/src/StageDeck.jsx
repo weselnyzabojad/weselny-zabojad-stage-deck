@@ -423,13 +423,11 @@ export default function StageDeck({
             projectedFinish={driftReport.projectedFinish}
             clock={driftReport.clock}
             musicPolicy={musicPolicy}
-            stagePing={liveState.stage_ping}
             syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             servicePackage={WEDDING.servicePackage}
-            viewVisibility={WEDDING.viewVisibility?.dj}
             theme={theme}
             onToggleTheme={toggleTheme}
             songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
