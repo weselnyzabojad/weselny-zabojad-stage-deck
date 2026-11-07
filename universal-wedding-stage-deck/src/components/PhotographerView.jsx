@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
 import RoleShell from './RoleShell';
@@ -6,7 +6,6 @@ import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
-import TopBarRoleLabel from './TopBarRoleLabel';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -96,24 +95,24 @@ function PhotoPlanBlock({ type, data }) {
       <div className="mt-1 space-y-1 text-[11px]">
         {type === 'miniSession' ? (
           <>
-            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
-            <Row label="Location" value={data.location ?? '—'} />
-            <Row label="Backup" value={data.backupLocation ?? '—'} />
+            <Row label="Duration" value={`${data.durationMin ?? 'â€”'} min`} />
+            <Row label="Location" value={data.location ?? 'â€”'} />
+            <Row label="Backup" value={data.backupLocation ?? 'â€”'} />
             <Row
               label="Latest start"
               value={
                 data.latestStartMinutesBeforeSunset != null
                   ? `${data.latestStartMinutesBeforeSunset} min before sunset`
-                  : '—'
+                  : 'â€”'
               }
             />
           </>
         ) : null}
         {type === 'groupPhotos' ? (
           <>
-            <Row label="Location" value={data.location ?? '—'} />
-            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
-            <Row label="Min group size" value={data.minGroupSize ?? '—'} />
+            <Row label="Location" value={data.location ?? 'â€”'} />
+            <Row label="Duration" value={`${data.durationMin ?? 'â€”'} min`} />
+            <Row label="Min group size" value={data.minGroupSize ?? 'â€”'} />
             {data.groups?.length ? (
               <div className="flex flex-wrap gap-1 pt-1">
                 {data.groups.map((group) => (
@@ -126,16 +125,16 @@ function PhotoPlanBlock({ type, data }) {
         {type === 'speedFoto' ? (
           <>
             {data.description ? <p className="text-slate-300">{data.description}</p> : null}
-            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
-            <Row label="Music" value={data.music ?? '—'} />
+            <Row label="Duration" value={`${data.durationMin ?? 'â€”'} min`} />
+            <Row label="Music" value={data.music ?? 'â€”'} />
           </>
         ) : null}
         {type === 'specialEffects' ? (
           <>
             <div className="flex flex-wrap gap-1">
-              {data.sparklers ? <DeferredBadge>✨ Sparklers</DeferredBadge> : null}
-              {data.fire ? <DeferredBadge>🔥 Fire</DeferredBadge> : null}
-              {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
+              {data.sparklers ? <DeferredBadge>âś¨ Sparklers</DeferredBadge> : null}
+              {data.fire ? <DeferredBadge>đź”Ą Fire</DeferredBadge> : null}
+              {data.heavySmoke ? <DeferredBadge>đź’¨ Smoke</DeferredBadge> : null}
               {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
             </div>
             <Row label="Permit" value={data.permitRequired ? 'Required' : 'Not required'} />
@@ -144,7 +143,7 @@ function PhotoPlanBlock({ type, data }) {
               value={data.venueApproved ? 'Yes' : 'No'}
               tone={data.venueApproved ? 'text-emerald-300' : 'text-amber-200'}
             />
-            <Row label="Safety briefing" value={data.safetyBriefing ?? '—'} />
+            <Row label="Safety briefing" value={data.safetyBriefing ?? 'â€”'} />
           </>
         ) : null}
         {type === 'guestCoverage' ? (
@@ -156,10 +155,10 @@ function PhotoPlanBlock({ type, data }) {
                   ? 'All guests'
                   : data.selectedGuests != null
                     ? `${data.selectedGuests} selected guests`
-                    : '—'
+                    : 'â€”'
               }
             />
-            <Row label="Consent" value={data.consent ?? '—'} />
+            <Row label="Consent" value={data.consent ?? 'â€”'} />
             {data.description ? (
               <p className="text-slate-400">{data.description}</p>
             ) : null}
@@ -295,28 +294,28 @@ export default function PhotographerView({
       />
 
       {visibility.sunset && sunset?.usable && !miniSessionDone ? (
-        <Card title="Light windows" icon="🌅">
+        <Card title="Light windows" icon="đźŚ…">
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-lg border border-line bg-page p-2.5">
               <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? '—'}</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? 'â€”'}</div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? 'â€”'}</div>
             </div>
             <div className="rounded-lg border border-line bg-page p-2.5">
               <div className="text-[9px] uppercase tracking-wider text-slate-500">Golden hour</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? '—'}</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? 'â€”'}</div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? 'â€”'}</div>
             </div>
             <div className="rounded-lg border border-line bg-page p-2.5">
               <div className="text-[9px] uppercase tracking-wider text-slate-500">Civil twilight</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
+              <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? 'â€”'}</div>
             </div>
             <div className="rounded-lg border border-line bg-page p-2.5">
               <div className="text-[9px] uppercase tracking-wider text-slate-500">Mini latest start</div>
               <div className="font-mono text-xl font-bold text-ink">
-                {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
+                {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : 'â€”'}
               </div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? '—'}</div>
+              <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? 'â€”'}</div>
             </div>
           </div>
           <MiniSessionOverride
@@ -336,10 +335,9 @@ export default function PhotographerView({
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
-          <TopBarRoleLabel role={role} />
           <TopBarRoleIdentity role={role} />
         </div>
 
@@ -371,7 +369,7 @@ export default function PhotographerView({
           {visibility.sunset && !miniSessionDone ? (
             <Card
               title="Sunset & golden hour"
-              icon="🌅"
+              icon="đźŚ…"
               aside={
                 sunset ? (
                   <span
@@ -384,7 +382,7 @@ export default function PhotographerView({
             >
               {!sunset || !sunset.usable ? (
                 <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
-                  <p className="font-semibold">Sunset unavailable — check connection.</p>
+                  <p className="font-semibold">Sunset unavailable â€” check connection.</p>
                   <p className="mt-1 text-[11px] text-slate-400">
                     D6: the app never estimates a sunset offline. Refresh the cartridge after the
                     online lookup succeeds.
@@ -395,7 +393,7 @@ export default function PhotographerView({
                   {sunset.status === 'STALE' ? (
                     <p className="mb-2 rounded border border-amber-700 bg-amber-950/60 px-2 py-1 text-[10px] text-amber-200">
                       Cached sunset data is stale
-                      {sunset.lastFetchedAt ? ` · fetched ${sunset.lastFetchedAt}` : ''}. Treat the
+                      {sunset.lastFetchedAt ? ` Â· fetched ${sunset.lastFetchedAt}` : ''}. Treat the
                       window as approximate.
                     </p>
                   ) : null}
@@ -403,10 +401,10 @@ export default function PhotographerView({
                     <div className="rounded-lg border border-line bg-page p-2.5">
                       <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
                       <div className="font-mono text-xl font-bold text-ink">
-                        {sunset.sunsetTime ?? '—'}
+                        {sunset.sunsetTime ?? 'â€”'}
                       </div>
                       <div className="font-mono text-[10px] text-slate-400">
-                        {countdownText(sunsetSeconds) ?? '—'}
+                        {countdownText(sunsetSeconds) ?? 'â€”'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
@@ -414,10 +412,10 @@ export default function PhotographerView({
                         Golden hour
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
-                        {sunset.goldenHourStart ?? '—'}
+                        {sunset.goldenHourStart ?? 'â€”'}
                       </div>
                       <div className="font-mono text-[10px] text-slate-400">
-                        {countdownText(goldenSeconds) ?? '—'}
+                        {countdownText(goldenSeconds) ?? 'â€”'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
@@ -425,7 +423,7 @@ export default function PhotographerView({
                         Civil twilight
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
-                        {sunset.civilTwilightEnd ?? '—'}
+                        {sunset.civilTwilightEnd ?? 'â€”'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
@@ -435,10 +433,10 @@ export default function PhotographerView({
                       <div className="font-mono text-xl font-bold text-ink">
                         {countdowns.latestMiniStartAt
                           ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone)
-                          : '—'}
+                          : 'â€”'}
                       </div>
                       <div className="font-mono text-[10px] text-slate-400">
-                        {countdownText(latestStartSeconds) ?? '—'}
+                        {countdownText(latestStartSeconds) ?? 'â€”'}
                       </div>
                     </div>
                   </div>
@@ -446,17 +444,17 @@ export default function PhotographerView({
                     <div className="mt-2 grid gap-1.5 text-[11px] sm:grid-cols-2">
                       <Row
                         label="Mini session"
-                        value={`${sunset.miniSession.durationMin ?? '—'} min · ${sunset.miniSession.location ?? 'location TBC'}`}
+                        value={`${sunset.miniSession.durationMin ?? 'â€”'} min Â· ${sunset.miniSession.location ?? 'location TBC'}`}
                       />
                       <Row
                         label="Backup location"
-                        value={sunset.miniSession.backupLocation ?? '—'}
+                        value={sunset.miniSession.backupLocation ?? 'â€”'}
                       />
                     </div>
                   ) : null}
                   <p className="mt-2 text-[10px] text-slate-500">
                     Venue timezone {timeZone}
-                    {sunset.provider ? ` · source ${sunset.provider}` : ''}
+                    {sunset.provider ? ` Â· source ${sunset.provider}` : ''}
                   </p>
                   <MiniSessionOverride
                     value={miniSessionOverride}
@@ -472,7 +470,7 @@ export default function PhotographerView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
-        Read-only media view · step timeline, shot plan and light windows
+        Read-only media view Â· step timeline, shot plan and light windows
       </footer>
     </div>
   );

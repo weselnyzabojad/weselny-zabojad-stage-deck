@@ -22,7 +22,8 @@ describe('issue #158 non-MC desktop top bars', () => {
 
   it('keeps Photographer to clock, role, sync, phone QR, language and theme', () => {
     expect(photo).toContain('<TopBarClock');
-    expect(photo).toContain('<TopBarRoleLabel role={role}');
+    expect(photo).toContain('<TopBarRoleIdentity role={role} />');
+    expect(photo).not.toContain('<TopBarRoleLabel');
     expect(photo).toContain('<OpenOnPhoneButton role={role}');
     expect(photo).not.toContain('<CoupleIdentity');
     expect(photo).not.toContain('<RoleSwitcher');
@@ -30,7 +31,8 @@ describe('issue #158 non-MC desktop top bars', () => {
 
   it('keeps Speaker to clock, role, sync, phone QR, language and theme', () => {
     expect(speaker).toContain('<TopBarClock');
-    expect(speaker).toContain('<TopBarRoleLabel role="speaker"');
+    expect(speaker).toContain('<TopBarRoleIdentity role="speaker" />');
+    expect(speaker).not.toContain('<TopBarRoleLabel');
     expect(speaker).toContain('<OpenOnPhoneButton role="speaker"');
     expect(speaker).not.toContain('<CoupleIdentity');
     expect(speaker).not.toContain('<RoleSwitcher');

@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarClock from './TopBarClock';
-import TopBarRoleLabel from './TopBarRoleLabel';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -71,7 +70,7 @@ export default function SpeakerView({
         {speechMode === 'OFF' ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              🔇
+              đź”‡
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.offTitle')}</h1>
             <p className="mt-1 text-sm text-slate-400">
@@ -81,7 +80,7 @@ export default function SpeakerView({
         ) : speechCount === 0 ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              📝
+              đź“ť
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.noneTitle')}</h1>
             <p className="mt-1 text-sm text-slate-400">
@@ -91,7 +90,7 @@ export default function SpeakerView({
         ) : !activeSpeech ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              ⏳
+              âŹł
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.waitTitle')}
@@ -103,7 +102,7 @@ export default function SpeakerView({
         ) : !activeSpeech.speakerVisible ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              🔒
+              đź”’
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notSharedTitle')}
@@ -115,7 +114,7 @@ export default function SpeakerView({
         ) : !activeSpeech.scriptAllowed ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              🔒
+              đź”’
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notStoredTitle')}
@@ -187,10 +186,9 @@ export default function SpeakerView({
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
-          <TopBarRoleLabel role="speaker" />
           <TopBarRoleIdentity role="speaker" />
         </div>
 
@@ -207,7 +205,7 @@ export default function SpeakerView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-slate-500">
-        Read-only script · only the assigned speech is shown · no timeline controls
+        Read-only script Â· only the assigned speech is shown Â· no timeline controls
       </footer>
     </div>
   );
