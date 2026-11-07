@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `f2e3721` (step type/duration decisions)
+**Aligned with:** `master` @ `fb9f13e` (post-#297–#311 batch review)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -19,7 +19,7 @@ An offline-first, multi-device stage deck for a wedding MC and crew:
 
 - one cartridge-driven timeline, shared by the MC tablet, DJ booth, pocket phone,
   photographer and speaker;
-- a drift/elastic scheduling engine with hard anchors and buffer advice;
+- a drift scheduling engine with hard anchors and flexible steps;
 - production room access through per-role 6-digit PINs;
 - an owner-only admin surface for the wedding library, PINs, QR cards, presence
   and audit;
@@ -38,7 +38,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | --- | --- |
 | Stage deck views (MC/DJ/Photo/Speaker) | Complete |
 | Responsive phone layouts for every role | Complete (#109–#114) |
-| Drift engine, elastic schedule, buffer accordion, hard-anchor radar | Complete |
+| Drift engine, flexible schedule, hard-anchor radar | Complete |
 | Cake, speeches, key songs, music policy, contacts, photo plan | Complete |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
@@ -136,6 +136,10 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/309) | Auto-calculate step durations from next-step times |
 | [#310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/310) | Step cards: remove the "Step N" label |
 | [#311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/311) | Photographer/Cameraman: restore sunset UI |
+| [#327](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/327) | Mandatory update popup: enforce role visibility and service modes |
+| [#328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/328) | Post-#308 cleanup: remove dead BUFFER/ELASTIC code and fixtures |
+| [#329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/329) | Localize mandatory, ceremony, games and entrance cues |
+| [#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330) | Refresh README and active technical docs |
 
 ### Responsive phone / pocket plan
 
@@ -1245,6 +1249,45 @@ Music Policy card unchanged. The shared component, cartridge data and policy
 logic remain intact; only the Standard view hides the card, with no empty grid
 column or layout gap left behind.
 ([#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298))
+
+### Operational visibility, cleanup and localization (decision, 2026-11-07)
+
+Post-batch review of the #297–#311 implementation identified four follow-up
+areas.
+
+**Mandatory update popup visibility.** The popup must enforce the same role
+matrix as the stage banners:
+
+- First guests arrival: MC + DJ VIP only;
+- prestation, kitchen services and cake mode: MC only;
+- closure, extension and last song: MC + DJ VIP.
+
+Photographer, Cameraman and Speaker must not receive restricted mandatory data
+through the popup. The popup must include each kitchen service's Table
+service / Buffet mode, and it must not render at all when the current role has no
+permitted content left.
+([#327](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/327))
+
+**Post-#308 cleanup.** Remove the dead buffer-accordion module and drift-engine
+accordion fields, replace `isElastic`/`isBuffer` with `FLEXIBLE` terminology
+where a flag is still needed, rename stale buffer fixtures, and remove obsolete
+ELASTIC/BUFFER comments from active code. Legacy type names may remain only in
+explicit rejection tests and historical decision records.
+([#328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/328))
+
+**Localization of new operational surfaces.** The mandatory constraints,
+ceremony briefing, games, Grand Entrance, First Dance, mandatory-update popup
+and Venue Manager kitchen-mode labels must use the EN/FR/PL dictionaries rather
+than hardcoded English. Keep domain values untranslated and preserve role
+visibility.
+([#329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/329))
+
+**Documentation refresh.** Replace the default Vite README with project-specific
+setup, commands, routes, roles, architecture and validation guidance; correct
+the Supabase/RLS security description; and update active docs that still teach
+ELASTIC/BUFFER or anon read/write access. Historical plans stay clearly marked
+as historical.
+([#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330))
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
