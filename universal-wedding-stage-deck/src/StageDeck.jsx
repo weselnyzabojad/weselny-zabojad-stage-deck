@@ -430,6 +430,7 @@ export default function StageDeck({
       <MandatoryUpdatePopup
         weddingId={WEDDING.weddingId}
         role={currentRole}
+        isVipDj={djDetailTier(WEDDING) === 'vip'}
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
       <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />

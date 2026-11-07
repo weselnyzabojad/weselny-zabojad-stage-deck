@@ -1,10 +1,16 @@
 import { useState } from 'react';
+import { resolveMandatoryConstraints } from '../lib/mandatorySteps.js';
+
+const CAKE_SERVICE_LABELS = {
+  KITCHEN_RETURN: 'Kitchen return / plated pieces',
+  CUT_IN_PLACE: 'Cut in place / guests come',
+};
 
 function ackKey(weddingId) {
   return `wzsd:mandatory-ack:${weddingId}`;
 }
 
-export default function MandatoryUpdatePopup({ weddingId, role, update }) {
+export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false, update }) {
   const [acknowledged, setAcknowledged] = useState(() => {
     if (typeof window === 'undefined' || !update?.updatedAt) return false;
     try {
@@ -15,8 +21,58 @@ export default function MandatoryUpdatePopup({ weddingId, role, update }) {
   });
 
   if (!update?.value || role === 'venue_manager' || acknowledged) return null;
-  const value = update.value;
-  const kitchen = value.kitchenServices ?? {};
+
+  const isMc = role === 'mc';
+  const isDjVip = role === 'dj' && isVipDj;
+  if (!isMc && !isDjVip) return null;
+
+  const constraints = resolveMandatoryConstraints({}, update);
+  const rows = [];
+
+  if (constraints.firstGuestsArrival) {
+    rows.push({
+      id: 'arrival',
+      label: 'First guests arrival',
+      value: constraints.firstGuestsArrival,
+    });
+  }
+
+  if (isMc && constraints.prestationReady) {
+    rows.push({
+      id: 'prestation',
+      label: 'Prestation ready (derived)',
+      value: constraints.prestationReady,
+    });
+  }
+
+  if (isMc) {
+    for (const service of constraints.kitchenServices) {
+      rows.push({
+        id: `kitchen_${service.key}`,
+        label: `${service.label} · ${service.modeLabel}`,
+        value: service.time,
+      });
+    }
+    rows.push({
+      id: 'cake',
+      label: 'Cake service',
+      value: CAKE_SERVICE_LABELS[constraints.cakeServiceMode] ?? constraints.cakeServiceMode,
+    });
+  }
+
+  if (isDjVip) {
+    if (constraints.closureTime) {
+      rows.push({ id: 'closure', label: 'Wedding closure', value: constraints.closureTime });
+    }
+    if (constraints.closureExtensionAllowed) {
+      rows.push({ id: 'extension', label: 'Closure extension', value: '+1h allowed' });
+    }
+    if (constraints.lastSong) {
+      rows.push({ id: 'last_song', label: 'Last song', value: constraints.lastSong });
+    }
+  }
+
+  if (rows.length === 0) return null;
 
   const acknowledge = () => {
     try {
@@ -42,12 +98,11 @@ export default function MandatoryUpdatePopup({ weddingId, role, update }) {
           Mandatory times or cake service changed. Please acknowledge.
         </p>
         <div className="mt-3 space-y-1 rounded-lg border border-line bg-page/70 p-3 font-mono text-[11px] text-slate-300">
-          <div>First guests arrival: {value.firstGuestsArrival ?? '—'}</div>
-          <div>Obiad weselny: {kitchen.dinner ?? '—'}</div>
-          <div>Pierwsza kolacja: {kitchen.firstSupper ?? '—'}</div>
-          <div>Druga kolacja: {kitchen.secondSupper ?? '—'}</div>
-          <div>Trzecia kolacja: {kitchen.thirdSupper || '—'}</div>
-          <div>Cake service: {value.cakeServiceMode ?? 'KITCHEN_RETURN'}</div>
+          {rows.map((row) => (
+            <div key={row.id}>
+              {row.label}: {row.value ?? '—'}
+            </div>
+          ))}
         </div>
         <div className="mt-4 flex justify-end">
           <button
