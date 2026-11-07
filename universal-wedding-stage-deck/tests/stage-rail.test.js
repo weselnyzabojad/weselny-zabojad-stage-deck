@@ -250,13 +250,13 @@ describe('rail accessibility and i18n (#120)', () => {
 });
 
 describe('MC dashboard rail integration (#119)', () => {
-  it('derives the rail from drift entries and passes the hero body', async () => {
+  it('derives the shared focus stack from drift entries and passes the hero body', async () => {
     const { readFileSync } = await import('node:fs');
     const source = readFileSync(new URL('../src/views/McMasterView.jsx', import.meta.url), 'utf8');
 
     expect(source).toContain('driftReport.entries');
-    expect(source).toContain('buildStageRail(');
-    expect(source).toContain('<StageRail');
+    expect(source).toContain('railActiveIndex');
+    expect(source).toContain('<TimelineFocusStack');
     expect(source).toContain('currentBody={heroBody}');
     expect(source).toContain('Catering & Sub-Tasks');
     expect(source).not.toContain('MAIN DASHBOARD (70% / 30% SPLIT)');
@@ -270,7 +270,7 @@ describe('rail responsive and theme polish (#121)', () => {
   };
 
   it('degrades from three zones to tablet columns and phone stack', async () => {
-    const source = await readSource('src/components/StageRail.jsx');
+    const source = await readSource('src/components/TimelineFocusStack.jsx');
     expect(source).toContain('md:grid-cols-2');
     expect(source).toContain('lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)]');
     expect(source).toContain('stage-rail-scroll');

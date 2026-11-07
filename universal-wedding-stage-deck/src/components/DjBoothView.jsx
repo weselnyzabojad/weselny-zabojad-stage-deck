@@ -13,6 +13,7 @@ import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
+import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
@@ -24,20 +25,6 @@ import {
   getImportantSongs,
   resolveServicePackage,
 } from '../lib/importantSongs';
-
-const STATUS_CHIPS = {
-  done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
-  active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
-  next: 'border-amber-800 bg-amber-950/60 text-amber-200',
-  later: 'border-line-strong bg-raised text-slate-400',
-};
-
-function statusFor(entry, activeIndex) {
-  if (entry.isDone) return { key: 'done', label: 'DONE' };
-  if (entry.isActive) return { key: 'active', label: 'ON AIR' };
-  if (entry.index === activeIndex + 1) return { key: 'next', label: 'NEXT' };
-  return { key: 'later', label: 'PLANNED' };
-}
 
 // Read-only companion screen for the DJ: projected timeline, playlists, track
 // titles and hard cutoffs only. There are deliberately no step controls, no MC
@@ -85,6 +72,56 @@ export default function DjBoothView({
   const tierLabel = isVip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
   const keySongs = getImportantSongs(wedding);
   const showKeySongs = viewVisibility?.music !== false && keySongs.length > 0;
+
+  // Extra current-card detail for the shared focus stack. The stack owns the
+  // card hierarchy and visibility counts; this body only adds DJ-specific
+  // projected timing and booth cues.
+  const djCurrentBody = (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-start justify-between gap-2 font-mono">
+        <div className="rounded-lg border border-line bg-page/80 p-2">
+          <div className="text-[10px] uppercase tracking-wider text-slate-400">{t('dj.projected')}</div>
+          <div className="text-sm font-semibold text-white">
+            {activeEntry
+              ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
+              : '—'}
+          </div>
+        </div>
+        <div className="text-right text-[10px] uppercase tracking-wider text-slate-500">
+          <div>
+            {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
+          </div>
+          <div>{t('dj.stepsDone', { done: completedCount, total: timeline.length })}</div>
+        </div>
+      </div>
+      {activeEntry?.step.dj?.cutoff || Number.isFinite(activeEntry?.step.dj?.cutoffSec) ? (
+        <div className="w-fit rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
+          {t('dj.cutoff')}{' '}
+          {activeEntry.step.dj.cutoff ?? `start + ${activeEntry.step.dj.cutoffSec}s`}
+        </div>
+      ) : null}
+      {activeEntry?.step.dj ? (
+        <div className="flex flex-wrap gap-2 text-[11px]">
+          {isVip && activeEntry.step.dj.playlist ? (
+            <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
+              🎵 {activeEntry.step.dj.playlist}
+            </span>
+          ) : null}
+          {activeEntry.step.dj.track ? (
+            <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
+              ▶ {activeEntry.step.dj.track}
+            </span>
+          ) : null}
+          {isVip && activeEntry.step.dj.note ? (
+            <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
+              📝 {activeEntry.step.dj.note}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+
   const [copyNotice, setCopyNotice] = useState('');
   const [nowPlayingOpen, setNowPlayingOpen] = useState(false);
 
@@ -122,29 +159,6 @@ export default function DjBoothView({
 
       <ReelClock clock={clock} compact />
 
-      <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
-        <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">
-          {activeEntry ? t('dj.nowOnStage') : t('dj.eventComplete')}
-        </span>
-        <h1 className="mt-1 font-heading text-lg font-bold text-white">
-          {activeEntry ? activeEntry.step.title : t('dj.allComplete')}
-        </h1>
-        <div className="mt-1 text-xs text-slate-400">
-          📍 {activeEntry?.step.location ?? '—'} · {t('dj.stepsDone', { done: completedCount, total: timeline.length })}
-        </div>
-        <div className="mt-2 flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
-          <span className="text-slate-400">{t('dj.projected')}</span>
-          <span className="text-white">
-            {activeEntry
-              ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
-              : '—'}
-          </span>
-        </div>
-        <div className="mt-1 text-right text-[10px] uppercase tracking-wider text-slate-500">
-          {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
-        </div>
-      </section>
-
       {isVip ? (
         <button
           type="button"
@@ -172,29 +186,13 @@ export default function DjBoothView({
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
           📋 Projected timeline
         </h2>
-        <ol className="mt-2 space-y-2">
-          {timeline.map((entry) => {
-            const status = statusFor(entry, activeIndex);
-            return (
-              <li
-                key={entry.step.id}
-                className={`rounded-lg border p-2.5 ${entry.isActive ? 'border-brand-strong bg-brand/20' : 'border-line bg-page'}`}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="min-w-0 truncate font-heading text-sm font-semibold text-white">
-                    {entry.step.title}
-                  </span>
-                  <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-bold ${STATUS_CHIPS[status.key]}`}>
-                    {status.label}
-                  </span>
-                </div>
-                <div className="mt-0.5 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span>{entry.step.location}</span>
-                  <span className="text-slate-300">{entry.projectedStart ?? '—'}–{entry.projectedEnd ?? '—'}</span>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+        <TimelineFocusStack
+          compact
+          className="mt-2"
+          entries={timeline}
+          activeIndex={activeIndex}
+          currentBody={djCurrentBody}
+        />
       </section>
 
       <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
@@ -256,61 +254,6 @@ export default function DjBoothView({
 
           <ReelClock clock={clock} compact />
 
-          <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-400">
-                  {activeEntry ? t('dj.nowOnStage') : t('dj.eventComplete')}
-                </span>
-                <h1 className="mt-1 font-heading text-2xl font-bold text-white">
-                  {activeEntry ? activeEntry.step.title : t('dj.allComplete')}
-                </h1>
-                <div className="mt-1 text-xs text-slate-400">
-                  📍 {activeEntry?.step.location ?? '—'} · {t('dj.stepsDone', { done: completedCount, total: timeline.length })}
-                </div>
-              </div>
-
-              <div className="rounded-lg border border-line bg-page/80 p-3 text-right font-mono">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400">{t('dj.projected')}</div>
-                <div className="text-lg font-semibold text-white">
-                  {activeEntry
-                    ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
-                    : '—'}
-                </div>
-                <div className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
-                  {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
-                </div>
-                {activeEntry?.step.dj?.cutoff || Number.isFinite(activeEntry?.step.dj?.cutoffSec) ? (
-                  <div className="mt-1 rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
-                    {t('dj.cutoff')}{' '}
-                    {activeEntry.step.dj.cutoff ??
-                      `start + ${activeEntry.step.dj.cutoffSec}s`}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            {activeEntry?.step.dj ? (
-              <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-                {isVip && activeEntry.step.dj.playlist ? (
-                  <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-                    🎵 {activeEntry.step.dj.playlist}
-                  </span>
-                ) : null}
-                {activeEntry.step.dj.track ? (
-                  <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
-                    ▶ {activeEntry.step.dj.track}
-                  </span>
-                ) : null}
-                {isVip && activeEntry.step.dj.note ? (
-                  <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-                    📝 {activeEntry.step.dj.note}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
-          </section>
-
           {showKeySongs ? (
             <KeySongsCard
               songs={keySongs}
@@ -325,81 +268,12 @@ export default function DjBoothView({
               <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                 📋 Projected timeline
               </h2>
-              <ol className="mt-3 space-y-2">
-                {timeline.map((entry) => {
-                  const status = statusFor(entry, activeIndex);
-                  return (
-                    <li
-                      key={entry.step.id}
-                      className={`rounded-lg border p-3 ${
-                        entry.isActive
-                          ? 'border-brand-strong bg-brand/20'
-                          : 'border-line bg-page/60'
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="font-mono text-[10px] text-slate-500">
-                            Step {entry.index + 1} · {entry.step.type.replaceAll('_', ' ')}
-                          </div>
-                          <div className="font-heading text-sm font-semibold text-white">
-                            {entry.step.title}
-                          </div>
-                          <div className="mt-0.5 text-[11px] text-slate-400">
-                            📍 {entry.step.location} · {entry.step.durationMin} min
-                          </div>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-2 font-mono">
-                          <span className="text-sm text-white">
-                            {entry.projectedStart ?? '—'}–{entry.projectedEnd ?? '—'}
-                          </span>
-                          {entry.projectedDriftMinutes ? (
-                            <span
-                              title={`Projected ${entry.driftLabel ?? 'drift'} vs plan`}
-                              className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${
-                                entry.projectedDriftMinutes > 0
-                                  ? 'border-alert/60 bg-alert/20 text-alert-soft'
-                                  : 'border-emerald-700 bg-emerald-950/60 text-emerald-300'
-                              }`}
-                            >
-                              {entry.projectedDriftMinutes > 0
-                                ? `+${entry.projectedDriftMinutes}m`
-                                : `${Math.abs(entry.projectedDriftMinutes)}m ahead`}
-                            </span>
-                          ) : null}
-                          <span className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${STATUS_CHIPS[status.key]}`}>
-                            {status.label}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
-                        {isVip && entry.step.dj?.playlist ? (
-                          <span className="rounded border border-line-strong bg-raised px-2 py-0.5 text-slate-300">
-                            🎵 {entry.step.dj.playlist}
-                          </span>
-                        ) : null}
-                        {entry.step.dj?.track ? (
-                          <span className="rounded border border-line bg-page px-2 py-0.5 text-slate-300">
-                            ▶ {entry.step.dj.track}
-                          </span>
-                        ) : null}
-                        {entry.step.dj?.cutoff || Number.isFinite(entry.step.dj?.cutoffSec) ? (
-                          <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono font-bold text-alert-soft">
-                            {t('dj.cutoff')}{' '}
-                            {entry.step.dj.cutoff ?? `start + ${entry.step.dj.cutoffSec}s`}
-                          </span>
-                        ) : null}
-                        {isVip && entry.step.dj?.note ? (
-                          <span className="rounded border border-line-strong bg-raised px-2 py-0.5 text-slate-300">
-                            📝 {entry.step.dj.note}
-                          </span>
-                        ) : null}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
+              <TimelineFocusStack
+                className="mt-3"
+                entries={timeline}
+                activeIndex={activeIndex}
+                currentBody={djCurrentBody}
+              />
             </section>
 
             <aside className="space-y-4">
