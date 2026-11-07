@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `dafbde7` (before the secondary-bar and mandatory-data changes)
+**Aligned with:** `master` @ `a87f9b2` (mandatory-data embedding and secondary control bar)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -41,6 +41,8 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Drift engine, flexible schedule, hard-anchor radar | Complete |
 | Cake, speeches, key songs, music policy, photo plan | Complete |
 | Group-photo step and shared MC/Photographer checklist | Complete (#378, #379) |
+| Mandatory constraints embedded in timeline steps | Complete (#384) |
+| Shared secondary control bar across role views | Complete (#385) |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
 | Deferred PWA update flow (#81) | Complete |
@@ -59,8 +61,6 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
-| [#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384) | MC: embed mandatory constraint data into timeline steps | Implementation |
-| [#385](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/385) | Shared secondary control bar across role views | Implementation |
 
 ### Planning TODO register
 
@@ -759,7 +759,7 @@ Implementation issues:
 - [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) — center ring/language/date layout;
 - [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) — localized weekday.
 
-### Secondary control bar and mandatory-data placement (decision, 2026-11-07)
+### Secondary control bar and mandatory-data placement (implemented, 2026-11-07)
 
 **Shared secondary bar.** Add a full-width control bar directly below the top
 bar and above the timeline in MC Master, then reuse the same shell in every
@@ -775,6 +775,7 @@ authenticated roles, and Late/Sync only where the role already has them.
 Photographer 1/2, Cameraman and other impacted media views use the same bar;
 the fixed bottom-right Children expected badge is removed there. Compact layouts
 may wrap the bar into two rows but keep the left/center/right grouping.
+Implemented in #385.
 ([#385](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/385))
 
 **Mandatory constraints move into steps.** Remove the page-level
@@ -790,6 +791,7 @@ it into the relevant timeline steps:
 
 DJ VIP keeps only the mandatory data it is allowed to see, embedded the same
 way. The removed card must not be replaced by a duplicate page-level strip.
+Implemented in #384.
 ([#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384))
 
 ### DJ Standard laptop-only and top-bar ring size (decision, 2026-11-07)
