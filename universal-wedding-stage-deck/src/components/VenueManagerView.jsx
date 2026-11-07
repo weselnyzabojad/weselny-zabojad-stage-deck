@@ -100,11 +100,6 @@ export default function VenueManagerView({
         </h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <TimeField
-            label="First guests arrival"
-            value={settings.firstGuestsArrival}
-            onChange={(time) => update({ ...settings, firstGuestsArrival: time })}
-          />
-          <TimeField
             label="Obiad weselny"
             value={kitchen.dinner}
             onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, dinner: time } })}

@@ -77,6 +77,7 @@ Props: Veil, Bow ties, Test cards
 
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| step_00 | 15:30 | 30 | First guests arrival | HARD_ANCHOR | Venue entrance |  | false |  | Ceremony in church: St. Mary Church |
 | step_01 | 16:30 | 30 | Cocktail / Vin d'honneur | BUFFER | Garden |  | false |  |  |
 | step_02 | 17:00 | 60 | Ceremony | ELASTIC | Garden Gazebo |  | false |  |  |
 | step_03 | 18:00 | 90 | Grand Entrance | ELASTIC | Main Hall |  | true |  | Planned 18:00; actual start logged live. |

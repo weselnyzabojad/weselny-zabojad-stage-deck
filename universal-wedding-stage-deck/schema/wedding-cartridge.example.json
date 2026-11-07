@@ -301,6 +301,16 @@
   },
   "steps": [
     {
+      "id": "step_00",
+      "time": "15:30",
+      "durationMin": 30,
+      "title": "First guests arrival",
+      "type": "HARD_ANCHOR",
+      "location": "Venue entrance",
+      "ceremonyType": "CHURCH",
+      "ceremonyLocation": "St. Mary Church"
+    },
+    {
       "id": "step_01",
       "time": "16:30",
       "durationMin": 30,
@@ -708,6 +718,7 @@
     },
     "stage_ping": null,
     "step_order": [
+      "step_00",
       "step_01",
       "step_02",
       "step_03",
