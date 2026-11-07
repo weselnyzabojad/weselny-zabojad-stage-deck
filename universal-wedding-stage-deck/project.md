@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `b00ac77` (before separate game steps)
+**Aligned with:** `master` @ `133b629` (before the LATE/Undo stability change)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -71,6 +71,7 @@ sections below and in git history.
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#414](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/414) | One timeline step per game (Test Wiedzy / Test Zgodności) | Implementation |
+| [#416](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/416) | Keep LATE value unchanged on Undo | Implementation |
 
 
 ### Planning TODO register
@@ -212,7 +213,9 @@ future shown around it.
    clock.
 9. **LATE unreel data button.** A button displaying unreel LATE data in the
    format `109709m` (minutes late) should be added to the top bar. This shows
-   the cumulative late time across the event.
+   the cumulative late time across the event. Pressing **Undo** reverts the step
+   state but must not change the displayed LATE value; normal schedule progress
+   can still update it.
 10. **Open on phone button.** The desktop button opens a closeable QR popup for
     the same role's pocket view. It is available for MC, DJ VIP, Photographer and
     Speaker, but not for DJ Standard or pocket. The popup closes with an X button,
