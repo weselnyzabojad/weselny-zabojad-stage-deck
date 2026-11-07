@@ -67,7 +67,7 @@ describe('schema fixture suite', () => {
     );
     expect(errors).toEqual([]);
     expect(cartridge.couple).toBe('Jennifer & Guillaume');
-    expect(cartridge.steps).toHaveLength(5);
+    expect(cartridge.steps).toHaveLength(4);
     expect(cartridge.hardAnchors).toHaveLength(3);
     expect(cartridge.liveSyncState.actual_timestamps.step_03).toBe(
       '2026-08-20T18:25:00+02:00',

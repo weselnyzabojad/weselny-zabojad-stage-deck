@@ -304,7 +304,7 @@
       "id": "step_01",
       "time": "16:30",
       "durationMin": 30,
-      "title": "Aperitif in Garden",
+      "title": "Cocktail / Vin d'honneur",
       "type": "BUFFER",
       "location": "Garden",
       "buffer": {
@@ -320,7 +320,7 @@
       "id": "step_02",
       "time": "17:00",
       "durationMin": 60,
-      "title": "Outdoor Civil Ceremony",
+      "title": "Ceremony",
       "type": "ELASTIC",
       "location": "Garden Gazebo",
       "dj": {
@@ -335,7 +335,7 @@
       "planned": "18:00",
       "realStart": "18:25",
       "durationMin": 90,
-      "title": "Hall Entrance, Toast & Dinner Start",
+      "title": "Grand Entrance",
       "type": "ELASTIC",
       "location": "Main Hall",
       "photographerCue": "Group photo before the toast",
@@ -354,7 +354,7 @@
       "teleprompter": {
         "has_script": true,
         "type": "SPEECH",
-        "title": "Hall Entrance, Toast & Dinner Start",
+        "title": "Grand Entrance",
         "items": [
           {
             "id": "welcome",
@@ -378,28 +378,10 @@
       }
     },
     {
-      "id": "step_04",
-      "time": "19:30",
-      "durationMin": 30,
-      "title": "Buffets Open & Dance Floor",
-      "type": "BUFFER",
-      "location": "Main Hall",
-      "buffer": {
-        "minDurationMin": 10,
-        "maxDurationMin": 60,
-        "danceBlock": true
-      },
-      "dj": {
-        "playlist": "Dance Floor Block",
-        "track": "September — Earth, Wind & Fire",
-        "cutoffSec": 1800
-      }
-    },
-    {
       "id": "step_05",
       "time": "20:30",
       "durationMin": 30,
-      "title": "Cake & Sparklers",
+      "title": "Wedding cake",
       "type": "HARD_ANCHOR",
       "location": "Terrace",
       "isMainSongRequired": true,
@@ -572,7 +554,6 @@
         "title": "Perfect",
         "artist": "Ed Sheeran",
         "version": "Duet version",
-        "stepId": "step_04",
         "plannedTime": "19:30",
         "startAtSec": 0,
         "fadeOutSec": 270,
@@ -685,7 +666,6 @@
       "step_01",
       "step_02",
       "step_03",
-      "step_04",
       "step_05"
     ],
     "mutation_log": []
