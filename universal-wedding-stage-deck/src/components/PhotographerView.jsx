@@ -204,7 +204,7 @@ function PhotoPlanBlock({ type, data }) {
 function MiniSessionOverride({ value, onSave }) {
   return (
     <form
-      className="mt-2 flex flex-wrap items-end gap-2 rounded-lg border border-line bg-page p-2"
+      className="mx-auto mt-2 flex max-w-xl flex-wrap items-center justify-center gap-2 rounded-lg border border-line bg-page p-2 text-center"
       onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
