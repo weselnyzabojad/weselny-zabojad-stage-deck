@@ -30,7 +30,6 @@ describe('issue #261 predefined step renames and Buffets deletion', () => {
 
   it('keeps retained step ids stable and removes step_04', () => {
     expect(DEMO_WEDDING.steps.map((step) => step.id)).toEqual([
-      'step_00',
       'step_01',
       'step_02',
       'step_03',
@@ -40,7 +39,6 @@ describe('issue #261 predefined step renames and Buffets deletion', () => {
       'step_08',
       'step_09',
       'step_10',
-      'step_11',
     ]);
     expect(DEMO_WEDDING.steps.map((step) => step.id)).not.toContain('step_04');
   });

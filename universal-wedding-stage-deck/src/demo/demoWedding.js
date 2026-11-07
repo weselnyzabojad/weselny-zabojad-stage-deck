@@ -449,7 +449,6 @@ export const DEMO_WEDDING = {
     { task: "Confirm the Instax cameras and guestbook are packed", done: false }
   ],
   steps: [
-    { id: "step_00", time: "15:30", durationMin: 30, title: "First guests arrival", type: "HARD_ANCHOR", location: "Venue entrance", ceremonyType: "CHURCH", ceremonyLocation: "St. Mary's Church" },
     { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
     { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Grand Entrance", type: "ELASTIC", location: "Main Hall", photographerCue: "Group photo before the toast", isMainSongRequired: true, dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15", cutoffSec: 3600 }, teleprompter: HALL_ENTRANCE_SCRIPT },
@@ -458,8 +457,7 @@ export const DEMO_WEDDING = {
     { id: "step_07", time: "21:15", durationMin: 30, title: "Wishes", type: "BUFFER", location: "Garden", optionalFlag: "wishes" },
     { id: "step_08", time: "21:45", durationMin: 10, title: "First Dance", type: "ELASTIC", location: "Main Hall", isMainSongRequired: true },
     { id: "step_09", time: "00:00", durationMin: 60, title: "Oczepiny", type: "HARD_ANCHOR", location: "Main Hall", optionalFlag: "oczepiny" },
-    { id: "step_10", time: "01:00", durationMin: 45, title: "Games", type: "BUFFER", location: "Main Hall", optionalFlag: "games" },
-    { id: "step_11", time: "02:00", durationMin: 15, title: "Wedding closure", type: "HARD_ANCHOR", location: "Main Hall" }
+    { id: "step_10", time: "01:00", durationMin: 45, title: "Games", type: "BUFFER", location: "Main Hall", optionalFlag: "games" }
   ]
 };
 
