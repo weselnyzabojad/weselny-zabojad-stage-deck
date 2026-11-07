@@ -213,26 +213,29 @@ export default function DjBoothView({
   const wideContent = (
     <div className="flex h-screen flex-col overflow-hidden bg-page text-slate-100 antialiased select-none">
       <SkipLink />
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
-        <div className="flex items-center gap-3">
+      <header
+        className={`border-b border-line bg-card px-4 py-3 ${
+          isVip
+            ? 'grid grid-cols-1 items-center gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
+            : 'flex flex-wrap items-center justify-between gap-3'
+        }`}
+      >
+        <div className="flex items-center gap-3 xl:min-w-0">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <TopBarRoleLabel role={role} tier={tierLabel} />
-            </div>
-            {isVip ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <CoupleIdentity wedding={wedding} className="text-sm" />
-                <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
-              </div>
-            ) : null}
-          </div>
+          <TopBarRoleLabel role={role} tier={tierLabel} />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {isVip ? (
+          <div className="flex min-w-0 flex-wrap items-center justify-center gap-2">
+            <CoupleIdentity wedding={wedding} className="text-sm" />
+            <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end xl:min-w-0">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
           <LanguageToggle />
