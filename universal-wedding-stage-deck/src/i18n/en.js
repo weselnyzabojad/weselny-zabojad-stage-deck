@@ -29,6 +29,7 @@ const en = {
   'roles.switchTitle': "Switch this device's role",
   'roles.menuAria': 'Switch device role',
   'roles.role': 'Role: {short}',
+  'roles.fixed': 'Role is fixed on this device',
 
   'common.wedding': 'Wedding',
   'common.retry': 'Retry',

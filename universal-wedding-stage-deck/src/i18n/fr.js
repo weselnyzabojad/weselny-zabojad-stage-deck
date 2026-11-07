@@ -29,6 +29,7 @@ const fr = {
   'roles.switchTitle': "Changer le rôle de cet appareil",
   'roles.menuAria': "Changer le rôle de l'appareil",
   'roles.role': 'Rôle : {short}',
+  'roles.fixed': 'Rôle fixé sur cet appareil',
 
   'common.wedding': 'Mariage',
   'common.retry': 'Réessayer',

@@ -4,6 +4,7 @@ import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
+import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -314,6 +315,7 @@ export default function SpeakerView({
           </div>
           <TopBarClock clock={clock} />
           <TopBarRoleLabel role="speaker" />
+          <TopBarRoleIdentity role="speaker" />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

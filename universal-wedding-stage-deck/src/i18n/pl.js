@@ -29,6 +29,7 @@ const pl = {
   'roles.switchTitle': 'Zmień rolę tego urządzenia',
   'roles.menuAria': 'Zmień rolę urządzenia',
   'roles.role': 'Rola: {short}',
+  'roles.fixed': 'Rola jest stała na tym urządzeniu',
 
   'common.wedding': 'Wesele',
   'common.retry': 'Ponów',

@@ -21,7 +21,6 @@ import MusicPolicyCard from '../components/MusicPolicyCard';
 import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import ReelClock from '../components/ReelClock';
 import RoleShell from '../components/RoleShell';
-import RoleSwitcher from '../components/RoleSwitcher';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
@@ -50,9 +49,7 @@ export default function McMasterView({ model }) {
   IS_PRODUCTION,
   roleSession,
   pairing,
-  roleIds,
   currentRole,
-  handleRoleChange,
   roomCode,
   theme,
   toggleTheme,
@@ -370,9 +367,6 @@ export default function McMasterView({ model }) {
             )}
           </button>
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          {roleIds.length > 1 ? (
-            <RoleSwitcher role={currentRole} roles={roleIds} onChange={handleRoleChange} />
-          ) : null}
           <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -533,14 +527,12 @@ export default function McMasterView({ model }) {
     <RoleShell
       compact
       role={currentRole}
-      roles={roleIds}
       syncStatus={syncStatus}
       syncError={syncError}
       remoteUpdatedAt={remoteUpdatedAt}
       outbox={outbox}
       onToggleTheme={toggleTheme}
       theme={theme}
-      onRoleChange={handleRoleChange}
       onUndo={handleUndo}
       canUndo={canUndo}
       lastUndoLabel={lastUndo?.label}
