@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `d0f8525` (admin backend preflight and setup documentation)
+**Aligned with:** `master` @ `5f11190` (environment setup documentation, before the TODO-register cleanup)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -50,116 +50,32 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 
 ### Open roadmap issues
 
-| Issue | Item |
-| --- | --- |
-| [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation |
-| [#79](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/79) | Multi-wedding library and importer safety |
-| [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) |
-| [#82](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/82) | Google Docs-first import (remove the AI-prompt path) |
-| [#165](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/165) | Server-published cartridge revisions as the only source of truth |
-| [#166](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/166) | Remove all non-admin cartridge import, activation and reset paths |
-| [#167](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/167) | Propagate cartridge revisions live to every role and on reconnect |
-| [#168](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/168) | Admin-only server-side Google Drive REST API connector |
-| [#169](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/169) | Browse, read and preview shared Drive cartridge sources in admin |
-| [#170](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/170) | Validate, diff and publish Drive cartridge revisions from admin |
-| [#186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/186) | Top bar: enlarge the clock |
-| [#187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/187) | Top bar: center the couple identity and languages |
-| [#188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/188) | Top bar: remove the role switcher and show a static role element |
-| [#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189) | Top bar: move cultural chips and utility controls into a right-hand two-row stack |
-| [#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190) | Hard-anchor banner: host PIN and Sync and use white detail text |
-| [#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191) | Pocket header: mini cultural chips and trimmed drift label |
-| [#198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/198) | MC top bar: Speeches status chip |
-| [#199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/199) | MC current step: remove DJ / Audio cues |
-| [#200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/200) | MC current step: rename Sub-tasks and order unchecked first |
-| [#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201) | MC: Speeches as the only card below the timeline |
-| [#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202) | MC: remove summary cards and move Cake into its active step |
-| [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) | MC: hide the Speeches card when there are no speeches |
-| [#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210) | MC Master: switch to the DJ view (production, view-only) |
-| [#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211) | Development-only all-role view switcher |
-| [#214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/214) | MC: make the Speeches card full width |
-| [#215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/215) | DJ top bar: remove duplicate role label and add selected MC VIP controls |
-| [#216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/216) | DJ timeline: align step presentation with MC Master |
-| [#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217) | DJ: remove unselected sections and fix scrolling |
-| [#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218) | DJ VIP: add a guest song-request bar below the top bar |
-| [#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219) | DJ view: enforce Standard vs VIP restrictions |
-| [#226](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/226) | Photographer: read-only MC-style step timeline |
-| [#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227) | Photographer: remove selected sections and keep approved UI |
-| [#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228) | Photographer: move photo-plan details into step cards |
-| [#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229) | Photographer: sunset lifecycle and shared mini-session override |
-| [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Photographer/MC: group-photo step rework TODO |
-| [#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231) | Media roles: Photographer 1, Photographer 2 and Cameraman |
-| [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) | Photographer: DJ VIP parity and feature gates |
-| [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Media team: future rework TODO |
-| [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) | DJ: remove Reel Clock from Standard and VIP |
-| [#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242) | Photographer/Cameraman: full-page step layout |
-| [#243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/243) | Speaker: remove the timeline UI element |
-| [#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244) | Speaker: reduce Now speaking card |
-| [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker: dedicated speech cartridge TODO |
-| [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) | DJ: remove ZAIKS/licensing from Music Policy |
-| [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) | Media/Speaker: remove duplicate top-left role label |
-| [#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253) | Top bar: shared layout, clock size and spacing |
-| [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) | Top bar center: ring logo, language and date rows |
-| [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) | Top bar center: localized weekday |
-| [#256](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/256) | DJ Standard: laptop-only view |
-| [#257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/257) | Top bar: enlarge the center ring logo |
-| [#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258) | Dev switcher: DJ Standard preview |
-| [#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259) | DJ current step: remove generic track chips, add main songs |
-| [#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260) | Schema: add isMainSongRequired step flag |
-| [#261](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/261) | Predefined steps: rename catalogue, delete Buffets |
-| [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) | Predefined steps: add Thank-You, Wishes, Oczepiny, Games, First Dance |
-| [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | TODO: rework and define each predefined step |
-| [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) | Predefined steps: repeated-concept audit |
-| [#273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/273) | Mandatory steps: first arrival, prep-ready and kitchen service hours |
-| [#274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/274) | Venue Manager role and editable mandatory panel |
-| [#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275) | Venue Manager overrides and persistent update popup |
-| [#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276) | Cake service mode on MC/Venue Manager |
-| [#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277) | Children expected boolean and global badge |
-| [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) | First guests arrival as customer-confirmed first step |
-| [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) | Time-derived timeline position in all views |
-| [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) | Wedding closure step, extension and last song |
-| [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) | MC: children reminder in Hard Anchor Collision banner |
-| [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) | Oczepiny Early/Midnight schema and Google Doc parsing |
-| [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC, Photographer and DJ VIP cues |
-| [#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295) | Current Step card: subtle stable 3D tilt and elevation |
-| [#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297) | MC: center the children expected reminder in the banner |
-| [#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298) | DJ Standard: disable the Music Policy UI |
-| [#299](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/299) | Top bar: distinguish couple languages from UI language switch |
-| [#300](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/300) | Music Policy: list every main song from flagged steps |
-| [#301](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/301) | Predefined timeline data contract; remove first arrival/closure |
-| [#302](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/302) | Mandatory constraints, visibility and kitchen service mode |
-| [#303](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/303) | Ceremony variants and MC visibility |
-| [#304](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/304) | Grand Entrance guest order |
-| [#305](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/305) | First Dance variants and DJ VIP timing |
-| [#306](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/306) | Games question-list Docs |
-| [#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307) | Photographer children text: only "Children expected" |
-| [#308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/308) | Step types: remove BUFFER, use FLEXIBLE/HARD_ANCHOR |
-| [#309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/309) | Auto-calculate step durations from next-step times |
-| [#310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/310) | Step cards: remove the "Step N" label |
-| [#311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/311) | Photographer/Cameraman: restore sunset UI |
-| [#327](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/327) | Mandatory update popup: enforce role visibility and service modes |
-| [#328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/328) | Post-#308 cleanup: remove dead BUFFER/ELASTIC code and fixtures |
-| [#329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/329) | Localize mandatory, ceremony, games and entrance cues |
-| [#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330) | Refresh README and active technical docs |
-| [#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331) | Mobile: shared compact top bar for every role view |
-| [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332) | Mobile: dev switcher and secondary configuration density |
-| [#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333) | Mobile: consistent cultural and speech pill grid |
-| [#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334) | Mobile: harden drawers, modals and floating panels |
-| [#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335) | Mobile: 3D current-step card across all role views |
-| [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews and regression coverage |
-| [#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337) | Admin panel: restrict access to laptops/desktops only |
-| [#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349) | Speaker view: localize UI text, keep speech text verbatim |
-| [#350](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/350) | Google Doc to cartridge: complete section mapping |
-| [#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351) | Admin Drive: publish mapped Google Doc cartridges |
-| [#352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/352) | QR phone handoff: always require the role PIN |
-| [#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353) | Localize the QR and PIN handoff flow |
-| [#355](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/355) | MC Cues: children warnings and remove language tags |
-| [#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356) | Cake protocol: remove cutting/serving time UI |
-| [#362](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/362) | Admin route: move from /deck/admin to /admin |
-| [#363](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/363) | Admin Drive: root/year/month/wedding folder hierarchy + year tabs |
-| [#364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/364) | Admin Drive: parse month secrets folders |
-| [#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365) | Admin Drive: refresh on open + manifest hash diff |
-| [#370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/370) | Admin: remove manual New wedding creation; use Drive only |
-| [#374](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/374) | Setup: centralize environment/secrets configuration and document deployment |
+Only genuinely open issues are listed here; completed work stays in the
+sections below and in git history.
+
+| Issue | Item | Type |
+| --- | --- | --- |
+| [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
+| [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
+| [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Photographer/MC group-photo step rework | Planning TODO |
+| [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
+
+### Planning TODO register
+
+Planning TODOs are product/design decisions, not implementation commitments.
+They must not be implemented until the owner approves the behaviour and a
+follow-up implementation issue exists.
+
+| Item | Tracking | Status |
+| --- | --- | --- |
+| Group-photo step rework | [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Open; needs owner decisions on sequencing, controls, group order, locations, timing and media assignments |
+| Dedicated Speaker speech cartridge | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Open; needs schema, validation, revision/publication and offline-cache contract |
+| MC top-bar VIP Radar / Contacts relocation | No issue yet | Pending owner decision on where the controls belong |
+| Media-team visibility and restrictions | [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Closed; the Media team card stays removed and its data remains in the model |
+| Precise predefined-step definitions | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | Closed; see [`docs/predefined-step-audit.md`](docs/predefined-step-audit.md) for the current concept audit |
+
+There are no open TODO entries for schema, MC cues or predefined-step work:
+#77 and #80 are implementation issues, and #263 is closed.
 
 ### Responsive phone / pocket plan
 
@@ -223,10 +139,12 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
 6. **QR to open on a phone.** When the view is a laptop/desktop width, display
    a QR code that opens the same view on a phone (scan to open the deck URL on
    the device).
-7. **Top-bar relocation TODO.** The MC top bar no longer exposes VIP Radar or
-   vendor Contacts. Keep their functionality intact and ask the owner in a
-   future pass where these controls should be surfaced. Cartridge import is
-   admin-only through `/admin` and is not part of this relocation.
+7. **Top-bar relocation pending owner decision.** The MC top bar no longer
+   exposes VIP Radar or vendor Contacts. Keep their functionality intact and ask
+   the owner in a future pass where these controls should be surfaced. This is
+   tracked in the Planning TODO register and has no implementation issue yet.
+   Cartridge import is admin-only through `/admin` and is not part of this
+   relocation.
 
 ### Universal timeline focus stacks (decision, 2026-11-07)
 
@@ -322,8 +240,9 @@ Shared controls:
 - Only MC desktop gets the role switcher. Non-MC roles and pocket views have no
   role-switching control.
 - VIP Radar, the empty placeholder button and Contacts are removed from the MC
-  top bar only. Their components and functionality stay intact. **TODO:** ask
-  the owner where VIP Radar and Contacts should be relocated in a future pass.
+  top bar only. Their components and functionality stay intact. **Owner
+  decision pending:** where VIP Radar and Contacts should be relocated. This is
+  tracked in the Planning TODO register; no implementation issue exists yet.
 
 Pocket header:
 
@@ -662,10 +581,12 @@ top-bar clock stays if present.
 - the "Read-only timeline" card wrapper once the main step timeline is primary.
 
 Keep the footer strip and Sunset & Golden Hour. Media-team data stays in the
-model for a future rework. Add project TODOs for the Media team and the
-group-photo step.
+model for a future rework. The media-team planning TODO (#233) is closed, so the
+card stays removed until an approved follow-up exists. The group-photo planning
+TODO remains open (#230).
 ([#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227),
-[#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233))
+[#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233),
+[#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230))
 
 **Photo plan into steps.** Delete the standalone Photo plan card and render each
 plan element inside its mapped step card: mini session, group photos, speed
@@ -681,10 +602,11 @@ published cartridge, and writes an audit-log entry with actor, old value, new
 value and timestamp so it can be traced later.
 ([#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229))
 
-**Group photo TODO.** The group-photo step is critical for the MC and
+**Group photo TODO (open).** The group-photo step is critical for the MC and
 Photographer and needs a dedicated design pass before implementation: sequencing,
 MC controls, Photographer view, group order, location, timing, minimum group
-size and multi-media assignments. This is tracked as a planning TODO.
+size and multi-media assignments. This remains an open planning TODO; no
+implementation commitment exists until the owner approves the behaviour.
 ([#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230))
 
 **Media roles.** Support two photographers and a cameraman as separate media
@@ -714,7 +636,7 @@ remaining approved DJ sections.
 | Oczepini cues | Removed | Oczepiny remains in MC cultural/timeline data |
 | Venue access | Removed | Not affected |
 | Stage ping banner | Removed | Receiving banner stays in other roles |
-| Media team card | Removed for now; TODO | Data model retained |
+| Media team card | Removed; #233 closed | Data model retained |
 | Photo plan card | Removed; details move into step cards | Cartridge data unchanged |
 | Sunset & Golden Hour | Kept with expiry + shared override | n/a |
 | Footer | Kept | n/a |
@@ -725,10 +647,10 @@ Implementation issues:
 - [#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227) — remove selected sections;
 - [#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228) — photo plan into step cards;
 - [#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229) — sunset lifecycle and mini-session override;
-- [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) — group-photo TODO;
+- [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) — group-photo planning TODO (open);
 - [#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231) — separate media roles;
 - [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) — VIP parity;
-- [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) — Media team TODO;
+- [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) — media-team planning TODO (closed);
 - [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) — remove DJ Reel Clock.
 
 ### Media/Speaker/DJ refinements (decision, 2026-11-07)
@@ -755,10 +677,12 @@ MC-intro and offline-copy badges from that card. The script/teleprompter card
 stays separate and intact.
 ([#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244))
 
-**Speech cartridge TODO.** The speech-display UI content will in future be
-retrieved from a dedicated cartridge produced from a Google Doc through a JSON
-parser. Record the schema, validation, revision/publication and offline-cache
-work as a follow-up; do not hardcode speech text or scrape the Doc at runtime.
+**Speech cartridge TODO (open).** The speech-display UI content will in future
+be retrieved from a dedicated cartridge produced from a Google Doc through a
+JSON parser. Record the schema, validation, revision/publication and
+offline-cache work as a follow-up; do not hardcode speech text or scrape the Doc
+at runtime. This remains an open planning TODO; the current speech rendering
+stays until the contract is approved.
 ([#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245))
 
 **Music Policy — ZAIKS.** Remove the ZAIKS/licensing UI element from the Music
@@ -777,7 +701,7 @@ Implementation issues:
 - [#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242) — full-page media step layout;
 - [#243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/243) — Speaker timeline removal;
 - [#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244) — reduced Now speaking card;
-- [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) — dedicated speech cartridge TODO;
+- [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) — dedicated speech cartridge planning TODO (open);
 - [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) — remove ZAIKS/licensing UI;
 - [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) — single role identity element.
 
@@ -918,20 +842,22 @@ content and app features:
 | Buffets Open & Dance Floor | No | Delete step_04. |
 
 Each concept should have exactly one timeline representation; remove duplicate
-anchor/subtask-only representations where the step now owns the moment. Any
-remaining ambiguity goes to the step-rework TODO.
+anchor/subtask-only representations where the step now owns the moment. The
+former step-rework planning TODO (#263) is closed; this audit remains the
+current concept reference.
 ([#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264))
 
-**Rework TODO.** Every predefined step needs a precise definition before
-implementation: purpose/trigger, duration/type, location, MC/speaker cues,
-subtasks, main song/playlist/cutoff, photo/video cues, hard-anchor links,
-dependencies and optional/mandatory rules.
+**Step definitions (closed planning TODO).** The definition checklist covering
+purpose/trigger, duration/type, location, MC/speaker cues, subtasks, main
+song/playlist/cutoff, photo/video cues, hard-anchor links, dependencies and
+optional/mandatory rules was tracked by #263, which is closed. Any new
+behaviour change needs a fresh issue rather than reopening the old checklist.
 ([#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263))
 
 Implementation issues:
 - [#261](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/261) — renames and Buffets deletion;
 - [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) — new predefined steps;
-- [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) — precise step-rework TODO;
+- [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) — precise step-rework planning TODO (closed);
 - [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) — repeated-concept audit.
 
 ### Mandatory steps, Venue Manager and children (decision, 2026-11-07)
@@ -1949,10 +1875,11 @@ CI runs the same checks on pushes and pull requests to `master`.
 - The Pocket role removal and per-role phone layouts shipped in #109–#114.
 - The MC Stage Rail (current-step hero with done/upcoming accordions) is planned
   in #118–#121; see `docs/mc-stage-rail-plan.md`.
-- v1.2 schema freeze (#77), multi-wedding library (#79) and MC cue cleanup
-  (#80) remain open.
+- v1.2 schema freeze (#77) and MC cue cleanup (#80) remain open. The
+  multi-wedding library work (#79) is closed.
 - `/deck/` static hosting still needs an Apache/SPA rewrite for deep links such
-  as `/deck/8f3k2q/mc` and `/admin` (TODO 19).
+  as `/deck/8f3k2q/mc` and `/admin`. This is a known deployment limitation and
+  has no tracking issue yet.
 - No automated browser/axe E2E suite yet.
 
 ---

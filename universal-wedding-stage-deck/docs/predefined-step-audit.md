@@ -24,5 +24,5 @@ and application features.
 - Optional steps are filtered by `filterEnabledSteps` before the live state is
   built, so disabled features never appear in the timeline.
 - Step IDs are stable: `step_04` is retired and new steps use `step_06`–`step_10`.
-- Remaining ambiguities and precise step definitions are tracked by the step
-  rework TODO (#263).
+- The former step-rework planning TODO (#263) is closed; this audit remains the
+  current concept reference. New behaviour changes need a fresh issue.
