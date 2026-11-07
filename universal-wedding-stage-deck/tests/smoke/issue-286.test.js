@@ -8,10 +8,10 @@ describe('issue #286 children reminder in hard-anchor banner', () => {
     expect(badge).not.toContain("role !== 'mc'");
     expect(badge).toContain('isMediaRole(role)');
   });
-  it('renders children info inside the hard-anchor banner', () => {
+  it('does not render children info inside the hard-anchor banner', () => {
     const banner = read('src/components/HardAnchorAlertBanner.jsx');
-    expect(banner).toContain('childrenExpected');
-    expect(banner).toContain('Children expected');
-    expect(read('src/views/McMasterView.jsx')).toContain('childrenExpected={childrenExpected}');
+    expect(banner).not.toContain('childrenExpected');
+    expect(banner).not.toContain('Children expected');
+    expect(read('src/views/McMasterView.jsx')).toContain('<ChildrenExpectedBadge');
   });
 });

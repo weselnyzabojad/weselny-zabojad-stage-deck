@@ -3,7 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 // Full-width collision / compression banner for the MC dashboard. It only
 // renders for real warnings (collision or compression), not for the earlier
 // "approaching" notice shown in the radar card.
-export default function HardAnchorAlertBanner({ radar, actions = null, childrenExpected = false }) {
+export default function HardAnchorAlertBanner({ radar, actions = null }) {
   const { t } = useI18n();
   const warning = radar?.primary;
   if (!warning) return null;
@@ -38,12 +38,6 @@ export default function HardAnchorAlertBanner({ radar, actions = null, childrenE
           </div>
         </div>
       </div>
-
-      {childrenExpected ? (
-        <div className="mx-auto rounded border border-amber-300/60 bg-amber-900/50 px-2 py-1 text-center text-[11px] font-semibold text-amber-100">
-          🧒 Children expected — keep them clear of key moments.
-        </div>
-      ) : null}
 
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
         <div className="min-w-0 text-xs text-white">
