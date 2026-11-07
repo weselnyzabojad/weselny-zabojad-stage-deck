@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `c648b2c` (QR phone handoff decision)
+**Aligned with:** `master` @ `58068ce` (MC children warnings and cake cleanup decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -152,6 +152,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351) | Admin Drive: publish mapped Google Doc cartridges |
 | [#352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/352) | QR phone handoff: always require the role PIN |
 | [#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353) | Localize the QR and PIN handoff flow |
+| [#355](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/355) | MC Cues: children warnings and remove language tags |
+| [#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356) | Cake protocol: remove cutting/serving time UI |
 
 ### Responsive phone / pocket plan
 
@@ -1332,6 +1334,26 @@ Every step in this handoff must be localized: the open-on-phone dialog, join
 screen, local pairing screen, QR-context hint, PIN errors and status text. PINs,
 room codes, role ids and cartridge content remain untranslated.
 ([#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353))
+
+### MC Cues children warnings and cake protocol cleanup (decision, 2026-11-07)
+
+When \`childrenExpected\` is true, MC Cues adds one step-specific warning for:
+
+- **Wedding cake** — keep children clear of the cake table and cutting area.
+- **Grand Entrance** — keep children out of the entrance aisle.
+- **First Dance** — keep children clear of the dancefloor.
+
+The warning appears only while that step is current and only when children are
+expected. The global hard-anchor children reminder stays unchanged. The MC Cues
+heading drops the \`(FR / PL / EN)\` suffix, and cue lines drop the \`[FR]\`,
+\`[PL]\`, \`[EN]\`, \`[ALL]\` and combined language tags. Cue text itself remains.
+([#355](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/355))
+
+The cake protocol UI no longer displays cutting time or serve time. Remove the
+desktop grid and the compact \`time → serveTime\` header readout. Keep the cake
+song, sparklers, photographer cue, sync note and step state. The cartridge
+fields and schedule logic remain intact.
+([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
