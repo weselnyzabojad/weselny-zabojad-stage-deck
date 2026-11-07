@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `09ac4d0` (admin Drive folder library decision)
+**Aligned with:** `master` @ `29132f7` (Drive-only admin wedding library decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -158,6 +158,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | [#363](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/363) | Admin Drive: root/year/month/wedding folder hierarchy + year tabs |
 | [#364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/364) | Admin Drive: parse month secrets folders |
 | [#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365) | Admin Drive: refresh on open + manifest hash diff |
+| [#370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/370) | Admin: remove manual New wedding creation; use Drive only |
 
 ### Responsive phone / pocket plan
 
@@ -1358,6 +1359,19 @@ desktop grid and the compact \`time → serveTime\` header readout. Keep the cak
 song, sparklers, photographer cue, sync note and step state. The cartridge
 fields and schedule logic remain intact.
 ([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
+
+### Drive-only admin wedding library (decision, 2026-11-07)
+
+The owner admin must not create weddings manually. Remove the **New wedding**
+button, empty-state create CTA, inline create form and manual create path. Any
+server/API route that can create a wedding from an arbitrary admin payload must
+be removed or gated so it cannot bypass Drive discovery.
+
+New weddings enter the system only by discovering a valid Drive wedding folder
+under the root/year/month hierarchy. Existing weddings can still be edited,
+published, archived, restored, re-PINed and deleted. Manual duplicate/create
+actions are not a wedding source unless explicitly reapproved.
+([#370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/370))
 
 ### Admin Drive folder library and /admin route (decision, 2026-11-07)
 
