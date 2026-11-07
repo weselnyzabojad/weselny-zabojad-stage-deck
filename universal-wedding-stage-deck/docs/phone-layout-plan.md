@@ -253,3 +253,20 @@ Manual checks:
 - No Pocket role in join, QR cards, admin filters or i18n.
 - Production join still enforces per-role PIN and session revocation.
 - Skip link, focus restoration and reduced motion still work.
+
+---
+
+## Mobile 3D current-step QA
+
+Check at 320×568 and 375×667:
+
+- MC, DJ Standard/VIP, Photographer 1/2, Cameraman, Speaker and Venue Manager
+  show the same subtle current-step tilt.
+- Scrolling does not jitter or change the tilt continuously.
+- Pressing/advancing the step gives a short settle animation without layout
+  shift or clipped text.
+- Desktop pointer tracking at ≥1024px is unchanged.
+- `prefers-reduced-motion` renders the card flat while retaining elevation.
+- Dev role previews inherit the effect; blocked mobile admin and non-step admin
+  cards stay flat.
+
