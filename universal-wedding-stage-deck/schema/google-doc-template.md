@@ -101,7 +101,7 @@ step below is sourced from this Google Doc.
 | step_05 | 20:30 | 30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
 | step_06 | 21:00 | 15 | Wedding Thank-You | ELASTIC | Main Hall |  | false |  |  |
 | step_07 | 21:15 | 30 | Wishes | BUFFER | Garden |  | false | wishes |  |
-| step_08 | 21:45 | 10 | First Dance | ELASTIC | Main Hall |  | true |  |  |
+| step_08 | 21:45 | 10 | First Dance | ELASTIC | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
 | step_10 | 01:00 | 45 | Games | BUFFER | Main Hall |  | false | games |  |
 
