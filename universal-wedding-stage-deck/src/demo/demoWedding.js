@@ -7,7 +7,7 @@
 export const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
   type: "SPEECH",
-  title: "Hall Entrance, Toast & Dinner Start",
+  title: "Grand Entrance",
   items: [
     {
       id: "welcome",
@@ -314,8 +314,7 @@ export const DEMO_WEDDING = {
         moment: "FIRST_DANCE",
         title: "Perfect",
         artist: "Ed Sheeran",
-        version: "Duet version",
-        stepId: "step_04",
+        version: "Duet version",
         plannedTime: "19:30",
         startAtSec: 0,
         fadeOutSec: 270,
@@ -426,11 +425,10 @@ export const DEMO_WEDDING = {
     { task: "Confirm the Instax cameras and guestbook are packed", done: false }
   ],
   steps: [
-    { id: "step_01", time: "16:30", durationMin: 30, title: "Aperitif in Garden", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
-    { id: "step_02", time: "17:00", durationMin: 60, title: "Outdoor Civil Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
-    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Hall Entrance, Toast & Dinner Start", type: "ELASTIC", location: "Main Hall", photographerCue: "Group photo before the toast", isMainSongRequired: true, dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15", cutoffSec: 3600 }, teleprompter: HALL_ENTRANCE_SCRIPT },
-    { id: "step_04", time: "19:30", durationMin: 30, title: "Buffets Open & Dance Floor", type: "BUFFER", location: "Main Hall", buffer: { minDurationMin: 10, maxDurationMin: 60, danceBlock: true }, dj: { playlist: "Dance Floor Block", track: "September — Earth, Wind & Fire", cutoffSec: 1800 } },
-    { id: "step_05", time: "20:30", durationMin: 30, title: "Cake & Sparklers", type: "HARD_ANCHOR", location: "Terrace", isMainSongRequired: true, dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
+    { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
+    { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
+    { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Grand Entrance", type: "ELASTIC", location: "Main Hall", photographerCue: "Group photo before the toast", isMainSongRequired: true, dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15", cutoffSec: 3600 }, teleprompter: HALL_ENTRANCE_SCRIPT },
+    { id: "step_05", time: "20:30", durationMin: 30, title: "Wedding cake", type: "HARD_ANCHOR", location: "Terrace", isMainSongRequired: true, dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME }
   ]
 };
 

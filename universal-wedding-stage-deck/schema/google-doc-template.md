@@ -1,4 +1,4 @@
-# Wedding harmonogram — Google Doc template (v1.2 proposal, D8)
+﻿# Wedding harmonogram — Google Doc template (v1.2 proposal, D8)
 
 > **Status: PROVISIONAL.** Generated from the v1.2 proposal, not from an
 > approved schema yet. `schema/wedding-schema-v1.1.json` remains canonical.
@@ -21,7 +21,7 @@ Date: 20.08.2026
 Date ISO: 2026-08-20
 Sync PIN: 2008
 Service package: HOST_AND_DJ_VIP
-Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
+Venue: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
 
 ## COUPLE IDENTITY
 
@@ -69,18 +69,17 @@ Props: Veil, Bow ties, Test cards
 | --- | --- | --- | --- | --- |
 | toss | Veil toss | 10 | false | true |
 | ties | Bow-tie game | 10 | true | true |
-| test | Test Zgodności | 15 | true | true |
+| test | Test ZgodnoĹ›ci | 15 | true | true |
 | winner_photo | Winner photo | 5 | false | false |
 
 ## TIMELINE
 
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:30 | 30 | Aperitif in Garden | BUFFER | Garden |  | false |  |
-| step_02 | 17:00 | 60 | Outdoor Civil Ceremony | ELASTIC | Garden Gazebo |  | false |  |
-| step_03 | 18:00 | 90 | Hall Entrance, Toast & Dinner Start | ELASTIC | Main Hall |  | true | Planned 18:00; actual start logged live. |
-| step_04 | 19:30 | 30 | Buffets Open & Dance Floor | BUFFER | Main Hall |  | false |  |
-| step_05 | 20:30 | 30 | Cake & Sparklers | HARD_ANCHOR | Terrace | cake_midnight | true |  |
+| step_01 | 16:30 | 30 | Cocktail / Vin d'honneur | BUFFER | Garden |  | false |  |
+| step_02 | 17:00 | 60 | Ceremony | ELASTIC | Garden Gazebo |  | false |  |
+| step_03 | 18:00 | 90 | Grand Entrance | ELASTIC | Main Hall |  | true | Planned 18:00; actual start logged live. |
+| step_05 | 20:30 | 30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |
 
 ## DJ CUES
 
@@ -88,14 +87,13 @@ Props: Veil, Bow ties, Test cards
 | --- | --- | --- | --- | --- | --- |
 | step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |  |
 | step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 | 3600 | Absolute cutoff wins over cutoffSec. |
-| step_04 | Dance Floor Block | September — Earth, Wind & Fire |  | 1800 | Relative cutoff counts from the actual start. |
 
 ## MC CUES
 
 | Step ID | Language | Timing | Text |
 | --- | --- | --- | --- |
-| step_03 | PL | AT_START | Prosimy o powstanie i powitanie Pary Młodej! |
-| step_03 | FR | AT_START | Veuillez vous lever et accueillir les jeunes mariés ! |
+| step_03 | PL | AT_START | Prosimy o powstanie i powitanie Pary MĹ‚odej! |
+| step_03 | FR | AT_START | Veuillez vous lever et accueillir les jeunes mariĂ©s ! |
 | step_03 | EN | AT_START | Please stand and welcome the newlyweds! |
 
 ## SUBTASKS
@@ -103,7 +101,7 @@ Props: Veil, Bow ties, Test cards
 | Step ID | Subtask ID | Label | Done |
 | --- | --- | --- | --- |
 | step_03 | step_03_speech_mic | Confirm the speech mic is on | false |
-| step_03 | step_03_rosol | Rosół + Tartare with Vodka shot | false |
+| step_03 | step_03_rosol | RosĂłĹ‚ + Tartare with Vodka shot | false |
 
 ## HARD ANCHORS
 
@@ -115,7 +113,7 @@ Props: Veil, Bow ties, Test cards
 
 ## VENUE LOGISTICS
 
-Address: Dwór X, ul. Przykładowa 1, 59-400 Jawor
+Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
 Latitude: 51.05
 Longitude: 16.19
 Timezone: Europe/Warsaw
@@ -139,7 +137,7 @@ Key holder: Anna Kowalska
 Travel baseline minutes: 55
 Travel distance km: 62
 Travel origin label: Jawor 59-400
-Accommodation name: Hotel Przykład
+Accommodation name: Hotel PrzykĹ‚ad
 Accommodation address: ul. Hotelowa 2, 59-400 Jawor
 Accommodation latitude: 51.06
 Accommodation longitude: 16.2
@@ -217,7 +215,7 @@ Guest coverage consent: Couple approved; announce before candid coverage.
 | Moment ID | Moment | Title | Artist | Version | Step ID | Planned time | Source type | File / Link | Start (s) | Fade out (s) | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | step_03 | 18:00 | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 | 0 | 215 |  |
-| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version | step_04 | 19:30 | STREAMING |  | 0 | 260 | Duet version if available. |
+| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version |  | 19:30 | STREAMING |  | 0 | 260 | Duet version if available. |
 | cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | step_05 | 20:30 | STREAMING |  | 0 | 180 |  |
 
 ## MUSIC POLICY
@@ -239,7 +237,7 @@ Licensing: Venue ZAIKS license confirmed.
 
 | Song ID | Track | Reason |
 | --- | --- | --- |
-| no_macarena | Macarena — Los del Río | Couple's request. |
+| no_macarena | Macarena — Los del RĂ­o | Couple's request. |
 
 ## GUEST REQUESTS
 
@@ -257,7 +255,7 @@ Rules: One request per guest; the DJ decides the order.
 ### Speech Script speech_witness
 
 ```text
-Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume…
+Drodzy PaĹ„stwo, chciaĹ‚bym powiedzieÄ‡ kilka sĹ‚Ăłw o Jennifer i Guillaumeâ€¦
 ```
 
 ## CAKE
@@ -273,7 +271,7 @@ Serve time: 20:45
 | Game | Requested | Requested by | Languages | Existing questions | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Test Wiedzy | UNDECIDED |  | PL, FR, EN | No |  |
-| Test Zgodności | UNDECIDED |  | PL, FR, EN | No | Link to Oczepiny? |
+| Test ZgodnoĹ›ci | UNDECIDED |  | PL, FR, EN | No | Link to Oczepiny? |
 
 ## VENDOR CONTACTS
 
@@ -322,7 +320,7 @@ plaintext.
 
 | Todo ID | Task | Done | Due date | Owner |
 | --- | --- | --- | --- | --- |
-| confirm_test_questions | Confirm Test Zgodności questions with the witnesses | false | 2026-08-18 | MC |
+| confirm_test_questions | Confirm Test ZgodnoĹ›ci questions with the witnesses | false | 2026-08-18 | MC |
 | confirm_sunset | Confirm the sunset time with the photo team | false | 2026-08-19 | MC |
 
 ## PRIVACY
