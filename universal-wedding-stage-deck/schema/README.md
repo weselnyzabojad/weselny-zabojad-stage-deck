@@ -12,7 +12,6 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | `wedding-schema-v1.2.proposal.md` | Proposed v1.2 field model, decisions D1-D9, migration, and validation rules. |
 | `google-doc-template.md` | Provisional Google Doc template with stable `## SECTION` markers (D8 / issue #70). |
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
-| `ai-converter-prompt.md` | Copy-paste prompt for converting raw Google Docs / notes into v1.1 JSON. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
 | `validate-lib.mjs` | Shared Ajv + semantic validator used by the CLI, fixtures and Vitest. |
 | `validate-fixtures.mjs` | Fixture-suite validator (`valid-`/`real-` pass, `invalid-` fail). |
@@ -36,16 +35,20 @@ The same schema and semantic checks run in the admin publishing flow and in the
 role-device cache, so a cartridge is validated against the exact same contract
 before it is published or cached.
 
-## AI conversion workflow
+## Google Doc input workflow
 
-1. Open `/deck/admin` and sign in as an allowlisted owner.
-2. Copy `ai-converter-prompt.md` (plus your raw Google Doc notes) into your AI.
-3. Paste the returned JSON into **Create / publish wedding**.
-4. Validate and publish; the server snapshot becomes the source for role devices.
+1. Fill in `google-doc-template.md` as a Google Doc, keeping every stable
+   `## SECTION` marker in order.
+2. The admin Drive flow (#168–#170) reads the Doc server-side and converts the
+   Google Docs API response with `googleDocToTemplateText(doc)`.
+3. The deterministic parser (`parseGoogleDocTemplate`) validates the section
+   markers and table headers.
+4. Validate, preview the diff and publish from `/deck/admin`; the server snapshot
+   becomes the source for role devices. Manual JSON paste remains the
+   offline/legacy fallback.
 
-The prompt at `ai-converter-prompt.md` uses this schema's canonical camelCase
-shape and also extracts `preWeddingTodos`, which render in the MC
-**Pre-Wedding Checklist** card.
+The template uses this schema's canonical camelCase shape and also captures
+`preWeddingTodos`, which render in the MC **Pre-Wedding Checklist** card.
 
 
 ## Canonical shape
@@ -196,7 +199,7 @@ Each rule accepts an optional `note`.
 
 `coHosts` and `contentCreators` belonged to the removed Issue #16 module. They
 remain defined only so older v1.1 cartridges still pass structural validation.
-The app no longer renders them, the AI converter prompt no longer emits them,
+The app no longer renders them, the Google Doc template no longer emits them,
 and the shared validator drops both arrays when a cartridge is published or
 cached (D10 / TODO 20).
 Use `contacts` for the vendor directory.
@@ -315,5 +318,5 @@ The product roadmap sketched v1.1 with snake_case examples (`wedding_id`,
 `sync_pin`, `hard_anchors`, `live_sync_state`). This implementation adopts the
 app's canonical camelCase names and formalizes the controls added in Sprint 3
 (`step_order`, `stage_ping`).
-The AI converter and admin publishing flow translate raw documents and legacy
+The deterministic Google Doc parser and admin publishing flow translate raw documents and legacy
 snake_case keys into this schema.

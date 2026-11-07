@@ -314,34 +314,39 @@ rejects unknown top-level keys; use `extensions` for forward-compatible extras. 
 Legacy snake_case Google Docs imports are mapped by the shared cartridge
 converter used by admin publishing.
 
-### 12. AI converter prompt and admin-only cartridge publishing (issue #15 / #166)
+### 12. Admin-only cartridge publishing and Google Doc input (issues #15 / #82 / #166)
 
 The ingestion pipeline is admin-only:
 
-- `schema/ai-converter-prompt.md` is the copy-paste AI prompt. It defines the
-  exact v1.1 shape, ELASTIC/BUFFER/HARD_ANCHOR classification, buffer ranges,
-  hard anchors, teleprompter shapes and pre-wedding task extraction.
+- `schema/google-doc-template.md` defines the stable `## SECTION` template the
+  couple fills in. `src/lib/googleDocTemplate.js` converts a Google Docs API
+  response with `googleDocToTemplateText(doc)` and parses the deterministic
+  template with `parseGoogleDocTemplate`.
 - Cartridge JSON is pasted and published only from `/deck/admin`
-  (**Create / publish wedding**). The page validates it in the browser with the
-  same Ajv schema + semantic checks as the CLI before calling `admin_api`.
+  (**Create / publish wedding**, **Replace cartridge**). The page validates it
+  in the browser with the same Ajv schema + semantic checks as the CLI before
+  calling `admin_api`.
+- The former copy-paste AI-prompt workflow and its prompt payload are removed.
+  Manual JSON paste remains as the offline/legacy fallback until the Drive admin
+  flow from #168–#170 is available.
 - Stage roles never import, activate, replace or reset a cartridge. After a role
   PIN is accepted they fetch the server-published snapshot.
 - For offline continuity the device keeps a read-only cache keyed by
-  `weddingId`. It records the server `updated_at` revision marker and can only
-  be written by the fetch path in `App.jsx`.
+  `weddingId`. It records the server `cartridge_revision` marker and can only
+  be written by the cartridge provider after an authoritative server fetch.
 - When the server is unreachable, the cached snapshot for the same joined
   wedding is shown with a persistent stale/read-only banner.
 - When no server cartridge is available, production shows a clear retry/error
   state. It never falls back to the built-in demo.
 - `preWeddingTodos` from the cartridge render in the MC **🧳 Pre-Wedding
   Checklist** card; check states use the synced `checked_subtasks` map.
-- The AI prompt payload and the former `CartridgeImporter` component are not
-  part of the role-device bundle.
+- The former `CartridgeImporter` and AI-prompt payload are not part of the
+  role-device bundle.
 
-Relevant files: `schema/ai-converter-prompt.md`, `src/admin/AdminApp.jsx`,
-`src/lib/cartridgeImporter.js`, `src/lib/cartridgeValidation.js`,
-`src/lib/cartridgeStorage.js`, `src/App.jsx`, `src/StageDeck.jsx`,
-`src/components/PreWeddingChecklistCard.jsx`.
+Relevant files: `schema/google-doc-template.md`, `src/lib/googleDocTemplate.js`,
+`src/admin/AdminApp.jsx`, `src/lib/cartridgeImporter.js`,
+`src/lib/cartridgeValidation.js`, `src/lib/cartridgeStorage.js`, `src/App.jsx`,
+`src/StageDeck.jsx`, `src/components/PreWeddingChecklistCard.jsx`.
 
 ### 13. Retired: Co-Hosting & Content Creator module (D10 / TODO 20)
 
@@ -354,7 +359,7 @@ The Issue #16 module was removed on 2026-11-03 (decision D10):
 - `WeddingSchema v1.1` keeps the `coHosts` / `contentCreators` definitions so
   existing cartridges still validate, but they are marked legacy and the shared
   validator **drops both arrays** when a cartridge is published or cached. The
-  AI converter prompt no longer asks for them.
+  Google Doc template no longer asks for them.
 - Use `contacts` for the vendor directory instead.
 
 ### 14. DJ Key Songs card: VIP vs Standard (issue #60 / TODO 18)
@@ -413,13 +418,13 @@ The cartridge supplies the data in `musicPolicy.importantSongs[]`:
 - `viewVisibility.dj.music: false` hides the whole card. The card is driven by
   the service package and visibility matrix, not by role switching.
 - The Google Doc `## IMPORTANT SONGS` section maps to this block; see
-  `schema/ai-converter-prompt.md`. Links are preserved exactly and never
+  `schema/google-doc-template.md`. Links are preserved exactly and never
   invented; missing sources warn instead of blocking admin publishing.
 
 Relevant files: `src/lib/importantSongs.js`,
 `src/components/KeySongsCard.jsx`, `src/components/QrCodeImage.jsx`,
 `src/components/DjBoothView.jsx`, `src/App.jsx`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-schema-v1.1.json`, `schema/google-doc-template.md`,
 `src/lib/cartridgeValidation.js`.
 
 ### 15. Real-time reel clock (issue #42 / P0.6)
@@ -488,7 +493,7 @@ The MC, DJ Booth and Pocket headers now render the cartridge-driven
 - Fallback order: `coupleProfile` -> legacy `couple` string -> "Wedding".
   v1.1 cartridges therefore keep the old `Wedding: {couple}` label.
 **Google Doc parser:** the `## COUPLE IDENTITY` section maps to `coupleProfile`
-(see `schema/ai-converter-prompt.md`). Nationality names are normalized to ISO
+(see `schema/google-doc-template.md`). Nationality names are normalized to ISO
 3166-1 alpha-2 (`French`/`France`/`Français`/`Francja` -> `FR`, `Polish`/`Poland`/
 `Polonais`/`Pologne`/`Polska` -> `PL`). Nationality is never inferred from a
 name, birthplace or spoken language, and `commonLanguages` is never derived from
@@ -497,7 +502,7 @@ be split on `&` only as an unconfirmed prefill.
 
 Relevant files: `src/components/CoupleIdentity.jsx`, `src/lib/coupleIdentity.js`,
 `src/lib/flags.js`, `src/App.jsx`, `src/components/DjBoothView.jsx`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-schema-v1.1.json`, `schema/google-doc-template.md`,
 `schema/wedding-cartridge.example.json`, `vite.config.js`.
 
 ### 17. Cake protocol (issue #49 / TODO 6)
@@ -525,13 +530,13 @@ The cartridge can now describe the cake moment as a first-class block:
 - If `cake.time` is missing, the CAKE key song's `plannedTime` is used. Missing
   sparklers/cue/serve time render as `—`; nothing is inferred.
 - Validation: `cake.serveTime` cannot be before `cake.time`.
-- The AI converter prompt maps a Google Doc `## CAKE` section to this block and
-  tells the AI to reuse the CAKE row from `musicPolicy.importantSongs[]`.
+- The deterministic Google Doc parser maps `## CAKE` section to this block and
+  reuses the CAKE row from `musicPolicy.importantSongs[]`.
 
 Relevant files: `src/lib/cake.js`, `src/components/CakeCard.jsx`, `src/App.jsx`,
 `src/components/PocketRemoteView.jsx`, `src/lib/cartridgeValidation.js`,
 `src/lib/cartridgeImporter.js`, `schema/wedding-schema-v1.1.json`,
-`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
+`schema/google-doc-template.md`, `schema/wedding-cartridge.example.json`.
 
 ### 18. Vendor contacts directory (issue #53 / TODO 10)
 
@@ -562,13 +567,13 @@ directory:
 - The schema now allows `contacts[].id`, `email` and `leavesAt`; duplicate
   contact ids are rejected when publishing from `/deck/admin`. v1.1 cartridges
   without those fields still load.
-- The AI converter prompt maps a Google Doc `## VENDOR CONTACTS` section to this
-  block and tells the AI never to invent phone numbers or emails.
+- The deterministic Google Doc parser maps `## VENDOR CONTACTS` section to this
+  block and forbids inventing phone numbers or emails.
 
 Relevant files: `src/lib/contacts.js`, `src/components/ContactsModal.jsx`,
 `src/components/HardAnchorRadar.jsx`, `src/App.jsx`,
 `src/lib/cartridgeValidation.js`, `src/lib/cartridgeImporter.js`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-schema-v1.1.json`, `schema/google-doc-template.md`,
 `schema/wedding-cartridge.example.json`.
 
 ### 19. Music policy: requests, blacklist and licensing (issue #45 / TODO 2)
@@ -599,14 +604,14 @@ The cartridge now carries the full guest-music policy:
   flagged (never two conflicting first-dance titles).
 - Validation rejects duplicate must-play/do-not-play ids and a
   `requestWindow.end` that is not after `start`.
-- The AI converter prompt maps `## MUSIC POLICY` / `## GUEST REQUESTS` to this
+- The deterministic Google Doc parser maps `## MUSIC POLICY` / `## GUEST REQUESTS` to this
   block and forbids inventing songs, reasons or licensing details.
 
 Relevant files: `src/lib/musicPolicy.js`, `src/components/MusicPolicyCard.jsx`,
 `src/components/DjBoothView.jsx`, `src/components/PocketRemoteView.jsx`,
 `src/App.jsx`, `src/lib/cartridgeValidation.js`,
 `src/lib/cartridgeImporter.js`, `schema/wedding-schema-v1.1.json`,
-`schema/ai-converter-prompt.md`, `schema/wedding-cartridge.example.json`.
+`schema/google-doc-template.md`, `schema/wedding-cartridge.example.json`.
 
 ### 20. Room identity and production role PINs (issue #38 / P0.2)
 
@@ -915,7 +920,7 @@ The speeches module is finalised for the v1.1 cartridge.
   wiped. The full cartridge and role token remain cached for offline use.
 
 **Google Doc parser**
-- The AI converter prompt maps `## SPEECHES` to `speechMode` + `speeches[]` and
+- The deterministic Google Doc parser maps `## SPEECHES` to `speechMode` + `speeches[]` and
   tells the model to copy scripts exactly (never summarise), record consent and
   `readFrom`, and add a pre-wedding TODO when a COMPLEX script is missing.
 
@@ -929,7 +934,7 @@ Relevant files: `src/lib/speeches.js`, `src/lib/speakerCache.js`,
 `src/components/SpeechesCard.jsx`, `src/components/SpeakerView.jsx`,
 `src/lib/roles.js`, `src/App.jsx`, `src/lib/liveStageState.js`,
 `src/hooks/useLiveStageState.js`, `src/components/RoleJoinScreen.jsx`,
-`schema/wedding-schema-v1.1.json`, `schema/ai-converter-prompt.md`,
+`schema/wedding-schema-v1.1.json`, `schema/google-doc-template.md`,
 `schema/wedding-cartridge.example.json`.
 
 ### 26. Command/undo stack, audit log and anchor-safe controls (issue #43 / P0.7)
@@ -966,8 +971,8 @@ Relevant files: `src/lib/liveStageState.js`, `src/hooks/useLiveStageState.js`,
 
 ### 27. Optional games: Test Wiedzy & Test Zgodności (issue #59 / TODO 16)
 
-Design and content are prepared without changing the cartridge schema or the AI
-converter prompt (the `games` schema is still awaiting approval):
+Design and content are prepared without changing the cartridge schema or the
+Google Doc template (the `games` schema is still awaiting approval):
 
 - [`docs/optional-games.md`](docs/optional-games.md) defines the Google Doc
   `## GAMES` section with an explicit `YES` / `NO` / `UNDECIDED` per game,
@@ -981,7 +986,7 @@ converter prompt (the `games` schema is still awaiting approval):
   score bands, MC script, Oczepini relationship and fallbacks.
 - `src/content/games/index.js` exposes the capture options (`YES`/`NO`/
   `UNDECIDED`) and game metadata.
-- **Not added** to `schema/ai-converter-prompt.md` or the cartridge validator on
+- **Not added** to `schema/google-doc-template.md` or the cartridge validator on
   purpose. Once the `games` schema is approved, wire these banks into the
   schema, parser and admin publishing flow.
 
@@ -1013,7 +1018,7 @@ Every step can carry one DJ cutoff. The rule is:
 
 ### 29. Google Doc template with stable section markers (issue #70 / D8)
 
-The couple's Google Doc is now a deterministic input, not only an AI prompt:
+The couple's Google Doc is now a deterministic input with a pure API-to-template converter:
 
 - [`schema/google-doc-template.md`](schema/google-doc-template.md) is the
   copy-paste D8 template. It contains all 28 stable `## SECTION` markers in a
@@ -1032,9 +1037,9 @@ The couple's Google Doc is now a deterministic input, not only an AI prompt:
 - Sections map deterministically: `## TIMELINE` to `steps`, `## DJ CUES`,
   `## MC CUES` and `## SUBTASKS` attach by `Step ID`, `## VIEW VISIBILITY` to
   the D1 matrix, `## PHOTO PLAN` to the D6 online-sunset plan, and so on.
-- **Provisional:** generated from the v1.2 proposal; the AI converter prompt,
-  v1.1 schema and runtime cartridge handling are unchanged until v1.2 is
-  approved. The parser is additive and ready to wire in after approval.
+- **Provisional:** generated from the v1.2 proposal; the v1.1 schema and runtime
+  cartridge handling are unchanged until v1.2 is approved. The parser is
+  additive and ready to wire in after approval.
 
 ### 30. Error boundaries, last-known step and local error log (issue #66 / TODO 24)
 

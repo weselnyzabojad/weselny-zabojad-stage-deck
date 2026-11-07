@@ -22,8 +22,8 @@ Files:
 | [`src/lib/googleDocTemplate.js`](../src/lib/googleDocTemplate.js) | Section manifest + pure parser/validator. |
 | [`scripts/validate-google-doc-template.mjs`](../scripts/validate-google-doc-template.mjs) | CI-style check: `npm run validate:template`. |
 
-The AI converter prompt remains unchanged: v1.2 is not approved yet, and the
-deterministic parser is additive.
+The deterministic Google Doc converter and parser are additive: v1.2 is not
+approved yet, and v1.1 remains the runtime contract.
 
 ---
 
@@ -335,7 +335,7 @@ section that has one.
 
 ## 6. Approval gate
 
-This template is **not** wired into the AI converter prompt, the v1.1 schema or
+This template is **not** wired into the v1.1 schema or
 the runtime importer yet. When v1.2 is approved:
 
 1. Add `schema/wedding-schema-v1.2.json`.
@@ -353,4 +353,4 @@ Checklist:
 - [ ] Field map reviewed against the final validation rules.
 - [ ] Parser fixtures cover every section and every error path.
 - [ ] Sensitive `VIP ALERTS` encryption confirmed.
-- [ ] AI converter prompt updated after the schema is frozen.
+- [ ] Google Doc converter wired into admin publishing after the schema is frozen.

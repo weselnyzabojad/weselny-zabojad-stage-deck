@@ -160,7 +160,7 @@ supabase/
   schema.sql        base tables, RLS, join/wipe/purge functions
   migrations/       owner-admin tables, presence, sessions, audit, RLS updates
   functions/        join_room, admin_api, submit_song_request
-schema/             WeddingSchema v1.1, fixtures, validators, AI converter prompt
+schema/             WeddingSchema v1.1, fixtures, validators, Google Doc template/parser
 docs/               focused design/testing/accessibility notes
 scripts/            validators and migration helpers
 tests/              Vitest suites and smoke tests
@@ -307,7 +307,7 @@ Removed by issue #75:
 - kitchen/vendor `+15m` control and `manual_offset_minutes`;
 - weather variants/branching (`weatherVariants`, step `weatherOption`);
 - step `cateringNotes` and `propsAndFx`;
-- related UI, schema fields, fixtures, template columns, AI-prompt sections and
+- related UI, schema fields, fixtures, template columns, Google Doc sections and
   docs.
 
 The shared admin/server cartridge validator strips legacy copies of these
@@ -389,8 +389,9 @@ CI runs the same checks on pushes and pull requests to `master`.
   admin-adjacent components. Cartridge content remains in its authored
   language; some role-view domain strings are still English.
 - Optional games content exists but is not in the schema or UI (deferred).
-- Google Docs-first import (#82) is not implemented; admin JSON/AI-prompt
-  publishing remains, but role devices no longer import cartridges.
+- Google Docs-first import (#82) has deterministic API-to-template parsing and
+  AI-prompt cleanup; Drive transport/admin placement is tracked in #168–#170.
+  Admin JSON publishing remains, but role devices no longer import cartridges.
 - The Pocket role removal and per-role phone layouts shipped in #109–#114.
 - The MC Stage Rail (current-step hero with done/upcoming accordions) is planned
   in #118–#121; see `docs/mc-stage-rail-plan.md`.
