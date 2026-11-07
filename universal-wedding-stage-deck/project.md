@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `aa640b3` (before the mini-session timeline and centering changes)
+**Aligned with:** `master` @ `c7f8a7b` (sunset, bar, cake, Game Clicker and mini-session fixes)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -43,6 +43,15 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Group-photo step and shared MC/Photographer checklist | Complete (#378, #379) |
 | Mandatory constraints embedded in timeline steps | Complete (#384) |
 | Shared secondary control bar across role views | Complete (#385) |
+| Sunset/mini-session kept out of planning | Complete (#390) |
+| Full-width secondary bar | Complete (#391) |
+| Hard-anchor banner children notice removed | Complete (#392) |
+| Couple common languages label | Complete (#394) |
+| Full-width DJ layout | Complete (#396) |
+| Game Clicker scoped to games step | Complete (#398) |
+| Cake Protocol consolidation | Complete (#399) |
+| Mini-session timeline twin task | Complete (#401) |
+| Centered mini-session hour control | Complete (#402) |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
 | Deferred PWA update flow (#81) | Complete |
@@ -61,15 +70,7 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
-| [#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390) | Keep sunset/mini-session data out of step planning | Implementation |
-| [#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391) | Secondary bar full width and edge alignment | Implementation |
-| [#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392) | Remove children notice from hard-anchor banner | Implementation |
-| [#394](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/394) | Rename couple language label to Couple common languages | Implementation |
-| [#396](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/396) | DJ and DJ Standard full-width layout | Implementation |
-| [#398](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/398) | Show Game Clicker only on the games step | Implementation |
-| [#399](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/399) | Fold cake service and mandatory data into Cake Protocol | Implementation |
-| [#401](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/401) | Show mini session as a timeline twin task | Implementation |
-| [#402](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/402) | Center the Chosen mini-session hour control | Implementation |
+
 
 ### Planning TODO register
 
