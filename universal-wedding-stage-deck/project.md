@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `fb9f13e` (post-#297–#311 batch review)
+**Aligned with:** `master` @ `ff608b2` (unified mobile layout decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -140,6 +140,10 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/328) | Post-#308 cleanup: remove dead BUFFER/ELASTIC code and fixtures |
 | [#329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/329) | Localize mandatory, ceremony, games and entrance cues |
 | [#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330) | Refresh README and active technical docs |
+| [#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331) | Mobile: shared compact top bar for every role view |
+| [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332) | Mobile: admin, dev switcher and secondary panel density |
+| [#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333) | Mobile: consistent cultural and speech pill grid |
+| [#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334) | Mobile: harden drawers, modals and floating panels |
 
 ### Responsive phone / pocket plan
 
@@ -1289,6 +1293,43 @@ ELASTIC/BUFFER or anon read/write access. Historical plans stay clearly marked
 as historical.
 ([#330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/330))
 
+### Unified mobile layout (decision, 2026-11-07)
+
+This supersedes earlier pocket-header rules where they conflict, including the
+previous no-clock pocket header.
+
+**One compact mobile header for every stage role.** MC, DJ Standard, DJ VIP,
+Photographer 1, Photographer 2/Cameraman, Speaker and Venue Manager use the same
+phone header primitive. The utility row carries the brand logo, role short label,
+digital clock, paired PIN when available, Sync status, language selector and
+theme control in a compact balanced layout. Sync/language/theme must not be
+duplicated between the header and the bottom navigation.
+
+The phone header stays at most two utility rows plus the status-pill grid. Couple
+identity is condensed or hidden before any control is allowed to overflow. Wide
+desktop layouts remain unchanged.
+([#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331))
+
+**Admin, dev and secondary surfaces.** Admin, the development view switcher,
+Venue Manager configuration and other secondary panels reuse the same mobile
+spacing, type scale, radius and touch-target contract without forcing stage-only
+clock/PIN data into admin. Admin navigation and session controls must not become
+a tall header stack.
+([#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332))
+
+**Status pills.** STO LAT, GORZKO, OCZEPINY and DISCOURS use a stable 2-column
+grid on phone widths. Cells keep equal height, truncate secondary text, preserve
+full accessible labels, and never overflow or push the timeline down
+unpredictably.
+([#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333))
+
+**Overlays and floating controls.** Drawers, modals, QR/contacts/VIP panels,
+mandatory-update popups, banners, bottom actions and the dev switcher use
+\`100dvh\`-safe sizing, internal scrolling, safe-area padding and 44px touch
+targets. Floating panels must not overlap each other or the bottom navigation on
+narrow screens.
+([#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334))
+
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
 DJ Standard remains minimal: title/artist, planned track, projected timeline,
@@ -1472,7 +1513,14 @@ The separate **Pocket** role is removed. Each role keeps one responsive view:
 - a shared bottom navigation bar keeps the current role and its phone controls
   consistent across views.
 
-Owner admin (`/deck/admin`) remains desktop-first.
+The unified mobile header, status-pill grid and overlay sizing rules are defined
+in **Unified mobile layout (decision, 2026-11-07)** above. Owner admin
+(`/deck/admin`) is desktop-first but uses the same compact mobile chrome on
+narrow viewports.
+([#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331),
+[#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332),
+[#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333),
+[#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334))
 
 ---
 
@@ -1486,7 +1534,7 @@ Core top-level groups:
 - identity: `weddingId`, `couple`, `coupleProfile`, `date`, `dateISO`,
   `syncPin`, `role`, `hostingMode`;
 - venue and cultural rules: `venue`, `venueLogistics`, `culturalRules`;
-- schedule: `hardAnchors`, `steps` (`ELASTIC`, `BUFFER`, `HARD_ANCHOR`);
+- schedule: `hardAnchors`, `steps` (`FLEXIBLE`, `HARD_ANCHOR`);
 - content: `cake`, `speeches`, `musicPolicy`, `tact_and_vip_alerts`,
   `preWeddingTodos`, `contacts`, `mediaTeam`, `photoPlan`, `oczepiny`;
 - optional/forward-compatible: `demographics`, `viewVisibility`, `privacy`,
