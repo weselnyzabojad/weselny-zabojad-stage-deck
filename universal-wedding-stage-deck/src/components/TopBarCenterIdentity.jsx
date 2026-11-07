@@ -58,7 +58,7 @@ function Person({ person }) {
 
 // Centered couple identity used by every role: names + flags with a ring logo,
 // a language row and the localized event date/weekday row.
-export default function TopBarCenterIdentity({ wedding, compact = false }) {
+export default function TopBarCenterIdentity({ wedding, compact = false, showCoupleLanguages = true }) {
   const { t, locale } = useI18n();
   const identity = resolveCoupleIdentity(wedding);
   const dateISO = resolveEventDateISO(wedding);
@@ -94,16 +94,23 @@ export default function TopBarCenterIdentity({ wedding, compact = false }) {
         ))}
       </div>
 
-      {identity.commonLanguages.length > 0 ? (
-        <div className="flex flex-wrap items-center justify-center gap-1 text-[9px] text-slate-400">
-          <span aria-hidden="true">🌐</span>
+      {showCoupleLanguages && identity.commonLanguages.length > 0 ? (
+        <div
+          className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-slate-400"
+          aria-label={t('couple.languages')}
+        >
+          <span className="inline-flex items-center gap-1 font-heading font-semibold uppercase tracking-[0.18em] text-slate-400">
+            <span aria-hidden="true">🗣️</span>
+            <span>{t('couple.languages')}</span>
+          </span>
+          <span aria-hidden="true" className="text-slate-600">·</span>
           {identity.commonLanguages.map((code) => (
             <span
               key={code}
               title={localizedLanguageName(code, locale)}
-              className="rounded border border-line-strong bg-raised px-1 py-0.5 font-mono font-semibold uppercase tracking-wide text-brand-tint"
+              className="rounded-full border border-brand-strong/40 bg-brand/10 px-1.5 py-0.5 font-body font-medium text-brand-tint"
             >
-              {code}
+              {localizedLanguageName(code, locale)}
             </span>
           ))}
         </div>

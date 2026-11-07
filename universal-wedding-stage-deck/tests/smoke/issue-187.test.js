@@ -40,7 +40,7 @@ describe('issue #187 centered couple identity', () => {
     expect(html).toContain('Guillaume');
     expect(html).toContain('flag-icons-fr');
     expect(html).toContain('flag-icons-pl');
-    expect(html).toContain('>FR<');
-    expect(html).toContain('>PL<');
+    expect(html).toContain('French');
+    expect(html).toContain('Polish');
   });
 });
