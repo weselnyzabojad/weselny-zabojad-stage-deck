@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import MusicPolicyCard from './MusicPolicyCard';
+import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
@@ -90,6 +91,11 @@ export default function DjBoothView({
           {t('dj.cutoff')}{' '}
           {activeEntry.step.dj.cutoff ?? `start + ${activeEntry.step.dj.cutoffSec}s`}
         </div>
+      ) : null}
+      {isVip &&
+      (activeEntry?.step?.optionalFlag === 'oczepiny' ||
+        /oczepiny/i.test(activeEntry?.step?.title ?? '')) ? (
+        <OczepinyCueCard wedding={wedding} audience="dj-vip" />
       ) : null}
       {mainSongRequired ? (
         <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2 text-[11px]">

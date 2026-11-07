@@ -34,7 +34,7 @@ describe('issue #228 photo plan details in step cards', () => {
   it('removes the standalone Photo plan card and renders details in the step stack', () => {
     const photo = read('src/components/PhotographerView.jsx');
     expect(photo).not.toContain('title="Photo plan"');
-    expect(photo).toContain('entryBodies={planBodies}');
+    expect(photo).toContain('entryBodies={cueBodies}');
     expect(photo).toContain('PhotoPlanDetails');
   });
 });
