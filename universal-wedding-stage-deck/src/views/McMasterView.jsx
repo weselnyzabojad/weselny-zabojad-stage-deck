@@ -338,38 +338,42 @@ export default function McMasterView({ model }) {
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>
 
-        <div className="flex flex-wrap items-center justify-start gap-2 my-2 sm:my-0 xl:min-w-0 xl:justify-end">
-          <CulturalRulesBar
-            rules={WEDDING.culturalRules}
-            oczepinyStatus={oczepinyStatus}
-          />
-          <DriftPill drift={driftReport.drift} />
-          <button
-            type="button"
-            onClick={handleUnpair}
-            title={
-              IS_PRODUCTION
-                ? 'Sign out of this role'
-                : 'Paired room PIN — click to forget this device'
-            }
-            className="text-slate-400 hover:text-white transition"
-          >
-            {IS_PRODUCTION ? (
-              <>
-                ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
-                <span className="ml-1 text-[10px]">🔐</span>
-              </>
-            ) : (
-              <>
-                PIN: <strong className="text-white">{pairing.pin}</strong>
-                <span className="ml-1 text-[10px]">🔓</span>
-              </>
-            )}
-          </button>
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        <div className="my-2 flex w-full min-w-0 flex-col items-start gap-2 sm:my-0 xl:items-end">
+          <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
+            <CulturalRulesBar
+              rules={WEDDING.culturalRules}
+              oczepinyStatus={oczepinyStatus}
+            />
+          </div>
+          <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
+            <DriftPill drift={driftReport.drift} />
+            <button
+              type="button"
+              onClick={handleUnpair}
+              title={
+                IS_PRODUCTION
+                  ? 'Sign out of this role'
+                  : 'Paired room PIN — click to forget this device'
+              }
+              className="text-slate-400 hover:text-white transition"
+            >
+              {IS_PRODUCTION ? (
+                <>
+                  ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
+                  <span className="ml-1 text-[10px]">🔐</span>
+                </>
+              ) : (
+                <>
+                  PIN: <strong className="text-white">{pairing.pin}</strong>
+                  <span className="ml-1 text-[10px]">🔓</span>
+                </>
+              )}
+            </button>
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          </div>
         </div>
       </header>
 
