@@ -26,6 +26,20 @@ import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { orderSubtasks } from '../lib/subtasks.js';
+
+function childrenWarningFor(step) {
+  const title = String(step?.title ?? '').toLowerCase();
+  if (/wedding cake|cake cutting/.test(title)) {
+    return 'Children expected — keep them clear of the cake table and cutting area.';
+  }
+  if (/grand entrance/.test(title)) {
+    return 'Children expected — keep them out of the entrance aisle.';
+  }
+  if (/first dance/.test(title)) {
+    return 'Children expected — keep them clear of the dancefloor.';
+  }
+  return null;
+}
 import SpeechesCard from '../components/SpeechesCard';
 import SpeechesChip from '../components/SpeechesChip';
 import SyncStatusBadge from '../components/SyncStatusBadge';
@@ -227,19 +241,22 @@ export default function McMasterView({ model }) {
         <div className="bg-page/60 p-3 rounded-lg border border-line">
           <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
             <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
-            <span>🗣️ MC Cues (FR / PL / EN)</span>
+            <span>🗣️ MC Cues</span>
           </h3>
           <ul className="space-y-2 text-sm text-slate-300">
+            {childrenExpected && childrenWarningFor(currentStep) ? (
+              <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
+                <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
+                <span>{childrenWarningFor(currentStep)}</span>
+              </li>
+            ) : null}
             <li className="flex items-start space-x-2">
-              <span className="text-brand-soft font-mono text-xs mt-0.5">[FR/PL]</span>
               <span>Inform guests: NO Sto Lat tonight!</span>
             </li>
             <li className="flex items-start space-x-2">
-              <span className="text-brand-soft font-mono text-xs mt-0.5">[FR]</span>
               <span>Explain Polish Steak Tartare + Vodka tradition.</span>
             </li>
             <li className="flex items-start space-x-2">
-              <span className="text-brand-soft font-mono text-xs mt-0.5">[ALL]</span>
               <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
             </li>
           </ul>
