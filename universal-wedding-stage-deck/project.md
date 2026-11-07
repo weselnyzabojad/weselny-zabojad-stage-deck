@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `58068ce` (MC children warnings and cake cleanup decision)
+**Aligned with:** `master` @ `09ac4d0` (admin Drive folder library decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -26,7 +26,7 @@ An offline-first, multi-device stage deck for a wedding MC and crew:
 - installable PWA with a deferred update prompt (never reloads a live stage
   silently).
 
-Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
+Primary deployment path is `/deck/`; the owner surface is `/admin`.
 
 ---
 
@@ -46,7 +46,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | PWA icons + favicon (#74) | Complete |
 | Per-device i18n EN/FR/PL (#78) | Complete |
 | Deprecated-feature cleanup (#75) | Complete |
-| Owner admin panel `/deck/admin` (#76) | Complete in code; live Supabase smoke test still required |
+| Owner admin panel `/admin` (#76) | Complete in code; live Supabase smoke test still required |
 
 ### Open roadmap issues
 
@@ -154,6 +154,10 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353) | Localize the QR and PIN handoff flow |
 | [#355](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/355) | MC Cues: children warnings and remove language tags |
 | [#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356) | Cake protocol: remove cutting/serving time UI |
+| [#362](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/362) | Admin route: move from /deck/admin to /admin |
+| [#363](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/363) | Admin Drive: root/year/month/wedding folder hierarchy + year tabs |
+| [#364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/364) | Admin Drive: parse month secrets folders |
+| [#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365) | Admin Drive: refresh on open + manifest hash diff |
 
 ### Responsive phone / pocket plan
 
@@ -220,7 +224,7 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
 7. **Top-bar relocation TODO.** The MC top bar no longer exposes VIP Radar or
    vendor Contacts. Keep their functionality intact and ask the owner in a
    future pass where these controls should be surfaced. Cartridge import is
-   admin-only through `/deck/admin` and is not part of this relocation.
+   admin-only through `/admin` and is not part of this relocation.
 
 ### Universal timeline focus stacks (decision, 2026-11-07)
 
@@ -1355,6 +1359,36 @@ song, sparklers, photographer cue, sync note and step state. The cartridge
 fields and schedule logic remain intact.
 ([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
 
+### Admin Drive folder library and /admin route (decision, 2026-11-07)
+
+The owner admin panel moves from \`/deck/admin\` to \`/admin\`. The old route may
+redirect or show a moved notice but must not serve the admin UI. The admin remains
+laptop/desktop-only and keeps its auth/MFA gates.
+([#362](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/362))
+
+The admin wedding library is sourced from the Google Drive folder tree, starting
+at folder \`1Q7IVT0GNiLztKQE8l4eCDCRw-px1qheh\`.
+
+- The root contains year folders such as \`2026\`, \`2027\`, \`2028\`; the UI shows
+  one tab per discovered year.
+- Each year contains English month folders.
+- Each month contains wedding folders named like \`UM-2027-09-001\`; this folder
+  name is used as the generated cartridge name/source identifier.
+- Each month also contains a \`secrets\` folder with per-wedding folders holding
+  the speech Doc and Test zgodności question Doc. Missing Docs must produce a
+  safe empty state.
+- Discovery resolves folders by parent/name rather than hardcoding every year ID,
+  while the supplied 2027/2028 folder IDs may be used as fallback.
+([#363](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/363),
+[#364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/364))
+
+Opening the admin page always re-runs the Drive hierarchy scan. A manifest hash
+of folder IDs, names, versions and modified times decides whether parsing can be
+reused. New or changed folders are processed; unchanged folders are skipped; a
+scan failure keeps the last known-good library. Discovery stays admin-only and
+never auto-publishes into a live event.
+([#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365))
+
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
 The couple/shared-language indicator in the top-bar center looks too similar to
@@ -1457,7 +1491,7 @@ narrow screens.
 
 ### Admin laptop-only access (decision, 2026-11-07)
 
-The owner admin panel (\`/deck/admin\`) is a laptop/desktop-only surface. It must
+The owner admin panel (\`/admin\`) is a laptop/desktop-only surface. It must
 not be accessible or operable on mobile or narrow-tablet viewports.
 
 - Show a clear accessible "laptop/desktop required" fallback instead of the
@@ -1496,7 +1530,7 @@ Must-play Coverage Tracker and Venue & Soundcheck Checklist.
 ### Server-only cartridges and Google Drive (decision, 2026-11-06)
 
 **Decision:** a cartridge is an immutable, server-published snapshot for every
-stage role. Only the owner at `/deck/admin` may create, import, select, replace
+stage role. Only the owner at `/admin` may create, import, select, replace
 or publish one. MC, DJ Standard/VIP, Photographer and Speaker devices never
 activate a cartridge from local JSON, a file, the built-in demo, a publish
 secret or another role device.
@@ -1597,9 +1631,9 @@ independent of this transport decision.
   - local/demo mode: 4-digit DDMM display PIN and local pairing;
   - production mode: 6-digit per-role PIN validated by `join_room`, returning a
     role-scoped JWT with `wedding_id`, `room_id`, `app_role` and session `jti`;
-  - `/deck/admin`: Supabase Auth email/password + TOTP MFA, allowlisted through
+  - `/admin`: Supabase Auth email/password + TOTP MFA, allowlisted through
     `app_admins`.
-- **Routing:** no router library. `main.jsx` selects `/deck/admin` vs the stage
+- **Routing:** no router library. `main.jsx` selects `/admin` vs the stage
   deck from `window.location.pathname`.
 - **Data flow:** cartridge → normalized live state → local persistence →
   optional outbox/Realtime sync. Sensitive notes stay encrypted; only ciphertext
@@ -1655,7 +1689,7 @@ The separate **Pocket** role is removed. Each role keeps one responsive view:
 
 The unified mobile header, status-pill grid and overlay sizing rules are defined
 in **Unified mobile layout (decision, 2026-11-07)** above. Owner admin
-(`/deck/admin`) is laptop/desktop-only and must show a blocked-screen fallback on
+(`/admin`) is laptop/desktop-only and must show a blocked-screen fallback on
 mobile ([#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337)).
 ([#331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/331),
 [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332),
@@ -1721,7 +1755,7 @@ npm run validate:i18n
 
 ### Content publishing
 
-- admin-only JSON publishing through `/deck/admin` with Ajv + semantic
+- admin-only JSON publishing through `/admin` with Ajv + semantic
   validation;
 - read-only server-snapshot cache on role devices (no import, activation or
   reset path);
@@ -1739,7 +1773,7 @@ npm run validate:i18n
 - per-device EN/FR/PL UI, persisted locally, separate from cartridge content;
 - Night Stage / Daylight themes.
 
-### Owner admin (`/deck/admin`)
+### Owner admin (`/admin`)
 
 - Supabase Auth + TOTP MFA; allowlisted `app_admins`; no self-signup;
 - 30-minute idle / 8-hour absolute admin session;
@@ -1868,7 +1902,7 @@ CI runs the same checks on pushes and pull requests to `master`.
 - v1.2 schema freeze (#77), multi-wedding library (#79) and MC cue cleanup
   (#80) remain open.
 - `/deck/` static hosting still needs an Apache/SPA rewrite for deep links such
-  as `/deck/8f3k2q/mc` and `/deck/admin` (TODO 19).
+  as `/deck/8f3k2q/mc` and `/admin` (TODO 19).
 - No automated browser/axe E2E suite yet.
 
 ---
