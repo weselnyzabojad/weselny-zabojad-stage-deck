@@ -25,8 +25,8 @@ describe('issue #201 Speeches as the only card below the MC timeline', () => {
     expect(exists('src/components/StagePingControls.jsx')).toBe(false);
   });
 
-  it('keeps Reel Clock in the remaining role views', () => {
+  it('removes Reel Clock from the MC, DJ and Photographer views', () => {
     expect(read('src/components/DjBoothView.jsx')).not.toContain('<ReelClock');
-    expect(read('src/components/PhotographerView.jsx')).toContain('<ReelClock');
+    expect(read('src/components/PhotographerView.jsx')).not.toContain('<ReelClock');
   });
 });
