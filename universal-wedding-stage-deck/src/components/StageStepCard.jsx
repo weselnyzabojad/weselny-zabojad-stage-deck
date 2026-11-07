@@ -11,7 +11,7 @@ const VARIANTS = {
     status: 'done',
   },
   current: {
-    card: 'border-brand-strong bg-card ring-2 ring-brand-strong shadow-2xl',
+    card: 'timeline-focus-current rounded-2xl border-2 border-brand-strong bg-card ring-2 ring-brand-strong/70',
     chip: 'border-brand-strong bg-brand/30 text-brand-soft',
     status: 'active',
   },
