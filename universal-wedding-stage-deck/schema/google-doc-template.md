@@ -97,7 +97,7 @@ step below is sourced from this Google Doc.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | step_01 | 16:30 | 30 | Cocktail / Vin d'honneur | BUFFER | Garden |  | false |  |  |
 | step_02 | 17:00 | 60 | Ceremony | ELASTIC | Garden Gazebo |  | false |  |  |
-| step_03 | 18:00 | 90 | Grand Entrance | ELASTIC | Main Hall |  | true |  | Planned 18:00; actual start logged live. |
+| step_03 | 18:00 | 90 | Grand Entrance | ELASTIC | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
 | step_05 | 20:30 | 30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
 | step_06 | 21:00 | 15 | Wedding Thank-You | ELASTIC | Main Hall |  | false |  |  |
 | step_07 | 21:15 | 30 | Wishes | BUFFER | Garden |  | false | wishes |  |
