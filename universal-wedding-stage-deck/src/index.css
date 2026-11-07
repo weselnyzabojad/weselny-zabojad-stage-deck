@@ -289,6 +289,24 @@ input[type="checkbox"] {
     var(--focus-shadow);
 }
 
+/* Mobile-only current-step depth: touch devices keep a subtle static tilt and
+   a press settle. Desktop pointer tracking is untouched, and reduced motion
+   still removes all transforms below. */
+@media (max-width: 639px) {
+  .current-step-tilt {
+    perspective: 900px;
+  }
+
+  .timeline-focus-current {
+    transform: rotateX(1.5deg) translateY(-1px);
+    transition: transform 160ms ease-out;
+  }
+
+  .current-step-tilt:active .timeline-focus-current {
+    transform: rotateX(0.6deg) scale(0.995) translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .current-step-tilt {
     perspective: none;
