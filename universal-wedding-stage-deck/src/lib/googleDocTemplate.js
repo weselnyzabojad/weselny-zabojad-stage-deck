@@ -473,3 +473,85 @@ export function sectionForMarker(marker) {
 export function canonicalSectionOrder() {
   return [...SECTION_ORDER];
 }
+
+function paragraphText(paragraph) {
+  return (Array.isArray(paragraph?.elements) ? paragraph.elements : [])
+    .map((element) => element?.textRun?.content ?? element?.autoText?.content ?? '')
+    .join('')
+    .replace(/\n+$/g, '');
+}
+
+function paragraphToMarkdown(paragraph) {
+  const text = paragraphText(paragraph);
+  const style = paragraph?.paragraphStyle?.namedStyleType ?? '';
+  const heading = /^HEADING_([1-6])$/.exec(style);
+  if (heading) return `${'#'.repeat(Number(heading[1]))} ${text}`.trimEnd();
+
+  if (paragraph?.bullet) {
+    const level = Math.max(0, Number(paragraph.bullet.nestingLevel) || 0);
+    return `${'  '.repeat(level)}- ${text}`.trimEnd();
+  }
+  return text.trimEnd();
+}
+
+function tableCellText(cell) {
+  return (Array.isArray(cell?.content) ? cell.content : [])
+    .map((element) => (element?.paragraph ? paragraphText(element.paragraph) : ''))
+    .filter((text) => text.trim().length > 0)
+    .join('<br>')
+    .replace(/\|/g, '\\|')
+    .replace(/\r?\n/g, '<br>')
+    .trim();
+}
+
+function tableToMarkdownLines(table) {
+  const rows = Array.isArray(table?.tableRows) ? table.tableRows : [];
+  if (rows.length === 0) return [];
+
+  const cells = rows.map((row) =>
+    (Array.isArray(row?.tableCells) ? row.tableCells : []).map(tableCellText),
+  );
+  const width = Math.max(1, ...cells.map((row) => row.length));
+  const padded = cells.map((row) => [
+    ...row,
+    ...Array(Math.max(0, width - row.length)).fill(''),
+  ]);
+
+  const lines = [];
+  padded.forEach((row, index) => {
+    lines.push(`| ${row.join(' | ')} |`);
+    if (index === 0) lines.push(`| ${Array(width).fill('---').join(' | ')} |`);
+  });
+  return lines;
+}
+
+// Convert a Google Docs API v1 `documents.get` response into the markdown-like
+// text consumed by `parseGoogleDocTemplate`. This function is pure and keeps
+// the deterministic section markers, table rows and bullet text intact.
+export function googleDocToTemplateText(document) {
+  const content = document?.body?.content;
+  if (!Array.isArray(content)) return '';
+
+  const lines = [];
+  for (const element of content) {
+    if (element?.paragraph) {
+      lines.push(paragraphToMarkdown(element.paragraph));
+    } else if (element?.table) {
+      lines.push('', ...tableToMarkdownLines(element.table), '');
+    } else if (element?.tableOfContents?.content) {
+      for (const child of element.tableOfContents.content) {
+        if (child?.paragraph) lines.push(paragraphToMarkdown(child.paragraph));
+        else if (child?.table) lines.push('', ...tableToMarkdownLines(child.table), '');
+      }
+    } else if (element?.sectionBreak) {
+      lines.push('');
+    }
+  }
+
+  return lines
+    .join('\n')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+

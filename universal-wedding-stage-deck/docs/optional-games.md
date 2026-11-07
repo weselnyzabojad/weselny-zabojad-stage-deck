@@ -3,8 +3,8 @@
 > **Status: prepared content only (TODO 16).** The `YES` / `NO` / `UNDECIDED`
 > capture, question banks, scoring, MC scripts and fallbacks are ready. The
 > final `games` schema, validation, MC UI and Google Doc parser mapping are
-> **deferred until the schema is approved**. Do **not** add `games` to the AI
-> converter prompt or the importer yet.
+> **deferred until the schema is approved**. Do **not** add `games` to the
+> Google Doc template or the importer yet.
 
 The two games are independent and both optional:
 
