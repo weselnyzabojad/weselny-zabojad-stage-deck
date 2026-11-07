@@ -1,7 +1,7 @@
 // Guards for live schedule mutations (P0.7 / Phase 2).
 //
-// Hard anchors (vendor departures, sunset, midnight Oczepini, transport) must
-// never move. Steps that carry a photographer cue may move only after an
+// Hard anchors (vendor departures, midnight Oczepini, transport) must never
+// move. Steps that carry a photographer cue may move only after an
 // explicit warning because a vendor is waiting for that moment.
 
 export function stepHasPhotographerCue(step) {

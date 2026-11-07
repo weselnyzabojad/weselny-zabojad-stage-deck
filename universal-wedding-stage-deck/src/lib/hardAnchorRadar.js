@@ -1,7 +1,7 @@
 // HARD_ANCHOR protection radar.
 //
-// Each anchor is a fixed real-world deadline (vendor departure, sunset,
-// midnight Oczepiny, shuttle bus...). The radar compares the projected end of
+// Each anchor is a fixed real-world deadline (vendor departure, midnight
+// Oczepiny, shuttle bus...). The radar compares the projected end of
 // the last block scheduled before the anchor against the anchor time:
 //
 //   slack < 0                 -> collision (work overruns the anchor)
