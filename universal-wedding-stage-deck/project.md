@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `20fd87f` (VIP Radar / Contacts removal)
+**Aligned with:** `master` @ `236e0df` (group-photo implementation)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -40,6 +40,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Responsive phone layouts for every role | Complete (#109–#114) |
 | Drift engine, flexible schedule, hard-anchor radar | Complete |
 | Cake, speeches, key songs, music policy, photo plan | Complete |
+| Group-photo step and shared MC/Photographer checklist | Complete (#378, #379) |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
 | Deferred PWA update flow (#81) | Complete |
@@ -57,10 +58,7 @@ sections below and in git history.
 | --- | --- | --- |
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
-| [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Photographer/MC group-photo step rework | Implementation umbrella; design complete |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
-| [#378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/378) | Group photo: cartridge and Google Doc data alignment | Implementation |
-| [#379](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/379) | MC/Photographer group-photo step checklist | Implementation |
 
 ### Planning TODO register
 
@@ -75,8 +73,8 @@ follow-up implementation issue exists.
 | Precise predefined-step definitions | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | Closed; see [`docs/predefined-step-audit.md`](docs/predefined-step-audit.md) for the current concept audit |
 
 There are no open TODO entries for schema, MC cues, group photos or
-predefined-step work: the group-photo design is complete and tracked by #230,
-#378 and #379; #77 and #80 are implementation issues, and #263 is closed.
+predefined-step work: group photos were implemented in #378 and #379; #77 and
+#80 are implementation issues, and #263 is closed.
 
 ### Responsive phone / pocket plan
 
@@ -580,8 +578,8 @@ top-bar clock stays if present.
 
 Keep the footer strip and Sunset & Golden Hour. Media-team data stays in the
 model for a future rework. The media-team planning TODO (#233) is closed, so the
-card stays removed until an approved follow-up exists. The group-photo design is
-complete; implementation is tracked by #230, #378 and #379.
+card stays removed until an approved follow-up exists. The group-photo step is
+implemented in #378 and #379.
 ([#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227),
 [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233),
 [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230))
@@ -600,7 +598,7 @@ published cartridge, and writes an audit-log entry with actor, old value, new
 value and timestamp so it can be traced later.
 ([#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229))
 
-**Group-photo step (design complete).** The group-photo moment is a normal
+**Group-photo step (implemented).** The group-photo moment is a normal
 timeline step: it starts at its planned timeline time like every other step and
 has no special duration or minimum-group-size gate. The sequence is:
 
@@ -617,8 +615,7 @@ both views can act on the shared checklist, while only the MC advances/completes
 the timeline step. The step is visible and actionable from the main timeline in
 both views. Photographer/cameraman assignment uses the existing `mediaTeam`
 data. `location` is optional; `minGroupSize` and `durationMin` must not gate
-behaviour. Implementation is split between #378 (data/parser) and #379 (shared
-UI).
+behaviour. Implemented in #378 (data/parser) and #379 (shared UI).
 ([#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230),
 [#378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/378),
 [#379](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/379))
@@ -661,9 +658,9 @@ Implementation issues:
 - [#227](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/227) — remove selected sections;
 - [#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228) — photo plan into step cards;
 - [#229](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/229) — sunset lifecycle and mini-session override;
-- [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) — group-photo step design and implementation umbrella;
-- [#378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/378) — group-photo cartridge and Google Doc data alignment;
-- [#379](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/379) — MC/Photographer group-photo checklist;
+- [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) — group-photo step design (complete);
+- [#378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/378) — group-photo cartridge and Google Doc data alignment (complete);
+- [#379](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/379) — MC/Photographer group-photo checklist (complete);
 - [#231](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/231) — separate media roles;
 - [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) — VIP parity;
 - [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) — media-team planning TODO (closed);
@@ -1662,7 +1659,7 @@ tests/              Vitest suites and smoke tests
 
 | Role id | Label | Purpose |
 | --- | --- | --- |
-| `mc` | MC Master | Full deck, drift controls, scripts, stage pings |
+| `mc` | MC Master | Full deck, drift controls, scripts, stage pings, group-photo checklist |
 | `dj` | DJ Booth | Read-only timeline, playlists, hard cutoffs |
 | `photo` | Photographer | Shot lists, sunset windows, Oczepiny cues |
 | `speaker` | Speaker | Read-only teleprompter for the assigned speech |
