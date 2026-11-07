@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `33c4076` (Music Policy key songs decision)
+**Aligned with:** `master` @ `fab9fd1` (predefined step data contract)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -131,6 +131,9 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#304](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/304) | Grand Entrance guest order |
 | [#305](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/305) | First Dance variants and DJ VIP timing |
 | [#306](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/306) | Games question-list Docs |
+| [#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307) | Photographer children text: only "Children expected" |
+| [#308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/308) | Step types: remove BUFFER, use FLEXIBLE/HARD_ANCHOR |
+| [#309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/309) | Auto-calculate step durations from next-step times |
 
 ### Responsive phone / pocket plan
 
@@ -1001,6 +1004,37 @@ Implementation issues:
 - [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
 - [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
 - [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
+
+### Step types, durations and children wording (decision, 2026-11-07)
+
+**Photographer children text.** The Photographer/Cameraman children indicator
+shows only **"Children expected"**. Remove the longer explanatory sentence and
+align the communication with the MC pattern. MC keeps its hard-anchor-banner
+placement; no bottom-right MC badge returns.
+([#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307))
+
+**Step type model.** This supersedes the earlier ELASTIC/BUFFER/HARD_ANCHOR
+model:
+
+- remove **BUFFER** entirely;
+- rename **ELASTIC** to **FLEXIBLE**;
+- mandatory steps/constraints use **HARD_ANCHOR**;
+- all non-mandatory predefined steps use **FLEXIBLE**.
+
+Remove buffer ranges/accordion logic where unused, migrate schema/demo/fixtures/
+template values, and update engine/guards/tests/docs.
+([#308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/308))
+
+**Automatic step durations.** Step durations are no longer manually authored.
+Each duration is calculated from the hour of the next step in the Google Doc and
+inserted into the cartridge:
+
+- example: current 16:30, next 17:00 -> 30 minutes;
+- midnight-crossing times must compute correctly;
+- define the final/closure step duration rule;
+- missing, duplicate or out-of-order times fail safely with validation errors;
+- remove manual duration input from the template/parser where possible.
+([#309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/309))
 
 ### Predefined step data contract and mandatory constraints (decision, 2026-11-07)
 
