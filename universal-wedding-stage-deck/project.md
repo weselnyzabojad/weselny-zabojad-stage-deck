@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `826bc43` (Current Step 3D tilt)
+**Aligned with:** `master` @ `33c4076` (Music Policy key songs decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -125,6 +125,12 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298) | DJ Standard: disable the Music Policy UI |
 | [#299](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/299) | Top bar: distinguish couple languages from UI language switch |
 | [#300](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/300) | Music Policy: list every main song from flagged steps |
+| [#301](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/301) | Predefined timeline data contract; remove first arrival/closure |
+| [#302](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/302) | Mandatory constraints, visibility and kitchen service mode |
+| [#303](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/303) | Ceremony variants and MC visibility |
+| [#304](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/304) | Grand Entrance guest order |
+| [#305](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/305) | First Dance variants and DJ VIP timing |
+| [#306](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/306) | Games question-list Docs |
 
 ### Responsive phone / pocket plan
 
@@ -995,6 +1001,88 @@ Implementation issues:
 - [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
 - [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
 - [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
+
+### Predefined step data contract and mandatory constraints (decision, 2026-11-07)
+
+This supersedes the earlier decisions that made First guests arrival and
+Wedding closure ordinary predefined timeline steps.
+
+**Predefined timeline steps.** Remove from the predefined timeline:
+
+- First guests arrival;
+- Wedding closure.
+
+Remaining predefined steps and their source:
+
+| Step | Source |
+| --- | --- |
+| Cocktail / Vin d'honneur | Google Doc |
+| Ceremony | Google Doc + ceremony variant rules below |
+| Grand Entrance | Google Doc + guest order below |
+| Wedding cake | Google Doc |
+| Wedding Thank-You | Google Doc |
+| Wishes | Google Doc |
+| First Dance | Google Doc + First Dance rules below |
+| Oczepiny | Google Doc; no schema changes to current Oczepiny |
+| Games | Google Doc + question-list Docs |
+
+Keep stable IDs for retained steps; retire removed IDs safely.
+([#301](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/301))
+
+**Mandatory constraints.** These are exact obligations, not ordinary timeline
+cards:
+
+| Constraint | Source | Visibility |
+| --- | --- | --- |
+| First guests arrival | Google Doc | MC + DJ VIP only |
+| Prestation ready | Automatically derived (1h before arrival) | MC |
+| Obiad weselny | Venue Manager | MC |
+| Pierwsza kolacja | Venue Manager | MC |
+| Druga kolacja | Venue Manager | MC |
+| Trzecia kolacja | Venue Manager (optional) | MC |
+| Wedding closure | Google Doc and/or Venue Manager | MC + DJ VIP |
+| Closure extension | Venue Manager | MC + DJ VIP |
+| Cake service mode | Venue Manager | MC |
+| Last song | Google Doc | DJ VIP |
+| Children expected | Google Doc | MC + media |
+
+Each kitchen service can be **table service** or **buffet**; this mode comes from
+the Venue Manager and is displayed in MC view. Prestation ready stays read-only
+and derived.
+([#302](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/302))
+
+**Ceremony variants.**
+
+- RELIGIOUS: if the customer requests MC support, show ceremony details in MC.
+  If not, only mention the religious ceremony as additional info in the First
+  guests arrival constraint.
+- CIVIL: read from Google Doc; MC may be asked for translation help.
+- HUMANIST / LAÏQUE (ceremonia humanistyczna): visible in MC view.
+
+Add fields for ceremony type, MC support requested and MC translation help
+requested.
+([#303](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/303))
+
+**Grand Entrance order.** Read from Google Doc:
+
+- guests first, newlyweds after;
+- newlyweds first, guests after.
+
+Show the order in the MC entrance cue.
+([#304](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/304))
+
+**First Dance.**
+
+- FAKE: MC asks guests to come around the dancefloor; first songs are dedicated
+  to the newlyweds and open the musical set.
+- NORMAL: standard first dance with a key song for the DJ.
+- Google Doc may provide start-at seconds and stop-after minutes/seconds.
+- DJ VIP sees the start/stop timing; other roles do not.
+([#305](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/305))
+
+**Games.** Read game definitions from Google Doc and question lists from
+separate Google Docs, with validated references in the cartridge.
+([#306](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/306))
 
 ### Music Policy key songs (decision, 2026-11-07)
 
