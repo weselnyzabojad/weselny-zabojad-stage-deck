@@ -11,7 +11,8 @@ describe('issue #158 non-MC desktop top bars', () => {
 
   it('keeps DJ Standard minimal and DJ VIP differentiated', () => {
     expect(dj).toContain('<TopBarClock');
-    expect(dj).toContain('<TopBarRoleLabel role={role} tier={tierLabel}');
+    expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} />');
+    expect(dj).not.toContain('<TopBarRoleLabel');
     expect(dj).toContain('<OpenOnPhoneButton role={role} tier={tierLabel}');
     expect(dj).toContain('{isVip ? (');
     expect(dj).toContain('<CoupleIdentity');

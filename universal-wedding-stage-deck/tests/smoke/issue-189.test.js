@@ -35,7 +35,7 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
     const speaker = read('src/components/SpeakerView.jsx');
 
     expect(dj).toContain('<OpenOnPhoneButton role={role} tier={tierLabel}');
-    expect(dj).not.toContain('<CulturalRulesBar');
+    expect(dj).toContain('<CulturalRulesBar');
     expect(photo).toContain('<OpenOnPhoneButton role={role}');
     expect(photo).not.toContain('<CulturalRulesBar');
     expect(speaker).toContain('<OpenOnPhoneButton role="speaker"');

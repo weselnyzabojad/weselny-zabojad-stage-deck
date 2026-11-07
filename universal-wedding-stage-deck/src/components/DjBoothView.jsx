@@ -1,6 +1,7 @@
 import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
+import CulturalRulesBar from './CulturalRulesBar';
 import CutoffStopwatchCard from './CutoffStopwatchCard';
 import DjExportPack from './DjExportPack';
 import DjNowPlayingOverlay from './DjNowPlayingOverlay';
@@ -12,10 +13,10 @@ import OpenOnPhoneButton from './OpenOnPhoneButton';
 import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import StagePingBanner from './StagePingBanner';
+import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
-import TopBarRoleLabel from './TopBarRoleLabel';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -52,6 +53,12 @@ export default function DjBoothView({
   songRequestRoomCode = null,
   roomCode = null,
   viewSwitch = null,
+  culturalRules = null,
+  oczepinyStatus = null,
+  speeches = [],
+  speechMode = 'OFF',
+  activeSpeechId = null,
+  authControl = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -227,7 +234,6 @@ export default function DjBoothView({
             <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
-          <TopBarRoleLabel role={role} tier={tierLabel} />
           <TopBarRoleIdentity role={role} tier={tierLabel} />
         </div>
 
@@ -239,9 +245,20 @@ export default function DjBoothView({
         ) : null}
 
         <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end xl:min-w-0">
+          {isVip && culturalRules ? (
+            <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
+          ) : null}
+          {isVip ? (
+            <SpeechesChip
+              mode={speechMode}
+              speeches={speeches}
+              activeSpeechId={activeSpeechId}
+            />
+          ) : null}
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
           {viewSwitch}
+          {isVip && authControl ? authControl : null}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
@@ -386,6 +403,12 @@ export default function DjBoothView({
       theme={theme}
       onRoleChange={onRoleChange}
       viewSwitch={viewSwitch}
+      culturalRules={isVip ? culturalRules : null}
+      oczepinyStatus={oczepinyStatus}
+      speeches={isVip ? speeches : null}
+      speechMode={isVip ? speechMode : null}
+      activeSpeechId={activeSpeechId}
+      authControl={isVip ? authControl : null}
     >
       {compactContent}
     </RoleShell>
