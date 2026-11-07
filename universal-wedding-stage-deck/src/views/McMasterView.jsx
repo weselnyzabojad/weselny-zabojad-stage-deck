@@ -69,6 +69,7 @@ export default function McMasterView({ model }) {
   completedCount,
   nextEntry,
   cakeProtocol,
+  cakeServiceMode = 'KITCHEN_RETURN',
   speechMode,
   speeches,
   selectSpeech,
@@ -234,7 +235,19 @@ export default function McMasterView({ model }) {
       </div>
 
       {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (
-        <CakeCard cake={cakeProtocol} />
+        <>
+          <CakeCard cake={cakeProtocol} />
+          <div className="rounded-lg border border-amber-700/60 bg-amber-950/40 p-2.5 text-[11px] text-amber-100">
+            <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-amber-200">
+              Cake service
+            </div>
+            <div className="mt-0.5">
+              {cakeServiceMode === 'CUT_IN_PLACE'
+                ? 'Cut in place — ask guests to come to the cake spot for a piece.'
+                : 'Kitchen return — service will take the cake and return plated pieces.'}
+            </div>
+          </div>
+        </>
       ) : null}
 
       {stepSubtasks.length > 0 ? (
