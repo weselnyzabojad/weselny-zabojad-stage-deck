@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 const SIZES = {
   full: 'w-full h-full sm:h-[calc(100dvh-2rem)] sm:max-w-6xl rounded-none sm:rounded-2xl',
-  panel: 'w-full max-w-2xl max-h-[calc(100dvh-2rem)] rounded-2xl'
+  panel: 'w-full max-w-2xl max-h-[calc(100dvh-1rem)] rounded-none sm:max-h-[calc(100dvh-2rem)] sm:rounded-2xl'
 };
 
 const FOCUSABLE_SELECTOR = [
@@ -84,7 +84,7 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-0 backdrop-blur-sm sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-0 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
