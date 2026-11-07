@@ -284,7 +284,7 @@ export default function PhotographerView({
           <TopBarRoleIdentity role={role} />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} roomCode={roomCode} />
           <LanguageToggle />
