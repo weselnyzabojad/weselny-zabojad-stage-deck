@@ -12,7 +12,7 @@ const fixtureFiles = readdirSync(FIXTURES_DIR)
   .sort();
 
 const EXPECTED_INVALID_REASONS = {
-  'invalid-buffer-range.json': 'must NOT have additional properties',
+  'invalid-legacy-buffer-field.json': 'must NOT have additional properties',
   'invalid-cake-serve-time.json': 'serveTime cannot be before the cake cutting time',
   'invalid-duplicate-step-id.json': 'duplicate step id',
   'invalid-fire-safety.json': 'fire effects require a permit requirement',

@@ -3,13 +3,12 @@
 // The engine turns the synced `live_sync_state` into a schedule report:
 // - actual-vs-planned drift for every step that has started
 // - a single live drift value for the header / pocket pill
-// - projected start/end times for upcoming ELASTIC blocks
+// - projected start/end times for upcoming FLEXIBLE blocks
 //
 // Clock math is day-aware so an event that crosses midnight (e.g. 23:50 ->
 // 00:10 = +20m) does not produce a 23-hour phantom drift.
 
 import { addMinutesToClock } from './liveStageState.js';
-import { buildBufferAccordion } from './bufferAccordion.js';
 import { t } from '../i18n/index.js';
 import { clockDeltaMinutes, clockToMinutes } from './clockMath.js';
 import { clockToEventDate, formatClockInZone, isIsoTimestamp } from './eventTime.js';
@@ -74,12 +73,10 @@ function projectionSource(step, actualStart) {
 
 // Build one enriched entry per step. Existing callers of `buildTimeline` keep
 // working; the extra drift fields are what the engine report consumes.
-// `durationOverrides` lets the buffer accordion project the recommended
-// shortened/extended lengths without mutating the cartridge.
 export function buildTimeline(
   steps = [],
   liveState = {},
-  { durationOverrides = null, eventContext = {} } = {},
+  { eventContext = {} } = {},
 ) {
   const { eventDateISO = null, timeZone = 'UTC' } = eventContext;
   const completed = new Set(liveState?.completed_step_ids ?? []);
@@ -89,8 +86,7 @@ export function buildTimeline(
   const entries = steps.map((step, index) => {
     const plannedStart = stepPlannedStart(step);
     const plannedDurationMin = Number.isFinite(step.durationMin) ? step.durationMin : null;
-    const override = durationOverrides?.[step.id];
-    const durationMin = Number.isFinite(override) ? override : plannedDurationMin;
+    const durationMin = plannedDurationMin;
     const plannedEnd = addMinutesToClock(plannedStart, plannedDurationMin);
 
     // TODO 23: actual starts are ISO internally; legacy HH:MM still loads and
@@ -112,7 +108,7 @@ export function buildTimeline(
         projectedStart = plannedStart;
       } else if (cursor) {
         // Roll forward from the previous projected end, but respect a planned
-        // buffer when its slot starts later than the rolling estimate.
+        // slot when it starts later than the rolling estimate.
         const cursorAhead = clockDeltaMinutes(plannedStart, cursor);
         projectedStart = cursorAhead != null && cursorAhead > 0 ? cursor : plannedStart;
       } else {
@@ -172,8 +168,6 @@ export function buildTimeline(
       driftTone: driftTone(driftMinutes),
       isDone: completed.has(step.id),
       isActive: liveState?.active_step_id === step.id,
-      isElastic: step.type === 'FLEXIBLE',
-      isBuffer: step.type === 'FLEXIBLE',
       isHardAnchor: step.type === 'HARD_ANCHOR',
       projectionSource: projectionSource(step, actualStart),
     };
@@ -207,10 +201,10 @@ export function buildDriftReport(
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
 
-  // P0.5: one canonical drift value for the header, buffer advice, radar,
-  // Pocket and DJ. `startDrift` is the newest actual-vs-planned sample; the
-  // projected start is reported separately. The live overrun is a separate
-  // live-clock metric and never replaces the schedule drift.
+  // P0.5: one canonical drift value for the header, radar, Pocket and DJ.
+  // `startDrift` is the newest actual-vs-planned sample; the projected start is
+  // reported separately. The live overrun is a separate live-clock metric and
+  // never replaces the schedule drift.
   const startDriftMinutes = currentEntry?.actualDriftMinutes ?? null;
   const projectedDriftMinutes = currentEntry?.projectedDriftMinutes ?? null;
   const canonicalDriftMinutes = startDriftMinutes;
@@ -223,18 +217,8 @@ export function buildDriftReport(
     compressionSlackMinutes,
   });
 
-  const bufferAccordion = buildBufferAccordion(entries, canonicalDriftMinutes);
-  const accordionEntries = bufferAccordion.hasChanges
-    ? buildTimeline(steps, liveState, {
-        durationOverrides: bufferAccordion.durationByStepId,
-        eventContext,
-      })
-    : entries;
-
   const projectedFinish = entries.length > 0 ? entries[entries.length - 1].projectedEnd : null;
   const plannedFinish = entries.length > 0 ? entries[entries.length - 1].plannedEnd : null;
-  const accordionProjectedFinish =
-    accordionEntries.length > 0 ? accordionEntries[accordionEntries.length - 1].projectedEnd : null;
 
   // Live reel clock: recomputed from `now` on every tick so overruns,
   // anchor countdowns and DJ cutoffs move without a step transition.
@@ -284,15 +268,8 @@ export function buildDriftReport(
       .join(' · '),
   };
 
-  const projectedElasticEntries = entries.filter((entry) => entry.isElastic && !entry.isDone);
-  const upcomingElasticEntries = projectedElasticEntries.filter((entry) => !entry.isActive);
-  const accordionElasticEntries = accordionEntries.filter(
-    (entry) => entry.isElastic && !entry.isDone,
-  );
-
   return {
     entries,
-    accordionEntries,
     activeEntry,
     nextEntry,
     lastCompletedEntry,
@@ -313,29 +290,12 @@ export function buildDriftReport(
     clockSkewMinutes: clock.clockSkewMs / 60000,
     isClockSkewed: clock.isClockSkewed,
     hardAnchorRadar,
-    projectedElasticEntries,
-    upcomingElasticEntries,
-    accordionElasticEntries,
     projectedFinish,
     plannedFinish,
     projectedFinishDeltaMinutes:
       projectedFinish && plannedFinish
         ? clockDeltaMinutes(plannedFinish, projectedFinish)
         : null,
-    accordionProjectedFinish,
-    accordionProjectedFinishDeltaMinutes:
-      accordionProjectedFinish && plannedFinish
-        ? clockDeltaMinutes(plannedFinish, accordionProjectedFinish)
-        : null,
-    bufferAccordion: {
-      ...bufferAccordion,
-      baselineProjectedFinish: projectedFinish,
-      accordionProjectedFinish,
-      accordionFinishDeltaMinutes:
-        accordionProjectedFinish && projectedFinish
-          ? clockDeltaMinutes(projectedFinish, accordionProjectedFinish)
-          : null,
-    },
     completedCount: entries.filter((entry) => entry.isDone).length,
     totalCount: entries.length,
     isComplete: eventComplete,

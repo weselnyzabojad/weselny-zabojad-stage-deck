@@ -21,7 +21,7 @@
       "id": "step_01",
       "time": "16:30",
       "durationMin": 70,
-      "title": "Bad Buffer",
+      "title": "Legacy Buffer Field",
       "type": "FLEXIBLE",
       "location": "Garden",
       "buffer": {

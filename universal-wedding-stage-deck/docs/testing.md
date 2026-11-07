@@ -43,7 +43,7 @@ Valid edge cases:
 - `valid-minimal.json` — only required top-level fields.
 - `valid-midnight.json` — steps after midnight, a `00:00` hard anchor and ISO
   actual timestamps.
-- `valid-buffers.json` — buffer bounds and a hard-anchor step.
+- `valid-timeline.json` — mixed FLEXIBLE/HARD_ANCHOR timeline steps.
 - `valid-speeches.json` — `speechMode`, unique speech order, complex/light
   scripts.
 - `valid-music.json` — important songs, must/do-not-play, request window,
@@ -55,13 +55,13 @@ Valid edge cases:
 Real wedding:
 
 - `real-jennifer-guillaume.json` — the canonical Jennifer & Guillaume cartridge
-  (5 steps, 3 hard anchors).
+  (9 steps, 3 hard anchors).
 
 Invalid edge cases:
 
 - duplicate step IDs,
 - unknown live-state step references,
-- inverted buffer bounds / out-of-range duration,
+- a legacy step-level `buffer` field,
 - cake served before cutting,
 - reversed music request window,
 - MIDNIGHT Oczepiny without an anchor,
@@ -78,7 +78,7 @@ Invalid edge cases:
 | File | Covers |
 | --- | --- |
 | `tests/schema-fixtures.test.js` | All fixtures, expected error reasons, real-wedding stability, canonical example |
-| `tests/validation-rules.test.js` | Semantic rules directly: IDs, refs, buffers, cake, music, Oczepiny, photo safety, speeches, song refs, counts, ISO/legacy timestamps |
+| `tests/validation-rules.test.js` | Semantic rules directly: IDs, refs, legacy step types, cake, music, Oczepiny, photo safety, speeches, song refs, counts, ISO/legacy timestamps |
 | `tests/iso-timestamps.test.js` | ISO round-trips, legacy migration, after-midnight rollover, map filtering |
 
 Vitest runs in a Node environment (`vitest.config.js`) because the current suite

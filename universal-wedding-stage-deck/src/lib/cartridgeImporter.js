@@ -89,7 +89,7 @@ export async function validateCartridge(input) {
 
 export function summarizeCartridge(cartridge) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
-  const buffers = steps.filter((step) => step?.type === 'FLEXIBLE');
+  const flexibleSteps = steps.filter((step) => step?.type === 'FLEXIBLE');
   const anchors = Array.isArray(cartridge?.hardAnchors) ? cartridge.hardAnchors : [];
   const vipAlerts = Array.isArray(cartridge?.tact_and_vip_alerts)
     ? cartridge.tact_and_vip_alerts
@@ -112,7 +112,7 @@ export function summarizeCartridge(cartridge) {
     date: cartridge?.date ?? '—',
     syncPin: cartridge?.syncPin ?? '—',
     stepCount: steps.length,
-    bufferCount: buffers.length,
+    flexibleStepCount: flexibleSteps.length,
     hardAnchorCount: anchors.length,
     vipAlertCount: vipAlerts.length,
     preWeddingCount: preWedding.length,

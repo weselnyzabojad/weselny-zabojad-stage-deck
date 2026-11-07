@@ -117,7 +117,7 @@ one row per item. Header names are fixed and case-sensitive.
 ```text
 | Step ID | Time | Duration (min) | Title | Type | Location |
 | --- | --- | --- | --- | --- | --- |
-| step_03 | 18:00 | 90 | Hall Entrance | ELASTIC | Main Hall |
+| step_03 | 18:00 | 90 | Hall Entrance | FLEXIBLE | Main Hall |
 ```
 
 Rules:
@@ -195,7 +195,7 @@ Rules:
 
 - Write `true` / `false` for booleans.
 - Enum values are uppercase ASCII and come from the v1.2 proposal:
-  `ELASTIC`, `BUFFER`, `HARD_ANCHOR`; `DEFAULT`, `RAIN`, `HEATWAVE`;
+  `FLEXIBLE`, `HARD_ANCHOR`; `DEFAULT`, `RAIN`, `HEATWAVE`;
   `YES`, `NO`, `UNDECIDED`; `PHOTO`, `VIDEO`, `DRONE`; `MIDNIGHT`,
   `AFTER_CAKE`, `CUSTOM`.
 - Never write Polish labels in enum cells; put the display text in the title or

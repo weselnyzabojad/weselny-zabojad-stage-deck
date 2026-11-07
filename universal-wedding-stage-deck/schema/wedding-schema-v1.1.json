@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/wedding-schema-v1.1.json",
   "title": "WeddingSchema v1.1",
-  "description": "Portable wedding cartridge for the Universal Wedding Stage Deck. Defines the schedule, drift/buffer metadata, hard anchors, cultural rules, VIP alerts, teleprompter content and the optional synced live state.",
+  "description": "Portable wedding cartridge for the Universal Wedding Stage Deck. Defines the schedule, drift metadata, hard anchors, cultural rules, VIP alerts, teleprompter content and the optional synced live state.",
   "type": "object",
   "additionalProperties": false,
   "required": [
