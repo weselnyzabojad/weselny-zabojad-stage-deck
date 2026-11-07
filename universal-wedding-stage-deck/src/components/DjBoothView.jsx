@@ -51,6 +51,7 @@ export default function DjBoothView({
   songRequestAccessToken = null,
   songRequestRoomCode = null,
   roomCode = null,
+  viewSwitch = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -240,6 +241,7 @@ export default function DjBoothView({
         <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end xl:min-w-0">
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
+          {viewSwitch}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
@@ -383,6 +385,7 @@ export default function DjBoothView({
       onToggleTheme={onToggleTheme}
       theme={theme}
       onRoleChange={onRoleChange}
+      viewSwitch={viewSwitch}
     >
       {compactContent}
     </RoleShell>

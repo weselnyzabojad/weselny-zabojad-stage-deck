@@ -46,6 +46,7 @@ export default function McMasterView({ model }) {
   roleSession,
   pairing,
   currentRole,
+  viewSwitch,
   roomCode,
   theme,
   toggleTheme,
@@ -375,6 +376,7 @@ export default function McMasterView({ model }) {
               </>
             )}
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
+            {viewSwitch}
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
@@ -531,6 +533,7 @@ export default function McMasterView({ model }) {
       speeches={speeches}
       speechMode={speechMode}
       activeSpeechId={liveState.active_speech_id}
+      viewSwitch={viewSwitch}
       onUndo={handleUndo}
       canUndo={canUndo}
       lastUndoLabel={lastUndo?.label}

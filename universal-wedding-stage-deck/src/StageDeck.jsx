@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
+import ViewSwitchControl from './components/ViewSwitchControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import SpeakerView from './components/SpeakerView';
@@ -10,6 +11,12 @@ import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { useSensitiveNotes } from './hooks/useSensitiveNotes';
 import { availableRoleIds } from './lib/roles';
+import { djDetailTier } from './lib/importantSongs';
+import {
+  resolveAllowedViewRoles,
+  resolveBaseRole,
+  resolveViewRole,
+} from './lib/viewRoles';
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveContacts } from './lib/contacts';
@@ -143,6 +150,8 @@ export default function StageDeck({
     lastKnownStep.totalSteps,
   ]);
   const [overlay, setOverlay] = useState(() => loadReloadState()?.overlay ?? null);
+  // Local, device-only view override. It never changes the authenticated role.
+  const [viewRoleOverride, setViewRoleOverride] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [undoToast, setUndoToast] = useState(null);
   const [contactsOpen, setContactsOpen] = useState(false);
@@ -200,15 +209,44 @@ export default function StageDeck({
   };
 
   const availableRoles = availableRoleIds(WEDDING.hostingMode);
-  // Production: the role token fixes this device to exactly one role. Switching
-  // requires signing out and joining with another role's PIN.
-  const roleIds = isProduction ? [roleSession.role] : availableRoles;
-  const currentRole = isProduction
-    ? roleSession.role
-    : roleIds.includes(role)
-      ? role
-      : "mc";
+  // Production: the role token fixes this device to exactly one role. The MC
+  // may render the read-only DJ view locally, but keeps its MC identity/token.
+  const roleIds = isProduction ? [roleSession?.role ?? 'mc'] : availableRoles;
+  const baseRole = resolveBaseRole({
+    isProduction,
+    roleSessionRole: roleSession?.role,
+    role,
+    availableRoles,
+  });
+  const allowedViewRoles = resolveAllowedViewRoles({
+    isProduction,
+    baseRole,
+    availableRoles,
+    development: Boolean(import.meta.env.DEV),
+  });
+  const currentRole = resolveViewRole({
+    override: viewRoleOverride,
+    allowedRoles: allowedViewRoles,
+    baseRole,
+  });
+  const productionDjViewAllowed =
+    isProduction && allowedViewRoles.includes('mc') && allowedViewRoles.includes('dj');
   const showDjCues = availableRoles.includes("dj");
+
+  const handleViewChange = (next) => {
+    setOverlay(null);
+    setViewRoleOverride(next === baseRole ? null : next);
+    window.setTimeout(() => document.getElementById('main-content')?.focus(), 50);
+  };
+
+  const djTierLabel = djDetailTier(WEDDING) === 'vip' ? 'VIP' : 'STANDARD';
+  const viewSwitch = productionDjViewAllowed ? (
+    <ViewSwitchControl
+      mode={currentRole === 'dj' ? 'return' : 'enter'}
+      tier={djTierLabel}
+      onClick={() => handleViewChange(currentRole === 'dj' ? 'mc' : 'dj')}
+    />
+  ) : null;
 
   const steps = activeSteps(WEDDING.steps, liveState);
   const vipAlerts =
@@ -373,6 +411,7 @@ export default function StageDeck({
             songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
             songRequestRoomCode={deckIntent.roomCode}
             roomCode={deckIntent.roomCode}
+            viewSwitch={viewSwitch}
             {...roleProps}
           />
         </AppErrorBoundary>
@@ -459,6 +498,7 @@ export default function StageDeck({
     roleIds,
     currentRole,
     handleRoleChange,
+    viewSwitch: currentRole === 'mc' ? viewSwitch : null,
     roomCode: deckIntent.roomCode,
     theme,
     toggleTheme,

@@ -165,6 +165,10 @@ const en = {
 
   'speaker.title': 'Speaker · Speech script',
   'speaker.exit': 'Exit',
+  'viewSwitch.dj': 'DJ view',
+  'viewSwitch.djTitle': 'Open the read-only DJ view ({tier})',
+  'viewSwitch.return': 'Return to MC',
+  'viewSwitch.returnTitle': 'Return to the MC Master view',
   'speeches.chip': 'Speeches',
   'speeches.live': 'LIVE',
   'speeches.none': 'No speeches',
