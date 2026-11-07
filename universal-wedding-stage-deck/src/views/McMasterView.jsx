@@ -219,7 +219,7 @@ export default function McMasterView({ model }) {
         </span>
       </div>
 
-      <div className={`grid grid-cols-1 gap-3 ${showDjCues ? 'md:grid-cols-2' : ''}`}>
+      <div className="grid grid-cols-1 gap-3">
         {/* MC Cues */}
         <div className="bg-page/60 p-3 rounded-lg border border-line">
           <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
@@ -241,25 +241,6 @@ export default function McMasterView({ model }) {
             </li>
           </ul>
         </div>
-
-        {/* DJ / Audio Cues (hidden in HOST_ONLY mode) */}
-        {showDjCues && (
-          <div className="bg-page/60 p-3 rounded-lg border border-line">
-            <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-brand"></span>
-              <span>🎧 DJ / Audio Cues</span>
-            </h3>
-            <ul className="space-y-2 text-sm text-slate-300">
-              <li className="flex items-start space-x-2">
-                <span className="text-cyan-400 font-mono text-xs mt-0.5">🎵</span>
-                <span>{currentStep.dj?.playlist ?? 'Background dinner music'} ({currentStep.dj?.track ?? 'playlist active'}).</span>
-              </li>
-              <li className="text-xs text-slate-400 bg-card p-2 rounded border border-line mt-2">
-                ⚡ Remote Stage Ping Ready: <span className="text-white font-mono">Synced to DJ Booth View</span>
-              </li>
-            </ul>
-          </div>
-        )}
       </div>
 
       {stepSubtasks.length > 0 ? (
