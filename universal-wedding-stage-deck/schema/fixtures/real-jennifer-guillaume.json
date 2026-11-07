@@ -251,7 +251,10 @@
     "winnerPhoto": {
       "enabled": true,
       "replacesWinnersDance": false,
-      "photographerCue": "Winner photo with the couple, then clear the floor."
+      "photographerCue": "Winner photo with the couple, then clear the floor.",
+      "winnersOnly": true,
+      "winnersWithCouple": true,
+      "photographerAvailable": true
     },
     "photographerBriefed": {
       "confirmed": true,
@@ -266,7 +269,8 @@
     ],
     "music": {
       "track": "Oczepiny mix",
-      "playlist": "Midnight"
+      "playlist": "Midnight",
+      "enabled": true
     },
     "subEvents": [
       {
@@ -297,7 +301,22 @@
         "deferable": false,
         "skippable": false
       }
-    ]
+    ],
+    "variant": "MIDNIGHT",
+    "throwings": {
+      "veil": true,
+      "bouquet": true,
+      "bowTie": true,
+      "cravat": false
+    },
+    "game": {
+      "enabled": true,
+      "type": "TEST_ZGODNOSCI",
+      "notes": "Test Zgodności with the guests."
+    },
+    "countdown": {
+      "mode": "MC"
+    }
   },
   "steps": [
     {

@@ -49,6 +49,15 @@ Notes: Couple speaks FR/PL; most guests understand EN.
 
 ## OCZEPINY
 
+Oczepiny variant: MIDNIGHT
+Throwings: veil=yes, bouquet=yes, bow tie=yes, cravat=no
+Game enabled: yes
+Game type: TEST_ZGODNOSCI
+Countdown mode: MC
+Winners only photo: yes
+Winners + couple photo: yes
+Photographer available: yes
+
 Enabled: true
 Order: MIDNIGHT
 Anchor ID: oczepiny_midnight
