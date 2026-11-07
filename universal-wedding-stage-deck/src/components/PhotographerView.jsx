@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
+import CulturalRulesBar from './CulturalRulesBar';
 import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
+import SpeechesChip from './SpeechesChip';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
@@ -103,6 +105,12 @@ export default function PhotographerView({
   theme = 'night',
   onToggleTheme,
   roomCode = null,
+  culturalRules = null,
+  oczepinyStatus = null,
+  speeches = [],
+  speechMode = 'OFF',
+  activeSpeechId = null,
+  authControl = null,
 }) {
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
@@ -285,8 +293,17 @@ export default function PhotographerView({
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-2">
+          {culturalRules ? (
+            <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
+          ) : null}
+          <SpeechesChip
+            mode={speechMode}
+            speeches={speeches}
+            activeSpeechId={activeSpeechId}
+          />
           <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
           <OpenOnPhoneButton role={role} roomCode={roomCode} />
+          {authControl}
           <LanguageToggle />
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
@@ -807,6 +824,12 @@ export default function PhotographerView({
       onToggleTheme={onToggleTheme}
       theme={theme}
       onRoleChange={onRoleChange}
+      culturalRules={culturalRules}
+      oczepinyStatus={oczepinyStatus}
+      speeches={speeches}
+      speechMode={speechMode}
+      activeSpeechId={activeSpeechId}
+      authControl={authControl}
     >
       {compactContent}
     </RoleShell>
