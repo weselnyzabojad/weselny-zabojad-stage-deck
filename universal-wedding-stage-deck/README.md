@@ -628,8 +628,9 @@ PIN collisions no longer select a local cartridge: the room is keyed by
   `{ wedding_id, room_id, app_role }`. Supabase's reserved `role` claim stays
   `authenticated`; the device role is `app_role`.
 - After joining, the client fetches the role-scoped cartridge from `weddings`
-  (RLS only returns the matching row), caches it locally and reloads. Production
-  never falls back to the demo wedding.
+  (RLS only returns the matching row), caches it locally together with its
+  `cartridge_revision`, and reloads. Production never falls back to the demo
+  wedding.
 - The token is cached in `localStorage` (`wzsd:v1:role-session`) so a joined
   device keeps working offline until expiry. The sync client sends it as a
   bearer token to PostgREST and Realtime.
@@ -645,13 +646,26 @@ PIN collisions no longer select a local cartridge: the room is keyed by
    adds `app_admins`, the audit log, per-device `role_sessions` /
    `role_presence`, and enforces revoked sessions in RLS;
    [`202611060002_song_requests.sql`](supabase/migrations/202611060002_song_requests.sql)
-   adds the public guest request queue and rate-limit log.
+   adds the public guest request queue and rate-limit log;
+   [`202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql)
+   adds monotonic cartridge revisions, publication metadata, safe backfill and
+   the atomic `stage_deck_publish_cartridge(...)` RPC used by `admin_api`.
 3. Deploy the functions: `supabase functions deploy join_room`,
-   `supabase functions deploy publish_room`,
    `supabase functions deploy admin_api` and
    `supabase functions deploy submit_song_request`.
-4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
-   `DECK_PUBLISH_SECRET`, and optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
+4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, and
+   optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
+
+**Legacy cleanup.** If an older deployment still has the secret-based
+`publish_room` function, delete it and its secret:
+
+```bash
+supabase functions delete publish_room
+supabase secrets unset DECK_PUBLISH_SECRET
+```
+
+`admin_api` is the only cartridge publication path; role devices can only read
+the server-published revision.
 5. Insert the owner account into `app_admins` (no self-signup):
    `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`
 6. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
@@ -696,7 +710,7 @@ Relevant files: `src/App.jsx`, `src/lib/pairing.js`, `src/hooks/usePairing.js`,
 `src/lib/sync/joinRoom.js`, `src/components/RoleJoinScreen.jsx`,
 `src/lib/sync/supabaseSyncClient.js`, `src/hooks/useLiveStageState.js`,
 `supabase/schema.sql`, `supabase/functions/join_room/index.ts`,
-`supabase/functions/publish_room/index.ts`.
+`supabase/functions/admin_api/index.ts`.
 
 ### 21. Night Stage / Daylight theming (issue #69 / TODO 27)
 
@@ -793,7 +807,7 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
   URLs or Supabase. Non-MC devices never receive it.
 - Encrypted bundles live in `sensitive_notes`, readable only by the `mc` role
   for its own room. The published cartridge is **redacted** server-side
-  (`publish_room` strips `vipAlerts`/`contacts`), so plaintext never reaches the
+  (`admin_api` strips `vipAlerts`/`contacts`), so plaintext never reaches the
   cloud.
 - The MC loads and decrypts the bundle at runtime; the VIP Radar and Contacts
   directory then use the decrypted data. If the bundle exists but this device
@@ -808,9 +822,13 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
   service-role only.
 
 **TTL / delete.**
-- `weddings.expires_at` is set by `publish_room` from the **event date plus a
+- `weddings.expires_at` is set by `admin_api` from the **event date plus a
   grace period** (default 7 days; configurable with `expiresInDays`, 1–365).
   Without an event date it falls back to 30 days from publish time.
+- `cartridge_revision` is monotonic. `admin_api` requires the current
+  `expectedRevision` for a content-only republication, returns HTTP 409 when the
+  revision is stale, and never changes `room_code`, PINs, sessions or live
+  progress when only the cartridge changes.
 - `join_room` rejects an expired room with HTTP 410.
 - `stage_deck_purge_expired()` deletes expired rooms (state, wedding, roles,
   notes), orphaned room state and old `join_attempts`. Schedule it daily with
@@ -818,14 +836,14 @@ This completes the D4 privacy layer on top of the D7 room/role work in section
 - `stage_deck_wipe_my_room()` lets the MC token wipe its own room immediately.
 - The service-role `stage_deck_wipe_room(wedding_id)` remains for admin use.
 
-After pulling this change, re-run [`supabase/schema.sql`](supabase/schema.sql)
-and redeploy `publish_room` (it now redacts sensitive fields and sets
-`expires_at`).
+After pulling this change, re-run [`supabase/schema.sql`](supabase/schema.sql),
+apply the cartridge revision migration, and redeploy `admin_api` (it now
+redacts sensitive fields, validates server-side and sets `expires_at`).
 
 Relevant files: `src/lib/sensitiveNotes.js`,
 `src/hooks/useSensitiveNotes.js`,
 `src/App.jsx`, `src/lib/sync/supabaseSyncClient.js`, `supabase/schema.sql`,
-`supabase/functions/publish_room/index.ts`.
+`supabase/functions/admin_api/index.ts`.
 
 ### 24. One canonical drift value (issue #41 / P0.5)
 
@@ -1179,7 +1197,7 @@ are dropped and recreated), so it is safe to re-run on an existing deployment.
   limited to `mc`/`pocket`. `sensitive_notes` is `mc`-only ciphertext.
 - The 4-digit DDMM PIN is a local display gate, not a server secret; production
   uses 6-digit per-role PINs hashed server-side and rate-limited.
-- `publish_room` sets `expires_at` to the event date + 7 days grace
+- `admin_api` sets `expires_at` to the event date + 7 days grace
   (`expiresInDays`); `join_room` rejects expired rooms with 410;
   `stage_deck_purge_expired()` removes expired and orphaned data plus old join
   attempts. The MC can wipe immediately via `stage_deck_wipe_my_room()`.

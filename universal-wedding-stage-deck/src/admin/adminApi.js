@@ -172,6 +172,9 @@ export async function callAdmin(action, payload = {}) {
     error.status = response.status;
     error.requiresMfa = Boolean(data?.requiresMfa);
     error.requiresMfaReauth = Boolean(data?.requiresMfaReauth);
+    error.currentRevision = data?.currentRevision ?? null;
+    error.stale = Boolean(data?.stale);
+    error.errors = Array.isArray(data?.errors) ? data.errors : [];
     throw error;
   }
   return data;

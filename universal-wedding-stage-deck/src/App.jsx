@@ -104,13 +104,13 @@ export default function App() {
         if (!isCartridgeLike(row.cartridge)) {
           throw new Error(t('app.invalidPublishedCartridge'));
         }
-        // `updated_at` is the server publication marker available before the
-        // revision contract lands (#165); it also keeps the cache tied to the
-        // exact snapshot that was rendered.
+        // `cartridge_revision` is the server publication marker (#165). The
+        // cache keeps the revision so a later read can tell which snapshot it
+        // holds; the deck always renders the latest fetched revision.
         saveCachedCartridge({
           weddingId: roleSession.weddingId,
           cartridge: row.cartridge,
-          revision: row.updated_at ?? null,
+          revision: row.cartridge_revision ?? null,
           fetchedAt: new Date().toISOString(),
         });
         setCartridgeState({

@@ -41,6 +41,12 @@ export function isCartridgeLike(value) {
 }
 
 function normalizeRevision(value) {
+  const parsed =
+    typeof value === 'number' ? value : Number.parseInt(String(value ?? '').trim(), 10);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function normalizeTimestamp(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }
 
@@ -61,7 +67,7 @@ export function loadCachedCartridge(weddingId, storage) {
     return {
       cartridge: dropDeprecatedCartridgeFields(parsed.cartridge),
       revision: normalizeRevision(parsed.revision),
-      fetchedAt: normalizeRevision(parsed.fetchedAt),
+      fetchedAt: normalizeTimestamp(parsed.fetchedAt),
     };
   } catch {
     return null;
@@ -87,7 +93,7 @@ export function saveCachedCartridge(
       JSON.stringify({
         weddingId,
         revision: normalizeRevision(revision),
-        fetchedAt: normalizeRevision(fetchedAt) ?? new Date().toISOString(),
+        fetchedAt: normalizeTimestamp(fetchedAt) ?? new Date().toISOString(),
         cartridge: cleaned,
       }),
     );

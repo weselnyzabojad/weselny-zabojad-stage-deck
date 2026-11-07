@@ -45,6 +45,9 @@ export function demoList() {
         archived_at: null,
         created_at: hoursAgo(72),
         updated_at: hoursAgo(3),
+        cartridge_revision: 3,
+        cartridge_source: 'admin_json',
+        cartridge_published_at: hoursAgo(3),
       },
       {
         wedding_id: 'demo-2025',
@@ -56,6 +59,9 @@ export function demoList() {
         archived_at: hoursAgo(240),
         created_at: hoursAgo(2000),
         updated_at: hoursAgo(240),
+        cartridge_revision: 1,
+        cartridge_source: 'legacy_backfill',
+        cartridge_published_at: hoursAgo(240),
       },
     ],
     presence: [

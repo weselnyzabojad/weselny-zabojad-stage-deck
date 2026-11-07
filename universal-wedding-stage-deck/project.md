@@ -159,7 +159,7 @@ src/
 supabase/
   schema.sql        base tables, RLS, join/wipe/purge functions
   migrations/       owner-admin tables, presence, sessions, audit, RLS updates
-  functions/        join_room, publish_room (legacy), admin_api
+  functions/        join_room, admin_api, submit_song_request
 schema/             WeddingSchema v1.1, fixtures, validators, AI converter prompt
 docs/               focused design/testing/accessibility notes
 scripts/            validators and migration helpers
@@ -339,18 +339,23 @@ Never ship the service-role key.
 
 1. Apply [`supabase/schema.sql`](supabase/schema.sql).
 2. Apply [`supabase/migrations/202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql).
-3. Deploy functions:
+3. Apply [`supabase/migrations/202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql).
+4. Deploy functions:
 
 ```bash
 supabase functions deploy join_room
-supabase functions deploy publish_room   # legacy x-publish-secret path
 supabase functions deploy admin_api
+supabase functions deploy submit_song_request
 ```
 
-4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
-   `DECK_PUBLISH_SECRET`, `PUBLIC_DECK_URL`, optional `ALLOWED_ORIGIN`.
-5. Add the owner account to `app_admins` and disable Auth self-signup.
-6. Build with `VITE_DECK_MODE=production`.
+If an older deployment still has the legacy secret-based function, remove it:
+`supabase functions delete publish_room` and
+`supabase secrets unset DECK_PUBLISH_SECRET`.
+
+5. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
+   `PUBLIC_DECK_URL`, optional `ALLOWED_ORIGIN`.
+6. Add the owner account to `app_admins` and disable Auth self-signup.
+7. Build with `VITE_DECK_MODE=production`.
 
 `join_room` now writes `role_sessions` and `role_presence`; existing role tokens
 issued before the owner-admin migration have no session row and must rejoin.
