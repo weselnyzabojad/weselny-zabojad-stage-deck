@@ -2,12 +2,16 @@ import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import MandatoryConstraintsCard from '../../src/components/MandatoryConstraintsCard.jsx';
+import StepMandatoryNotes from '../../src/components/StepMandatoryNotes.jsx';
 import { DEMO_WEDDING } from '../../src/demo/demoWedding.js';
-import { resolveMandatoryConstraints } from '../../src/lib/mandatorySteps.js';
+import {
+  mapMandatoryToSteps,
+  resolveMandatoryConstraints,
+} from '../../src/lib/mandatorySteps.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
-const render = (props) => renderToStaticMarkup(createElement(MandatoryConstraintsCard, props));
+const render = (props) => renderToStaticMarkup(createElement(StepMandatoryNotes, props));
+const allItems = (mapped) => Object.values(mapped).flat();
 
 describe('issue #302 mandatory constraints', () => {
   it('derives prestation ready one hour before first arrival', () => {
@@ -41,8 +45,9 @@ describe('issue #302 mandatory constraints', () => {
     });
   });
 
-  it('shows all MC constraints including buffets', () => {
-    const html = render({ wedding: DEMO_WEDDING, role: 'mc' });
+  it('embeds all MC constraints into their steps, including buffets', () => {
+    const mapped = mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, { role: 'mc' });
+    const html = render({ items: allItems(mapped) });
     expect(html).toContain('First guests arrival');
     expect(html).toContain('Prestation ready (derived)');
     expect(html).toContain('Obiad weselny');
@@ -51,16 +56,22 @@ describe('issue #302 mandatory constraints', () => {
   });
 
   it('shows first arrival on DJ VIP but not kitchen detail', () => {
-    const html = render({ wedding: DEMO_WEDDING, role: 'dj', isVipDj: true });
+    const mapped = mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, {
+      role: 'dj',
+      isVipDj: true,
+    });
+    const items = allItems(mapped);
+    expect(items.map((item) => item.kind)).toEqual(['firstArrival']);
+    const html = render({ items });
     expect(html).toContain('First guests arrival');
     expect(html).not.toContain('Obiad weselny');
     expect(html).not.toContain('Cake');
   });
 
   it('hides mandatory constraints from DJ Standard and other roles', () => {
-    expect(render({ wedding: DEMO_WEDDING, role: 'dj', isVipDj: false })).toBe('');
-    expect(render({ wedding: DEMO_WEDDING, role: 'photographer_1' })).toBe('');
-    expect(render({ wedding: DEMO_WEDDING, role: 'venue_manager' })).toBe('');
+    expect(mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, { role: 'dj' })).toEqual({});
+    expect(mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, { role: 'photographer_1' })).toEqual({});
+    expect(mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, { role: 'venue_manager' })).toEqual({});
   });
 
   it('keeps prestation ready derived and non-editable in Venue Manager', () => {

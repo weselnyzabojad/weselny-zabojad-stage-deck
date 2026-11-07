@@ -7,7 +7,6 @@ import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
 import CeremonyCueCard from './components/CeremonyCueCard';
-import MandatoryConstraintsCard from './components/MandatoryConstraintsCard';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import ChildrenExpectedBadge from './components/ChildrenExpectedBadge';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
@@ -410,12 +409,6 @@ export default function StageDeck({
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
       <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />
-      <MandatoryConstraintsCard
-        wedding={WEDDING}
-        role={currentRole}
-        isVipDj={djDetailTier(WEDDING) === 'vip'}
-        override={liveState.media_overrides?.mandatorySteps ?? null}
-      />
       <CeremonyCueCard wedding={WEDDING} role={currentRole} />
       <WeddingClosureBanner
         role={currentRole}
@@ -463,6 +456,7 @@ export default function StageDeck({
             speechMode={speechMode}
             activeSpeechId={liveState.active_speech_id}
             authControl={authControl}
+            mandatoryOverride={liveState.media_overrides?.mandatorySteps ?? null}
             {...roleProps}
           />
         </AppErrorBoundary>
@@ -611,6 +605,7 @@ export default function StageDeck({
     nextEntry,
     cakeProtocol,
     cakeServiceMode,
+    mandatoryOverride: liveState.media_overrides?.mandatorySteps ?? null,
     musicPolicy,
     speechMode,
     speeches,

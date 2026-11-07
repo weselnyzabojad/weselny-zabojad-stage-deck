@@ -24,6 +24,7 @@ import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
+import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
@@ -43,6 +44,7 @@ function childrenWarningFor(step) {
 }
 import SpeechesCard from '../components/SpeechesCard';
 import SpeechesChip from '../components/SpeechesChip';
+import StepMandatoryNotes from '../components/StepMandatoryNotes';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
@@ -86,6 +88,7 @@ export default function McMasterView({ model }) {
   nextEntry,
   cakeProtocol,
   cakeServiceMode = 'KITCHEN_RETURN',
+  mandatoryOverride = null,
   speechMode,
   speeches,
   selectSpeech,
@@ -112,6 +115,11 @@ export default function McMasterView({ model }) {
   });
   const photoPlan = resolvePhotoPlan(WEDDING);
   const groupPhotoStepId = resolveGroupPhotoStepId(photoPlan, WEDDING?.steps);
+  const mandatoryByStep = mapMandatoryToSteps(WEDDING, WEDDING?.steps, {
+    role: 'mc',
+    override: mandatoryOverride,
+  });
+  const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
   const groupPhotoBody =
     currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
       <GroupPhotoChecklist
@@ -159,6 +167,7 @@ export default function McMasterView({ model }) {
       {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
         <GamesCueCard wedding={WEDDING} role="mc" />
       ) : null}
+      <StepMandatoryNotes items={mandatoryItems} />
       {groupPhotoBody}
       <div className="flex flex-wrap items-center gap-2">
         <button
@@ -299,6 +308,7 @@ export default function McMasterView({ model }) {
         <OczepinyCueCard wedding={WEDDING} audience="mc" />
       ) : null}
 
+      <StepMandatoryNotes items={mandatoryItems} />
       {groupPhotoBody}
 
       {stepSubtasks.length > 0 ? (

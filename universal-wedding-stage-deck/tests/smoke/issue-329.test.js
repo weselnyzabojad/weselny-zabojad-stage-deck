@@ -2,12 +2,13 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
 import { setLocale } from '../../src/i18n/index.js';
-import MandatoryConstraintsCard from '../../src/components/MandatoryConstraintsCard.jsx';
+import StepMandatoryNotes from '../../src/components/StepMandatoryNotes.jsx';
 import CeremonyCueCard from '../../src/components/CeremonyCueCard.jsx';
 import GamesCueCard from '../../src/components/GamesCueCard.jsx';
 import GrandEntranceCueCard from '../../src/components/GrandEntranceCueCard.jsx';
 import FirstDanceCueCard from '../../src/components/FirstDanceCueCard.jsx';
 import MandatoryUpdatePopup from '../../src/components/MandatoryUpdatePopup.jsx';
+import { mapMandatoryToSteps } from '../../src/lib/mandatorySteps.js';
 
 const wedding = {
   weddingId: 'w1',
@@ -39,6 +40,14 @@ const wedding = {
 };
 
 const update = { updatedAt: '2026-11-07T18:00:00.000Z', value: wedding.mandatorySteps };
+const steps = [
+  { id: 'step_01', title: 'Cocktail', time: '15:30' },
+  { id: 'step_05', title: 'Wedding cake', time: '18:30' },
+];
+const mandatoryItems = (role = 'mc', extra = {}) =>
+  Object.values(
+    mapMandatoryToSteps(wedding, steps, { role, override: update, ...extra }),
+  ).flat();
 
 afterEach(() => setLocale('en', { persist: false }));
 
@@ -46,7 +55,7 @@ describe('issue #329 localized operational cues', () => {
   it('localizes mandatory constraints in French and Polish', () => {
     setLocale('fr', { persist: false });
     const fr = renderToStaticMarkup(
-      createElement(MandatoryConstraintsCard, { wedding, role: 'mc' }),
+      createElement(StepMandatoryNotes, { items: mandatoryItems() }),
     );
     expect(fr).toContain('Contraintes obligatoires');
     expect(fr).toContain('Service à table');
@@ -54,7 +63,7 @@ describe('issue #329 localized operational cues', () => {
 
     setLocale('pl', { persist: false });
     const pl = renderToStaticMarkup(
-      createElement(MandatoryConstraintsCard, { wedding, role: 'mc' }),
+      createElement(StepMandatoryNotes, { items: mandatoryItems() }),
     );
     expect(pl).toContain('Obowiązkowe ograniczenia');
     expect(pl).toContain('Obsługa przy stole');
@@ -123,7 +132,7 @@ describe('issue #329 localized operational cues', () => {
     setLocale('fr', { persist: false });
     expect(
       renderToStaticMarkup(
-        createElement(MandatoryConstraintsCard, { wedding, role: 'mc' }),
+        createElement(StepMandatoryNotes, { items: mandatoryItems() }),
       ),
     ).toContain('23:30');
   });

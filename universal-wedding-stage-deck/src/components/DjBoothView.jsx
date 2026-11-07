@@ -7,6 +7,8 @@ import MusicPolicyCard from './MusicPolicyCard';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
+import StepMandatoryNotes from './StepMandatoryNotes';
+import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
@@ -50,6 +52,7 @@ export default function DjBoothView({
   speechMode = 'OFF',
   activeSpeechId = null,
   authControl = null,
+  mandatoryOverride = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -66,6 +69,12 @@ export default function DjBoothView({
     ? importantSongs.find((song) => song.stepId === activeEntry.step.id) ?? null
     : null;
   const mainSongRequired = activeEntry?.step?.isMainSongRequired === true;
+  const mandatoryByStep = mapMandatoryToSteps(
+    wedding,
+    timeline.map((entry) => entry?.step).filter(Boolean),
+    { role: 'dj', isVipDj: isVip, override: mandatoryOverride },
+  );
+  const mandatoryItems = activeEntry?.step?.id ? mandatoryByStep[activeEntry.step.id] ?? [] : [];
 
   // Extra current-card detail for the shared focus stack. The stack owns the
   // card hierarchy and visibility counts; this body only adds DJ-specific
@@ -102,6 +111,7 @@ export default function DjBoothView({
       {isVip && activeEntry?.step?.firstDanceMode ? (
         <FirstDanceCueCard step={activeEntry.step} audience="dj-vip" />
       ) : null}
+      <StepMandatoryNotes items={mandatoryItems} />
       {mainSongRequired ? (
         <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2 text-[11px]">
           <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">

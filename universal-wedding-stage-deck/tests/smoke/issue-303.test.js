@@ -3,12 +3,13 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import CeremonyCueCard from '../../src/components/CeremonyCueCard.jsx';
-import MandatoryConstraintsCard from '../../src/components/MandatoryConstraintsCard.jsx';
+import StepMandatoryNotes from '../../src/components/StepMandatoryNotes.jsx';
 import {
   ceremonyVisibleToMc,
   firstArrivalCeremonyNote,
   resolveCeremony,
 } from '../../src/lib/ceremony.js';
+import { mapMandatoryToSteps } from '../../src/lib/mandatorySteps.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const weddingWith = (ceremony) => ({
@@ -73,9 +74,13 @@ describe('issue #303 ceremony variants', () => {
     expect(firstArrivalCeremonyNote(resolveCeremony(wedding))).toContain(
       'Religious wedding ceremony at St. Mary',
     );
-    const html = renderToStaticMarkup(createElement(MandatoryConstraintsCard, {
+    const mapped = mapMandatoryToSteps(
       wedding,
-      role: 'mc',
+      [{ id: 'step_ceremony', title: 'Ceremony', time: '17:00' }],
+      { role: 'mc' },
+    );
+    const html = renderToStaticMarkup(createElement(StepMandatoryNotes, {
+      items: mapped.step_ceremony,
     }));
     expect(html).toContain('Religious wedding ceremony at St. Mary');
   });
