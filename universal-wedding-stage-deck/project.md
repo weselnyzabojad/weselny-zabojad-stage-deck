@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `0e6a473` (before the couple-language label change)
+**Aligned with:** `master` @ `426fe98` (before the DJ full-width layout change)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -65,6 +65,7 @@ sections below and in git history.
 | [#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391) | Secondary bar full width and edge alignment | Implementation |
 | [#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392) | Remove children notice from hard-anchor banner | Implementation |
 | [#394](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/394) | Rename couple language label to Couple common languages | Implementation |
+| [#396](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/396) | DJ and DJ Standard full-width layout | Implementation |
 
 ### Planning TODO register
 
@@ -681,6 +682,12 @@ step layout may use the entire page width; remove the centered `max-w-5xl` /
 `max-w-3xl` caps while keeping responsive padding and avoiding horizontal
 overflow.
 ([#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242))
+
+**Full-width DJ layout.** DJ VIP and DJ Standard use the entire screen width,
+matching MC Master. Remove the `mx-auto max-w-5xl` cap from the DJ main area,
+keep the shared responsive horizontal padding and ensure compact layouts do not
+overflow horizontally.
+([#396](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/396))
 
 **Speaker timeline removal.** Delete the Timeline UI element from the Speaker
 view (desktop and pocket). Keep the assigned speech/script and the Now speaking
