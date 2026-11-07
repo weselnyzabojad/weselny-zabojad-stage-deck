@@ -439,6 +439,7 @@ export const DEMO_WEDDING = {
     { task: "Confirm the Instax cameras and guestbook are packed", done: false }
   ],
   steps: [
+    { id: "step_00", time: "15:30", durationMin: 30, title: "First guests arrival", type: "HARD_ANCHOR", location: "Venue entrance", ceremonyType: "CHURCH", ceremonyLocation: "St. Mary's Church" },
     { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "BUFFER", location: "Garden", buffer: { minDurationMin: 15, maxDurationMin: 45 }, dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "ELASTIC", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
     { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 90, title: "Grand Entrance", type: "ELASTIC", location: "Main Hall", photographerCue: "Group photo before the toast", isMainSongRequired: true, dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15", cutoffSec: 3600 }, teleprompter: HALL_ENTRANCE_SCRIPT },

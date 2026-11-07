@@ -14,7 +14,7 @@ describe('issue #274 Venue Manager role', () => {
   it('renders a read-only timeline and editable mandatory panel', () => {
     const view = read('src/components/VenueManagerView.jsx');
     expect(view).toContain('<TimelineFocusStack');
-    expect(view).toContain('First guests arrival');
+    expect(view).not.toContain('label="First guests arrival"');
     expect(view).toContain('Obiad weselny');
     expect(view).toContain('Pierwsza kolacja');
     expect(view).toContain('Druga kolacja');

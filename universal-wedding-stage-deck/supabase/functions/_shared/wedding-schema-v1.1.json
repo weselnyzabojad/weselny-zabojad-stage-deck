@@ -1018,6 +1018,13 @@
           "type": "string",
           "enum": ["wishes", "games", "oczepiny"],
           "description": "Predefined step is shown only when the matching cartridge feature is enabled."
+        },
+        "ceremonyType": {
+          "type": "string",
+          "enum": ["CHURCH", "VENUE", "NONE"]
+        },
+        "ceremonyLocation": {
+          "type": "string"
         }
       }
     },
