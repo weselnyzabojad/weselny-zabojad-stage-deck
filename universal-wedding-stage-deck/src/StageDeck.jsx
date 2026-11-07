@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
+import DevViewSwitcher from './components/DevViewSwitcher';
 import ViewSwitchControl from './components/ViewSwitchControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
@@ -248,6 +249,13 @@ export default function StageDeck({
     />
   ) : null;
 
+  // Build-time gate: Vite replaces this with `false` in production and the
+  // temporary switcher module is tree-shaken out of the production bundle.
+  const DEV_VIEW_SWITCHER = import.meta.env.DEV;
+  const devViewSwitcher = DEV_VIEW_SWITCHER ? (
+    <DevViewSwitcher currentRole={currentRole} onChange={handleViewChange} />
+  ) : null;
+
   const steps = activeSteps(WEDDING.steps, liveState);
   const vipAlerts =
     sensitiveNotes.payload?.vipAlerts ?? WEDDING.tact_and_vip_alerts ?? [];
@@ -416,6 +424,7 @@ export default function StageDeck({
           />
         </AppErrorBoundary>
         {statusBanners}
+        {devViewSwitcher}
       </>
     );
   }
@@ -447,6 +456,7 @@ export default function StageDeck({
           />
         </AppErrorBoundary>
         {statusBanners}
+        {devViewSwitcher}
       </>
     );
   }
@@ -480,6 +490,7 @@ export default function StageDeck({
           />
         </AppErrorBoundary>
         {statusBanners}
+        {devViewSwitcher}
       </>
     );
   }
@@ -555,6 +566,7 @@ export default function StageDeck({
         <McMasterView model={mcModel} />
       </AppErrorBoundary>
       {statusBanners}
+      {devViewSwitcher}
     </>
   );
 }
