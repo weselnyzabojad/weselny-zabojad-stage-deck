@@ -119,7 +119,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) | Wedding closure step, extension and last song |
 | [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) | MC: children reminder in Hard Anchor Collision banner |
 | [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) | Oczepiny Early/Midnight schema and Google Doc parsing |
-| [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC and Photographer cues |
+| [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC, Photographer and DJ VIP cues |
 
 ### Responsive phone / pocket plan
 
@@ -1025,14 +1025,17 @@ existing Oczepiny fields.
 
 **Role cues.** MC shows only the enabled variant components (game, throwings,
 music/countdown, winner-photo cue). Photographer/Cameraman shows winner photo
-and winners+couple photo only when the photographer is available. Do not show
-disabled fields; keep cartridge order and localized labels.
+and winners+couple photo only when the photographer is available. **DJ VIP only**
+also shows the Oczepiny variant data: variant, enabled game, throwing
+order/timing, music or MC countdown and winner-photo cue. DJ Standard must not
+show this Oczepiny block. Do not show disabled fields; keep cartridge order and
+localized labels.
 ([#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288))
 
 Implementation issues:
 - [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) — MC children banner placement;
 - [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) — Oczepiny schema/parser;
-- [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) — Oczepiny role cues.
+- [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) — Oczepiny role cues for MC, Photographer/Cameraman and DJ VIP.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
