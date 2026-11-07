@@ -7,6 +7,7 @@ import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
+import ChildrenExpectedBadge from './components/ChildrenExpectedBadge';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
@@ -419,6 +420,7 @@ export default function StageDeck({
         role={currentRole}
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
+      <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />
     </>
   );
 

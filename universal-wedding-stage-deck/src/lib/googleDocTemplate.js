@@ -13,7 +13,7 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 1,
     marker: 'EVENT',
     required: true,
-    schemaPath: ['weddingId', 'couple', 'date', 'dateISO', 'syncPin', 'servicePackage', 'venue'],
+    schemaPath: ['weddingId', 'couple', 'date', 'dateISO', 'syncPin', 'servicePackage', 'venue', 'childrenExpected'],
     purpose: 'Identity, date, room key and service package.',
   },
   {
