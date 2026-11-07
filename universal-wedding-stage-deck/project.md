@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `87f7e11` (Photographer/media rework #226–#234)
+**Aligned with:** `master` @ `54bcd64` (Photographer/media rework alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -91,6 +91,12 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) | Photographer: DJ VIP parity and feature gates |
 | [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Media team: future rework TODO |
 | [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) | DJ: remove Reel Clock from Standard and VIP |
+| [#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242) | Photographer/Cameraman: full-page step layout |
+| [#243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/243) | Speaker: remove the timeline UI element |
+| [#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244) | Speaker: reduce Now speaking card |
+| [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker: dedicated speech cartridge TODO |
+| [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) | DJ: remove ZAIKS/licensing from Music Policy |
+| [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) | Media/Speaker: remove duplicate top-left role label |
 
 ### Responsive phone / pocket plan
 
@@ -661,6 +667,56 @@ Implementation issues:
 - [#232](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/232) — VIP parity;
 - [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) — Media team TODO;
 - [#234](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/234) — remove DJ Reel Clock.
+
+### Media/Speaker/DJ refinements (decision, 2026-11-07)
+
+**Full-width media layout.** The Photographer 1, Photographer 2 and Cameraman
+step layout may use the entire page width; remove the centered `max-w-5xl` /
+`max-w-3xl` caps while keeping responsive padding and avoiding horizontal
+overflow.
+([#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242))
+
+**Speaker timeline removal.** Delete the Timeline UI element from the Speaker
+view (desktop and pocket). Keep the assigned speech/script and the Now speaking
+card.
+([#243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/243))
+
+**Now speaking card.** Keep only:
+
+- the "Now speaking" label;
+- the speaker name (for example Bartek);
+- the speaker relationship (for example Best man).
+
+Remove timer chips, time, cue, mic, language, delivery, read-from, consent,
+MC-intro and offline-copy badges from that card. The script/teleprompter card
+stays separate and intact.
+([#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244))
+
+**Speech cartridge TODO.** The speech-display UI content will in future be
+retrieved from a dedicated cartridge produced from a Google Doc through a JSON
+parser. Record the schema, validation, revision/publication and offline-cache
+work as a follow-up; do not hardcode speech text or scrape the Doc at runtime.
+([#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245))
+
+**Music Policy — ZAIKS.** Remove the ZAIKS/licensing UI element from the Music
+Policy card. Keep must-play, do-not-play, clean versions and request
+status/window. The shared card makes this apply to both DJ tiers; cartridge data
+may remain.
+([#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246))
+
+**Duplicate role labels.** Photographer 1/2, Cameraman and Speaker must follow
+the MC Master pattern: remove the duplicate top-left role label/icon and keep a
+single Role identity element (for example Role: Photo 1, Role: Camera, Role:
+Speaker). Pocket role badges are unchanged.
+([#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247))
+
+Implementation issues:
+- [#242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/242) — full-page media step layout;
+- [#243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/243) — Speaker timeline removal;
+- [#244](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/244) — reduced Now speaking card;
+- [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) — dedicated speech cartridge TODO;
+- [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) — remove ZAIKS/licensing UI;
+- [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) — single role identity element.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
