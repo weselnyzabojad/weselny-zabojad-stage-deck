@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `4abf4c2` (DJ view rework alignment)
+**Aligned with:** `master` @ `87f7e11` (Photographer/media rework #226–#234)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
