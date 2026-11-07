@@ -1503,6 +1503,36 @@
         "enabled": {
           "type": "boolean"
         },
+        "variant": {
+          "type": "string",
+          "enum": ["EARLY", "MIDNIGHT"]
+        },
+        "throwings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "veil": { "type": "boolean" },
+            "bouquet": { "type": "boolean" },
+            "bowTie": { "type": "boolean" },
+            "cravat": { "type": "boolean" }
+          }
+        },
+        "game": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "type": { "type": "string", "enum": ["TEST_ZGODNOSCI", "OTHER"] },
+            "notes": { "type": "string" }
+          }
+        },
+        "countdown": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": { "type": "string", "enum": ["MC", "NONE"] }
+          }
+        },
         "order": {
           "type": "string",
           "enum": [
@@ -1546,7 +1576,10 @@
             },
             "photographerCue": {
               "type": "string"
-            }
+            },
+            "winnersOnly": { "type": "boolean" },
+            "winnersWithCouple": { "type": "boolean" },
+            "photographerAvailable": { "type": "boolean" }
           }
         },
         "photographerBriefed": {
@@ -1577,6 +1610,9 @@
           "type": "object",
           "additionalProperties": true,
           "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
             "track": {
               "type": "string"
             },

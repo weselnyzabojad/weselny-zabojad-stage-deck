@@ -211,13 +211,20 @@ export const DEMO_WEDDING = {
   },
   oczepiny: {
     enabled: true,
+    variant: "MIDNIGHT",
     order: "MIDNIGHT",
+    throwings: { veil: true, bouquet: true, bowTie: true, cravat: false },
+    game: { enabled: true, type: "TEST_ZGODNOSCI", notes: "Test Zgodności with the guests." },
+    countdown: { mode: "MC" },
     anchorId: "ocsepiny",
     toss: "VEIL",
     ties: "BOW_TIE",
     winnerPhoto: {
       enabled: true,
       replacesWinnersDance: false,
+      winnersOnly: true,
+      winnersWithCouple: true,
+      photographerAvailable: true,
       photographerCue: "Winner photo with the couple, then clear the floor."
     },
     photographerBriefed: {
@@ -227,7 +234,7 @@ export const DEMO_WEDDING = {
       notes: "Cameraman confirmed the midnight window."
     },
     props: ["Veil", "Bow ties", "Test cards"],
-    music: { track: "Oczepiny mix", playlist: "Midnight" },
+    music: { enabled: true, track: "Oczepiny mix", playlist: "Midnight" },
     subEvents: [
       { id: "toss", title: "Veil toss", durationMin: 10, deferable: false, skippable: true },
       { id: "ties", title: "Bow-tie game", durationMin: 10, deferable: true, skippable: true },
