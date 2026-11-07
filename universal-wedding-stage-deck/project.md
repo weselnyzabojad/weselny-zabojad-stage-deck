@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `133b629` (before the LATE/Undo stability change)
+**Aligned with:** `master` @ `22ef9d1` (separate game steps and stable LATE)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -52,6 +52,8 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Cake Protocol consolidation | Complete (#399) |
 | Mini-session timeline twin task | Complete (#401) |
 | Centered mini-session hour control | Complete (#402) |
+| One timeline step per game | Complete (#414) |
+| LATE stable across Undo | Complete (#416) |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
 | Deferred PWA update flow (#81) | Complete |
@@ -70,8 +72,7 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
-| [#414](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/414) | One timeline step per game (Test Wiedzy / Test Zgodności) | Implementation |
-| [#416](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/416) | Keep LATE value unchanged on Undo | Implementation |
+
 
 
 ### Planning TODO register
