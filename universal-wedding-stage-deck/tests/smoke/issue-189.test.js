@@ -45,6 +45,7 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
   it('keeps the pocket header free of Open on phone', () => {
     const shell = read('src/components/RoleShell.jsx');
     expect(shell).not.toContain('<OpenOnPhoneButton');
-    expect(shell).not.toContain('<CulturalRulesBar');
+    expect(shell).toContain('<CulturalRulesBar');
+    expect(shell).toContain('compact');
   });
 });

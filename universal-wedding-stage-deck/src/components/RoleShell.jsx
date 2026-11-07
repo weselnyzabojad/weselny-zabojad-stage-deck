@@ -4,6 +4,7 @@ import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
+import CulturalRulesBar from './CulturalRulesBar';
 
 /**
  * RoleShell — shared responsive shell for role views.
@@ -27,6 +28,8 @@ export default function RoleShell({
   outbox,
   onToggleTheme,
   theme,
+  culturalRules = null,
+  oczepinyStatus = null,
   onUndo,
   canUndo,
   lastUndoLabel,
@@ -47,20 +50,29 @@ export default function RoleShell({
 
   return (
     <div className="font-body min-h-screen flex flex-col bg-page text-slate-100">
-      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Żabojad" className="h-8 w-auto object-contain" />
+      <header className="bg-card border-b border-line px-4 py-3 flex flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
+              <img src={logo} alt="Weselny Żabojad" className="h-8 w-auto object-contain" />
+            </div>
+            <span className="bg-raised px-2.5 py-1 rounded text-white font-mono font-semibold border border-line-strong text-xs uppercase tracking-wider">
+              {t(`role.${role}.short`)}
+            </span>
           </div>
-          <span className="bg-raised px-2.5 py-1 rounded text-white font-mono font-semibold border border-line-strong text-xs uppercase tracking-wider">
-            {t(`role.${role}.short`)}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-        </div>
+        {culturalRules ? (
+          <CulturalRulesBar
+            rules={culturalRules}
+            oczepinyStatus={oczepinyStatus}
+            compact
+          />
+        ) : null}
       </header>
 
       <main id="phone-main" className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
