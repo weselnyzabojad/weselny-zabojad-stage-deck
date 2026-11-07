@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 import { buildFocusStack, focusStackTier } from '../lib/focusStack.js';
 import { nextFocusIndex, toggleRailOpen } from '../lib/stageRail.js';
 import StageStepCard from './StageStepCard.jsx';
+import CurrentStepTilt from './CurrentStepTilt.jsx';
 
 function cardKey(entry) {
   return entry?.step?.id ?? `index-${entry?.index}`;
@@ -174,19 +175,21 @@ export default function TimelineFocusStack({
             {copy.current}
           </h2>
           {stack.current ? (
-            <div
-              className="relative"
-              data-focus-card
-              data-focus-depth="0"
-              data-focus-opacity="1"
-              data-focus-scale="1"
-              style={{ zIndex: 30 }}
-            >
-              <StageStepCard entry={stack.current} variant="current">
-                {entryBodies?.[stack.current.step?.id] ?? null}
-                {currentBody}
-              </StageStepCard>
-            </div>
+            <CurrentStepTilt>
+              <div
+                className="relative"
+                data-focus-card
+                data-focus-depth="0"
+                data-focus-opacity="1"
+                data-focus-scale="1"
+                style={{ zIndex: 30 }}
+              >
+                <StageStepCard entry={stack.current} variant="current">
+                  {entryBodies?.[stack.current.step?.id] ?? null}
+                  {currentBody}
+                </StageStepCard>
+              </div>
+            </CurrentStepTilt>
           ) : (
             <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-slate-500">
               {copy.noCurrent}
