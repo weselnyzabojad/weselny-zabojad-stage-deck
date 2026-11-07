@@ -361,6 +361,31 @@ export function resolveGroupPhotoStepId(plan, steps = []) {
   );
 }
 
+function clockMinutes(value) {
+  const match = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(value ?? '');
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+}
+
+// Place the mini session as a twin task inside the step whose time window
+// contains the chosen hour. The chosen hour is explicit; latest sunset start is
+// never used as the task time.
+export function resolveMiniSessionTwinStepId(timeline = [], clock = null) {
+  const target = clockMinutes(clock);
+  if (target == null || !Array.isArray(timeline)) return null;
+
+  let current = null;
+  let currentMinutes = -1;
+  for (const entry of timeline) {
+    const minutes = clockMinutes(entry?.step?.time);
+    if (minutes == null) continue;
+    if (minutes <= target && minutes >= currentMinutes) {
+      current = entry.step.id;
+      currentMinutes = minutes;
+    }
+  }
+  return current;
+}
+
 export function mapPhotoPlanToSteps(plan, timeline = []) {
   const byStep = {};
   if (!plan || !Array.isArray(timeline)) return byStep;

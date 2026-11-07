@@ -3,6 +3,7 @@ import logo from '../assets/img/logo.png';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
+import MiniSessionTwinTask from './MiniSessionTwinTask';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -27,6 +28,7 @@ import {
 import {
   buildSunsetCountdowns,
   mapPhotoPlanToSteps,
+  resolveMiniSessionTwinStepId,
   resolvePhotoPlan,
   resolvePhotoVisibility,
   resolveSunset,
@@ -229,7 +231,11 @@ function MiniSessionOverride({ value, onSave }) {
         <span className="font-mono text-[10px] text-emerald-300">
           Shared override: {value}
         </span>
-      ) : null}
+      ) : (
+        <p className="w-full text-[10px] text-amber-300">
+          Unscheduled — choose the hour to place the mini session on the timeline.
+        </p>
+      )}
     </form>
   );
 }
@@ -288,11 +294,14 @@ export default function PhotographerView({
       ? new Date(miniSessionStart.getTime() + miniSessionDuration * 60000)
       : null;
   const miniSessionDone = miniSessionCompleted(now, miniSessionEnd, eventDateISO, timeZone);
+  const miniTwinStepId = resolveMiniSessionTwinStepId(timeline, miniSessionOverride);
   const planByStep = mapPhotoPlanToSteps(plan, timeline);
   const planBodies = Object.fromEntries(
     Object.entries(planByStep).map(([stepId, entries]) => {
       const groupEntry = entries.find((entry) => entry.type === 'groupPhotos');
-      const otherEntries = entries.filter((entry) => entry.type !== 'groupPhotos');
+      const otherEntries = entries.filter(
+        (entry) => entry.type !== 'groupPhotos' && entry.type !== 'miniSession',
+      );
       return [
         stepId,
         <div key={stepId} className="space-y-2">
@@ -315,6 +324,22 @@ export default function PhotographerView({
       entry?.step?.optionalFlag === 'oczepiny' || /oczepiny/i.test(entry?.step?.title ?? ''),
   );
   const cueBodies = { ...planBodies };
+  if (miniTwinStepId && plan?.miniSession) {
+    const twinTask = (
+      <MiniSessionTwinTask
+        time={miniSessionOverride}
+        durationMin={miniSessionDuration}
+        location={plan.miniSession.location}
+        backupLocation={plan.miniSession.backupLocation}
+      />
+    );
+    cueBodies[miniTwinStepId] = (
+      <div className="space-y-2">
+        {twinTask}
+        {cueBodies[miniTwinStepId] ?? null}
+      </div>
+    );
+  }
   if (oczepinyStep?.step?.id) {
     cueBodies[oczepinyStep.step.id] = (
       <div className="space-y-2">
