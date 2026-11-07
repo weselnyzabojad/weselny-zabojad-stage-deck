@@ -16,7 +16,7 @@ describe('issue #234 remove DJ Reel Clock', () => {
     expect(dj).toContain('<TimelineFocusStack');
   });
 
-  it('keeps Reel Clock available to other roles', () => {
-    expect(read('src/components/PhotographerView.jsx')).toContain('<ReelClock');
+  it('keeps the shared Reel Clock component available for future use', () => {
+    expect(read('src/components/ReelClock.jsx')).toContain('export default function ReelClock');
   });
 });

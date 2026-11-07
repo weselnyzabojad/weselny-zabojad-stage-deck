@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
-import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
 import StagePingBanner from './StagePingBanner';
@@ -163,7 +162,7 @@ export default function PhotographerView({
     <div id="main-content" tabIndex={-1} className="space-y-4">
       <SkipLink />
       <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
-      <ReelClock clock={clock} compact />
+      <TimelineFocusStack compact entries={timeline} activeIndex={activeIndex} />
 
       {visibility.sunset && sunset?.usable ? (
         <Card title="Light windows" icon="🌅">
@@ -267,15 +266,6 @@ export default function PhotographerView({
         </Card>
       ) : null}
 
-      {visibility.timeline ? (
-        <Card title="Read-only timeline" icon="📋">
-          {timeline.length === 0 ? (
-            <p className="text-xs text-slate-400">No steps in this cartridge.</p>
-          ) : (
-            <TimelineFocusStack compact entries={timeline} activeIndex={activeIndex} />
-          )}
-        </Card>
-      ) : null}
     </div>
   );
 
@@ -313,7 +303,7 @@ export default function PhotographerView({
 
       <main id="main-content" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
-          <ReelClock clock={clock} compact />
+          <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
 
           {visibility.sunset ? (
             <Card
@@ -790,15 +780,6 @@ export default function PhotographerView({
             </Card>
           ) : null}
 
-          {visibility.timeline ? (
-            <Card title="Read-only timeline" icon="📋">
-              {timeline.length === 0 ? (
-                <p className="text-xs text-slate-400">No steps in this cartridge.</p>
-              ) : (
-                <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
-              )}
-            </Card>
-          ) : null}
         </div>
       </main>
 
