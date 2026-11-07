@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `fc68d23` (unified top bar design #253–#255)
+**Aligned with:** `master` @ `6adf142` (unified top bar design alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -100,6 +100,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253) | Top bar: shared layout, clock size and spacing |
 | [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) | Top bar center: ring logo, language and date rows |
 | [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) | Top bar center: localized weekday |
+| [#256](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/256) | DJ Standard: laptop-only view |
+| [#257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/257) | Top bar: enlarge the center ring logo |
 
 ### Responsive phone / pocket plan
 
@@ -759,6 +761,24 @@ Implementation issues:
 - [#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253) — shared top-bar shell, clock and spacing;
 - [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) — center ring/language/date layout;
 - [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) — localized weekday.
+
+### DJ Standard laptop-only and top-bar ring size (decision, 2026-11-07)
+
+**DJ Standard is laptop-only.** The Standard view has no pocket layout:
+
+- render only the desktop/laptop layout for DJ Standard;
+- do not render the compact pocket shell for Standard;
+- on small screens, show a clear "DJ Standard requires a laptop/tablet" notice
+  instead of the pocket UI;
+- DJ VIP keeps its pocket layout unchanged;
+- keep the existing Standard control restrictions and do not offer the Open on
+  phone QR for Standard.
+([#256](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/256))
+
+**Ring logo size.** The center ring logo is too small: size it to match the
+enlarged top-bar clock (`text-2xl` / equivalent height) in every role that uses
+the shared center identity, while keeping it vertically aligned and decorative.
+([#257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/257))
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
