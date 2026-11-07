@@ -230,7 +230,7 @@ export default function DjBoothView({
       </div>
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
-        <div className="mx-auto max-w-5xl space-y-4">
+        <div className="w-full space-y-4">
           {isSolo ? (
             <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
               <strong className="font-heading">{t('dj.soloTitle')}</strong> {t('dj.soloBody')}
