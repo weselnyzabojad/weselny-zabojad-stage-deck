@@ -26,6 +26,7 @@ import {
   filterWeddings,
   formatAdminTime,
   getAdminSessionState,
+  isAdminViewportSupported,
   presenceStatus,
   shouldWarnAdminSession,
   touchAdminSession,
@@ -502,7 +503,52 @@ function CreateWeddingForm({ onCreated, onCancel }) {
   );
 }
 
+function AdminViewportBlocked() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+      <section
+        role="alert"
+        className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl"
+      >
+        <div className="text-3xl" aria-hidden="true">💻</div>
+        <h1 className="mt-3 font-heading text-lg font-bold text-white">
+          Laptop or desktop required
+        </h1>
+        <p className="mt-2 text-sm text-slate-400">
+          The owner admin panel is not available on mobile or narrow-tablet
+          screens. Open this page on a laptop or desktop.
+        </p>
+      </section>
+    </div>
+  );
+}
+
+function useAdminViewportSupported() {
+  const [supported, setSupported] = useState(() =>
+    typeof window === 'undefined' ? true : isAdminViewportSupported(window.innerWidth),
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return undefined;
+    }
+    const query = window.matchMedia('(min-width: 1024px)');
+    const sync = () => setSupported(isAdminViewportSupported(window.innerWidth));
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
+
+  return supported;
+}
+
 export default function AdminApp() {
+  const supported = useAdminViewportSupported();
+  if (!supported) return <AdminViewportBlocked />;
+  return <AdminAppContent />;
+}
+
+function AdminAppContent() {
   const [session, setSession] = useState(null);
   const [mfa, setMfa] = useState(null);
   const [booting, setBooting] = useState(true);
