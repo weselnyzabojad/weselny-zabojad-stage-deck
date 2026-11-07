@@ -12,6 +12,9 @@ describe('issue #277 children expected badge', () => {
     for (const role of ['photo1', 'photo2', 'video']) {
       expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role }))).toContain('Children');
     }
+    expect(
+      renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'mc', allowMc: true })),
+    ).toContain('Children');
     expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'mc' }))).toBe('');
     expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: false }, role: 'mc' }))).toBe('');
     expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'dj' }))).toBe('');
@@ -23,7 +26,9 @@ describe('issue #277 children expected badge', () => {
     expect(read('schema/google-doc-template.md')).toContain('Children expected: yes');
   });
 
-  it('renders globally in StageDeck', () => {
-    expect(read('src/StageDeck.jsx')).toContain('<ChildrenExpectedBadge');
+  it('renders in the MC and Photographer secondary bars', () => {
+    expect(read('src/StageDeck.jsx')).not.toContain('<ChildrenExpectedBadge');
+    expect(read('src/views/McMasterView.jsx')).toContain('<ChildrenExpectedBadge');
+    expect(read('src/components/PhotographerView.jsx')).toContain('<ChildrenExpectedBadge');
   });
 });

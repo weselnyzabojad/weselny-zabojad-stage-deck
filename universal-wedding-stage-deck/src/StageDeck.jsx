@@ -8,7 +8,6 @@ import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
 import CeremonyCueCard from './components/CeremonyCueCard';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
-import ChildrenExpectedBadge from './components/ChildrenExpectedBadge';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
@@ -408,7 +407,6 @@ export default function StageDeck({
         isVipDj={djDetailTier(WEDDING) === 'vip'}
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
-      <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />
       <CeremonyCueCard wedding={WEDDING} role={currentRole} />
       <WeddingClosureBanner
         role={currentRole}
