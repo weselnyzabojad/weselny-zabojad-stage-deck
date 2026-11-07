@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
@@ -27,6 +27,7 @@ import { resolvePwaReloadBlock } from './lib/pwaUpdate';
 import { setPwaReloadContext } from './lib/pwaUpdateState';
 import { activeSteps } from './lib/liveStageState';
 import { deriveLastKnownStep, saveLastKnownStep } from './lib/lastKnownStep';
+import { resolveEffectiveSyncStatus } from './lib/cartridgeSync';
 import { useI18n } from './i18n/useI18n';
 
 // Renders the stage deck once a cartridge is available. Production users only
@@ -43,6 +44,10 @@ export default function StageDeck({
   theme,
   toggleTheme,
   cartridgeStale = false,
+  cartridgeRevision = null,
+  cartridgeFreshness = 'current',
+  cartridgeChecking = false,
+  cartridgeNotice = null,
   isProduction = false,
   deckIntent = { roomCode: null, role: null },
   onSignOut,
@@ -53,6 +58,7 @@ export default function StageDeck({
   // Venue date/timezone drive ISO migration, clock display and day rollover.
   const EVENT_DATE_ISO = resolveEventDateISO(WEDDING);
   const VENUE_TIME_ZONE = resolveVenueTimeZone(WEDDING);
+  const speeches = useMemo(() => resolveSpeeches(WEDDING), [WEDDING]);
 
   // The actor role is logged in mutation entries; production uses the token role.
   const actorRole = isProduction ? roleSession?.role ?? 'mc' : role;
@@ -71,6 +77,8 @@ export default function StageDeck({
     syncError,
     outbox,
     remoteUpdatedAt,
+    liveCaughtUp,
+    cartridgeNotices,
     serverTimeOffsetMs,
     serverTimeAvailable,
   } = useLiveStageState({
@@ -84,6 +92,8 @@ export default function StageDeck({
     accessToken: sessionValid ? roleSession.token : null,
     requireToken: isProduction,
     role: actorRole,
+    cartridgeRevision,
+    speeches,
   });
   // D4: the host/MC device decrypts sensitive notes with its local host key.
   const sensitiveNotes = useSensitiveNotes({
@@ -222,9 +232,19 @@ export default function StageDeck({
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
   });
-  const speeches = resolveSpeeches(WEDDING);
   const speechMode = resolveSpeechMode(WEDDING, speeches);
   const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
+  // The visible sync badge is only fully green after BOTH the cartridge and
+  // the live-state catch-up have finished (issue #167).
+  const online = typeof navigator === 'undefined' ? true : navigator.onLine !== false;
+  const displaySyncStatus = isProduction
+    ? resolveEffectiveSyncStatus({
+        syncStatus,
+        liveCaughtUp,
+        cartridgeFreshness: cartridgeChecking ? 'connecting' : cartridgeFreshness,
+        online,
+      })
+    : syncStatus;
   // If the cartridge is unavailable but the active speech id is still known,
   // show the cached copy on this speaker device instead of a blank screen.
   const speakerSpeech =
@@ -287,6 +307,28 @@ export default function StageDeck({
     onRoleChange: handleRoleChange
   };
 
+  const cartridgeMessages = [];
+  if (cartridgeNotice?.kind === 'updated') {
+    cartridgeMessages.push(
+      t('app.cartridgeUpdated', { revision: cartridgeNotice.revision ?? '' }),
+    );
+  }
+  for (const notice of cartridgeNotices) {
+    if (notice.kind === 'step_removed') cartridgeMessages.push(t('app.cartridgeStepRemoved'));
+    if (notice.kind === 'speech_removed') cartridgeMessages.push(t('app.cartridgeSpeechRemoved'));
+  }
+
+  const cartridgeNoticeBanner =
+    cartridgeMessages.length > 0 ? (
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed bottom-16 left-1/2 z-[70] w-[min(92vw,34rem)] -translate-x-1/2 rounded-lg border border-sky-700 bg-sky-950/95 px-3 py-2 text-center font-mono text-[11px] leading-snug text-sky-100 shadow-2xl"
+      >
+        {cartridgeMessages.join(' ')}
+      </div>
+    ) : null;
+
   const staleBanner = cartridgeStale ? (
     <div
       role="status"
@@ -295,6 +337,13 @@ export default function StageDeck({
       {t('app.offlineCartridge')}
     </div>
   ) : null;
+
+  const statusBanners = (
+    <>
+      {cartridgeNoticeBanner}
+      {staleBanner}
+    </>
+  );
 
   if (currentRole === "dj") {
     return (
@@ -313,7 +362,7 @@ export default function StageDeck({
             clock={driftReport.clock}
             musicPolicy={musicPolicy}
             stagePing={liveState.stage_ping}
-            syncStatus={syncStatus}
+            syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
@@ -327,7 +376,7 @@ export default function StageDeck({
             {...roleProps}
           />
         </AppErrorBoundary>
-        {staleBanner}
+        {statusBanners}
       </>
     );
   }
@@ -348,7 +397,7 @@ export default function StageDeck({
             clock={driftReport.clock}
             stagePing={liveState.stage_ping}
             hardAnchors={WEDDING.hardAnchors}
-            syncStatus={syncStatus}
+            syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
@@ -358,7 +407,7 @@ export default function StageDeck({
             {...roleProps}
           />
         </AppErrorBoundary>
-        {staleBanner}
+        {statusBanners}
       </>
     );
   }
@@ -381,7 +430,7 @@ export default function StageDeck({
             activeSpeech={speakerSpeech}
             activeSpeechId={liveState.active_speech_id}
             fromCache={!activeSpeech && Boolean(speakerSpeech)}
-            syncStatus={syncStatus}
+            syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
@@ -390,7 +439,7 @@ export default function StageDeck({
             roomCode={deckIntent.roomCode}
           />
         </AppErrorBoundary>
-        {staleBanner}
+        {statusBanners}
       </>
     );
   }
@@ -412,7 +461,7 @@ export default function StageDeck({
     roomCode: deckIntent.roomCode,
     theme,
     toggleTheme,
-    syncStatus,
+    syncStatus: displaySyncStatus,
     syncError,
     outbox,
     remoteUpdatedAt,
@@ -464,7 +513,7 @@ export default function StageDeck({
       >
         <McMasterView model={mcModel} />
       </AppErrorBoundary>
-      {staleBanner}
+      {statusBanners}
     </>
   );
 }

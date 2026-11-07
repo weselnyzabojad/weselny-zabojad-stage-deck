@@ -11,6 +11,7 @@ import {
   toggleSubtask as toggleSubtaskState,
   undoSnapshot,
 } from '../lib/liveStageState';
+import { reconcileLiveStateWithCartridge } from '../lib/cartridgeReconciliation';
 import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
@@ -48,6 +49,8 @@ export function useLiveStageState({
   accessToken = null,
   requireToken = false,
   role = 'mc',
+  cartridgeRevision = null,
+  speeches = [],
 }) {
   const key = storageKey(weddingId);
   const eventContext = useMemo(
@@ -109,6 +112,8 @@ export function useLiveStageState({
     return typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'connecting';
   });
   const [syncError, setSyncError] = useState(null);
+  const [liveCaughtUp, setLiveCaughtUp] = useState(false);
+  const [cartridgeNotices, setCartridgeNotices] = useState([]);
   const [remoteUpdatedAt, setRemoteUpdatedAt] = useState(null);
   // Room + client whose authoritative row has already been fetched. Prevents
   // publishing stale local state into a newly paired room before hydration
@@ -163,6 +168,34 @@ export function useLiveStageState({
   useEffect(() => {
     latestSerializedRef.current = serialized;
   }, [serialized]);
+
+  // Cartridge changes arrive as a new immutable snapshot. Reconcile the live
+  // state in place: keep valid progress, current step/speech and the mutation
+  // log; only fall back when an active id disappeared. The reconciled snapshot
+  // is treated as locally adopted so it is not echoed back as a stage mutation.
+  const stateRef = useRef(model.state);
+  useEffect(() => {
+    stateRef.current = model.state;
+  }, [model.state]);
+  const reconciledCartridgeRef = useRef(null);
+
+  useEffect(() => {
+    if (cartridgeRevision == null) return;
+    const revisionKey = `${weddingId}:${cartridgeRevision}`;
+    if (reconciledCartridgeRef.current === revisionKey) return;
+    reconciledCartridgeRef.current = revisionKey;
+
+    const result = reconcileLiveStateWithCartridge({
+      liveState: stateRef.current,
+      steps,
+      speeches,
+    });
+    setCartridgeNotices(result.notices);
+    if (!result.changed) return;
+
+    lastAdoptedRef.current = JSON.stringify(result.state);
+    setModel({ state: result.state, undo: [] });
+  }, [cartridgeRevision, weddingId, steps, speeches]);
 
   const publishLatest = useCallback(
     (snapshot) => {
@@ -236,7 +269,9 @@ export function useLiveStageState({
     return () => window.removeEventListener('storage', handleStorage);
   }, [key, steps, eventContext]);
 
-  // Subscribe to the room channel and hydrate from the authoritative row once.
+  // Subscribe to the room channel and hydrate from the authoritative row.
+  // Realtime events are hints; reconnect/online always triggers a fresh fetch so
+  // missed events cannot leave this device behind.
   useEffect(() => {
     if (!client) return undefined;
 
@@ -244,6 +279,7 @@ export function useLiveStageState({
     lastPublishedRef.current = null;
     lastAdoptedRef.current = null;
     latestRemoteAtRef.current = 0;
+    setLiveCaughtUp(false);
 
     let cancelled = false;
 
@@ -271,42 +307,71 @@ export function useLiveStageState({
       });
     };
 
+    const catchUp = () =>
+      client
+        .fetchLatest(roomKey)
+        .then((row) => {
+          if (cancelled) return;
+          if (row?.state) {
+            applyRemote({ state: row.state, updated_at: row.updated_at, pin: row.pin });
+          }
+          setHydration({ client, room: roomKey });
+          setLiveCaughtUp(true);
+          setSyncStatus((current) => (current === 'error' ? 'error' : 'connected'));
+        })
+        .catch((error) => {
+          if (cancelled) return;
+          // Stay usable offline; the local mirror keeps the show running.
+          setSyncError(error.message);
+          setHydration({ client, room: roomKey });
+          setLiveCaughtUp(false);
+          setSyncStatus(
+            typeof navigator !== 'undefined' && navigator.onLine === false
+              ? 'offline'
+              : 'error',
+          );
+        });
+
     const unsubscribe = client.subscribe(roomKey, {
       onState: (payload) => {
         if (!cancelled) applyRemote(payload);
       },
       onStatus: (status, message) => {
         if (cancelled) return;
-        setSyncStatus(status);
-        if (status === 'error') {
-          setSyncError(message ?? 'Realtime channel error');
-        } else if (status === 'connected') {
+        if (status === 'connected') {
+          // Keep the badge non-green until the authoritative catch-up finishes.
+          setSyncStatus('connecting');
           setSyncError(null);
           // Realtime is back: do not wait out the remaining outbox backoff.
           wakePendingOutbox();
+          void catchUp();
+          return;
+        }
+        setSyncStatus(status);
+        if (status === 'connecting' || status === 'disconnected') {
+          setLiveCaughtUp(false);
+        }
+        if (status === 'error') {
+          setSyncError(message ?? 'Realtime channel error');
         }
       },
     });
 
-    client
-      .fetchLatest(roomKey)
-      .then((row) => {
-        if (cancelled) return;
-        if (row?.state) {
-          applyRemote({ state: row.state, updated_at: row.updated_at, pin: row.pin });
-        }
-        setHydration({ client, room: roomKey });
-      })
-      .catch((error) => {
-        if (cancelled) return;
-        // Stay usable offline; the local mirror keeps the show running.
-        setSyncError(error.message);
-        setHydration({ client, room: roomKey });
-      });
+    // Always fetch after subscribing, even if no Realtime event arrives.
+    void catchUp();
+
+    const handleOnline = () => {
+      if (cancelled) return;
+      setSyncStatus('connecting');
+      setLiveCaughtUp(false);
+      void catchUp();
+    };
+    window.addEventListener('online', handleOnline);
 
     return () => {
       cancelled = true;
       unsubscribe();
+      window.removeEventListener('online', handleOnline);
     };
   }, [client, roomKey, steps, eventContext, wakePendingOutbox]);
 
@@ -471,6 +536,8 @@ export function useLiveStageState({
     syncError,
     outbox,
     remoteUpdatedAt,
+    liveCaughtUp,
+    cartridgeNotices,
     serverTimeOffsetMs: serverTime.offsetMs,
     serverTimeAvailable: serverTime.available,
   };

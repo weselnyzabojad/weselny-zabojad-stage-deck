@@ -12,12 +12,7 @@ import {
   parseDeckIntent,
   saveRoleSession,
 } from './lib/sync/roleSession';
-import {
-  isCartridgeLike,
-  loadCachedCartridge,
-  saveCachedCartridge,
-} from './lib/cartridgeStorage';
-import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
+import { usePublishedCartridge } from './hooks/usePublishedCartridge';
 import { useI18n } from './i18n/useI18n';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
@@ -33,10 +28,6 @@ const DECK_INTENT =
     ? parseDeckIntent(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
     : { roomCode: null, role: null };
 
-function idleCartridgeState() {
-  return { status: 'idle', wedding: null, stale: false, error: null };
-}
-
 export default function App() {
   const { t } = useI18n();
   const { theme, toggleTheme } = useTheme();
@@ -49,18 +40,11 @@ export default function App() {
     weddingId: DEFAULT_WEDDING.weddingId,
   });
   const { role, setRole } = useRole();
-  const [reloadKey, setReloadKey] = useState(0);
-  // Production must never fall back to the built-in demo. The cache is only a
-  // read-only copy of a server-published cartridge for the same wedding.
-  const [cartridgeState, setCartridgeState] = useState(() => {
-    if (!IS_PRODUCTION) {
-      return { status: 'ready', wedding: DEFAULT_WEDDING, stale: false, error: null };
-    }
-    if (!sessionValid) return idleCartridgeState();
-    const cached = loadCachedCartridge(roleSession.weddingId);
-    return cached
-      ? { status: 'loading', wedding: cached.cartridge, stale: true, error: null }
-      : { status: 'loading', wedding: null, stale: false, error: null };
+  const publishedCartridge = usePublishedCartridge({
+    enabled: IS_PRODUCTION && sessionValid,
+    weddingId: roleSession?.weddingId ?? null,
+    accessToken: roleSession?.token ?? null,
+    syncConfig: SYNC_CONFIG,
   });
 
   // Local pocket deep links use `?role=...`; apply the intent once on mount so
@@ -69,86 +53,30 @@ export default function App() {
     if (!IS_PRODUCTION && DECK_INTENT.role) setRole(DECK_INTENT.role);
   }, [setRole]);
 
-  // Fetch the server-published cartridge after the role PIN is accepted. A
-  // cached copy for the same wedding keeps the deck usable offline; it is
-  // marked stale until the authoritative fetch succeeds. There is deliberately
-  // no local import, activation or demo fallback in production.
-  useEffect(() => {
-    if (!IS_PRODUCTION) return undefined;
-    if (!sessionValid || !roleSession) {
-      setCartridgeState(idleCartridgeState());
-      return undefined;
-    }
+  // Production must never fall back to the built-in demo. The cartridge hook
+  // only exposes the cache for this joined wedding and replaces it in place
+  // when a newer server revision arrives.
+  const activeCartridgeStateBase = IS_PRODUCTION
+    ? {
+        status: publishedCartridge.cartridge
+          ? 'ready'
+          : publishedCartridge.freshness === 'error'
+            ? 'error'
+            : 'loading',
+        wedding: publishedCartridge.cartridge,
+        stale: publishedCartridge.stale,
+        error: publishedCartridge.error,
+      }
+    : { status: 'ready', wedding: DEFAULT_WEDDING, stale: false, error: null };
 
-    let cancelled = false;
-    const cached = loadCachedCartridge(roleSession.weddingId);
-    setCartridgeState((current) => {
-      const sameWedding = current.wedding?.weddingId === roleSession.weddingId;
-      return {
-        status: 'loading',
-        wedding: cached?.cartridge ?? (sameWedding ? current.wedding : null),
-        stale: Boolean(cached) || (sameWedding && current.stale),
-        error: null,
-      };
-    });
-
-    const client = createSupabaseSyncClient(SYNC_CONFIG, {
-      accessToken: roleSession.token,
-    });
-
-    client
-      .fetchWedding(roleSession.weddingId)
-      .then((row) => {
-        if (cancelled) return;
-        if (!row?.cartridge) throw new Error(t('app.noPublishedCartridge'));
-        if (!isCartridgeLike(row.cartridge)) {
-          throw new Error(t('app.invalidPublishedCartridge'));
-        }
-        // `cartridge_revision` is the server publication marker (#165). The
-        // cache keeps the revision so a later read can tell which snapshot it
-        // holds; the deck always renders the latest fetched revision.
-        saveCachedCartridge({
-          weddingId: roleSession.weddingId,
-          cartridge: row.cartridge,
-          revision: row.cartridge_revision ?? null,
-          fetchedAt: new Date().toISOString(),
-        });
-        setCartridgeState({
-          status: 'ready',
-          wedding: row.cartridge,
-          stale: false,
-          error: null,
-        });
-      })
-      .catch((error) => {
-        if (cancelled) return;
-        setCartridgeState((current) => {
-          if (current.wedding?.weddingId === roleSession.weddingId) {
-            return {
-              status: 'ready',
-              wedding: current.wedding,
-              stale: true,
-              error: error.message,
-            };
-          }
-          return { status: 'error', wedding: null, stale: false, error: error.message };
-        });
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [roleSession, sessionValid, reloadKey, t]);
-
-  // Never render a cartridge that belongs to a different joined wedding. Keep
-  // the error/loading state for this session intact so a missing server
-  // cartridge surfaces the retry screen instead of an endless loader.
-  const activeCartridgeState =
-    IS_PRODUCTION && cartridgeState.wedding
-      ? cartridgeState.wedding.weddingId === roleSession?.weddingId
-        ? cartridgeState
-        : { status: 'loading', wedding: null, stale: false, error: null }
-      : cartridgeState;
+  // Never render a cartridge that belongs to a different joined wedding.
+  const wrongWedding =
+    IS_PRODUCTION &&
+    activeCartridgeStateBase.wedding &&
+    activeCartridgeStateBase.wedding.weddingId !== roleSession?.weddingId;
+  const activeCartridgeState = wrongWedding
+    ? { ...activeCartridgeStateBase, wedding: null, status: 'loading' }
+    : activeCartridgeStateBase;
 
   if (IS_PRODUCTION && !sessionValid) {
     return (
@@ -194,7 +122,7 @@ export default function App() {
             {failed ? (
               <button
                 type="button"
-                onClick={() => setReloadKey((key) => key + 1)}
+                onClick={() => publishedCartridge.retry()}
                 className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
               >
                 {t('app.retry')}
@@ -237,12 +165,15 @@ export default function App() {
       theme={theme}
       toggleTheme={toggleTheme}
       cartridgeStale={IS_PRODUCTION ? activeCartridgeState.stale : false}
+      cartridgeRevision={IS_PRODUCTION ? publishedCartridge.revision : null}
+      cartridgeFreshness={IS_PRODUCTION ? publishedCartridge.freshness : 'current'}
+      cartridgeChecking={IS_PRODUCTION ? publishedCartridge.checking : false}
+      cartridgeNotice={IS_PRODUCTION ? publishedCartridge.notice : null}
       isProduction={IS_PRODUCTION}
       deckIntent={DECK_INTENT}
       onSignOut={() => {
         clearRoleSession();
         setRoleSession(null);
-        setCartridgeState(idleCartridgeState());
       }}
     />
   );

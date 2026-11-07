@@ -115,6 +115,10 @@ const en = {
     'The published cartridge is invalid. Retry, or ask the owner to publish it again from /deck/admin.',
   'app.offlineCartridge':
     'Offline — showing the last published cartridge for this wedding. Read-only until the server is reachable.',
+  'app.cartridgeUpdated': 'Cartridge updated to revision {revision}.',
+  'app.cartridgeStepRemoved':
+    'The active step was removed by the new cartridge. Switched to the next available step.',
+  'app.cartridgeSpeechRemoved': 'The active speech was removed by the new cartridge.',
 
   'error.recovered': 'RECOVERED',
   'error.scope.app': 'the deck',
