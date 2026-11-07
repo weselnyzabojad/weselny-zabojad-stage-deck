@@ -194,6 +194,20 @@
         }
       }
     },
+    "wishes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" }
+      }
+    },
+    "games": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" }
+      }
+    },
     "cake": {
       "type": "object",
       "additionalProperties": false,
@@ -973,6 +987,11 @@
           "type": "boolean",
           "default": false,
           "description": "Whether this step requires a main song (for example Grand Entrance, Wedding cake, First Dance). Missing values are treated as false."
+        },
+        "optionalFlag": {
+          "type": "string",
+          "enum": ["wishes", "games", "oczepiny"],
+          "description": "Predefined step is shown only when the matching cartridge feature is enabled."
         }
       }
     },

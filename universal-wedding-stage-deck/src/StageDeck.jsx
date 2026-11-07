@@ -22,6 +22,7 @@ import {
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
+import { filterEnabledSteps } from './lib/predefinedSteps';
 import { resolveContacts } from './lib/contacts';
 import { resolveMusicPolicy } from './lib/musicPolicy';
 import {
@@ -63,7 +64,10 @@ export default function StageDeck({
   onSignOut,
 }) {
   const { t } = useI18n();
-  const WEDDING = wedding;
+  const WEDDING = useMemo(
+    () => ({ ...wedding, steps: filterEnabledSteps(wedding) }),
+    [wedding],
+  );
 
   // Venue date/timezone drive ISO migration, clock display and day rollover.
   const EVENT_DATE_ISO = resolveEventDateISO(WEDDING);
