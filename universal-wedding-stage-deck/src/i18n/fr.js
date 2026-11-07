@@ -167,6 +167,9 @@ const fr = {
 
   'speaker.title': 'Orateur · Script du discours',
   'speaker.exit': 'Quitter',
+  'speeches.chip': 'Discours',
+  'speeches.live': 'EN DIRECT',
+  'speeches.none': 'Aucun discours',
   'speaker.offTitle': 'Les discours sont désactivés',
   'speaker.offBody': 'Cette cartouche a speechMode : OFF.',
   'speaker.noneTitle': 'Aucun discours pour le moment',
