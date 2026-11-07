@@ -9,7 +9,6 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
-import TimelineFocusStack from './TimelineFocusStack';
 import { useI18n } from '../i18n/useI18n';
 import {
   formatDuration,
@@ -39,7 +38,6 @@ const FALLBACK_NOW = new Date(0);
 // controls, VIP alerts or other speeches.
 export default function SpeakerView({
   wedding,
-  timeline = [],
   clock,
   speechMode = 'OFF',
   speechCount = 0,
@@ -269,18 +267,6 @@ export default function SpeakerView({
           </div>
         )}
 
-        {timeline.length > 0 ? (
-          <section className="rounded-2xl border border-line bg-card p-4 shadow-lg">
-            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-              Timeline
-            </h2>
-            <TimelineFocusStack
-              className="mt-3"
-              entries={timeline}
-              activeIndex={timeline.findIndex((entry) => entry.isActive)}
-            />
-          </section>
-        ) : null}
     </>
   );
 
