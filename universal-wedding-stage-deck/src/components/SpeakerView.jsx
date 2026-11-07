@@ -2,8 +2,10 @@
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SyncStatusBadge from './SyncStatusBadge';
+import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarShell from './TopBarShell';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -164,6 +166,7 @@ export default function SpeakerView({
       <RoleShell
         compact
         role="speaker"
+        wedding={wedding}
         roles={[]}
         syncStatus={syncStatus}
         syncError={syncError}
@@ -183,22 +186,26 @@ export default function SpeakerView({
   return (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
       <SkipLink />
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
-          </div>
-          <TopBarClock clock={clock} />
-          <TopBarRoleIdentity role="speaker" />
-        </div>
-
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-        </div>
-      </header>
+      <TopBarShell
+        left={(
+          <>
+            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
+              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
+            </div>
+            <TopBarClock clock={clock} />
+            <TopBarRoleIdentity role="speaker" />
+          </>
+        )}
+        center={<TopBarCenterIdentity wedding={wedding} />}
+        right={(
+          <>
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          </>
+        )}
+      />
 
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
         {speakerBody}

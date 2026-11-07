@@ -195,6 +195,18 @@ export function formatDate(value, { dateStyle = 'medium', locale = null } = {}) 
   return new Intl.DateTimeFormat(locale ?? getLocale(), { dateStyle }).format(date);
 }
 
+// Event date with a localized weekday, used by the unified top-bar center.
+export function formatWeekdayDate(value, { locale = null } = {}) {
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return '—';
+  return new Intl.DateTimeFormat(locale ?? getLocale(), {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(date);
+}
+
 export function formatNumber(value, options = {}) {
   return new Intl.NumberFormat(getLocale(), options).format(value);
 }

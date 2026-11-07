@@ -5,16 +5,16 @@ const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), '
 
 describe('issue #157 MC top bar simplification', () => {
   const mc = read('src/views/McMasterView.jsx');
-  const header = mc.slice(mc.indexOf('{/* ================= TOP BAR'), mc.indexOf('</header>'));
+  const header = mc.slice(
+    mc.indexOf('<TopBarShell'),
+    mc.indexOf('{/* TODO(top-bar rework)'),
+  );
 
-  it('keeps logo, clock, MC label and couple identity on the left', () => {
-    expect(header.indexOf('<TopBarClock')).toBeGreaterThan(-1);
-    expect(header.indexOf('<TopBarRoleLabel role="mc"')).toBeGreaterThan(
-      header.indexOf('<TopBarClock'),
-    );
-    expect(header.indexOf('<CoupleIdentity')).toBeGreaterThan(
-      header.indexOf('<TopBarRoleLabel role="mc"'),
-    );
+  it('keeps logo, clock, MC label and couple identity', () => {
+    expect(header).toContain('<TopBarShell');
+    expect(header).toContain('<TopBarClock');
+    expect(header).toContain('<TopBarRoleLabel role="mc"');
+    expect(header).toContain('<TopBarCenterIdentity wedding={WEDDING}');
   });
 
   it('keeps the approved MC controls on the right', () => {

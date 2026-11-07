@@ -12,16 +12,15 @@ describe('issue #187 centered couple identity', () => {
   const dj = read('src/components/DjBoothView.jsx');
 
   it('centers the couple block between the left and right MC groups', () => {
-    expect(mc).toContain(centeredGrid);
-    expect(mc).toContain('<CoupleIdentity wedding={WEDDING}');
-    expect(mc).toContain('items-center justify-center');
+    expect(mc).toContain('<TopBarShell');
+    expect(mc).toContain('<TopBarCenterIdentity wedding={WEDDING}');
+    expect(read('src/components/TopBarShell.jsx')).toContain(centeredGrid);
   });
 
-  it('centers the couple and date for DJ VIP only', () => {
-    expect(dj).toContain(centeredGrid);
-    expect(dj).toContain('{isVip ? (');
-    expect(dj).toContain('<CoupleIdentity wedding={wedding}');
-    expect(dj).toContain('{wedding.date}');
+  it('centers the couple and localized date for every DJ tier', () => {
+    expect(dj).toContain('<TopBarShell');
+    expect(dj).toContain('<TopBarCenterIdentity wedding={wedding}');
+    expect(read('src/components/TopBarCenterIdentity.jsx')).toContain('formatWeekdayDate');
   });
 
   it('renders names, flags and shared language chips', () => {

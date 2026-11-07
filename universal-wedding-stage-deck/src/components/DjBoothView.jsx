@@ -1,6 +1,5 @@
 ﻿import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
-import CoupleIdentity from './CoupleIdentity';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -9,8 +8,10 @@ import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
+import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarShell from './TopBarShell';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
@@ -150,47 +151,38 @@ export default function DjBoothView({
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
       <SkipLink />
       <div className="sticky top-0 z-30">
-      <header
-        className={`border-b border-line bg-card px-4 py-3 ${
-          isVip
-            ? 'grid grid-cols-1 items-center gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
-            : 'flex flex-wrap items-center justify-between gap-3'
-        }`}
-      >
-        <div className="flex items-center gap-3 xl:min-w-0">
-          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
-          </div>
-          <TopBarClock clock={clock} />
-          <TopBarRoleIdentity role={role} tier={tierLabel} />
-        </div>
-
-        {isVip ? (
-          <div className="flex min-w-0 flex-wrap items-center justify-center gap-2">
-            <CoupleIdentity wedding={wedding} className="text-sm" />
-            <span className="font-body text-xs font-normal text-slate-400">{wedding.date}</span>
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap items-center justify-start gap-2 xl:justify-end xl:min-w-0">
-          {isVip && culturalRules ? (
-            <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
-          ) : null}
-          {isVip ? (
-            <SpeechesChip
-              mode={speechMode}
-              speeches={speeches}
-              activeSpeechId={activeSpeechId}
-            />
-          ) : null}
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-          {viewSwitch}
-          {isVip && authControl ? authControl : null}
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-        </div>
-      </header>
+      <TopBarShell
+        left={(
+          <>
+            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
+              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
+            </div>
+            <TopBarClock clock={clock} />
+            <TopBarRoleIdentity role={role} tier={tierLabel} />
+          </>
+        )}
+        center={<TopBarCenterIdentity wedding={wedding} />}
+        right={(
+          <>
+            {isVip && culturalRules ? (
+              <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
+            ) : null}
+            {isVip ? (
+              <SpeechesChip
+                mode={speechMode}
+                speeches={speeches}
+                activeSpeechId={activeSpeechId}
+              />
+            ) : null}
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
+            {viewSwitch}
+            {isVip && authControl ? authControl : null}
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          </>
+        )}
+      />
 
       {isVip ? (
         <DjSongRequestQueue
@@ -255,6 +247,7 @@ export default function DjBoothView({
     <RoleShell
       compact
       role={role}
+      wedding={wedding}
       roles={roles}
       syncStatus={syncStatus}
       syncError={syncError}

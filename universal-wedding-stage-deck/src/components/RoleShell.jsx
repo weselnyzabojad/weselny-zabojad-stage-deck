@@ -6,6 +6,7 @@ import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
 import CulturalRulesBar from './CulturalRulesBar';
 import SpeechesChip from './SpeechesChip';
+import TopBarCenterIdentity from './TopBarCenterIdentity';
 
 /**
  * RoleShell — shared responsive shell for role views.
@@ -23,6 +24,7 @@ export default function RoleShell({
   compact,
   children,
   role,
+  wedding = null,
   syncStatus,
   syncError,
   remoteUpdatedAt,
@@ -74,6 +76,11 @@ export default function RoleShell({
             <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           </div>
         </div>
+        {wedding ? (
+          <div className="flex justify-center">
+            <TopBarCenterIdentity wedding={wedding} compact />
+          </div>
+        ) : null}
         {culturalRules || speechMode != null ? (
           <div className="flex flex-wrap items-center gap-2">
             {culturalRules ? (

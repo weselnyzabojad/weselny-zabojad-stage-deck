@@ -5,12 +5,9 @@ const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), '
 
 describe('issue #189 right-hand two-row top-bar stack', () => {
   const mc = read('src/views/McMasterView.jsx');
-  const header = mc.slice(
-    mc.indexOf('{/* ================= TOP BAR'),
-    mc.indexOf('</header>'),
-  );
+  const header = mc;
 
-  it('puts cultural chips above the utility row', () => {
+  it('puts cultural chips and utilities in the shared right zone', () => {
     const cultural = header.indexOf('<CulturalRulesBar');
     const open = header.indexOf('<OpenOnPhoneButton');
     const language = header.indexOf('<LanguageToggle');
@@ -20,13 +17,11 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
     expect(cultural).toBeLessThan(open);
     expect(cultural).toBeLessThan(language);
     expect(cultural).toBeLessThan(theme);
-    expect(header).toContain('flex-col');
-    expect(header).toContain('xl:items-end');
+    expect(header).toContain('<TopBarShell');
   });
 
   it('keeps the right stack aligned to the right on desktop', () => {
-    expect(header).toContain('xl:justify-end');
-    expect(header).toContain('w-full min-w-0 flex-col');
+    expect(read('src/components/TopBarShell.jsx')).toContain('xl:justify-end');
   });
 
   it('keeps per-role utility visibility', () => {

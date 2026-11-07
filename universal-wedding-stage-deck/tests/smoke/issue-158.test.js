@@ -15,7 +15,7 @@ describe('issue #158 non-MC desktop top bars', () => {
     expect(dj).not.toContain('<TopBarRoleLabel');
     expect(dj).toContain('<OpenOnPhoneButton role={role} tier={tierLabel}');
     expect(dj).toContain('{isVip ? (');
-    expect(dj).toContain('<CoupleIdentity');
+    expect(dj).toContain('<TopBarCenterIdentity');
     expect(dj).not.toContain('<DriftPill');
     expect(dj).not.toContain('<RoleSwitcher');
   });
@@ -25,7 +25,7 @@ describe('issue #158 non-MC desktop top bars', () => {
     expect(photo).toContain('<TopBarRoleIdentity role={role} />');
     expect(photo).not.toContain('<TopBarRoleLabel');
     expect(photo).toContain('<OpenOnPhoneButton role={role}');
-    expect(photo).not.toContain('<CoupleIdentity');
+    expect(photo).toContain('<TopBarCenterIdentity');
     expect(photo).not.toContain('<RoleSwitcher');
   });
 
@@ -34,7 +34,7 @@ describe('issue #158 non-MC desktop top bars', () => {
     expect(speaker).toContain('<TopBarRoleIdentity role="speaker" />');
     expect(speaker).not.toContain('<TopBarRoleLabel');
     expect(speaker).toContain('<OpenOnPhoneButton role="speaker"');
-    expect(speaker).not.toContain('<CoupleIdentity');
+    expect(speaker).toContain('<TopBarCenterIdentity');
     expect(speaker).not.toContain('<RoleSwitcher');
   });
 

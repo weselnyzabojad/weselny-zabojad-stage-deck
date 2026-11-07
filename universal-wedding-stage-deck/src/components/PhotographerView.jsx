@@ -5,8 +5,10 @@ import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
+import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarShell from './TopBarShell';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -332,31 +334,35 @@ export default function PhotographerView({
   const wideContent = (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
       <SkipLink />
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
-          </div>
-          <TopBarClock clock={clock} />
-          <TopBarRoleIdentity role={role} />
-        </div>
-
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {culturalRules ? (
-            <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
-          ) : null}
-          <SpeechesChip
-            mode={speechMode}
-            speeches={speeches}
-            activeSpeechId={activeSpeechId}
-          />
-          <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-          <OpenOnPhoneButton role={role} roomCode={roomCode} />
-          {authControl}
-          <LanguageToggle />
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-        </div>
-      </header>
+      <TopBarShell
+        left={(
+          <>
+            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
+              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
+            </div>
+            <TopBarClock clock={clock} />
+            <TopBarRoleIdentity role={role} />
+          </>
+        )}
+        center={<TopBarCenterIdentity wedding={wedding} />}
+        right={(
+          <>
+            {culturalRules ? (
+              <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
+            ) : null}
+            <SpeechesChip
+              mode={speechMode}
+              speeches={speeches}
+              activeSpeechId={activeSpeechId}
+            />
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            <OpenOnPhoneButton role={role} roomCode={roomCode} />
+            {authControl}
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          </>
+        )}
+      />
 
       <main id="main-content" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="w-full space-y-4">
@@ -483,6 +489,7 @@ export default function PhotographerView({
     <RoleShell
       compact
       role={role}
+      wedding={wedding}
       roles={roles}
       syncStatus={syncStatus}
       syncError={syncError}

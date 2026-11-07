@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
 import ContactsModal from '../components/ContactsModal';
-import CoupleIdentity from '../components/CoupleIdentity';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
@@ -17,8 +16,10 @@ import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
 import RoleShell from '../components/RoleShell';
 import TimelineFocusStack from '../components/TimelineFocusStack';
+import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
+import TopBarShell from '../components/TopBarShell';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { orderSubtasks } from '../lib/subtasks.js';
 import SpeechesCard from '../components/SpeechesCard';
@@ -337,26 +338,24 @@ export default function McMasterView({ model }) {
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
-      <header className="bg-card border-b border-line px-4 py-3 grid grid-cols-1 items-center gap-3 text-xs font-heading tracking-wide xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-        <div className="flex flex-wrap items-center gap-3 xl:min-w-0">
-          <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
-            <img
-              src={logo}
-              alt="Weselny Żabojad"
-              className="h-20 w-auto object-contain max-w-[260px]"
-            />
-          </div>
-          <span className="text-slate-500 hidden sm:inline">|</span>
-          <TopBarClock clock={driftReport.clock} />
-          <TopBarRoleLabel role="mc" />
-        </div>
-
-        <div className="flex min-w-0 items-center justify-center">
-          <CoupleIdentity wedding={WEDDING} className="text-xs" />
-        </div>
-
-        <div className="my-2 flex w-full min-w-0 flex-col items-start gap-2 sm:my-0 xl:items-end">
-          <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
+      <TopBarShell
+        left={(
+          <>
+            <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
+              <img
+                src={logo}
+                alt="Weselny Żabojad"
+                className="h-12 w-auto object-contain max-w-[220px]"
+              />
+            </div>
+            <span className="text-slate-500 hidden sm:inline">|</span>
+            <TopBarClock clock={driftReport.clock} />
+            <TopBarRoleLabel role="mc" />
+          </>
+        )}
+        center={<TopBarCenterIdentity wedding={WEDDING} />}
+        right={(
+          <>
             <CulturalRulesBar
               rules={WEDDING.culturalRules}
               oczepinyStatus={oczepinyStatus}
@@ -366,8 +365,6 @@ export default function McMasterView({ model }) {
               speeches={speeches}
               activeSpeechId={liveState.active_speech_id}
             />
-          </div>
-          <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
             <DriftPill drift={driftReport.drift} />
             {hasAnchorWarning ? null : (
               <>
@@ -379,9 +376,9 @@ export default function McMasterView({ model }) {
             {viewSwitch}
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
-          </div>
-        </div>
-      </header>
+          </>
+        )}
+      />
 
       {/* TODO(top-bar rework): ask the owner where to surface VIP Radar and
           vendor Contacts. Their modals and data flow stay wired below; only the
@@ -517,6 +514,7 @@ export default function McMasterView({ model }) {
     <RoleShell
       compact
       role={currentRole}
+      wedding={WEDDING}
       syncStatus={syncStatus}
       syncError={syncError}
       remoteUpdatedAt={remoteUpdatedAt}

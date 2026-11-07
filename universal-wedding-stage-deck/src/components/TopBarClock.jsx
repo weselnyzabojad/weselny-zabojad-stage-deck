@@ -3,7 +3,7 @@ export default function TopBarClock({ clock, className = '' }) {
 
   return (
     <span
-      className={`font-mono text-xl leading-none font-semibold tabular-nums text-white ${className}`}
+      className={`font-mono text-2xl leading-none font-semibold tabular-nums text-white ${className}`}
       aria-label="Current time"
       title="Current time"
     >
