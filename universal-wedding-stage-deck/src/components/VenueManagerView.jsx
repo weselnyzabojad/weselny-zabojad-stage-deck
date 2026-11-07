@@ -65,13 +65,16 @@ export default function VenueManagerView({
   theme = 'night',
   onToggleTheme,
   onUpdateMandatory,
+  mandatoryOverride = null,
 }) {
-  const [settings, setSettings] = useState(() => loadSettings(wedding));
+  const [settings, setSettings] = useState(() =>
+    mandatoryOverride?.value ?? loadSettings(wedding),
+  );
   const [saved, setSaved] = useState('');
 
   useEffect(() => {
-    setSettings(loadSettings(wedding));
-  }, [wedding]);
+    setSettings(mandatoryOverride?.value ?? loadSettings(wedding));
+  }, [wedding, mandatoryOverride]);
 
   const update = (patch) => {
     setSettings((current) => {

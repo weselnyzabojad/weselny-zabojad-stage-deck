@@ -6,6 +6,7 @@ import RoleSignOutControl from './components/RoleSignOutControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
+import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
@@ -410,6 +411,11 @@ export default function StageDeck({
     <>
       {cartridgeNoticeBanner}
       {staleBanner}
+      <MandatoryUpdatePopup
+        weddingId={WEDDING.weddingId}
+        role={currentRole}
+        update={liveState.media_overrides?.mandatorySteps ?? null}
+      />
     </>
   );
 
@@ -516,6 +522,8 @@ export default function StageDeck({
             outbox={outbox}
             theme={theme}
             onToggleTheme={toggleTheme}
+            mandatoryOverride={liveState.media_overrides?.mandatorySteps ?? null}
+            onUpdateMandatory={(settings) => setMediaOverride('mandatorySteps', settings)}
           />
         </AppErrorBoundary>
         {statusBanners}
