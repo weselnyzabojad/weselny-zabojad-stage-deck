@@ -7,6 +7,7 @@ import MusicPolicyCard from './MusicPolicyCard';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
+import SecondaryControlBar from './SecondaryControlBar';
 import StepMandatoryNotes from './StepMandatoryNotes';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import SpeechesChip from './SpeechesChip';
@@ -196,10 +197,21 @@ export default function DjBoothView({
                 activeSpeechId={activeSpeechId}
               />
             ) : null}
-            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-            <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
             {viewSwitch}
+          </>
+        )}
+      />
+
+      <SecondaryControlBar
+        left={(
+          <>
+            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
             {isVip && authControl ? authControl : null}
+          </>
+        )}
+        right={(
+          <>
+            <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
           </>

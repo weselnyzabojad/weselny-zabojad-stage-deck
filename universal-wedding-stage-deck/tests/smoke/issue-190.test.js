@@ -43,22 +43,27 @@ describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
     expect(html).not.toContain('opacity-90');
   });
 
-  it('moves PIN and Sync out of the top bar while a warning is visible', () => {
+  it('moves PIN and Sync into the secondary control bar', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('const hasAnchorWarning = driftReport.hardAnchorRadar.hasWarning');
-    expect(mc).toContain('{hasAnchorWarning ? null : (');
-    expect(mc).toContain('actions={(');
+    expect(mc).toContain('<SecondaryControlBar');
     expect(mc).toContain('{pinControl}');
     expect(mc).toContain('{syncControl}');
+    const topBar = mc.slice(
+      mc.indexOf('<TopBarShell'),
+      mc.indexOf('<SecondaryControlBar'),
+    );
+    expect(topBar).not.toContain('{pinControl}');
+    expect(topBar).not.toContain('{syncControl}');
   });
 
-  it('keeps a top-bar fallback when no warning is present', () => {
+  it('no longer renders PIN/Sync actions inside the warning banner', () => {
     const mc = read('src/views/McMasterView.jsx');
-    const fallback = mc.slice(
-      mc.indexOf('{hasAnchorWarning ? null : ('),
-      mc.indexOf('<OpenOnPhoneButton role={currentRole}'),
+    const banner = mc.slice(
+      mc.indexOf('<HardAnchorAlertBanner'),
+      mc.indexOf('/>', mc.indexOf('<HardAnchorAlertBanner')),
     );
-    expect(fallback).toContain('{pinControl}');
-    expect(fallback).toContain('{syncControl}');
+    expect(banner).not.toContain('actions={(');
+    expect(banner).not.toContain('{pinControl}');
+    expect(banner).not.toContain('{syncControl}');
   });
 });

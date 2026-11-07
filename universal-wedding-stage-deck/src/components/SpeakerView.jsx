@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
+import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
@@ -199,9 +200,13 @@ export default function SpeakerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
+        right={null}
+      />
+
+      <SecondaryControlBar
+        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
         right={(
           <>
-            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
             <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />

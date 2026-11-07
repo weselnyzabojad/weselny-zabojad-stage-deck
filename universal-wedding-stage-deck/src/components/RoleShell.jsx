@@ -4,6 +4,7 @@ import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
+import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import SpeechesChip from './SpeechesChip';
 import TopBarClock from './TopBarClock';
@@ -40,6 +41,9 @@ export default function RoleShell({
   lastUndoLabel,
   onAdvance,
   isComplete,
+  childrenExpected = false,
+  childrenRole = null,
+  allowMcChildren = false,
 }) {
   const { t } = useI18n();
   const isCompact =
@@ -88,6 +92,16 @@ export default function RoleShell({
           <div className="flex min-w-0 items-center gap-1.5">
             {viewSwitch}
             {authControl}
+          </div>
+          <div className="flex items-center justify-center">
+            {childrenExpected ? (
+              <ChildrenExpectedBadge
+                wedding={{ childrenExpected: true }}
+                role={childrenRole ?? role}
+                inline
+                allowMc={allowMcChildren}
+              />
+            ) : null}
           </div>
           <div className="flex items-center gap-1.5">
             <LanguageToggle />
