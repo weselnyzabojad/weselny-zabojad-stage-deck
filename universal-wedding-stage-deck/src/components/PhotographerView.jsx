@@ -7,6 +7,7 @@ import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
+import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -280,6 +281,7 @@ export default function PhotographerView({
           </div>
           <TopBarClock clock={clock} />
           <TopBarRoleLabel role={role} />
+          <TopBarRoleIdentity role={role} />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">

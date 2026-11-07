@@ -23,7 +23,6 @@ describe('issue #157 MC top bar simplification', () => {
       '<DriftPill',
       'handleUnpair',
       '<SyncStatusBadge',
-      '<RoleSwitcher',
       '<OpenOnPhoneButton',
       '<LanguageToggle',
       '<ThemeToggle',

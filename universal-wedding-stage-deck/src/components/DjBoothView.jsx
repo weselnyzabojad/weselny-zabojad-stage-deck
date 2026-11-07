@@ -16,6 +16,7 @@ import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
+import TopBarRoleIdentity from './TopBarRoleIdentity';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
@@ -226,6 +227,7 @@ export default function DjBoothView({
           </div>
           <TopBarClock clock={clock} />
           <TopBarRoleLabel role={role} tier={tierLabel} />
+          <TopBarRoleIdentity role={role} tier={tierLabel} />
         </div>
 
         {isVip ? (
