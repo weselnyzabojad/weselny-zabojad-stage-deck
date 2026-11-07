@@ -463,8 +463,6 @@ export default function StageDeck({
             wedding={WEDDING}
             timeline={timeline}
             clock={driftReport.clock}
-            stagePing={liveState.stage_ping}
-            hardAnchors={WEDDING.hardAnchors}
             syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}

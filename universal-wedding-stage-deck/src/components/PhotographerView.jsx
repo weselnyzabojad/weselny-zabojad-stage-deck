@@ -3,7 +3,6 @@ import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
-import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
@@ -14,8 +13,6 @@ import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import {
-  clockToEventDate,
-  formatCountdown,
   formatDuration,
   formatTimeOfDay,
   resolveEventDateISO,
@@ -23,24 +20,15 @@ import {
 } from '../lib/eventTime.js';
 import {
   buildSunsetCountdowns,
-  resolveMediaTeam,
-  resolveOczepiny,
   resolvePhotoPlan,
   resolvePhotoVisibility,
   resolveSunset,
-  resolveVenueAccess,
 } from '../lib/photoPlan.js';
 
 const SUNSET_STATUS = {
   LIVE: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
   STALE: 'border-amber-700 bg-amber-950/60 text-amber-200',
   UNAVAILABLE: 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]',
-};
-
-const MEDIA_ROLE_META = {
-  PHOTO: { label: 'Photo', icon: '📷' },
-  VIDEO: { label: 'Video', icon: '🎥' },
-  DRONE: { label: 'Drone', icon: '🚁' },
 };
 
 // Stable fallback so the component never calls `new Date()` during render; the
@@ -92,8 +80,6 @@ export default function PhotographerView({
   wedding,
   timeline = [],
   clock,
-  stagePing,
-  hardAnchors = [],
   syncStatus,
   syncError,
   remoteUpdatedAt,
@@ -115,30 +101,11 @@ export default function PhotographerView({
   const eventDateISO = resolveEventDateISO(wedding);
   const timeZone = resolveVenueTimeZone(wedding);
   const visibility = resolvePhotoVisibility(wedding);
-  const mediaTeam = resolveMediaTeam(wedding);
   const sunset = resolveSunset(wedding);
   const countdowns = buildSunsetCountdowns(sunset, { now, eventDateISO, timeZone });
   const plan = resolvePhotoPlan(wedding);
-  const oczepiny = resolveOczepiny(wedding, hardAnchors, mediaTeam);
-  const venue = resolveVenueAccess(wedding);
 
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
-  const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
-  const pingStep =
-    timeline.find((entry) => entry.step.id === stagePing?.step_id)?.step ?? activeEntry?.step ?? null;
-
-  const anchorAt =
-    oczepiny?.anchor?.time
-      ? clockToEventDate({ clock: oczepiny.anchor.time, eventDateISO, timeZone, after: now })
-      : null;
-  const anchorSeconds = secondsUntil(anchorAt, now);
-
-  const showVenue =
-    visibility.venueAddress ||
-    visibility.venueMaps ||
-    visibility.venueManager ||
-    visibility.venueInstallation ||
-    visibility.venueParking;
 
   const sunsetSeconds = secondsUntil(countdowns.sunsetAt, now);
   const goldenSeconds = secondsUntil(countdowns.goldenHourAt, now);
@@ -157,11 +124,10 @@ export default function PhotographerView({
     return () => mq.removeEventListener('change', listener);
   }, []);
 
-  // Compact (phone) read-only content: light windows, Oczepini cue, contacts.
+  // Compact (phone) read-only content: step timeline and light windows.
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       <SkipLink />
-      <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
       <TimelineFocusStack compact entries={timeline} activeIndex={activeIndex} />
 
       {visibility.sunset && sunset?.usable ? (
@@ -192,79 +158,6 @@ export default function PhotographerView({
         </Card>
       ) : null}
 
-      {oczepiny ? (
-        <Card
-          title="Oczepini cue"
-          icon="💃"
-          aside={
-            anchorSeconds != null ? (
-              <span className="font-mono text-[10px] text-brand-soft">{formatCountdown(anchorSeconds)}</span>
-            ) : null
-          }
-        >
-          {oczepiny.winnerPhotoWarning ? (
-            <p role="alert" className="mb-2 rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-2 py-1.5 text-[11px] text-alert-tint">
-              ⚠ Media team leaves before the Oczepini anchor — they would miss the winner photo.
-            </p>
-          ) : null}
-          <div className="grid gap-1.5 text-[11px]">
-            <Row label="Anchor" value={oczepiny.anchor ? `${oczepiny.anchor.label} · ${oczepiny.anchor.time ?? '—'}` : 'No anchor'} />
-            <Row
-              label="Briefed"
-              value={oczepiny.photographerBriefed?.confirmed ? 'Confirmed' : 'Not confirmed'}
-              tone={oczepiny.photographerBriefed?.confirmed ? 'text-emerald-300' : 'text-amber-200'}
-            />
-          </div>
-          {oczepiny.winnerPhoto.enabled && oczepiny.winnerPhoto.photographerCue ? (
-            <p className="mt-2 text-xs text-slate-300">📷 {oczepiny.winnerPhoto.photographerCue}</p>
-          ) : null}
-        </Card>
-      ) : null}
-
-      {mediaTeam.length > 0 ? (
-        <Card title="Media team" icon="🎥">
-          <div className="space-y-2">
-            {mediaTeam.map((member) => {
-              const meta = MEDIA_ROLE_META[member.role] ?? MEDIA_ROLE_META.PHOTO;
-              return (
-                <div key={member.id} className="flex items-center justify-between gap-2 rounded-lg border border-line bg-page p-2.5">
-                  <div className="min-w-0">
-                    <div className="font-mono text-[9px] uppercase tracking-widest text-brand-soft">{meta.icon} {meta.label}</div>
-                    <div className="truncate font-heading text-sm font-semibold text-ink">{member.name}</div>
-                  </div>
-                  {member.phoneHref ? (
-                    <a href={member.phoneHref} className="shrink-0 rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
-                      📞 Call
-                    </a>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      ) : null}
-
-      {showVenue && venue ? (
-        <Card title="Venue access" icon="📍">
-          <div className="space-y-1.5 text-[11px]">
-            {visibility.venueAddress && venue.address ? <Row label="Address" value={venue.address} /> : null}
-            {visibility.venueManager && venue.manager?.name ? <Row label="Manager" value={venue.manager.name} /> : null}
-            {visibility.venueParking && venue.installation?.parking ? <Row label="Parking" value={venue.installation.parking} /> : null}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {visibility.venueMaps && venue.mapsUrl ? (
-              <a href={venue.mapsUrl} target="_blank" rel="noreferrer noopener" className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
-                Open in Maps
-              </a>
-            ) : null}
-            {visibility.venueManager && venue.manager?.phoneHref ? (
-              <a href={venue.manager.phoneHref} className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint">
-                📞 Call venue
-              </a>
-            ) : null}
-          </div>
-        </Card>
-      ) : null}
 
     </div>
   );
@@ -298,8 +191,6 @@ export default function PhotographerView({
           <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
       </header>
-
-      <StagePingBanner key={stagePing?.id ?? 'no-ping'} ping={stagePing} step={pingStep} />
 
       <main id="main-content" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
@@ -397,110 +288,6 @@ export default function PhotographerView({
                   </p>
                 </>
               )}
-            </Card>
-          ) : null}
-
-          {oczepiny ? (
-            <Card
-              title="Oczepini cues"
-              icon="💃"
-              aside={
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <DeferredBadge>{oczepiny.order.replaceAll('_', ' ')}</DeferredBadge>
-                  {anchorSeconds != null ? (
-                    <span className="font-mono text-[10px] text-brand-soft">
-                      {formatCountdown(anchorSeconds)}
-                    </span>
-                  ) : null}
-                </div>
-              }
-            >
-              {oczepiny.winnerPhotoWarning ? (
-                <p
-                  role="alert"
-                  className="mb-2 rounded border border-[#ED2939]/60 bg-[#ED2939]/20 px-2 py-1.5 text-[11px] text-alert-tint"
-                >
-                  ⚠ Every media-team member leaves before the Oczepini anchor — they would miss the
-                  winner photo. Extend a departure or brief the team.
-                </p>
-              ) : null}
-
-              <div className="grid gap-2 text-[11px] sm:grid-cols-2">
-                <Row label="Toss" value={oczepiny.toss ?? '—'} />
-                <Row label="Ties" value={oczepiny.ties ?? '—'} />
-                <Row
-                  label="Anchor"
-                  value={
-                    oczepiny.anchor
-                      ? `${oczepiny.anchor.label} · ${oczepiny.anchor.time ?? '—'}`
-                      : 'No anchor linked'
-                  }
-                />
-                <Row
-                  label="Photographer briefed"
-                  value={
-                    oczepiny.photographerBriefed?.confirmed
-                      ? `Confirmed${oczepiny.photographerBriefed.confirmedBy ? ` by ${oczepiny.photographerBriefed.confirmedBy}` : ''}`
-                      : 'Not confirmed'
-                  }
-                  tone={oczepiny.photographerBriefed?.confirmed ? 'text-emerald-300' : 'text-amber-200'}
-                />
-              </div>
-
-              {oczepiny.winnerPhoto.enabled ? (
-                <div className="mt-2 rounded-lg border border-line bg-page p-2.5">
-                  <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
-                    Winner photo
-                  </div>
-                  {oczepiny.winnerPhoto.photographerCue ? (
-                    <p className="mt-0.5 text-xs text-slate-300">
-                      📷 {oczepiny.winnerPhoto.photographerCue}
-                    </p>
-                  ) : null}
-                  {oczepiny.winnerPhoto.replacesWinnersDance ? (
-                    <p className="mt-0.5 text-[10px] text-slate-500">
-                      Replaces the winners&apos; dance.
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-
-              {oczepiny.subEvents.length > 0 ? (
-                <ol className="mt-2 grid gap-1.5 sm:grid-cols-2">
-                  {oczepiny.subEvents.map((event, index) => (
-                    <li
-                      key={event.id}
-                      className="flex items-center justify-between gap-2 rounded border border-line bg-page px-2 py-1.5 text-[11px]"
-                    >
-                      <span className="min-w-0 truncate text-slate-300">
-                        {index + 1}. {event.title}
-                      </span>
-                      <span className="shrink-0 font-mono text-[10px] text-slate-500">
-                        {event.durationMin != null ? `${event.durationMin} min` : '—'}
-                        {event.skippable ? ' · skippable' : ''}
-                      </span>
-                    </li>
-                  ))}
-                </ol>
-              ) : null}
-
-              {oczepiny.props.length > 0 || oczepiny.music ? (
-                <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
-                  {oczepiny.props.map((prop) => (
-                    <span
-                      key={prop}
-                      className="rounded border border-line bg-raised px-1.5 py-0.5 text-slate-300"
-                    >
-                      🎒 {prop}
-                    </span>
-                  ))}
-                  {oczepiny.music?.track || oczepiny.music?.playlist ? (
-                    <span className="rounded border border-line bg-raised px-1.5 py-0.5 text-slate-300">
-                      🎵 {oczepiny.music.track ?? oczepiny.music.playlist}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
             </Card>
           ) : null}
 
@@ -637,154 +424,11 @@ export default function PhotographerView({
             </Card>
           ) : null}
 
-          {mediaTeam.length > 0 ? (
-            <Card title="Media team" icon="🎥" aside={<DeferredBadge>{mediaTeam.length} crew</DeferredBadge>}>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {mediaTeam.map((member) => {
-                  const meta = MEDIA_ROLE_META[member.role] ?? MEDIA_ROLE_META.PHOTO;
-                  const endsAt = member.endTime
-                    ? clockToEventDate({ clock: member.endTime, eventDateISO, timeZone, after: now })
-                    : null;
-                  const endSeconds = secondsUntil(endsAt, now);
-                  return (
-                    <div key={member.id} className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <div className="font-mono text-[9px] uppercase tracking-widest text-brand-soft">
-                            {meta.icon} {meta.label}
-                          </div>
-                          <div className="font-heading text-sm font-semibold text-ink">
-                            {member.name}
-                          </div>
-                        </div>
-                        {member.endTime ? (
-                          <div className="shrink-0 text-right font-mono text-[10px]">
-                            <div className="text-slate-400">leaves {member.endTime}</div>
-                            <div
-                              className={
-                                endSeconds != null && endSeconds < 0
-                                  ? 'text-alert-soft'
-                                  : 'text-slate-500'
-                              }
-                            >
-                              {countdownText(endSeconds) ?? ''}
-                            </div>
-                          </div>
-                        ) : null}
-                      </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
-                        {member.phoneHref ? (
-                          <a
-                            href={member.phoneHref}
-                            className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-semibold text-brand-tint"
-                          >
-                            📞 {member.phone}
-                          </a>
-                        ) : null}
-                        {member.startTime ? (
-                          <span className="rounded border border-line bg-raised px-1.5 py-0.5 text-slate-400">
-                            from {member.startTime}
-                          </span>
-                        ) : null}
-                      </div>
-                      {member.deliverables.length > 0 ? (
-                        <p className="mt-1 text-[10px] text-slate-400">
-                          {member.deliverables.join(' · ')}
-                        </p>
-                      ) : null}
-                      {member.notes ? (
-                        <p className="mt-0.5 text-[10px] text-slate-500">{member.notes}</p>
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
-          ) : null}
-
-          {showVenue && venue ? (
-            <Card title="Venue access" icon="📍">
-              <div className="grid gap-2 text-[11px] sm:grid-cols-2">
-                {visibility.venueAddress && venue.address ? (
-                  <div className="sm:col-span-2">
-                    <Row label="Address" value={venue.address} />
-                  </div>
-                ) : null}
-                {visibility.venueMaps && venue.mapsUrl ? (
-                  <div className="flex items-center justify-between gap-2 text-[11px]">
-                    <span className="uppercase tracking-wider text-slate-500">Maps</span>
-                    <a
-                      href={venue.mapsUrl}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="rounded border border-brand-strong bg-brand/30 px-2 py-1 font-semibold text-brand-tint"
-                    >
-                      Open in Maps
-                    </a>
-                  </div>
-                ) : null}
-                {visibility.venueManager && venue.manager?.name ? (
-                  <Row
-                    label="Manager"
-                    value={
-                      venue.manager.phoneHref
-                        ? `${venue.manager.name} · ${venue.manager.phone}`
-                        : venue.manager.name
-                    }
-                  />
-                ) : null}
-                {visibility.venueInstallation && venue.installation ? (
-                  <>
-                    <Row
-                      label="Access window"
-                      value={
-                        venue.installation.windowStart || venue.installation.windowEnd
-                          ? `${venue.installation.windowStart ?? '—'}–${venue.installation.windowEnd ?? '—'}`
-                          : '—'
-                      }
-                    />
-                    <Row
-                      label="Load-in"
-                      value={
-                        venue.installation.loadInMinutes != null
-                          ? `${venue.installation.loadInMinutes} min`
-                          : '—'
-                      }
-                    />
-                    {venue.installation.accessNotes ? (
-                      <div className="sm:col-span-2">
-                        <Row label="Access" value={venue.installation.accessNotes} />
-                      </div>
-                    ) : null}
-                  </>
-                ) : null}
-                {visibility.venueParking && venue.installation?.parking ? (
-                  <div className="sm:col-span-2">
-                    <Row label="Parking" value={venue.installation.parking} />
-                  </div>
-                ) : null}
-                {visibility.notes && venue.notes ? (
-                  <div className="sm:col-span-2">
-                    <Row label="Notes" value={venue.notes} />
-                  </div>
-                ) : null}
-              </div>
-              {visibility.venueManager && venue.manager?.phoneHref ? (
-                <a
-                  href={venue.manager.phoneHref}
-                  className="mt-2 inline-flex items-center gap-1 rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint"
-                >
-                  📞 Call venue manager
-                </a>
-              ) : null}
-            </Card>
-          ) : null}
-
         </div>
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
-        Read-only photographer view · shot plans, light windows and Oczepini cues
+        Read-only media view · step timeline, shot plan and light windows
       </footer>
     </div>
   );
