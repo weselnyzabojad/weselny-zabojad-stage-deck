@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `aeb5698` (Oczepiny cues batch)
+**Aligned with:** `master` @ `826bc43` (Current Step 3D tilt)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -121,6 +121,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) | Oczepiny Early/Midnight schema and Google Doc parsing |
 | [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC, Photographer and DJ VIP cues |
 | [#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295) | Current Step card: subtle stable 3D tilt and elevation |
+| [#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297) | MC: center the children expected reminder in the banner |
 
 ### Responsive phone / pocket plan
 
@@ -999,6 +1000,12 @@ the bottom-right floating badge into the **Hard Anchor Collision** banner when
 that banner is visible. Remove the MC bottom-right badge; keep other roles
 unchanged. The reminder must be localized and must not duplicate.
 ([#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286))
+
+Within that banner, the children reminder is **horizontally centered** rather
+than aligned with the right-side actions/detail group. It stays inside the MC
+hard-anchor banner, never returns to a bottom-right MC badge, and the
+Photographer/Cameraman floating badge remains unchanged.
+([#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297))
 
 **Oczepiny variants.** Oczepiny supports two variants:
 
