@@ -23,6 +23,11 @@ Sync PIN: 2008
 Service package: HOST_AND_DJ_VIP
 Children expected: yes
 Venue: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
+Ceremony type: RELIGIOUS
+Ceremony MC support: yes
+Ceremony MC translation help: no
+Ceremony location: St. Mary Church
+Ceremony notes: Full mass; MC introduces the couple at the church door.
 
 ## COUPLE IDENTITY
 

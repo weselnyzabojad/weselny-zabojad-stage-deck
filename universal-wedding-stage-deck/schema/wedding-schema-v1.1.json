@@ -233,6 +233,18 @@
         }
       }
     },
+    "ceremony": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ceremony variant and MC support requirements from the Google Doc.",
+      "properties": {
+        "type": { "enum": ["RELIGIOUS", "CIVIL", "HUMANIST"] },
+        "mcSupportRequested": { "type": "boolean" },
+        "mcTranslationHelpRequested": { "type": "boolean" },
+        "location": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
     "wishes": {
       "type": "object",
       "additionalProperties": false,

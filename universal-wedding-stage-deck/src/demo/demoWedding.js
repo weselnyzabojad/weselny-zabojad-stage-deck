@@ -276,6 +276,13 @@ export const DEMO_WEDDING = {
   },
   wishes: { enabled: true },
   games: { enabled: true },
+  ceremony: {
+    type: "RELIGIOUS",
+    mcSupportRequested: true,
+    mcTranslationHelpRequested: false,
+    location: "St. Mary's Church",
+    notes: "Full mass; MC introduces the couple at the church door.",
+  },
   musicPolicy: {
     mustPlay: [
       { id: "first_dance", track: "Perfect - Ed Sheeran", note: "First dance — duet version." },
