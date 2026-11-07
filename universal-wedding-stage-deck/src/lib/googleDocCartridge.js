@@ -428,10 +428,9 @@ function mapPhotoPlan(source) {
       backupLocation: text(kv(source, 'Mini session backup location')),
     },
     groupPhotos: {
+      stepId: text(kv(source, 'Group photos step ID')),
       location: text(kv(source, 'Group photos location')),
       groups,
-      minGroupSize: int(kv(source, 'Group photos min group size')),
-      durationMin: int(kv(source, 'Group photos duration (min)')),
     },
     speedFoto: {
       enabled: bool(kv(source, 'Speed foto enabled'), false),

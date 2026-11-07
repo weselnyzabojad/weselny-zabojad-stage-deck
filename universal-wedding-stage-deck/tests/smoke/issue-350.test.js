@@ -52,7 +52,13 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(result.cartridge.speeches[0].id).toBe('speech_witness');
     expect(result.cartridge.speeches[0].script.text).toContain('Drodzy');
     expect(result.cartridge.mediaTeam).toHaveLength(2);
-    expect(result.cartridge.photoPlan.groupPhotos.groups).toHaveLength(3);
+    expect(result.cartridge.photoPlan.groupPhotos.groups.map((group) => group.id)).toEqual([
+      'bride_family',
+      'groom_family',
+      'friends',
+    ]);
+    expect(result.cartridge.photoPlan.groupPhotos).not.toHaveProperty('minGroupSize');
+    expect(result.cartridge.photoPlan.groupPhotos).not.toHaveProperty('durationMin');
     expect(result.cartridge.preWeddingTodos).toHaveLength(2);
     expect(result.cartridge).not.toHaveProperty('contacts');
     expect(result.cartridge).not.toHaveProperty('tact_and_vip_alerts');

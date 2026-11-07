@@ -139,8 +139,7 @@ function PhotoPlanBlock({ type, data }) {
         {type === 'groupPhotos' ? (
           <>
             <Row label="Location" value={data.location ?? 'â€”'} />
-            <Row label="Duration" value={`${data.durationMin ?? 'â€”'} min`} />
-            <Row label="Min group size" value={data.minGroupSize ?? 'â€”'} />
+            <Row label="Groups" value={data.groups?.length ?? 0} />
             {data.groups?.length ? (
               <div className="flex flex-wrap gap-1 pt-1">
                 {data.groups.map((group) => (

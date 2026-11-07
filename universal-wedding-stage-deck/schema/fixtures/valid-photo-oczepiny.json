@@ -82,8 +82,7 @@
           "id": "friends",
           "label": "Friends"
         }
-      ],
-      "minGroupSize": 5
+      ]
     },
     "specialEffects": {
       "fire": true,

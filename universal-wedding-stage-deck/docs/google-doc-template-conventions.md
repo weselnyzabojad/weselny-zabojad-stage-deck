@@ -255,8 +255,11 @@ default to all-false.
 ### MEDIA TEAM / PHOTO PLAN
 
 `MEDIA TEAM` rows map to `mediaTeam[]`. `PHOTO PLAN` key/values map to
-`photoPlan.*`; `### Group Photos` maps to `photoPlan.groupPhotos.groups[]`.
-Sunset source is `ONLINE_API` only (D6); never write an estimated sunset.
+`photoPlan.*`; `### Group Photos` maps to `photoPlan.groupPhotos.groups[]` in
+document order. `Group photos step ID` optionally binds the list to the
+group-photo timeline step. Group-photo timing comes from that step's planned
+time; `minGroupSize` and duration are not used as gates. Sunset source is
+`ONLINE_API` only (D6); never write an estimated sunset.
 
 ### MUSIC POLICY / IMPORTANT SONGS / GUEST REQUESTS
 
