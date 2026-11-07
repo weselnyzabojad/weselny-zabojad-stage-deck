@@ -374,10 +374,14 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 
 ## MANDATORY STEPS
 
-| Field | Time | Service mode |
-| --- | --- | --- |
-| First guests arrival | 15:30 |  |
-| Obiad weselny | 18:30 | TABLE_SERVICE |
-| Pierwsza kolacja | 21:30 | TABLE_SERVICE |
-| Druga kolacja | 23:30 | BUFFET |
-| Trzecia kolacja |  | TABLE_SERVICE |
+| Field | Time |
+| --- | --- |
+| First guests arrival | 15:30 |
+| Obiad weselny | 18:30 |
+| Pierwsza kolacja | 21:30 |
+| Druga kolacja | 23:30 |
+| Trzecia kolacja |  |
+| Obiad weselny service | TABLE_SERVICE |
+| Pierwsza kolacja service | TABLE_SERVICE |
+| Druga kolacja service | BUFFET |
+| Trzecia kolacja service | TABLE_SERVICE |
