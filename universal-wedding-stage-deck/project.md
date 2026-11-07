@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `c7f8a7b` (sunset, bar, cake, Game Clicker and mini-session fixes)
+**Aligned with:** `master` @ `b00ac77` (before separate game steps)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -70,6 +70,7 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
+| [#414](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/414) | One timeline step per game (Test Wiedzy / Test Zgodności) | Implementation |
 
 
 ### Planning TODO register
@@ -928,7 +929,8 @@ subtasks/import mappings and docs).
 - **Wedding Thank-You** — couple thanks guests; mandatory.
 - **Wishes** — guest wishes/guestbook moment; optional by cartridge flag.
 - **Oczepiny** — optional by the existing Oczepiny enable flag.
-- **Games** — optional by cartridge flag.
+- **Games** — one optional timeline step per configured game (for example Test
+  Wiedzy and Test Zgodności); never a single combined Games step.
 - **First Dance** — mandatory for now; detailed schema will be worked out later.
 
 Optional steps are inserted only when their cartridge flag is enabled; mandatory
@@ -949,7 +951,7 @@ content and app features:
 | Wedding Thank-You | Yes, mandatory | Parents' thank-you subtask/speeches today. |
 | Wishes (guest wishes/guestbook) | Yes, optional | Guestbook/Instax/wish-bottle mentions today. |
 | Oczepiny | Yes, optional | Hard anchor/object/photo/cultural indicator today. |
-| Games | Yes, optional | Game content/teleprompter today. |
+| Games | Yes, optional | One step per game; Test Wiedzy and Test Zgodności are separate. |
 | First Dance | Yes, mandatory for now | Important song/deliverable today, not a step. |
 | Buffets Open & Dance Floor | No | Delete step_04. |
 
@@ -1206,6 +1208,13 @@ Show the order in the MC entrance cue.
 **Games.** Read game definitions from Google Doc and question lists from
 separate Google Docs, with validated references in the cartridge.
 ([#306](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/306))
+
+**One step per game.** Test Wiedzy and Test Zgodności are different games and
+must not share one `Games` step. Each enabled game gets its own optional timeline
+step with its own game id/type, title, question-list reference and teleprompter
+payload. Timeline generation creates one step per enabled game; the Games cue
+card and clicker show only the current step's game.
+([#414](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/414))
 
 ### Music Policy key songs (decision, 2026-11-07)
 
