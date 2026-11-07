@@ -107,8 +107,6 @@ The badge is passed through the MC, DJ, pocket, photographer and speaker views.
 - This is device-local. Two devices offline at once still converge via the
   existing last-write-wins snapshot model; a future version can add a server
   revision check.
-- The outbox does not queue sensitive-note uploads (different table and
-  encryption path). That can be added later with the same pattern.
 - The badge does not tick a live countdown; it shows the next retry time in the
   tooltip and updates on each attempt.
 

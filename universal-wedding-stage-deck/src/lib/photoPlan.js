@@ -6,7 +6,6 @@
 
 import { clockToEventDate, isIsoTimestamp } from './eventTime.js';
 import { clockDeltaMinutes } from './clockMath.js';
-import { normalizePhoneHref } from './contacts.js';
 
 export const DEFAULT_PHOTO_VISIBILITY = {
   timeline: true,
@@ -26,6 +25,16 @@ const CLOCK_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 function text(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
+}
+
+function normalizePhoneHref(phone) {
+  const trimmed = text(phone);
+  if (!trimmed) return null;
+  const digits = trimmed.replace(/[^\d+]/g, '');
+  const normalized = digits.startsWith('+')
+    ? `+${digits.slice(1).replace(/\+/g, '')}`
+    : digits.replace(/\+/g, '');
+  return /\d{5,}/.test(normalized.replace(/\D/g, '')) ? `tel:${normalized}` : null;
 }
 
 function clockText(value) {

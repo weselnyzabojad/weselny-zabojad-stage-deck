@@ -11,7 +11,6 @@ import CakeCard from '../components/CakeCard';
 import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
 import GamesCueCard from '../components/GamesCueCard';
-import ContactsModal from '../components/ContactsModal';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
@@ -49,7 +48,6 @@ import LanguageToggle from '../components/LanguageToggle';
 import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
-import VipAlertsModal from '../components/VipAlertsModal';
 import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConstants';
 
 export default function McMasterView({ model }) {
@@ -58,9 +56,6 @@ export default function McMasterView({ model }) {
   childrenExpected = false,
   realStart,
   driftReport,
-  vipAlerts,
-  setContactsOpen,
-  contacts,
   handleUnpair,
   IS_PRODUCTION,
   roleSession,
@@ -105,8 +100,6 @@ export default function McMasterView({ model }) {
   closeOverlay,
   undoToast,
   setUndoToast,
-  contactsOpen,
-  handleOpenAnchor,
 } = model;
 
   const oczepinyStatus = resolveOczepinyIndicator({
@@ -434,10 +427,6 @@ export default function McMasterView({ model }) {
         )}
       />
 
-      {/* TODO(top-bar rework): ask the owner where to surface VIP Radar and
-          vendor Contacts. Their modals and data flow stay wired below; only the
-          top-bar buttons were removed. Cartridge import is admin-only. */}
-
       {hasAnchorWarning ? (
         <HardAnchorAlertBanner
           radar={driftReport.hardAnchorRadar}
@@ -540,10 +529,6 @@ export default function McMasterView({ model }) {
       {overlay === "game" && (
         <GameClickerOverlay open game={game} onClose={closeOverlay} />
       )}
-      {overlay === "vip" && (
-        <VipAlertsModal open alerts={vipAlerts} onClose={closeOverlay} />
-      )}
-
       <UndoToast
         toast={undoToast}
         onUndo={handleUndo}
@@ -551,13 +536,6 @@ export default function McMasterView({ model }) {
       />
 
       </div>
-
-      <ContactsModal
-        open={contactsOpen}
-        onClose={() => setContactsOpen(false)}
-        contacts={contacts}
-        onOpenAnchor={handleOpenAnchor}
-      />
     </>
   );
 

@@ -14,7 +14,7 @@ const pl = {
 
   'role.mc.label': 'Mistrz ceremonii',
   'role.mc.short': 'MC',
-  'role.mc.blurb': 'Skrypty, kontrola opóźnienia, radar VIP i pełna oś czasu.',
+  'role.mc.blurb': 'Skrypty, kontrola opóźnienia i pełna oś czasu.',
   'role.dj.label': 'Kabina DJ-a',
   'role.dj.short': 'DJ',
   'role.dj.blurb': 'Oś czasu tylko do odczytu, playlisty i twarde odcięcia.',

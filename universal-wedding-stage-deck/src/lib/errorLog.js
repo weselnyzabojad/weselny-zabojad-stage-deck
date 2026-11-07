@@ -2,7 +2,7 @@
 //
 // A render crash must never lose the only diagnostic. This module keeps a
 // small, bounded log in localStorage so the host can inspect or copy it after
-// the event. It never stores cartridge data, sensitive notes or form values.
+// the event. It never stores cartridge data, sensitive values or form values.
 
 export const ERROR_LOG_STORAGE_KEY = 'wzsd:v1:error-log';
 export const ERROR_LOG_LIMIT = 20;

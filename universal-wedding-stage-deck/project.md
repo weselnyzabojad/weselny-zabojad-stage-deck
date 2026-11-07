@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `5f11190` (environment setup documentation, before the TODO-register cleanup)
+**Aligned with:** `master` @ `2f94251` (before the VIP Radar / Contacts removal)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -39,7 +39,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Stage deck views (MC/DJ/Photo/Speaker) | Complete |
 | Responsive phone layouts for every role | Complete (#109–#114) |
 | Drift engine, flexible schedule, hard-anchor radar | Complete |
-| Cake, speeches, key songs, music policy, contacts, photo plan | Complete |
+| Cake, speeches, key songs, music policy, photo plan | Complete |
 | Offline-first localStorage + optional Supabase sync/outbox | Complete |
 | Production per-role PIN join (`join_room` + role JWT) | Complete |
 | Deferred PWA update flow (#81) | Complete |
@@ -70,7 +70,6 @@ follow-up implementation issue exists.
 | --- | --- | --- |
 | Group-photo step rework | [#230](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/230) | Open; needs owner decisions on sequencing, controls, group order, locations, timing and media assignments |
 | Dedicated Speaker speech cartridge | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Open; needs schema, validation, revision/publication and offline-cache contract |
-| MC top-bar VIP Radar / Contacts relocation | No issue yet | Pending owner decision on where the controls belong |
 | Media-team visibility and restrictions | [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Closed; the Media team card stays removed and its data remains in the model |
 | Precise predefined-step definitions | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | Closed; see [`docs/predefined-step-audit.md`](docs/predefined-step-audit.md) for the current concept audit |
 
@@ -139,12 +138,10 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
 6. **QR to open on a phone.** When the view is a laptop/desktop width, display
    a QR code that opens the same view on a phone (scan to open the deck URL on
    the device).
-7. **Top-bar relocation pending owner decision.** The MC top bar no longer
-   exposes VIP Radar or vendor Contacts. Keep their functionality intact and ask
-   the owner in a future pass where these controls should be surfaced. This is
-   tracked in the Planning TODO register and has no implementation issue yet.
-   Cartridge import is admin-only through `/admin` and is not part of this
-   relocation.
+7. **VIP Radar and Contacts are removed.** Both features, their modals, data
+   fields, Google Doc sections and encrypted sensitive-note path are deleted.
+   They must not be reintroduced. Cartridge import remains admin-only through
+   `/admin`.
 
 ### Universal timeline focus stacks (decision, 2026-11-07)
 
@@ -239,10 +236,9 @@ Shared controls:
 - Language stays on desktop and pocket.
 - Only MC desktop gets the role switcher. Non-MC roles and pocket views have no
   role-switching control.
-- VIP Radar, the empty placeholder button and Contacts are removed from the MC
-  top bar only. Their components and functionality stay intact. **Owner
-  decision pending:** where VIP Radar and Contacts should be relocated. This is
-  tracked in the Planning TODO register; no implementation issue exists yet.
+- VIP Radar, the empty placeholder button and Contacts are removed from the app
+  entirely. Both features, their modals, data fields and import paths must not
+  be reintroduced.
 
 Pocket header:
 
@@ -1230,8 +1226,8 @@ cartridge:
 - EVENT, couple identity, languages, cultural rules, Oczepiny and timeline;
 - DJ/MC cues, subtasks, hard anchors, mandatory constraints and view visibility;
 - venue logistics, media team, photo plan, songs/music policy and guest requests;
-- speeches, cake, games/question lists, contacts, kitchen, VIP alerts,
-  pre-wedding todos, privacy and extensions;
+- speeches, cake, games/question lists, kitchen, pre-wedding todos, privacy and
+  extensions;
 - live sync state only when explicitly supplied as a seed.
 
 Mapping is validation-first and deterministic. Missing required data must fail
@@ -1286,6 +1282,23 @@ desktop grid and the compact \`time → serveTime\` header readout. Keep the cak
 song, sparklers, photographer cue, sync note and step state. The cartridge
 fields and schedule logic remain intact.
 ([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
+
+### VIP Radar and Contacts removal (decision, 2026-11-07)
+
+VIP Radar and vendor Contacts are deleted, not relocated. Remove:
+
+- `VipAlertsModal`, `ContactsModal`, the MC overlay/button wiring and the
+  contacts helper library;
+- every `contacts`, `vipAlerts`, `tact_and_vip_alerts` and `vipRadarCount`
+  schema field and fixture;
+- the Google Doc `VENDOR CONTACTS` and `VIP ALERTS` sections and their parser,
+  template and documentation references;
+- the encrypted `sensitive_notes` payload, client hook, Edge sync methods and
+  database table, because they existed only for these two features.
+
+Old cartridges that still contain the removed fields must drop them before
+publication. The features must not be reintroduced without a new approved
+decision.
 
 ### Drive-only admin wedding library (decision, 2026-11-07)
 
@@ -1445,7 +1458,7 @@ full accessible labels, and never overflow or push the timeline down
 unpredictably.
 ([#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333))
 
-**Overlays and floating controls.** Drawers, modals, QR/contacts/VIP panels,
+**Overlays and floating controls.** Drawers, modals, QR panels,
 mandatory-update popups, banners, bottom actions and the dev switcher use
 \`100dvh\`-safe sizing, internal scrolling, safe-area padding and 44px touch
 targets. Floating panels must not overlap each other or the bottom navigation on
@@ -1599,8 +1612,7 @@ independent of this transport decision.
 - **Routing:** no router library. `main.jsx` selects `/admin` vs the stage
   deck from `window.location.pathname`.
 - **Data flow:** cartridge → normalized live state → local persistence →
-  optional outbox/Realtime sync. Sensitive notes stay encrypted; only ciphertext
-  is synced.
+  optional outbox/Realtime sync. Cartridge content remains the only shared data.
 
 ### Main directories
 
@@ -1610,7 +1622,7 @@ src/
   components/       stage UI cards, modals, status and overlay components
   content/games/    prepared optional-game content (not wired into schema yet)
   demo/             demo wedding cartridge
-  hooks/            live state, role, theme, pairing, sensitive notes
+  hooks/            live state, role, theme, pairing
   i18n/             en/fr/pl dictionaries, t()/tp(), locale persistence
   lib/              drift, clock, schema, import, sync, PWA and data helpers
   views/            MC master view
@@ -1630,7 +1642,7 @@ tests/              Vitest suites and smoke tests
 
 | Role id | Label | Purpose |
 | --- | --- | --- |
-| `mc` | MC Master | Full deck, drift controls, scripts, VIP radar, stage pings |
+| `mc` | MC Master | Full deck, drift controls, scripts, stage pings |
 | `dj` | DJ Booth | Read-only timeline, playlists, hard cutoffs |
 | `photo` | Photographer | Shot lists, sunset windows, Oczepiny cues |
 | `speaker` | Speaker | Read-only teleprompter for the assigned speech |
@@ -1672,8 +1684,8 @@ Core top-level groups:
   `syncPin`, `role`, `hostingMode`;
 - venue and cultural rules: `venue`, `venueLogistics`, `culturalRules`;
 - schedule: `hardAnchors`, `steps` (`FLEXIBLE`, `HARD_ANCHOR`);
-- content: `cake`, `speeches`, `musicPolicy`, `tact_and_vip_alerts`,
-  `preWeddingTodos`, `contacts`, `mediaTeam`, `photoPlan`, `oczepiny`;
+- content: `cake`, `speeches`, `musicPolicy`, `preWeddingTodos`, `mediaTeam`,
+  `photoPlan`, `oczepiny`;
 - optional/forward-compatible: `demographics`, `viewVisibility`, `privacy`,
   `speeches`, `extensions`;
 - live state: `liveSyncState` with `active_step_id`, `completed_step_ids`,
@@ -1757,7 +1769,6 @@ npm run validate:i18n
 - room key `wzsd:<weddingId>`, never the PIN;
 - RLS scoped to the role JWT claims;
 - optional outbox with retry;
-- sensitive notes encrypted client-side, MC-only ciphertext sync;
 - service-role key only in Edge Function secrets;
 - TTL purge for expired rooms.
 
@@ -1777,6 +1788,16 @@ Removed by issue #75:
 
 The shared admin/server cartridge validator strips legacy copies of these
 fields before validation instead of migrating them.
+
+Removed in the VIP Radar / Contacts deletion pass:
+
+- `VipAlertsModal` and `ContactsModal`;
+- `contacts`, `vipAlerts`, `tact_and_vip_alerts`, `vipRadarCount`;
+- the `VENDOR CONTACTS` and `VIP ALERTS` Google Doc sections;
+- the encrypted `sensitive_notes` table, client hook, sync methods and payload.
+
+Old cartridges must drop these fields; they are no longer accepted by the
+schema.
 
 ---
 
@@ -1812,8 +1833,10 @@ and troubleshooting guide is
 
 1. Apply [`supabase/schema.sql`](supabase/schema.sql).
 2. Apply [`supabase/migrations/202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql).
-3. Apply [`supabase/migrations/202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql)
-   and [`supabase/migrations/202611060004_drive_publication.sql`](supabase/migrations/202611060004_drive_publication.sql).
+3. Apply the remaining migrations, including
+   [`supabase/migrations/202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql),
+   [`supabase/migrations/202611060004_drive_publication.sql`](supabase/migrations/202611060004_drive_publication.sql)
+   and [`supabase/migrations/202611070001_drop_vip_contacts.sql`](supabase/migrations/202611070001_drop_vip_contacts.sql).
 4. Deploy functions:
 
 ```bash

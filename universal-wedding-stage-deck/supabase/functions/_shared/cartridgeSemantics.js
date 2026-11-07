@@ -64,16 +64,6 @@ export function sanitizeCartridge(cartridge) {
   return clean;
 }
 
-// D4: never store plaintext VIP alerts or contacts in a published cartridge.
-// The MC device uploads the encrypted bundle separately to `sensitive_notes`.
-export function redactSensitive(cartridge) {
-  const copy = { ...cartridge };
-  delete copy.vipAlerts;
-  delete copy.tact_and_vip_alerts;
-  delete copy.contacts;
-  return copy;
-}
-
 function clockMinutes(clock) {
   const match = /^(\d{1,2}):(\d{2})$/.exec(clock ?? '');
   return match ? Number(match[1]) * 60 + Number(match[2]) : null;
@@ -185,8 +175,6 @@ export function collectSemanticErrors(cartridge) {
   };
 
   uniqueList(cartridge?.hardAnchors, '/hardAnchors', 'hard anchor');
-  uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
-  uniqueList(cartridge?.contacts, '/contacts', 'contact');
 
   // Speeches (TODO 8): ids and explicit order values must be unique. A missing
   // COMPLEX script is a warning in the product spec, not an import blocker.
@@ -302,17 +290,6 @@ export function collectSemanticErrors(cartridge) {
     if (!Number.isFinite(sunset?.latitude) || !Number.isFinite(sunset?.longitude)) {
       pushError('/photoPlan/miniSession', 'mini session requires sunset latitude and longitude');
     }
-  }
-
-  if (
-    Number.isInteger(cartridge?.vipRadarCount) &&
-    Array.isArray(cartridge?.tact_and_vip_alerts) &&
-    cartridge.vipRadarCount !== cartridge.tact_and_vip_alerts.length
-  ) {
-    pushError(
-      '/vipRadarCount',
-      `vipRadarCount ${cartridge.vipRadarCount} does not match tact_and_vip_alerts.length ${cartridge.tact_and_vip_alerts.length}`,
-    );
   }
 
   if (steps.length > 0) {

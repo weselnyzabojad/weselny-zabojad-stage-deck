@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/wedding-schema-v1.1.json",
   "title": "WeddingSchema v1.1",
-  "description": "Portable wedding cartridge for the Universal Wedding Stage Deck. Defines the schedule, drift metadata, hard anchors, cultural rules, VIP alerts, teleprompter content and the optional synced live state.",
+  "description": "Portable wedding cartridge for the Universal Wedding Stage Deck. Defines the schedule, drift metadata, hard anchors, cultural rules, teleprompter content and the optional synced live state.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -84,17 +84,6 @@
         }
       }
     },
-    "vipRadarCount": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Optional display count. Prefer deriving it from tact_and_vip_alerts.length."
-    },
-    "tact_and_vip_alerts": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/vipAlert"
-      }
-    },
     "coHosts": {
       "type": "array",
       "deprecated": true,
@@ -130,12 +119,6 @@
     },
     "demographics": {
       "$ref": "#/$defs/demographics"
-    },
-    "contacts": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/contact"
-      }
     },
     "preWeddingTodos": {
       "type": "array",
@@ -557,45 +540,6 @@
         }
       }
     },
-    "vipAlert": {
-      "type": "object",
-      "required": [
-        "id",
-        "tone",
-        "icon",
-        "tag",
-        "title",
-        "detail"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "tone": {
-          "type": "string",
-          "enum": [
-            "critical",
-            "celebrate",
-            "care",
-            "info",
-            "warning"
-          ]
-        },
-        "icon": {
-          "type": "string"
-        },
-        "tag": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
-        "detail": {
-          "type": "string"
-        }
-      }
-    },
     "hardAnchor": {
       "type": "object",
       "required": [
@@ -716,38 +660,6 @@
             "type": "string",
             "minLength": 1
           }
-        },
-        "notes": {
-          "type": "string"
-        }
-      }
-    },
-    "contact": {
-      "type": "object",
-      "required": [
-        "role",
-        "name"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "role": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "leavesAt": {
-          "$ref": "#/$defs/clock",
-          "description": "Vendor departure time. Link it to a hard anchor with the same time so the directory can jump to the protected anchor."
         },
         "notes": {
           "type": "string"
@@ -1290,14 +1202,8 @@
     "privacy": {
       "type": "object",
       "additionalProperties": true,
-      "description": "D4 sensitive-note classification. The app encrypts vipAlerts + contacts client-side with AES-GCM and keeps the key on host devices.",
+      "description": "Optional privacy and encryption metadata.",
       "properties": {
-        "sensitiveFields": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "cloudSync": {
           "type": "string",
           "enum": [

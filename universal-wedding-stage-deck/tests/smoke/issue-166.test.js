@@ -188,7 +188,7 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
     const sync = read('src/lib/sync/supabaseSyncClient.js');
     const fetchWedding = sync.slice(
       sync.indexOf('async function fetchWedding'),
-      sync.indexOf('async function fetchSensitiveNotes'),
+      sync.indexOf('async function publish('),
     );
     expect(fetchWedding).toContain(".from('weddings')");
     expect(fetchWedding).toContain('.select(');

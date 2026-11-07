@@ -14,7 +14,7 @@ const en = {
 
   'role.mc.label': 'MC Master',
   'role.mc.short': 'MC',
-  'role.mc.blurb': 'Scripts, drift controls, VIP radar and full timeline.',
+  'role.mc.blurb': 'Scripts, drift controls and full timeline.',
   'role.dj.label': 'DJ Booth',
   'role.dj.short': 'DJ',
   'role.dj.blurb': 'Read-only timeline, playlists and hard cutoffs.',

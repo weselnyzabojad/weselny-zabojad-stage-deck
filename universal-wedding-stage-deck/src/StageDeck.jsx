@@ -17,7 +17,6 @@ import { buildInitialLiveState } from './demo/demoWedding';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
-import { useSensitiveNotes } from './hooks/useSensitiveNotes';
 import { availableRoleIds, isMediaRole } from './lib/roles';
 import { djDetailTier } from './lib/importantSongs';
 import {
@@ -29,7 +28,6 @@ import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
 import { filterEnabledSteps } from './lib/predefinedSteps';
-import { resolveContacts } from './lib/contacts';
 import { resolveMusicPolicy } from './lib/musicPolicy';
 import {
   resolveActiveSpeech,
@@ -117,13 +115,6 @@ export default function StageDeck({
     cartridgeRevision,
     speeches,
   });
-  // D4: the host/MC device decrypts sensitive notes with its local host key.
-  const sensitiveNotes = useSensitiveNotes({
-    enabled: isProduction && sessionValid && roleSession?.role === 'mc',
-    wedding: WEDDING,
-    weddingId: roleSession?.weddingId ?? WEDDING.weddingId,
-    accessToken: sessionValid ? roleSession.token : null,
-  });
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
@@ -169,7 +160,6 @@ export default function StageDeck({
   const [viewRoleOverride, setViewRoleOverride] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [undoToast, setUndoToast] = useState(null);
-  const [contactsOpen, setContactsOpen] = useState(false);
   // Offline cache for the speaker script (the active id is synced separately).
   const [cachedSpeakerSpeech] = useState(() => loadSpeakerScript(WEDDING.weddingId));
   const closeOverlay = () => setOverlay(null);
@@ -271,12 +261,6 @@ export default function StageDeck({
   ) : null;
 
   const steps = activeSteps(WEDDING.steps, liveState);
-  const vipAlerts =
-    sensitiveNotes.payload?.vipAlerts ?? WEDDING.tact_and_vip_alerts ?? [];
-  const contacts = resolveContacts({
-    ...WEDDING,
-    contacts: sensitiveNotes.payload?.contacts ?? WEDDING.contacts,
-  });
   const driftReport = buildDriftReport(steps, liveState, {
     hardAnchors: WEDDING.hardAnchors,
     now,
@@ -377,15 +361,6 @@ export default function StageDeck({
     setUndoToast(null);
     setControlNotice('Last action undone.');
   };
-  const handleOpenAnchor = (anchorElementId) => {
-    setContactsOpen(false);
-    window.setTimeout(() => {
-      document
-        .getElementById(anchorElementId)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 80);
-  };
-
   const roleProps = {
     role: currentRole,
     roles: roleIds,
@@ -603,9 +578,6 @@ export default function StageDeck({
     childrenExpected: WEDDING.childrenExpected === true,
     realStart,
     driftReport,
-    vipAlerts,
-    setContactsOpen,
-    contacts,
     handleUnpair,
     IS_PRODUCTION: isProduction,
     roleSession,
@@ -655,8 +627,6 @@ export default function StageDeck({
     closeOverlay,
     undoToast,
     setUndoToast,
-    contactsOpen,
-    handleOpenAnchor,
   };
 
   return (

@@ -73,14 +73,12 @@ Canonical order and mapping:
 | 18 | `## SPEECHES` | no | `speeches` |
 | 19 | `## CAKE` | no | `cake` |
 | 20 | `## GAMES` | no | `games` (schema still pending approval) |
-| 21 | `## VENDOR CONTACTS` | no | `contacts` |
-| 22 | `## KITCHEN` | no | `kitchen` |
-| 23 | `## VIP ALERTS` | no | `vipAlerts` (encrypted) |
-| 24 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
-| 25 | `## PRIVACY` | no | `privacy` |
-| 26 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
-| 27 | `## EXTENSIONS` | no | `extensions` |
-| 28 | `## MANDATORY STEPS` | no | `mandatorySteps` |
+| 21 | `## KITCHEN` | no | `kitchen` |
+| 22 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
+| 23 | `## PRIVACY` | no | `privacy` (encryption metadata only) |
+| 24 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
+| 25 | `## EXTENSIONS` | no | `extensions` |
+| 26 | `## MANDATORY STEPS` | no | `mandatorySteps` |
 
 The machine-readable source of truth is `SECTION_MANIFEST` in
 `src/lib/googleDocTemplate.js`. The template validator fails if a marker is
@@ -165,8 +163,8 @@ Rules:
 - `weddingId`: `YYYY-MM-DD_slug`, matching `dateISO` (D7 room key).
 - Step ID: `step_NN`, lowercase, underscores, unique.
 - Every checkable, referenceable or reorderable item has a stable ID:
-  `anchorId`, `subtaskId`, `speechId`, `contactId`, `gameId`, `todoId`,
-  `alertId`, `momentId`, `songId`, `courseId`.
+  `anchorId`, `subtaskId`, `speechId`, `gameId`, `todoId`, `momentId`,
+  `songId`, `courseId`.
 - Never reuse an ID after deleting its row. The live state and mutation log may
   still reference it.
 - References are by ID, never by display title: `stepId`, `anchorId`,
@@ -201,11 +199,9 @@ Rules:
 - Never write Polish labels in enum cells; put the display text in the title or
   notes column.
 
-### Sensitive data
+### Privacy and scripts
 
-- `## VIP ALERTS` is sensitive. The importer marks it in
-  `privacy.sensitiveFields` and encrypts it before cloud sync (D4).
-- Never put sensitive family context in `notes` fields, comments, or the title.
+- VIP alerts and vendor contacts are no longer part of the template or cartridge.
 - Scripts follow speech consent: `consent: false` locks the script on the
   speaker device.
 
@@ -276,16 +272,16 @@ The table maps to `speeches[]`. Each `### Speech Script <speech_id>` block maps
 the fenced text to `speeches[].script.text` with `source: "GOOGLE_DOC"`. Missing
 scripts are allowed unless `speechMode` requires them.
 
-### CAKE / GAMES / VENDOR CONTACTS / KITCHEN
+### CAKE / GAMES / KITCHEN
 
-Direct table/key mapping to `cake`, `games`, `contacts[]` and `kitchen.*`.
-`GAMES` writes only `YES`, `NO` or `UNDECIDED`; never infer consent from a
-mention elsewhere (see `docs/optional-games.md`).
+Direct table/key mapping to `cake`, `games` and `kitchen.*`. `GAMES` writes only
+`YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
+`docs/optional-games.md`).
 
-### VIP ALERTS / PRE-WEDDING TODOS / PRIVACY
+### PRE-WEDDING TODOS / PRIVACY
 
-Direct mapping to `vipAlerts[]`, `preWeddingTodos[]` and `privacy.*`. Every row
-needs a stable ID.
+Direct mapping to `preWeddingTodos[]` and optional `privacy.*` encryption
+metadata. Every todo row needs a stable ID.
 
 ### LIVE SYNC STATE / EXTENSIONS
 
@@ -353,5 +349,5 @@ Checklist:
 - [ ] Template markers and order match the frozen schema.
 - [ ] Field map reviewed against the final validation rules.
 - [ ] Parser fixtures cover every section and every error path.
-- [ ] Sensitive `VIP ALERTS` encryption confirmed.
+- [ ] No VIP alert or vendor contact sections remain in the template.
 - [ ] Google Doc converter wired into admin publishing after the schema is frozen.

@@ -44,8 +44,8 @@ create table if not exists public.wedding_roles (
   primary key (wedding_id, role)
 );
 
--- D4: sensitive notes sync only as ciphertext, readable by the MC role. The
--- AES-GCM key stays on the host device and is never stored here.
+-- Legacy table kept only so the historical owner-admin migration can apply.
+-- Migration 202611070001 drops it after the VIP Radar / Contacts removal.
 create table if not exists public.sensitive_notes (
   wedding_id text primary key references public.weddings(wedding_id) on delete cascade,
   bundle     jsonb not null,
@@ -138,11 +138,6 @@ create trigger touch_wedding_roles
   before insert or update on public.wedding_roles
   for each row execute function public.touch_updated_at();
 
-drop trigger if exists touch_sensitive_notes on public.sensitive_notes;
-create trigger touch_sensitive_notes
-  before insert or update on public.sensitive_notes
-  for each row execute function public.touch_updated_at();
-
 drop trigger if exists touch_song_requests on public.song_requests;
 create trigger touch_song_requests
   before insert or update on public.song_requests
@@ -170,7 +165,6 @@ alter table public.live_sync_state enable row level security;
 alter table public.weddings       enable row level security;
 alter table public.wedding_roles  enable row level security;
 alter table public.join_attempts  enable row level security;
-alter table public.sensitive_notes enable row level security;
 alter table public.song_requests enable row level security;
 alter table public.song_request_attempts enable row level security;
 
@@ -237,39 +231,6 @@ create policy "wedding read"
     and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
   );
 
--- D4: encrypted sensitive notes are MC-only, and only for the joined room.
-drop policy if exists "sensitive host read"   on public.sensitive_notes;
-drop policy if exists "sensitive host insert" on public.sensitive_notes;
-drop policy if exists "sensitive host update" on public.sensitive_notes;
-
-create policy "sensitive host read"
-  on public.sensitive_notes for select
-  to authenticated
-  using (
-    wedding_id = public.current_wedding_id()
-    and public.current_app_role() = 'mc'
-  );
-
-create policy "sensitive host insert"
-  on public.sensitive_notes for insert
-  to authenticated
-  with check (
-    wedding_id = public.current_wedding_id()
-    and public.current_app_role() = 'mc'
-  );
-
-create policy "sensitive host update"
-  on public.sensitive_notes for update
-  to authenticated
-  using (
-    wedding_id = public.current_wedding_id()
-    and public.current_app_role() = 'mc'
-  )
-  with check (
-    wedding_id = public.current_wedding_id()
-    and public.current_app_role() = 'mc'
-  );
-
 -- `wedding_roles` and `join_attempts` intentionally have NO client policies:
 -- only the service-role key (Edge Functions) can read/write their hashes.
 
@@ -306,13 +267,11 @@ revoke all on public.live_sync_state from anon;
 revoke all on public.weddings       from anon;
 revoke all on public.wedding_roles  from anon;
 revoke all on public.join_attempts  from anon;
-revoke all on public.sensitive_notes from anon;
 revoke all on public.song_requests from anon, authenticated;
 revoke all on public.song_request_attempts from anon, authenticated;
 
 grant select, insert, update on public.live_sync_state to authenticated;
 grant select on public.weddings to authenticated;
-grant select, insert, update on public.sensitive_notes to authenticated;
 grant select on public.song_requests to authenticated;
 grant update (status) on public.song_requests to authenticated;
 
@@ -323,7 +282,7 @@ grant execute on function public.current_wedding_id()    to authenticated;
 grant execute on function public.current_app_role()      to authenticated;
 
 -- End-of-event wipe (service role / admin only): removes the room state and
--- the wedding row; roles and sensitive notes cascade.
+-- the wedding row; roles and live state cascade.
 create or replace function public.stage_deck_wipe_room(p_wedding_id text)
 returns void
 language sql

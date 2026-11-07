@@ -4,8 +4,6 @@
 // and the Async validator, so Vitest can exercise success, stale revisions and
 // invalid/mismatched cartridges without deploying anything.
 
-import { redactSensitive } from './cartridgeSemantics.js';
-
 export const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 export const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
 export const ALLOWED_ROLES = ['mc', 'dj', 'photo', 'speaker'];
@@ -214,7 +212,7 @@ export async function publishCartridge({ admin, request, actor, validate }) {
     p_room_code: roomCode,
     p_couple: request.couple,
     p_date: request.date,
-    p_cartridge: redactSensitive(cartridge),
+    p_cartridge: cartridge,
     p_expires_at: expiresAt,
     p_source: request.source,
     p_expected_revision: request.expectedRevision ?? 0,

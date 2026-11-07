@@ -718,43 +718,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const gamesSource = section(parsed, 'GAMES');
   const games = gamesSource ? mapGames(gamesSource) : undefined;
-  const contacts = table(section(parsed, 'VENDOR CONTACTS'), [
-    'Contact ID',
-    'Role',
-    'Name',
-    'Phone',
-    'Email',
-    'Leaves at',
-    'Notes',
-  ]).map((row) => ({
-    id: slug(row['Contact ID']),
-    role: text(row.Role) ?? 'Vendor',
-    name: text(row.Name) ?? 'Vendor',
-    phone: text(row.Phone),
-    email: text(row.Email),
-    leavesAt: clock(row['Leaves at']),
-    notes: text(row.Notes),
-  }));
-
-  const vipAlerts = table(section(parsed, 'VIP ALERTS'), [
-    'Alert ID',
-    'Tone',
-    'Tag',
-    'Title',
-    'Detail',
-    'Visibility',
-  ]).map((row) => ({
-    id: slug(row['Alert ID']),
-    tone: ['critical', 'celebrate', 'care', 'info', 'warning'].includes(
-      text(row.Tone)?.toLowerCase(),
-    )
-      ? text(row.Tone).toLowerCase()
-      : 'info',
-    icon: '⚠️',
-    tag: text(row.Tag) ?? 'Info',
-    title: text(row.Title) ?? row['Alert ID'],
-    detail: text(row.Detail) ?? '',
-  }));
 
   const preWeddingTodos = table(section(parsed, 'PRE-WEDDING TODOS'), [
     'Todo ID',
@@ -770,7 +733,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
     ? {
-        sensitiveFields: list(kv(privacySource, 'Sensitive fields')),
         cloudSync: text(kv(privacySource, 'Cloud sync')) ?? 'ENCRYPTED_HOST_KEY',
         encryption: {
           alg: text(kv(privacySource, 'Encryption algorithm')),
@@ -872,9 +834,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     speeches,
     cake,
     games,
-    contacts,
-    tact_and_vip_alerts: vipAlerts,
-    vipRadarCount: vipAlerts.length,
     preWeddingTodos,
     privacy,
     mandatorySteps,

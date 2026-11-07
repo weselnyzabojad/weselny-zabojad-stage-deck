@@ -1,13 +1,14 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
+const exists = (path) => existsSync(new URL(`../../${path}`, import.meta.url));
 
 describe('issue #157 MC top bar simplification', () => {
   const mc = read('src/views/McMasterView.jsx');
   const header = mc.slice(
     mc.indexOf('<TopBarShell'),
-    mc.indexOf('{/* TODO(top-bar rework)'),
+    mc.indexOf('\n      {hasAnchorWarning ? ('),
   );
 
   it('keeps logo, clock, MC label and couple identity', () => {
@@ -41,17 +42,15 @@ describe('issue #157 MC top bar simplification', () => {
     expect(header).not.toContain('setImporterOpen(true)');
   });
 
-  it('retains the preserved VIP and Contacts modals and records the relocation decision', () => {
-    expect(mc).toContain('<VipAlertsModal');
-    expect(mc).toContain('<ContactsModal');
+  it('removes the VIP Radar and Contacts features entirely', () => {
+    expect(mc).not.toContain('<VipAlertsModal');
+    expect(mc).not.toContain('<ContactsModal');
     expect(mc).not.toContain('<CartridgeImporter');
-    expect(mc).toContain('TODO(top-bar rework)');
-
-    const project = read('project.md');
-    expect(project).toContain('Top-bar relocation pending owner decision');
-    expect(project).toContain('Planning TODO register');
-    expect(project).toContain('VIP Radar');
-    expect(project).toContain('vendor Contacts');
-    expect(project).not.toContain('cartridge Import');
+    expect(exists('src/components/VipAlertsModal.jsx')).toBe(false);
+    expect(exists('src/components/ContactsModal.jsx')).toBe(false);
+    expect(exists('src/lib/contacts.js')).toBe(false);
+    expect(read('src/StageDeck.jsx')).not.toContain('useSensitiveNotes');
+    expect(read('src/StageDeck.jsx')).not.toContain('resolveContacts');
+    expect(read('project.md')).not.toContain('Top-bar relocation');
   });
 });

@@ -90,13 +90,10 @@ rejected; put app-specific data under `extensions`.
 | `role` | no | Legacy display hint only; device role is local. |
 | `venue` | no | Venue name / address. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
-| `vipRadarCount` | no | Should equal `tact_and_vip_alerts.length`. |
-| `tact_and_vip_alerts` | no | Sensitive family / care notes. |
 | `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
 | `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
-| `contacts` | no | Vendor and family contacts. |
 | `preWeddingTodos` | no | Pre-flight checklist. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
@@ -200,7 +197,6 @@ remain defined only so older v1.1 cartridges still pass structural validation.
 The app no longer renders them, the Google Doc template no longer emits them,
 and the shared validator drops both arrays when a cartridge is published or
 cached (D10 / TODO 20).
-Use `contacts` for the vendor directory.
 
 ```json
 "coHosts": [],

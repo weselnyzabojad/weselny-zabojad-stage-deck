@@ -55,7 +55,7 @@ describe('issue #81 deferred PWA update flow', () => {
 
   it('ignores stale reload state', () => {
     const storage = fakeStorage();
-    saveReloadState({ overlay: 'vip', scrollY: 12, storage, now: 1_000 });
+    saveReloadState({ overlay: 'teleprompter', scrollY: 12, storage, now: 1_000 });
     expect(loadReloadState({ storage, now: 1_000 + 6 * 60 * 1000 })).toBeNull();
   });
 

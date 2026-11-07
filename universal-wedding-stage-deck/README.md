@@ -86,7 +86,7 @@ Roles: `mc`, `dj` (DJ VIP), `dj_standard`, `photo1`, `photo2`, `video`,
 
 ## Role surfaces
 
-- **MC** — timeline control, advance/undo, scripts, VIP alerts, drift, mandatory
+- **MC** — timeline control, advance/undo, scripts, drift, mandatory
   constraints, ceremony briefing, games and music cues.
 - **DJ Standard** — minimal read-only timeline and cutoffs; no Music Policy.
 - **DJ VIP** — full timeline, Music Policy, main songs, First Dance timing,
@@ -178,7 +178,7 @@ Cloud sync uses Supabase Realtime and role-scoped JWTs.
 - The service-role key stays in Edge Function secrets.
 - `/admin` uses Supabase Auth email/password + TOTP MFA and an
   `app_admins` allowlist. There is no self-signup.
-- Sensitive notes are stored encrypted; signed URLs must never be logged.
+- Signed URLs must never be logged.
 
 Apply the SQL in [`supabase/schema.sql`](supabase/schema.sql) and the migrations
 in [`supabase/migrations/`](supabase/migrations/) before enabling cloud mode.
