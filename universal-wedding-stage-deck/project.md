@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `54bcd64` (Photographer/media rework alignment)
+**Aligned with:** `master` @ `e682c90` (media/speaker/DJ refinements #242–#247)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
