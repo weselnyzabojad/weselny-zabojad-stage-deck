@@ -125,9 +125,9 @@ const en = {
     'Fetching the server-published cartridge for this room. A cached copy is used only for this same wedding.',
   'app.retry': 'Retry',
   'app.noPublishedCartridge':
-    'No cartridge has been published for this wedding yet. Ask the owner to publish one from /deck/admin.',
+    'No cartridge has been published for this wedding yet. Ask the owner to publish one from /admin.',
   'app.invalidPublishedCartridge':
-    'The published cartridge is invalid. Retry, or ask the owner to publish it again from /deck/admin.',
+    'The published cartridge is invalid. Retry, or ask the owner to publish it again from /admin.',
   'app.offlineCartridge':
     'Offline — showing the last published cartridge for this wedding. Read-only until the server is reachable.',
   'app.cartridgeUpdated': 'Cartridge updated to revision {revision}.',

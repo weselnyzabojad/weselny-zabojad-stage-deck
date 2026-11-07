@@ -64,7 +64,7 @@ use the `VITE_` prefix.
 | `/deck/` | Stage deck entry / local pairing or production role join |
 | `/deck/:roomCode/:role` | Role-scoped production deck |
 | `/deck/?room=...&role=...` | Query form of the same deck deep link |
-| `/deck/admin` | Owner admin panel (laptop/desktop-oriented) |
+| `/admin` | Owner admin panel (laptop/desktop-oriented) |
 | `/request/:roomCode` | Guest song-request page |
 
 Roles: `mc`, `dj` (DJ VIP), `dj_standard`, `photo1`, `photo2`, `video`,
@@ -164,7 +164,7 @@ Cloud sync uses Supabase Realtime and role-scoped JWTs.
   columns to `authenticated`.
 - The browser anon key is public by design and is not a data-access grant.
 - The service-role key stays in Edge Function secrets.
-- `/deck/admin` uses Supabase Auth email/password + TOTP MFA and an
+- `/admin` uses Supabase Auth email/password + TOTP MFA and an
   `app_admins` allowlist. There is no self-signup.
 - Sensitive notes are stored encrypted; signed URLs must never be logged.
 

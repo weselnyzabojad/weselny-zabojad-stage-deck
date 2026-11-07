@@ -125,9 +125,9 @@ const fr = {
     'Récupération de la cartouche publiée sur le serveur pour cette salle. Une copie en cache n\'est utilisée que pour ce même mariage.',
   'app.retry': 'Réessayer',
   'app.noPublishedCartridge':
-    'Aucune cartouche n\'a encore été publiée pour ce mariage. Demandez au propriétaire de la publier depuis /deck/admin.',
+    'Aucune cartouche n\'a encore été publiée pour ce mariage. Demandez au propriétaire de la publier depuis /admin.',
   'app.invalidPublishedCartridge':
-    'La cartouche publiée est invalide. Réessayez ou demandez au propriétaire de la republier depuis /deck/admin.',
+    'La cartouche publiée est invalide. Réessayez ou demandez au propriétaire de la republier depuis /admin.',
   'app.offlineCartridge':
     'Hors ligne — affichage de la dernière cartouche publiée pour ce mariage. Lecture seule jusqu\'au retour du serveur.',
   'app.cartridgeUpdated': 'Cartouche mise à jour vers la révision {revision}.',

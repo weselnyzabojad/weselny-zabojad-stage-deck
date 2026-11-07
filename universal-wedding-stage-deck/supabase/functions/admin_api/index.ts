@@ -3,7 +3,7 @@
 // Every request carries a Supabase Auth access token. The owner must be in
 // `public.app_admins` and the session must be aal2 (verified TOTP MFA).
 // Destructive actions additionally require a TOTP re-auth within 5 minutes
-// (`amr` claim), matching the `/deck/admin` UI.
+// (`amr` claim), matching the `/admin` UI.
 //
 // Issue #165: this function is the only cartridge publication path. It
 // revalidates the cartridge server-side, requires an optimistic-concurrency

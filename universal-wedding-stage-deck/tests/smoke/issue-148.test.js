@@ -33,7 +33,7 @@ describe('issue #148 public guest song requests', () => {
       roomCode: 'xyz789',
     });
     expect(parseSongRequestPath('/deck/request/not-valid', '', '/deck/')).toBeNull();
-    expect(parseSongRequestPath('/deck/admin', '', '/deck/')).toBeNull();
+    expect(parseSongRequestPath('/admin', '', '/deck/')).toBeNull();
   });
 
   it('builds an absolute request URL', () => {

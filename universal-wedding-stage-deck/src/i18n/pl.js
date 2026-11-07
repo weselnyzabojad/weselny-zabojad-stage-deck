@@ -125,9 +125,9 @@ const pl = {
     'Pobieranie kartridża opublikowanego na serwerze dla tego pokoju. Kopia z pamięci podręcznej jest używana tylko dla tego samego wesela.',
   'app.retry': 'Ponów',
   'app.noPublishedCartridge':
-    'Dla tego wesela nie opublikowano jeszcze kartridża. Poproś właściciela o publikację w /deck/admin.',
+    'Dla tego wesela nie opublikowano jeszcze kartridża. Poproś właściciela o publikację w /admin.',
   'app.invalidPublishedCartridge':
-    'Opublikowany kartridż jest nieprawidłowy. Ponów próbę lub poproś właściciela o ponowną publikację w /deck/admin.',
+    'Opublikowany kartridż jest nieprawidłowy. Ponów próbę lub poproś właściciela o ponowną publikację w /admin.',
   'app.offlineCartridge':
     'Offline — wyświetlany jest ostatni opublikowany kartridż tego wesela. Tylko do odczytu, dopóki serwer jest niedostępny.',
   'app.cartridgeUpdated': 'Kartridż zaktualizowany do wersji {revision}.',
