@@ -1,11 +1,9 @@
 ﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
-import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
-import SecondaryControlBar from './SecondaryControlBar';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
@@ -425,23 +423,9 @@ export default function PhotographerView({
               speeches={speeches}
               activeSpeechId={activeSpeechId}
             />
-          </>
-        )}
-      />
-
-      <SecondaryControlBar
-        left={(
-          <>
             <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-            {authControl}
-          </>
-        )}
-        center={(
-          <ChildrenExpectedBadge wedding={wedding} role={role} inline />
-        )}
-        right={(
-          <>
             <OpenOnPhoneButton role={role} roomCode={roomCode} />
+            {authControl}
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
           </>
@@ -589,8 +573,6 @@ export default function PhotographerView({
       speeches={speeches}
       speechMode={speechMode}
       activeSpeechId={activeSpeechId}
-      childrenExpected={wedding?.childrenExpected === true}
-      childrenRole={role}
       authControl={authControl}
     >
       {compactContent}
