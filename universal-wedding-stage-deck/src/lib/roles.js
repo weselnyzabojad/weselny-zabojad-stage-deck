@@ -59,6 +59,13 @@ export const ROLES = {
     icon: '📷',
     blurb: 'Media step timeline, shot plan and light windows.',
   },
+  venue_manager: {
+    id: 'venue_manager',
+    label: 'Venue Manager',
+    short: 'Venue',
+    icon: '🏨',
+    blurb: 'Read-only timeline and mandatory service times.',
+  },
   speaker: {
     id: 'speaker',
     label: 'Speaker',
@@ -69,7 +76,7 @@ export const ROLES = {
 };
 
 export const MEDIA_ROLE_IDS = ['photo1', 'photo2', 'video'];
-export const ROLE_ORDER = ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'];
+export const ROLE_ORDER = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
 
 export function isMediaRole(value) {
   return MEDIA_ROLE_IDS.includes(value);

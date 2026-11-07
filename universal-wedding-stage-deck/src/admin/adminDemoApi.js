@@ -41,7 +41,7 @@ export function demoList() {
         date: '20.08.2026',
         venue: 'DwĂłr Pod Lipami',
         room_code: '4821',
-        roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'],
+        roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'],
         archived_at: null,
         created_at: hoursAgo(72),
         updated_at: hoursAgo(3),
@@ -121,7 +121,7 @@ export function demoList() {
         target: 'demo-2026',
         actor_email: 'demo@local',
         created_at: hoursAgo(5),
-        detail: { roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'] },
+        detail: { roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'] },
       },
     ],
   };

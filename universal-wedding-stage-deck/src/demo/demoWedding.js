@@ -249,6 +249,7 @@ export const DEMO_WEDDING = {
   ],
   mandatorySteps: {
     firstGuestsArrival: "15:30",
+    cakeServiceMode: "KITCHEN_RETURN",
     kitchenServices: {
       dinner: "18:30",
       firstSupper: "21:30",

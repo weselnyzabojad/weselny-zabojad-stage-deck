@@ -200,6 +200,10 @@
       "description": "Exact-hour mandatory milestones separate from timeline steps.",
       "properties": {
         "firstGuestsArrival": { "$ref": "#/$defs/clock" },
+        "cakeServiceMode": {
+          "type": "string",
+          "enum": ["KITCHEN_RETURN", "CUT_IN_PLACE"]
+        },
         "kitchenServices": {
           "type": "object",
           "additionalProperties": false,

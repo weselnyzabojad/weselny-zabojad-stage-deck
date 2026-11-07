@@ -11,6 +11,7 @@ const LABELS = {
   photo1: 'Photo 1',
   photo2: 'Photo 2',
   video: 'Camera',
+  venue_manager: 'Venue',
   speaker: 'Speaker',
 };
 
