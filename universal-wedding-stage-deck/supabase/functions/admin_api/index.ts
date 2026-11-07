@@ -59,7 +59,6 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'publish_drive',
   'restore_revision',
 ]);
-const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_JWT_SECRET'];
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
 
@@ -224,22 +223,6 @@ Deno.serve(async (req) => {
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '').trim();
     if (!token) return json({ error: 'Sign in first.' }, 401);
 
-    const body = await req.json().catch(() => null);
-    const action = typeof body?.action === 'string' ? body.action : '';
-    const missingEnv = REQUIRED_ADMIN_ENV.filter((name) => !Deno.env.get(name));
-    if (missingEnv.length > 0) {
-      return json(
-        {
-          error:
-            'Admin backend is read-only because required server secrets are missing. Mutating actions are disabled.',
-          code: 'admin_read_only',
-          readOnly: true,
-          missing: missingEnv,
-        },
-        503,
-      );
-    }
-
     const admin = createClient(serverEnv('SUPABASE_URL'), serverEnv('SUPABASE_SERVICE_ROLE_KEY'), {
       auth: { persistSession: false, autoRefreshToken: false },
     });
@@ -261,6 +244,9 @@ Deno.serve(async (req) => {
         authorized.status,
       );
     }
+
+    const body = await req.json().catch(() => null);
+    const action = typeof body?.action === 'string' ? body.action : '';
 
     if (DESTRUCTIVE_ACTIONS.has(action) && !mfaFresh(claims)) {
       return json(

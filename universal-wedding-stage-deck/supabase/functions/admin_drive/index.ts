@@ -99,16 +99,6 @@ Deno.serve(async (req) => {
       return json(result);
     }
 
-    if (action === 'status') {
-      return json({
-        ok: true,
-        action,
-        checkedAt: new Date().toISOString(),
-        configured: connector.isConfigured,
-        function: 'admin_drive',
-      });
-    }
-
     if (action === 'list') {
       const result = await connector.listFiles({
         query: typeof body?.query === 'string' ? body.query : '',

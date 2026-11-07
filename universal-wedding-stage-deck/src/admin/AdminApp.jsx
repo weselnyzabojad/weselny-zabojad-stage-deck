@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { roleLabel, roleShort } from '../lib/roles';
 import { validateCartridge } from '../lib/cartridgeImporter';
 import {
   adminConfigured,
   archiveWedding,
   challengeExistingFactor,
-  checkAdminBackend,
   deleteWedding,
   enrollTotp,
   getAdminSession,
@@ -416,26 +415,8 @@ function AdminAppContent() {
   const [clock, setClock] = useState(() => createAdminSession());
   const clockRef = useRef(clock);
   const loadingRef = useRef(false);
-  const [backendHealth, setBackendHealth] = useState(null);
-  const [backendChecking, setBackendChecking] = useState(true);
 
   const configured = adminConfigured();
-  const readOnly = backendHealth?.readOnly === true;
-
-  const refreshBackendHealth = useCallback(async () => {
-    setBackendChecking(true);
-    try {
-      setBackendHealth(await checkAdminBackend());
-    } catch (err) {
-      setBackendHealth({
-        ok: false,
-        readOnly: true,
-        reason: err.message ?? 'Admin backend preflight failed.',
-      });
-    } finally {
-      setBackendChecking(false);
-    }
-  }, []);
 
   const refreshMfa = async (nextSession = session) => {
     if (!nextSession) {
@@ -449,14 +430,6 @@ function AdminAppContent() {
       setMfa(null);
     }
   };
-
-  useEffect(() => {
-    void refreshBackendHealth();
-  }, [refreshBackendHealth]);
-
-  useEffect(() => {
-    if (session?.access_token) void refreshBackendHealth();
-  }, [refreshBackendHealth, session?.access_token]);
 
   useEffect(() => {
     if (!configured) {
@@ -498,16 +471,6 @@ function AdminAppContent() {
     if (tone !== 'error') {
       setTimeout(() => setToasts((current) => current.filter((toast) => toast.id !== id)), 4000);
     }
-  };
-
-  const guardReadOnly = () => {
-    if (!readOnly) return false;
-    pushToast(
-      backendHealth?.reason ||
-        'Read-only mode: the admin backend is unavailable. Re-check the backend before making changes.',
-      'error',
-    );
-    return true;
   };
 
   const dismissToast = (id) => {
@@ -612,7 +575,6 @@ function AdminAppContent() {
   };
 
   const handlePinSubmit = (pins) => {
-    if (guardReadOnly()) return;
     const wedding = pinDialog;
     setPinDialog(null);
     if (!wedding) return;
@@ -638,7 +600,6 @@ function AdminAppContent() {
   };
 
   const handlePublishRevisionSubmit = async (cartridge) => {
-    if (guardReadOnly()) return;
     const wedding = publishDialog;
     if (!wedding) return;
     setDialogBusy(true);
@@ -670,7 +631,6 @@ function AdminAppContent() {
   };
 
   const handleRestorePrevious = (wedding) => {
-    if (guardReadOnly()) return;
     setDialogError('');
     setConfirmDialog({
       title: 'Restore previous cartridge revision',
@@ -691,7 +651,6 @@ function AdminAppContent() {
   };
 
   const handleArchive = (wedding) => {
-    if (guardReadOnly()) return;
     setDialogError('');
     setConfirmDialog({
       title: 'Archive wedding',
@@ -710,7 +669,6 @@ function AdminAppContent() {
   };
 
   const handleDelete = (wedding) => {
-    if (guardReadOnly()) return;
     setDialogError('');
     setConfirmDialog({
       title: 'Delete wedding permanently',
@@ -730,7 +688,6 @@ function AdminAppContent() {
   };
 
   const handleRevoke = (entry) => {
-    if (guardReadOnly()) return;
     setDialogError('');
     setConfirmDialog({
       title: 'Revoke device session',
@@ -898,29 +855,6 @@ function AdminAppContent() {
       <main id="admin-tab-panel" tabIndex={-1} className="mx-auto max-w-6xl space-y-4 px-4 py-4">
         {authError || error ? <ErrorLine>{authError || error}</ErrorLine> : null}
 
-        {readOnly ? (
-          <div
-            role="alert"
-            className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-alert/60 bg-alert/15 px-4 py-3 text-xs text-alert-tint"
-          >
-            <div>
-              <strong className="font-heading uppercase tracking-widest">Read-only mode</strong>
-              <p className="mt-1 text-[11px]">
-                {backendHealth?.reason ||
-                  'The admin backend is unavailable. Mutating actions are disabled.'}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => void refreshBackendHealth()}
-              disabled={backendChecking}
-              className="rounded border border-alert/60 bg-page/60 px-2.5 py-1 font-semibold text-alert-tint disabled:opacity-50"
-            >
-              {backendChecking ? 'Checking…' : 'Re-check backend'}
-            </button>
-          </div>
-        ) : null}
-
         {showIdleWarning ? (
           <div
             role="alert"
@@ -1003,7 +937,6 @@ function AdminAppContent() {
               onRequestMfa={askMfa}
               onPublished={() => load()}
               onNotify={pushToast}
-              readOnly={readOnly}
             />
 
             <div className="space-y-3">
@@ -1051,8 +984,7 @@ function AdminAppContent() {
                       <button
                         type="button"
                         onClick={() => handleRotate(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200 disabled:opacity-40"
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
                       >
                         Rotate PINs
                       </button>
@@ -1066,32 +998,28 @@ function AdminAppContent() {
                       <button
                         type="button"
                         onClick={() => handlePublishRevision(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-white disabled:opacity-40"
+                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-white"
                       >
                         Replace cartridge
                       </button>
                       <button
                         type="button"
                         onClick={() => handleRestorePrevious(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200 disabled:opacity-40"
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
                       >
                         Restore previous
                       </button>
                       <button
                         type="button"
                         onClick={() => handleArchive(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-amber-800 bg-amber-950/60 px-2 py-1 font-semibold text-amber-200 disabled:opacity-40"
+                        className="rounded border border-amber-800 bg-amber-950/60 px-2 py-1 font-semibold text-amber-200"
                       >
                         Archive
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-alert/60 bg-alert/20 px-2 py-1 font-semibold text-alert-soft disabled:opacity-40"
+                        className="rounded border border-alert/60 bg-alert/20 px-2 py-1 font-semibold text-alert-soft"
                       >
                         Delete
                       </button>
@@ -1181,8 +1109,7 @@ function AdminAppContent() {
                           <button
                             type="button"
                             onClick={() => handleRevoke(entry)}
-                            disabled={readOnly}
-                            className="rounded border border-alert/60 bg-alert/20 px-2 py-1 text-[10px] font-semibold text-alert-soft disabled:opacity-40"
+                            className="rounded border border-alert/60 bg-alert/20 px-2 py-1 text-[10px] font-semibold text-alert-soft"
                           >
                             Revoke
                           </button>

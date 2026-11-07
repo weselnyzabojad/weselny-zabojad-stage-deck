@@ -182,39 +182,9 @@ immutable revision after fresh MFA.
 Limits:
 
 - no Drive writes, watchers or automatic publication;
-- Google Docs are mapped to cartridge drafts; any unmapped displayed field blocks publication;
-- every publish re-reads and binds the exact Drive version/text hash;
+- Google Doc preview is structural until the v1.2 cartridge mapping is approved;
+- every publish re-reads and binds the exact Drive version;
 - restore creates another audited revision.
-
-### Edge Function deployment
-
-Deploy every function the admin and stage roles use:
-
-```sh
-supabase functions deploy admin_api
-supabase functions deploy admin_drive
-supabase functions deploy join_room
-supabase functions deploy submit_song_request
-```
-
-Set server secrets:
-
-```sh
-supabase secrets set \
-  ALLOWED_ORIGIN=http://localhost:5173 \
-  SUPABASE_URL=... \
-  SUPABASE_SERVICE_ROLE_KEY=... \
-  SUPABASE_JWT_SECRET=... \
-  GOOGLE_SERVICE_ACCOUNT_EMAIL=... \
-  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=...
-```
-
-For production, `ALLOWED_ORIGIN` must be the deployed admin origin, not only
-localhost. Verify CORS `OPTIONS` responses and the `admin_drive` `status` action.
-
-If Supabase, `admin_api`, `admin_drive` or required secrets are unavailable, the
-admin panel enters **read-only mode** and blocks every mutation until the backend
-preflight succeeds again.
 
 ### Drive connector setup
 

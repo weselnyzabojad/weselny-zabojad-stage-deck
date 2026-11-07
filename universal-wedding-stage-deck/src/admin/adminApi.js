@@ -28,121 +28,6 @@ export function adminConfigured(env = import.meta.env) {
   return getAdminConfig(env).configured;
 }
 
-function adminEndpointError(endpoint, cause) {
-  const error = new Error(
-    `Could not reach ${endpoint}: ${cause?.message ?? 'network request failed'}`,
-  );
-  error.endpoint = endpoint;
-  error.code = 'admin_endpoint_unreachable';
-  error.cause = cause;
-  return error;
-}
-
-async function fetchAdminEndpoint(url, options) {
-  try {
-    return await fetch(url, options);
-  } catch (cause) {
-    throw adminEndpointError(url, cause);
-  }
-}
-
-export async function checkAdminBackend(env = import.meta.env) {
-  const config = getAdminConfig(env);
-  if (ADMIN_DEMO) {
-    return {
-      ok: true,
-      readOnly: false,
-      configured: true,
-      adminApi: { ok: true, endpoint: 'demo' },
-      adminDrive: { ok: true, endpoint: 'demo' },
-      checkedAt: new Date().toISOString(),
-    };
-  }
-  if (!config.configured) {
-    return {
-      ok: false,
-      readOnly: true,
-      configured: false,
-      reason: 'Supabase is not configured for this build.',
-      adminApi: { ok: false, endpoint: `${config.functionsUrl}/admin_api` },
-      adminDrive: { ok: false, endpoint: `${config.functionsUrl}/admin_drive` },
-      checkedAt: new Date().toISOString(),
-    };
-  }
-
-  async function probe(name) {
-    const endpoint = `${config.functionsUrl}/${name}`;
-    try {
-      const response = await fetch(endpoint, {
-        method: 'OPTIONS',
-        headers: {
-          apikey: config.anonKey,
-          'Access-Control-Request-Method': 'POST',
-          'Access-Control-Request-Headers': 'authorization,apikey,content-type',
-        },
-      });
-      if (response.status === 404) {
-        return { ok: false, endpoint, status: 404, error: `${name} is not deployed (404).` };
-      }
-      return { ok: true, endpoint, status: response.status };
-    } catch (cause) {
-      return {
-        ok: false,
-        endpoint,
-        status: null,
-        error: `Could not reach ${name}: ${cause?.message ?? 'network request failed'}`,
-      };
-    }
-  }
-
-  const [adminApi, adminDrive] = await Promise.all([probe('admin_api'), probe('admin_drive')]);
-
-  if (adminDrive.ok) {
-    try {
-      const session = await getAdminSession();
-      if (session?.access_token) {
-        const response = await fetchAdminEndpoint(`${config.functionsUrl}/admin_drive`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: config.anonKey,
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({ action: 'status' }),
-        });
-        if (response.ok) {
-          const status = await response.json().catch(() => ({}));
-          adminDrive.configured = status.configured === true;
-          if (!adminDrive.configured) {
-            adminDrive.ok = false;
-            adminDrive.error = 'admin_drive is deployed but the Drive connector is not configured.';
-          }
-        }
-      }
-    } catch {
-      // Preflight remains reachability-only when no admin session exists yet.
-    }
-  }
-
-  const ok = adminApi.ok && adminDrive.ok;
-  return {
-    ok,
-    readOnly: !ok,
-    configured: true,
-    adminApi,
-    adminDrive,
-    reason: ok
-      ? null
-      : [
-          !adminApi.ok ? adminApi.error ?? 'admin_api is unavailable.' : null,
-          !adminDrive.ok ? adminDrive.error ?? 'admin_drive is unavailable.' : null,
-        ]
-          .filter(Boolean)
-          .join(' '),
-    checkedAt: new Date().toISOString(),
-  };
-}
-
 export function getAdminClient(env = import.meta.env) {
   const config = getAdminConfig(env);
   if (!config.configured) throw new Error('Supabase is not configured for this build.');
@@ -271,8 +156,7 @@ export async function callAdmin(action, payload = {}) {
   const session = await getAdminSession();
   if (!session?.access_token) throw new Error('Admin session expired. Sign in again.');
 
-  const endpoint = `${config.functionsUrl}/admin_api`;
-  const response = await fetchAdminEndpoint(endpoint, {
+  const response = await fetch(`${config.functionsUrl}/admin_api`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -313,8 +197,7 @@ async function callAdminDrive(action, payload = {}) {
   const session = await getAdminSession();
   if (!session?.access_token) throw new Error('Admin session expired. Sign in again.');
 
-  const endpoint = `${config.functionsUrl}/admin_drive`;
-  const response = await fetchAdminEndpoint(endpoint, {
+  const response = await fetch(`${config.functionsUrl}/admin_drive`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
