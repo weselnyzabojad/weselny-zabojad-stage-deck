@@ -19,7 +19,7 @@ export const TEST_WIEDZY_GAME = {
   relationship: {
     standalone: true,
     anchorId: null,
-    note: 'Can run in any ELASTIC/BUFFER block. Link it to a step when scheduling.',
+    note: 'Can run in any FLEXIBLE block. Link it to a step when scheduling.',
   },
   scoring: {
     mode: 'POINTS',
