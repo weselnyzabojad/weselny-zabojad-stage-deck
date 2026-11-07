@@ -168,7 +168,7 @@ export default function DjBoothView({
             <TopBarRoleIdentity role={role} tier={tierLabel} />
           </>
         )}
-        center={<TopBarCenterIdentity wedding={wedding} />}
+        center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={isVip} />}
         right={(
           <>
             {isVip && culturalRules ? (

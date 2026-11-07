@@ -34,8 +34,8 @@ describe('issue #254 center identity layout', () => {
     expect(html).toContain('Jennifer');
     expect(html).toContain('Guillaume');
     expect(html).toContain('💍');
-    expect(html).toContain('>FR<');
-    expect(html).toContain('>PL<');
+    expect(html).toContain('French');
+    expect(html).toContain('Polish');
     expect(html).toContain('2026');
   });
 });

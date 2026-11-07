@@ -48,6 +48,7 @@ const fr = {
   'common.retry': 'Réessayer',
   'common.unknown': 'Inconnu',
   'couple.wedding': 'Mariage :',
+  'couple.languages': 'Langues du couple',
 
   'drift.onTime': "À L'HEURE",
   'drift.late': '+{minutes} min DE RETARD',
