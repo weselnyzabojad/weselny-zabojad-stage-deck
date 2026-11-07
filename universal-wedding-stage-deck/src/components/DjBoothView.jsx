@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
+import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -96,6 +97,9 @@ export default function DjBoothView({
       (activeEntry?.step?.optionalFlag === 'oczepiny' ||
         /oczepiny/i.test(activeEntry?.step?.title ?? '')) ? (
         <OczepinyCueCard wedding={wedding} audience="dj-vip" />
+      ) : null}
+      {isVip && activeEntry?.step?.firstDanceMode ? (
+        <FirstDanceCueCard step={activeEntry.step} audience="dj-vip" />
       ) : null}
       {mainSongRequired ? (
         <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2 text-[11px]">

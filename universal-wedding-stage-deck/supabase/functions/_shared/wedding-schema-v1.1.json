@@ -1055,6 +1055,22 @@
           "type": "string",
           "enum": ["GUESTS_FIRST", "NEWLYWEDS_FIRST"],
           "description": "Grand Entrance guest order from the Google Doc."
+        },
+        "firstDanceMode": {
+          "type": "string",
+          "enum": ["FAKE", "NORMAL"],
+          "description": "First Dance variant from the Google Doc."
+        },
+        "firstDanceStartAtSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "firstDanceStopAfterSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "firstDanceNotes": {
+          "type": "string"
         }
       }
     },

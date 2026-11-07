@@ -468,7 +468,7 @@ export const DEMO_WEDDING = {
     { id: "step_05", time: "20:30", durationMin: 30, title: "Wedding cake", type: "HARD_ANCHOR", location: "Terrace", isMainSongRequired: true, dj: { playlist: "Party Set", track: "Dancing Queen — ABBA", cutoff: "21:30" }, teleprompter: TEST_WIEDZY_GAME },
     { id: "step_06", time: "21:00", durationMin: 15, title: "Wedding Thank-You", type: "ELASTIC", location: "Main Hall" },
     { id: "step_07", time: "21:15", durationMin: 30, title: "Wishes", type: "BUFFER", location: "Garden", optionalFlag: "wishes" },
-    { id: "step_08", time: "21:45", durationMin: 10, title: "First Dance", type: "ELASTIC", location: "Main Hall", isMainSongRequired: true },
+    { id: "step_08", time: "21:45", durationMin: 10, title: "First Dance", type: "ELASTIC", location: "Main Hall", isMainSongRequired: true, firstDanceMode: "NORMAL", firstDanceStartAtSec: 12, firstDanceStopAfterSec: 270, firstDanceNotes: "Key song for the DJ; fade under the applause." },
     { id: "step_09", time: "00:00", durationMin: 60, title: "Oczepiny", type: "HARD_ANCHOR", location: "Main Hall", optionalFlag: "oczepiny" },
     { id: "step_10", time: "01:00", durationMin: 45, title: "Games", type: "BUFFER", location: "Main Hall", optionalFlag: "games" }
   ]
