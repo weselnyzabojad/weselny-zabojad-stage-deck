@@ -43,7 +43,7 @@ const fr = {
   'roles.role': 'Rôle : {short}',
   'roles.fixed': 'Rôle fixé sur cet appareil',
 
-  'children.expectedBadge': 'Enfants attendus — écartez-les des moments clés',
+  'children.expectedBadge': 'Enfants attendus',
   'common.wedding': 'Mariage',
   'common.retry': 'Réessayer',
   'common.unknown': 'Inconnu',
