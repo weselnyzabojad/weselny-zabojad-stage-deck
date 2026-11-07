@@ -37,7 +37,7 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
     expect(dj).toContain('<OpenOnPhoneButton role={role} tier={tierLabel}');
     expect(dj).toContain('<CulturalRulesBar');
     expect(photo).toContain('<OpenOnPhoneButton role={role}');
-    expect(photo).not.toContain('<CulturalRulesBar');
+    expect(photo).toContain('<CulturalRulesBar');
     expect(speaker).toContain('<OpenOnPhoneButton role="speaker"');
     expect(speaker).not.toContain('<CulturalRulesBar');
   });

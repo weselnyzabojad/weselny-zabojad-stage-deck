@@ -472,6 +472,12 @@ export default function StageDeck({
             theme={theme}
             onToggleTheme={toggleTheme}
             roomCode={deckIntent.roomCode}
+            culturalRules={WEDDING.culturalRules}
+            oczepinyStatus={djOczepinyStatus}
+            speeches={speeches}
+            speechMode={speechMode}
+            activeSpeechId={liveState.active_speech_id}
+            authControl={authControl}
             {...roleProps}
           />
         </AppErrorBoundary>
