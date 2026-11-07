@@ -1,4 +1,4 @@
-// Supabase Auth + admin_api client for `/deck/admin` (issue #76).
+// Supabase Auth + admin_api client for `/admin` (issue #76).
 //
 // The browser only ever holds the public anon key and the owner's Auth session.
 // Every admin mutation goes through the `admin_api` Edge Function, which checks

@@ -24,12 +24,12 @@ import {
 } from '../src/admin/adminUtils.js';
 
 describe('issue #76 owner admin panel', () => {
-  it('only activates on the /deck/admin route', () => {
-    expect(isAdminPath('/deck/admin')).toBe(true);
-    expect(isAdminPath('/deck/admin/')).toBe(true);
+  it('only activates on the /admin route', () => {
+    expect(isAdminPath('/admin')).toBe(true);
+    expect(isAdminPath('/admin/')).toBe(true);
     expect(isAdminPath('/deck')).toBe(false);
     expect(isAdminPath('/deck/room/mc')).toBe(false);
-    expect(isAdminPath('/admin')).toBe(false);
+    expect(isAdminPath('/deck/admin')).toBe(false);
   });
 
   it('enforces a 30-minute idle and 8-hour absolute admin session', () => {

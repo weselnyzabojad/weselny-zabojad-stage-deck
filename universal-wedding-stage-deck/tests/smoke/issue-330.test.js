@@ -36,7 +36,7 @@ describe('issue #330 documentation refresh', () => {
     ]) {
       expect(readme).toContain(command);
     }
-    expect(readme).toContain('/deck/admin');
+    expect(readme).toContain('/admin');
     expect(readme).toContain('/request/:roomCode');
   });
 
