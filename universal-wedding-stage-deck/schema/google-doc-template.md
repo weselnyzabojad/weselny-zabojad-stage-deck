@@ -74,13 +74,13 @@ Props: Veil, Bow ties, Test cards
 
 ## TIMELINE
 
-| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:30 | 30 | Aperitif in Garden | BUFFER | Garden |  |  |
-| step_02 | 17:00 | 60 | Outdoor Civil Ceremony | ELASTIC | Garden Gazebo |  |  |
-| step_03 | 18:00 | 90 | Hall Entrance, Toast & Dinner Start | ELASTIC | Main Hall |  | Planned 18:00; actual start logged live. |
-| step_04 | 19:30 | 30 | Buffets Open & Dance Floor | BUFFER | Main Hall |  |  |
-| step_05 | 20:30 | 30 | Cake & Sparklers | HARD_ANCHOR | Terrace | cake_midnight |  |
+| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| step_01 | 16:30 | 30 | Aperitif in Garden | BUFFER | Garden |  | false |  |
+| step_02 | 17:00 | 60 | Outdoor Civil Ceremony | ELASTIC | Garden Gazebo |  | false |  |
+| step_03 | 18:00 | 90 | Hall Entrance, Toast & Dinner Start | ELASTIC | Main Hall |  | true | Planned 18:00; actual start logged live. |
+| step_04 | 19:30 | 30 | Buffets Open & Dance Floor | BUFFER | Main Hall |  | false |  |
+| step_05 | 20:30 | 30 | Cake & Sparklers | HARD_ANCHOR | Terrace | cake_midnight | true |  |
 
 ## DJ CUES
 

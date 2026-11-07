@@ -968,6 +968,11 @@
         "photographerCue": {
           "type": "string",
           "description": "Optional photographer/vendor cue for this step. Swap warns and defer skips protected steps."
+        },
+        "isMainSongRequired": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this step requires a main song (for example Grand Entrance, Wedding cake, First Dance). Missing values are treated as false."
         }
       }
     },

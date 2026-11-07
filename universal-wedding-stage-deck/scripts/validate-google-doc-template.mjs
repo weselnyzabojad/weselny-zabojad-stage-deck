@@ -32,6 +32,7 @@ const EXPECTED_TABLES = {
     'Type',
     'Location',
     'Anchor ID',
+    'Main Song Required',
     'Notes',
   ],
   'DJ CUES': ['Step ID', 'Playlist', 'Track', 'Cutoff', 'CutoffSec', 'Note'],
