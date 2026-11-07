@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `0d0a6c7` (speaker view localization decision)
+**Aligned with:** `master` @ `ee06dae` (Google Doc mapping decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -148,6 +148,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews and regression coverage |
 | [#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337) | Admin panel: restrict access to laptops/desktops only |
 | [#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349) | Speaker view: localize UI text, keep speech text verbatim |
+| [#350](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/350) | Google Doc to cartridge: complete section mapping |
+| [#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351) | Admin Drive: publish mapped Google Doc cartridges |
 
 ### Responsive phone / pocket plan
 
@@ -1277,6 +1279,37 @@ name, relationship and other cartridge data remain data, not UI copy. Speech
 sourcing and cartridge work stays with #245; this decision covers only UI
 localization.
 ([#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349))
+
+### Google Doc to cartridge mapping completeness (decision, 2026-11-07)
+
+The current Google Docs import is incomplete: `googleDocToTemplateText` converts
+the Drive API response into the canonical template, and the parser validates
+section structure, but there is **no deterministic mapping from those sections
+into a WeddingSchema cartridge**. Admin Google Doc preview is therefore
+read-only and cannot be diffed or published.
+
+Every field the application displays must be mapped from the Doc into the
+cartridge:
+
+- EVENT, couple identity, languages, cultural rules, Oczepiny and timeline;
+- DJ/MC cues, subtasks, hard anchors, mandatory constraints and view visibility;
+- venue logistics, media team, photo plan, songs/music policy and guest requests;
+- speeches, cake, games/question lists, contacts, kitchen, VIP alerts,
+  pre-wedding todos, privacy and extensions;
+- live sync state only when explicitly supplied as a seed.
+
+Mapping is validation-first and deterministic. Missing required data must fail
+with a section/row error; derived values such as durations and prestation ready
+are calculated after mapping. Speech text stays verbatim and is never translated.
+Keep schema v1.1 until #77 freezes v1.2, and coordinate speech-source work with
+#245.
+([#350](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/350))
+
+The admin Drive flow must then produce a cartridge draft, run schema/semantic/
+completeness validation, show a revision diff and publish through the existing
+fresh-MFA source-bound path. Any displayed field that failed to map blocks
+publication. Round-trip and completeness tests are required.
+([#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
