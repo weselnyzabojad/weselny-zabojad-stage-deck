@@ -159,7 +159,7 @@ src/
 supabase/
   schema.sql        base tables, RLS, join/wipe/purge functions
   migrations/       owner-admin tables, presence, sessions, audit, RLS updates
-  functions/        join_room, admin_api, submit_song_request
+  functions/        join_room, admin_api, admin_drive, submit_song_request
 schema/             WeddingSchema v1.1, fixtures, validators, Google Doc template/parser
 docs/               focused design/testing/accessibility notes
 scripts/            validators and migration helpers
@@ -345,6 +345,7 @@ Never ship the service-role key.
 ```bash
 supabase functions deploy join_room
 supabase functions deploy admin_api
+supabase functions deploy admin_drive
 supabase functions deploy submit_song_request
 ```
 

@@ -656,10 +656,13 @@ PIN collisions no longer select a local cartridge: the room is keyed by
    adds monotonic cartridge revisions, publication metadata, safe backfill and
    the atomic `stage_deck_publish_cartridge(...)` RPC used by `admin_api`.
 3. Deploy the functions: `supabase functions deploy join_room`,
-   `supabase functions deploy admin_api` and
+   `supabase functions deploy admin_api`,
+   `supabase functions deploy admin_drive` and
    `supabase functions deploy submit_song_request`.
 4. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, and
-   optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`.
+   optionally `PUBLIC_DECK_URL` / `ALLOWED_ORIGIN`. For Google Drive add
+   `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` and an
+   optional `GOOGLE_DRIVE_TEST_FILE_ID` (see below).
 
 **Legacy cleanup.** If an older deployment still has the secret-based
 `publish_room` function, delete it and its secret:
@@ -671,6 +674,42 @@ supabase secrets unset DECK_PUBLISH_SECRET
 
 `admin_api` is the only cartridge publication path; role devices can only read
 the server-published revision.
+
+**Google Drive connector setup (issue #168)**
+1. In Google Cloud, create or select a project, enable **Google Drive API**,
+   and create a least-privilege service account. Do not enable domain-wide
+   delegation.
+2. Create a JSON key for the service account. Store the client email and private
+   key only as Edge Function secrets:
+
+```bash
+supabase secrets set \
+  GOOGLE_SERVICE_ACCOUNT_EMAIL="service-account@project.iam.gserviceaccount.com" \
+  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n" \
+  GOOGLE_DRIVE_TEST_FILE_ID="shared-test-file-id"
+```
+
+   The connector also accepts escaped `\n` newlines in the key. Never use a
+   `VITE_` variable for Google credentials.
+3. Share only the test file (or later the wedding source folder) with the
+   service-account email, then call the admin-only connectivity action:
+
+```bash
+curl -X POST "$SUPABASE_URL/functions/v1/admin_drive" \
+  -H "Authorization: Bearer $OWNER_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"action":"status"}'
+```
+
+   A successful response contains only sanitized metadata. Unshared files return
+   a safe not-found/permission error.
+4. Rotate or revoke the key in Google Cloud, update
+   `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` with `supabase secrets set`, and redeploy
+   `admin_drive`. Tokens live only in Edge Function memory and expire within an
+   hour.
+5. Smoke test: allowlisted AAL2 owner → shared file metadata succeeds; anonymous
+   or role JWT → rejected; unshared file → actionable 404/403 without secrets.
+
 5. Insert the owner account into `app_admins` (no self-signup):
    `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`
 6. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
