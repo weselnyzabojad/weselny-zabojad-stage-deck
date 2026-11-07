@@ -39,12 +39,13 @@ export default function HardAnchorAlertBanner({ radar, actions = null, childrenE
         </div>
       </div>
 
+      {childrenExpected ? (
+        <div className="mx-auto rounded border border-amber-300/60 bg-amber-900/50 px-2 py-1 text-center text-[11px] font-semibold text-amber-100">
+          🧒 Children expected — keep them clear of key moments.
+        </div>
+      ) : null}
+
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
-        {childrenExpected ? (
-          <div className="rounded border border-amber-300/60 bg-amber-900/50 px-2 py-1 text-[11px] font-semibold text-amber-100">
-            🧒 Children expected — keep them clear of key moments.
-          </div>
-        ) : null}
         <div className="min-w-0 text-xs text-white">
           {warning.workEntry ? (
             <>
