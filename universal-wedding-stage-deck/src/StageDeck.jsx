@@ -8,6 +8,7 @@ import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import ChildrenExpectedBadge from './components/ChildrenExpectedBadge';
+import WeddingClosureBanner from './components/WeddingClosureBanner';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
@@ -429,6 +430,13 @@ export default function StageDeck({
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
       <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />
+      <WeddingClosureBanner
+        role={currentRole}
+        isVipDj={djDetailTier(WEDDING) === 'vip'}
+        closureTime={mandatorySettings.closureTime}
+        extensionAllowed={mandatorySettings.closureExtensionAllowed === true}
+        lastSong={mandatorySettings.lastSong}
+      />
     </>
   );
 

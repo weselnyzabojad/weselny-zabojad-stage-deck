@@ -208,6 +208,9 @@
           "type": "string",
           "enum": ["KITCHEN_RETURN", "CUT_IN_PLACE"]
         },
+        "closureTime": { "$ref": "#/$defs/clock" },
+        "closureExtensionAllowed": { "type": "boolean" },
+        "lastSong": { "type": "string" },
         "kitchenServices": {
           "type": "object",
           "additionalProperties": false,
