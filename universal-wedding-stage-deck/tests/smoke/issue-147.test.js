@@ -115,15 +115,8 @@ describe('issue #147 VIP export & print pack', () => {
     expect(html).toBe('');
   });
 
-  it('does not add the export pack to the pocket content', () => {
+  it('removes the export pack from the reworked DJ view', () => {
     const source = read('src/components/DjBoothView.jsx');
-    const compact = source.slice(
-      source.indexOf('const compactContent'),
-      source.indexOf('const wideContent'),
-    );
-    const wide = source.slice(source.indexOf('const wideContent'));
-
-    expect(compact).not.toContain('DjExportPack');
-    expect(wide).toContain('<DjExportPack enabled={isVip}');
+    expect(source).not.toContain('DjExportPack');
   });
 });

@@ -40,6 +40,7 @@ function FocusZone({
   onToggle,
   onCollapse,
   compact,
+  zoneScroll,
 }) {
   return (
     <section
@@ -56,7 +57,7 @@ function FocusZone({
         </p>
       ) : (
         <ol
-          className={`${compact ? '' : 'stage-rail-scroll '}flex flex-col gap-2`}
+          className={`${compact || !zoneScroll ? '' : 'stage-rail-scroll '}flex flex-col gap-2`}
           onKeyDown={(event) => handleZoneKeyDown(event, onCollapse)}
         >
           {entries.map((entry, position) => {
@@ -106,6 +107,7 @@ export default function TimelineFocusStack({
   currentBody = null,
   labels = {},
   className = '',
+  zoneScroll = true,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
@@ -153,6 +155,7 @@ export default function TimelineFocusStack({
           onToggle={toggle}
           onCollapse={() => collapse('history')}
           compact={compact}
+          zoneScroll={zoneScroll}
         />
       </div>
 
@@ -197,6 +200,7 @@ export default function TimelineFocusStack({
           onToggle={toggle}
           onCollapse={() => collapse('future')}
           compact={compact}
+          zoneScroll={zoneScroll}
         />
       </div>
     </section>
