@@ -2,6 +2,7 @@
 // React/Supabase makes the session, presence and QR rules testable offline.
 
 export const ADMIN_PATH = '/deck/admin';
+export const ADMIN_MIN_VIEWPORT_WIDTH = 1024;
 export const ADMIN_IDLE_MS = 30 * 60 * 1000;
 export const ADMIN_ABSOLUTE_MS = 8 * 60 * 60 * 1000;
 export const ADMIN_WARNING_MS = 5 * 60 * 1000;
@@ -12,6 +13,10 @@ export const ROLE_IDS = ['mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venu
 export function isAdminPath(pathname = '') {
   const normalized = String(pathname).replace(/\/+$/, '') || '/';
   return normalized === ADMIN_PATH;
+}
+
+export function isAdminViewportSupported(width) {
+  return Number.isFinite(width) && width >= ADMIN_MIN_VIEWPORT_WIDTH;
 }
 
 export function createAdminSession(now = Date.now()) {
