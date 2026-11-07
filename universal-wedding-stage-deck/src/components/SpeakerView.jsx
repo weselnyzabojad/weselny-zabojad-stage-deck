@@ -33,6 +33,7 @@ export default function SpeakerView({
   outbox = null,
   theme = 'night',
   onToggleTheme,
+  pin = null,
   roomCode = null,
 }) {
   const { t } = useI18n();
@@ -166,6 +167,8 @@ export default function SpeakerView({
       <RoleShell
         compact
         role="speaker"
+        clock={clock}
+        pin={pin}
         wedding={wedding}
         roles={[]}
         syncStatus={syncStatus}

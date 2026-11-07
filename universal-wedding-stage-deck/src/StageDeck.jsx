@@ -389,6 +389,7 @@ export default function StageDeck({
   const roleProps = {
     role: currentRole,
     roles: roleIds,
+    pin: pairing?.pin ?? null,
     onRoleChange: handleRoleChange
   };
 

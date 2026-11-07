@@ -72,6 +72,7 @@ export default function VenueManagerView({
   outbox = null,
   theme = 'night',
   onToggleTheme,
+  pin = null,
   onUpdateMandatory,
   mandatoryOverride = null,
 }) {
@@ -196,6 +197,8 @@ export default function VenueManagerView({
       <RoleShell
         compact
         role="venue_manager"
+        clock={clock}
+        pin={pin}
         wedding={wedding}
         syncStatus={syncStatus}
         syncError={syncError}
