@@ -74,38 +74,53 @@ function labelFor(status) {
   return status ? status.replaceAll('_', ' ') : 'TBC';
 }
 
-function RuleChip({ ruleKey, label, icon, status, statusLabels = {}, note = null }) {
+function RuleChip({
+  ruleKey,
+  label,
+  icon,
+  status,
+  statusLabels = {},
+  note = null,
+  compact = false,
+}) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
   const colors = TONES[toneFor(normalizedStatus)];
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
-  // Keep aria-label/title without the note suffix so screen readers still
-  // announce the rule state, but the visible note is removed per SR refine.
+  // The full state stays available to assistive tech even when pocket hides
+  // the visible status text.
   const description = `${label}: ${statusLabel}${cleanNote ? ` — ${cleanNote}` : ''}`;
 
   return (
     <div
       key={ruleKey}
       role="note"
-      aria-label={statusLabel}
-      title={statusLabel}
-      className={`flex items-start gap-2 rounded-lg border px-2.5 py-1.5 ${colors.chip}`}
+      aria-label={description}
+      title={description}
+      className={`flex items-center gap-2 rounded-lg border ${compact ? 'px-2 py-1' : 'items-start px-2.5 py-1.5'} ${colors.chip}`}
     >
-      <span aria-hidden="true" className="mt-0.5 text-sm leading-none">
+      <span aria-hidden="true" className={`text-sm leading-none ${compact ? '' : 'mt-0.5'}`}>
         {icon}
       </span>
       <div className="min-w-0">
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex items-center gap-1.5">
           <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-slate-100">
             {label}
           </span>
-          <span className={`flex items-center gap-1 font-mono text-[10px] font-bold ${colors.text}`}>
+          {compact ? (
             <span
               aria-hidden="true"
               className={`inline-block h-1.5 w-1.5 rounded-full ${colors.dot}`}
             />
-            {statusLabel}
-          </span>
+          ) : (
+            <span className={`flex items-center gap-1 font-mono text-[10px] font-bold ${colors.text}`}>
+              <span
+                aria-hidden="true"
+                className={`inline-block h-1.5 w-1.5 rounded-full ${colors.dot}`}
+              />
+              {statusLabel}
+            </span>
+          )}
         </div>
         {/* Note text removed per MC top-bar refinement (project.md, 2026-11-06) */}
       </div>
@@ -113,7 +128,7 @@ function RuleChip({ ruleKey, label, icon, status, statusLabels = {}, note = null
   );
 }
 
-export default function CulturalRulesBar({ rules = {}, oczepinyStatus = null }) {
+export default function CulturalRulesBar({ rules = {}, oczepinyStatus = null, compact = false }) {
   const oczepinyState = oczepinyStatus?.state ?? 'OFF';
 
   return (
@@ -132,6 +147,7 @@ export default function CulturalRulesBar({ rules = {}, oczepinyStatus = null }) 
             status={rule.status}
             statusLabels={statusLabels}
             note={rule.note}
+            compact={compact}
           />
         );
       })}
@@ -141,6 +157,7 @@ export default function CulturalRulesBar({ rules = {}, oczepinyStatus = null }) 
         icon={OCZEPINY.icon}
         status={oczepinyState}
         statusLabels={OCZEPINY.statusLabels}
+        compact={compact}
         note={
           oczepinyState === 'ACTIVE'
             ? 'Midnight tradition is live.'

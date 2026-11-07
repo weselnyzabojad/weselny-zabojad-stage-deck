@@ -21,12 +21,19 @@ const TONES = {
 // Pocket Remote (P0.5). The tooltip explains the component values
 // (start drift, projected drift, manual offset, live overrun) without showing a
 // second competing number.
-export default function DriftPill({ drift, size = 'md', className = '' }) {
-  const label = drift?.canonicalDriftLabel ?? drift?.label ?? null;
+export default function DriftPill({ drift, size = 'md', compact = false, className = '' }) {
+  const toneKey = drift?.canonicalDriftTone ?? drift?.tone ?? 'unknown';
+  const rawLabel = drift?.canonicalDriftLabel ?? drift?.label ?? null;
+  const lateMinutes = drift?.canonicalDriftMinutes;
+  // Pocket keeps the tone and tooltip but drops the "LATE / DE RETARD" wording.
+  const label =
+    compact && toneKey === 'late' && Number.isFinite(lateMinutes)
+      ? `+${Math.abs(lateMinutes)} min`
+      : rawLabel;
   if (!label) return null;
 
-  const tone = TONES[drift?.canonicalDriftTone ?? drift?.tone ?? 'unknown'] ?? TONES.unknown;
-  const sizing = size === 'sm' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-sm';
+  const tone = TONES[toneKey] ?? TONES.unknown;
+  const sizing = size === 'sm' ? 'px-2 py-1 text-[10px]' : compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm';
 
   return (
     <span

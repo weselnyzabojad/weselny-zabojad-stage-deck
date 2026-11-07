@@ -167,7 +167,7 @@ export default function McMasterView({ model }) {
       ) : null}
 
       <ReelClock clock={driftReport.clock} />
-      <DriftPill drift={driftReport.drift} />
+      <DriftPill drift={driftReport.drift} compact />
 
       {railEntries.length > 0 ? (
         <TimelineFocusStack
@@ -562,6 +562,8 @@ export default function McMasterView({ model }) {
       outbox={outbox}
       onToggleTheme={toggleTheme}
       theme={theme}
+      culturalRules={WEDDING.culturalRules}
+      oczepinyStatus={oczepinyStatus}
       onUndo={handleUndo}
       canUndo={canUndo}
       lastUndoLabel={lastUndo?.label}
