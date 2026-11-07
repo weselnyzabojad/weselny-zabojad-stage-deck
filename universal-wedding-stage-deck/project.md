@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `ed682fe` (DJ Standard laptop-only and ring size alignment)
+**Aligned with:** `master` @ `e61bb15` (DJ song info and dev switcher alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -105,6 +105,10 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258) | Dev switcher: DJ Standard preview |
 | [#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259) | DJ current step: remove generic track chips, add main songs |
 | [#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260) | Schema: add isMainSongRequired step flag |
+| [#261](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/261) | Predefined steps: rename catalogue, delete Buffets |
+| [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) | Predefined steps: add Thank-You, Wishes, Oczepiny, Games, First Dance |
+| [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | TODO: rework and define each predefined step |
+| [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) | Predefined steps: repeated-concept audit |
 
 ### Responsive phone / pocket plan
 
@@ -816,6 +820,68 @@ Implementation issues:
 - [#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258) — dev DJ Standard preview;
 - [#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259) — DJ current-step song info;
 - [#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260) — isMainSongRequired schema flag.
+
+### Predefined step catalogue (decision, 2026-11-07)
+
+**Renames.**
+
+| Current | New |
+| --- | --- |
+| Aperitif in Garden (`step_01`) | Cocktail / Vin d'honneur |
+| Outdoor Civil Ceremony (`step_02`) | Ceremony |
+| Hall Entrance, Toast & Dinner Start (`step_03`) | Grand Entrance |
+| Cake & Sparklers (`step_05`) | Wedding cake |
+
+**Delete.** Remove `step_04` "Buffets Open & Dance Floor" from every
+source (demo, schema example/real fixture, Google Doc template, DJ cues,
+subtasks/import mappings and docs).
+
+**Add.** New predefined steps:
+
+- **Wedding Thank-You** — couple thanks guests; mandatory.
+- **Wishes** — guest wishes/guestbook moment; optional by cartridge flag.
+- **Oczepiny** — optional by the existing Oczepiny enable flag.
+- **Games** — optional by cartridge flag.
+- **First Dance** — mandatory for now; detailed schema will be worked out later.
+
+Optional steps are inserted only when their cartridge flag is enabled; mandatory
+steps always appear. Existing step IDs stay stable; new steps get new IDs.
+([#261](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/261),
+[#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262))
+
+**Repeated-concept audit.** Across the demo cartridge, schema
+example/real fixture, Google Doc template, hard anchors, speeches, games
+content and app features:
+
+| Concept | Predefined? | Notes |
+| --- | --- | --- |
+| Cocktail / Vin d'honneur | Yes | Renamed from Aperitif; repeated in step_01/template. |
+| Ceremony | Yes | Step_02 plus ceremony hard anchor. |
+| Grand Entrance | Yes | Step_03 plus MC cues/grand-entrance important song. |
+| Wedding cake | Yes | Step_05 plus cake protocol, hard anchor and CAKE song. |
+| Wedding Thank-You | Yes, mandatory | Parents' thank-you subtask/speeches today. |
+| Wishes (guest wishes/guestbook) | Yes, optional | Guestbook/Instax/wish-bottle mentions today. |
+| Oczepiny | Yes, optional | Hard anchor/object/photo/cultural indicator today. |
+| Games | Yes, optional | Game content/teleprompter today. |
+| First Dance | Yes, mandatory for now | Important song/deliverable today, not a step. |
+| Buffets Open & Dance Floor | No | Delete step_04. |
+
+Each concept should have exactly one timeline representation; remove duplicate
+anchor/subtask-only representations where the step now owns the moment. Any
+remaining ambiguity goes to the step-rework TODO.
+([#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264))
+
+**Rework TODO.** Every predefined step needs a precise definition before
+implementation: purpose/trigger, duration/type, location, MC/speaker cues,
+subtasks, main song/playlist/cutoff, photo/video cues, hard-anchor links,
+dependencies and optional/mandatory rules.
+([#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263))
+
+Implementation issues:
+- [#261](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/261) — renames and Buffets deletion;
+- [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) — new predefined steps;
+- [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) — precise step-rework TODO;
+- [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) — repeated-concept audit.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
