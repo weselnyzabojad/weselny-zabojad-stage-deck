@@ -20,6 +20,13 @@ const DEFAULT_KITCHEN = {
   thirdSupper: '',
 };
 
+const KITCHEN_MODE_FIELDS = [
+  { key: 'dinner', label: 'Obiad weselny service' },
+  { key: 'firstSupper', label: 'Pierwsza kolacja service' },
+  { key: 'secondSupper', label: 'Druga kolacja service' },
+  { key: 'thirdSupper', label: 'Trzecia kolacja service' },
+];
+
 function loadSettings(wedding) {
   if (typeof window === 'undefined') return wedding.mandatorySteps ?? {};
   try {
@@ -88,6 +95,7 @@ export default function VenueManagerView({
   };
 
   const kitchen = { ...DEFAULT_KITCHEN, ...(settings.kitchenServices ?? {}) };
+  const kitchenModes = settings.kitchenServiceModes ?? {};
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
 
   const body = (
@@ -119,6 +127,27 @@ export default function VenueManagerView({
             value={kitchen.thirdSupper}
             onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, thirdSupper: time } })}
           />
+          {KITCHEN_MODE_FIELDS.map(({ key, label }) => (
+            <label
+              key={key}
+              className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500"
+            >
+              {label}
+              <select
+                value={kitchenModes[key] ?? 'TABLE_SERVICE'}
+                onChange={(event) =>
+                  update({
+                    ...settings,
+                    kitchenServiceModes: { ...kitchenModes, [key]: event.target.value },
+                  })
+                }
+                className="rounded border border-line bg-card px-2 py-1 text-xs text-white"
+              >
+                <option value="TABLE_SERVICE">Table service</option>
+                <option value="BUFFET">Buffet</option>
+              </select>
+            </label>
+          ))}
           <TimeField
             label="Wedding closure"
             value={settings.closureTime}

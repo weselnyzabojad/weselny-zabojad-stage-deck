@@ -267,6 +267,12 @@ export const DEMO_WEDDING = {
       secondSupper: "23:30",
       thirdSupper: null,
     },
+    kitchenServiceModes: {
+      dinner: "TABLE_SERVICE",
+      firstSupper: "TABLE_SERVICE",
+      secondSupper: "BUFFET",
+      thirdSupper: "TABLE_SERVICE",
+    },
   },
   wishes: { enabled: true },
   games: { enabled: true },
