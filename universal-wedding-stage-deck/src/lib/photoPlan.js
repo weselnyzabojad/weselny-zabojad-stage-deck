@@ -157,12 +157,6 @@ export function resolvePhotoPlan(wedding) {
                 label: text(group.label) ?? text(group.name) ?? `Group ${index + 1}`,
               }))
           : [],
-        minGroupSize: Number.isFinite(plan.groupPhotos.minGroupSize)
-          ? plan.groupPhotos.minGroupSize
-          : null,
-        durationMin: Number.isFinite(plan.groupPhotos.durationMin)
-          ? plan.groupPhotos.durationMin
-          : null,
       }
     : null;
 

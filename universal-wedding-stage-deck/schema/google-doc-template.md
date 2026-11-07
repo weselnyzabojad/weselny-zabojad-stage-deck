@@ -207,9 +207,8 @@ Mini session latest start before sunset (min): 30
 Mini session duration (min): 20
 Mini session location: Garden
 Mini session backup location: Ballroom window
+Group photos step ID:
 Group photos location: OUTDOOR
-Group photos min group size: 5
-Group photos duration (min): 25
 Speed foto enabled: true
 Speed foto description: Couple in the middle of the dance floor; guests run in, pose, and clear.
 Speed foto duration (min): 10

@@ -197,9 +197,7 @@
           "id": "friends",
           "label": "Friends"
         }
-      ],
-      "minGroupSize": 5,
-      "durationMin": 25
+      ]
     },
     "speedFoto": {
       "enabled": true,
