@@ -41,7 +41,7 @@ export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode =
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="open-on-phone-title" size="panel">
-      <div className="flex min-h-0 flex-1 flex-col p-5">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
           Pocket view
         </div>

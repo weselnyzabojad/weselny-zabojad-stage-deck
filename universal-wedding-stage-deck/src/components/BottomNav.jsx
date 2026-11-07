@@ -39,7 +39,7 @@ export default function BottomNav({
   if (!isCompact) return null;
 
   return (
-    <footer className="bg-card border-t border-line px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs uppercase tracking-wider">
+    <footer className="min-h-11 bg-card border-t border-line px-4 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs uppercase tracking-wider">
       <SkipLink />
 
       <div className="flex items-center gap-2">
