@@ -339,7 +339,8 @@ Never ship the service-role key.
 
 1. Apply [`supabase/schema.sql`](supabase/schema.sql).
 2. Apply [`supabase/migrations/202611060001_owner_admin.sql`](supabase/migrations/202611060001_owner_admin.sql).
-3. Apply [`supabase/migrations/202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql).
+3. Apply [`supabase/migrations/202611060003_cartridge_revisions.sql`](supabase/migrations/202611060003_cartridge_revisions.sql)
+   and [`supabase/migrations/202611060004_drive_publication.sql`](supabase/migrations/202611060004_drive_publication.sql).
 4. Deploy functions:
 
 ```bash

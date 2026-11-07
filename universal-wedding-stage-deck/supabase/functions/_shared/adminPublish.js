@@ -63,6 +63,12 @@ export function normalizePublishRequest(body, { source = 'admin_json' } = {}) {
   const requestedRoomCode =
     typeof body?.roomCode === 'string' ? body.roomCode.trim().toLowerCase() : '';
   const expected = parseExpectedRevision(body?.expectedRevision);
+  const sourceMetadata =
+    body?.sourceMetadata &&
+    typeof body.sourceMetadata === 'object' &&
+    !Array.isArray(body.sourceMetadata)
+      ? body.sourceMetadata
+      : null;
 
   if (!WEDDING_ID_PATTERN.test(weddingId)) {
     return { error: 'weddingId must look like YYYY-MM-DD_bride_groom.', status: 400 };
@@ -92,6 +98,7 @@ export function normalizePublishRequest(body, { source = 'admin_json' } = {}) {
       expectedRevision: expected.value,
       expiresInDays: Number.isFinite(body?.expiresInDays) ? body.expiresInDays : null,
       source,
+      sourceMetadata,
     },
   };
 }
@@ -111,6 +118,7 @@ function normalizePublishedRow(row) {
     previousRevision: Number(row.previous_revision ?? 0),
     cartridgeRevision: Number(row.cartridge_revision ?? 0),
     cartridgeSource: row.cartridge_source ?? 'admin_json',
+    cartridgeSourceMetadata: row.cartridge_source_metadata ?? null,
     cartridgePublishedAt: row.cartridge_published_at ?? null,
   };
 }
@@ -211,6 +219,7 @@ export async function publishCartridge({ admin, request, actor, validate }) {
     p_source: request.source,
     p_expected_revision: request.expectedRevision ?? 0,
     p_actor: actor?.user_id ?? actor?.id ?? null,
+    p_source_metadata: request.sourceMetadata ?? null,
   });
 
   if (error) {
@@ -234,7 +243,40 @@ export function buildPublishAuditDetail(result, request) {
     oldRevision: result?.previousRevision ?? 0,
     newRevision: result?.cartridgeRevision ?? 0,
     source: result?.cartridgeSource ?? request?.source ?? 'admin_json',
+    sourceMetadata: result?.cartridgeSourceMetadata ?? request?.sourceMetadata ?? null,
     expectedRevision: request?.expectedRevision ?? null,
     created: Boolean(result?.created),
+  };
+}
+
+// Exact-source binding for the Drive publish action (issue #170). A preview may
+// only be published if the file version/checksum still match the re-read file.
+export function driveSourceChanged(file, { expectedVersion = '', expectedChecksum = '' } = {}) {
+  const expectedV = typeof expectedVersion === 'string' ? expectedVersion.trim() : '';
+  const expectedC = typeof expectedChecksum === 'string' ? expectedChecksum.trim() : '';
+  const versionChanged = Boolean(expectedV && expectedV !== (file?.version ?? null));
+  const checksumChanged = Boolean(expectedC && expectedC !== (file?.md5Checksum ?? null));
+  return {
+    changed: versionChanged || checksumChanged,
+    reason: versionChanged ? 'version' : checksumChanged ? 'checksum' : 'unchanged',
+    expectedVersion: expectedV || null,
+    actualVersion: file?.version ?? null,
+    expectedChecksum: expectedC || null,
+    actualChecksum: file?.md5Checksum ?? null,
+  };
+}
+
+export function buildDriveSourceMetadata(file, { bytes = null, retrievedAt = null } = {}) {
+  return {
+    provider: 'google_drive',
+    driveFileId: file?.id ?? null,
+    name: file?.name ?? null,
+    mimeType: file?.mimeType ?? null,
+    modifiedTime: file?.modifiedTime ?? null,
+    version: file?.version ?? null,
+    md5Checksum: file?.md5Checksum ?? null,
+    size: file?.size ?? null,
+    bytes,
+    retrievedAt,
   };
 }
