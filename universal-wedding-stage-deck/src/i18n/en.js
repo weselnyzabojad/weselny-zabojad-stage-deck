@@ -165,6 +165,9 @@ const en = {
 
   'speaker.title': 'Speaker · Speech script',
   'speaker.exit': 'Exit',
+  'speeches.chip': 'Speeches',
+  'speeches.live': 'LIVE',
+  'speeches.none': 'No speeches',
   'speaker.offTitle': 'Speeches are off',
   'speaker.offBody': 'This wedding cartridge has speechMode: OFF.',
   'speaker.noneTitle': 'No speeches yet',

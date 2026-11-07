@@ -26,6 +26,7 @@ import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import SpeechesCard from '../components/SpeechesCard';
+import SpeechesChip from '../components/SpeechesChip';
 import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
@@ -378,6 +379,11 @@ export default function McMasterView({ model }) {
               rules={WEDDING.culturalRules}
               oczepinyStatus={oczepinyStatus}
             />
+            <SpeechesChip
+              mode={speechMode}
+              speeches={speeches}
+              activeSpeechId={liveState.active_speech_id}
+            />
           </div>
           <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
             <DriftPill drift={driftReport.drift} />
@@ -564,6 +570,9 @@ export default function McMasterView({ model }) {
       theme={theme}
       culturalRules={WEDDING.culturalRules}
       oczepinyStatus={oczepinyStatus}
+      speeches={speeches}
+      speechMode={speechMode}
+      activeSpeechId={liveState.active_speech_id}
       onUndo={handleUndo}
       canUndo={canUndo}
       lastUndoLabel={lastUndo?.label}

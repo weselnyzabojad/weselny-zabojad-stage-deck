@@ -5,6 +5,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
 import CulturalRulesBar from './CulturalRulesBar';
+import SpeechesChip from './SpeechesChip';
 
 /**
  * RoleShell — shared responsive shell for role views.
@@ -30,6 +31,9 @@ export default function RoleShell({
   theme,
   culturalRules = null,
   oczepinyStatus = null,
+  speeches = null,
+  speechMode = null,
+  activeSpeechId = null,
   onUndo,
   canUndo,
   lastUndoLabel,
@@ -66,12 +70,24 @@ export default function RoleShell({
             <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           </div>
         </div>
-        {culturalRules ? (
-          <CulturalRulesBar
-            rules={culturalRules}
-            oczepinyStatus={oczepinyStatus}
-            compact
-          />
+        {culturalRules || speechMode != null ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {culturalRules ? (
+              <CulturalRulesBar
+                rules={culturalRules}
+                oczepinyStatus={oczepinyStatus}
+                compact
+              />
+            ) : null}
+            {speechMode != null ? (
+              <SpeechesChip
+                mode={speechMode}
+                speeches={speeches ?? []}
+                activeSpeechId={activeSpeechId}
+                compact
+              />
+            ) : null}
+          </div>
         ) : null}
       </header>
 

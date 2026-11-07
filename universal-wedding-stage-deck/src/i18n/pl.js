@@ -165,6 +165,9 @@ const pl = {
 
   'speaker.title': 'Mówca · Skrypt mowy',
   'speaker.exit': 'Wyjdź',
+  'speeches.chip': 'Mowy',
+  'speeches.live': 'NA ŻYWO',
+  'speeches.none': 'Brak mów',
   'speaker.offTitle': 'Mowy są wyłączone',
   'speaker.offBody': 'Ten kartridż ma speechMode: OFF.',
   'speaker.noneTitle': 'Brak mów',
