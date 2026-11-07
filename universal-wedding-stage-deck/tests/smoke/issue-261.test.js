@@ -34,6 +34,12 @@ describe('issue #261 predefined step renames and Buffets deletion', () => {
       'step_02',
       'step_03',
       'step_05',
+      'step_06',
+      'step_07',
+      'step_08',
+      'step_09',
+      'step_10',
     ]);
+    expect(DEMO_WEDDING.steps.map((step) => step.id)).not.toContain('step_04');
   });
 });
