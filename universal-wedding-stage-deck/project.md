@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `6adf142` (unified top bar design alignment)
+**Aligned with:** `master` @ `ed682fe` (DJ Standard laptop-only and ring size alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -102,6 +102,9 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) | Top bar center: localized weekday |
 | [#256](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/256) | DJ Standard: laptop-only view |
 | [#257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/257) | Top bar: enlarge the center ring logo |
+| [#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258) | Dev switcher: DJ Standard preview |
+| [#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259) | DJ current step: remove generic track chips, add main songs |
+| [#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260) | Schema: add isMainSongRequired step flag |
 
 ### Responsive phone / pocket plan
 
@@ -779,6 +782,40 @@ Implementation issues:
 enlarged top-bar clock (`text-2xl` / equivalent height) in every role that uses
 the shared center identity, while keeping it vertically aligned and decorative.
 ([#257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/257))
+
+### DJ step song info and dev switcher (decision, 2026-11-07)
+
+**Dev switcher — DJ Standard.** The development view switcher gets a separate
+"DJ Standard" entry that forces the Standard tier view even when the cartridge
+is configured as VIP. The existing "DJ" entry keeps following the configured
+tier. The forced preview must honor Standard restrictions, stay
+laptop/desktop-only and remain absent from production bundles.
+([#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258))
+
+**DJ current-step song info.**
+
+- Remove the generic playlist and track chips from the current-step card
+  (for example "Dinner Jazz", "Fly Me to the Moon").
+- Keep the cutoff element.
+- Add a main-song block only for steps flagged `isMainSongRequired`:
+  Grand entrance, Wedding cake and First dance.
+- Resolve the main song from the existing important-songs/step song data linked
+  by step id; show title and artist and a missing-song state when absent.
+- Keep the Projected timing block unchanged (confirmed with the owner). The
+  projected block is the live forecast of the current step's realistic
+  start/end and event finish; it is distinct from the planned schedule.
+([#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259))
+
+**Step schema flag.** Add `isMainSongRequired` (boolean, default false) to the
+step schema and predefined steps/template/import mapping. Mark Grand entrance,
+Wedding cake and First dance as true in the relevant examples. Missing values
+default to false for backward compatibility.
+([#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260))
+
+Implementation issues:
+- [#258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/258) — dev DJ Standard preview;
+- [#259](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/259) — DJ current-step song info;
+- [#260](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/260) — isMainSongRequired schema flag.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
