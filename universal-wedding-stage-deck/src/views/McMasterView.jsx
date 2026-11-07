@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
+import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import ContactsModal from '../components/ContactsModal';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
@@ -128,6 +129,7 @@ export default function McMasterView({ model }) {
         <span>Real start: <strong className="text-white">{realStart}</strong></span>
         <span>Est. end: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
       </div>
+      {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -235,6 +237,8 @@ export default function McMasterView({ model }) {
           </ul>
         </div>
       </div>
+
+      {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
 
       {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (
         <>

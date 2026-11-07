@@ -359,6 +359,7 @@
       "location": "Main Hall",
       "photographerCue": "Group photo before the toast",
       "isMainSongRequired": true,
+      "grandEntranceOrder": "NEWLYWEDS_FIRST",
       "subTasks": [
         "Parents' thank-you speech + gifts (with mic)",
         "Rosół + Tartare with Vodka shot",

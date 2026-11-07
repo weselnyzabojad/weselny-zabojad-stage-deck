@@ -1050,6 +1050,11 @@
         },
         "ceremonyLocation": {
           "type": "string"
+        },
+        "grandEntranceOrder": {
+          "type": "string",
+          "enum": ["GUESTS_FIRST", "NEWLYWEDS_FIRST"],
+          "description": "Grand Entrance guest order from the Google Doc."
         }
       }
     },
