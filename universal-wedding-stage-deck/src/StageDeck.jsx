@@ -500,7 +500,6 @@ export default function StageDeck({
         >
           <SpeakerView
             wedding={WEDDING}
-            timeline={timeline}
             clock={driftReport.clock}
             speechMode={speechMode}
             speechCount={speeches.length}

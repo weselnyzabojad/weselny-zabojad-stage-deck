@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+﻿import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -99,7 +99,6 @@ describe('floating current card (#179)', () => {
       'src/views/McMasterView.jsx',
       'src/components/DjBoothView.jsx',
       'src/components/PhotographerView.jsx',
-      'src/components/SpeakerView.jsx',
     ]) {
       expect(read(path), path).toContain('TimelineFocusStack');
     }

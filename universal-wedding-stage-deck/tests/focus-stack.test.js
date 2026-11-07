@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+﻿import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -165,7 +165,6 @@ describe('universal role wiring', () => {
       'src/views/McMasterView.jsx',
       'src/components/DjBoothView.jsx',
       'src/components/PhotographerView.jsx',
-      'src/components/SpeakerView.jsx',
     ]) {
       const source = read(path);
       expect(source, path).toContain('TimelineFocusStack');
@@ -179,7 +178,6 @@ describe('universal role wiring', () => {
       'src/views/McMasterView.jsx',
       'src/components/DjBoothView.jsx',
       'src/components/PhotographerView.jsx',
-      'src/components/SpeakerView.jsx',
     ]) {
       expect(read(path), path).toContain('compact');
     }
