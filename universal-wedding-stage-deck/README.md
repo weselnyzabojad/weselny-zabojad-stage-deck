@@ -710,9 +710,22 @@ curl -X POST "$SUPABASE_URL/functions/v1/admin_drive" \
 5. Smoke test: allowlisted AAL2 owner → shared file metadata succeeds; anonymous
    or role JWT → rejected; unshared file → actionable 404/403 without secrets.
 
-5. Insert the owner account into `app_admins` (no self-signup):
+**Drive source browser (issue #169)**
+- `/deck/admin` can search and paginate only two source types shared with the
+  service-account email: cartridge JSON (`application/json`) and native Google
+  Docs (`application/vnd.google-apps.document`).
+- JSON is read with `files.get?alt=media`; Google Docs are exported with
+  `files.export` as `text/plain`. The existing deterministic template parser
+  consumes the exported text.
+- Sources are limited to 5 MB. Unsupported, oversized, malformed, unshared and
+  revoked files return actionable messages.
+- Preview shows the file id/name/MIME/modified time/version/checksum, validation
+  errors and parsed section or cartridge summary. It never publishes or mutates a
+  wedding. Stage-role devices have no Drive access.
+
+6. Insert the owner account into `app_admins` (no self-signup):
    `insert into public.app_admins (user_id, email) select id, email from auth.users where email = 'owner@example.com';`
-6. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
+7. Build the client with `VITE_DECK_MODE=production` and the Supabase URL/anon
    key. Never ship the service-role key.
 
 **Guest song requests**

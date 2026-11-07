@@ -188,6 +188,45 @@ export async function listAdminData() {
   return callAdmin('list');
 }
 
+// Admin-only Google Drive proxy (issue #169). The browser never talks to Google
+// directly and never receives credentials or access tokens.
+async function callAdminDrive(action, payload = {}) {
+  const config = getAdminConfig();
+  if (!config.configured) throw new Error('Supabase is not configured for this build.');
+
+  const session = await getAdminSession();
+  if (!session?.access_token) throw new Error('Admin session expired. Sign in again.');
+
+  const response = await fetch(`${config.functionsUrl}/admin_drive`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: config.anonKey,
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ action, ...payload }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data?.error || 'Google Drive request failed.');
+    error.status = response.status;
+    error.code = data?.code ?? null;
+    throw error;
+  }
+  return data;
+}
+
+export async function listDriveSources({ query = '', pageToken = null, pageSize = 20 } = {}) {
+  if (ADMIN_DEMO) return { files: [], nextPageToken: null };
+  return callAdminDrive('list', { query, pageToken, pageSize });
+}
+
+export async function previewDriveSource(fileId) {
+  if (ADMIN_DEMO) throw new Error('Google Drive preview is unavailable in demo mode.');
+  return callAdminDrive('preview', { fileId });
+}
+
 export async function publishWedding(payload) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');

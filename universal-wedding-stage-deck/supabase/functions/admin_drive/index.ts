@@ -83,8 +83,23 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const action = typeof body?.action === 'string' ? body.action : '';
-    if (action !== 'status' && action !== 'metadata') {
+    if (!['status', 'metadata', 'list', 'preview'].includes(action)) {
       return json({ error: 'Unsupported Drive action.' }, 400);
+    }
+
+    if (action === 'list') {
+      const result = await connector.listFiles({
+        query: typeof body?.query === 'string' ? body.query : '',
+        pageToken: typeof body?.pageToken === 'string' ? body.pageToken : null,
+        pageSize: body?.pageSize,
+      });
+      return json({
+        ok: true,
+        action,
+        checkedAt: new Date().toISOString(),
+        files: result.files,
+        nextPageToken: result.nextPageToken,
+      });
     }
 
     const requestedFileId = typeof body?.fileId === 'string' ? body.fileId.trim() : '';
@@ -100,6 +115,20 @@ Deno.serve(async (req) => {
         },
         400,
       );
+    }
+
+    if (action === 'preview') {
+      const source = await connector.readSource(fileId);
+      return json({
+        ok: true,
+        action,
+        checkedAt: new Date().toISOString(),
+        file: source.file,
+        kind: source.kind,
+        text: source.text,
+        bytes: source.bytes,
+        retrievedAt: source.retrievedAt,
+      });
     }
 
     const file = await connector.getFileMetadata(fileId);
