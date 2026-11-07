@@ -124,6 +124,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297) | MC: center the children expected reminder in the banner |
 | [#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298) | DJ Standard: disable the Music Policy UI |
 | [#299](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/299) | Top bar: distinguish couple languages from UI language switch |
+| [#300](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/300) | Music Policy: list every main song from flagged steps |
 
 ### Responsive phone / pocket plan
 
@@ -994,6 +995,19 @@ Implementation issues:
 - [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
 - [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
 - [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
+
+### Music Policy key songs (decision, 2026-11-07)
+
+Every step flagged `isMainSongRequired` contributes its main song to the Music
+Policy UI element:
+
+- collect all flagged steps and resolve their linked important song/step song;
+- show title/artist with the step/moment context, ordered by timeline;
+- show a missing-song state if the flagged step has no song;
+- avoid duplicate entries;
+- keep the existing must-play, do-not-play, clean-version and request sections;
+- DJ VIP shows the list; DJ Standard has no Music Policy UI.
+([#300](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/300))
 
 ### Children banner and Oczepiny variants (decision, 2026-11-07)
 
