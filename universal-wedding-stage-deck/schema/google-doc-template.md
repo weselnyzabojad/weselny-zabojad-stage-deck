@@ -294,8 +294,8 @@ Serve time: 20:45
 
 | Game | Requested | Requested by | Languages | Existing questions | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Test Wiedzy | UNDECIDED |  | PL, FR, EN | No |  |
-| Test ZgodnoĹ›ci | UNDECIDED |  | PL, FR, EN | No | Link to Oczepiny? |
+| Test Wiedzy | UNDECIDED |  | PL, FR, EN | Yes | Question list Doc: gdoc_test_wiedzy |
+| Test ZgodnoĹ›ci | UNDECIDED |  | PL, FR, EN | No | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
 
 ## VENDOR CONTACTS
 

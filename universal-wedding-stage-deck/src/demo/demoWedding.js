@@ -275,7 +275,57 @@ export const DEMO_WEDDING = {
     },
   },
   wishes: { enabled: true },
-  games: { enabled: true },
+  games: {
+    enabled: true,
+    questionLists: [
+      {
+        id: "test_wiedzy",
+        title: "Test Wiedzy",
+        sourceDocId: "gdoc_test_wiedzy",
+        status: "AVAILABLE",
+        questions: [
+          {
+            id: "w01",
+            prompt: {
+              PL: "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
+              FR: "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              EN: "Where did Jennifer and Guillaume first meet?",
+            },
+            answer: {
+              PL: "Na weselu przyjaciół w Krakowie",
+              FR: "Au mariage d'amis à Cracovie",
+              EN: "At a friend's wedding in Kraków",
+            },
+          },
+          {
+            id: "w02",
+            prompt: {
+              PL: "Kto jako pierwszy powiedział „kocham cię”?",
+              FR: "Qui a dit « je t'aime » en premier ?",
+              EN: "Who said I love you first?",
+            },
+            answer: { PL: "Guillaume", FR: "Guillaume", EN: "Guillaume" },
+          },
+          {
+            id: "w03",
+            prompt: {
+              PL: "Jak nazywa się pies Jennifer i Guillaume?",
+              FR: "Comment s'appelle le chien du couple ?",
+              EN: "What is the couple's dog called?",
+            },
+            answer: { PL: "Silvio", FR: "Silvio", EN: "Silvio" },
+          },
+        ],
+      },
+      {
+        id: "test_zgodnosci",
+        title: "Test Zgodności",
+        sourceDocId: "gdoc_test_zgodnosci",
+        status: "MISSING",
+        questions: [],
+      },
+    ],
+  },
   ceremony: {
     type: "RELIGIOUS",
     mcSupportRequested: true,
