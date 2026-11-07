@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `d4c52ec` (pocket header simplification #159)
+**Aligned with:** `master` @ `ce0df6f` (pocket mini chips #191)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -68,6 +68,12 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189) | Top bar: move cultural chips and utility controls into a right-hand two-row stack |
 | [#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190) | Hard-anchor banner: host PIN and Sync and use white detail text |
 | [#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191) | Pocket header: mini cultural chips and trimmed drift label |
+| [#198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/198) | MC top bar: Speeches status chip |
+| [#199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/199) | MC current step: remove DJ / Audio cues |
+| [#200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/200) | MC current step: rename Sub-tasks and order unchecked first |
+| [#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201) | MC: Speeches as the only card below the timeline |
+| [#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202) | MC: remove summary cards and move Cake into its active step |
+| [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) | MC: hide the Speeches card when there are no speeches |
 
 ### Responsive phone / pocket plan
 
@@ -316,6 +322,97 @@ Implementation issues:
 - [#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189) — right-hand cultural/utility stack;
 - [#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190) — PIN/Sync in the hard-anchor banner;
 - [#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191) — pocket mini chips and trimmed drift label.
+
+### MC Master simplification (decision, 2026-11-07)
+
+These changes apply to the **MC Master view only**. Cross-view decisions below
+were confirmed with the owner.
+
+**Current-step content.**
+
+- Remove the **DJ / Audio Cues** block from the MC current-step body. The
+  **MC Cues** block stays, as do script and game launchers.
+- Rename **Catering & Sub-Tasks** to **Sub-tasks**.
+- Keep checked and unchecked subtasks visible, but sort unchecked tasks first
+  and checked tasks last. Checked tasks must be clearly distinguished from
+  unchecked ones (done styling/marker, muted colour, line-through) without
+  mutating the cartridge order or persisted state.
+
+([#199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/199),
+[#200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/200))
+
+**Duplicate current-step title.** The same step title currently appears in the
+current-step card and in the wide Reel Clock card. The current-step card is the
+one that stays; the **entire Reel Clock card is removed from the MC view**,
+including its active-step title and metrics. Reel Clock remains in DJ Booth,
+Photographer, Speaker and their pocket layouts.
+
+**Speeches is the only card below the timeline.** Remove from the MC
+below-timeline area:
+
+- Reel Clock;
+- Buffer Accordion;
+- Hard Anchor Radar card;
+- Stage Pings controls;
+- standalone Cake protocol card;
+- Music Policy card;
+- Pre-wedding Checklist card.
+
+The top hard-anchor warning banner stays. The timeline, drift engine and the
+receiving Stage Ping banner in other roles stay. Remove MC-only components and
+related tests/imports once nothing references them.
+([#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201))
+
+**Cross-view disposition.**
+
+| Element | MC Master | Other views |
+| --- | --- | --- |
+| DJ / Audio cues | Removed | Not present |
+| Sub-tasks | Kept; renamed and reordered | Not present |
+| Reel Clock | Removed | Kept in DJ, Photographer, Speaker and pocket |
+| Cake protocol | Moved into the active cake step | Not present |
+| Music Policy | Removed | Kept in DJ Booth desktop and pocket |
+| Pre-wedding Checklist | Removed | Not present |
+| Buffer Accordion | Removed | Not present |
+| Hard Anchor Radar card | Removed; top warning banner stays | Not present |
+| Stage Pings controls | Removed | Receiving banner stays in other roles |
+| Speeches card | Kept when speeches exist | Speaker view is unchanged |
+
+**Cake protocol inside the timeline.** The standalone Cake card is deleted and
+its protocol is rendered inside the current-step card only while
+`cakeProtocol.stepId` matches the current step. It keeps the song, cutting and
+serve times, sparklers, photographer cue, state and Key Songs sync note, and is
+not shown on other steps or collapsed history/future cards.
+([#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202))
+
+**Speeches top-bar chip.** Add a **Speeches** chip to the same right-hand
+cultural row as Sto Lat, Gorzko and Oczepiny, on MC desktop and in the MC pocket
+compact row. It is always visible, including when the wedding has no speeches or
+`speechMode: OFF`, with these colours:
+
+- `OFF` or no speeches — red;
+- `LIGHT` — orange;
+- `COMPLEX` — green;
+- active live speech — highlighted brand.
+
+The chip keeps count/active-speaker detail in its tooltip/accessible name. It is
+not added to DJ, Photographer or Speaker.
+([#198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/198))
+
+**Speeches card visibility.** Render the MC Speeches card only when the cartridge
+contains at least one speech. With zero speeches the chip stays visible but the
+card is absent; do not show the old "No speeches captured" placeholder. When
+speeches exist, the card keeps the existing Go live / Stop live behaviour and is
+the only card below the timeline.
+([#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203))
+
+Implementation issues:
+- [#198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/198) — Speeches top-bar chip;
+- [#199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/199) — remove DJ / Audio cues;
+- [#200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/200) — Sub-tasks rename and ordering;
+- [#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201) — Speeches as the only card below the timeline;
+- [#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202) — remove summary cards and embed Cake;
+- [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) — hide the Speeches card when empty.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
