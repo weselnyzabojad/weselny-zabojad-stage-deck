@@ -12,7 +12,7 @@ export default function SecondaryControlBar({
 
   return (
     <div className={`border-b border-line bg-card/95 px-4 py-1.5 ${className}`}>
-      <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-2">
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1.5">{left}</div>
         <div className="flex items-center justify-center">{center}</div>
         <div className="flex min-w-0 flex-wrap items-center justify-end gap-1.5">{right}</div>
