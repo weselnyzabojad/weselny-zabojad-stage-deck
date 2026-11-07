@@ -3,6 +3,7 @@ import ModalShell from './ModalShell';
 import QrCodeImage from './QrCodeImage';
 import { roleLabel } from '../lib/roles.js';
 import { buildOpenOnPhoneUrl, canOpenOnPhone } from '../lib/openOnPhone.js';
+import { useI18n } from '../i18n/useI18n.js';
 
 function PhoneIcon() {
   return (
@@ -23,40 +24,41 @@ function PhoneIcon() {
   );
 }
 
-function roleTitle(role, tier) {
+function roleTitle(role, tier, t) {
   if (role === 'dj') {
-    return String(tier).toUpperCase() === 'VIP' ? 'DJ VIP' : 'DJ Standard';
+    return String(tier).toUpperCase() === 'VIP'
+      ? t('openOnPhone.djVip')
+      : t('openOnPhone.djStandard');
   }
   return roleLabel(role);
 }
 
 export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode = null }) {
+  const { t } = useI18n();
   const url = buildOpenOnPhoneUrl({
     origin: typeof window !== 'undefined' ? window.location.origin : '',
     baseUrl: import.meta.env.BASE_URL,
     roomCode,
     role,
   });
-  const title = roleTitle(role, tier);
+  const title = roleTitle(role, tier, t);
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="open-on-phone-title" size="panel">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
-          Pocket view
+          {t('openOnPhone.pocketView')}
         </div>
         <h2 id="open-on-phone-title" className="mt-1 font-heading text-xl font-bold text-white">
-          Open {title} on your phone
+          {t('openOnPhone.title', { role: title })}
         </h2>
-        <p className="mt-1 text-xs text-slate-400">
-          Scan this QR to open the same role’s pocket view. This device stays on the current view.
-        </p>
+        <p className="mt-1 text-xs text-slate-400">{t('openOnPhone.description')}</p>
 
         <div className="mx-auto mt-5 w-fit rounded-xl bg-white p-3">
           <QrCodeImage
             text={url}
             size={260}
-            label={`QR code to open ${title} on a phone`}
+            label={t('openOnPhone.qrLabel', { role: title })}
           />
         </div>
 
@@ -70,7 +72,7 @@ export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode =
             onClick={onClose}
             className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
           >
-            Close
+            {t('openOnPhone.close')}
           </button>
         </div>
       </div>
@@ -85,6 +87,7 @@ export default function OpenOnPhoneButton({
   compact = false,
   className = '',
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   if (!canOpenOnPhone({ role, tier, compact })) return null;
 
@@ -94,10 +97,10 @@ export default function OpenOnPhoneButton({
         type="button"
         onClick={() => setOpen(true)}
         className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:bg-line ${className}`}
-        title="Open this role on your phone"
+        title={t('openOnPhone.buttonTitle')}
       >
         <PhoneIcon />
-        <span>Open on phone</span>
+        <span>{t('openOnPhone.button')}</span>
       </button>
       <OpenOnPhoneDialog
         open={open}

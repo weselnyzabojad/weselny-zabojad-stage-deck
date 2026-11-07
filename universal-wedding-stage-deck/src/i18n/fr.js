@@ -285,6 +285,30 @@ const fr = {
   'venueManager.cake.CUT_IN_PLACE': 'Découpe sur place / les invités viennent',
   'venueManager.prestationHelper': 'La prestation prête est calculée automatiquement 1 heure avant l’arrivée des premiers invités.',
   'venueManager.saved': 'Enregistré',
+
+  'openOnPhone.button': 'Ouvrir sur téléphone',
+  'openOnPhone.buttonTitle': 'Ouvrir ce rôle sur votre téléphone',
+  'openOnPhone.pocketView': 'Vue mobile',
+  'openOnPhone.title': 'Ouvrir {role} sur votre téléphone',
+  'openOnPhone.description': 'Scannez ce QR code pour ouvrir la vue mobile du même rôle. Cet appareil reste sur la vue actuelle.',
+  'openOnPhone.qrLabel': 'QR code pour ouvrir {role} sur un téléphone',
+  'openOnPhone.close': 'Fermer',
+  'openOnPhone.djVip': 'DJ VIP',
+  'openOnPhone.djStandard': 'DJ Standard',
+
+  'pairing.stageDeck': 'Wedding Stage Deck',
+  'pairing.roomPairing': 'Appairage de la salle',
+  'pairing.instructionBefore': 'Saisissez le',
+  'pairing.pinLabel': 'PIN d’affichage à 4 chiffres',
+  'pairing.instructionAfter': 'pour déverrouiller cet appareil. La salle cloud est liée à l’identifiant du mariage, pas au PIN.',
+  'pairing.digitLabel': 'Chiffre {index} du PIN sur {total}',
+  'pairing.submit': 'Appairer cet appareil',
+  'pairing.cloudConfigured': 'Synchronisation cloud configurée',
+  'pairing.localOnly': 'Mode local uniquement — aucun cloud configuré',
+  'pairing.helper': 'Demandez le PIN au MC. L’appairage fonctionne hors ligne et la progression reste sur cet appareil jusqu’au retour de la connexion.',
+  'pairing.errorDigits': 'Saisissez les quatre chiffres.',
+  'pairing.errorGeneric': 'Impossible d’appairer cet appareil. Réessayez.',
+  'pairing.errorIncorrect': 'PIN incorrect.',
 };
 
 export default fr;

@@ -283,6 +283,30 @@ const pl = {
   'venueManager.cake.CUT_IN_PLACE': 'Krojenie na miejscu / goście podchodzą',
   'venueManager.prestationHelper': 'Prestacja gotowa jest wyliczana automatycznie 1 godzinę przed przyjazdem pierwszych gości.',
   'venueManager.saved': 'Zapisano',
+
+  'openOnPhone.button': 'Otwórz na telefonie',
+  'openOnPhone.buttonTitle': 'Otwórz tę rolę na telefonie',
+  'openOnPhone.pocketView': 'Widok telefonu',
+  'openOnPhone.title': 'Otwórz {role} na telefonie',
+  'openOnPhone.description': 'Zeskanuj kod QR, aby otworzyć widok telefonu dla tej samej roli. To urządzenie pozostaje w bieżącym widoku.',
+  'openOnPhone.qrLabel': 'Kod QR do otwarcia {role} na telefonie',
+  'openOnPhone.close': 'Zamknij',
+  'openOnPhone.djVip': 'DJ VIP',
+  'openOnPhone.djStandard': 'DJ Standard',
+
+  'pairing.stageDeck': 'Wedding Stage Deck',
+  'pairing.roomPairing': 'Parowanie pokoju',
+  'pairing.instructionBefore': 'Wpisz',
+  'pairing.pinLabel': '4-cyfrowy PIN wyświetlany',
+  'pairing.instructionAfter': 'aby odblokować to urządzenie. Pokój w chmurze jest powiązany z identyfikatorem wesela, nie z PIN-em.',
+  'pairing.digitLabel': 'Cyfra {index} z {total} PIN-u',
+  'pairing.submit': 'Sparuj to urządzenie',
+  'pairing.cloudConfigured': 'Synchronizacja w chmurze skonfigurowana',
+  'pairing.localOnly': 'Tryb lokalny — brak konfiguracji chmury',
+  'pairing.helper': 'Poproś MC o PIN. Parowanie działa offline, a postęp pozostaje na tym urządzeniu do powrotu połączenia.',
+  'pairing.errorDigits': 'Wpisz wszystkie cztery cyfry.',
+  'pairing.errorGeneric': 'Nie udało się sparować urządzenia. Spróbuj ponownie.',
+  'pairing.errorIncorrect': 'Nieprawidłowy PIN.',
 };
 
 export default pl;
