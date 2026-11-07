@@ -342,7 +342,7 @@ export default function StageDeck({
   const isComplete = !currentStep;
   const realStart = currentEntry?.projectedStart ?? null;
   const estimatedEnd = currentEntry?.projectedEnd ?? null;
-  const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.ELASTIC : '';
+  const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.FLEXIBLE : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
   const stepSubtasks = currentStep?.subTasks ?? [];

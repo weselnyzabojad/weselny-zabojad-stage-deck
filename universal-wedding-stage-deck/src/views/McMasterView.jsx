@@ -164,7 +164,7 @@ export default function McMasterView({ model }) {
           📖 Open teleprompter / script
         </button>
       ) : null}
-      <div className="text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</div>
+      <div className="text-xs text-slate-400 font-mono">{completedCount} / {steps.length} completed</div>
     </div>
   ) : null;
 
@@ -218,7 +218,7 @@ export default function McMasterView({ model }) {
           </span>
         </div>
         <span className="font-mono text-[10px] text-slate-500">
-          Step {currentEntry.index + 1} of {steps.length}
+          {completedCount} / {steps.length} completed
         </span>
       </div>
 
