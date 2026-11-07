@@ -37,6 +37,7 @@ export default function DjBoothView({
   roles,
   onRoleChange,
   servicePackage,
+  pin = null,
   theme = 'night',
   onToggleTheme,
   songRequestAccessToken = null,
@@ -276,6 +277,8 @@ export default function DjBoothView({
     <RoleShell
       compact
       role={role}
+      clock={clock}
+      pin={pin}
       wedding={wedding}
       roles={roles}
       syncStatus={syncStatus}

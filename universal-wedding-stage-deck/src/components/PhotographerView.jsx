@@ -256,6 +256,7 @@ export default function PhotographerView({
   onRoleChange,
   theme = 'night',
   onToggleTheme,
+  pin = null,
   roomCode = null,
   culturalRules = null,
   oczepinyStatus = null,
@@ -539,6 +540,8 @@ export default function PhotographerView({
     <RoleShell
       compact
       role={role}
+      clock={clock}
+      pin={pin}
       wedding={wedding}
       roles={roles}
       syncStatus={syncStatus}

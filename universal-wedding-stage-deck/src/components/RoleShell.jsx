@@ -6,25 +6,22 @@ import LanguageToggle from './LanguageToggle';
 import BottomNav from './BottomNav';
 import CulturalRulesBar from './CulturalRulesBar';
 import SpeechesChip from './SpeechesChip';
-import TopBarCenterIdentity from './TopBarCenterIdentity';
+import TopBarClock from './TopBarClock';
 
 /**
  * RoleShell — shared responsive shell for role views.
  *
  * On wide screens (≥640px) it is a pass-through: the view renders its own full
  * desktop layout untouched. On phones (<640px) it wraps the compact content in
- * a minimal phone chrome — a slim header (logo, role, sync, language, theme)
- * and the shared persistent bottom navigation bar.
- *
- * Views pass `compact` (a boolean resolved from a matchMedia listener) and the
- * body content the phone should display. Role-specific phone actions are
- * forwarded to BottomNav.
+ * a shared compact header (logo, role, clock, PIN, Sync, language, theme) and
+ * the persistent bottom navigation bar.
  */
 export default function RoleShell({
   compact,
   children,
   role,
-  wedding = null,
+  clock = null,
+  pin = null,
   syncStatus,
   syncError,
   remoteUpdatedAt,
@@ -58,31 +55,48 @@ export default function RoleShell({
 
   return (
     <div className="font-body min-h-screen flex flex-col bg-page text-slate-100">
-      <header className="bg-card border-b border-line px-4 py-3 flex flex-col gap-2">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-              <img src={logo} alt="Weselny Żabojad" className="h-8 w-auto object-contain" />
+      <header className="bg-card border-b border-line px-3 py-2 flex flex-col gap-1.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            <div className="flex items-center justify-center rounded-md bg-white px-1.5 py-0.5 shadow-sm">
+              <img src={logo} alt="Weselny Żabojad" className="h-7 w-auto object-contain" />
             </div>
-            <span className="bg-raised px-2.5 py-1 rounded text-white font-mono font-semibold border border-line-strong text-xs uppercase tracking-wider">
+            <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-white">
               {t(`role.${role}.short`)}
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-            {viewSwitch}
-            {authControl}
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <div className="flex min-w-0 items-center gap-1.5">
+            <TopBarClock clock={clock} className="text-base" />
+            {pin ? (
+              <span
+                title="Paired room PIN"
+                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-300"
+              >
+                PIN {pin}
+              </span>
+            ) : null}
+            <SyncStatusBadge
+              status={syncStatus}
+              error={syncError}
+              remoteUpdatedAt={remoteUpdatedAt}
+              outbox={outbox}
+            />
           </div>
         </div>
-        {wedding ? (
-          <div className="flex justify-center">
-            <TopBarCenterIdentity wedding={wedding} compact />
+
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-1.5">
+            {viewSwitch}
+            {authControl}
           </div>
-        ) : null}
+          <div className="flex items-center gap-1.5">
+            <LanguageToggle />
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          </div>
+        </div>
+
         {culturalRules || speechMode != null ? (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
             {culturalRules ? (
               <CulturalRulesBar
                 rules={culturalRules}
@@ -108,12 +122,6 @@ export default function RoleShell({
 
       <BottomNav
         role={role}
-        syncStatus={syncStatus}
-        syncError={syncError}
-        remoteUpdatedAt={remoteUpdatedAt}
-        outbox={outbox}
-        onToggleTheme={onToggleTheme}
-        theme={theme}
         isCompact
         onUndo={onUndo}
         canUndo={canUndo}
@@ -124,3 +132,4 @@ export default function RoleShell({
     </div>
   );
 }
+

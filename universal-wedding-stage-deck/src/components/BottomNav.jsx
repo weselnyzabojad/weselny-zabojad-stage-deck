@@ -2,9 +2,6 @@ import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import { CONTROL_BUTTON_BASE } from '../lib/styleConstants';
 import HoldToConfirmButton from './HoldToConfirmButton';
-import SyncStatusBadge from './SyncStatusBadge';
-import ThemeToggle from './ThemeToggle';
-import LanguageToggle from './LanguageToggle';
 
 /**
  * BottomNav — persistent bottom navigation bar for phone layouts.
@@ -29,12 +26,6 @@ import LanguageToggle from './LanguageToggle';
  */
 export default function BottomNav({
   role,
-  syncStatus,
-  syncError,
-  remoteUpdatedAt,
-  outbox,
-  onToggleTheme,
-  theme,
   isCompact,
   onUndo,
   canUndo,
@@ -58,12 +49,6 @@ export default function BottomNav({
         <span className="font-mono text-slate-400">
           {t('role.' + role + '.label')}
         </span>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-        <LanguageToggle />
-        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
       </div>
 
       {/* Role-specific action buttons: MC gets undo/advance */}

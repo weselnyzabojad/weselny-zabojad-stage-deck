@@ -552,6 +552,8 @@ export default function McMasterView({ model }) {
     <RoleShell
       compact
       role={currentRole}
+      clock={driftReport.clock}
+      pin={pairing?.pin ?? null}
       wedding={WEDDING}
       syncStatus={syncStatus}
       syncError={syncError}
