@@ -19,7 +19,7 @@ describe('issue #274 Venue Manager role', () => {
     expect(view).toContain('Pierwsza kolacja');
     expect(view).toContain('Druga kolacja');
     expect(view).toContain('Trzecia kolacja');
-    expect(view).toContain('Cake service');
+    expect(view).toContain('venueManager.cakeService');
     expect(view).toContain('KITCHEN_RETURN');
     expect(view).toContain('CUT_IN_PLACE');
     expect(view).not.toContain('HOLD TO ADVANCE');

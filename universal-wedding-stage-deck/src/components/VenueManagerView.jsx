@@ -10,6 +10,7 @@ import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
+import { useI18n } from '../i18n/useI18n';
 
 const STORAGE_PREFIX = 'wzsd:venue-manager:';
 
@@ -21,10 +22,10 @@ const DEFAULT_KITCHEN = {
 };
 
 const KITCHEN_MODE_FIELDS = [
-  { key: 'dinner', label: 'Obiad weselny service' },
-  { key: 'firstSupper', label: 'Pierwsza kolacja service' },
-  { key: 'secondSupper', label: 'Druga kolacja service' },
-  { key: 'thirdSupper', label: 'Trzecia kolacja service' },
+  { key: 'dinner', course: 'Obiad weselny' },
+  { key: 'firstSupper', course: 'Pierwsza kolacja' },
+  { key: 'secondSupper', course: 'Druga kolacja' },
+  { key: 'thirdSupper', course: 'Trzecia kolacja' },
 ];
 
 function loadSettings(wedding) {
@@ -74,6 +75,7 @@ export default function VenueManagerView({
   onUpdateMandatory,
   mandatoryOverride = null,
 }) {
+  const { t } = useI18n();
   const [settings, setSettings] = useState(() =>
     mandatoryOverride?.value ?? loadSettings(wedding),
   );
@@ -90,7 +92,7 @@ export default function VenueManagerView({
       onUpdateMandatory?.(next);
       return next;
     });
-    setSaved('Saved');
+    setSaved(t('venueManager.saved'));
     window.setTimeout(() => setSaved(''), 1500);
   };
 
@@ -104,7 +106,7 @@ export default function VenueManagerView({
 
       <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
-          Mandatory steps
+          {t('venueManager.mandatorySteps')}
         </h2>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <TimeField
@@ -127,12 +129,12 @@ export default function VenueManagerView({
             value={kitchen.thirdSupper}
             onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, thirdSupper: time } })}
           />
-          {KITCHEN_MODE_FIELDS.map(({ key, label }) => (
+          {KITCHEN_MODE_FIELDS.map(({ key, course }) => (
             <label
               key={key}
               className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500"
             >
-              {label}
+              {t('venueManager.serviceMode', { course })}
               <select
                 value={kitchenModes[key] ?? 'TABLE_SERVICE'}
                 onChange={(event) =>
@@ -143,13 +145,13 @@ export default function VenueManagerView({
                 }
                 className="rounded border border-line bg-card px-2 py-1 text-xs text-white"
               >
-                <option value="TABLE_SERVICE">Table service</option>
-                <option value="BUFFET">Buffet</option>
+                <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
+                <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
               </select>
             </label>
           ))}
           <TimeField
-            label="Wedding closure"
+            label={t('venueManager.closure')}
             value={settings.closureTime}
             onChange={(time) => update({ ...settings, closureTime: time })}
           />
@@ -159,22 +161,22 @@ export default function VenueManagerView({
               checked={settings.closureExtensionAllowed === true}
               onChange={(event) => update({ ...settings, closureExtensionAllowed: event.target.checked })}
             />
-            +1h extension allowed
+            {t('venueManager.extension')}
           </label>
           <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500">
-            Cake service
+            {t('venueManager.cakeService')}
             <select
               value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
               onChange={(event) => update({ ...settings, cakeServiceMode: event.target.value })}
               className="rounded border border-line bg-card px-2 py-1 text-xs text-white"
             >
-              <option value="KITCHEN_RETURN">Kitchen return / plated pieces</option>
-              <option value="CUT_IN_PLACE">Cut in place / guests come</option>
+              <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
+              <option value="CUT_IN_PLACE">{t('venueManager.cake.CUT_IN_PLACE')}</option>
             </select>
           </label>
         </div>
         <p className="mt-2 text-[10px] text-slate-500">
-          Prestation ready is derived automatically 1 hour before first guests arrival.
+          {t('venueManager.prestationHelper')}
           {saved ? <span className="ml-2 text-emerald-300">{saved}</span> : null}
         </p>
       </section>

@@ -67,7 +67,7 @@ describe('issue #302 mandatory constraints', () => {
     const venue = read('src/components/VenueManagerView.jsx');
     expect(venue).not.toContain('label="First guests arrival"');
     expect(venue).not.toContain('label="Prestation ready"');
-    expect(venue).toContain('Prestation ready is derived automatically');
+    expect(venue).toContain('venueManager.prestationHelper');
   });
 
   it('supports table service and buffet in schema and venue manager UI', () => {
@@ -75,7 +75,7 @@ describe('issue #302 mandatory constraints', () => {
     const modes = schema.properties.mandatorySteps.properties.kitchenServiceModes;
     expect(modes.properties.dinner.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
     const venue = read('src/components/VenueManagerView.jsx');
-    expect(venue).toContain('<option value="TABLE_SERVICE">Table service</option>');
-    expect(venue).toContain('<option value="BUFFET">Buffet</option>');
+    expect(venue).toContain('mandatory.serviceMode.TABLE_SERVICE');
+    expect(venue).toContain('mandatory.serviceMode.BUFFET');
   });
 });

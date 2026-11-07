@@ -1,10 +1,6 @@
 import { resolveMandatoryConstraints } from '../lib/mandatorySteps.js';
-import { firstArrivalCeremonyNote, resolveCeremony } from '../lib/ceremony.js';
-
-const CAKE_SERVICE_LABELS = {
-  KITCHEN_RETURN: 'Kitchen return / plated pieces',
-  CUT_IN_PLACE: 'Cut in place / guests come to the cake spot',
-};
+import { resolveCeremony } from '../lib/ceremony.js';
+import { useI18n } from '../i18n/useI18n.js';
 
 // Mandatory constraints are exact-hour obligations, not timeline steps.
 // First guests arrival is visible only to MC and DJ VIP; kitchen/cake detail is
@@ -15,12 +11,19 @@ export default function MandatoryConstraintsCard({
   isVipDj = false,
   override = null,
 }) {
+  const { t } = useI18n();
   const isMc = role === 'mc';
   const isDjVip = role === 'dj' && isVipDj;
   if (!isMc && !isDjVip) return null;
 
   const constraints = resolveMandatoryConstraints(wedding, override);
-  const ceremonyNote = isMc ? firstArrivalCeremonyNote(resolveCeremony(wedding)) : null;
+  const ceremony = isMc ? resolveCeremony(wedding) : null;
+  const ceremonyNote =
+    ceremony?.type === 'RELIGIOUS' && !ceremony.mcSupportRequested
+      ? ceremony.location
+        ? t('ceremony.arrivalNoteAt', { location: ceremony.location })
+        : t('ceremony.arrivalNote')
+      : null;
   const hasArrival = Boolean(constraints.firstGuestsArrival);
   const hasMcDetail =
     isMc &&
@@ -32,22 +35,22 @@ export default function MandatoryConstraintsCard({
 
   return (
     <section
-      aria-label="Mandatory constraints"
+      aria-label={t('mandatory.title')}
       className="border-b border-line bg-card px-4 py-2 text-[10px] text-slate-300"
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <span className="font-heading font-semibold uppercase tracking-widest text-brand-soft">
-          📌 Mandatory constraints
+          📌 {t('mandatory.title')}
         </span>
         {hasArrival ? (
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
-            First guests arrival:{' '}
+            {t('mandatory.firstArrival')}:{' '}
             <strong className="font-mono text-white">{constraints.firstGuestsArrival}</strong>
           </span>
         ) : null}
         {isMc && constraints.prestationReady ? (
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
-            Prestation ready (derived):{' '}
+            {t('mandatory.prestation')}:{' '}
             <strong className="font-mono text-white">{constraints.prestationReady}</strong>
           </span>
         ) : null}
@@ -67,14 +70,14 @@ export default function MandatoryConstraintsCard({
             >
               {service.label}: <strong className="font-mono text-white">{service.time}</strong>
               <span className="ml-1 rounded border border-brand-strong/50 bg-brand/20 px-1 font-semibold text-brand-tint">
-                {service.modeLabel}
+                {t(`mandatory.serviceMode.${service.mode}`)}
               </span>
             </span>
           ))}
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
-            Cake:{' '}
+            {t('mandatory.cake')}:{' '}
             <strong className="text-white">
-              {CAKE_SERVICE_LABELS[constraints.cakeServiceMode] ?? constraints.cakeServiceMode}
+              {t(`mandatory.cakeMode.${constraints.cakeServiceMode}`)}
             </strong>
           </span>
         </div>
@@ -82,3 +85,4 @@ export default function MandatoryConstraintsCard({
     </section>
   );
 }
+
