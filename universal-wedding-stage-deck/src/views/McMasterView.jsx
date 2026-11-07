@@ -323,8 +323,8 @@ export default function McMasterView({ model }) {
       <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
-      <header className="bg-card border-b border-line px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs font-heading tracking-wide">
-        <div className="flex flex-wrap items-center gap-3">
+      <header className="bg-card border-b border-line px-4 py-3 grid grid-cols-1 items-center gap-3 text-xs font-heading tracking-wide xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+        <div className="flex flex-wrap items-center gap-3 xl:min-w-0">
           <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
             <img
               src={logo}
@@ -335,10 +335,13 @@ export default function McMasterView({ model }) {
           <span className="text-slate-500 hidden sm:inline">|</span>
           <TopBarClock clock={driftReport.clock} />
           <TopBarRoleLabel role="mc" />
+        </div>
+
+        <div className="flex min-w-0 items-center justify-center">
           <CoupleIdentity wedding={WEDDING} className="text-xs" />
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-2 my-2 sm:my-0">
+        <div className="flex flex-wrap items-center justify-start gap-2 my-2 sm:my-0 xl:min-w-0 xl:justify-end">
           <CulturalRulesBar
             rules={WEDDING.culturalRules}
             oczepinyStatus={oczepinyStatus}
