@@ -73,6 +73,7 @@ function resolveMiniSession(wedding) {
 
   return {
     enabled: true,
+    stepId: text(raw.stepId),
     latestStartMinutesBeforeSunset: Number.isFinite(raw.latestStartMinutesBeforeSunset)
       ? raw.latestStartMinutesBeforeSunset
       : null,
@@ -137,6 +138,7 @@ export function resolvePhotoPlan(wedding) {
 
   const groupPhotos = plan.groupPhotos && typeof plan.groupPhotos === 'object'
     ? {
+        stepId: text(plan.groupPhotos.stepId),
         location: text(plan.groupPhotos.location),
         groups: Array.isArray(plan.groupPhotos.groups)
           ? plan.groupPhotos.groups
@@ -157,6 +159,7 @@ export function resolvePhotoPlan(wedding) {
 
   const speedFoto = plan.speedFoto && typeof plan.speedFoto === 'object'
     ? {
+        stepId: text(plan.speedFoto.stepId),
         enabled: plan.speedFoto.enabled === true,
         description: text(plan.speedFoto.description),
         durationMin: Number.isFinite(plan.speedFoto.durationMin) ? plan.speedFoto.durationMin : null,
@@ -166,6 +169,7 @@ export function resolvePhotoPlan(wedding) {
 
   const specialEffects = plan.specialEffects && typeof plan.specialEffects === 'object'
     ? {
+        stepId: text(plan.specialEffects.stepId),
         sparklers: plan.specialEffects.sparklers === true,
         fire: plan.specialEffects.fire === true,
         heavySmoke: plan.specialEffects.heavySmoke === true,
@@ -178,6 +182,7 @@ export function resolvePhotoPlan(wedding) {
 
   const guestCoverage = plan.guestCoverage && typeof plan.guestCoverage === 'object'
     ? {
+        stepId: text(plan.guestCoverage.stepId),
         allGuests: plan.guestCoverage.allGuests === true,
         selectedGuests: Number.isFinite(plan.guestCoverage.selectedGuests)
           ? plan.guestCoverage.selectedGuests
@@ -324,4 +329,36 @@ export function sunsetFreshnessLabel(sunset) {
   if (!sunset?.lastFetchedAt || !isIsoTimestamp(sunset.lastFetchedAt)) return null;
   const date = new Date(sunset.lastFetchedAt);
   return Number.isFinite(date.getTime()) ? date.toISOString() : null;
+}
+
+// Map photo-plan items to timeline steps. Explicit `stepId` wins; otherwise a
+// deterministic title/keyword match is used so a cartridge without ids still
+// shows details in a sensible step card.
+const PHOTO_PLAN_MATCHERS = {
+  miniSession: /mini|session|golden/i,
+  groupPhotos: /group|family|portrait/i,
+  speedFoto: /speed/i,
+  specialEffects: /cake|sparkler|fire|smoke|effect/i,
+  guestCoverage: /guest|dinner|reception/i,
+};
+
+export function mapPhotoPlanToSteps(plan, timeline = []) {
+  const byStep = {};
+  if (!plan || !Array.isArray(timeline)) return byStep;
+  const stepIds = new Set(timeline.map((entry) => entry?.step?.id).filter(Boolean));
+
+  for (const [type, matcher] of Object.entries(PHOTO_PLAN_MATCHERS)) {
+    const data = plan[type];
+    if (!data) continue;
+    const explicit = data.stepId && stepIds.has(data.stepId) ? data.stepId : null;
+    const fallback = explicit
+      ? null
+      : timeline.find((entry) => matcher.test(entry?.step?.title ?? ''))?.step?.id ?? null;
+    const stepId = explicit ?? fallback;
+    if (!stepId) continue;
+    byStep[stepId] = byStep[stepId] ?? [];
+    byStep[stepId].push({ type, data });
+  }
+
+  return byStep;
 }

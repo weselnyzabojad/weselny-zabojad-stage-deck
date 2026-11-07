@@ -20,6 +20,7 @@ import {
 } from '../lib/eventTime.js';
 import {
   buildSunsetCountdowns,
+  mapPhotoPlanToSteps,
   resolvePhotoPlan,
   resolvePhotoVisibility,
   resolveSunset,
@@ -76,6 +77,109 @@ function DeferredBadge({ children }) {
   );
 }
 
+function PhotoPlanBlock({ type, data }) {
+  if (!data) return null;
+  const title = {
+    miniSession: 'Mini session',
+    groupPhotos: 'Group photos',
+    speedFoto: 'Speed foto',
+    specialEffects: 'Special effects',
+    guestCoverage: 'Guest coverage',
+  }[type] ?? type;
+
+  return (
+    <div className="rounded-lg border border-line bg-page p-2.5">
+      <h4 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
+        {title}
+      </h4>
+      <div className="mt-1 space-y-1 text-[11px]">
+        {type === 'miniSession' ? (
+          <>
+            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
+            <Row label="Location" value={data.location ?? '—'} />
+            <Row label="Backup" value={data.backupLocation ?? '—'} />
+            <Row
+              label="Latest start"
+              value={
+                data.latestStartMinutesBeforeSunset != null
+                  ? `${data.latestStartMinutesBeforeSunset} min before sunset`
+                  : '—'
+              }
+            />
+          </>
+        ) : null}
+        {type === 'groupPhotos' ? (
+          <>
+            <Row label="Location" value={data.location ?? '—'} />
+            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
+            <Row label="Min group size" value={data.minGroupSize ?? '—'} />
+            {data.groups?.length ? (
+              <div className="flex flex-wrap gap-1 pt-1">
+                {data.groups.map((group) => (
+                  <DeferredBadge key={group.id}>{group.label}</DeferredBadge>
+                ))}
+              </div>
+            ) : null}
+          </>
+        ) : null}
+        {type === 'speedFoto' ? (
+          <>
+            {data.description ? <p className="text-slate-300">{data.description}</p> : null}
+            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
+            <Row label="Music" value={data.music ?? '—'} />
+          </>
+        ) : null}
+        {type === 'specialEffects' ? (
+          <>
+            <div className="flex flex-wrap gap-1">
+              {data.sparklers ? <DeferredBadge>✨ Sparklers</DeferredBadge> : null}
+              {data.fire ? <DeferredBadge>🔥 Fire</DeferredBadge> : null}
+              {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
+              {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
+            </div>
+            <Row label="Permit" value={data.permitRequired ? 'Required' : 'Not required'} />
+            <Row
+              label="Venue approved"
+              value={data.venueApproved ? 'Yes' : 'No'}
+              tone={data.venueApproved ? 'text-emerald-300' : 'text-amber-200'}
+            />
+            <Row label="Safety briefing" value={data.safetyBriefing ?? '—'} />
+          </>
+        ) : null}
+        {type === 'guestCoverage' ? (
+          <>
+            <Row
+              label="Coverage"
+              value={
+                data.allGuests
+                  ? 'All guests'
+                  : data.selectedGuests != null
+                    ? `${data.selectedGuests} selected guests`
+                    : '—'
+              }
+            />
+            <Row label="Consent" value={data.consent ?? '—'} />
+            {data.description ? (
+              <p className="text-slate-400">{data.description}</p>
+            ) : null}
+          </>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function PhotoPlanDetails({ entries = [] }) {
+  if (entries.length === 0) return null;
+  return (
+    <div className="grid gap-2 sm:grid-cols-2">
+      {entries.map(({ type, data }) => (
+        <PhotoPlanBlock key={type} type={type} data={data} />
+      ))}
+    </div>
+  );
+}
+
 export default function PhotographerView({
   wedding,
   timeline = [],
@@ -104,6 +208,13 @@ export default function PhotographerView({
   const sunset = resolveSunset(wedding);
   const countdowns = buildSunsetCountdowns(sunset, { now, eventDateISO, timeZone });
   const plan = resolvePhotoPlan(wedding);
+  const planByStep = mapPhotoPlanToSteps(plan, timeline);
+  const planBodies = Object.fromEntries(
+    Object.entries(planByStep).map(([stepId, entries]) => [
+      stepId,
+      <PhotoPlanDetails key={stepId} entries={entries} />,
+    ]),
+  );
 
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
 
@@ -128,7 +239,12 @@ export default function PhotographerView({
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       <SkipLink />
-      <TimelineFocusStack compact entries={timeline} activeIndex={activeIndex} />
+      <TimelineFocusStack
+        compact
+        entries={timeline}
+        activeIndex={activeIndex}
+        entryBodies={planBodies}
+      />
 
       {visibility.sunset && sunset?.usable ? (
         <Card title="Light windows" icon="🌅">
@@ -194,7 +310,11 @@ export default function PhotographerView({
 
       <main id="main-content" tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto p-4">
         <div className="mx-auto max-w-5xl space-y-4">
-          <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
+          <TimelineFocusStack
+            entries={timeline}
+            activeIndex={activeIndex}
+            entryBodies={planBodies}
+          />
 
           {visibility.sunset ? (
             <Card
@@ -291,138 +411,6 @@ export default function PhotographerView({
             </Card>
           ) : null}
 
-          {visibility.photoPlan && plan ? (
-            <Card title="Photo plan" icon="🗂️">
-              <div className="grid gap-3 lg:grid-cols-2">
-                {plan.miniSession ? (
-                  <div className="rounded-lg border border-line bg-page p-3">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-                      Mini session
-                    </h3>
-                    <div className="mt-1 space-y-1 text-[11px]">
-                      <Row label="Duration" value={`${plan.miniSession.durationMin ?? '—'} min`} />
-                      <Row label="Location" value={plan.miniSession.location ?? '—'} />
-                      <Row label="Backup" value={plan.miniSession.backupLocation ?? '—'} />
-                      <Row
-                        label="Latest start"
-                        value={
-                          plan.miniSession.latestStartMinutesBeforeSunset != null
-                            ? `${plan.miniSession.latestStartMinutesBeforeSunset} min before sunset`
-                            : '—'
-                        }
-                      />
-                    </div>
-                  </div>
-                ) : null}
-
-                {plan.groupPhotos ? (
-                  <div className="rounded-lg border border-line bg-page p-3">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-                      Group photos
-                    </h3>
-                    <div className="mt-1 space-y-1 text-[11px]">
-                      <Row label="Location" value={plan.groupPhotos.location ?? '—'} />
-                      <Row
-                        label="Duration"
-                        value={`${plan.groupPhotos.durationMin ?? '—'} min`}
-                      />
-                      <Row
-                        label="Min group size"
-                        value={plan.groupPhotos.minGroupSize ?? '—'}
-                      />
-                    </div>
-                    {plan.groupPhotos.groups.length > 0 ? (
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        {plan.groupPhotos.groups.map((group) => (
-                          <span
-                            key={group.id}
-                            className="rounded border border-line bg-raised px-1.5 py-0.5 text-[10px] text-slate-300"
-                          >
-                            {group.label}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {plan.speedFoto ? (
-                  <div className="rounded-lg border border-line bg-page p-3">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-                      Speed foto {plan.speedFoto.enabled ? '' : '· off'}
-                    </h3>
-                    {plan.speedFoto.description ? (
-                      <p className="mt-1 text-[11px] text-slate-300">{plan.speedFoto.description}</p>
-                    ) : null}
-                    <div className="mt-1 space-y-1 text-[11px]">
-                      <Row label="Duration" value={`${plan.speedFoto.durationMin ?? '—'} min`} />
-                      <Row label="Music" value={plan.speedFoto.music ?? '—'} />
-                    </div>
-                  </div>
-                ) : null}
-
-                {plan.specialEffects ? (
-                  <div className="rounded-lg border border-line bg-page p-3">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-                      Special effects
-                    </h3>
-                    <div className="mt-1 flex flex-wrap gap-1 text-[10px]">
-                      {plan.specialEffects.sparklers ? <DeferredBadge>✨ Sparklers</DeferredBadge> : null}
-                      {plan.specialEffects.fire ? <DeferredBadge>🔥 Fire</DeferredBadge> : null}
-                      {plan.specialEffects.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
-                      {plan.specialEffects.other ? (
-                        <DeferredBadge>{plan.specialEffects.other}</DeferredBadge>
-                      ) : null}
-                    </div>
-                    <div className="mt-1.5 space-y-1 text-[11px]">
-                      <Row
-                        label="Permit"
-                        value={plan.specialEffects.permitRequired ? 'Required' : 'Not required'}
-                      />
-                      <Row
-                        label="Venue approved"
-                        value={plan.specialEffects.venueApproved ? 'Yes' : 'No'}
-                        tone={plan.specialEffects.venueApproved ? 'text-emerald-300' : 'text-amber-200'}
-                      />
-                      <Row
-                        label="Safety briefing"
-                        value={plan.specialEffects.safetyBriefing ?? '—'}
-                      />
-                    </div>
-                  </div>
-                ) : null}
-
-                {plan.guestCoverage ? (
-                  <div className="rounded-lg border border-line bg-page p-3 lg:col-span-2">
-                    <h3 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-                      Guest coverage
-                    </h3>
-                    <div className="mt-1 space-y-1 text-[11px]">
-                      <Row
-                        label="Coverage"
-                        value={
-                          plan.guestCoverage.allGuests
-                            ? 'All guests'
-                            : plan.guestCoverage.selectedGuests != null
-                              ? `${plan.guestCoverage.selectedGuests} selected guests`
-                              : '—'
-                        }
-                      />
-                      <Row
-                        label="Consent"
-                        value={plan.guestCoverage.consent ?? '—'}
-                      />
-                    </div>
-                    {plan.guestCoverage.description ? (
-                      <p className="mt-1 text-[11px] text-slate-400">
-                        {plan.guestCoverage.description}
-                      </p>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-            </Card>
-          ) : null}
 
         </div>
       </main>
