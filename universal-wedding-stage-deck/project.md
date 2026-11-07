@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `426fe98` (before the DJ full-width layout change)
+**Aligned with:** `master` @ `8cc6dfd` (before the cake-step and Game Clicker cleanup)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -66,6 +66,8 @@ sections below and in git history.
 | [#392](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/392) | Remove children notice from hard-anchor banner | Implementation |
 | [#394](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/394) | Rename couple language label to Couple common languages | Implementation |
 | [#396](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/396) | DJ and DJ Standard full-width layout | Implementation |
+| [#398](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/398) | Show Game Clicker only on the games step | Implementation |
+| [#399](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/399) | Fold cake service and mandatory data into Cake Protocol | Implementation |
 
 ### Planning TODO register
 
@@ -1375,6 +1377,20 @@ desktop grid and the compact \`time → serveTime\` header readout. Keep the cak
 song, sparklers, photographer cue, sync note and step state. The cartridge
 fields and schedule logic remain intact.
 ([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
+
+### Cake step consolidation and Game Clicker scope (decision, 2026-11-07)
+
+**Cake Protocol is the single cake element.** On the Wedding cake step, delete
+the separate `Cake service` box and the generic Mandatory constraints block.
+Fold the cake service mode into Cake Protocol together with the song, sparklers,
+photographer cue, sync note and state. Do not duplicate the cake service mode
+elsewhere on that step; other mandatory data stays on its own step.
+([#399](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/399))
+
+**Game Clicker only on the games step.** The Game Clicker button and overlay
+render only when the current step is the games step. Remove the leftover
+`GAME_QUESTIONS` payload from Wedding cake so the clicker cannot appear there.
+([#398](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/398))
 
 ### VIP Radar and Contacts removal (decision, 2026-11-07)
 
