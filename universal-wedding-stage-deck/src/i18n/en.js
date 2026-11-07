@@ -48,7 +48,7 @@ const en = {
   'common.retry': 'Retry',
   'common.unknown': 'Unknown',
   'couple.wedding': 'Wedding:',
-  'couple.languages': 'Couple languages',
+  'couple.languages': 'Couple common languages',
 
   'drift.onTime': 'ON TIME',
   'drift.late': '+{minutes}m LATE',

@@ -17,7 +17,7 @@ const wedding = {
 describe('issue #299 couple languages vs UI language switch', () => {
   it('labels the couple languages explicitly with conversational icon and names', () => {
     const html = renderToStaticMarkup(createElement(TopBarCenterIdentity, { wedding }));
-    expect(html).toContain('Couple languages');
+    expect(html).toContain('Couple common languages');
     expect(html).toContain('🗣️');
     expect(html).toContain('French');
     expect(html).toContain('Polish');
@@ -28,7 +28,7 @@ describe('issue #299 couple languages vs UI language switch', () => {
     const html = renderToStaticMarkup(
       createElement(TopBarCenterIdentity, { wedding, showCoupleLanguages: false }),
     );
-    expect(html).not.toContain('Couple languages');
+    expect(html).not.toContain('Couple common languages');
     expect(html).toContain('Jennifer');
     expect(html).toContain('Guillaume');
     expect(html).toContain('2026');
@@ -40,8 +40,8 @@ describe('issue #299 couple languages vs UI language switch', () => {
   });
 
   it('localizes the label in EN/FR/PL', () => {
-    expect(read('src/i18n/en.js')).toContain("'couple.languages': 'Couple languages'");
-    expect(read('src/i18n/fr.js')).toContain("'couple.languages': 'Langues du couple'");
-    expect(read('src/i18n/pl.js')).toContain("'couple.languages': 'Języki pary'");
+    expect(read('src/i18n/en.js')).toContain("'couple.languages': 'Couple common languages'");
+    expect(read('src/i18n/fr.js')).toContain("'couple.languages': 'Langues communes du couple'");
+    expect(read('src/i18n/pl.js')).toContain("'couple.languages': 'Wspólne języki pary'");
   });
 });
