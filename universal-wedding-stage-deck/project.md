@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `f5e9732` (first arrival / closure decisions)
+**Aligned with:** `master` @ `aeb5698` (Oczepiny cues batch)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -120,6 +120,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) | MC: children reminder in Hard Anchor Collision banner |
 | [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) | Oczepiny Early/Midnight schema and Google Doc parsing |
 | [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC, Photographer and DJ VIP cues |
+| [#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295) | Current Step card: subtle stable 3D tilt and elevation |
 
 ### Responsive phone / pocket plan
 
@@ -1036,6 +1037,23 @@ Implementation issues:
 - [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) — MC children banner placement;
 - [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) — Oczepiny schema/parser;
 - [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) — Oczepiny role cues for MC, Photographer/Cameraman and DJ VIP.
+
+### Current Step 3D tilt (decision, 2026-11-07)
+
+Give the shared Current Step card a subtle 3D tilt and elevation without
+affecting layout stability:
+
+- Analyze TimelineFocusStack, StageStepCard and the existing
+  `timeline-focus-current` styles first.
+- No `framer-motion` dependency is added; use lightweight CSS/vanilla pointer
+  tracking with GPU-friendly transforms.
+- Use a perspective container (~1000px) and a max 5–7° pointer tilt.
+- Use Z-axis offsets so the header/status banner ("ON AIR / Step N") floats
+  slightly above the card body for a pop-up-book depth effect.
+- Keep the card stable during timer refreshes, live updates and state changes.
+- Respect `prefers-reduced-motion` by rendering flat with no tilt.
+- Do not overflow or clip the Completed/Upcoming columns.
+([#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295))
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
