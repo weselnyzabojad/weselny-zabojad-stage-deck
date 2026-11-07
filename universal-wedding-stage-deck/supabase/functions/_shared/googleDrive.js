@@ -12,6 +12,7 @@ export const DRIVE_METADATA_FIELDS =
   'id,name,mimeType,modifiedTime,version,md5Checksum,size';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
+export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
 export const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
 
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -379,6 +380,46 @@ export function createGoogleDriveConnector({
     };
   }
 
+  async function listChildren({
+    parentId = '',
+    name = '',
+    nameContains = '',
+    mimeType = DRIVE_FOLDER_MIME_TYPE,
+    pageToken = null,
+    pageSize = 100,
+  } = {}) {
+    const parent = typeof parentId === 'string' ? parentId.trim() : '';
+    if (!parent) {
+      throw createDriveError('drive_invalid_request', 'A parent folder id is required.');
+    }
+    const size = Math.min(200, Math.max(1, Number(pageSize) || 100));
+    const conditions = ['trashed = false', `'${parent.replace(/'/g, "\\'")}' in parents`];
+    if (mimeType) conditions.push(`mimeType = '${mimeType}'`);
+    if (typeof name === 'string' && name.trim()) {
+      conditions.push(`name = '${name.trim().replace(/'/g, "\\'")}'`);
+    }
+    if (typeof nameContains === 'string' && nameContains.trim()) {
+      conditions.push(`name contains '${nameContains.trim().replace(/'/g, "\\'")}'`);
+    }
+    const params = new URLSearchParams({
+      q: conditions.join(' and '),
+      pageSize: String(size),
+      fields: `nextPageToken,files(${DRIVE_METADATA_FIELDS})`,
+      orderBy: 'name_natural',
+    });
+    if (typeof pageToken === 'string' && pageToken.trim()) {
+      params.set('pageToken', pageToken.trim());
+    }
+    const response = await authorizedRequest(`${filesEndpoint}?${params.toString()}`, {
+      method: 'GET',
+    });
+    const payload = await readJson(response);
+    return {
+      files: (Array.isArray(payload?.files) ? payload.files : []).map(sanitizedMetadata),
+      nextPageToken: typeof payload?.nextPageToken === 'string' ? payload.nextPageToken : null,
+    };
+  }
+
   async function readSource(fileId, { maxBytes = MAX_SOURCE_BYTES } = {}) {
     const file = await getFileMetadata(fileId);
     const limit = Math.max(1, Number(maxBytes) || MAX_SOURCE_BYTES);
@@ -453,6 +494,7 @@ export function createGoogleDriveConnector({
     getAccessToken,
     getFileMetadata,
     listFiles,
+    listChildren,
     readSource,
     isConfigured: Boolean(clientEmail && privateKey),
   };
