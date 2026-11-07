@@ -152,17 +152,8 @@ function publishResponse(result: any, pins: Record<string, string> | null) {
   };
 }
 
-async function weddingExists(admin: any, weddingId: string) {
-  const { data, error } = await admin
-    .from('weddings')
-    .select('wedding_id')
-    .eq('wedding_id', weddingId)
-    .maybeSingle();
-  if (error) throw error;
-  return Boolean(data);
-}
-
-async function handlePublish(admin: any, allowlisted: any, body: any, { source = 'admin_json' } = {}) {  const normalized = normalizePublishRequest(body, { source });
+async function handlePublish(admin: any, allowlisted: any, body: any, { source = 'admin_json' } = {}) {
+  const normalized = normalizePublishRequest(body, { source });
   if (normalized.error) return { response: json({ error: normalized.error }, normalized.status) };
 
   const published = await publishCartridge({
@@ -307,24 +298,6 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'publish') {
-      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-      if (!WEDDING_ID_PATTERN.test(weddingId)) {
-        return json({ error: 'Invalid weddingId.' }, 400);
-      }
-      if (!(await weddingExists(admin, weddingId))) {
-        await writeAudit(admin, allowlisted, 'publish_failed', weddingId, {
-          source: 'admin_json',
-          error: 'Manual wedding creation is disabled.',
-        });
-        return json(
-          {
-            error:
-              'New weddings can only be introduced from the Google Drive folder library. Add the wedding folder in Drive instead.',
-            code: 'manual_create_disabled',
-          },
-          403,
-        );
-      }
       const { response } = await handlePublish(admin, allowlisted, body);
       return response;
     }
@@ -532,6 +505,32 @@ Deno.serve(async (req) => {
         },
         { source: 'backup_restore' },
       );
+      return response;
+    }
+
+    if (action === 'duplicate') {
+      const sourceId = typeof body?.sourceWeddingId === 'string' ? body.sourceWeddingId.trim() : '';
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'New weddingId must look like YYYY-MM-DD_bride_groom.' }, 400);
+      }
+      const { data: source, error: sourceError } = await admin
+        .from('weddings')
+        .select('couple, date, cartridge')
+        .eq('wedding_id', sourceId)
+        .maybeSingle();
+      if (sourceError) throw sourceError;
+      if (!source?.cartridge) return json({ error: 'Source wedding not found.' }, 404);
+
+      const { response } = await handlePublish(admin, allowlisted, {
+        weddingId,
+        couple: body?.couple ?? source.couple,
+        date: body?.date ?? source.date,
+        roomCode: body?.roomCode,
+        roles: body?.roles,
+        expectedRevision: 0,
+        cartridge: { ...source.cartridge, weddingId },
+      });
       return response;
     }
 

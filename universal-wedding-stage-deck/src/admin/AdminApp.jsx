@@ -6,6 +6,7 @@ import {
   archiveWedding,
   challengeExistingFactor,
   deleteWedding,
+  duplicateWedding,
   enrollTotp,
   getAdminSession,
   getMfaState,
@@ -30,6 +31,9 @@ import {
   presenceStatus,
   shouldWarnAdminSession,
   touchAdminSession,
+  validateRoomCode,
+  validateRoles,
+  validateWeddingId,
   ROLE_IDS,
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
@@ -41,6 +45,7 @@ import { AdminPublishRevisionDialog } from './AdminDialogs';
 const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
 import {
   AdminConfirmDialog,
+  AdminDuplicateDialog,
   AdminMfaDialog,
   AdminPinDialog,
 } from './AdminDialogs';
@@ -342,6 +347,163 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
   );
 }
 
+function CreateWeddingForm({ onCreated, onCancel }) {
+  const [weddingId, setWeddingId] = useState('');
+  const [couple, setCouple] = useState('');
+  const [date, setDate] = useState('');
+  const [roomCode, setRoomCode] = useState('');
+  const [roles, setRoles] = useState(['mc', 'dj']);
+  const [cartridgeJson, setCartridgeJson] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const toggleRole = (role) => {
+    setRoles((current) =>
+      current.includes(role) ? current.filter((item) => item !== role) : [...current, role],
+    );
+  };
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setError('');
+    if (!validateWeddingId(weddingId)) {
+      setError('Wedding id must look like 2026-08-20_jennifer_guillaume.');
+      return;
+    }
+    if (roomCode && !validateRoomCode(roomCode)) {
+      setError('Room code must be 6–12 lowercase letters/digits.');
+      return;
+    }
+    if (validateRoles(roles).length === 0) {
+      setError('Select at least one role.');
+      return;
+    }
+
+    let cartridge;
+    try {
+      cartridge = JSON.parse(cartridgeJson);
+    } catch (err) {
+      setError(`Cartridge JSON is invalid: ${err.message}`);
+      return;
+    }
+
+    setBusy(true);
+    const validation = await validateCartridge(cartridge);
+    if (!validation.valid) {
+      setBusy(false);
+      setError(validation.errors.map((item) => `${item.location}: ${item.message}`).join('\n'));
+      return;
+    }
+
+    try {
+      const result = await publishWedding({
+        weddingId: weddingId.trim(),
+        couple: couple.trim() || undefined,
+        date: date.trim() || undefined,
+        roomCode: roomCode.trim() || undefined,
+        roles,
+        expectedRevision: 0,
+        cartridge: validation.cartridge,
+      });
+      onCreated(result, { couple: couple.trim(), date: date.trim() });
+    } catch (err) {
+      setError(err.message ?? 'Could not create the wedding.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submit} className="rounded-2xl border border-line bg-card p-4">
+      <div className="flex items-center justify-between">
+        <h3 className="font-heading text-sm font-bold text-white">Create / publish wedding</h3>
+        <button type="button" onClick={onCancel} className="text-xs text-slate-400">
+          Cancel
+        </button>
+      </div>
+
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          Wedding id
+          <input
+            value={weddingId}
+            onChange={(event) => setWeddingId(event.target.value)}
+            placeholder="2026-08-20_jennifer_guillaume"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 font-mono text-xs text-white"
+          />
+        </label>
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          Couple
+          <input
+            value={couple}
+            onChange={(event) => setCouple(event.target.value)}
+            placeholder="Jennifer & Guillaume"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+          />
+        </label>
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          Date
+          <input
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+            placeholder="20.08.2026"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 font-mono text-xs text-white"
+          />
+        </label>
+        <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          Room code (optional)
+          <input
+            value={roomCode}
+            onChange={(event) => setRoomCode(event.target.value.toLowerCase())}
+            placeholder="auto-generated"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 font-mono text-xs text-white"
+          />
+        </label>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {ROLE_IDS.map((role) => (
+          <button
+            key={role}
+            type="button"
+            onClick={() => toggleRole(role)}
+            className={`rounded border px-2 py-1 text-[10px] font-semibold ${
+              roles.includes(role)
+                ? 'border-brand-strong bg-brand/40 text-white'
+                : 'border-line bg-raised text-slate-400'
+            }`}
+          >
+            {roleShort(role)}
+          </button>
+        ))}
+      </div>
+
+      <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        Cartridge JSON
+        <textarea
+          value={cartridgeJson}
+          onChange={(event) => setCartridgeJson(event.target.value)}
+          rows={8}
+          spellCheck={false}
+          className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 font-mono text-[10px] text-white"
+        />
+      </label>
+
+      <div className="mt-3">
+        <ErrorLine>{error}</ErrorLine>
+      </div>
+
+      <button
+        type="submit"
+        disabled={busy}
+        className="mt-3 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white disabled:opacity-60"
+      >
+        {busy ? 'Publishing…' : 'Publish wedding'}
+      </button>
+    </form>
+  );
+}
+
 function AdminViewportBlocked() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
@@ -403,7 +565,9 @@ function AdminAppContent() {
   const toastIdRef = useRef(0);
   const [pinResult, setPinResult] = useState(null);
   const [pinWedding, setPinWedding] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
   const [pinDialog, setPinDialog] = useState(null);
+  const [duplicateDialog, setDuplicateDialog] = useState(null);
   const [publishDialog, setPublishDialog] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [mfaAction, setMfaAction] = useState(null);
@@ -594,6 +758,11 @@ function AdminAppContent() {
     });
   };
 
+  const handleDuplicate = (wedding) => {
+    setDialogError('');
+    setDuplicateDialog(wedding);
+  };
+
   const handlePublishRevision = (wedding) => {
     setDialogError('');
     setPublishDialog(wedding);
@@ -648,6 +817,30 @@ function AdminAppContent() {
         });
       },
     });
+  };
+
+  const handleDuplicateSubmit = async ({ weddingId, couple, date }) => {
+    const wedding = duplicateDialog;
+    if (!wedding) return;
+    setDialogBusy(true);
+    setDialogError('');
+    try {
+      const result = await duplicateWedding({
+        sourceWeddingId: wedding.wedding_id,
+        weddingId,
+        couple,
+        date,
+      });
+      setDuplicateDialog(null);
+      setPinWedding({ ...wedding, wedding_id: result.weddingId, room_code: result.roomCode });
+      setPinResult(result);
+      await load();
+      pushToast('Wedding duplicated.', 'success');
+    } catch (err) {
+      setDialogError(err.message ?? 'Could not duplicate the wedding.');
+    } finally {
+      setDialogBusy(false);
+    }
   };
 
   const handleArchive = (wedding) => {
@@ -893,6 +1086,13 @@ function AdminAppContent() {
               <h2 className="font-heading text-sm font-bold text-white">
                 {filteredWeddings.length} of {data?.weddings?.length ?? 0} weddings
               </h2>
+              <button
+                type="button"
+                onClick={() => setShowCreate((value) => !value)}
+                className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white"
+              >
+                {showCreate ? 'Close form' : 'New wedding'}
+              </button>
             </div>
 
             <div className="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-card p-3">
@@ -939,10 +1139,34 @@ function AdminAppContent() {
               onNotify={pushToast}
             />
 
+            {showCreate ? (
+              <CreateWeddingForm
+                onCancel={() => setShowCreate(false)}
+                onCreated={(result, meta) => {
+                  setShowCreate(false);
+                  setPinResult(result);
+                  setPinWedding({
+                    wedding_id: result.weddingId,
+                    room_code: result.roomCode,
+                    couple: meta?.couple,
+                    date: meta?.date,
+                  });
+                  load();
+                }}
+              />
+            ) : null}
+
             <div className="space-y-3">
               {filteredWeddings.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
-                  <p>No weddings match this filter. Switch to All or refresh the Drive library.</p>
+                  <p>No weddings match this filter. Create one or switch to All.</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowCreate(true)}
+                    className="mt-3 rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white"
+                  >
+                    New wedding
+                  </button>
                 </div>
               ) : null}
               {filteredWeddings.map((wedding) => (
@@ -994,6 +1218,13 @@ function AdminAppContent() {
                         className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
                       >
                         QR cards
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicate(wedding)}
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
+                      >
+                        Duplicate
                       </button>
                       <button
                         type="button"
@@ -1191,6 +1422,18 @@ function AdminAppContent() {
         onSubmit={handlePinSubmit}
         onCancel={() => {
           setPinDialog(null);
+          closeDialogs();
+        }}
+        busy={dialogBusy}
+        error={dialogError}
+      />
+
+      <AdminDuplicateDialog
+        open={Boolean(duplicateDialog)}
+        wedding={duplicateDialog}
+        onSubmit={handleDuplicateSubmit}
+        onCancel={() => {
+          setDuplicateDialog(null);
           closeDialogs();
         }}
         busy={dialogBusy}
