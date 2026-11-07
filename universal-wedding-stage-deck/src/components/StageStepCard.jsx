@@ -77,9 +77,6 @@ export default function StageStepCard({
             <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}>
               {statusLabel}
             </span>
-            <span className="font-mono text-[10px] text-slate-500">
-              Step {typeof entry.index === 'number' ? entry.index + 1 : '—'}
-            </span>
           </div>
           <div className="mt-1 truncate font-heading text-sm font-semibold text-white">
             {title}
