@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `236e0df` (group-photo implementation)
+**Aligned with:** `master` @ `dafbde7` (before the secondary-bar and mandatory-data changes)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -59,6 +59,8 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
+| [#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384) | MC: embed mandatory constraint data into timeline steps | Implementation |
+| [#385](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/385) | Shared secondary control bar across role views | Implementation |
 
 ### Planning TODO register
 
@@ -757,6 +759,39 @@ Implementation issues:
 - [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) — center ring/language/date layout;
 - [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) — localized weekday.
 
+### Secondary control bar and mandatory-data placement (decision, 2026-11-07)
+
+**Shared secondary bar.** Add a full-width control bar directly below the top
+bar and above the timeline in MC Master, then reuse the same shell in every
+impacted role view:
+
+- left: Late/drift, PIN/sign-out and Sync;
+- center: Children expected;
+- right: night-stage/theme switch, language switch and Open on phone.
+
+Remove these controls from the existing top bar so they are not duplicated.
+Role gating stays: Open on phone only where supported, PIN only for
+authenticated roles, and Late/Sync only where the role already has them.
+Photographer 1/2, Cameraman and other impacted media views use the same bar;
+the fixed bottom-right Children expected badge is removed there. Compact layouts
+may wrap the bar into two rows but keep the left/center/right grouping.
+([#385](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/385))
+
+**Mandatory constraints move into steps.** Remove the page-level
+`Mandatory constraints` card from MC Master. Keep the underlying data and embed
+it into the relevant timeline steps:
+
+- Prestation ready and First guests arrival → the first relevant step
+  (Cocktail / first timeline step) as pre-step milestones.
+- Kitchen service times and table/buffet modes → the nearest meal step, or a
+  dedicated meal step when present.
+- Cake service mode → Wedding cake.
+- Ceremony note → Ceremony.
+
+DJ VIP keeps only the mandatory data it is allowed to see, embedded the same
+way. The removed card must not be replaced by a duplicate page-level strip.
+([#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384))
+
 ### DJ Standard laptop-only and top-bar ring size (decision, 2026-11-07)
 
 **DJ Standard is laptop-only.** The Standard view has no pocket layout:
@@ -1067,8 +1102,11 @@ cards:
 
 Each kitchen service can be **table service** or **buffet**; this mode comes from
 the Venue Manager and is displayed in MC view. Prestation ready stays read-only
-and derived.
-([#302](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/302))
+and derived. The later decision "Secondary control bar and mandatory-data
+placement" removes the page-level Mandatory constraints card and embeds these
+values in their respective timeline steps.
+([#302](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/302),
+[#384](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/384))
 
 **Ceremony variants.**
 
