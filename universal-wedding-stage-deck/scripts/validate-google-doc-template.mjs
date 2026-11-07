@@ -24,6 +24,7 @@ const EXPECTED_TABLES = {
   'LANGUAGES': null,
   'CULTURAL RULES': ['Rule', 'Status', 'Note'],
   'OCZEPINY': ['Sub-event ID', 'Title', 'Duration (min)', 'Deferable', 'Skippable'],
+  'MANDATORY STEPS': ['Field', 'Time'],
   'TIMELINE': [
     'Step ID',
     'Time',

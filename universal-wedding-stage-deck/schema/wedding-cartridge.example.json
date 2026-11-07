@@ -725,5 +725,13 @@
   },
   "games": {
     "enabled": true
+  },
+  "mandatorySteps": {
+    "firstGuestsArrival": "15:30",
+    "kitchenServices": {
+      "dinner": "18:30",
+      "firstSupper": "21:30",
+      "secondSupper": "23:30"
+    }
   }
 }

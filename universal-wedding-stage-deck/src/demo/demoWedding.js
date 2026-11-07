@@ -247,6 +247,15 @@ export const DEMO_WEDDING = {
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
+  mandatorySteps: {
+    firstGuestsArrival: "15:30",
+    kitchenServices: {
+      dinner: "18:30",
+      firstSupper: "21:30",
+      secondSupper: "23:30",
+      thirdSupper: null,
+    },
+  },
   wishes: { enabled: true },
   games: { enabled: true },
   musicPolicy: {

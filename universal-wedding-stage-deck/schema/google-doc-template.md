@@ -357,3 +357,13 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 ```json
 {}
 ```
+
+## MANDATORY STEPS
+
+| Field | Time |
+| --- | --- |
+| First guests arrival | 15:30 |
+| Obiad weselny | 18:30 |
+| Pierwsza kolacja | 21:30 |
+| Druga kolacja | 23:30 |
+| Trzecia kolacja |  |
