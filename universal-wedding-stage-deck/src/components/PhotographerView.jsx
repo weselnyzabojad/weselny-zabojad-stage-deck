@@ -4,6 +4,7 @@ import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import StagePingBanner from './StagePingBanner';
 import SyncStatusBadge from './SyncStatusBadge';
+import TimelineFocusStack from './TimelineFocusStack';
 import TopBarClock from './TopBarClock';
 import TopBarRoleLabel from './TopBarRoleLabel';
 import ThemeToggle from './ThemeToggle';
@@ -38,13 +39,6 @@ const MEDIA_ROLE_META = {
   PHOTO: { label: 'Photo', icon: '📷' },
   VIDEO: { label: 'Video', icon: '🎥' },
   DRONE: { label: 'Drone', icon: '🚁' },
-};
-
-const STEP_STATUS = {
-  done: { label: 'DONE', chip: 'border-emerald-800 bg-emerald-950/60 text-emerald-300' },
-  active: { label: 'ON AIR', chip: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse' },
-  next: { label: 'NEXT', chip: 'border-amber-800 bg-amber-950/60 text-amber-200' },
-  planned: { label: 'PLANNED', chip: 'border-line bg-raised text-slate-400' },
 };
 
 // Stable fallback so the component never calls `new Date()` during render; the
@@ -261,6 +255,16 @@ export default function PhotographerView({
               </a>
             ) : null}
           </div>
+        </Card>
+      ) : null}
+
+      {visibility.timeline ? (
+        <Card title="Read-only timeline" icon="📋">
+          {timeline.length === 0 ? (
+            <p className="text-xs text-slate-400">No steps in this cartridge.</p>
+          ) : (
+            <TimelineFocusStack compact entries={timeline} activeIndex={activeIndex} />
+          )}
         </Card>
       ) : null}
     </div>
@@ -772,43 +776,7 @@ export default function PhotographerView({
               {timeline.length === 0 ? (
                 <p className="text-xs text-slate-400">No steps in this cartridge.</p>
               ) : (
-                <ol className="space-y-1.5">
-                  {timeline.map((entry) => {
-                    const status = entry.isDone
-                      ? 'done'
-                      : entry.isActive
-                        ? 'active'
-                        : entry.index === activeIndex + 1
-                          ? 'next'
-                          : 'planned';
-                    const meta = STEP_STATUS[status];
-                    return (
-                      <li
-                        key={entry.step.id}
-                        className={`flex flex-wrap items-center justify-between gap-2 rounded border px-2.5 py-2 ${
-                          entry.isActive ? 'border-brand-strong bg-brand/20' : 'border-line bg-page'
-                        }`}
-                      >
-                        <div className="min-w-0">
-                          <div className="font-heading text-xs font-semibold text-ink">
-                            {entry.step.title}
-                          </div>
-                          <div className="font-mono text-[10px] text-slate-500">
-                            📍 {entry.step.location} · {entry.step.durationMin} min
-                          </div>
-                        </div>
-                        <div className="flex shrink-0 items-center gap-2 font-mono text-[10px]">
-                          <span className="text-slate-300">
-                            {entry.projectedStart ?? '—'}–{entry.projectedEnd ?? '—'}
-                          </span>
-                          <span className={`rounded border px-1.5 py-0.5 text-[9px] font-bold ${meta.chip}`}>
-                            {meta.label}
-                          </span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
+                <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
               )}
             </Card>
           ) : null}

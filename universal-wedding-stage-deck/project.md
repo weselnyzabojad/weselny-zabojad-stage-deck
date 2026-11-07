@@ -124,6 +124,56 @@ guidance in [`docs/mc-stage-rail-plan.md`](docs/mc-stage-rail-plan.md).
    future pass where these controls should be surfaced. Cartridge import is
    admin-only through `/deck/admin` and is not part of this relocation.
 
+### Universal timeline focus stacks (decision, 2026-11-07)
+
+The timeline workflow uses one shared depth model in **every role view** (MC,
+DJ, Photographer and Speaker) and on **every viewport** (desktop, laptop,
+tablet and compact phone/pocket layouts). The goal is one unmistakable focal
+point — the active step — with only the immediate history and the immediate
+future shown around it.
+
+1. **Current step floats above everything.** The active step card is always the
+   visual centre: elevated, floating and slightly 3D. Use layered depth
+   (soft multi-layer drop shadows), a subtle perspective/tilt treatment and a
+   stronger border/glow than any history or future card. It must remain the
+   dominant element on a full desktop layout and on the smallest phone layout,
+   for every role, even when the role view is read-only or shows a reduced
+   subset of timeline data.
+2. **Completed steps stack behind the current card.** Only the **last** done
+   step and the **second-to-last** done step may be rendered:
+   - the most recent completed step (immediately before the active step) is
+     fully readable and prominent;
+   - the second-to-last completed step sits underneath/behind it with reduced
+     opacity and scale;
+   - every older completed step is hidden from the timeline (not merely dimmed;
+     keep it out of the stack and out of assistive reading order unless a
+     dedicated “show all completed” control is provided).
+3. **Future steps mirror the same horizon.** Only the **next** step and the
+   **second-next** planned step may be rendered in the immediate horizon:
+   - the immediate next step is the most visible future card;
+   - the second-next planned step layers behind/fades in the same way as the
+     second-to-last completed step;
+   - anything farther into the future is hidden by default and only reachable
+     through an explicit “show full timeline”/expand interaction.
+4. **Responsive layout, identical rules.** Desktop/laptop uses a horizontal
+   trailing stack (past — current — future). Phone/pocket may use a compact
+   vertical or horizontal sliding depth stack, but it must keep the same
+   visibility counts: one floating current card, at most two history cards and
+   at most two future cards visible at once. Breakpoints may change card size,
+   spacing, overlap, offset and the placement of controls; they may not change
+   the depth rules.
+5. **Shared rendering contract.** All role views use the same focus-stack
+   component/helper fed by the same drift/timeline entries and live state.
+   MC-specific controls (advance, undo, swap) may be hidden on non-MC roles,
+   but card hierarchy, stacking order, opacity/scale tiers and visibility
+   counts stay identical across roles and devices.
+6. **Supersession and rollout.** This universal stack supersedes the
+   MC-only “previous/current/next” card guidance above and the three-cards-per-rail
+   idea in `docs/mc-stage-rail-plan.md` wherever they conflict. Implementation
+   should introduce the shared focus-stack helper first, then port each role
+   (desktop and pocket) to it, with visual regression or screenshot checks on a
+   large desktop viewport and a compact phone viewport.
+
 ---
 
 ## 3. Architecture

@@ -22,10 +22,9 @@ import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import ReelClock from '../components/ReelClock';
 import RoleShell from '../components/RoleShell';
 import RoleSwitcher from '../components/RoleSwitcher';
-import StageRail from '../components/StageRail';
+import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
-import { buildStageRail } from '../lib/stageRail.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import SpeechesCard from '../components/SpeechesCard';
 import StagePingControls from '../components/StagePingControls';
@@ -118,7 +117,52 @@ export default function McMasterView({ model }) {
     return () => mq.removeEventListener('change', listener);
   }, []);
 
-  // Compact (phone) content: drift check + advance/undo + next peek + summaries.
+  const railEntries = driftReport.entries ?? [];
+  const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
+
+  // Compact (phone) content: the same shared focus stack as the desktop rail,
+  // plus the MC-only advance/undo controls inside the current card.
+  const compactCurrentBody = currentStep ? (
+    <div className="flex flex-col gap-2">
+      <span
+        className={`w-fit rounded border px-2.5 py-1 font-heading text-xs font-semibold uppercase tracking-wider ${stepTypeClass}`}
+      >
+        {currentStep.type.replace('_', ' ')} STEP
+      </span>
+      <div className="flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
+        <span>Real start: <strong className="text-white">{realStart}</strong></span>
+        <span>Est. end: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={handleUndo}
+          disabled={!canUndo}
+          className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
+        >
+          ↩ Undo
+        </button>
+        <HoldToConfirmButton
+          onConfirm={handleAdvance}
+          disabled={isComplete}
+          label={isComplete ? 'EVENT COMPLETE ✓' : 'HOLD TO ADVANCE ➔'}
+          holdLabel="hold 1.2s"
+          className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong'}`}
+        />
+      </div>
+      {script ? (
+        <button
+          type="button"
+          onClick={() => setOverlay('teleprompter')}
+          className="w-full bg-raised hover:bg-line text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
+        >
+          📖 Open teleprompter / script
+        </button>
+      ) : null}
+      <div className="text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</div>
+    </div>
+  ) : null;
+
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       {driftReport.hardAnchorRadar.hasWarning ? (
@@ -128,80 +172,28 @@ export default function McMasterView({ model }) {
       <ReelClock clock={driftReport.clock} />
       <DriftPill drift={driftReport.drift} />
 
-      {currentStep ? (
-        <div className="bg-card/95 border border-line rounded-xl p-4 shadow-xl">
-          <span className={`text-xs uppercase tracking-wider font-heading font-semibold px-2.5 py-1 rounded border ${stepTypeClass}`}>
-            {currentStep.type.replace('_', ' ')} STEP
-          </span>
-          <h1 className="text-lg font-heading font-bold text-white mt-2">{currentStep.title}</h1>
-          <div className="text-xs text-slate-400 mt-1">
-            📍 <strong className="text-slate-200">{currentStep.location}</strong>
-          </div>
-          <div className="mt-2 flex items-center justify-between bg-page/80 p-2 rounded-lg border border-line text-xs font-mono">
-            <span>Real start: <strong className="text-white">{realStart}</strong></span>
-            <span>Est. end: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleUndo}
-              disabled={!canUndo}
-              className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
-            >
-              ↩ Undo
-            </button>
-            <HoldToConfirmButton
-              onConfirm={handleAdvance}
-              disabled={isComplete}
-              label={isComplete ? 'EVENT COMPLETE ✓' : 'HOLD TO ADVANCE ➔'}
-              holdLabel="hold 1.2s"
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong'}`}
-            />
-          </div>
-          {script ? (
-            <button
-              type="button"
-              onClick={() => setOverlay('teleprompter')}
-              className="mt-2 w-full bg-raised hover:bg-line text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
-            >
-              📖 Open teleprompter / script
-            </button>
-          ) : null}
-          <div className="mt-2 text-xs text-slate-400 font-mono">Step {currentEntry.index + 1} of {steps.length}</div>
-        </div>
-      ) : (
+      {railEntries.length > 0 ? (
+        <TimelineFocusStack
+          compact
+          entries={railEntries}
+          activeIndex={railActiveIndex}
+          currentBody={compactCurrentBody}
+        />
+      ) : null}
+
+      {!currentStep ? (
         <div className="bg-card/95 border border-line rounded-xl p-4 text-center">
           <div className="text-4xl mb-2">🎉</div>
           <div className="text-xs uppercase tracking-widest text-emerald-300 font-semibold">Event complete</div>
           <div className="text-sm text-slate-400 mt-1">{completedCount} / {steps.length} completed</div>
         </div>
-      )}
-
-      <div className="bg-card/95 border border-line rounded-xl p-4 shadow-lg">
-        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">PEEK NEXT</span>
-        {nextEntry ? (
-          <>
-            <div className="text-base font-heading font-bold text-white mt-1">{nextEntry.step.title}</div>
-            <div className="text-xs font-mono mt-1">
-              <span className="text-slate-500 line-through">{nextEntry.plannedStart}</span>
-              <span className="mx-1 text-slate-500">→</span>
-              <span className="text-white">{nextEntry.projectedStart}</span>
-            </div>
-          </>
-        ) : (
-          <div className="text-sm text-slate-400 mt-1">No further steps — event complete.</div>
-        )}
-      </div>
+      ) : null}
 
       <CakeCard cake={cakeProtocol} />
       <MusicPolicyCard policy={musicPolicy} compact />
       <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
     </div>
   );
-
-  const railEntries = driftReport.entries ?? [];
-  const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
-  const stageRail = buildStageRail(railEntries, railActiveIndex);
 
   // Hero body: the current step's cues, sub-tasks and launchers live inside the
   // centre card of the Stage Rail.
@@ -395,10 +387,9 @@ export default function McMasterView({ model }) {
       {/* ================= STAGE RAIL + DETAILS ================= */}
       <main id="main-content" tabIndex={-1} className="flex-1 min-h-0 overflow-y-auto p-4">
         <div className="flex flex-col gap-4">
-          <StageRail
-            done={stageRail.done}
-            current={stageRail.current}
-            upcoming={stageRail.upcoming}
+          <TimelineFocusStack
+            entries={railEntries}
+            activeIndex={railActiveIndex}
             currentBody={heroBody}
           />
 

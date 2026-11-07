@@ -1,5 +1,12 @@
 # MC Stage Rail — current-step hero with done / upcoming accordions
 
+> **Superseded (2026-11-07):** The “Universal timeline focus stacks” decision in
+> `project.md` replaces the MC-only previous/current/next guidance and the
+> three-cards-per-rail idea below wherever they conflict. The shared
+> implementation now lives in `src/lib/focusStack.js` and
+> `src/components/TimelineFocusStack.jsx`; `src/components/StageRail.jsx` is a
+> backwards-compatible adapter.
+
 **Created:** 2026-11-06
 **Baseline:** `master` @ `1ad7de9`
 **Scope:** MC Master desktop presentation only. No schema, sync, drift-engine or
