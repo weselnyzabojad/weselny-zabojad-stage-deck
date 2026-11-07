@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { listDriveChildren, previewDriveSource } from './adminApi';
 import {
   DRIVE_ROOT_FOLDER_ID,
@@ -6,6 +6,7 @@ import {
   DRIVE_MONTH_NAMES,
   mergeYearFolders,
   partitionMonthFolders,
+  manifestHash,
 } from '../lib/driveFolders';
 import { summarizeSecretDocs } from '../lib/secretDocs';
 
@@ -29,6 +30,8 @@ export default function AdminWeddingFolders() {
   const [lastLoaded, setLastLoaded] = useState(null);
   const [secretsByWedding, setSecretsByWedding] = useState({});
   const [secretLoadingId, setSecretLoadingId] = useState('');
+  const [scanState, setScanState] = useState('');
+  const yearCacheRef = useRef(new Map());
 
   const loadYears = useCallback(async () => {
     setLoading(true);
@@ -57,9 +60,26 @@ export default function AdminWeddingFolders() {
     try {
       const monthResult = await listDriveChildren({ parentId: yearId, pageSize: 200 });
       const candidates = sortMonths(partitionMonthFolders(monthResult.files ?? []).months);
+      const childResults = await Promise.all(
+        candidates.map(async (month) => ({
+          month,
+          childResult: await listDriveChildren({ parentId: month.id, pageSize: 200 }),
+        })),
+      );
+      const hash = manifestHash([
+        ...(monthResult.files ?? []),
+        ...childResults.flatMap(({ childResult }) => childResult.files ?? []),
+      ]);
+      const cached = yearCacheRef.current.get(yearId);
+      if (cached && cached.hash === hash) {
+        setMonths(cached.months);
+        setScanState('No folder changes since the last scan.');
+        setLastLoaded(new Date());
+        return;
+      }
+
       const loaded = await Promise.all(
-        candidates.map(async (month) => {
-          const childResult = await listDriveChildren({ parentId: month.id, pageSize: 200 });
+        childResults.map(async ({ month, childResult }) => {
           const partition = partitionMonthFolders(childResult.files ?? []);
           let secretByWedding = {};
           if (partition.secrets) {
@@ -81,11 +101,12 @@ export default function AdminWeddingFolders() {
           };
         }),
       );
+      yearCacheRef.current.set(yearId, { hash, months: loaded });
       setMonths(loaded);
+      setScanState(cached ? 'Folder changes detected and processed.' : 'Folder manifest loaded.');
       setLastLoaded(new Date());
     } catch (err) {
       setError(err.message ?? 'Could not load Drive month folders.');
-      setMonths([]);
     } finally {
       setLoadingYear('');
     }
@@ -136,11 +157,15 @@ export default function AdminWeddingFolders() {
             Drive library · {totalWeddings} wedding folders in the selected year
             {lastLoaded ? ` · refreshed ${lastLoaded.toLocaleTimeString()}` : ''}
           </p>
+          {scanState ? <p className="mt-1 text-[10px] text-brand-tint">{scanState}</p> : null}
         </div>
         <button
           type="button"
-          onClick={() => void loadYears()}
-          disabled={loading}
+          onClick={() => {
+            void loadYears();
+            if (selectedYearId) void loadYear(selectedYearId);
+          }}
+          disabled={loading || Boolean(loadingYear)}
           className="rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
         >
           {loading ? 'Refreshing…' : 'Refresh folders'}
