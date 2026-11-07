@@ -251,6 +251,9 @@ export const DEMO_WEDDING = {
   mandatorySteps: {
     firstGuestsArrival: "15:30",
     cakeServiceMode: "KITCHEN_RETURN",
+    closureTime: "02:00",
+    closureExtensionAllowed: true,
+    lastSong: "Perfect - Ed Sheeran",
     kitchenServices: {
       dinner: "18:30",
       firstSupper: "21:30",
@@ -448,7 +451,8 @@ export const DEMO_WEDDING = {
     { id: "step_07", time: "21:15", durationMin: 30, title: "Wishes", type: "BUFFER", location: "Garden", optionalFlag: "wishes" },
     { id: "step_08", time: "21:45", durationMin: 10, title: "First Dance", type: "ELASTIC", location: "Main Hall", isMainSongRequired: true },
     { id: "step_09", time: "00:00", durationMin: 60, title: "Oczepiny", type: "HARD_ANCHOR", location: "Main Hall", optionalFlag: "oczepiny" },
-    { id: "step_10", time: "01:00", durationMin: 45, title: "Games", type: "BUFFER", location: "Main Hall", optionalFlag: "games" }
+    { id: "step_10", time: "01:00", durationMin: 45, title: "Games", type: "BUFFER", location: "Main Hall", optionalFlag: "games" },
+    { id: "step_11", time: "02:00", durationMin: 15, title: "Wedding closure", type: "HARD_ANCHOR", location: "Main Hall" }
   ]
 };
 

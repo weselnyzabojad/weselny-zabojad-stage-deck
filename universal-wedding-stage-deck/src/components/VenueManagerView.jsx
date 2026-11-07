@@ -119,6 +119,19 @@ export default function VenueManagerView({
             value={kitchen.thirdSupper}
             onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, thirdSupper: time } })}
           />
+          <TimeField
+            label="Wedding closure"
+            value={settings.closureTime}
+            onChange={(time) => update({ ...settings, closureTime: time })}
+          />
+          <label className="flex items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-slate-400">
+            <input
+              type="checkbox"
+              checked={settings.closureExtensionAllowed === true}
+              onChange={(event) => update({ ...settings, closureExtensionAllowed: event.target.checked })}
+            />
+            +1h extension allowed
+          </label>
           <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500">
             Cake service
             <select

@@ -469,6 +469,14 @@
       "type": "BUFFER",
       "location": "Main Hall",
       "optionalFlag": "games"
+    },
+    {
+      "id": "step_11",
+      "time": "02:00",
+      "durationMin": 15,
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "Main Hall"
     }
   ],
   "demographics": {
@@ -727,7 +735,8 @@
       "step_07",
       "step_08",
       "step_09",
-      "step_10"
+      "step_10",
+      "step_11"
     ],
     "mutation_log": []
   },
@@ -743,7 +752,10 @@
       "dinner": "18:30",
       "firstSupper": "21:30",
       "secondSupper": "23:30"
-    }
+    },
+    "closureTime": "02:00",
+    "closureExtensionAllowed": true,
+    "lastSong": "Perfect - Ed Sheeran"
   },
   "childrenExpected": true
 }
