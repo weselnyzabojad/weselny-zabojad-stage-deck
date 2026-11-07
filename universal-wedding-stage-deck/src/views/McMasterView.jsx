@@ -15,8 +15,6 @@ import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
-import MusicPolicyCard from '../components/MusicPolicyCard';
-import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
 import RoleShell from '../components/RoleShell';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarClock from '../components/TopBarClock';
@@ -69,7 +67,6 @@ export default function McMasterView({ model }) {
   completedCount,
   nextEntry,
   cakeProtocol,
-  musicPolicy,
   speechMode,
   speeches,
   selectSpeech,
@@ -181,8 +178,6 @@ export default function McMasterView({ model }) {
         </div>
       ) : null}
 
-      <CakeCard cake={cakeProtocol} />
-      <MusicPolicyCard policy={musicPolicy} compact />
     </div>
   );
 
@@ -235,6 +230,10 @@ export default function McMasterView({ model }) {
           </ul>
         </div>
       </div>
+
+      {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (
+        <CakeCard cake={cakeProtocol} />
+      ) : null}
 
       {stepSubtasks.length > 0 ? (
         <div className="bg-page/70 p-3 rounded-lg border border-line">
@@ -411,16 +410,6 @@ export default function McMasterView({ model }) {
             aria-label="Stage details"
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            <CakeCard cake={cakeProtocol} />
-
-            <MusicPolicyCard policy={musicPolicy} compact />
-
-            <PreWeddingChecklistCard
-              tasks={WEDDING.preWeddingTodos ?? []}
-              checked={liveState.checked_subtasks}
-              onToggle={toggleSubtask}
-            />
-
             <SpeechesCard
               wedding={WEDDING}
               mode={speechMode}
