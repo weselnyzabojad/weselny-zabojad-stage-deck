@@ -1,11 +1,10 @@
-import logo from '../assets/img/logo.png';
+﻿import logo from '../assets/img/logo.png';
 import { useEffect, useState } from 'react';
 import CoupleIdentity from './CoupleIdentity';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import MusicPolicyCard from './MusicPolicyCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
-import ReelClock from './ReelClock';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -69,8 +68,8 @@ export default function DjBoothView({
           <div className="text-[10px] uppercase tracking-wider text-slate-400">{t('dj.projected')}</div>
           <div className="text-sm font-semibold text-white">
             {activeEntry
-              ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
-              : '—'}
+              ? `${activeEntry.projectedStart ?? 'â€”'}â€“${activeEntry.projectedEnd ?? 'â€”'}`
+              : 'â€”'}
           </div>
         </div>
         <div className="text-right text-[10px] uppercase tracking-wider text-slate-500">
@@ -90,17 +89,17 @@ export default function DjBoothView({
         <div className="flex flex-wrap gap-2 text-[11px]">
           {isVip && activeEntry.step.dj.playlist ? (
             <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-              🎵 {activeEntry.step.dj.playlist}
+              đźŽµ {activeEntry.step.dj.playlist}
             </span>
           ) : null}
           {activeEntry.step.dj.track ? (
             <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
-              ▶ {activeEntry.step.dj.track}
+              â–¶ {activeEntry.step.dj.track}
             </span>
           ) : null}
           {isVip && activeEntry.step.dj.note ? (
             <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-              📝 {activeEntry.step.dj.note}
+              đź“ť {activeEntry.step.dj.note}
             </span>
           ) : null}
         </div>
@@ -134,7 +133,6 @@ export default function DjBoothView({
         />
       ) : null}
 
-      <ReelClock clock={clock} compact />
 
       <TimelineFocusStack
         compact
@@ -161,7 +159,7 @@ export default function DjBoothView({
       >
         <div className="flex items-center gap-3 xl:min-w-0">
           <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-            <img src={logo} alt="Weselny Żabojad" className="h-10 w-auto object-contain" />
+            <img src={logo} alt="Weselny Ĺ»abojad" className="h-10 w-auto object-contain" />
           </div>
           <TopBarClock clock={clock} />
           <TopBarRoleIdentity role={role} tier={tierLabel} />
@@ -210,12 +208,11 @@ export default function DjBoothView({
           {isSolo ? (
             <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
               <strong className="font-heading">{t('dj.soloTitle')}</strong> {t('dj.soloBody')}
-              device — open the MC view for scripts and drift controls. Song detail stays at the
+              device â€” open the MC view for scripts and drift controls. Song detail stays at the
               Standard level.
             </div>
           ) : null}
 
-          <ReelClock clock={clock} compact />
 
           <TimelineFocusStack
             zoneScroll={false}
@@ -231,11 +228,11 @@ export default function DjBoothView({
             <aside className="space-y-4">
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
-                  🎚️ Set notes
+                  đźŽšď¸Ź Set notes
                 </h2>
                 <ul className="mt-2 space-y-1.5 text-[11px] text-slate-400">
                   <li>Follow the projected times; the host advances the live state.</li>
-                  <li>Red cutoffs are hard stops — fade before the stated time.</li>
+                  <li>Red cutoffs are hard stops â€” fade before the stated time.</li>
                   <li>This view never exposes MC scripts or family alerts.</li>
                 </ul>
               </section>
@@ -245,7 +242,7 @@ export default function DjBoothView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
-        Read-only DJ view · no step controls · syncs with the host over the room PIN
+        Read-only DJ view Â· no step controls Â· syncs with the host over the room PIN
       </footer>
     </div>
   );
