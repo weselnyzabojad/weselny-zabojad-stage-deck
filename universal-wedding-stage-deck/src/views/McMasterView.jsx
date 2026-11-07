@@ -37,6 +37,7 @@ import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConsta
 export default function McMasterView({ model }) {
   const {
   WEDDING,
+  childrenExpected = false,
   realStart,
   driftReport,
   vipAlerts,
@@ -159,7 +160,7 @@ export default function McMasterView({ model }) {
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       {driftReport.hardAnchorRadar.hasWarning ? (
-        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} childrenExpected={childrenExpected} />
       ) : null}
 
       <DriftPill drift={driftReport.drift} compact />
@@ -400,6 +401,7 @@ export default function McMasterView({ model }) {
       {hasAnchorWarning ? (
         <HardAnchorAlertBanner
           radar={driftReport.hardAnchorRadar}
+          childrenExpected={childrenExpected}
           actions={(
             <>
               {pinControl}

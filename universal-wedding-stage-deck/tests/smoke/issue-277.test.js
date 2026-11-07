@@ -9,9 +9,10 @@ const wedding = { childrenExpected: true };
 
 describe('issue #277 children expected badge', () => {
   it('shows for MC and all media roles only when true', () => {
-    for (const role of ['mc', 'photo1', 'photo2', 'video']) {
+    for (const role of ['photo1', 'photo2', 'video']) {
       expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role }))).toContain('Children');
     }
+    expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'mc' }))).toBe('');
     expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: false }, role: 'mc' }))).toBe('');
     expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'dj' }))).toBe('');
   });

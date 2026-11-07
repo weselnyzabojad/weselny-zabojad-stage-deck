@@ -5,7 +5,7 @@ import { useI18n } from '../i18n/useI18n';
 export default function ChildrenExpectedBadge({ wedding, role }) {
   const { t } = useI18n();
   if (wedding?.childrenExpected !== true) return null;
-  if (role !== 'mc' && !isMediaRole(role)) return null;
+  if (!isMediaRole(role)) return null;
 
   return (
     <div
