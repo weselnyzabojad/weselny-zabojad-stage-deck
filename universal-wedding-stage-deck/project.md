@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `ecfecee` (media/speaker/DJ refinements alignment)
+**Aligned with:** `master` @ `fc68d23` (unified top bar design #253–#255)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
