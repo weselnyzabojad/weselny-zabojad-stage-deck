@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
+import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -264,6 +265,19 @@ export default function PhotographerView({
       <PhotoPlanDetails key={stepId} entries={entries} />,
     ]),
   );
+  const oczepinyStep = timeline.find(
+    (entry) =>
+      entry?.step?.optionalFlag === 'oczepiny' || /oczepiny/i.test(entry?.step?.title ?? ''),
+  );
+  const cueBodies = { ...planBodies };
+  if (oczepinyStep?.step?.id) {
+    cueBodies[oczepinyStep.step.id] = (
+      <div className="space-y-2">
+        {planBodies[oczepinyStep.step.id] ?? null}
+        <OczepinyCueCard wedding={wedding} audience="photo" />
+      </div>
+    );
+  }
 
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
 
@@ -292,7 +306,7 @@ export default function PhotographerView({
         compact
         entries={timeline}
         activeIndex={activeIndex}
-        entryBodies={planBodies}
+        entryBodies={cueBodies}
       />
 
       {visibility.sunset && sunset?.usable && !miniSessionDone ? (
@@ -369,7 +383,7 @@ export default function PhotographerView({
           <TimelineFocusStack
             entries={timeline}
             activeIndex={activeIndex}
-            entryBodies={planBodies}
+            entryBodies={cueBodies}
           />
 
           {visibility.sunset && !miniSessionDone ? (

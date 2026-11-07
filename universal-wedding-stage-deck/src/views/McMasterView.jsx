@@ -14,6 +14,7 @@ import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
+import OczepinyCueCard from '../components/OczepinyCueCard';
 import RoleShell from '../components/RoleShell';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
@@ -249,6 +250,10 @@ export default function McMasterView({ model }) {
             </div>
           </div>
         </>
+      ) : null}
+
+      {currentStep.optionalFlag === 'oczepiny' || /oczepiny/i.test(currentStep.title) ? (
+        <OczepinyCueCard wedding={WEDDING} audience="mc" />
       ) : null}
 
       {stepSubtasks.length > 0 ? (
