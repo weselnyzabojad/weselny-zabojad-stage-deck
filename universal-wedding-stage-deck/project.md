@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `fab9fd1` (predefined step data contract)
+**Aligned with:** `master` @ `f2e3721` (step type/duration decisions)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -134,6 +134,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#307](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/307) | Photographer children text: only "Children expected" |
 | [#308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/308) | Step types: remove BUFFER, use FLEXIBLE/HARD_ANCHOR |
 | [#309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/309) | Auto-calculate step durations from next-step times |
+| [#310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/310) | Step cards: remove the "Step N" label |
+| [#311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/311) | Photographer/Cameraman: restore sunset UI |
 
 ### Responsive phone / pocket plan
 
@@ -1004,6 +1006,26 @@ Implementation issues:
 - [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
 - [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
 - [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
+
+### Step card labels and Photographer sunset (decision, 2026-11-07)
+
+**No numeric step labels.** Remove "Step 1", "Step 2", etc. from all step cards.
+Keep the step index in data/logic, but do not show the numeric position label in
+current, completed or upcoming cards in any role or viewport.
+([#310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/310))
+
+**Restore Photographer/Cameraman sunset UI.** The Sunset & Golden Hour card has
+disappeared from Photographer/Cameraman views. Restore it and stabilize its
+visibility:
+
+- show the sunset, golden hour, civil twilight, mini-session latest-start and
+  status/countdowns on desktop and pocket;
+- show the unavailable/stale state instead of removing the card when data is
+  missing or stale;
+- investigate the hide conditions; do not hide it merely because mini-session
+  data is absent;
+- keep the prior lifecycle rule only when a real mini session is complete.
+([#311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/311))
 
 ### Step types, durations and children wording (decision, 2026-11-07)
 
