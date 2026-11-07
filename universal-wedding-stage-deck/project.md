@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `ff608b2` (unified mobile layout decision)
+**Aligned with:** `master` @ `5205c4f` (mobile 3D current-step decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -144,6 +144,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#332](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/332) | Mobile: admin, dev switcher and secondary panel density |
 | [#333](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/333) | Mobile: consistent cultural and speech pill grid |
 | [#334](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/334) | Mobile: harden drawers, modals and floating panels |
+| [#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335) | Mobile: 3D current-step card across all role views |
+| [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews, admin boundary and regression coverage |
 
 ### Responsive phone / pocket plan
 
@@ -1229,6 +1231,36 @@ affecting layout stability:
 - Respect `prefers-reduced-motion` by rendering flat with no tilt.
 - Do not overflow or clip the Completed/Upcoming columns.
 ([#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295))
+
+### Mobile 3D current-step card (decision, 2026-11-07)
+
+The existing Current Step 3D treatment is pointer-driven and explicitly ignores
+touch, so phone/pocket layouts render flat. Extend it to mobile without changing
+the completed desktop implementation.
+
+**Mobile behaviour.**
+
+- The shared current-step wrapper activates a subtle 3D perspective/elevation on
+  phone widths and touch devices.
+- Do not use hover-style pointer tracking on touch. Use a controlled static or
+  press/advance-state tilt that does not fight scrolling or cause jitter.
+- Keep a short transform transition on step changes while preserving text
+  crispness, contrast and touch-target size.
+- Respect \`prefers-reduced-motion\`: flat transform, retained elevation.
+- Keep the existing layered shadows, Z-axis header/body depth and card hierarchy.
+- The effect must scale with the compact mobile top bar without horizontal
+  overflow or clipping.
+
+Apply the shared mobile wrapper to MC, DJ Standard, DJ VIP, Photographer 1,
+Photographer 2/Cameraman, Speaker and Venue Manager.
+([#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335))
+
+**Secondary surfaces.** Dev role previews inherit the shared mobile effect. Any
+admin-embedded role preview or future Admin current-step card must reuse the same
+wrapper. Admin library, presence and audit cards are not step cards and stay
+flat. Add viewport regression coverage for 320×568 and 375×667, plus manual QA
+for touch scrolling, advance and reduced motion.
+([#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
