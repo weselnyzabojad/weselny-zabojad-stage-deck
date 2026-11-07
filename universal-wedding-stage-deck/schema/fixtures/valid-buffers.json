@@ -22,20 +22,15 @@
       "time": "16:30",
       "durationMin": 30,
       "title": "Aperitif",
-      "type": "BUFFER",
-      "location": "Garden",
-      "buffer": {
-        "minDurationMin": 15,
-        "maxDurationMin": 45,
-        "danceBlock": true
-      }
+      "type": "FLEXIBLE",
+      "location": "Garden"
     },
     {
       "id": "step_02",
       "time": "17:30",
       "durationMin": 60,
       "title": "Dinner",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Hall"
     },
     {

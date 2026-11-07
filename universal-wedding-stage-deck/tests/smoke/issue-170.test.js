@@ -159,7 +159,7 @@ describe('issue #170 publication metadata and audit', () => {
       gorzko: { status: 'STRICT_NO' },
       bread_salt: { status: 'TBC' },
     },
-    steps: [{ id: 'a', time: '16:00', durationMin: 30, title: 'Arrival', type: 'BUFFER', location: 'Garden' }],
+    steps: [{ id: 'a', time: '16:00', durationMin: 30, title: 'Arrival', type: 'FLEXIBLE', location: 'Garden' }],
   };
 
   it('forwards source metadata to the atomic RPC', async () => {

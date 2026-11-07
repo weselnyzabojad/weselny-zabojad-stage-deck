@@ -803,30 +803,6 @@
         }
       }
     },
-    "buffer": {
-      "type": "object",
-      "required": [
-        "minDurationMin",
-        "maxDurationMin"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "minDurationMin": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 720
-        },
-        "maxDurationMin": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 720
-        },
-        "danceBlock": {
-          "type": "boolean",
-          "default": false
-        }
-      }
-    },
     "djCue": {
       "type": "object",
       "additionalProperties": false,
@@ -1039,16 +1015,12 @@
         "type": {
           "type": "string",
           "enum": [
-            "ELASTIC",
-            "BUFFER",
+            "FLEXIBLE",
             "HARD_ANCHOR"
           ]
         },
         "location": {
           "type": "string"
-        },
-        "buffer": {
-          "$ref": "#/$defs/buffer"
         },
         "dj": {
           "$ref": "#/$defs/djCue"

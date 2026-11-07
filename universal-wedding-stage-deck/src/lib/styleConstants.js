@@ -4,8 +4,7 @@
 // definition. Pure refactor: the class strings are unchanged.
 
 export const STEP_TYPE_STYLES = {
-  ELASTIC: 'text-white bg-brand border-brand-strong',
-  BUFFER: 'text-cyan-200 bg-cyan-950/70 border-cyan-800',
+  FLEXIBLE: 'text-white bg-brand border-brand-strong',
   HARD_ANCHOR: 'text-alert-tint bg-alert/20 border-alert/60',
 };
 

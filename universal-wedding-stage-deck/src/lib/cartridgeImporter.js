@@ -81,7 +81,7 @@ export async function validateCartridge(input) {
 
 export function summarizeCartridge(cartridge) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
-  const buffers = steps.filter((step) => step?.type === 'BUFFER');
+  const buffers = steps.filter((step) => step?.type === 'FLEXIBLE');
   const anchors = Array.isArray(cartridge?.hardAnchors) ? cartridge.hardAnchors : [];
   const vipAlerts = Array.isArray(cartridge?.tact_and_vip_alerts)
     ? cartridge.tact_and_vip_alerts

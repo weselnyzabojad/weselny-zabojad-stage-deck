@@ -25,7 +25,7 @@ const timeline = [
     step: {
       id: 'step_01',
       title: 'Hall Entrance',
-      type: 'ELASTIC',
+      type: 'FLEXIBLE',
       location: 'Main Hall',
       durationMin: 30,
       dj: { track: 'Track A' },

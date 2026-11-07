@@ -107,29 +107,27 @@ rejected; put app-specific data under `extensions`.
 
 ```json
 {
-  "id": "step_04",
-  "time": "19:30",
+  "id": "step_01",
+  "time": "16:30",
   "durationMin": 30,
-  "title": "Buffets Open & Dance Floor",
-  "type": "BUFFER",
-  "location": "Main Hall",
-  "buffer": { "minDurationMin": 10, "maxDurationMin": 60, "danceBlock": true },
-  "dj": { "playlist": "Dance Floor Block", "track": "September — Earth, Wind & Fire" }
+  "title": "Cocktail / Vin d'honneur",
+  "type": "FLEXIBLE",
+  "location": "Garden",
+  "dj": { "playlist": "Garden Aperitif", "track": "La Vie en Rose — Édith Piaf" }
 }
 ```
 
 | Type | Behavior |
 | --- | --- |
-| `ELASTIC` | Shifts with real drift; projects realistic starts/ends. |
-| `BUFFER` | Accordion shock-absorber. `buffer` gives the allowed min/max range. |
-| `HARD_ANCHOR` | Pinned to its clock time; never shifts. |
+| `FLEXIBLE` | Non-mandatory step; shifts with real drift and projects realistic starts/ends. |
+| `HARD_ANCHOR` | Pinned to its clock time; never shifts. Mandatory steps use this type. |
 
 Notes:
 
 - `time` is the planned start. Optional `planned` overrides it for drift math.
 - `realStart` is only a demo/test seed; live actual starts are logged on transitions.
-- `durationMin` should sit between `buffer.minDurationMin` and
-  `buffer.maxDurationMin` when a buffer range is present.
+- `BUFFER` and `ELASTIC` are removed; legacy cartridges must migrate to
+  `FLEXIBLE` or `HARD_ANCHOR`.
 
 ### DJ cue
 
