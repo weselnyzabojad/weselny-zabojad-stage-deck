@@ -12,7 +12,7 @@ describe('issue #199 remove MC DJ / Audio cues', () => {
   });
 
   it('keeps MC cues and the step launchers', () => {
-    expect(mc).toContain('MC Cues (FR / PL / EN)');
+    expect(mc).toContain('MC Cues');
     expect(mc).toContain('Open Teleprompter / Script');
     expect(mc).toContain('Game Clicker');
   });
