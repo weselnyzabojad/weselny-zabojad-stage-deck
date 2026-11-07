@@ -12,7 +12,7 @@ import { STEP_TYPE_STYLES } from './lib/styleConstants';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { useSensitiveNotes } from './hooks/useSensitiveNotes';
-import { availableRoleIds } from './lib/roles';
+import { availableRoleIds, isMediaRole } from './lib/roles';
 import { djDetailTier } from './lib/importantSongs';
 import {
   resolveAllowedViewRoles,
@@ -450,7 +450,7 @@ export default function StageDeck({
     );
   }
 
-  if (currentRole === "photo") {
+  if (isMediaRole(currentRole)) {
     return (
       <>
         <AppErrorBoundary

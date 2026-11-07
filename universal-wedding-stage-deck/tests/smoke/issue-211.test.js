@@ -31,13 +31,13 @@ describe('issue #211 development-only all-role switcher', () => {
   it('renders a clearly marked temporary all-role switcher', () => {
     const html = renderToStaticMarkup(
       createElement(DevViewSwitcher, {
-        currentRole: 'photo',
+        currentRole: 'photo1',
         onChange: () => {},
       }),
     );
     expect(html).toContain('DEV VIEW SWITCHER');
     expect(html).toContain('not for production');
-    for (const label of ['MC', 'DJ', 'Photo', 'Speaker']) {
+    for (const label of ['MC', 'DJ', 'Photo 1', 'Photo 2', 'Camera', 'Speaker']) {
       expect(html).toContain(label);
     }
     expect(html).toContain('aria-pressed="true"');

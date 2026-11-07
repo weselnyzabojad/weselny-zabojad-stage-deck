@@ -30,12 +30,34 @@ export const ROLES = {
     icon: '🎧',
     blurb: 'Read-only timeline, playlists and hard cutoffs.',
   },
+  photo1: {
+    id: 'photo1',
+    label: 'Photographer 1',
+    short: 'Photo 1',
+    icon: '📷',
+    blurb: 'Media step timeline, shot plan and light windows.',
+  },
+  photo2: {
+    id: 'photo2',
+    label: 'Photographer 2',
+    short: 'Photo 2',
+    icon: '📷',
+    blurb: 'Media step timeline, shot plan and light windows.',
+  },
+  video: {
+    id: 'video',
+    label: 'Cameraman',
+    short: 'Camera',
+    icon: '🎥',
+    blurb: 'Media step timeline, shot plan and light windows.',
+  },
+  // Legacy single-photographer role, kept for old stored values and tokens.
   photo: {
     id: 'photo',
     label: 'Photographer',
     short: 'Photo',
     icon: '📷',
-    blurb: 'Shot lists, sunset windows and Oczepini cues.',
+    blurb: 'Media step timeline, shot plan and light windows.',
   },
   speaker: {
     id: 'speaker',
@@ -46,9 +68,15 @@ export const ROLES = {
   },
 };
 
-export const ROLE_ORDER = ['mc', 'dj', 'photo', 'speaker'];
+export const MEDIA_ROLE_IDS = ['photo1', 'photo2', 'video'];
+export const ROLE_ORDER = ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'];
+
+export function isMediaRole(value) {
+  return MEDIA_ROLE_IDS.includes(value);
+}
 
 export function normalizeRole(value) {
+  if (value === 'photo') return 'photo1';
   return typeof value === 'string' && ROLES[value] ? value : 'mc';
 }
 
