@@ -7,7 +7,7 @@ export const ADMIN_ABSOLUTE_MS = 8 * 60 * 60 * 1000;
 export const ADMIN_WARNING_MS = 5 * 60 * 1000;
 export const MFA_REAUTH_WINDOW_MS = 5 * 60 * 1000;
 
-export const ROLE_IDS = ['mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'speaker'];
+export const ROLE_IDS = ['mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
 
 export function isAdminPath(pathname = '') {
   const normalized = String(pathname).replace(/\/+$/, '') || '/';

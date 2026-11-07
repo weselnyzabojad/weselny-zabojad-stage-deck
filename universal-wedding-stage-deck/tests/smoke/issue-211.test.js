@@ -47,7 +47,7 @@ describe('issue #211 development-only all-role switcher', () => {
     const deck = read('src/StageDeck.jsx');
     expect(deck).toContain('const DEV_VIEW_SWITCHER = import.meta.env.DEV;');
     expect(deck).toContain('{devViewSwitcher}');
-    expect(deck.match(/\{devViewSwitcher\}/g)?.length).toBe(4);
+    expect(deck.match(/\{devViewSwitcher\}/g)?.length).toBe(5);
   });
 
   it('does not expose the switcher through public runtime configuration', () => {

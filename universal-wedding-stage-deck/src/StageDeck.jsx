@@ -5,6 +5,7 @@ import ViewSwitchControl from './components/ViewSwitchControl';
 import RoleSignOutControl from './components/RoleSignOutControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
+import VenueManagerView from './components/VenueManagerView';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
@@ -487,6 +488,34 @@ export default function StageDeck({
             mediaOverrides={liveState.media_overrides}
             onMiniSessionOverride={(time) => setMediaOverride('miniSessionTime', time)}
             {...roleProps}
+          />
+        </AppErrorBoundary>
+        {statusBanners}
+        {devViewSwitcher}
+      </>
+    );
+  }
+
+  if (currentRole === "venue_manager") {
+    return (
+      <>
+        <AppErrorBoundary
+          scope="venue_manager"
+          weddingId={WEDDING.weddingId}
+          role={currentRole}
+          resetKey={currentRole}
+          lastKnownStep={lastKnownStep}
+        >
+          <VenueManagerView
+            wedding={WEDDING}
+            timeline={timeline}
+            clock={driftReport.clock}
+            syncStatus={displaySyncStatus}
+            syncError={syncError}
+            remoteUpdatedAt={remoteUpdatedAt}
+            outbox={outbox}
+            theme={theme}
+            onToggleTheme={toggleTheme}
           />
         </AppErrorBoundary>
         {statusBanners}
