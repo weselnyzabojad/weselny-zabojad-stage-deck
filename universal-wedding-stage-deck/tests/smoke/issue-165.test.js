@@ -45,7 +45,7 @@ const BASE_CARTRIDGE = {
     bread_salt: { status: 'TBC' },
   },
   steps: [
-    { id: 'arrival', time: '16:00', durationMin: 30, title: 'Arrival', type: 'BUFFER', location: 'Garden' },
+    { id: 'arrival', time: '16:00', durationMin: 30, title: 'Arrival', type: 'FLEXIBLE', location: 'Garden' },
   ],
 };
 

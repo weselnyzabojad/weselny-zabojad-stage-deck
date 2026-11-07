@@ -12,7 +12,7 @@
 import { addMinutesToClock } from './liveStageState.js';
 
 export function getBufferFlex(step) {
-  if (!step || step.type !== 'BUFFER') return null;
+  if (!step || step.type !== 'FLEXIBLE') return null;
 
   const plannedDurationMin = Number(step.durationMin);
   if (!Number.isFinite(plannedDurationMin) || plannedDurationMin < 0) return null;
@@ -74,7 +74,7 @@ function buildItem(entry, flex, action, adjustedDurationMin, deltaMinutes) {
 
 export function buildBufferAccordion(entries = [], driftMinutes = null) {
   const candidates = entries
-    .filter((entry) => !entry.isDone && entry.step?.type === 'BUFFER')
+    .filter((entry) => !entry.isDone && entry.step?.type === 'FLEXIBLE')
     .map((entry) => ({ entry, flex: getBufferFlex(entry.step) }))
     .filter((candidate) => candidate.flex);
 

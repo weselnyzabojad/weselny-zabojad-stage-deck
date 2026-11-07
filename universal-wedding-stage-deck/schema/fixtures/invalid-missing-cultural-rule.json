@@ -19,19 +19,15 @@
       "time": "16:30",
       "durationMin": 30,
       "title": "Arrival",
-      "type": "BUFFER",
-      "location": "Garden",
-      "buffer": {
-        "minDurationMin": 15,
-        "maxDurationMin": 45
-      }
+      "type": "FLEXIBLE",
+      "location": "Garden"
     },
     {
       "id": "step_02",
       "time": "17:30",
       "durationMin": 60,
       "title": "Ceremony",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Gazebo"
     }
   ]

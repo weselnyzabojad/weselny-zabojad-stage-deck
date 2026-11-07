@@ -22,7 +22,7 @@
       "time": "23:30",
       "durationMin": 20,
       "title": "Dance",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Hall"
     },
     {
@@ -30,7 +30,7 @@
       "time": "23:50",
       "durationMin": 20,
       "title": "Toast",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Hall"
     },
     {

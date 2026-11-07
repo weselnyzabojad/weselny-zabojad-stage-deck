@@ -271,31 +271,5 @@ export function collectSemanticErrors(cartridge) {
     );
   }
 
-  for (const [index, step] of steps.entries()) {
-    const buffer = step?.buffer;
-    if (!buffer || typeof buffer !== 'object') continue;
-    if (
-      Number.isFinite(buffer.minDurationMin) &&
-      Number.isFinite(buffer.maxDurationMin) &&
-      buffer.minDurationMin > buffer.maxDurationMin
-    ) {
-      pushError(`/steps/${index}/buffer`, 'minDurationMin cannot exceed maxDurationMin');
-    }
-    if (
-      Number.isFinite(step.durationMin) &&
-      Number.isFinite(buffer.minDurationMin) &&
-      step.durationMin < buffer.minDurationMin
-    ) {
-      pushError(`/steps/${index}/durationMin`, 'durationMin is below buffer.minDurationMin');
-    }
-    if (
-      Number.isFinite(step.durationMin) &&
-      Number.isFinite(buffer.maxDurationMin) &&
-      step.durationMin > buffer.maxDurationMin
-    ) {
-      pushError(`/steps/${index}/durationMin`, 'durationMin is above buffer.maxDurationMin');
-    }
-  }
-
   return errors;
 }

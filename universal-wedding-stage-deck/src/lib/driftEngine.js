@@ -172,8 +172,8 @@ export function buildTimeline(
       driftTone: driftTone(driftMinutes),
       isDone: completed.has(step.id),
       isActive: liveState?.active_step_id === step.id,
-      isElastic: step.type === 'ELASTIC',
-      isBuffer: step.type === 'BUFFER',
+      isElastic: step.type === 'FLEXIBLE',
+      isBuffer: step.type === 'FLEXIBLE',
       isHardAnchor: step.type === 'HARD_ANCHOR',
       projectionSource: projectionSource(step, actualStart),
     };

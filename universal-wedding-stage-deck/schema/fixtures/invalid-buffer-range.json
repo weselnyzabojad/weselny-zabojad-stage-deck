@@ -22,7 +22,7 @@
       "time": "16:30",
       "durationMin": 70,
       "title": "Bad Buffer",
-      "type": "BUFFER",
+      "type": "FLEXIBLE",
       "location": "Garden",
       "buffer": {
         "minDurationMin": 60,

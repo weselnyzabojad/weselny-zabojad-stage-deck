@@ -324,12 +324,8 @@
       "time": "16:30",
       "durationMin": 30,
       "title": "Cocktail / Vin d'honneur",
-      "type": "BUFFER",
+      "type": "FLEXIBLE",
       "location": "Garden",
-      "buffer": {
-        "minDurationMin": 15,
-        "maxDurationMin": 45
-      },
       "dj": {
         "playlist": "Garden Aperitif",
         "track": "La Vie en Rose — Édith Piaf"
@@ -340,7 +336,7 @@
       "time": "17:00",
       "durationMin": 60,
       "title": "Ceremony",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Garden Gazebo",
       "dj": {
         "playlist": "Ceremony Procession",
@@ -355,7 +351,7 @@
       "realStart": "18:25",
       "durationMin": 90,
       "title": "Grand Entrance",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Main Hall",
       "photographerCue": "Group photo before the toast",
       "isMainSongRequired": true,
@@ -441,7 +437,7 @@
       "time": "21:00",
       "durationMin": 15,
       "title": "Wedding Thank-You",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Main Hall"
     },
     {
@@ -449,7 +445,7 @@
       "time": "21:15",
       "durationMin": 30,
       "title": "Wishes",
-      "type": "BUFFER",
+      "type": "FLEXIBLE",
       "location": "Garden",
       "optionalFlag": "wishes"
     },
@@ -458,7 +454,7 @@
       "time": "21:45",
       "durationMin": 10,
       "title": "First Dance",
-      "type": "ELASTIC",
+      "type": "FLEXIBLE",
       "location": "Main Hall",
       "isMainSongRequired": true,
       "firstDanceMode": "NORMAL",
@@ -471,7 +467,7 @@
       "time": "00:00",
       "durationMin": 60,
       "title": "Oczepiny",
-      "type": "HARD_ANCHOR",
+      "type": "FLEXIBLE",
       "location": "Main Hall",
       "optionalFlag": "oczepiny"
     },
@@ -480,7 +476,7 @@
       "time": "01:00",
       "durationMin": 45,
       "title": "Games",
-      "type": "BUFFER",
+      "type": "FLEXIBLE",
       "location": "Main Hall",
       "optionalFlag": "games"
     }

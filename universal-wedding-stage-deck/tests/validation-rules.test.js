@@ -50,13 +50,14 @@ describe('semantic validation rules', () => {
     expect(messages(errors)).toContain('active step cannot also be completed');
   });
 
-  it('rejects an inverted buffer range and out-of-range duration', () => {
-    const errors = errorsFor((cartridge) => {
-      cartridge.steps[0].durationMin = 70;
-      cartridge.steps[0].buffer = { minDurationMin: 60, maxDurationMin: 30 };
-    });
-    expect(messages(errors)).toContain('minDurationMin cannot exceed maxDurationMin');
-    expect(messages(errors)).toContain('durationMin is above buffer.maxDurationMin');
+  it('rejects legacy ELASTIC and BUFFER step types', async () => {
+    for (const legacy of ['ELASTIC', 'BUFFER']) {
+      const cartridge = clone(minimal);
+      cartridge.steps[0].type = legacy;
+      const errors = await validateCartridge(cartridge);
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors.some((error) => error.message.includes('allowed values'))).toBe(true);
+    }
   });
 
   it('rejects cake serving before the cutting time', () => {

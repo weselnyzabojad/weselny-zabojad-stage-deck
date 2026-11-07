@@ -22,7 +22,7 @@ function entry(index, overrides = {}) {
       id: `step_${index}`,
       title: `Step ${index}`,
       location: `Room ${index}`,
-      type: 'ELASTIC',
+      type: 'FLEXIBLE',
       durationMin: 15,
       ...overrides.step,
     },
