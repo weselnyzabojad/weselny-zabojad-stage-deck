@@ -7,7 +7,6 @@
 
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
-import BufferAccordionCard from '../components/BufferAccordionCard';
 import CakeCard from '../components/CakeCard';
 import ContactsModal from '../components/ContactsModal';
 import CoupleIdentity from '../components/CoupleIdentity';
@@ -15,11 +14,9 @@ import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
-import HardAnchorRadar from '../components/HardAnchorRadar';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import PreWeddingChecklistCard from '../components/PreWeddingChecklistCard';
-import ReelClock from '../components/ReelClock';
 import RoleShell from '../components/RoleShell';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarClock from '../components/TopBarClock';
@@ -28,7 +25,6 @@ import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { orderSubtasks } from '../lib/subtasks.js';
 import SpeechesCard from '../components/SpeechesCard';
 import SpeechesChip from '../components/SpeechesChip';
-import StagePingControls from '../components/StagePingControls';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
 import ThemeToggle from '../components/ThemeToggle';
@@ -62,7 +58,6 @@ export default function McMasterView({ model }) {
   currentStep,
   stepTypeClass,
   estimatedEnd,
-  showDjCues,
   stepSubtasks,
   liveState,
   toggleSubtask,
@@ -78,7 +73,6 @@ export default function McMasterView({ model }) {
   speechMode,
   speeches,
   selectSpeech,
-  sendStagePing,
   isComplete,
   handleSwap,
   swapBlock,
@@ -168,7 +162,6 @@ export default function McMasterView({ model }) {
         <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
 
-      <ReelClock clock={driftReport.clock} />
       <DriftPill drift={driftReport.drift} compact />
 
       {railEntries.length > 0 ? (
@@ -190,7 +183,6 @@ export default function McMasterView({ model }) {
 
       <CakeCard cake={cakeProtocol} />
       <MusicPolicyCard policy={musicPolicy} compact />
-      <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
     </div>
   );
 
@@ -419,13 +411,9 @@ export default function McMasterView({ model }) {
             aria-label="Stage details"
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            <ReelClock clock={driftReport.clock} />
-
             <CakeCard cake={cakeProtocol} />
 
             <MusicPolicyCard policy={musicPolicy} compact />
-
-            <BufferAccordionCard accordion={driftReport.bufferAccordion} />
 
             <PreWeddingChecklistCard
               tasks={WEDDING.preWeddingTodos ?? []}
@@ -441,17 +429,6 @@ export default function McMasterView({ model }) {
               onSelect={selectSpeech}
               clock={driftReport.clock}
             />
-
-            <HardAnchorRadar radar={driftReport.hardAnchorRadar} />
-
-            {/* Silent Stage Pings to DJ (hidden in HOST_ONLY mode) */}
-            {showDjCues && (
-              <StagePingControls
-                onSend={sendStagePing}
-                lastPing={liveState.stage_ping}
-                syncStatus={syncStatus}
-              />
-            )}
           </section>
         </div>
       </main>
