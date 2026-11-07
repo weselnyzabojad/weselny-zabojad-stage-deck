@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `3ce4907` (predefined step audit alignment)
+**Aligned with:** `master` @ `1974846` (mandatory steps / Venue Manager batch)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -114,6 +114,9 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275) | Venue Manager overrides and persistent update popup |
 | [#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276) | Cake service mode on MC/Venue Manager |
 | [#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277) | Children expected boolean and global badge |
+| [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) | First guests arrival as customer-confirmed first step |
+| [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) | Time-derived timeline position in all views |
+| [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) | Wedding closure step, extension and last song |
 
 ### Responsive phone / pocket plan
 
@@ -945,6 +948,45 @@ Implementation issues:
 - [#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275) — overrides, audit and persistent popup;
 - [#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276) — cake-service mode;
 - [#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277) — children expected badge.
+
+### First arrival, time-based timeline and wedding closure (decision, 2026-11-07)
+
+**First guests arrival is customer-confirmed.** It is not a Venue Manager
+mandatory step:
+
+- confirmed only by the customer/newlyweds;
+- comes from the Google Doc and is parsed into the wedding cartridge JSON;
+- is the first timeline step before the wedding starts;
+- includes ceremony context, such as whether the ceremony is in a church or at
+  the venue;
+- removed from the Venue Manager editable mandatory panel;
+- the derived prestation-ready hour stays tied to this customer-confirmed
+  arrival.
+([#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283))
+
+**Timeline position follows current time.** All role views derive
+current/completed/upcoming from the current time and schedule:
+
+- before the wedding starts, no Completed steps UI is shown;
+- before the wedding starts, the Current step is First guests arrival;
+- during and after the event, the three zones update by time;
+- MC advance/undo must stay consistent with the derived timeline across roles.
+([#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284))
+
+**Wedding closure is the final step.** The latest displayed step is the Wedding
+closure hour:
+
+- closure data comes from the Venue Manager;
+- Venue Manager records whether the venue allows a one-hour extension;
+- extension availability is shown on MC and DJ VIP views only;
+- the customer may request a last song;
+- the last song is shown/flagged on DJ VIP only.
+([#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285))
+
+Implementation issues:
+- [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
+- [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
+- [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
