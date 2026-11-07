@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `ce0df6f` (pocket mini chips #191)
+**Aligned with:** `master` @ `921b2dc` (MC Master simplification #198–#203)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -345,7 +345,7 @@ were confirmed with the owner.
 current-step card and in the wide Reel Clock card. The current-step card is the
 one that stays; the **entire Reel Clock card is removed from the MC view**,
 including its active-step title and metrics. Reel Clock remains in DJ Booth,
-Photographer, Speaker and their pocket layouts.
+Photographer and their pocket layouts.
 
 **Speeches is the only card below the timeline.** Remove from the MC
 below-timeline area:
@@ -369,7 +369,7 @@ related tests/imports once nothing references them.
 | --- | --- | --- |
 | DJ / Audio cues | Removed | Not present |
 | Sub-tasks | Kept; renamed and reordered | Not present |
-| Reel Clock | Removed | Kept in DJ, Photographer, Speaker and pocket |
+| Reel Clock | Removed | Kept in DJ, Photographer and pocket |
 | Cake protocol | Moved into the active cake step | Not present |
 | Music Policy | Removed | Kept in DJ Booth desktop and pocket |
 | Pre-wedding Checklist | Removed | Not present |
