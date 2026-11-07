@@ -4,6 +4,7 @@ import { validateCartridge } from '../lib/cartridgeImporter';
 import {
   adminConfigured,
   archiveWedding,
+  challengeExistingFactor,
   deleteWedding,
   duplicateWedding,
   enrollTotp,
