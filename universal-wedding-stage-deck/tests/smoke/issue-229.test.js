@@ -27,8 +27,8 @@ describe('issue #229 sunset lifecycle and shared mini-session override', () => {
   it('hides the sunset card after the mini session and exposes the override form', () => {
     const photo = read('src/components/PhotographerView.jsx');
     expect(photo).toContain('miniSessionDone');
-    expect(photo).toContain('visibility.sunset && sunset?.usable && !miniSessionDone');
     expect(photo).toContain('visibility.sunset && !miniSessionDone');
+    expect(photo).not.toContain('visibility.sunset && sunset?.usable && !miniSessionDone');
     expect(photo).toContain('MiniSessionOverride');
     expect(photo).toContain('Save for all media');
   });

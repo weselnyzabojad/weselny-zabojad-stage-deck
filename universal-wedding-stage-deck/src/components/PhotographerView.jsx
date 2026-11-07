@@ -35,6 +35,31 @@ const SUNSET_STATUS = {
   UNAVAILABLE: 'border-[#ED2939]/60 bg-[#ED2939]/20 text-[#ff808a]',
 };
 
+function isEventDay(date, eventDateISO, timeZone) {
+  if (!eventDateISO) return false;
+  try {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    return formatter.format(date) === eventDateISO;
+  } catch {
+    return false;
+  }
+}
+
+// A mini session is complete only when its real window ended on the event day.
+// A stale/old event date must not hide the sunset card.
+function miniSessionCompleted(now, end, eventDateISO, timeZone) {
+  return Boolean(
+    end &&
+      now.getTime() > end.getTime() &&
+      isEventDay(now, eventDateISO, timeZone),
+  );
+}
+
 // Stable fallback so the component never calls `new Date()` during render; the
 // parent always supplies the shared reel clock.
 const FALLBACK_NOW = new Date(0);
@@ -257,7 +282,7 @@ export default function PhotographerView({
     miniSessionStart && Number.isFinite(miniSessionDuration)
       ? new Date(miniSessionStart.getTime() + miniSessionDuration * 60000)
       : null;
-  const miniSessionDone = Boolean(miniSessionEnd && now.getTime() > miniSessionEnd.getTime());
+  const miniSessionDone = miniSessionCompleted(now, miniSessionEnd, eventDateISO, timeZone);
   const planByStep = mapPhotoPlanToSteps(plan, timeline);
   const planBodies = Object.fromEntries(
     Object.entries(planByStep).map(([stepId, entries]) => [
@@ -309,35 +334,46 @@ export default function PhotographerView({
         entryBodies={cueBodies}
       />
 
-      {visibility.sunset && sunset?.usable && !miniSessionDone ? (
-        <Card title="Light windows" icon="đźŚ…">
-          <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-lg border border-line bg-page p-2.5">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? 'â€”'}</div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? 'â€”'}</div>
+      {visibility.sunset && !miniSessionDone ? (
+        <Card title="Light windows" icon="🌅">
+          {!sunset?.usable ? (
+            <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
+              <p className="font-semibold">Sunset unavailable — check connection.</p>
+              <p className="mt-1 text-[11px] text-slate-400">
+                The card stays visible; refresh the cartridge after the online lookup succeeds.
+              </p>
             </div>
-            <div className="rounded-lg border border-line bg-page p-2.5">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500">Golden hour</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? 'â€”'}</div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? 'â€”'}</div>
-            </div>
-            <div className="rounded-lg border border-line bg-page p-2.5">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500">Civil twilight</div>
-              <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? 'â€”'}</div>
-            </div>
-            <div className="rounded-lg border border-line bg-page p-2.5">
-              <div className="text-[9px] uppercase tracking-wider text-slate-500">Mini latest start</div>
-              <div className="font-mono text-xl font-bold text-ink">
-                {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : 'â€”'}
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="rounded-lg border border-line bg-page p-2.5">
+                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
+                  <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? '—'}</div>
+                </div>
+                <div className="rounded-lg border border-line bg-page p-2.5">
+                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Golden hour</div>
+                  <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? '—'}</div>
+                </div>
+                <div className="rounded-lg border border-line bg-page p-2.5">
+                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Civil twilight</div>
+                  <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
+                </div>
+                <div className="rounded-lg border border-line bg-page p-2.5">
+                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Mini latest start</div>
+                  <div className="font-mono text-xl font-bold text-ink">
+                    {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
+                  </div>
+                  <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? '—'}</div>
+                </div>
               </div>
-              <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? 'â€”'}</div>
-            </div>
-          </div>
-          <MiniSessionOverride
-            value={miniSessionOverride}
-            onSave={onMiniSessionOverride}
-          />
+              <MiniSessionOverride
+                value={miniSessionOverride}
+                onSave={onMiniSessionOverride}
+              />
+            </>
+          )}
         </Card>
       ) : null}
 
