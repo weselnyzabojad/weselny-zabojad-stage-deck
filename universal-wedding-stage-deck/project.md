@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `e682c90` (media/speaker/DJ refinements #242–#247)
+**Aligned with:** `master` @ `ecfecee` (media/speaker/DJ refinements alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -97,6 +97,9 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker: dedicated speech cartridge TODO |
 | [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) | DJ: remove ZAIKS/licensing from Music Policy |
 | [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) | Media/Speaker: remove duplicate top-left role label |
+| [#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253) | Top bar: shared layout, clock size and spacing |
+| [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) | Top bar center: ring logo, language and date rows |
+| [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) | Top bar center: localized weekday |
 
 ### Responsive phone / pocket plan
 
@@ -717,6 +720,45 @@ Implementation issues:
 - [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) — dedicated speech cartridge TODO;
 - [#246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/246) — remove ZAIKS/licensing UI;
 - [#247](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/247) — single role identity element.
+
+### Unified top bar design (decision, 2026-11-07)
+
+Every role view uses the same top-bar shell, spacing and centered identity
+layout. Role-specific controls stay role-gated; the visual design must not drift
+between roles or between desktop and pocket.
+
+**Shared shell.**
+
+- One shared three-zone structure: left (logo, clock, role), center (couple and
+  date), right (role controls).
+- The clock is visibly larger and the same size in every role.
+- Increase spacing between elements and align vertical centering/padding.
+- DJ Standard keeps its restricted controls (Sync, language, theme only) while
+  using the same shell. DJ VIP, MC, Photographer 1/2 and Cameraman keep their
+  approved matrices; Speaker keeps its approved controls.
+([#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253))
+
+**Center identity layout.**
+
+- Top row: person 1 first name + flag, **ring logo**, person 2 first name + flag.
+- The ring logo replaces the current "&" separator.
+- Bottom row: language information (couple/shared languages).
+- Bottom row: event date data.
+- The block stays horizontally centered and uses the cartridge event date.
+([#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254))
+
+**Localized date.**
+
+- The event date row includes the weekday: for example "Monday 7 November 2026".
+- The weekday and date format follow the current UI locale through the existing
+  i18n/`Intl.DateTimeFormat` path; no hardcoded English weekday names.
+- EN, FR and PL must all render correctly.
+([#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255))
+
+Implementation issues:
+- [#253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/253) — shared top-bar shell, clock and spacing;
+- [#254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/254) — center ring/language/date layout;
+- [#255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/255) — localized weekday.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
