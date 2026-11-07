@@ -472,10 +472,7 @@ export default function McMasterView({ model }) {
       />
 
       {hasAnchorWarning ? (
-        <HardAnchorAlertBanner
-          radar={driftReport.hardAnchorRadar}
-          childrenExpected={childrenExpected}
-        />
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
 
       {/* ================= STAGE RAIL + DETAILS ================= */}
