@@ -4,7 +4,7 @@
 **Decision:** remove the separate **Pocket** role and give every role a classy,
 phone-first layout on small screens. Laptop/tablet keeps the full layout.
 MC's phone layout allows **advance, undo and drift check**; DJ, Photographer
-and Speaker stay read-only. `/deck/admin` stays desktop-first.
+and Speaker stay read-only. `/deck/admin` is laptop/desktop-only (mobile restriction tracked in #337).
 
 Each `P-NN` section below maps to one GitHub issue. Suggested branch names:
 `p-01-remove-pocket-role`, `p-02-responsive-role-shell`, `p-03-mc-phone-layout`,
