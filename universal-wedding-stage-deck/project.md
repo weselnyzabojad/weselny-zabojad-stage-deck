@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `e61bb15` (DJ song info and dev switcher alignment)
+**Aligned with:** `master` @ `3ce4907` (predefined step audit alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -109,6 +109,11 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) | Predefined steps: add Thank-You, Wishes, Oczepiny, Games, First Dance |
 | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | TODO: rework and define each predefined step |
 | [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) | Predefined steps: repeated-concept audit |
+| [#273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/273) | Mandatory steps: first arrival, prep-ready and kitchen service hours |
+| [#274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/274) | Venue Manager role and editable mandatory panel |
+| [#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275) | Venue Manager overrides and persistent update popup |
+| [#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276) | Cake service mode on MC/Venue Manager |
+| [#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277) | Children expected boolean and global badge |
 
 ### Responsive phone / pocket plan
 
@@ -882,6 +887,64 @@ Implementation issues:
 - [#262](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/262) — new predefined steps;
 - [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) — precise step-rework TODO;
 - [#264](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/264) — repeated-concept audit.
+
+### Mandatory steps, Venue Manager and children (decision, 2026-11-07)
+
+**Mandatory steps.** Add mandatory milestones separate from regular and
+predefined steps. These must fit exactly into the plan:
+
+- **First guests arrival**.
+- **Prestation ready hour** — derived as exactly 1 hour before first guests
+  arrival.
+- **Kitchen service hours** — obiad weselny, pierwsza kolacja, druga kolacja,
+  and optional trzecia kolacja.
+
+Initial values may come from the venue manager or customer through the parsed
+Google Doc cartridge. They are exact-hour obligations, not elastic steps. Only
+the Venue Manager role may change them at runtime.
+([#273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/273))
+
+**Venue Manager role.** Add a new role with its own PIN and QR card, available
+on **laptop and pocket**:
+
+- shows the MC Master step timeline **read-only**;
+- shows an editable mandatory panel for first arrival, derived prep-ready hour,
+  the kitchen service times, third-supper enable/time and cake-service mode;
+- only the Venue Manager can edit that panel;
+- no MC advance/undo/script controls.
+([#274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/274))
+
+**Venue Manager overrides.** Google Doc values are the initial source; Venue
+Manager edits override them in shared/cartridge data so every user is aware.
+Every override is audited (actor, field, old value, new value, timestamp). After
+an override, every connected role **except Venue Manager** shows a popup
+announcing the change. The popup does not auto-close; the user must acknowledge
+it. Duplicate/replayed revisions must not spawn duplicate popups.
+([#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275))
+
+**Wedding cake service mode.** Venue Manager chooses between:
+
+- **Kitchen return** — service takes the cake to the kitchen and returns plated
+  pieces;
+- **Cut in place** — service cuts at the original cake spot and guests are asked
+  to come there for a piece.
+
+MC Master shows the current mode and an appropriate announcement cue.
+([#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276))
+
+**Children expected.** Retrieve a boolean `childrenExpected` from the Google Doc
+into the cartridge. If false, no action. If true, show a global persistent badge
+on MC, Photographer 1, Photographer 2 and Cameraman views on laptop and pocket.
+Per the confirmed decision, show only the global badge for now — no per-step
+warnings yet.
+([#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277))
+
+Implementation issues:
+- [#273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/273) — mandatory-step model;
+- [#274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/274) — Venue Manager role/view;
+- [#275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/275) — overrides, audit and persistent popup;
+- [#276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/276) — cake-service mode;
+- [#277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/277) — children expected badge.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
