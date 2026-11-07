@@ -408,7 +408,7 @@ export default function StageDeck({
     </>
   );
 
-  if (currentRole === "dj") {
+  if (currentRole === "dj" || currentRole === "dj_standard") {
     return (
       <>
         <AppErrorBoundary
@@ -428,7 +428,10 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
-            servicePackage={WEDDING.servicePackage}
+            servicePackage={
+              currentRole === 'dj_standard' ? 'HOST_AND_DJ_STANDARD' : WEDDING.servicePackage
+            }
+            role={currentRole === 'dj_standard' ? 'dj' : role}
             theme={theme}
             onToggleTheme={toggleTheme}
             songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
