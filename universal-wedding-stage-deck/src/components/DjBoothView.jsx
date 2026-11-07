@@ -191,18 +191,12 @@ export default function DjBoothView({
         />
       ) : null}
 
-      <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
-        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
-          📋 Projected timeline
-        </h2>
-        <TimelineFocusStack
-          compact
-          className="mt-2"
-          entries={timeline}
-          activeIndex={activeIndex}
-          currentBody={djCurrentBody}
-        />
-      </section>
+      <TimelineFocusStack
+        compact
+        entries={timeline}
+        activeIndex={activeIndex}
+        currentBody={djCurrentBody}
+      />
 
       <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
 
@@ -287,20 +281,14 @@ export default function DjBoothView({
             />
           ) : null}
 
-          <div className="grid gap-4 lg:grid-cols-3">
-            <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg lg:col-span-2">
-              <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
-                📋 Projected timeline
-              </h2>
-              <TimelineFocusStack
-                className="mt-3"
-                entries={timeline}
-                activeIndex={activeIndex}
-                currentBody={djCurrentBody}
-              />
-            </section>
+          <TimelineFocusStack
+            entries={timeline}
+            activeIndex={activeIndex}
+            currentBody={djCurrentBody}
+          />
 
-            <aside className="space-y-4">
+          <div className="grid gap-4 lg:grid-cols-3">
+            <aside className="space-y-4 lg:col-span-3">
               <CutoffStopwatchCard timeline={timeline} clock={clock} wedding={wedding} />
 
               {isVip ? (
