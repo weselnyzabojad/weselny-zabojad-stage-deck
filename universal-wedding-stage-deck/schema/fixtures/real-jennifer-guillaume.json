@@ -96,13 +96,6 @@
       "kind": "VENDOR"
     },
     {
-      "id": "sunset",
-      "time": "21:10",
-      "label": "Sunset Window",
-      "alertBeforeMin": 30,
-      "kind": "SUNSET"
-    },
-    {
       "id": "ocsepiny",
       "time": "00:00",
       "label": "Oczepiny (Exact)",

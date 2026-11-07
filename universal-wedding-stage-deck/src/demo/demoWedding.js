@@ -214,7 +214,6 @@ export const DEMO_WEDDING = {
   },
   hardAnchors: [
     { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
-    { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
   childrenExpected: true,
