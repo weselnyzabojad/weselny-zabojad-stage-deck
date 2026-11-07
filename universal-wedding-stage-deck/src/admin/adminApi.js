@@ -222,6 +222,25 @@ export async function listDriveSources({ query = '', pageToken = null, pageSize 
   return callAdminDrive('list', { query, pageToken, pageSize });
 }
 
+export async function listDriveChildren({
+  parentId,
+  name = '',
+  nameContains = '',
+  mimeType = undefined,
+  pageToken = null,
+  pageSize = 100,
+} = {}) {
+  if (ADMIN_DEMO) return { files: [], nextPageToken: null };
+  return callAdminDrive('children', {
+    parentId,
+    name,
+    nameContains,
+    ...(mimeType ? { mimeType } : {}),
+    pageToken,
+    pageSize,
+  });
+}
+
 export async function previewDriveSource(fileId) {
   if (ADMIN_DEMO) throw new Error('Google Drive preview is unavailable in demo mode.');
   return callAdminDrive('preview', { fileId });

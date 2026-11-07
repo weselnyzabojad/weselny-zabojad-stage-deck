@@ -246,7 +246,7 @@ describe('issue #169 admin-only UI wiring', () => {
 
   it('adds list and preview actions to the admin_drive function', () => {
     const source = read('supabase/functions/admin_drive/index.ts');
-    expect(source).toContain("'status', 'metadata', 'list', 'preview', 'check'");
+    expect(source).toContain("'status', 'metadata', 'list', 'children', 'preview', 'check'");
     expect(source).toContain('connector.listFiles');
     expect(source).toContain('connector.readSource');
     expect(source).toContain('files: result.files');

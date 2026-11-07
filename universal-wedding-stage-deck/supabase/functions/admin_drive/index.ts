@@ -83,8 +83,20 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const action = typeof body?.action === 'string' ? body.action : '';
-    if (!['status', 'metadata', 'list', 'preview', 'check'].includes(action)) {
+    if (!['status', 'metadata', 'list', 'children', 'preview', 'check'].includes(action)) {
       return json({ error: 'Unsupported Drive action.' }, 400);
+    }
+
+    if (action === 'children') {
+      const result = await connector.listChildren({
+        parentId: typeof body?.parentId === 'string' ? body.parentId : '',
+        name: typeof body?.name === 'string' ? body.name : '',
+        nameContains: typeof body?.nameContains === 'string' ? body.nameContains : '',
+        mimeType: typeof body?.mimeType === 'string' ? body.mimeType : undefined,
+        pageToken: typeof body?.pageToken === 'string' ? body.pageToken : null,
+        pageSize: body?.pageSize,
+      });
+      return json(result);
     }
 
     if (action === 'list') {

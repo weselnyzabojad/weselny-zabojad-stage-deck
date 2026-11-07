@@ -13,6 +13,7 @@ import {
 } from '../lib/googleDocTemplate';
 import { googleDocTemplateToCartridge } from '../lib/googleDocCartridge';
 import { diffCartridges } from '../lib/cartridgeDiff';
+import AdminWeddingFolders from './AdminWeddingFolders';
 
 async function hashSourceText(text) {
   if (typeof crypto === 'undefined' || !crypto.subtle) return null;
@@ -227,7 +228,9 @@ export default function AdminDrivePanel({
   };
 
   return (
-    <section className="space-y-3 rounded-xl border border-line bg-card p-4">
+    <>
+      <AdminWeddingFolders />
+      <section className="space-y-3 rounded-xl border border-line bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="font-heading text-sm font-bold text-white">Google Drive source</h2>
@@ -509,6 +512,7 @@ export default function AdminDrivePanel({
           )}
         </div>
       ) : null}
-    </section>
+      </section>
+    </>
   );
 }
