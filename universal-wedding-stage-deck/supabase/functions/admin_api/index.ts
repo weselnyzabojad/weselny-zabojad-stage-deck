@@ -45,6 +45,12 @@ const driveConnector = createGoogleDriveConnector({
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
 });
 
+async function sha256Text(value: string) {
+  const bytes = new TextEncoder().encode(String(value ?? ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
 const DESTRUCTIVE_ACTIONS = new Set([
   'archive',
   'delete',
@@ -319,15 +325,14 @@ Deno.serve(async (req) => {
         throw error;
       }
 
-      if (source.kind !== 'json') {
+      if (!['json', 'google_doc'].includes(source.kind)) {
         await writeAudit(admin, allowlisted, 'publish_drive_failed', weddingId, {
-          error: 'Drive Google Doc sources cannot be published until the v1.2 cartridge mapping is approved.',
+          error: 'Unsupported Drive source kind.',
           fileId,
         });
         return json(
           {
-            error:
-              'Drive Google Doc sources cannot be published until the v1.2 cartridge mapping is approved. Publish a cartridge JSON source instead.',
+            error: 'Only cartridge JSON files and native Google Docs can be published.',
             code: 'drive_doc_publish_unsupported',
           },
           400,
@@ -359,10 +364,39 @@ Deno.serve(async (req) => {
       }
 
       let cartridge;
-      try {
-        cartridge = JSON.parse(source.text);
-      } catch {
-        return json({ error: 'The Drive JSON source is not valid JSON.' }, 422);
+      if (source.kind === 'json') {
+        try {
+          cartridge = JSON.parse(source.text);
+        } catch {
+          return json({ error: 'The Drive JSON source is not valid JSON.' }, 422);
+        }
+      } else {
+        const submitted = body?.cartridge;
+        const expectedHash = typeof body?.sourceTextHash === 'string' ? body.sourceTextHash.trim() : '';
+        if (!submitted || typeof submitted !== 'object' || Array.isArray(submitted)) {
+          return json({ error: 'A mapped cartridge is required for Google Doc sources.' }, 400);
+        }
+        if (!expectedHash) {
+          return json({ error: 'A source text hash is required for Google Doc sources.' }, 400);
+        }
+        const actualHash = await sha256Text(source.text);
+        if (actualHash !== expectedHash) {
+          await writeAudit(admin, allowlisted, 'publish_drive_failed', weddingId, {
+            error: 'Drive source text changed after preview.',
+            fileId,
+            expectedHash,
+            actualHash,
+          });
+          return json(
+            {
+              error: 'The Drive source changed after preview. Preview it again before publishing.',
+              code: 'drive_source_changed',
+              file: source.file,
+            },
+            409,
+          );
+        }
+        cartridge = submitted;
       }
 
       const { response } = await handlePublish(
@@ -379,7 +413,7 @@ Deno.serve(async (req) => {
             retrievedAt: source.retrievedAt,
           }),
         },
-        { source: 'drive_json' },
+        { source: source.kind === 'json' ? 'drive_json' : 'drive_google_doc' },
       );
       return response;
     }
