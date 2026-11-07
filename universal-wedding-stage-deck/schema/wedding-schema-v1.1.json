@@ -256,7 +256,40 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "enabled": { "type": "boolean" }
+        "enabled": { "type": "boolean" },
+        "questionLists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "title"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "title": { "type": "string", "minLength": 1 },
+              "sourceDocId": { "type": "string" },
+              "status": { "enum": ["AVAILABLE", "MISSING", "UNAVAILABLE"] },
+              "questions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["id"],
+                  "properties": {
+                    "id": { "type": "string", "minLength": 1 },
+                    "prompt": {
+                      "type": ["string", "object"],
+                      "additionalProperties": { "type": "string" }
+                    },
+                    "answer": {
+                      "type": ["string", "object"],
+                      "additionalProperties": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "cake": {

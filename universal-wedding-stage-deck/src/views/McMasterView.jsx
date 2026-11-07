@@ -10,6 +10,7 @@ import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
 import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
+import GamesCueCard from '../components/GamesCueCard';
 import ContactsModal from '../components/ContactsModal';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
@@ -134,6 +135,9 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
+      {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
+        <GamesCueCard wedding={WEDDING} role="mc" />
+      ) : null}
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -245,6 +249,9 @@ export default function McMasterView({ model }) {
       {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
+      ) : null}
+      {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
+        <GamesCueCard wedding={WEDDING} role="mc" />
       ) : null}
 
       {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (

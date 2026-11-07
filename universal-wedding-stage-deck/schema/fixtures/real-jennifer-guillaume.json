@@ -748,7 +748,30 @@
     "enabled": true
   },
   "games": {
-    "enabled": true
+    "enabled": true,
+    "questionLists": [
+      {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "sourceDocId": "gdoc_test_wiedzy",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "w01",
+            "prompt": {
+              "PL": "Gdzie poznali się Jennifer i Guillaume?",
+              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              "EN": "Where did Jennifer and Guillaume first meet?"
+            },
+            "answer": {
+              "PL": "W Krakowie",
+              "FR": "À Cracovie",
+              "EN": "In Kraków"
+            }
+          }
+        ]
+      }
+    ]
   },
   "mandatorySteps": {
     "firstGuestsArrival": "15:30",
