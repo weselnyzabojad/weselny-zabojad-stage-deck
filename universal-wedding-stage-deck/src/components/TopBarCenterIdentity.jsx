@@ -84,7 +84,7 @@ export default function TopBarCenterIdentity({ wedding, compact = false }) {
               <span
                 aria-hidden="true"
                 title="Wedding rings"
-                className={`inline-flex items-center justify-center ${compact ? 'text-sm' : 'text-base'}`}
+                className="inline-flex items-center justify-center text-2xl"
               >
                 💍
               </span>
