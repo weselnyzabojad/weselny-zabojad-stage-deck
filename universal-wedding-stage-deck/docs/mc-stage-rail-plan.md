@@ -26,9 +26,9 @@ The **Stage Rail** turns the timeline into the primary object:
 ```text
         DONE (past)                NOW (hero)                 UPCOMING (next)
   ┌───────────────────┐   ┌─────────────────────────┐   ┌───────────────────┐
-  │ ✓ step 03  ▸      │   │  ●  ELASTIC STEP        │   │  step 05      ▸   │
-  │   step 02  ▸      │───│  Buffets Open &         │───│  step 06      ▸   │
-  │   step 01  ▸      │   │  Dance Floor            │   │  step 07      ▸   │
+  │ ✓ step 03  ▸      │   │  ●  FLEXIBLE STEP       │   │  step 05      ▸   │
+  │   step 02  ▸      │───│  Cocktail /             │───│  step 06      ▸   │
+  │   step 01  ▸      │   │  Vin d’honneur          │   │  step 07      ▸   │
   └───────────────────┘   │  📍 Ballroom            │   └───────────────────┘
       accordion           │  19:42 → 20:30          │       accordion
       (collapsed)         │  [ MC cues / subtasks ] │       (collapsed)
@@ -149,14 +149,16 @@ variables unless a token is genuinely missing.
 
 - MC cues, catering sub-tasks, teleprompter and game launchers remain inside the
   hero body.
-- Sidebar cards (ReelClock, Cake, Music policy, Buffer accordion, Pre-wedding
-  checklist, Event admin, Speeches, Hard-anchor radar, Stage pings) remain in the
-  right column beneath the rail on wide screens.
+- Sidebar cards (ReelClock, Cake, Music policy, Pre-wedding checklist, Event
+  admin, Speeches, Hard-anchor radar, Stage pings) remain in the right column
+  beneath the rail on wide screens. The buffer accordion was removed with the
+  legacy step types.
 - Footer drift controls, undo toast and hold-to-advance are unchanged.
 - The **PEEK NEXT** sidebar card is removed once the upcoming rail ships, to
   avoid duplicating the next step.
 - DJ, Photographer and Speaker views are untouched.
-- `/deck/admin` remains desktop-first.
+- `/deck/admin` is laptop/desktop-only (mobile access restriction tracked in
+  [#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337)).
 
 ---
 
