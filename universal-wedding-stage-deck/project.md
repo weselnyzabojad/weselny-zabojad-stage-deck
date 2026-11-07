@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `921b2dc` (MC Master simplification #198–#203)
+**Aligned with:** `master` @ `44da382` (role view switching #210–#211)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
