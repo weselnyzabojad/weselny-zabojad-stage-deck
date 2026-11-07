@@ -314,6 +314,40 @@ export default function McMasterView({ model }) {
     </div>
   ) : null;
 
+  const hasAnchorWarning = driftReport.hardAnchorRadar.hasWarning;
+  const pinControl = (
+    <button
+      type="button"
+      onClick={handleUnpair}
+      title={
+        IS_PRODUCTION
+          ? 'Sign out of this role'
+          : 'Paired room PIN — click to forget this device'
+      }
+      className="text-slate-400 hover:text-white transition"
+    >
+      {IS_PRODUCTION ? (
+        <>
+          ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
+          <span className="ml-1 text-[10px]">🔐</span>
+        </>
+      ) : (
+        <>
+          PIN: <strong className="text-white">{pairing.pin}</strong>
+          <span className="ml-1 text-[10px]">🔓</span>
+        </>
+      )}
+    </button>
+  );
+  const syncControl = (
+    <SyncStatusBadge
+      status={syncStatus}
+      error={syncError}
+      remoteUpdatedAt={remoteUpdatedAt}
+      outbox={outbox}
+    />
+  );
+
   const wideContent = (
     <>
       <SkipLink />
@@ -347,29 +381,12 @@ export default function McMasterView({ model }) {
           </div>
           <div className="flex w-full flex-wrap items-center justify-start gap-2 xl:justify-end">
             <DriftPill drift={driftReport.drift} />
-            <button
-              type="button"
-              onClick={handleUnpair}
-              title={
-                IS_PRODUCTION
-                  ? 'Sign out of this role'
-                  : 'Paired room PIN — click to forget this device'
-              }
-              className="text-slate-400 hover:text-white transition"
-            >
-              {IS_PRODUCTION ? (
-                <>
-                  ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
-                  <span className="ml-1 text-[10px]">🔐</span>
-                </>
-              ) : (
-                <>
-                  PIN: <strong className="text-white">{pairing.pin}</strong>
-                  <span className="ml-1 text-[10px]">🔓</span>
-                </>
-              )}
-            </button>
-            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
+            {hasAnchorWarning ? null : (
+              <>
+                {pinControl}
+                {syncControl}
+              </>
+            )}
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
@@ -381,8 +398,16 @@ export default function McMasterView({ model }) {
           vendor Contacts. Their modals and data flow stay wired below; only the
           top-bar buttons were removed. Cartridge import is admin-only. */}
 
-      {driftReport.hardAnchorRadar.hasWarning ? (
-        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
+      {hasAnchorWarning ? (
+        <HardAnchorAlertBanner
+          radar={driftReport.hardAnchorRadar}
+          actions={(
+            <>
+              {pinControl}
+              {syncControl}
+            </>
+          )}
+        />
       ) : null}
 
       {/* ================= STAGE RAIL + DETAILS ================= */}

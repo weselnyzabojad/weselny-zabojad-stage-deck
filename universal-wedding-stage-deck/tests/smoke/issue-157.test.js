@@ -21,14 +21,16 @@ describe('issue #157 MC top bar simplification', () => {
     for (const control of [
       '<CulturalRulesBar',
       '<DriftPill',
-      'handleUnpair',
-      '<SyncStatusBadge',
+      '{pinControl}',
+      '{syncControl}',
       '<OpenOnPhoneButton',
       '<LanguageToggle',
       '<ThemeToggle',
     ]) {
       expect(header, control).toContain(control);
     }
+    expect(mc).toContain('onClick={handleUnpair}');
+    expect(mc).toContain('<SyncStatusBadge');
   });
 
   it('removes VIP Radar, placeholder Import and Contacts from the top bar', () => {
