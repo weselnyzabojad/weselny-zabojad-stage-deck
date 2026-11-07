@@ -41,6 +41,7 @@ function FocusZone({
   onCollapse,
   compact,
   zoneScroll,
+  entryBodies,
 }) {
   return (
     <section
@@ -79,7 +80,9 @@ function FocusZone({
                   collapsible
                   expanded={openKey === key}
                   onToggle={() => onToggle(zone, key)}
-                />
+                >
+                  {entryBodies?.[key] ?? null}
+                </StageStepCard>
               </li>
             );
           })}
@@ -108,6 +111,7 @@ export default function TimelineFocusStack({
   labels = {},
   className = '',
   zoneScroll = true,
+  entryBodies = null,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
@@ -156,6 +160,7 @@ export default function TimelineFocusStack({
           onCollapse={() => collapse('history')}
           compact={compact}
           zoneScroll={zoneScroll}
+          entryBodies={entryBodies}
         />
       </div>
 
@@ -178,6 +183,7 @@ export default function TimelineFocusStack({
               style={{ zIndex: 30 }}
             >
               <StageStepCard entry={stack.current} variant="current">
+                {entryBodies?.[stack.current.step?.id] ?? null}
                 {currentBody}
               </StageStepCard>
             </div>
@@ -201,6 +207,7 @@ export default function TimelineFocusStack({
           onCollapse={() => collapse('future')}
           compact={compact}
           zoneScroll={zoneScroll}
+          entryBodies={entryBodies}
         />
       </div>
     </section>
