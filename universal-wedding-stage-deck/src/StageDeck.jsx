@@ -310,6 +310,7 @@ export default function StageDeck({
   const musicPolicy = resolveMusicPolicy(WEDDING, now, {
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
+    timeline,
   });
   const speechMode = resolveSpeechMode(WEDDING, speeches);
   const mandatorySettings =

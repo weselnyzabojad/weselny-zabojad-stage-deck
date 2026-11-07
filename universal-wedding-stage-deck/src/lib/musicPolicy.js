@@ -102,7 +102,42 @@ function resolveRequestStatus({ requestsOpen, start, end, now, eventDateISO, tim
   };
 }
 
-export function resolveMusicPolicy(wedding, now = new Date(), { eventDateISO = null, timeZone = 'UTC' } = {}) {
+function resolveMainSongs(timeline, importantSongs) {
+  const entries = Array.isArray(timeline) ? timeline : [];
+  const songs = Array.isArray(importantSongs) ? importantSongs : [];
+  const seenSteps = new Set();
+
+  return entries
+    .map((entry) => (entry?.step && typeof entry.step === 'object' ? entry.step : entry))
+    .filter((step) => step && typeof step === 'object' && step.isMainSongRequired === true)
+    .filter((step) => {
+      const id = text(step.id);
+      if (!id || seenSteps.has(id)) return false;
+      seenSteps.add(id);
+      return true;
+    })
+    .map((step, index) => {
+      const song = songs.find((candidate) => candidate?.stepId === step.id) ?? null;
+      const title = text(song?.title);
+      const artist = text(song?.artist);
+      return {
+        id: text(step.id) ?? `main_${index + 1}`,
+        stepId: step.id,
+        stepTitle: text(step.title) ?? text(step.id) ?? 'Main song',
+        moment: song?.moment ?? null,
+        title,
+        artist,
+        track: trackLabel(title, artist),
+        missing: !title && !artist,
+      };
+    });
+}
+
+export function resolveMusicPolicy(
+  wedding,
+  now = new Date(),
+  { eventDateISO = null, timeZone = 'UTC', timeline = [] } = {},
+) {
   const policy = wedding?.musicPolicy && typeof wedding.musicPolicy === 'object'
     ? wedding.musicPolicy
     : null;
@@ -115,6 +150,7 @@ export function resolveMusicPolicy(wedding, now = new Date(), { eventDateISO = n
 
   const mustPlay = resolveMustPlay(policy, importantById);
   const doNotPlay = resolveDoNotPlay(policy);
+  const mainSongs = resolveMainSongs(timeline, getImportantSongs(wedding));
 
   const requestsOpen =
     typeof policy?.requestsOpen === 'boolean' ? policy.requestsOpen : null;
@@ -138,12 +174,13 @@ export function resolveMusicPolicy(wedding, now = new Date(), { eventDateISO = n
         requestsOpen !== null ||
         cleanVersions !== null ||
         licensing),
-  );
+  ) || mainSongs.length > 0;
 
   return {
     hasData,
     mustPlay,
     doNotPlay,
+    mainSongs,
     requestsOpen,
     requestWindow,
     requestStatus,
