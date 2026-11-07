@@ -258,7 +258,7 @@ describe('MC dashboard rail integration (#119)', () => {
     expect(source).toContain('railActiveIndex');
     expect(source).toContain('<TimelineFocusStack');
     expect(source).toContain('currentBody={heroBody}');
-    expect(source).toContain('Catering & Sub-Tasks');
+    expect(source).toContain('📋 Sub-tasks');
     expect(source).not.toContain('MAIN DASHBOARD (70% / 30% SPLIT)');
   });
 });

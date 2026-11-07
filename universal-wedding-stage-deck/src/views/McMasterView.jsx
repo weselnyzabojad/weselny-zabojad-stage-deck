@@ -25,6 +25,7 @@ import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
+import { orderSubtasks } from '../lib/subtasks.js';
 import SpeechesCard from '../components/SpeechesCard';
 import SpeechesChip from '../components/SpeechesChip';
 import StagePingControls from '../components/StagePingControls';
@@ -245,14 +246,14 @@ export default function McMasterView({ model }) {
 
       {stepSubtasks.length > 0 ? (
         <div className="bg-page/70 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Catering & Sub-Tasks</h3>
+          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Sub-tasks</h3>
           <div className="space-y-2">
-            {stepSubtasks.map((task) => {
+            {orderSubtasks(stepSubtasks, liveState.checked_subtasks).map((task) => {
               const checked = Boolean(liveState.checked_subtasks[task]);
               return (
                 <label
                   key={task}
-                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/30 border border-brand/60 text-slate-200' : 'bg-card border border-line text-slate-300 hover:border-line-strong'}`}
+                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-slate-400' : 'bg-card border border-line text-slate-200 hover:border-line-strong'}`}
                 >
                   <input
                     type="checkbox"
@@ -260,7 +261,15 @@ export default function McMasterView({ model }) {
                     onChange={() => toggleSubtask(task)}
                     className="w-4 h-4 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
                   />
-                  <span className={`text-sm ${checked ? 'line-through text-slate-400' : ''}`}>{task}</span>
+                  <span className={`text-sm ${checked ? 'line-through' : ''}`}>{task}</span>
+                  {checked ? (
+                    <span
+                      aria-hidden="true"
+                      className="ml-auto rounded border border-brand/40 bg-brand/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint"
+                    >
+                      ✓
+                    </span>
+                  ) : null}
                 </label>
               );
             })}
