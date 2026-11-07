@@ -9,7 +9,7 @@ describe('issue #243 remove Speaker timeline', () => {
     expect(speaker).not.toContain('>Timeline<');
   });
   it('keeps the assigned speech view', () => {
-    expect(speaker).toContain('Now speaking');
+    expect(speaker).toContain("t('speaker.nowSpeaking')");
     expect(speaker).toContain('activeSpeech.script.text');
   });
 });

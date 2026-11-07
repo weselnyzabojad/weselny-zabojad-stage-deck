@@ -5,7 +5,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 describe('issue #244 reduced Now speaking card', () => {
   const speaker = read('src/components/SpeakerView.jsx');
   it('keeps only label, name and relationship', () => {
-    expect(speaker).toContain('Now speaking');
+    expect(speaker).toContain("t('speaker.nowSpeaking')");
     expect(speaker).toContain('activeSpeech.speaker.name');
     expect(speaker).toContain('activeSpeech.speaker.relationship');
   });

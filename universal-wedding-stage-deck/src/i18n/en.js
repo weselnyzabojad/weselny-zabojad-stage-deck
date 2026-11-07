@@ -307,6 +307,12 @@ const en = {
   'pairing.errorDigits': 'Enter all four digits.',
   'pairing.errorGeneric': 'Could not pair this device. Try again.',
   'pairing.errorIncorrect': 'Incorrect PIN.',
+
+  'clock.currentTime': 'Current time',
+  'speaker.nowSpeaking': 'Now speaking',
+  'speaker.scriptMissingTitle': 'Script not provided yet',
+  'speaker.scriptMissingBody': 'Check with the MC; the text can still be added to the cartridge.',
+  'speaker.footer': 'Read-only script · only the assigned speech is shown · no timeline controls',
 };
 
 export default en;

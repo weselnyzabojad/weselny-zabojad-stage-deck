@@ -130,7 +130,7 @@ export default function SpeakerView({
           <div className="space-y-4">
             <section className="rounded-2xl border border-brand-strong/50 bg-card p-4 shadow-lg">
               <div className="font-mono text-[10px] uppercase tracking-widest text-brand-soft">
-                Now speaking
+                {t('speaker.nowSpeaking')}
               </div>
               <h1 className="mt-0.5 font-heading text-2xl font-bold text-ink">
                 {activeSpeech.speaker.name}
@@ -148,10 +148,10 @@ export default function SpeakerView({
               ) : (
                 <div className="rounded-xl border border-amber-800 bg-amber-950/40 p-4 text-center">
                   <p className="font-heading text-sm font-semibold text-amber-200">
-                    Script not provided yet
+                    {t('speaker.scriptMissingTitle')}
                   </p>
                   <p className="mt-1 text-xs text-slate-400">
-                    Check with the MC; the text can still be added to the cartridge.
+                    {t('speaker.scriptMissingBody')}
                   </p>
                 </div>
               )}
@@ -215,7 +215,7 @@ export default function SpeakerView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-slate-500">
-        Read-only script Â· only the assigned speech is shown Â· no timeline controls
+        {t('speaker.footer')}
       </footer>
     </div>
   );

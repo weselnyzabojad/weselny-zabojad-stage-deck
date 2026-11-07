@@ -307,6 +307,12 @@ const pl = {
   'pairing.errorDigits': 'Wpisz wszystkie cztery cyfry.',
   'pairing.errorGeneric': 'Nie udało się sparować urządzenia. Spróbuj ponownie.',
   'pairing.errorIncorrect': 'Nieprawidłowy PIN.',
+
+  'clock.currentTime': 'Aktualna godzina',
+  'speaker.nowSpeaking': 'Teraz mówi',
+  'speaker.scriptMissingTitle': 'Skrypt nie został jeszcze dostarczony',
+  'speaker.scriptMissingBody': 'Sprawdź z MC; tekst można jeszcze dodać do cartridge’u.',
+  'speaker.footer': 'Skrypt tylko do odczytu · wyświetlana jest tylko przypisana mowa · brak sterowania timeline',
 };
 
 export default pl;
