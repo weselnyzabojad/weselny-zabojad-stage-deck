@@ -128,44 +128,59 @@ function RuleChip({
   );
 }
 
-export default function CulturalRulesBar({ rules = {}, oczepinyStatus = null, compact = false }) {
+export default function CulturalRulesBar({
+  rules = {},
+  oczepinyStatus = null,
+  compact = false,
+  children = null,
+  showRules = true,
+}) {
   const oczepinyState = oczepinyStatus?.state ?? 'OFF';
 
   return (
     <section
       aria-label="Cultural hard rules"
-      className="flex flex-wrap items-center gap-2"
+      className={
+        compact
+          ? 'grid grid-cols-2 items-stretch gap-1.5'
+          : 'flex flex-wrap items-center gap-2'
+      }
     >
-      {RULES.map(({ key, label, icon, statusLabels }) => {
-        const rule = rules[key] ?? {};
-        return (
-          <RuleChip
-            key={key}
-            ruleKey={key}
-            label={label}
-            icon={icon}
-            status={rule.status}
-            statusLabels={statusLabels}
-            note={rule.note}
-            compact={compact}
-          />
-        );
-      })}
-      <RuleChip
-        ruleKey={OCZEPINY.key}
-        label={OCZEPINY.label}
-        icon={OCZEPINY.icon}
-        status={oczepinyState}
-        statusLabels={OCZEPINY.statusLabels}
-        compact={compact}
-        note={
-          oczepinyState === 'ACTIVE'
-            ? 'Midnight tradition is live.'
-            : oczepinyState === 'OFF'
-              ? 'Not requested for this wedding.'
-              : 'Scheduled for the midnight block.'
-        }
-      />
+      {showRules
+        ? RULES.map(({ key, label, icon, statusLabels }) => {
+            const rule = rules[key] ?? {};
+            return (
+              <RuleChip
+                key={key}
+                ruleKey={key}
+                label={label}
+                icon={icon}
+                status={rule.status}
+                statusLabels={statusLabels}
+                note={rule.note}
+                compact={compact}
+              />
+            );
+          })
+        : null}
+      {showRules ? (
+        <RuleChip
+          ruleKey={OCZEPINY.key}
+          label={OCZEPINY.label}
+          icon={OCZEPINY.icon}
+          status={oczepinyState}
+          statusLabels={OCZEPINY.statusLabels}
+          compact={compact}
+          note={
+            oczepinyState === 'ACTIVE'
+              ? 'Midnight tradition is live.'
+              : oczepinyState === 'OFF'
+                ? 'Not requested for this wedding.'
+                : 'Scheduled for the midnight block.'
+          }
+        />
+      ) : null}
+      {children}
     </section>
   );
 }
