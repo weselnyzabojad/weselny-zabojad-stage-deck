@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { listDriveChildren } from './adminApi';
+import { listDriveChildren, previewDriveSource } from './adminApi';
 import {
   DRIVE_ROOT_FOLDER_ID,
+  DRIVE_DOC_MIME_TYPE,
   DRIVE_MONTH_NAMES,
   mergeYearFolders,
   partitionMonthFolders,
 } from '../lib/driveFolders';
+import { summarizeSecretDocs } from '../lib/secretDocs';
 
 const MONTH_ORDER = new Map(DRIVE_MONTH_NAMES.map((month, index) => [month.toLowerCase(), index]));
 
@@ -25,6 +27,8 @@ export default function AdminWeddingFolders() {
   const [loadingYear, setLoadingYear] = useState('');
   const [error, setError] = useState('');
   const [lastLoaded, setLastLoaded] = useState(null);
+  const [secretsByWedding, setSecretsByWedding] = useState({});
+  const [secretLoadingId, setSecretLoadingId] = useState('');
 
   const loadYears = useCallback(async () => {
     setLoading(true);
@@ -57,7 +61,24 @@ export default function AdminWeddingFolders() {
         candidates.map(async (month) => {
           const childResult = await listDriveChildren({ parentId: month.id, pageSize: 200 });
           const partition = partitionMonthFolders(childResult.files ?? []);
-          return { ...month, weddings: partition.weddings, secrets: partition.secrets };
+          let secretByWedding = {};
+          if (partition.secrets) {
+            const secretResult = await listDriveChildren({
+              parentId: partition.secrets.id,
+              pageSize: 200,
+            });
+            secretByWedding = Object.fromEntries(
+              (secretResult.files ?? []).map((folder) => [folder.name, folder]),
+            );
+          }
+          return {
+            ...month,
+            weddings: partition.weddings.map((wedding) => ({
+              ...wedding,
+              secretFolder: secretByWedding[wedding.name] ?? null,
+            })),
+            secrets: partition.secrets,
+          };
         }),
       );
       setMonths(loaded);
@@ -67,6 +88,30 @@ export default function AdminWeddingFolders() {
       setMonths([]);
     } finally {
       setLoadingYear('');
+    }
+  }, []);
+
+  const loadSecret = useCallback(async (wedding) => {
+    if (!wedding?.secretFolder) return;
+    setSecretLoadingId(wedding.id);
+    setError('');
+    try {
+      const result = await listDriveChildren({
+        parentId: wedding.secretFolder.id,
+        mimeType: DRIVE_DOC_MIME_TYPE,
+        pageSize: 100,
+      });
+      const docs = [];
+      for (const file of result.files ?? []) {
+        const source = await previewDriveSource(file.id);
+        docs.push({ name: file.name, text: source.text ?? '' });
+      }
+      const summary = summarizeSecretDocs(docs);
+      setSecretsByWedding((current) => ({ ...current, [wedding.id]: summary }));
+    } catch (err) {
+      setError(err.message ?? 'Could not load the wedding secrets.');
+    } finally {
+      setSecretLoadingId('');
     }
   }, []);
 
@@ -152,12 +197,35 @@ export default function AdminWeddingFolders() {
                   {month.weddings.map((wedding) => (
                     <li
                       key={wedding.id}
-                      className="flex items-center justify-between gap-2 rounded border border-line/70 bg-card/60 px-2 py-1"
+                      className="rounded border border-line/70 bg-card/60 px-2 py-1"
                     >
-                      <span className="font-mono text-[11px] text-slate-200">{wedding.name}</span>
-                      <span className="font-mono text-[9px] text-slate-500">
-                        {wedding.wedding.cartridgeName}
-                      </span>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="font-mono text-[11px] text-slate-200">{wedding.name}</span>
+                        <span className="font-mono text-[9px] text-slate-500">
+                          {wedding.wedding.cartridgeName}
+                        </span>
+                      </div>
+                      {wedding.secretFolder ? (
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void loadSecret(wedding)}
+                            disabled={secretLoadingId === wedding.id}
+                            className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[9px] font-semibold text-slate-300 disabled:opacity-50"
+                          >
+                            {secretLoadingId === wedding.id ? 'Loading secrets…' : 'Load secrets'}
+                          </button>
+                          {secretsByWedding[wedding.id] ? (
+                            <span className="text-[9px] text-slate-400">
+                              {secretsByWedding[wedding.id].empty
+                                ? 'No secret Docs yet'
+                                : `${secretsByWedding[wedding.id].speechCount} speeches · ${secretsByWedding[wedding.id].questionCount} questions`}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : (
+                        <p className="mt-1 text-[9px] text-slate-500">No secrets folder for this wedding.</p>
+                      )}
                     </li>
                   ))}
                 </ul>

@@ -22,6 +22,7 @@ export const DRIVE_MONTH_NAMES = [
 
 const MONTH_KEYS = new Set(DRIVE_MONTH_NAMES.map((month) => month.toLowerCase()));
 export const WEDDING_FOLDER_PATTERN = /^UM-\d{4}-\d{2}-\d{3}$/i;
+export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 
 export function isFolder(file) {
   return file?.mimeType === 'application/vnd.google-apps.folder';
