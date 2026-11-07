@@ -93,10 +93,11 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
     expect(cartridgeStorage.loadCachedCartridge(WEDDING_ID, fakeStorage())).toBeNull();
 
     const app = read('src/App.jsx');
+    const hook = read('src/hooks/usePublishedCartridge.js');
     // The production branch always starts without a wedding until the server or
     // a same-wedding snapshot provides one.
-    expect(app).toContain("t('app.noPublishedCartridge')");
-    expect(app).toContain("t('app.invalidPublishedCartridge')");
+    expect(hook).toContain("t('app.noPublishedCartridge')");
+    expect(hook).toContain("t('app.invalidPublishedCartridge')");
     expect(app).toContain("t('app.retry')");
     expect(app).not.toContain('STORED_CARTRIDGE');
   });
@@ -173,8 +174,9 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
     expect(cached).not.toBeNull();
 
     const app = read('src/App.jsx');
-    expect(app).toContain('loadCachedCartridge');
-    expect(app).toContain('stale: true');
+    const hook = read('src/hooks/usePublishedCartridge.js');
+    expect(hook).toContain('loadCachedCartridge');
+    expect(hook).toContain("freshness: cached ? (isOnline() ? 'stale' : 'offline')");
     expect(app).toContain('activeCartridgeState.stale');
 
     const deck = read('src/StageDeck.jsx');

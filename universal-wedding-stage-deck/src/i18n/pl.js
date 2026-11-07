@@ -115,6 +115,10 @@ const pl = {
     'Opublikowany kartridż jest nieprawidłowy. Ponów próbę lub poproś właściciela o ponowną publikację w /deck/admin.',
   'app.offlineCartridge':
     'Offline — wyświetlany jest ostatni opublikowany kartridż tego wesela. Tylko do odczytu, dopóki serwer jest niedostępny.',
+  'app.cartridgeUpdated': 'Kartridż zaktualizowany do wersji {revision}.',
+  'app.cartridgeStepRemoved':
+    'Aktywny krok został usunięty przez nowy kartridż. Przełączono na następny dostępny krok.',
+  'app.cartridgeSpeechRemoved': 'Aktywna mowa została usunięta przez nowy kartridż.',
 
   'error.recovered': 'ODZYSKANO',
   'error.scope.app': 'deck',

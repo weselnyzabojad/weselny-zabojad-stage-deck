@@ -10,6 +10,7 @@
 //   fetchServerTime()             -> epoch ms
 //   publish(roomKey, state)       -> Promise<void>
 //   subscribe(roomKey, handlers)  -> unsubscribe()
+//   subscribeWedding(id, handlers)-> unsubscribe()   (publication hints)
 //
 // `onStatus` receives one of: 'connecting' | 'connected' | 'disconnected' |
 // 'error'. The hook owns 'disabled' and 'offline'.
@@ -144,6 +145,46 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return ms;
   }
 
+  // Cartridge publication notifications are hints only (issue #167). The
+  // consumer must fetch the authoritative wedding row after every hint.
+  function subscribeWedding(weddingId, { onHint, onStatus } = {}) {
+    onStatus?.('connecting');
+
+    const channel = supabase
+      .channel(`wzsd:wedding:${weddingId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'weddings',
+          filter: `wedding_id=eq.${weddingId}`,
+        },
+        (payload) => {
+          const row = payload?.new;
+          if (!row?.wedding_id) return;
+          onHint?.({
+            wedding_id: row.wedding_id,
+            cartridge_revision: row.cartridge_revision,
+            updated_at: row.updated_at,
+          });
+        },
+      )
+      .subscribe((status, error) => {
+        if (status === 'SUBSCRIBED') {
+          onStatus?.('connected');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          onStatus?.('error', describeError(error));
+        } else if (status === 'CLOSED') {
+          onStatus?.('disconnected');
+        }
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }
+
   function subscribe(roomKey, { onState, onStatus } = {}) {
     onStatus?.('connecting');
 
@@ -191,6 +232,7 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     touchPresence,
     publish,
     subscribe,
+    subscribeWedding,
     wipeRoom,
   };
 }

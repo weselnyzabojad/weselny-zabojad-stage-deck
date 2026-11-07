@@ -115,6 +115,11 @@ const fr = {
     'La cartouche publiée est invalide. Réessayez ou demandez au propriétaire de la republier depuis /deck/admin.',
   'app.offlineCartridge':
     'Hors ligne — affichage de la dernière cartouche publiée pour ce mariage. Lecture seule jusqu\'au retour du serveur.',
+  'app.cartridgeUpdated': 'Cartouche mise à jour vers la révision {revision}.',
+  'app.cartridgeStepRemoved':
+    'L\'étape active a été supprimée par la nouvelle cartouche. Passage à l\'étape suivante disponible.',
+  'app.cartridgeSpeechRemoved':
+    'Le discours actif a été supprimé par la nouvelle cartouche.',
 
   'error.recovered': 'RÉCUPÉRÉ',
   'error.scope.app': 'le deck',
