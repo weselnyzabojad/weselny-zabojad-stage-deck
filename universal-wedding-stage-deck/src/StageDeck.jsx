@@ -302,6 +302,9 @@ export default function StageDeck({
     timeZone: VENUE_TIME_ZONE,
   });
   const speechMode = resolveSpeechMode(WEDDING, speeches);
+  const mandatorySettings =
+    liveState.media_overrides?.mandatorySteps?.value ?? WEDDING.mandatorySteps ?? {};
+  const cakeServiceMode = mandatorySettings.cakeServiceMode ?? 'KITCHEN_RETURN';
   const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
   // The visible sync badge is only fully green after BOTH the cartridge and
   // the live-state catch-up have finished (issue #167).
@@ -602,6 +605,7 @@ export default function StageDeck({
     completedCount,
     nextEntry,
     cakeProtocol,
+    cakeServiceMode,
     musicPolicy,
     speechMode,
     speeches,
