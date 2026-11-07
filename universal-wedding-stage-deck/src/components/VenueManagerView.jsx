@@ -102,14 +102,14 @@ export default function VenueManagerView({
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
 
   const body = (
-    <div id="main-content" tabIndex={-1} className="space-y-4">
+    <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
       <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
 
-      <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
+      <section className="rounded-xl border border-line bg-card p-3 shadow-lg sm:p-4">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
           {t('venueManager.mandatorySteps')}
         </h2>
-        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
           <TimeField
             label="Obiad weselny"
             value={kitchen.dinner}
