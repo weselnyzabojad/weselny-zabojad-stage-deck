@@ -501,6 +501,8 @@ export default function StageDeck({
             authControl={authControl}
             mediaOverrides={liveState.media_overrides}
             onMiniSessionOverride={(time) => setMediaOverride('miniSessionTime', time)}
+            checkedSubtasks={liveState.checked_subtasks}
+            onToggleSubtask={toggleSubtask}
             {...roleProps}
           />
         </AppErrorBoundary>
