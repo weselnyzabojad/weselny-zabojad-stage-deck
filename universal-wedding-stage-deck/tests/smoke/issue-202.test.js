@@ -17,9 +17,9 @@ describe('issue #202 MC summary card cleanup and embedded cake protocol', () => 
   });
 
   it('embeds cake protocol only in the active cake step', () => {
-    expect(mc).toContain('cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId');
-    expect(mc).toContain('<CakeCard cake={cakeProtocol} />');
-    expect(mc.match(/<CakeCard/g)?.length).toBe(1);
+    expect(mc).toContain('const isCakeStep = Boolean(');
+    expect(mc).toContain('<CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode}');
+    expect(mc.match(/<CakeCard/g)?.length).toBe(2);
   });
 
   it('keeps Music Policy in the DJ Booth view', () => {

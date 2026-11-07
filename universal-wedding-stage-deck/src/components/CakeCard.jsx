@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/useI18n.js';
+
 const STATE_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
   active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
@@ -61,10 +63,12 @@ function SyncNote({ cake, compact }) {
 // Cake protocol card (TODO 6). Shared by the MC dashboard and Pocket Remote.
 // `cake` comes from `resolveCakeProtocol`, which prefers the CAKE entry in
 // `musicPolicy.importantSongs[]` so this card and the Key Songs card agree.
-export default function CakeCard({ cake, compact = false }) {
+export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KITCHEN_RETURN' }) {
+  const { t } = useI18n();
   if (!cake?.hasData) return null;
 
   const song = cake.song || 'Song TBC';
+  const serviceModeLabel = t(`mandatory.cakeMode.${cakeServiceMode}`);
   const hasState = Boolean(cake.stepId);
 
   if (compact) {
@@ -82,6 +86,9 @@ export default function CakeCard({ cake, compact = false }) {
           {song}
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
+            {t('mandatory.cake')}: <strong className="text-white">{serviceModeLabel}</strong>
+          </span>
           <SparklersChip sparklers={cake.sparklers} />
           {cake.photographerCue ? (
             <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
@@ -130,6 +137,9 @@ export default function CakeCard({ cake, compact = false }) {
       <SyncNote cake={cake} />
 
       <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
+          {t('mandatory.cake')}: <strong className="text-white">{serviceModeLabel}</strong>
+        </span>
         <SparklersChip sparklers={cake.sparklers} />
         {cake.photographerCue ? (
           <span
