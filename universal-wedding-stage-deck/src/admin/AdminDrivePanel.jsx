@@ -11,7 +11,15 @@ import {
   parseGoogleDocTemplate,
   validateGoogleDocTemplate,
 } from '../lib/googleDocTemplate';
+import { googleDocTemplateToCartridge } from '../lib/googleDocCartridge';
 import { diffCartridges } from '../lib/cartridgeDiff';
+
+async function hashSourceText(text) {
+  if (typeof crypto === 'undefined' || !crypto.subtle) return null;
+  const bytes = new TextEncoder().encode(String(text ?? ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
 
 // Admin-only Google Drive browser and non-destructive preview (issue #169).
 // Nothing here is rendered on a stage-role view. A validated JSON preview may
@@ -85,18 +93,30 @@ export default function AdminDrivePanel({
         };
       } else {
         const document = parseGoogleDocTemplate(source.text);
-        const validation = validateGoogleDocTemplate(document);
+        const structureValidation = validateGoogleDocTemplate(document);
+        const mapped = googleDocTemplateToCartridge(document);
+        const cartridgeValidation = await validateCartridge(mapped.cartridge);
+        const errors = [
+          ...structureValidation.errors.map((message) => ({ location: '/', message })),
+          ...mapped.errors.map((message) => ({ location: '/', message })),
+          ...cartridgeValidation.errors,
+        ];
+        const valid = errors.length === 0 && cartridgeValidation.valid;
         parsed = {
           kind: 'google_doc',
+          cartridge: valid ? cartridgeValidation.cartridge : null,
+          sourceTextHash: await hashSourceText(source.text),
           validation: {
-            valid: validation.errors.length === 0,
-            errors: validation.errors.map((message) => ({ location: '/', message })),
-            warnings: validation.warnings,
+            valid,
+            errors,
+            warnings: [...structureValidation.warnings, ...mapped.warnings],
           },
-          summary: {
-            sections: document.sections.map((section) => section.marker),
-            required: document.sections.filter((section) => section.required).length,
-          },
+          summary: valid
+            ? summarizeCartridge(cartridgeValidation.cartridge)
+            : {
+                sections: document.sections.map((section) => section.marker),
+                required: document.sections.filter((section) => section.required).length,
+              },
         };
       }
       setPreview({ ...source, ...parsed, loading: false });
@@ -170,6 +190,8 @@ export default function AdminDrivePanel({
         fileId: preview.file.id,
         expectedVersion: preview.file.version ?? '',
         expectedChecksum: preview.file.md5Checksum ?? '',
+        cartridge: preview.cartridge,
+        sourceTextHash: preview.sourceTextHash ?? null,
         couple: targetWedding.couple,
         date: targetWedding.date,
       });
@@ -478,8 +500,9 @@ export default function AdminDrivePanel({
 
               {preview.kind === 'google_doc' ? (
                 <p className="border-t border-line pt-3 text-[10px] text-slate-400">
-                  Google Doc preview is read-only until the v1.2 cartridge mapping is approved.
-                  Publish a cartridge JSON source to create a new revision.
+                  Google Doc sources are mapped to a cartridge draft, validated against the
+                  schema and diffed before publication. Publishing also binds the exported
+                  Doc text hash so a changed source must be previewed again.
                 </p>
               ) : null}
             </>
