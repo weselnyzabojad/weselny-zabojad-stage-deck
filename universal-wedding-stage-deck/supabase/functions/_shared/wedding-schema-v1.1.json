@@ -194,6 +194,24 @@
         }
       }
     },
+    "mandatorySteps": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Exact-hour mandatory milestones separate from timeline steps.",
+      "properties": {
+        "firstGuestsArrival": { "$ref": "#/$defs/clock" },
+        "kitchenServices": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dinner": { "$ref": "#/$defs/clock" },
+            "firstSupper": { "$ref": "#/$defs/clock" },
+            "secondSupper": { "$ref": "#/$defs/clock" },
+            "thirdSupper": { "$ref": "#/$defs/clock" }
+          }
+        }
+      }
+    },
     "wishes": {
       "type": "object",
       "additionalProperties": false,
