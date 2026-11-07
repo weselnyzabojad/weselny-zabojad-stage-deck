@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `0ae9630` (admin laptop-only decision)
+**Aligned with:** `master` @ `0d0a6c7` (speaker view localization decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -147,6 +147,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#335](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/335) | Mobile: 3D current-step card across all role views |
 | [#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336) | Mobile 3D parity: dev previews and regression coverage |
 | [#337](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/337) | Admin panel: restrict access to laptops/desktops only |
+| [#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349) | Speaker view: localize UI text, keep speech text verbatim |
 
 ### Responsive phone / pocket plan
 
@@ -1262,6 +1263,20 @@ Admin library, presence and audit cards are not step cards and stay flat. Add
 viewport regression coverage for 320×568 and 375×667, plus manual QA for touch
 scrolling, advance and reduced motion.
 ([#336](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/336))
+
+### Speaker view localization (decision, 2026-11-07)
+
+All speaker-view UI copy must follow the per-device EN/FR/PL locale. This
+includes visible labels, empty/unavailable states, tooltips, aria-labels, footer
+text and the open-on-phone controls rendered in that view. Shared header controls
+must not leak hardcoded English.
+
+The speech script itself is an exception: it comes from the Google Doc/cartridge
+and must be rendered verbatim, never translated or locale-transformed. Speaker
+name, relationship and other cartridge data remain data, not UI copy. Speech
+sourcing and cartridge work stays with #245; this decision covers only UI
+localization.
+([#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
