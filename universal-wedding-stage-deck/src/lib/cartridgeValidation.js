@@ -5,6 +5,8 @@
 import { isHttpUrl } from './importantSongs.js';
 import { clockDeltaMinutes } from './clockMath.js';
 
+import { calculateStepDurations } from './stepDurations.js';
+
 export function collectSemanticErrors(cartridge) {
   const errors = [];
   const pushError = (location, message) => {
@@ -197,6 +199,15 @@ export function collectSemanticErrors(cartridge) {
       '/vipRadarCount',
       `vipRadarCount ${cartridge.vipRadarCount} does not match tact_and_vip_alerts.length ${cartridge.tact_and_vip_alerts.length}`,
     );
+  }
+
+  if (steps.length > 0) {
+    const durations = calculateStepDurations(steps, {
+      closureTime: cartridge?.mandatorySteps?.closureTime ?? null,
+    });
+    for (const message of durations.errors) {
+      pushError('/steps', message);
+    }
   }
 
   return errors;

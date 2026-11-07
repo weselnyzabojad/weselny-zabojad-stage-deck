@@ -91,19 +91,20 @@ Props: Veil, Bow ties, Test cards
 
 First guests arrival and Wedding closure are mandatory constraints, not timeline
 steps: keep them in the MANDATORY STEPS table below. Every remaining predefined
-step below is sourced from this Google Doc.
+step below is sourced from this Google Doc. Duration (min) is generated from the
+next step's time (and the closure time for the final step), not authored here.
 
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | step_01 | 16:30 | 30 | Cocktail / Vin d'honneur | FLEXIBLE | Garden |  | false |  |  |
 | step_02 | 17:00 | 60 | Ceremony | FLEXIBLE | Garden Gazebo |  | false |  |  |
-| step_03 | 18:00 | 90 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
+| step_03 | 18:00 | 150 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
 | step_05 | 20:30 | 30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
 | step_06 | 21:00 | 15 | Wedding Thank-You | FLEXIBLE | Main Hall |  | false |  |  |
 | step_07 | 21:15 | 30 | Wishes | FLEXIBLE | Garden |  | false | wishes |  |
-| step_08 | 21:45 | 10 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
+| step_08 | 21:45 | 135 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
-| step_10 | 01:00 | 45 | Games | FLEXIBLE | Main Hall |  | false | games |  |
+| step_10 | 01:00 | 60 | Games | FLEXIBLE | Main Hall |  | false | games |  |
 
 ## DJ CUES
 

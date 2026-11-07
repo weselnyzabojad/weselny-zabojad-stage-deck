@@ -74,6 +74,50 @@ export function redactSensitive(cartridge) {
   return copy;
 }
 
+function clockMinutes(clock) {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(clock ?? '');
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+}
+
+function stepDurationErrors(steps, closureTime) {
+  const errors = [];
+  steps.forEach((step, index) => {
+    const label = step?.id ?? `#${index + 1}`;
+    const current = step?.time ?? step?.planned ?? null;
+    const from = clockMinutes(current);
+    if (from == null) {
+      errors.push(`step ${label}: invalid or missing time`);
+      return;
+    }
+    if (index === steps.length - 1) {
+      if (!closureTime) return;
+      const to = clockMinutes(closureTime);
+      if (to == null) {
+        errors.push(`step ${label}: invalid closureTime ${closureTime}`);
+        return;
+      }
+      const duration = to < from ? to + 1440 - from : to - from;
+      if (duration === 0 || duration > 720) {
+        errors.push(`step ${label}: invalid final duration ${duration} minutes`);
+      }
+      return;
+    }
+    const next = steps[index + 1]?.time ?? steps[index + 1]?.planned ?? null;
+    const to = clockMinutes(next);
+    if (to == null) {
+      errors.push(`step ${label}: next step has invalid or missing time`);
+      return;
+    }
+    const duration = to < from ? to + 1440 - from : to - from;
+    if (duration === 0) {
+      errors.push(`step ${label}: duplicate time ${current} with the next step`);
+    } else if (duration > 720) {
+      errors.push(`step ${label}: next time ${next} is out of order or more than 720 minutes away`);
+    }
+  });
+  return errors;
+}
+
 export function collectSemanticErrors(cartridge) {
   const errors = [];
   const pushError = (location, message) => {
@@ -269,6 +313,12 @@ export function collectSemanticErrors(cartridge) {
       '/vipRadarCount',
       `vipRadarCount ${cartridge.vipRadarCount} does not match tact_and_vip_alerts.length ${cartridge.tact_and_vip_alerts.length}`,
     );
+  }
+
+  if (steps.length > 0) {
+    for (const message of stepDurationErrors(steps, cartridge?.mandatorySteps?.closureTime ?? null)) {
+      pushError('/steps', message);
+    }
   }
 
   return errors;

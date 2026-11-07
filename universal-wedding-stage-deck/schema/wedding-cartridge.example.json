@@ -349,7 +349,7 @@
       "time": "18:00",
       "planned": "18:00",
       "realStart": "18:25",
-      "durationMin": 90,
+      "durationMin": 150,
       "title": "Grand Entrance",
       "type": "FLEXIBLE",
       "location": "Main Hall",
@@ -452,7 +452,7 @@
     {
       "id": "step_08",
       "time": "21:45",
-      "durationMin": 10,
+      "durationMin": 135,
       "title": "First Dance",
       "type": "FLEXIBLE",
       "location": "Main Hall",
@@ -474,7 +474,7 @@
     {
       "id": "step_10",
       "time": "01:00",
-      "durationMin": 45,
+      "durationMin": 60,
       "title": "Games",
       "type": "FLEXIBLE",
       "location": "Main Hall",

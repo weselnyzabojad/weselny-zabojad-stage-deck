@@ -1,5 +1,6 @@
 import weddingSchema from '../../schema/wedding-schema-v1.1.json';
 import { collectSemanticErrors } from './cartridgeValidation';
+import { applyCalculatedDurations } from './stepDurations.js';
 
 let validatorPromise = null;
 
@@ -49,6 +50,13 @@ export function sanitizeCartridge(cartridge) {
   if (clean.liveSyncState && typeof clean.liveSyncState === 'object') {
     delete clean.liveSyncState.deferred_step_ids;
     delete clean.liveSyncState.manual_offset_minutes;
+  }
+
+  if (Array.isArray(clean.steps)) {
+    const computed = applyCalculatedDurations(clean.steps, {
+      closureTime: clean.mandatorySteps?.closureTime ?? null,
+    });
+    if (computed.errors.length === 0) clean.steps = computed.steps;
   }
 
   return clean;
