@@ -377,31 +377,6 @@
         "playlist": "Party Set",
         "track": "Dancing Queen — ABBA",
         "cutoff": "21:30"
-      },
-      "teleprompter": {
-        "has_script": true,
-        "type": "GAME_QUESTIONS",
-        "title": "Test Wiedzy — 2 Questions",
-        "items": [
-          {
-            "id": "q01",
-            "question": {
-              "EN": "Who arrives at the airport 4 hours before the flight?",
-              "PL": "Kto przychodzi na lotnisko 4 godziny przed odlotem?",
-              "FR": "Qui arrive à l'aéroport 4 heures avant le vol ?"
-            },
-            "answer": "Antoine"
-          },
-          {
-            "id": "q02",
-            "question": {
-              "EN": "Who is the boss at home?",
-              "PL": "Kto rządzi w domu?",
-              "FR": "Qui est le chef à la maison ?"
-            },
-            "answer": "Justyna"
-          }
-        ]
       }
     },
     {

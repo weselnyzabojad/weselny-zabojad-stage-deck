@@ -122,6 +122,10 @@ export default function McMasterView({ model }) {
     override: mandatoryOverride,
   });
   const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
+  const isGameStep = Boolean(
+    currentStep &&
+      (currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title)),
+  );
   const groupPhotoBody =
     currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
       <GroupPhotoChecklist
@@ -166,9 +170,7 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
-        <GamesCueCard wedding={WEDDING} role="mc" />
-      ) : null}
+      {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
       <StepMandatoryNotes items={mandatoryItems} />
       {groupPhotoBody}
       <div className="flex flex-wrap items-center gap-2">
@@ -286,9 +288,7 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
-        <GamesCueCard wedding={WEDDING} role="mc" />
-      ) : null}
+      {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
 
       {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (
         <>
@@ -357,7 +357,7 @@ export default function McMasterView({ model }) {
               📖 Open Teleprompter / Script
             </button>
           )}
-          {game && (
+          {isGameStep && game && (
             <button
               type="button"
               onClick={() => setOverlay('game')}
@@ -561,7 +561,7 @@ export default function McMasterView({ model }) {
       {overlay === "teleprompter" && (
         <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
       )}
-      {overlay === "game" && (
+      {overlay === "game" && isGameStep && (
         <GameClickerOverlay open game={game} onClose={closeOverlay} />
       )}
       <UndoToast
