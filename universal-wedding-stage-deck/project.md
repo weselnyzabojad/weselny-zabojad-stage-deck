@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `ee06dae` (Google Doc mapping decision)
+**Aligned with:** `master` @ `c648b2c` (QR phone handoff decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -150,6 +150,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#349](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/349) | Speaker view: localize UI text, keep speech text verbatim |
 | [#350](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/350) | Google Doc to cartridge: complete section mapping |
 | [#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351) | Admin Drive: publish mapped Google Doc cartridges |
+| [#352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/352) | QR phone handoff: always require the role PIN |
+| [#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353) | Localize the QR and PIN handoff flow |
 
 ### Responsive phone / pocket plan
 
@@ -1310,6 +1312,26 @@ completeness validation, show a revision diff and publish through the existing
 fresh-MFA source-bound path. Any displayed field that failed to map blocks
 publication. Round-trip and completeness tests are required.
 ([#351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/351))
+
+### QR phone handoff security (decision, 2026-11-07)
+
+The laptop "Open on phone" QR must always lead to a PIN challenge. A stored
+production role session or local pairing alone must not bypass the QR-initiated
+gate.
+
+- Production requires the per-role 6-digit PIN through `RoleJoinScreen`.
+- Local/demo requires the display PIN through `PairingScreen`.
+- The PIN is never encoded in the QR URL. It is shown on the laptop top-right
+  (and in the compact phone header when paired).
+- The deck opens only for the room/role carried by the QR after a successful PIN
+  check.
+- Non-QR reload behavior stays unchanged.
+([#352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/352))
+
+Every step in this handoff must be localized: the open-on-phone dialog, join
+screen, local pairing screen, QR-context hint, PIN errors and status text. PINs,
+room codes, role ids and cartridge content remain untranslated.
+([#353](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/353))
 
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
