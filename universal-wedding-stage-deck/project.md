@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `44da382` (role view switching #210–#211)
+**Aligned with:** `master` @ `8613333` (role view switching alignment)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -76,6 +76,12 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) | MC: hide the Speeches card when there are no speeches |
 | [#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210) | MC Master: switch to the DJ view (production, view-only) |
 | [#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211) | Development-only all-role view switcher |
+| [#214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/214) | MC: make the Speeches card full width |
+| [#215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/215) | DJ top bar: remove duplicate role label and add selected MC VIP controls |
+| [#216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/216) | DJ timeline: align step presentation with MC Master |
+| [#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217) | DJ: remove unselected sections and fix scrolling |
+| [#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218) | DJ VIP: add a guest song-request bar below the top bar |
+| [#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219) | DJ view: enforce Standard vs VIP restrictions |
 
 ### Responsive phone / pocket plan
 
@@ -462,6 +468,100 @@ Photographer and Speaker. DJ follows the cartridge-configured tier.
 Implementation issues:
 - [#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210) — production MC → DJ view-only switch;
 - [#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211) — dev-only all-role view switcher, excluded from production.
+
+### DJ view rework (decision, 2026-11-07)
+
+The DJ view is reworked to match the MC step experience while remaining
+read-only. Standard vs VIP boundaries stay explicit.
+
+**MC Speeches width.** The Speeches card is the only card below the MC timeline
+and must span the full page content width, with no leftover narrow grid column.
+([#214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/214))
+
+**DJ top bar.**
+
+- Remove the top-left headphone-icon role label showing the icon plus
+  "DJ VIP". The existing **Role: DJ VIP** identity remains the single role
+  label.
+- DJ VIP adds these selected MC top-bar elements: Sto Lat / Gorzko / Oczepiny
+  cultural chips, the Speeches status chip, and the authenticated role's
+  PIN/role sign-out element.
+- The Drift pill is not added.
+- Existing clock, Sync, Open on phone, language, theme, couple identity (VIP)
+  and the view-switch control stay.
+- The PIN/sign-out control targets the authenticated role: MC when the MC is
+  viewing DJ, DJ when a native DJ VIP is signed in.
+- DJ Standard keeps its current minimal top bar and gains none of the VIP
+  additions.
+([#215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/215))
+
+**Timeline alignment.** DJ uses the same `TimelineFocusStack` structure as MC:
+done/previous cards, the current step as the focal card, and next/upcoming
+cards, with the same step ordering. The current-step body stays read-only and
+DJ-specific. No MC advance, undo, swap or script controls are exposed.
+([#216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/216))
+
+**DJ sections.** Keep only:
+
+- current step / projected timeline focus stack;
+- Reel Clock;
+- Music Policy;
+- Set notes;
+- guest request queue — moved into the new dedicated second top bar.
+
+Remove:
+
+- Key Songs card;
+- Cutoff stopwatch;
+- VIP Set Health card;
+- VIP booth cues card, including fullscreen/copy-set-list launchers;
+- Export pack;
+- Stage Ping banner;
+- the guest request queue card in the page body once the top request bar exists.
+
+**Scrolling.** Use a single vertical scroll container for the DJ page body,
+remove nested scroll traps in the focus stack, keep the header and request bar
+stable/non-overlapping, and prevent cards from resizing or jumping while
+scrolling on desktop and tablet.
+([#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217))
+
+**Guest song-request bar.** Add a full-width bar directly below the DJ top bar,
+for **DJ VIP only**:
+
+- reuse the existing `song_requests` queue and public guest request form; do not
+  create a second wishes/notes data model;
+- show the pending count, latest pending requests with accept/decline, refresh
+  and the guest QR when available;
+- keep it compact, with expansion for the full queue if needed;
+- remove the old body queue card to avoid duplication;
+- show a clear unavailable/loading state when cloud requests are not configured
+  or cannot connect;
+- DJ Standard, Photographer and Speaker never render the bar.
+([#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218))
+
+**Tier restrictions.**
+
+| Area | DJ Standard | DJ VIP |
+| --- | --- | --- |
+| Timeline focus stack | Yes | Yes |
+| Reel Clock | Yes | Yes |
+| Music Policy | Yes | Yes |
+| Set notes | Yes | Yes |
+| Guest request bar | No | Yes |
+| Cultural / Speeches / PIN top-bar additions | No | Yes |
+| VIP Set Health / booth cues / export pack | No | Removed from the reworked view |
+
+The MC view-only navigation into DJ still renders the cartridge-configured
+Standard or VIP tier without changing auth.
+([#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219))
+
+Implementation issues:
+- [#214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/214) — full-width MC Speeches card;
+- [#215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/215) — DJ top-bar rework;
+- [#216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/216) — DJ timeline alignment;
+- [#217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/217) — section removal and scroll fix;
+- [#218](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/218) — VIP guest request bar;
+- [#219](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/219) — Standard/VIP restriction audit.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
