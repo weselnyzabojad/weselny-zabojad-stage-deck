@@ -96,14 +96,12 @@ export default function RoleShell({
         </div>
 
         {culturalRules || speechMode != null ? (
-          <div className="flex flex-wrap items-center gap-1.5">
-            {culturalRules ? (
-              <CulturalRulesBar
-                rules={culturalRules}
-                oczepinyStatus={oczepinyStatus}
-                compact
-              />
-            ) : null}
+          <CulturalRulesBar
+            rules={culturalRules ?? {}}
+            oczepinyStatus={oczepinyStatus}
+            compact
+            showRules={Boolean(culturalRules)}
+          >
             {speechMode != null ? (
               <SpeechesChip
                 mode={speechMode}
@@ -112,7 +110,7 @@ export default function RoleShell({
                 compact
               />
             ) : null}
-          </div>
+          </CulturalRulesBar>
         ) : null}
       </header>
 
