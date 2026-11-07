@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
+import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -226,14 +227,19 @@ export default function VenueManagerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
+        right={null}
+      />
+
+      <SecondaryControlBar
+        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
         right={(
           <>
-            <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={onToggleTheme} />
           </>
         )}
       />
+
       <main className="flex-1 p-4">{body}</main>
     </div>
   );

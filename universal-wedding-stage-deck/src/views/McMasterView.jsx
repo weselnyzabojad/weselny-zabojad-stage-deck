@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
+import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
 import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
 import GamesCueCard from '../components/GamesCueCard';
@@ -19,6 +20,7 @@ import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
 import OczepinyCueCard from '../components/OczepinyCueCard';
 import RoleShell from '../components/RoleShell';
+import SecondaryControlBar from '../components/SecondaryControlBar';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
@@ -439,15 +441,30 @@ export default function McMasterView({ model }) {
               speeches={speeches}
               activeSpeechId={liveState.active_speech_id}
             />
-            <DriftPill drift={driftReport.drift} />
-            {hasAnchorWarning ? null : (
-              <>
-                {pinControl}
-                {syncControl}
-              </>
-            )}
-            <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
             {viewSwitch}
+          </>
+        )}
+      />
+
+      <SecondaryControlBar
+        left={(
+          <>
+            <DriftPill drift={driftReport.drift} />
+            {pinControl}
+            {syncControl}
+          </>
+        )}
+        center={(
+          <ChildrenExpectedBadge
+            wedding={WEDDING}
+            role={currentRole}
+            inline
+            allowMc
+          />
+        )}
+        right={(
+          <>
+            <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
             <LanguageToggle />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </>
@@ -458,12 +475,6 @@ export default function McMasterView({ model }) {
         <HardAnchorAlertBanner
           radar={driftReport.hardAnchorRadar}
           childrenExpected={childrenExpected}
-          actions={(
-            <>
-              {pinControl}
-              {syncControl}
-            </>
-          )}
         />
       ) : null}
 
@@ -594,6 +605,9 @@ export default function McMasterView({ model }) {
       lastUndoLabel={lastUndo?.label}
       onAdvance={handleAdvance}
       isComplete={isComplete}
+      childrenExpected={childrenExpected}
+      childrenRole={currentRole}
+      allowMcChildren
     >
       {compactContent}
     </RoleShell>
