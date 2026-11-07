@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import DevViewSwitcher from './components/DevViewSwitcher';
 import ViewSwitchControl from './components/ViewSwitchControl';
@@ -158,6 +158,15 @@ export default function StageDeck({
   const [viewRoleOverride, setViewRoleOverride] = useState(null);
   const [controlNotice, setControlNotice] = useState('');
   const [undoToast, setUndoToast] = useState(null);
+  const [frozenLateDrift, setFrozenLateDrift] = useState(null);
+  const lateFreezeTimerRef = useRef(null);
+
+  useEffect(
+    () => () => {
+      if (lateFreezeTimerRef.current) clearTimeout(lateFreezeTimerRef.current);
+    },
+    [],
+  );
   // Offline cache for the speaker script (the active id is synced separately).
   const [cachedSpeakerSpeech] = useState(() => loadSpeakerScript(WEDDING.weddingId));
   const closeOverlay = () => setOverlay(null);
@@ -267,6 +276,9 @@ export default function StageDeck({
     serverTimeOffsetMs,
     serverTimeAvailable,
   });
+  const displayedDriftReport = frozenLateDrift
+    ? { ...driftReport, drift: frozenLateDrift }
+    : driftReport;
   const timeline = applyTimeAwareStart(driftReport.entries, {
     now,
     eventDateISO: EVENT_DATE_ISO,
@@ -334,6 +346,14 @@ export default function StageDeck({
   const swapWarn = swapNeedsWarning(currentStep, nextEntry?.step ?? null);
   const notifyUndo = (label) => setUndoToast({ id: Date.now(), label });
 
+  const releaseLateFreeze = () => {
+    if (lateFreezeTimerRef.current) {
+      clearTimeout(lateFreezeTimerRef.current);
+      lateFreezeTimerRef.current = null;
+    }
+    setFrozenLateDrift(null);
+  };
+
   const handleSwap = () => {
     if (!currentStep || !nextEntry || swapBlock) return;
     if (
@@ -344,17 +364,26 @@ export default function StageDeck({
     ) {
       return;
     }
+    releaseLateFreeze();
     setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
     swapWithNext();
     notifyUndo('Swapped steps');
   };
   const handleAdvance = () => {
+    releaseLateFreeze();
     markCurrentDone();
     setControlNotice('Step marked done.');
     notifyUndo('Step completed');
   };
   const handleUndo = () => {
     if (!canUndo) return;
+    // Keep the cumulative LATE display stable across the undo transition.
+    setFrozenLateDrift(driftReport.drift);
+    if (lateFreezeTimerRef.current) clearTimeout(lateFreezeTimerRef.current);
+    lateFreezeTimerRef.current = setTimeout(() => {
+      lateFreezeTimerRef.current = null;
+      setFrozenLateDrift(null);
+    }, 5000);
     undoLastStep();
     setUndoToast(null);
     setControlNotice('Last action undone.');
@@ -571,7 +600,7 @@ export default function StageDeck({
     WEDDING,
     childrenExpected: WEDDING.childrenExpected === true,
     realStart,
-    driftReport,
+    driftReport: displayedDriftReport,
     handleUnpair,
     IS_PRODUCTION: isProduction,
     roleSession,
