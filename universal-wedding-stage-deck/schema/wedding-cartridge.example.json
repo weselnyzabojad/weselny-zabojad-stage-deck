@@ -320,16 +320,6 @@
   },
   "steps": [
     {
-      "id": "step_00",
-      "time": "15:30",
-      "durationMin": 30,
-      "title": "First guests arrival",
-      "type": "HARD_ANCHOR",
-      "location": "Venue entrance",
-      "ceremonyType": "CHURCH",
-      "ceremonyLocation": "St. Mary Church"
-    },
-    {
       "id": "step_01",
       "time": "16:30",
       "durationMin": 30,
@@ -488,14 +478,6 @@
       "type": "BUFFER",
       "location": "Main Hall",
       "optionalFlag": "games"
-    },
-    {
-      "id": "step_11",
-      "time": "02:00",
-      "durationMin": 15,
-      "title": "Wedding closure",
-      "type": "HARD_ANCHOR",
-      "location": "Main Hall"
     }
   ],
   "demographics": {
@@ -745,7 +727,6 @@
     },
     "stage_ping": null,
     "step_order": [
-      "step_00",
       "step_01",
       "step_02",
       "step_03",
@@ -754,8 +735,7 @@
       "step_07",
       "step_08",
       "step_09",
-      "step_10",
-      "step_11"
+      "step_10"
     ],
     "mutation_log": []
   },
