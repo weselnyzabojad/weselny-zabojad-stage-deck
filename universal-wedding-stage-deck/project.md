@@ -123,6 +123,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295) | Current Step card: subtle stable 3D tilt and elevation |
 | [#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297) | MC: center the children expected reminder in the banner |
 | [#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298) | DJ Standard: disable the Music Policy UI |
+| [#299](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/299) | Top bar: distinguish couple languages from UI language switch |
 
 ### Responsive phone / pocket plan
 
@@ -1062,6 +1063,22 @@ affecting layout stability:
 - Respect `prefers-reduced-motion` by rendering flat with no tilt.
 - Do not overflow or clip the Completed/Upcoming columns.
 ([#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295))
+
+### Top bar couple-language indicator (decision, 2026-11-07)
+
+The couple/shared-language indicator in the top-bar center looks too similar to
+the EN/FR/PL UI language toggle. Redesign it so users understand these are the
+languages used to discuss with the customer/newlyweds:
+
+- use a conversational icon/logo (for example 🗣️/💬) and an explicit localized
+  label such as "Couple languages";
+- use a clearly different visual treatment from the segmented UI language
+  switch, e.g. label + language names/pills, not a toggle;
+- keep it in the center identity block below the names and above the date row;
+- leave the UI language switch unchanged;
+- hide this couple-language indicator in **DJ Standard** only;
+- keep it on DJ VIP, MC, Photographer 1/2, Cameraman and Speaker as appropriate.
+([#299](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/299))
 
 ### DJ Standard Music Policy removal (decision, 2026-11-07)
 
