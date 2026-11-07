@@ -14,6 +14,7 @@ import GamesCueCard from '../components/GamesCueCard';
 import CulturalRulesBar from '../components/CulturalRulesBar';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
+import GroupPhotoChecklist from '../components/GroupPhotoChecklist';
 import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
 import OczepinyCueCard from '../components/OczepinyCueCard';
@@ -24,6 +25,7 @@ import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
+import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
 
 function childrenWarningFor(step) {
@@ -108,6 +110,18 @@ export default function McMasterView({ model }) {
     eventDateISO: WEDDING?.dateISO ?? null,
     timeZone: driftReport?.clock?.timeZone ?? null,
   });
+  const photoPlan = resolvePhotoPlan(WEDDING);
+  const groupPhotoStepId = resolveGroupPhotoStepId(photoPlan, WEDDING?.steps);
+  const groupPhotoBody =
+    currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
+      <GroupPhotoChecklist
+        groups={photoPlan.groupPhotos.groups}
+        location={photoPlan.groupPhotos.location}
+        mediaTeam={WEDDING?.mediaTeam}
+        checked={liveState.checked_subtasks}
+        onToggle={toggleSubtask}
+      />
+    ) : null;
 
   const [isCompact, setIsCompact] = useState(
     typeof window !== 'undefined' && window.matchMedia
@@ -145,6 +159,7 @@ export default function McMasterView({ model }) {
       {currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title) ? (
         <GamesCueCard wedding={WEDDING} role="mc" />
       ) : null}
+      {groupPhotoBody}
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -283,6 +298,8 @@ export default function McMasterView({ model }) {
       {currentStep.optionalFlag === 'oczepiny' || /oczepiny/i.test(currentStep.title) ? (
         <OczepinyCueCard wedding={WEDDING} audience="mc" />
       ) : null}
+
+      {groupPhotoBody}
 
       {stepSubtasks.length > 0 ? (
         <div className="bg-page/70 p-3 rounded-lg border border-line">
