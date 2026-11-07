@@ -752,6 +752,11 @@
       "firstSupper": "21:30",
       "secondSupper": "23:30"
     },
+    "kitchenServiceModes": {
+      "dinner": "TABLE_SERVICE",
+      "firstSupper": "TABLE_SERVICE",
+      "secondSupper": "BUFFET"
+    },
     "closureTime": "02:00",
     "closureExtensionAllowed": true,
     "lastSong": "Perfect - Ed Sheeran"

@@ -6,6 +6,7 @@ import RoleSignOutControl from './components/RoleSignOutControl';
 import DjBoothView from './components/DjBoothView';
 import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
+import MandatoryConstraintsCard from './components/MandatoryConstraintsCard';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import ChildrenExpectedBadge from './components/ChildrenExpectedBadge';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
@@ -431,6 +432,12 @@ export default function StageDeck({
         update={liveState.media_overrides?.mandatorySteps ?? null}
       />
       <ChildrenExpectedBadge wedding={WEDDING} role={currentRole} />
+      <MandatoryConstraintsCard
+        wedding={WEDDING}
+        role={currentRole}
+        isVipDj={djDetailTier(WEDDING) === 'vip'}
+        override={liveState.media_overrides?.mandatorySteps ?? null}
+      />
       <WeddingClosureBanner
         role={currentRole}
         isVipDj={djDetailTier(WEDDING) === 'vip'}

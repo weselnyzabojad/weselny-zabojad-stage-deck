@@ -220,6 +220,16 @@
             "secondSupper": { "$ref": "#/$defs/clock" },
             "thirdSupper": { "$ref": "#/$defs/clock" }
           }
+        },
+        "kitchenServiceModes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dinner": { "enum": ["TABLE_SERVICE", "BUFFET"] },
+            "firstSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] },
+            "secondSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] },
+            "thirdSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] }
+          }
         }
       }
     },
