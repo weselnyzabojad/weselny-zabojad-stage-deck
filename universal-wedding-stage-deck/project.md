@@ -1,8 +1,8 @@
 # Universal Wedding Stage Deck — Project Status & Roadmap
 
-**Last aligned:** 2026-11-06
+**Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `1ad7de9` (phone layout fix #117)
+**Aligned with:** `master` @ `d4c52ec` (pocket header simplification #159)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -56,6 +56,18 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#79](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/79) | Multi-wedding library and importer safety |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) |
 | [#82](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/82) | Google Docs-first import (remove the AI-prompt path) |
+| [#165](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/165) | Server-published cartridge revisions as the only source of truth |
+| [#166](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/166) | Remove all non-admin cartridge import, activation and reset paths |
+| [#167](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/167) | Propagate cartridge revisions live to every role and on reconnect |
+| [#168](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/168) | Admin-only server-side Google Drive REST API connector |
+| [#169](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/169) | Browse, read and preview shared Drive cartridge sources in admin |
+| [#170](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/170) | Validate, diff and publish Drive cartridge revisions from admin |
+| [#186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/186) | Top bar: enlarge the clock |
+| [#187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/187) | Top bar: center the couple identity and languages |
+| [#188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/188) | Top bar: remove the role switcher and show a static role element |
+| [#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189) | Top bar: move cultural chips and utility controls into a right-hand two-row stack |
+| [#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190) | Hard-anchor banner: host PIN and Sync and use white detail text |
+| [#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191) | Pocket header: mini cultural chips and trimmed drift label |
 
 ### Responsive phone / pocket plan
 
@@ -173,6 +185,252 @@ future shown around it.
    should introduce the shared focus-stack helper first, then port each role
    (desktop and pocket) to it, with visual regression or screenshot checks on a
    large desktop viewport and a compact phone viewport.
+
+8. **Clock displays only the current time.** The desktop top-bar clock shows
+   only `HH:MM:SS` from the corrected clock (`clock.nowClock`) and nothing else —
+   no step number, no duration and no hidden data. Pocket headers do not show the
+   clock.
+9. **LATE unreel data button.** A button displaying unreel LATE data in the
+   format `109709m` (minutes late) should be added to the top bar. This shows
+   the cumulative late time across the event.
+10. **Open on phone button.** The desktop button opens a closeable QR popup for
+    the same role's pocket view. It is available for MC, DJ VIP, Photographer and
+    Speaker, but not for DJ Standard or pocket. The popup closes with an X button,
+    backdrop click and Escape.
+11. **Sync button.** The sync badge displays only the text "Sync". Green means
+    connected, orange means pending or connecting, and red means disabled,
+    local-only, offline, disconnected or sync error. Detailed status remains in
+    the tooltip.
+
+### Top bar rework (decision, 2026-11-06)
+
+Desktop top-left:
+
+- logo;
+- current time only, formatted as `HH:MM:SS`;
+- static role label;
+- DJ label includes the service tier: **DJ Standard** or **DJ VIP**;
+- couple name/date only for **MC** and **DJ VIP**.
+
+Desktop top-right:
+
+- **MC:** cultural chips, PIN/sign-out, Sync, role switcher, Open on phone,
+  language, icon-only theme and drift (MC only);
+- **DJ Standard:** Sync, language and icon-only theme only;
+- **DJ VIP:** Sync, Open on phone, language and icon-only theme;
+- **Photographer:** Sync, Open on phone, language and icon-only theme;
+- **Speaker:** Sync, Open on phone, language and icon-only theme; the local
+  Speaker Exit button is removed.
+
+Shared controls:
+
+- Sync visible text is only "Sync"; details stay in the tooltip.
+- Theme is icon-only everywhere.
+- Language stays on desktop and pocket.
+- Only MC desktop gets the role switcher. Non-MC roles and pocket views have no
+  role-switching control.
+- VIP Radar, the empty placeholder button and Contacts are removed from the MC
+  top bar only. Their components and functionality stay intact. **TODO:** ask
+  the owner where VIP Radar and Contacts should be relocated in a future pass.
+
+Pocket header:
+
+- logo/role badge, Sync, language and icon-only theme;
+- no clock, no Open on phone and no role switcher.
+
+Implementation issues:
+
+- [#155](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/155) — shared clock, sync and theme controls;
+- [#156](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/156) — Open on phone QR popup;
+- [#157](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/157) — MC top-bar layout and removed VIP/contact controls;
+- [#158](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/158) — non-MC role and DJ tier top bars;
+- [#159](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/159) — shared pocket header.
+
+### Top bar reorganization v2 (decision, 2026-11-07)
+
+This supersedes the desktop and pocket arrangements above where they conflict.
+It applies to every role and viewport; role-specific controls remain role-gated
+as described.
+
+**Clock.** The desktop current-time clock becomes visibly larger and remains the
+dominant left-side element. It still shows only `HH:MM:SS` from `clock.nowClock`
+— no step number, duration or hidden data. Pocket headers keep no clock.
+([#186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/186))
+
+**Role element.** The "Maître de cérémonie" role-switching control is removed
+entirely. It is replaced by the existing single **Role: MC** element:
+
+- MC keeps the current click action on it (sign out in production, forget the
+  room PIN in local/demo mode);
+- DJ Standard, DJ VIP, Photographer and Speaker show the same element but
+  non-clickable;
+- no role switching is available anywhere, including pocket.
+
+([#188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/188))
+
+**Couple identity.** The cartridge-driven couple block is horizontally centered
+in the desktop top bar for the roles that already show it (MC and DJ VIP). It
+shows each first name with their nationality flag (for example Jennifer + flag,
+Guillaume + flag) plus the shared-language chips, fully localised. The DJ VIP
+event date remains with the identity. The left side keeps logo, clock and static
+role; the right side carries the controls below.
+([#187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/187))
+
+**Right-hand two-row stack.** On desktop the right side of the top bar is one
+aligned stack:
+
+1. top row — **Sto Lat**, **Gorzko** and **Oczepiny** cultural chips (MC only);
+2. bottom row — **Open on phone** (eligible roles), UI **language** switcher and
+   icon-only **light/dark** theme toggle.
+
+The previous inline placement is removed. DJ Standard still has no Open on
+phone; Open on phone remains desktop-only; non-MC roles have no cultural chips.
+The stack must wrap readably at tablet widths without colliding with the
+centered couple block.
+([#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189))
+
+**PIN and Sync move into the hard-anchor banner.** While the "Collision avec un
+repère fixe" / "Compression contre un repère fixe" banner is displayed, the
+PIN/role sign-out element and the Sync badge move to the right side of that
+banner. When no warning banner is present, both return to the top bar as a
+fallback so they are never lost. This hosting applies to MC, the only role that
+renders the banner; other roles keep their normal top-bar Sync. The banner's
+right-side detail text — for example "Photo / Video leaves · 20:30 · 5 min de
+marge" — becomes white with sufficient contrast in both collision and
+compression tones.
+([#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190))
+
+**Pocket header.** Add mini Sto Lat, Gorzko and Oczepiny chips (icon + label +
+the same colour tone/dot as desktop) to the pocket header where the data is
+available. Mini chips hide all visible status text, including STRICT NO; the
+full status remains in the accessible label/tooltip. The pocket drift pill drops
+the "de retard" wording: a late drift shows only the magnitude, for example
+`+25 min`, while keeping its tone, icon and explanatory tooltip. Language and
+theme remain in the pocket header; Open on phone remains absent.
+([#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191))
+
+Implementation issues:
+- [#186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/186) — larger clock;
+- [#187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/187) — centered couple identity;
+- [#188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/188) — remove role switcher, static role element;
+- [#189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/189) — right-hand cultural/utility stack;
+- [#190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/190) — PIN/Sync in the hard-anchor banner;
+- [#191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/191) — pocket mini chips and trimmed drift label.
+
+### DJ Standard vs DJ VIP (decision, 2026-11-06)
+
+DJ Standard remains minimal: title/artist, planned track, projected timeline,
+cutoffs and music policy. DJ VIP adds these approved features:
+
+- **Offline Set Health ([#145](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/145))**:
+  full readiness dashboard on desktop; overall readiness and critical warnings
+  only on pocket.
+- **Fullscreen Now Playing ([#146](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/146))**:
+  low-distraction active/next display on desktop and pocket, with optional Wake
+  Lock support.
+- **Export & Print Pack ([#147](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/147))**:
+  desktop-only planned cue sheet, CSV export and source/backup checklist. No
+  actual-set report or audio-recognition integration.
+- **Song requests ([#148](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/148),
+  [#149](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/149))**:
+  a room-scoped public QR form collecting only song and artist, with server-side
+  rate limiting and only a "received" confirmation for guests. VIP desktop
+  provides accept/decline triage; pocket has no request-queue UI.
+
+Not planned: Next Key Moment Cue, Advanced Mix Cues, Music Policy Guard,
+Must-play Coverage Tracker and Venue & Soundcheck Checklist.
+
+### Server-only cartridges and Google Drive (decision, 2026-11-06)
+
+**Decision:** a cartridge is an immutable, server-published snapshot for every
+stage role. Only the owner at `/deck/admin` may create, import, select, replace
+or publish one. MC, DJ Standard/VIP, Photographer and Speaker devices never
+activate a cartridge from local JSON, a file, the built-in demo, a publish
+secret or another role device.
+
+The last downloaded snapshot may remain on a joined device for **offline,
+read-only continuity**, keyed by wedding and revision. It is a cache, not a
+second source of truth: it cannot be edited, published, reset or used for a
+different wedding. Production must show an error/retry state rather than silently
+substitute demo or wrong-wedding data when no valid server snapshot is available.
+
+Only `admin_api` may publish, using the allowlisted admin JWT + AAL2, server-side
+schema/semantic validation and an atomic monotonically increasing revision. A
+content-only publication preserves the room code, role PINs/sessions and live
+state. The legacy `publish_room` / `DECK_PUBLISH_SECRET` path is removed.
+
+Target flow:
+
+```text
+Admin JSON or Google Drive source shared with the service account
+  -> admin-only parse, validation and diff preview
+  -> fresh-MFA confirmation with expectedRevision
+  -> admin_api server validation + atomic cartridge_revision increment
+  -> weddings row (single published source of truth + audit + backup)
+  -> realtime notification plus authoritative fetch on subscribe/reconnect
+  -> reactive cartridge provider in every role, desktop and pocket
+  -> validated read-only offline cache and cartridge-dependent UI refresh
+```
+
+`live_sync_state` remains separate from cartridge content. Cartridge replacement
+must not replay the outbox or reset progress. Current step/speech ids are
+preserved when still present; removed ids follow a tested, visible safe fallback.
+Realtime payloads are only hints: clients always fetch the authoritative revision
+after subscribing and after reconnecting, ignore older/duplicate revisions, and
+do not report fully synced until both cartridge and live-state catch-up finish.
+
+Current gaps to remove: the MC/pairing `CartridgeImporter`, local activation and
+reset, module-level `STORED_CARTRIDGE ?? DEFAULT_WEDDING`, one-time server fetch
+followed by `window.location.reload()`, missing cartridge revisions, and the
+legacy secret-based publish function.
+
+#### Implementation order
+
+| Step | Issue | Deliverable | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#165](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/165) | Revisioned server-only publication, server validation, RLS, optimistic concurrency, audit, and removal of `publish_room`. | — |
+| 2 | [#166](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/166) | Delete all non-admin import/activation/reset paths while retaining a server-fed read-only cache and admin JSON publishing. | #165 |
+| 3 | [#167](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/167) | In-place revision delivery for all roles, offline catch-up, monotonic conflict handling and safe active-id reconciliation. | #165, #166 |
+| 4 | [#168](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/168) | Server-only Google Drive REST v3 service-account connector with read-only scope, secret handling, timeouts/retries and a connectivity check. | Can run in parallel with #165–#167 |
+| 5 | [#169](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/169) | Admin Drive search/list, JSON download, Google Doc `files.export`, metadata capture and non-destructive parse/validation preview. | #168 |
+| 6 | [#170](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/170) | Fresh-MFA Drive publication with exact-source binding, diff, backup/restore, provenance, audit and multi-role rollout verification. | #165, #167, #169 |
+
+Google auth follows the existing #82 direction: a service account whose email is
+explicitly shared with each source file/folder. Google credentials and access
+tokens stay in Supabase Edge Function secrets/memory, never in `VITE_*` values,
+the browser bundle, logs or git. Initial scope is Drive REST v3 read-only access
+to shared files. Domain-wide delegation, Drive writes, public-link scraping,
+background watchers and automatic Drive-to-stage publication are not planned.
+Drive changes require an explicit admin check, preview and publish action.
+
+#### Migration, rollout and verification checklist
+
+1. Back up production `weddings` rows and test the revision migration/backfill,
+   rollback and stale-`expectedRevision` behavior on a staging project first.
+2. Deploy the revised `admin_api` and compatible role clients before deleting
+   the deployed legacy `publish_room` function and `DECK_PUBLISH_SECRET`; verify
+   no caller or documentation still depends on them.
+3. Confirm RLS with anonymous, MC, DJ, Photographer and Speaker tokens: each can
+   read only its joined wedding and none can mutate cartridge rows.
+4. Verify publication does not rotate PINs, revoke sessions, reset live progress
+   or replay queued mutations. Test removed current-step and assigned-speech ids.
+5. Exercise every role on desktop and pocket with online publication, duplicated
+   and out-of-order notifications, missed realtime events, offline stale cache,
+   reconnect catch-up and wedding/session switching.
+6. In Google Cloud, enable Drive API, create a least-privilege service account,
+   store its secret through Supabase CLI, share only a test file/folder, and test
+   revoked sharing, key rotation and token redaction.
+7. Run the Drive smoke flow: shared source → preview/diff → fresh-MFA publish →
+   all online roles update → offline role catches up → restore creates another
+   audited revision. No automatic publication may occur.
+8. Update README/schema/deployment docs, remove obsolete importer translations
+   and fixtures from production paths, and run the full CI suite plus a manual
+   browser smoke test before release.
+
+Relations: #82's Drive transport/admin placement is superseded by #168–#170 and
+its role-side import removal by #166; #79 retains library-wide management, while
+#170 reuses its diff/backup primitives if available. WeddingSchema v1.2 (#77) is
+independent of this transport decision.
 
 ---
 
