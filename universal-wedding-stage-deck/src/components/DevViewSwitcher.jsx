@@ -24,12 +24,12 @@ export default function DevViewSwitcher({
     <aside
       data-testid="dev-view-switcher"
       aria-label="Development view switcher — not for production"
-      className="fixed bottom-3 left-3 z-[100] max-w-[calc(100vw-1.5rem)] rounded-xl border border-amber-500/70 bg-amber-950/95 p-2.5 text-amber-50 shadow-2xl"
+      className="fixed bottom-20 left-2 z-[100] max-h-[45dvh] w-[calc(100vw-1rem)] max-w-xs overflow-y-auto rounded-xl border border-amber-500/70 bg-amber-950/95 p-2 text-amber-50 shadow-2xl sm:bottom-3 sm:left-3 sm:w-auto sm:max-w-[calc(100vw-1.5rem)] sm:p-2.5"
     >
       <div className="font-mono text-[9px] font-bold uppercase tracking-widest text-amber-300">
         DEV VIEW SWITCHER — not for production
       </div>
-      <div role="group" aria-label="Development role view" className="mt-1.5 flex flex-wrap gap-1.5">
+      <div role="group" aria-label="Development role view" className="mt-1.5 grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap">
         {roles.map((role) => {
           const active = role === currentRole;
           return (
@@ -38,7 +38,7 @@ export default function DevViewSwitcher({
               type="button"
               aria-pressed={active}
               onClick={() => onChange?.(role)}
-              className={`rounded border px-2 py-1 font-mono text-[10px] font-bold transition ${
+              className={`min-h-9 rounded border px-2 py-1 font-mono text-[10px] font-bold transition ${
                 active
                   ? 'border-brand-strong bg-brand/50 text-white'
                   : 'border-amber-500/50 bg-amber-900/60 text-amber-100 hover:bg-amber-800/70'
