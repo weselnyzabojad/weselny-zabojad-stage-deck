@@ -167,6 +167,10 @@ const fr = {
 
   'speaker.title': 'Orateur · Script du discours',
   'speaker.exit': 'Quitter',
+  'viewSwitch.dj': 'Vue DJ',
+  'viewSwitch.djTitle': 'Ouvrir la vue DJ en lecture seule ({tier})',
+  'viewSwitch.return': 'Retour MC',
+  'viewSwitch.returnTitle': 'Revenir à la vue MC Master',
   'speeches.chip': 'Discours',
   'speeches.live': 'EN DIRECT',
   'speeches.none': 'Aucun discours',

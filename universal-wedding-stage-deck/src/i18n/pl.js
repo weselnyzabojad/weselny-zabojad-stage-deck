@@ -165,6 +165,10 @@ const pl = {
 
   'speaker.title': 'Mówca · Skrypt mowy',
   'speaker.exit': 'Wyjdź',
+  'viewSwitch.dj': 'Widok DJ-a',
+  'viewSwitch.djTitle': 'Otwórz widok DJ-a tylko do odczytu ({tier})',
+  'viewSwitch.return': 'Wróć do MC',
+  'viewSwitch.returnTitle': 'Wróć do widoku MC Master',
   'speeches.chip': 'Mowy',
   'speeches.live': 'NA ŻYWO',
   'speeches.none': 'Brak mów',
