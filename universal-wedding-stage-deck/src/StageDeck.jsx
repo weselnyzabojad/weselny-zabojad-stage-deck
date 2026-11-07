@@ -588,6 +588,7 @@ export default function StageDeck({
 
   const mcModel = {
     WEDDING,
+    childrenExpected: WEDDING.childrenExpected === true,
     realStart,
     driftReport,
     vipAlerts,
