@@ -38,6 +38,7 @@ describe('issue #308 simplified step types', () => {
       'FLEXIBLE',
       'FLEXIBLE',
       'FLEXIBLE',
+      'FLEXIBLE',
     ]);
   });
 

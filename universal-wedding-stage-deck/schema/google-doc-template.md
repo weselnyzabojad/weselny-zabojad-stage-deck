@@ -104,7 +104,8 @@ next step's time (and the closure time for the final step), not authored here.
 | step_07 | 21:15 | 30 | Wishes | FLEXIBLE | Garden |  | false | wishes |  |
 | step_08 | 21:45 | 135 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
-| step_10 | 01:00 | 60 | Games | FLEXIBLE | Main Hall |  | false | games |  |
+| step_10 | 01:00 | 30 | Test Wiedzy | FLEXIBLE | Main Hall |  | false | games |  |
+| step_11 | 01:30 | 30 | Test Zgodności | FLEXIBLE | Main Hall |  | false | games |  |
 
 ## DJ CUES
 

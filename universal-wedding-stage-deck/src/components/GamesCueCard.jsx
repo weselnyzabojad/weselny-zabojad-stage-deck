@@ -3,10 +3,11 @@ import { useI18n } from '../i18n/useI18n.js';
 
 // MC games brief. Question-list Docs are referenced by id only; raw document
 // links are never rendered. Missing/unavailable lists show a safe state.
-export default function GamesCueCard({ wedding, role }) {
+export default function GamesCueCard({ wedding, role, gameId = null }) {
   const { t } = useI18n();
   if (role !== 'mc') return null;
-  const lists = resolveGameQuestionLists(wedding);
+  const allLists = resolveGameQuestionLists(wedding);
+  const lists = gameId ? allLists.filter((list) => list.id === gameId) : allLists;
   if (lists.length === 0) return null;
 
   return (

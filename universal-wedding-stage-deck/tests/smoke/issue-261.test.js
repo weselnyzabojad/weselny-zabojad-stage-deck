@@ -39,6 +39,7 @@ describe('issue #261 predefined step renames and Buffets deletion', () => {
       'step_08',
       'step_09',
       'step_10',
+      'step_11',
     ]);
     expect(DEMO_WEDDING.steps.map((step) => step.id)).not.toContain('step_04');
   });
