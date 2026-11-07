@@ -6,7 +6,7 @@ import { stageRailSummary } from '../lib/stageRail.js';
 // lives in the component; SR-04 tunes these theme tokens.
 const VARIANTS = {
   done: {
-    card: 'border-line border-l-4 border-l-emerald-500/70 bg-card/70 opacity-90',
+    card: 'border-line border-l-4 border-l-emerald-500/70 bg-card',
     chip: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600',
     status: 'done',
   },

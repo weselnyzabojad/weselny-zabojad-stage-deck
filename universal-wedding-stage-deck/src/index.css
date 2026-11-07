@@ -280,6 +280,15 @@ input[type="checkbox"] {
   }
 }
 
+/* Completed-history depth stack (issue #180): the most recent completed step
+   sits fully visible, while the second-to-last tucks behind it with reduced
+   opacity and scale. Older completed steps are never rendered at all. */
+[data-focus-zone="history"] [data-focus-depth="2"] {
+  margin-top: -1rem;
+  transform: scale(0.95);
+  transform-origin: 50% 0;
+}
+
 /* MC Stage Rail: independent rail scrolling with soft edge fades on desktop. */
 @media (min-width: 1024px) {
   .stage-rail-scroll {
