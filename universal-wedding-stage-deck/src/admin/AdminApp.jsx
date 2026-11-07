@@ -35,6 +35,7 @@ import {
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
+import AdminDrivePanel from './AdminDrivePanel';
 import { AdminPublishRevisionDialog } from './AdminDialogs';
 
 // Inlined so production builds drop the demo banner and never reference it.
@@ -1062,6 +1063,8 @@ export default function AdminApp() {
                 </select>
               </label>
             </div>
+
+            <AdminDrivePanel />
 
             {showCreate ? (
               <CreateWeddingForm

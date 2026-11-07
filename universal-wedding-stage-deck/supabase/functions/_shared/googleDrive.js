@@ -10,6 +10,9 @@ export const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 export const GOOGLE_DRIVE_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/files';
 export const DRIVE_METADATA_FIELDS =
   'id,name,mimeType,modifiedTime,version,md5Checksum,size';
+export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
+export const DRIVE_JSON_MIME_TYPE = 'application/json';
+export const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
 
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_MAX_RETRIES = 2;
@@ -40,6 +43,12 @@ export function driveErrorHttpStatus(code) {
       return 403;
     case 'drive_file_not_found':
       return 404;
+    case 'drive_unsupported_type':
+      return 415;
+    case 'drive_file_too_large':
+      return 413;
+    case 'drive_malformed_source':
+      return 422;
     case 'drive_rate_limited':
       return 429;
     case 'drive_timeout':
@@ -312,37 +321,139 @@ export function createGoogleDriveConnector({
     return cachedToken;
   }
 
+  async function authorizedRequest(url, options = {}) {
+    const token = await getAccessToken();
+    const headers = { ...(options.headers ?? {}), Authorization: `Bearer ${token}` };
+    try {
+      return await request(url, { ...options, headers });
+    } catch (error) {
+      if (error?.code !== 'drive_auth_failed') throw error;
+      // A cached token can expire early after revocation; refresh once.
+      const refreshed = await getAccessToken({ force: true });
+      return request(url, {
+        ...options,
+        headers: { ...(options.headers ?? {}), Authorization: `Bearer ${refreshed}` },
+      });
+    }
+  }
+
   async function getFileMetadata(fileId) {
     if (typeof fileId !== 'string' || fileId.trim().length === 0) {
       throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
     }
 
-    const token = await getAccessToken();
     const params = new URLSearchParams({ fields: DRIVE_METADATA_FIELDS });
     const url = `${filesEndpoint}/${encodeURIComponent(fileId.trim())}?${params.toString()}`;
+    const response = await authorizedRequest(url, { method: 'GET' });
+    return sanitizedMetadata(await readJson(response));
+  }
 
-    let response;
-    try {
-      response = await request(url, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      if (error?.code !== 'drive_auth_failed') throw error;
-      // A cached token can expire early after revocation; refresh once.
-      const refreshed = await getAccessToken({ force: true });
-      response = await request(url, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${refreshed}` },
-      });
+  async function listFiles({ query = '', pageToken = null, pageSize = 20 } = {}) {
+    const size = Math.min(50, Math.max(1, Number(pageSize) || 20));
+    const conditions = [
+      'trashed = false',
+      `(mimeType = '${DRIVE_JSON_MIME_TYPE}' or mimeType = '${DRIVE_DOC_MIME_TYPE}')`,
+    ];
+    const term = typeof query === 'string' ? query.trim() : '';
+    if (term) {
+      const escaped = term.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      conditions.push(`name contains '${escaped}'`);
     }
 
-    return sanitizedMetadata(await readJson(response));
+    const params = new URLSearchParams({
+      q: conditions.join(' and '),
+      pageSize: String(size),
+      fields: `nextPageToken,files(${DRIVE_METADATA_FIELDS})`,
+    });
+    if (typeof pageToken === 'string' && pageToken.trim()) {
+      params.set('pageToken', pageToken.trim());
+    }
+
+    const response = await authorizedRequest(`${filesEndpoint}?${params.toString()}`, {
+      method: 'GET',
+    });
+    const payload = await readJson(response);
+    return {
+      files: (Array.isArray(payload?.files) ? payload.files : []).map(sanitizedMetadata),
+      nextPageToken: typeof payload?.nextPageToken === 'string' ? payload.nextPageToken : null,
+    };
+  }
+
+  async function readSource(fileId, { maxBytes = MAX_SOURCE_BYTES } = {}) {
+    const file = await getFileMetadata(fileId);
+    const limit = Math.max(1, Number(maxBytes) || MAX_SOURCE_BYTES);
+    const knownSize = Number(file.size);
+    if (Number.isFinite(knownSize) && knownSize > limit) {
+      throw createDriveError(
+        'drive_file_too_large',
+        `Drive source is larger than the ${limit}-byte preview limit.`,
+        413,
+      );
+    }
+
+    let kind;
+    let response;
+    if (file.mimeType === DRIVE_JSON_MIME_TYPE) {
+      kind = 'json';
+      response = await authorizedRequest(
+        `${filesEndpoint}/${encodeURIComponent(file.id)}?alt=media`,
+        { method: 'GET' },
+      );
+    } else if (file.mimeType === DRIVE_DOC_MIME_TYPE) {
+      kind = 'google_doc';
+      response = await authorizedRequest(
+        `${filesEndpoint}/${encodeURIComponent(file.id)}/export?mimeType=text%2Fplain`,
+        { method: 'GET' },
+      );
+    } else {
+      throw createDriveError(
+        'drive_unsupported_type',
+        'Only cartridge JSON files and native Google Docs are supported.',
+        415,
+      );
+    }
+
+    const text = await response.text();
+    const bytes = new TextEncoder().encode(text).length;
+    if (bytes > limit) {
+      throw createDriveError(
+        'drive_file_too_large',
+        `Drive source is larger than the ${limit}-byte preview limit.`,
+        413,
+      );
+    }
+    if (kind === 'json') {
+      try {
+        JSON.parse(text);
+      } catch {
+        throw createDriveError(
+          'drive_malformed_source',
+          'The Drive JSON source is not valid JSON.',
+          422,
+        );
+      }
+    } else if (!text.trim()) {
+      throw createDriveError(
+        'drive_malformed_source',
+        'The Google Doc source is empty or could not be exported.',
+        422,
+      );
+    }
+
+    return {
+      file,
+      kind,
+      text,
+      bytes,
+      retrievedAt: new Date(now()).toISOString(),
+    };
   }
 
   return {
     getAccessToken,
     getFileMetadata,
+    listFiles,
+    readSource,
     isConfigured: Boolean(clientEmail && privateKey),
   };
 }
