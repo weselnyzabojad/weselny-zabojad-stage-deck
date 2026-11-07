@@ -122,6 +122,7 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC, Photographer and DJ VIP cues |
 | [#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295) | Current Step card: subtle stable 3D tilt and elevation |
 | [#297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/297) | MC: center the children expected reminder in the banner |
+| [#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298) | DJ Standard: disable the Music Policy UI |
 
 ### Responsive phone / pocket plan
 
@@ -1061,6 +1062,14 @@ affecting layout stability:
 - Respect `prefers-reduced-motion` by rendering flat with no tilt.
 - Do not overflow or clip the Completed/Upcoming columns.
 ([#295](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/295))
+
+### DJ Standard Music Policy removal (decision, 2026-11-07)
+
+DJ Standard must not display the Music Policy UI element. DJ VIP keeps the
+Music Policy card unchanged. The shared component, cartridge data and policy
+logic remain intact; only the Standard view hides the card, with no empty grid
+column or layout gap left behind.
+([#298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/298))
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
