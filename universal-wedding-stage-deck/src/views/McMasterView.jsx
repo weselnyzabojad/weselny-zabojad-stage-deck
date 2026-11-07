@@ -126,6 +126,9 @@ export default function McMasterView({ model }) {
     currentStep &&
       (currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title)),
   );
+  const isCakeStep = Boolean(
+    currentStep && cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId,
+  );
   const groupPhotoBody =
     currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
       <GroupPhotoChecklist
@@ -171,7 +174,10 @@ export default function McMasterView({ model }) {
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
       {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
-      <StepMandatoryNotes items={mandatoryItems} />
+      {isCakeStep ? (
+        <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} compact />
+      ) : null}
+      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}
       {groupPhotoBody}
       <div className="flex flex-wrap items-center gap-2">
         <button
@@ -290,27 +296,15 @@ export default function McMasterView({ model }) {
       ) : null}
       {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
 
-      {cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId ? (
-        <>
-          <CakeCard cake={cakeProtocol} />
-          <div className="rounded-lg border border-amber-700/60 bg-amber-950/40 p-2.5 text-[11px] text-amber-100">
-            <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-amber-200">
-              Cake service
-            </div>
-            <div className="mt-0.5">
-              {cakeServiceMode === 'CUT_IN_PLACE'
-                ? 'Cut in place — ask guests to come to the cake spot for a piece.'
-                : 'Kitchen return — service will take the cake and return plated pieces.'}
-            </div>
-          </div>
-        </>
+      {isCakeStep ? (
+        <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} />
       ) : null}
 
       {currentStep.optionalFlag === 'oczepiny' || /oczepiny/i.test(currentStep.title) ? (
         <OczepinyCueCard wedding={WEDDING} audience="mc" />
       ) : null}
 
-      <StepMandatoryNotes items={mandatoryItems} />
+      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}
       {groupPhotoBody}
 
       {stepSubtasks.length > 0 ? (
