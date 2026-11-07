@@ -16,7 +16,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
-import { djDetailTier, resolveServicePackage } from '../lib/importantSongs';
+import { djDetailTier, getImportantSongs, resolveServicePackage } from '../lib/importantSongs';
 
 // Read-only companion screen for the DJ: projected timeline, playlists, track
 // titles and hard cutoffs only. There are deliberately no step controls, no MC
@@ -58,6 +58,11 @@ export default function DjBoothView({
   const isVip = detailTier === 'vip';
   const isSolo = resolvedPackage === 'HOST_AND_DJ_SOLO';
   const tierLabel = isVip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
+  const importantSongs = getImportantSongs(wedding);
+  const mainSong = activeEntry
+    ? importantSongs.find((song) => song.stepId === activeEntry.step.id) ?? null
+    : null;
+  const mainSongRequired = activeEntry?.step?.isMainSongRequired === true;
 
   // Extra current-card detail for the shared focus stack. The stack owns the
   // card hierarchy and visibility counts; this body only adds DJ-specific
@@ -86,23 +91,19 @@ export default function DjBoothView({
           {activeEntry.step.dj.cutoff ?? `start + ${activeEntry.step.dj.cutoffSec}s`}
         </div>
       ) : null}
-      {activeEntry?.step.dj ? (
-        <div className="flex flex-wrap gap-2 text-[11px]">
-          {isVip && activeEntry.step.dj.playlist ? (
-            <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-              đźŽµ {activeEntry.step.dj.playlist}
-            </span>
-          ) : null}
-          {activeEntry.step.dj.track ? (
-            <span className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-brand-tint">
-              â–¶ {activeEntry.step.dj.track}
-            </span>
-          ) : null}
-          {isVip && activeEntry.step.dj.note ? (
-            <span className="rounded border border-line-strong bg-raised px-2 py-1 text-slate-300">
-              đź“ť {activeEntry.step.dj.note}
-            </span>
-          ) : null}
+      {mainSongRequired ? (
+        <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2 text-[11px]">
+          <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
+            Main song
+          </div>
+          {mainSong ? (
+            <div className="mt-0.5 text-slate-200">
+              <strong className="text-white">{mainSong.title ?? 'Untitled'}</strong>
+              {mainSong.artist ? <span className="text-slate-400"> — {mainSong.artist}</span> : null}
+            </div>
+          ) : (
+            <div className="mt-0.5 text-amber-200">Main song not set for this step.</div>
+          )}
         </div>
       ) : null}
     </div>
