@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `8cc6dfd` (before the cake-step and Game Clicker cleanup)
+**Aligned with:** `master` @ `aa640b3` (before the mini-session timeline and centering changes)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -68,6 +68,8 @@ sections below and in git history.
 | [#396](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/396) | DJ and DJ Standard full-width layout | Implementation |
 | [#398](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/398) | Show Game Clicker only on the games step | Implementation |
 | [#399](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/399) | Fold cake service and mandatory data into Cake Protocol | Implementation |
+| [#401](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/401) | Show mini session as a timeline twin task | Implementation |
+| [#402](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/402) | Center the Chosen mini-session hour control | Implementation |
 
 ### Planning TODO register
 
@@ -815,8 +817,11 @@ Implemented in #384.
 and mini-session latest-start values must not infer, generate, move, constrain or
 recalculate step planning, durations, hard anchors, drift or timeline order.
 They remain informational in the Photographer/Cameraman Sunset & Golden Hour
-card and the shared mini-session override.
-([#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390))
+card and the shared mini-session override. The chosen mini-session hour may add
+a timeline twin task, but latest-start itself is never used as the task time or
+as planning input.
+([#390](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/390),
+[#401](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/401))
 
 **Hard-anchor banner children notice removed.** Delete the
 `Children expected — keep them clear of key moments` element from the
@@ -829,6 +834,26 @@ full viewport width with the same horizontal padding as the top bar. Left-side
 controls sit flush left, right-side controls flush right, and the centre group
 stays centred. Remove the `max-w-7xl` cap.
 ([#391](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/391))
+
+### Mini-session timeline twin task (decision, 2026-11-07)
+
+**Twin task, not a planned step.** The mini session is a parallel/twin task
+inside the step whose time window contains the chosen mini-session hour. The
+photographer(s) take the newlyweds outside for private pictures. It must not
+create a new top-level step, change step order, durations or drift.
+
+- Use the chosen `miniSessionTime` override; without a chosen hour show an
+  unscheduled state instead of guessing.
+- Show start time, duration, main location and backup location.
+- Visible in Photographer 1, Photographer 2 and Cameraman views.
+- The latest mini-session start remains decision support only, never the task
+  time.
+([#401](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/401))
+
+**Centered hour control.** Center the `Chosen mini-session hour` label, time
+input and save action in the light-window card for Photographer 1, Photographer 2
+and Cameraman, on desktop and compact layouts.
+([#402](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/402))
 
 ### DJ Standard laptop-only and top-bar ring size (decision, 2026-11-07)
 
