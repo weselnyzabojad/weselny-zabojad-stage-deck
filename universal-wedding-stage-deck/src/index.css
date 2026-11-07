@@ -56,6 +56,9 @@
 
   --on-accent: #ffffff;
   --focus-ring: #b8c6ff;
+  --focus-shadow:
+    0 18px 40px -12px rgb(0 0 0 / 0.65),
+    0 40px 80px -24px rgb(0 0 0 / 0.55);
 
   /* Contrast audit (TODO 26): small muted labels on the dark card were below
      WCAG AA at the default slate-500/600 values. Raise only those two steps. */
@@ -88,6 +91,9 @@
 
   --on-accent: #ffffff;
   --focus-ring: #002395;
+  --focus-shadow:
+    0 18px 40px -14px rgb(15 23 42 / 0.25),
+    0 40px 80px -28px rgb(15 23 42 / 0.18);
 
   /* Bridge for legacy slate utilities until each view is migrated. The scale
      mirrors so "muted" stays muted and primary text becomes navy. */
@@ -249,6 +255,28 @@ input[type="checkbox"] {
 
   .admin-qr-card {
     break-inside: avoid;
+  }
+}
+
+/* Universal timeline focus stack (issue #179): the current step floats above
+   the history and future cards with layered depth and a subtle static
+   perspective tilt. There is deliberately no transition, so live timeline
+   updates never animate or jitter; reduced motion removes the tilt while the
+   border, ring and shadows keep the hierarchy intact. */
+.timeline-focus-current {
+  position: relative;
+  transform: perspective(1200px) rotateX(1.2deg) translateY(-2px);
+  transform-origin: 50% 100%;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
+    0 0 28px -6px color-mix(in srgb, var(--brand-strong) 50%, transparent),
+    0 1px 0 rgb(255 255 255 / 0.08) inset,
+    var(--focus-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-focus-current {
+    transform: none;
   }
 }
 
