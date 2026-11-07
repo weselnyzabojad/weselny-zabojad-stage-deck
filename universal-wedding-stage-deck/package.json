@@ -13,6 +13,7 @@
     "validate:fixtures": "node schema/validate-fixtures.mjs",
     "validate:template": "node scripts/validate-google-doc-template.mjs",
     "validate:i18n": "node scripts/check-i18n.mjs",
+    "validate:env": "node scripts/validate-env.mjs",
     "migrate:timestamps": "node scripts/migrate-actual-timestamps.mjs",
     "preview": "vite preview"
   },

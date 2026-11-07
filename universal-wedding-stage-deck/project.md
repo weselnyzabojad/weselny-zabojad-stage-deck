@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `29132f7` (Drive-only admin wedding library decision)
+**Aligned with:** `master` @ `d0f8525` (admin backend preflight and setup documentation)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -159,6 +159,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | [#364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/364) | Admin Drive: parse month secrets folders |
 | [#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365) | Admin Drive: refresh on open + manifest hash diff |
 | [#370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/370) | Admin: remove manual New wedding creation; use Drive only |
+| [#374](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/374) | Setup: centralize environment/secrets configuration and document deployment |
 
 ### Responsive phone / pocket plan
 
@@ -1403,6 +1404,28 @@ scan failure keeps the last known-good library. Discovery stays admin-only and
 never auto-publishes into a live event.
 ([#365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/365))
 
+### Setup, environment and server secrets (decision, 2026-11-07)
+
+Configuration is split into two layers and must stay that way:
+
+- **Browser-safe client values** live in `.env.local` and may use the `VITE_`
+  prefix: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` and the optional
+  `VITE_DECK_MODE`, `VITE_SUPABASE_SYNC_TABLE`, `VITE_SUPABASE_ROOM_PREFIX`,
+  `VITE_ADMIN_DEMO` and `VITE_VIEW`.
+- **Server secrets** are set only with `supabase secrets set`: `SUPABASE_URL`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`,
+  `ALLOWED_ORIGIN`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`,
+  `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` and optional
+  `GOOGLE_DRIVE_TEST_FILE_ID`.
+
+The service-role key, JWT secret and Google private key must never appear in a
+`VITE_*` variable, an `.env*` file committed to git, an issue or a PR.
+`npm run validate:env` checks the client layer, rejects missing/malformed values
+and fails when a server secret is exposed through `VITE_*`, without printing
+values. `docs/admin-setup-and-secrets.md` is the canonical clone-to-working-admin
+guide; `README.md`, `.env.example` and `project.md` link to it.
+([#374](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/374))
+
 ### Top bar couple-language indicator (decision, 2026-11-07)
 
 The couple/shared-language indicator in the top-bar center looks too similar to
@@ -1841,7 +1864,7 @@ npm run dev
 npm run build
 ```
 
-Required public variables:
+Required public variables in `.env.local`:
 
 ```bash
 VITE_SUPABASE_URL=...
@@ -1849,7 +1872,15 @@ VITE_SUPABASE_ANON_KEY=...
 VITE_DECK_MODE=production   # optional; local mode is the default
 ```
 
-Never ship the service-role key.
+Validate the configuration (never prints values):
+
+```bash
+npm run validate:env
+```
+
+Never ship the service-role key or any other server secret. The complete setup
+and troubleshooting guide is
+[`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md).
 
 ### Supabase
 
@@ -1870,10 +1901,15 @@ If an older deployment still has the legacy secret-based function, remove it:
 `supabase functions delete publish_room` and
 `supabase secrets unset DECK_PUBLISH_SECRET`.
 
-5. Set secrets: `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`,
-   `PUBLIC_DECK_URL`, optional `ALLOWED_ORIGIN`.
-6. Add the owner account to `app_admins` and disable Auth self-signup.
+5. Set secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
+   `SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`, `ALLOWED_ORIGIN`,
+   `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` and
+   optional `GOOGLE_DRIVE_TEST_FILE_ID`.
+6. Add the owner account to `app_admins`, enable TOTP MFA and disable Auth
+   self-signup.
 7. Build with `VITE_DECK_MODE=production`.
+8. Run `npm run validate:env` before building; missing configuration or a
+   `VITE_*` server secret must fail the build pipeline.
 
 `join_room` now writes `role_sessions` and `role_presence`; existing role tokens
 issued before the owner-admin migration have no session row and must rejoin.
