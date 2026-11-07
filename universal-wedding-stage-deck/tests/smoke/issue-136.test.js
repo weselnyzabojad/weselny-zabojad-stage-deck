@@ -6,16 +6,11 @@ import { ROLE_ORDER, roleOptionsFor } from '../../src/lib/roles.js';
 
 describe('issue #136 MC Master can switch to all views', () => {
   it('offers every role view to MC Master', () => {
-    expect(roleOptionsFor('mc', ROLE_ORDER)).toEqual([
-      'mc',
-      'dj',
-      'photo',
-      'speaker',
-    ]);
+    expect(roleOptionsFor('mc', ROLE_ORDER)).toEqual(ROLE_ORDER);
   });
 
   it('keeps every companion view locked', () => {
-    for (const role of ['dj', 'photo', 'speaker']) {
+    for (const role of ['dj', 'photo1', 'photo2', 'video', 'speaker']) {
       expect(roleOptionsFor(role, ROLE_ORDER), role).toEqual([]);
     }
   });

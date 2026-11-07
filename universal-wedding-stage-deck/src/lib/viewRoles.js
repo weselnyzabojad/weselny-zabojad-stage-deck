@@ -1,10 +1,12 @@
+import { normalizeRole } from './roles.js';
+
 // Local view-role overrides. A view override changes only what this device
 // renders; it never changes the authenticated role, token, PIN or synced state.
-export const DEV_VIEW_ROLES = ['mc', 'dj', 'photo', 'speaker'];
+export const DEV_VIEW_ROLES = ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'];
 
 export function resolveBaseRole({ isProduction, roleSessionRole, role, availableRoles = [] }) {
-  if (isProduction) return roleSessionRole ?? 'mc';
-  return availableRoles.includes(role) ? role : 'mc';
+  const candidate = normalizeRole(isProduction ? roleSessionRole : role);
+  return availableRoles.includes(candidate) ? candidate : 'mc';
 }
 
 export function resolveAllowedViewRoles({

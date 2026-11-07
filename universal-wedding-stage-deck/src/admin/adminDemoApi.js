@@ -1,4 +1,4 @@
-// Local, read-only admin preview used only when VITE_ADMIN_DEMO=1 in a dev
+﻿// Local, read-only admin preview used only when VITE_ADMIN_DEMO=1 in a dev
 // build. It never contacts Supabase and never ships in production. Mutations
 // are intentionally disabled so nobody mistakes the sample data for real.
 
@@ -37,11 +37,11 @@ export function demoList() {
     weddings: [
       {
         wedding_id: 'demo-2026',
-        couple: 'Aleksandra & Michał',
+        couple: 'Aleksandra & MichaĹ‚',
         date: '20.08.2026',
-        venue: 'Dwór Pod Lipami',
+        venue: 'DwĂłr Pod Lipami',
         room_code: '4821',
-        roles: ['mc', 'dj', 'photo', 'speaker'],
+        roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'],
         archived_at: null,
         created_at: hoursAgo(72),
         updated_at: hoursAgo(3),
@@ -113,7 +113,7 @@ export function demoList() {
         target: 'demo-2026',
         actor_email: 'demo@local',
         created_at: hoursAgo(3),
-        detail: { note: 'Demo data only — no production records.' },
+        detail: { note: 'Demo data only â€” no production records.' },
       },
       {
         id: 'demo-audit-2',
@@ -121,7 +121,7 @@ export function demoList() {
         target: 'demo-2026',
         actor_email: 'demo@local',
         created_at: hoursAgo(5),
-        detail: { roles: ['mc', 'dj', 'photo', 'speaker'] },
+        detail: { roles: ['mc', 'dj', 'photo1', 'photo2', 'video', 'speaker'] },
       },
     ],
   };

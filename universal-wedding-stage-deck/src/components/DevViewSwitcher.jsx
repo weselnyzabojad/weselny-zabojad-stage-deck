@@ -7,7 +7,9 @@ import { DEV_VIEW_ROLES } from '../lib/viewRoles';
 const LABELS = {
   mc: 'MC',
   dj: 'DJ',
-  photo: 'Photo',
+  photo1: 'Photo 1',
+  photo2: 'Photo 2',
+  video: 'Camera',
   speaker: 'Speaker',
 };
 
