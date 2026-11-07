@@ -263,10 +263,25 @@ input[type="checkbox"] {
    perspective tilt. There is deliberately no transition, so live timeline
    updates never animate or jitter; reduced motion removes the tilt while the
    border, ring and shadows keep the hierarchy intact. */
+.current-step-tilt {
+  perspective: 1000px;
+}
+
+.current-step-header {
+  transform: translateZ(26px);
+}
+
+.current-step-body {
+  transform: translateZ(8px);
+}
+
 .timeline-focus-current {
   position: relative;
-  transform: perspective(1200px) rotateX(1.2deg) translateY(-2px);
-  transform-origin: 50% 100%;
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-2px);
+  transform-style: preserve-3d;
+  transform-origin: 50% 50%;
+  transition: transform 120ms ease-out;
+  will-change: transform;
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
     0 0 28px -6px color-mix(in srgb, var(--brand-strong) 50%, transparent),
@@ -275,7 +290,18 @@ input[type="checkbox"] {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .current-step-tilt {
+    perspective: none;
+  }
+
   .timeline-focus-current {
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .current-step-header,
+  .current-step-body {
     transform: none;
   }
 }

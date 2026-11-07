@@ -65,6 +65,9 @@ export default function StageStepCard({
   const drift = entry?.projectedDriftMinutes;
   const title = step.title ?? '—';
   const isOpen = collapsible ? Boolean(expanded) : true;
+  const headerWrapperClass = `flex w-full items-start gap-1 ${
+    variant === 'current' ? 'current-step-header' : ''
+  }`;
 
   const header = (
     <>
@@ -107,13 +110,17 @@ export default function StageStepCard({
           onClick={onToggle}
           className="flex w-full items-start gap-1 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft"
         >
-          {header}
+          <div className={headerWrapperClass}>{header}</div>
         </button>
       ) : (
-        <div className="flex items-start gap-1">{header}</div>
+        <div className={headerWrapperClass}>{header}</div>
       )}
 
-      <div id={bodyId} hidden={!isOpen} className="mt-2">
+      <div
+        id={bodyId}
+        hidden={!isOpen}
+        className={`mt-2 ${variant === 'current' ? 'current-step-body' : ''}`}
+      >
         <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line/60 pt-2 text-[11px] text-slate-400">
           <span className="truncate">📍 {step.location ?? '—'}</span>
           <div className="flex items-center gap-1.5 font-mono">

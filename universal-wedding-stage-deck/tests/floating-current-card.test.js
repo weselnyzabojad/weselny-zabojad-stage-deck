@@ -86,8 +86,9 @@ describe('floating current card (#179)', () => {
     const css = read('src/index.css');
 
     expect(css).toContain('.timeline-focus-current');
-    expect(css).toContain('perspective(1200px)');
-    expect(css).toContain('rotateX(1.2deg)');
+    expect(css).toContain('perspective: 1000px');
+    expect(css).toContain('rotateX(var(--tilt-x, 0deg))');
+    expect(css).toContain('transform-style: preserve-3d');
     expect(css).toContain('--focus-shadow');
     expect(css).toContain('box-shadow');
     expect(css).toContain('prefers-reduced-motion: reduce');
