@@ -718,6 +718,21 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const gamesSource = section(parsed, 'GAMES');
   const games = gamesSource ? mapGames(gamesSource) : undefined;
 
+  // Game steps are authored as one timeline row per game. Bind each step to its
+  // question list by title so the cue card and clicker stay game-specific.
+  const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
+  if (gameLists.length > 0) {
+    for (const step of steps) {
+      if (step?.optionalFlag !== 'games' || step.gameId) continue;
+      const match = gameLists.find(
+        (list) =>
+          typeof list?.title === 'string' &&
+          list.title.trim().toLowerCase() === String(step.title ?? '').trim().toLowerCase(),
+      );
+      if (match?.id) step.gameId = match.id;
+    }
+  }
+
   const preWeddingTodos = table(section(parsed, 'PRE-WEDDING TODOS'), [
     'Todo ID',
     'Task',

@@ -7,7 +7,7 @@ describe('issue #285 wedding closure step', () => {
   it('does not add closure as a predefined timeline step', () => {
     const titles = DEMO_WEDDING.steps.map((step) => step.title);
     expect(titles).not.toContain('Wedding closure');
-    expect(DEMO_WEDDING.steps.map((step) => step.id)).not.toContain('step_11');
+    expect(DEMO_WEDDING.steps.map((step) => step.id)).not.toContain('step_12');
   });
   it('stores closure/extension/last song data', () => {
     expect(DEMO_WEDDING.mandatorySteps.closureTime).toBe('02:00');

@@ -8,7 +8,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 describe('issue #262 new predefined steps', () => {
   it('adds the approved steps to the demo cartridge', () => {
     const titles = DEMO_WEDDING.steps.map((step) => step.title);
-    for (const title of ['Wedding Thank-You', 'Wishes', 'First Dance', 'Oczepiny', 'Games']) {
+    for (const title of ['Wedding Thank-You', 'Wishes', 'First Dance', 'Oczepiny', 'Test Wiedzy', 'Test Zgodności']) {
       expect(titles).toContain(title);
     }
   });
@@ -18,6 +18,7 @@ describe('issue #262 new predefined steps', () => {
     expect(ids).toContain('step_07');
     expect(ids).toContain('step_09');
     expect(ids).toContain('step_10');
+    expect(ids).toContain('step_11');
 
     const disabled = filterEnabledSteps({
       ...DEMO_WEDDING,
@@ -28,6 +29,7 @@ describe('issue #262 new predefined steps', () => {
     expect(disabled).not.toContain('step_07');
     expect(disabled).not.toContain('step_09');
     expect(disabled).not.toContain('step_10');
+    expect(disabled).not.toContain('step_11');
   });
 
   it('keeps mandatory steps and applies the filter in StageDeck', () => {

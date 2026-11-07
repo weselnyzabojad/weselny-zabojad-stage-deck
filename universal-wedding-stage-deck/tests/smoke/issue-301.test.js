@@ -17,7 +17,7 @@ describe('issue #301 predefined timeline data contract', () => {
       expect(source).not.toContain('First guests arrival');
       expect(source).not.toContain('Wedding closure');
       expect(source).not.toContain('"step_00"');
-      expect(source).not.toContain('"step_11"');
+      expect(source).not.toContain('"step_12"');
     }
   });
 
@@ -37,6 +37,7 @@ describe('issue #301 predefined timeline data contract', () => {
       'step_08',
       'step_09',
       'step_10',
+      'step_11',
     ]);
   });
 
@@ -45,7 +46,7 @@ describe('issue #301 predefined timeline data contract', () => {
     expect(template).toContain('First guests arrival and Wedding closure are mandatory constraints');
     expect(template).toContain('| step_01 | 16:30 |');
     expect(template).not.toContain('| step_00 |');
-    expect(template).not.toContain('| step_11 |');
+    expect(template).toContain('| step_11 |');
     for (const title of [
       "Cocktail / Vin d'honneur",
       'Ceremony',
@@ -55,7 +56,8 @@ describe('issue #301 predefined timeline data contract', () => {
       'Wishes',
       'First Dance',
       'Oczepiny',
-      'Games',
+      'Test Wiedzy',
+      'Test Zgodności',
     ]) {
       expect(template).toContain(title);
     }

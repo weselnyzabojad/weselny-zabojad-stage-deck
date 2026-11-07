@@ -961,6 +961,10 @@
           "enum": ["wishes", "games", "oczepiny"],
           "description": "Predefined step is shown only when the matching cartridge feature is enabled."
         },
+        "gameId": {
+          "$ref": "#/$defs/id",
+          "description": "Game question-list id when optionalFlag is games."
+        },
         "ceremonyType": {
           "type": "string",
           "enum": ["CHURCH", "VENUE", "NONE"]

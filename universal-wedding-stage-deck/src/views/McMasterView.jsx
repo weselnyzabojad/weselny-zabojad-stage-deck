@@ -173,7 +173,9 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
+      {isGameStep ? (
+        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.gameId ?? null} />
+      ) : null}
       {isCakeStep ? (
         <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} compact />
       ) : null}
@@ -294,7 +296,9 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep ? <GamesCueCard wedding={WEDDING} role="mc" /> : null}
+      {isGameStep ? (
+        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.gameId ?? null} />
+      ) : null}
 
       {isCakeStep ? (
         <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} />

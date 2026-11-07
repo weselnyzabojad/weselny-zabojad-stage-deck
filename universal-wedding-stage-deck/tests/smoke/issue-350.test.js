@@ -29,6 +29,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
       'step_08',
       'step_09',
       'step_10',
+      'step_11',
     ]);
     expect(result.cartridge.steps[0].durationMin).toBe(30);
     const entrance = result.cartridge.steps.find((step) => step.id === 'step_03');
