@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-07
 
-**Aligned with:** `master` @ `1974846` (mandatory steps / Venue Manager batch)
+**Aligned with:** `master` @ `f5e9732` (first arrival / closure decisions)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -117,6 +117,9 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) | First guests arrival as customer-confirmed first step |
 | [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) | Time-derived timeline position in all views |
 | [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) | Wedding closure step, extension and last song |
+| [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) | MC: children reminder in Hard Anchor Collision banner |
+| [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) | Oczepiny Early/Midnight schema and Google Doc parsing |
+| [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) | Oczepiny variant-aware MC and Photographer cues |
 
 ### Responsive phone / pocket plan
 
@@ -987,6 +990,49 @@ Implementation issues:
 - [#283](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/283) — customer-confirmed first arrival step;
 - [#284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/284) — time-derived timeline;
 - [#285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/285) — wedding closure step.
+
+### Children banner and Oczepiny variants (decision, 2026-11-07)
+
+**Children reminder on MC.** The MC children-expected communication moves from
+the bottom-right floating badge into the **Hard Anchor Collision** banner when
+that banner is visible. Remove the MC bottom-right badge; keep other roles
+unchanged. The reminder must be localized and must not duplicate.
+([#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286))
+
+**Oczepiny variants.** Oczepiny supports two variants:
+
+- **EARLY** — only throwings of veil/bouquet and bow tie/cravat.
+- **MIDNIGHT** — generally surrounded by a game (often Test Zgodności), with
+  veil/bouquet and bow-tie/cravat throwings, using music or an MC countdown.
+  After these, if the photographer is still available, request a winner photo
+  and a second photo of winners + newlyweds.
+
+**Schema and Google Doc parsing.** Add explicit fields for:
+
+- variant (`EARLY` / `MIDNIGHT`);
+- anchor/time;
+- throwings: veil, bouquet, bow tie, cravat;
+- game: enabled/type/notes;
+- music: enabled/track/playlist;
+- countdown: MC or none;
+- winner photo: enabled, winners-only, winners+couple, photographer available;
+- ordered sub-events.
+
+Update the OCZEPINY Google Doc section and parser, schema validation, fixtures,
+demo cartridge and template validator. Keep backward compatibility with the
+existing Oczepiny fields.
+([#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287))
+
+**Role cues.** MC shows only the enabled variant components (game, throwings,
+music/countdown, winner-photo cue). Photographer/Cameraman shows winner photo
+and winners+couple photo only when the photographer is available. Do not show
+disabled fields; keep cartridge order and localized labels.
+([#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288))
+
+Implementation issues:
+- [#286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/286) — MC children banner placement;
+- [#287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/287) — Oczepiny schema/parser;
+- [#288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/288) — Oczepiny role cues.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
