@@ -35,6 +35,7 @@ import {
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
+import { AdminPublishRevisionDialog } from './AdminDialogs';
 
 // Inlined so production builds drop the demo banner and never reference it.
 const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
@@ -397,6 +398,7 @@ function CreateWeddingForm({ onCreated, onCancel }) {
         date: date.trim() || undefined,
         roomCode: roomCode.trim() || undefined,
         roles,
+        expectedRevision: 0,
         cartridge: validation.cartridge,
       });
       onCreated(result, { couple: couple.trim(), date: date.trim() });
@@ -517,6 +519,7 @@ export default function AdminApp() {
   const [showCreate, setShowCreate] = useState(false);
   const [pinDialog, setPinDialog] = useState(null);
   const [duplicateDialog, setDuplicateDialog] = useState(null);
+  const [publishDialog, setPublishDialog] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [mfaAction, setMfaAction] = useState(null);
   const [dialogBusy, setDialogBusy] = useState(false);
@@ -709,6 +712,42 @@ export default function AdminApp() {
   const handleDuplicate = (wedding) => {
     setDialogError('');
     setDuplicateDialog(wedding);
+  };
+
+  const handlePublishRevision = (wedding) => {
+    setDialogError('');
+    setPublishDialog(wedding);
+  };
+
+  const handlePublishRevisionSubmit = async (cartridge) => {
+    const wedding = publishDialog;
+    if (!wedding) return;
+    setDialogBusy(true);
+    setDialogError('');
+    try {
+      const validation = await validateCartridge(cartridge);
+      if (!validation.valid) {
+        setDialogError(validation.errors.map((item) => `${item.location}: ${item.message}`).join('\n'));
+        return;
+      }
+      const result = await publishWedding({
+        weddingId: wedding.wedding_id,
+        couple: wedding.couple,
+        date: wedding.date,
+        expectedRevision: Number(wedding.cartridge_revision ?? 0),
+        cartridge: validation.cartridge,
+      });
+      setPublishDialog(null);
+      await load();
+      pushToast(`Published revision ${result.cartridgeRevision}.`, 'success');
+    } catch (err) {
+      setDialogError(err.message ?? 'Could not publish the revision.');
+      // A stale revision means another admin tab won the race. Refresh so the
+      // next attempt uses the current revision.
+      if (err.stale || err.status === 409) await load();
+    } finally {
+      setDialogBusy(false);
+    }
   };
 
   const handleDuplicateSubmit = async ({ weddingId, couple, date }) => {
@@ -1113,6 +1152,13 @@ export default function AdminApp() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => handlePublishRevision(wedding)}
+                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-white"
+                      >
+                        Replace cartridge
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handleArchive(wedding)}
                         className="rounded border border-amber-800 bg-amber-950/60 px-2 py-1 font-semibold text-amber-200"
                       >
@@ -1128,7 +1174,8 @@ export default function AdminApp() {
                     </div>
                   </div>
                   <div className="mt-2 font-mono text-[9px] text-slate-500">
-                    updated {formatAdminTime(wedding.updated_at)} · expires {formatAdminTime(wedding.expires_at)}
+                    rev {Number(wedding.cartridge_revision ?? 0)} · updated {formatAdminTime(wedding.updated_at)} · expires {formatAdminTime(wedding.expires_at)}
+                    {wedding.cartridge_published_at ? ` · published ${formatAdminTime(wedding.cartridge_published_at)}` : ''}
                   </div>
                 </article>
               ))}
@@ -1304,6 +1351,18 @@ export default function AdminApp() {
         onSubmit={handleDuplicateSubmit}
         onCancel={() => {
           setDuplicateDialog(null);
+          closeDialogs();
+        }}
+        busy={dialogBusy}
+        error={dialogError}
+      />
+
+      <AdminPublishRevisionDialog
+        open={Boolean(publishDialog)}
+        wedding={publishDialog}
+        onSubmit={handlePublishRevisionSubmit}
+        onCancel={() => {
+          setPublishDialog(null);
           closeDialogs();
         }}
         busy={dialogBusy}

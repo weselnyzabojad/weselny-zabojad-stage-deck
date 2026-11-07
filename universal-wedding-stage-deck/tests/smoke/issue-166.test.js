@@ -107,7 +107,7 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
       {
         weddingId: WEDDING_ID,
         cartridge: clone(fixture),
-        revision: '2026-11-06T10:00:00.000Z',
+        revision: 3,
         fetchedAt: '2026-11-06T10:00:01.000Z',
       },
       storage,
@@ -117,7 +117,7 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
     const cached = cartridgeStorage.loadCachedCartridge(WEDDING_ID, storage);
     expect(cached.cartridge.weddingId).toBe(WEDDING_ID);
     expect(cached.cartridge.couple).toBe(fixture.couple);
-    expect(cached.revision).toBe('2026-11-06T10:00:00.000Z');
+    expect(cached.revision).toBe(3);
     expect(cached.fetchedAt).toBe('2026-11-06T10:00:01.000Z');
   });
 
@@ -166,7 +166,7 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
   it('renders an offline snapshot read-only and clearly marked stale', () => {
     const storage = fakeStorage();
     cartridgeStorage.saveCachedCartridge(
-      { weddingId: WEDDING_ID, cartridge: clone(fixture), revision: 'rev-1' },
+      { weddingId: WEDDING_ID, cartridge: clone(fixture), revision: 1 },
       storage,
     );
     const cached = cartridgeStorage.loadCachedCartridge(WEDDING_ID, storage);

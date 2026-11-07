@@ -1,0 +1,1876 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/wedding-schema-v1.1.json",
+  "title": "WeddingSchema v1.1",
+  "description": "Portable wedding cartridge for the Universal Wedding Stage Deck. Defines the schedule, drift/buffer metadata, hard anchors, cultural rules, VIP alerts, teleprompter content and the optional synced live state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "weddingId",
+    "couple",
+    "date",
+    "syncPin",
+    "hostingMode",
+    "culturalRules",
+    "steps"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional URI of this schema, useful for editor autocomplete."
+    },
+    "schemaVersion": {
+      "const": "1.1",
+      "description": "Cartridge schema version. Breaking changes bump the major/minor version."
+    },
+    "weddingId": {
+      "$ref": "#/$defs/weddingId"
+    },
+    "couple": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name, e.g. Jennifer & Guillaume."
+    },
+    "coupleProfile": {
+      "$ref": "#/$defs/coupleProfile"
+    },
+    "date": {
+      "$ref": "#/$defs/date"
+    },
+    "syncPin": {
+      "$ref": "#/$defs/syncPin"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "MC",
+        "DJ"
+      ],
+      "description": "Optional legacy display hint. Device role is normally a per-device UI choice, not cartridge data."
+    },
+    "hostingMode": {
+      "type": "string",
+      "enum": [
+        "HOST_AND_DJ",
+        "HOST_ONLY"
+      ],
+      "description": "HOST_AND_DJ enables DJ cues, stage pings and the DJ Booth role; HOST_ONLY hides them."
+    },
+    "venue": {
+      "type": "string"
+    },
+    "driftMinutes": {
+      "type": "integer",
+      "description": "Optional demo/seed drift. Live drift is always computed from actual timestamps."
+    },
+    "culturalRules": {
+      "type": "object",
+      "required": [
+        "sto_lat",
+        "gorzko",
+        "bread_salt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sto_lat": {
+          "$ref": "#/$defs/stoLatRule"
+        },
+        "gorzko": {
+          "$ref": "#/$defs/gorzkoRule"
+        },
+        "bread_salt": {
+          "$ref": "#/$defs/breadSaltRule"
+        }
+      }
+    },
+    "vipRadarCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional display count. Prefer deriving it from tact_and_vip_alerts.length."
+    },
+    "tact_and_vip_alerts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/vipAlert"
+      }
+    },
+    "coHosts": {
+      "type": "array",
+      "deprecated": true,
+      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
+      "items": {
+        "$ref": "#/$defs/coHost"
+      }
+    },
+    "contentCreators": {
+      "type": "array",
+      "deprecated": true,
+      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
+      "items": {
+        "$ref": "#/$defs/contentCreator"
+      }
+    },
+    "hardAnchors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/hardAnchor"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/step"
+      }
+    },
+    "demographics": {
+      "$ref": "#/$defs/demographics"
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contact"
+      }
+    },
+    "preWeddingTodos": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/preWeddingTodo"
+      }
+    },
+    "musicPolicy": {
+      "type": "object",
+      "description": "Music requests, blacklist and the key songs pinned in the DJ Booth (project.md TODO 2 / TODO 18 / Phase 1.5d). v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
+      "additionalProperties": true,
+      "properties": {
+        "importantSongs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/importantSong"
+          }
+        },
+        "mustPlay": {
+          "type": "array",
+          "description": "Songs the couple wants. Reuse the importantSongs id when the entry is a key moment (first_dance, grand_entrance, cake_cutting).",
+          "items": {
+            "$ref": "#/$defs/mustPlayTrack"
+          }
+        },
+        "doNotPlay": {
+          "type": "array",
+          "description": "Guest-request blacklist with the reason.",
+          "items": {
+            "$ref": "#/$defs/doNotPlayTrack"
+          }
+        },
+        "requestsOpen": {
+          "type": "boolean",
+          "description": "Whether guest requests are accepted at all."
+        },
+        "requestWindow": {
+          "type": "object",
+          "required": [
+            "start",
+            "end"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/clock"
+            },
+            "end": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "cleanVersions": {
+          "type": "boolean",
+          "description": "Play clean/radio edits only."
+        },
+        "licensing": {
+          "type": "string",
+          "description": "Licensing note, e.g. Venue ZAIKS license confirmed."
+        }
+      }
+    },
+    "cake": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Cake protocol (project.md TODO 6). The cutting song stays in sync with musicPolicy.importantSongs[] (moment CAKE); the app prefers the Key Songs entry when both are present.",
+      "properties": {
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "cuttingSong": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sparklers": {
+          "type": "boolean"
+        },
+        "photographerCue": {
+          "type": "string"
+        },
+        "serveTime": {
+          "$ref": "#/$defs/clock"
+        }
+      }
+    },
+    "venueLogistics": {
+      "$ref": "#/$defs/venueLogistics"
+    },
+    "viewVisibility": {
+      "$ref": "#/$defs/viewVisibility"
+    },
+    "mediaTeam": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/mediaMember"
+      }
+    },
+    "photoPlan": {
+      "$ref": "#/$defs/photoPlan"
+    },
+    "oczepiny": {
+      "$ref": "#/$defs/oczepiny"
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy"
+    },
+    "speechMode": {
+      "type": "string",
+      "enum": [
+        "OFF",
+        "LIGHT",
+        "COMPLEX"
+      ],
+      "description": "Wedding-level speech mode (TODO 8); per-speech `mode` may override LIGHT/COMPLEX."
+    },
+    "speeches": {
+      "type": "array",
+      "description": "Speech records. Scripts are stored verbatim; the speaker role sees only the active, consented speech.",
+      "items": {
+        "$ref": "#/$defs/speech"
+      }
+    },
+    "liveSyncState": {
+      "$ref": "#/$defs/liveSyncState"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Forward-compatible namespace for app-specific data. Unknown top-level fields are rejected."
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "weddingId": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}_[a-z0-9_]+$",
+      "description": "Stable room identifier, e.g. 2026-08-20_jennifer_guillaume."
+    },
+    "syncPin": {
+      "type": "string",
+      "pattern": "^\\d{4}$",
+      "description": "Four-digit room PIN shared by paired devices."
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-3][0-9]\\.[0-1][0-9]\\.[0-9]{4}$",
+      "description": "Display date as DD.MM.YYYY."
+    },
+    "coupleProfile": {
+      "type": "object",
+      "required": [
+        "bride",
+        "groom"
+      ],
+      "additionalProperties": false,
+      "description": "Optional v1.2 couple identity for the top bar (project.md TODO 15 / Phase 1.5c). Both first names are required; nationalities are ISO 3166-1 alpha-2 and may be empty. `couple` remains the display fallback.",
+      "properties": {
+        "bride": {
+          "$ref": "#/$defs/couplePerson"
+        },
+        "groom": {
+          "$ref": "#/$defs/couplePerson"
+        },
+        "commonLanguages": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 639-1 languages the couple and the MC/host share. Never derived from `languages.supported`.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$"
+          }
+        }
+      }
+    },
+    "couplePerson": {
+      "type": "object",
+      "required": [
+        "firstName"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nationalities": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 3166-1 alpha-2 country codes. May be empty; never infer nationality from a name or language.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$"
+          }
+        }
+      }
+    },
+    "clock": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+      "description": "24-hour local clock time as HH:MM."
+    },
+    "isoTimestamp": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?Z$",
+      "description": "UTC ISO-8601 timestamp, e.g. 2026-08-20T18:25:00.000Z."
+    },
+    "actualTimestamp": {
+      "description": "Actual step start as a full ISO-8601 datetime (TODO 23). Legacy v1.1 bare HH:MM values still validate and are migrated on load.",
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        {
+          "$ref": "#/$defs/clock"
+        }
+      ]
+    },
+    "nullableClock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/clock"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nullableId": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/id"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "PL",
+        "FR",
+        "EN"
+      ]
+    },
+    "localizedText": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "PL": {
+          "type": "string"
+        },
+        "FR": {
+          "type": "string"
+        },
+        "EN": {
+          "type": "string"
+        }
+      }
+    },
+    "stoLatRule": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "YES",
+            "YES_EXPLAIN",
+            "STRICT_NO",
+            "TBC"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "gorzkoRule": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "YES",
+            "IF_GUESTS_START",
+            "STRICT_NO",
+            "TBC"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "breadSaltRule": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "YES",
+            "NO",
+            "TBC"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "vipAlert": {
+      "type": "object",
+      "required": [
+        "id",
+        "tone",
+        "icon",
+        "tag",
+        "title",
+        "detail"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "tone": {
+          "type": "string",
+          "enum": [
+            "critical",
+            "celebrate",
+            "care",
+            "info",
+            "warning"
+          ]
+        },
+        "icon": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "hardAnchor": {
+      "type": "object",
+      "required": [
+        "id",
+        "time",
+        "label"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alertBeforeMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180,
+          "default": 45
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "VENDOR",
+            "SUNSET",
+            "TRANSPORT",
+            "FAMILY",
+            "OTHER"
+          ]
+        }
+      }
+    },
+    "coHost": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "responsibilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "contentCreator": {
+      "type": "object",
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "type": "string",
+          "enum": [
+            "INSTAGRAM",
+            "TIKTOK",
+            "YOUTUBE",
+            "FACEBOOK",
+            "OTHER"
+          ]
+        },
+        "handle": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "arrivalTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "departureTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "required": [
+        "role",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "role": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "leavesAt": {
+          "$ref": "#/$defs/clock",
+          "description": "Vendor departure time. Link it to a hard anchor with the same time so the directory can jump to the protected anchor."
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "demographics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pl": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fr": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "other": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "languages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/language"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "preWeddingTodo": {
+      "type": "object",
+      "required": [
+        "task",
+        "done"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "task": {
+          "type": "string",
+          "minLength": 1
+        },
+        "done": {
+          "type": "boolean"
+        }
+      }
+    },
+    "buffer": {
+      "type": "object",
+      "required": [
+        "minDurationMin",
+        "maxDurationMin"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "minDurationMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 720
+        },
+        "maxDurationMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 720
+        },
+        "danceBlock": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "djCue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "playlist": {
+          "type": "string"
+        },
+        "track": {
+          "type": "string"
+        },
+        "cutoff": {
+          "$ref": "#/$defs/clock"
+        },
+        "cutoffSec": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "speechItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "heading",
+        "lines"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "heading": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "lang",
+              "text"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "lang": {
+                "$ref": "#/$defs/language"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "gameQuestion": {
+      "type": "object",
+      "required": [
+        "id",
+        "question",
+        "answer"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "question": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "answer": {
+          "type": "string"
+        }
+      }
+    },
+    "teleprompter": {
+      "type": "object",
+      "required": [
+        "has_script",
+        "type",
+        "title",
+        "items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "has_script": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "SPEECH",
+            "GAME_QUESTIONS"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "SPEECH"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/speechItem"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "GAME_QUESTIONS"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/gameQuestion"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "items": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "items"
+            ]
+          },
+          "then": {
+            "properties": {
+              "has_script": {
+                "const": true
+              }
+            }
+          }
+        }
+      ]
+    },
+    "step": {
+      "type": "object",
+      "required": [
+        "id",
+        "time",
+        "durationMin",
+        "title",
+        "type",
+        "location"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "time": {
+          "$ref": "#/$defs/clock",
+          "description": "Planned start time."
+        },
+        "planned": {
+          "$ref": "#/$defs/clock",
+          "description": "Optional explicit planned start; overrides time for drift math."
+        },
+        "realStart": {
+          "$ref": "#/$defs/clock",
+          "description": "Optional seeded actual start, mainly for demos/tests."
+        },
+        "durationMin": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 720
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "ELASTIC",
+            "BUFFER",
+            "HARD_ANCHOR"
+          ]
+        },
+        "location": {
+          "type": "string"
+        },
+        "buffer": {
+          "$ref": "#/$defs/buffer"
+        },
+        "dj": {
+          "$ref": "#/$defs/djCue"
+        },
+        "teleprompter": {
+          "$ref": "#/$defs/teleprompter"
+        },
+        "subTasks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "photographerCue": {
+          "type": "string",
+          "description": "Optional photographer/vendor cue for this step. Swap warns and defer skips protected steps."
+        }
+      }
+    },
+    "stagePing": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "sent_at",
+        "step_id"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "drop_track",
+            "fade_music",
+            "hold_2m",
+            "ready"
+          ]
+        },
+        "sent_at": {
+          "$ref": "#/$defs/isoTimestamp"
+        },
+        "step_id": {
+          "$ref": "#/$defs/nullableId"
+        }
+      }
+    },
+    "songSource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "Where a key song comes from. Customer files keep a stable fileRef (never audio bytes); streaming sources keep the exact customer URL. shortUrl is an optional pre-approved stable redirect for the QR.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "CUSTOMER_FILE",
+            "YOUTUBE",
+            "SPOTIFY",
+            "DEEZER",
+            "OTHER"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https?://",
+          "description": "Exact customer link for streaming sources, or a stable shared HTTPS URL for a customer file. Never a signed URL."
+        },
+        "shortUrl": {
+          "type": "string",
+          "pattern": "^https?://",
+          "description": "Optional pre-approved stable redirect used only for the QR so it survives link edits."
+        },
+        "fileRef": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable asset reference for CUSTOMER_FILE. Required for customer files."
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "type": "string"
+        },
+        "durationSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "LOCAL",
+            "MISSING"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "description": "Display label for OTHER sources (Tidal, Apple Music, SoundCloud, ...)."
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "venueLogistics": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Structured venue data (v1.2 proposal). The photographer view reads address, manager, installation access/parking and notes.",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            }
+          }
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "manager": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "installation": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "windowStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "windowEnd": {
+              "$ref": "#/$defs/clock"
+            },
+            "latestStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "loadInMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "setupMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "loadOutMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "accessNotes": {
+              "type": "string"
+            },
+            "parking": {
+              "type": "string"
+            },
+            "power": {
+              "type": "string"
+            },
+            "loadingDock": {
+              "type": "boolean"
+            },
+            "elevator": {
+              "type": "boolean"
+            },
+            "noiseCurfew": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "viewVisibility": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Per-role section visibility (D1/D9). Missing roles default to all-false in v1.2; this app merges role defaults.",
+      "properties": {
+        "mc": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "dj": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "photo": {
+          "$ref": "#/$defs/visibilityMatrix"
+        },
+        "speaker": {
+          "$ref": "#/$defs/visibilityMatrix"
+        }
+      }
+    },
+    "visibilityMatrix": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "D4 sensitive-note classification. The app encrypts vipAlerts + contacts client-side with AES-GCM and keeps the key on host devices.",
+      "properties": {
+        "sensitiveFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cloudSync": {
+          "type": "string",
+          "enum": [
+            "ENCRYPTED_HOST_KEY",
+            "LOCAL_ONLY",
+            "SERVER_MANAGED"
+          ]
+        },
+        "encryption": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "alg": {
+              "type": "string"
+            },
+            "keyHolder": {
+              "type": "string",
+              "enum": [
+                "HOST",
+                "SERVER"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "mediaMember": {
+      "type": "object",
+      "required": [
+        "id",
+        "role",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "PHOTO",
+            "VIDEO",
+            "DRONE"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "startTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "endTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "photoPlan": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Photographer plan (D2/D6). Sunset status is LIVE, STALE or UNAVAILABLE; the app never estimates it offline.",
+      "properties": {
+        "sunset": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "source": {
+              "type": "string"
+            },
+            "provider": {
+              "type": "string"
+            },
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            },
+            "timezone": {
+              "type": "string"
+            },
+            "lastFetchedAt": {
+              "type": "string"
+            },
+            "sunsetTime": {
+              "$ref": "#/$defs/clock"
+            },
+            "goldenHourStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "civilTwilightEnd": {
+              "$ref": "#/$defs/clock"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "LIVE",
+                "STALE",
+                "UNAVAILABLE"
+              ]
+            }
+          }
+        },
+        "miniSession": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "latestStartMinutesBeforeSunset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "location": {
+              "type": "string"
+            },
+            "backupLocation": {
+              "type": "string"
+            }
+          }
+        },
+        "groupPhotos": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "location": {
+              "type": "string"
+            },
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/id"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "minGroupSize": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "speedFoto": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "description": {
+              "type": "string"
+            },
+            "durationMin": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "music": {
+              "type": "string"
+            }
+          }
+        },
+        "specialEffects": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "sparklers": {
+              "type": "boolean"
+            },
+            "fire": {
+              "type": "boolean"
+            },
+            "heavySmoke": {
+              "type": "boolean"
+            },
+            "other": {
+              "type": "string"
+            },
+            "permitRequired": {
+              "type": "boolean"
+            },
+            "venueApproved": {
+              "type": "boolean"
+            },
+            "safetyBriefing": {
+              "type": "string"
+            }
+          }
+        },
+        "guestCoverage": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "allGuests": {
+              "type": "boolean"
+            },
+            "selectedGuests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "description": {
+              "type": "string"
+            },
+            "consent": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "oczepiny": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Oczepini / midnight tradition cues (v1.2 proposal).",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "order": {
+          "type": "string",
+          "enum": [
+            "MIDNIGHT",
+            "AFTER_CAKE",
+            "CUSTOM"
+          ]
+        },
+        "anchorId": {
+          "$ref": "#/$defs/id"
+        },
+        "toss": {
+          "type": "string",
+          "enum": [
+            "VEIL",
+            "BOUQUET",
+            "OFF"
+          ]
+        },
+        "ties": {
+          "type": "string",
+          "enum": [
+            "BOW_TIE",
+            "TIE",
+            "OFF"
+          ]
+        },
+        "testZgodnosci": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "winnerPhoto": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "replacesWinnersDance": {
+              "type": "boolean"
+            },
+            "photographerCue": {
+              "type": "string"
+            }
+          }
+        },
+        "photographerBriefed": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "confirmed": {
+              "type": "boolean"
+            },
+            "confirmedAt": {
+              "type": "string"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "music": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "track": {
+              "type": "string"
+            },
+            "playlist": {
+              "type": "string"
+            }
+          }
+        },
+        "subEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "title"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "title": {
+                "type": "string"
+              },
+              "durationMin": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "deferable": {
+                "type": "boolean"
+              },
+              "skippable": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "mutationEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "op",
+        "timestamp"
+      ],
+      "additionalProperties": true,
+      "description": "One append-only audit entry for a stage mutation (P0.7).",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "op": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "payload": {}
+      }
+    },
+    "speech": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": true,
+      "description": "Speech record (TODO 8). Script text is stored verbatim; consent and visibility gate the speaker view.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "LIGHT",
+            "COMPLEX"
+          ]
+        },
+        "speaker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "additionalProperties": true,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "relationship": {
+                  "type": "string"
+                },
+                "contact": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "order": {
+          "type": "integer"
+        },
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "durationMin": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "language": {
+          "type": "string"
+        },
+        "mic": {
+          "type": "string"
+        },
+        "cue": {
+          "type": "string"
+        },
+        "script": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "format": {
+              "type": "string"
+            },
+            "ready": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string"
+            }
+          }
+        },
+        "delivery": {
+          "type": "string",
+          "enum": [
+            "READ",
+            "MEMORIZE",
+            "NOTES"
+          ]
+        },
+        "readFrom": {
+          "type": "string",
+          "enum": [
+            "PHONE",
+            "TABLET",
+            "PAPER",
+            "MEMORY",
+            "OTHER"
+          ],
+          "description": "Where the speaker reads from: phone/tablet, printed paper or memory."
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Couple consent to store the script on the speaker device. `storeScript: false` locks it.",
+          "properties": {
+            "storeScript": {
+              "type": "boolean"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "confirmedAt": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "mcIntro": {
+          "type": "boolean"
+        },
+        "visibleToRoles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teleprompterRef": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "mustPlayTrack": {
+      "type": "object",
+      "required": [
+        "id",
+        "track"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "doNotPlayTrack": {
+      "type": "object",
+      "required": [
+        "id",
+        "track"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "importantSong": {
+      "type": "object",
+      "required": [
+        "id",
+        "moment"
+      ],
+      "additionalProperties": false,
+      "description": "One key moment pinned in the DJ Booth. title/artist/source may be missing at import time (warn, do not block); the UI shows TBC and keeps the row editable.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "moment": {
+          "type": "string",
+          "enum": [
+            "GRAND_ENTRANCE",
+            "CAKE",
+            "FIRST_DANCE",
+            "PARENTS_DANCE",
+            "LAST_DANCE",
+            "CUSTOM"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "stepId": {
+          "$ref": "#/$defs/id"
+        },
+        "plannedTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "startAtSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fadeOutSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/songSource"
+        },
+        "backupSource": {
+          "$ref": "#/$defs/songSource"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "liveSyncState": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional seed for the synced live state. Missing fields are filled with safe defaults by the app normalizer.",
+      "properties": {
+        "active_step_id": {
+          "$ref": "#/$defs/nullableId"
+        },
+        "completed_step_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "actual_timestamps": {
+          "type": "object",
+          "propertyNames": {
+            "$ref": "#/$defs/id"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/actualTimestamp"
+          }
+        },
+        "checked_subtasks": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        },
+        "stage_ping": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/stagePing"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "step_order": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "active_speech_id": {
+          "$ref": "#/$defs/nullableId"
+        },
+        "mutation_log": {
+          "type": "array",
+          "description": "Append-only audit entries (device_id, role, op, timestamp, payload).",
+          "items": {
+            "$ref": "#/$defs/mutationEntry"
+          }
+        }
+      }
+    }
+  }
+}

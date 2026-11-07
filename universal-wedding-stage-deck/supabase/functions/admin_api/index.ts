@@ -5,6 +5,11 @@
 // Destructive actions additionally require a TOTP re-auth within 5 minutes
 // (`amr` claim), matching the `/deck/admin` UI.
 //
+// Issue #165: this function is the only cartridge publication path. It
+// revalidates the cartridge server-side, requires an optimistic-concurrency
+// revision, and delegates the atomic increment to
+// `public.stage_deck_publish_cartridge(...)`.
+//
 // Deploy:
 //   supabase functions deploy admin_api
 // Secrets:
@@ -12,13 +17,24 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
+import Ajv2020 from 'npm:ajv@8.20.0/dist/2020.js';
+import weddingSchema from '../_shared/wedding-schema-v1.1.json' with { type: 'json' };
+import {
+  authorizeAdminSession,
+  decodeJwt,
+  mfaFresh,
+} from '../_shared/adminAuth.js';
+import {
+  WEDDING_ID_PATTERN,
+  buildPublishAuditDetail,
+  normalizePublishRequest,
+  normalizeRoles,
+  publishCartridge,
+} from '../_shared/adminPublish.js';
+import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
 
-const ALLOWED_ROLES = ['mc', 'dj', 'photo', 'speaker'];
-const DEFAULT_ROLES = ['mc', 'dj'];
-const ROOM_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
-const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
-const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
-const MFA_REAUTH_WINDOW_SECONDS = 5 * 60;
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema);
+
 const DESTRUCTIVE_ACTIONS = new Set(['archive', 'delete', 'rotate_pins', 'revoke_session']);
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
@@ -42,32 +58,6 @@ function serverEnv(name: string, fallback = '') {
   return value;
 }
 
-function decodeJwt(token: string) {
-  try {
-    const payload = token.split('.')[1];
-    const normalized = payload.replaceAll('-', '+').replaceAll('_', '/');
-    return JSON.parse(atob(normalized));
-  } catch {
-    return null;
-  }
-}
-
-function mfaFresh(claims: any, nowSeconds = Math.floor(Date.now() / 1000)) {
-  if (!claims || claims.aal !== 'aal2') return false;
-  const amr = Array.isArray(claims.amr) ? claims.amr : [];
-  const latest = amr
-    .filter((entry: any) => entry?.method === 'totp' && Number.isFinite(Number(entry?.timestamp)))
-    .map((entry: any) => Number(entry.timestamp))
-    .sort((a: number, b: number) => a - b)
-    .at(-1);
-  return Boolean(latest && nowSeconds - latest <= MFA_REAUTH_WINDOW_SECONDS);
-}
-
-function randomRoomCode(length = 8) {
-  const bytes = crypto.getRandomValues(new Uint8Array(length));
-  return Array.from(bytes, (byte) => ROOM_CODE_ALPHABET[byte % ROOM_CODE_ALPHABET.length]).join('');
-}
-
 function randomPin() {
   const value = crypto.getRandomValues(new Uint32Array(1))[0] % 900000;
   return String(100000 + value);
@@ -76,38 +66,6 @@ function randomPin() {
 function pinFor(role: string, requestedPins: Record<string, unknown> | null | undefined) {
   const requested = requestedPins?.[role];
   return typeof requested === 'string' && /^\d{6}$/.test(requested) ? requested : randomPin();
-}
-
-function normalizeRoles(value: unknown) {
-  const requested = Array.isArray(value) && value.length > 0 ? value : DEFAULT_ROLES;
-  return [...new Set(requested)].filter((role) => ALLOWED_ROLES.includes(role as string)) as string[];
-}
-
-function redactSensitive(cartridge: Record<string, unknown>) {
-  const copy = { ...cartridge };
-  delete copy.vipAlerts;
-  delete copy.tact_and_vip_alerts;
-  delete copy.contacts;
-  return copy;
-}
-
-function parseEventDateISO(body: any, cartridge: Record<string, any>, fallbackDate: string | null, weddingId: string) {
-  if (typeof cartridge.dateISO === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cartridge.dateISO)) {
-    return cartridge.dateISO;
-  }
-  const display = typeof cartridge.date === 'string' ? cartridge.date : fallbackDate;
-  const match = /^([0-3]\d)\.([01]\d)\.(\d{4})$/.exec(display ?? '');
-  if (match) return `${match[3]}-${match[2]}-${match[1]}`;
-  const fromId = /^(\d{4}-\d{2}-\d{2})/.exec(weddingId);
-  return fromId?.[1] ?? null;
-}
-
-function resolveExpiresAt(body: any, cartridge: Record<string, any>, date: string | null, weddingId: string) {
-  const requested = Number.isFinite(body?.expiresInDays) ? Math.round(body.expiresInDays) : null;
-  const eventDateISO = parseEventDateISO(body, cartridge, date, weddingId);
-  const days = Math.min(365, Math.max(1, requested ?? (eventDateISO ? 7 : 30)));
-  const baseMs = eventDateISO ? Date.parse(`${eventDateISO}T23:59:59Z`) : Date.now();
-  return new Date(baseMs + days * 86400000).toISOString();
 }
 
 async function writeAudit(admin: any, actor: any, action: string, target: string | null, detail: unknown) {
@@ -120,47 +78,16 @@ async function writeAudit(admin: any, actor: any, action: string, target: string
   });
 }
 
-async function publishWedding(admin: any, body: any) {
-  const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-  const couple = typeof body?.couple === 'string' ? body.couple.trim() : null;
-  const date = typeof body?.date === 'string' ? body.date.trim() : null;
-  const cartridge = body?.cartridge && typeof body.cartridge === 'object' ? body.cartridge : null;
-  const roles = normalizeRoles(body?.roles);
-
-  if (!WEDDING_ID_PATTERN.test(weddingId)) {
-    return { error: 'weddingId must look like YYYY-MM-DD_bride_groom.', status: 400 };
-  }
-  if (!cartridge) return { error: 'A cartridge object is required.', status: 400 };
-  if (roles.length === 0) return { error: 'Provide at least one role.', status: 400 };
-
-  const requestedRoomCode =
-    typeof body?.roomCode === 'string' ? body.roomCode.trim().toLowerCase() : '';
-  if (requestedRoomCode && !ROOM_CODE_PATTERN.test(requestedRoomCode)) {
-    return { error: 'roomCode must be 6–12 lowercase letters/digits.', status: 400 };
-  }
-
-  const { data: existing } = await admin
-    .from('weddings')
-    .select('room_code')
-    .eq('wedding_id', weddingId)
-    .maybeSingle();
-  const roomCode = requestedRoomCode || existing?.room_code || randomRoomCode();
-
-  const { error: weddingError } = await admin.from('weddings').upsert(
-    {
-      wedding_id: weddingId,
-      room_code: roomCode,
-      couple,
-      date,
-      cartridge: redactSensitive(cartridge),
-      archived_at: null,
-      expires_at: resolveExpiresAt(body, cartridge, date, weddingId),
-    },
-    { onConflict: 'wedding_id' },
-  );
-  if (weddingError) throw weddingError;
-
-  const requestedPins = body?.pins && typeof body.pins === 'object' ? body.pins : null;
+// Create the role PINs and the initial live state for a brand-new wedding.
+// Content-only republications never reach this function, so existing PINs,
+// sessions and live progress are preserved.
+async function initializeNewWedding(
+  admin: any,
+  weddingId: string,
+  roles: string[],
+  cartridge: Record<string, any>,
+  requestedPins: Record<string, unknown> | null | undefined,
+) {
   const pins: Record<string, string> = {};
   const roleRows = roles.map((role) => {
     const pin = pinFor(role, requestedPins);
@@ -185,7 +112,66 @@ async function publishWedding(admin: any, body: any) {
     { onConflict: 'wedding_id', ignoreDuplicates: true },
   );
 
-  return { weddingId, roomCode, roles: pins };
+  return pins;
+}
+
+function publishResponse(result: any, pins: Record<string, string> | null) {
+  return {
+    weddingId: result.weddingId,
+    roomCode: result.roomCode,
+    roles: pins ?? {},
+    created: result.created,
+    previousRevision: result.previousRevision,
+    cartridgeRevision: result.cartridgeRevision,
+    cartridgeSource: result.cartridgeSource,
+    cartridgePublishedAt: result.cartridgePublishedAt,
+  };
+}
+
+async function handlePublish(admin: any, allowlisted: any, body: any) {
+  const normalized = normalizePublishRequest(body);
+  if (normalized.error) return { response: json({ error: normalized.error }, normalized.status) };
+
+  const published = await publishCartridge({
+    admin,
+    request: normalized.request,
+    actor: allowlisted,
+    validate: validateCartridge,
+  });
+  if (!published.ok) {
+    return {
+      response: json(
+        {
+          error: published.error,
+          currentRevision: published.currentRevision ?? null,
+          stale: Boolean(published.stale),
+          errors: published.errors ?? undefined,
+        },
+        published.status,
+      ),
+    };
+  }
+
+  const result = published.result!;
+  const pins = result.created
+    ? await initializeNewWedding(
+        admin,
+        normalized.request.weddingId,
+        normalized.request.roles,
+        published.cartridge!,
+        body?.pins,
+      )
+    : null;
+
+  await writeAudit(
+    admin,
+    allowlisted,
+    result.created ? 'publish_create' : 'publish',
+    result.weddingId,
+    buildPublishAuditDetail(result, normalized.request),
+  );
+
+  return { response: json(publishResponse(result, pins)) };
 }
 
 Deno.serve(async (req) => {
@@ -208,11 +194,14 @@ Deno.serve(async (req) => {
       .select('user_id, email')
       .eq('user_id', userData.user.id)
       .maybeSingle();
-    if (!allowlisted) return json({ error: 'Not an allowlisted owner account.' }, 403);
 
     const claims = decodeJwt(token);
-    if (claims?.aal !== 'aal2') {
-      return json({ error: 'TOTP MFA required.', requiresMfa: true }, 403);
+    const authorized = authorizeAdminSession({ user: userData.user, allowlisted, claims });
+    if (!authorized.ok) {
+      return json(
+        { error: authorized.error, requiresMfa: Boolean(authorized.requiresMfa) },
+        authorized.status,
+      );
     }
 
     const body = await req.json().catch(() => null);
@@ -229,7 +218,9 @@ Deno.serve(async (req) => {
       const [weddings, roles, sessions, presence, audit] = await Promise.all([
         admin
           .from('weddings')
-          .select('wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge')
+          .select(
+            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_published_at',
+          )
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
         admin
@@ -275,13 +266,8 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'publish') {
-      const result = await publishWedding(admin, body);
-      if ('error' in result) return json({ error: result.error }, result.status);
-      await writeAudit(admin, allowlisted, 'publish', result.weddingId, {
-        roomCode: result.roomCode,
-        roles: Object.keys(result.roles),
-      });
-      return json(result);
+      const { response } = await handlePublish(admin, allowlisted, body);
+      return response;
     }
 
     if (action === 'duplicate') {
@@ -298,17 +284,16 @@ Deno.serve(async (req) => {
       if (sourceError) throw sourceError;
       if (!source?.cartridge) return json({ error: 'Source wedding not found.' }, 404);
 
-      const result = await publishWedding(admin, {
+      const { response } = await handlePublish(admin, allowlisted, {
         weddingId,
         couple: body?.couple ?? source.couple,
         date: body?.date ?? source.date,
         roomCode: body?.roomCode,
-        roles: body?.roles ?? normalizeRoles(body?.roles),
-        cartridge: source.cartridge,
+        roles: body?.roles,
+        expectedRevision: 0,
+        cartridge: { ...source.cartridge, weddingId },
       });
-      if ('error' in result) return json({ error: result.error }, result.status);
-      await writeAudit(admin, allowlisted, 'duplicate', weddingId, { sourceId });
-      return json(result);
+      return response;
     }
 
     if (action === 'archive') {

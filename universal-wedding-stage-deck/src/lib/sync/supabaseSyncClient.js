@@ -78,7 +78,9 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
   async function fetchWedding(weddingId) {
     const { data, error } = await supabase
       .from('weddings')
-      .select('wedding_id, couple, date, cartridge, updated_at')
+      .select(
+        'wedding_id, couple, date, cartridge, updated_at, cartridge_revision, cartridge_source, cartridge_published_at',
+      )
       .eq('wedding_id', weddingId)
       .maybeSingle();
 

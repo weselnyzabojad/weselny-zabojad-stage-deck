@@ -204,6 +204,78 @@ export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = fa
   );
 }
 
+export function AdminPublishRevisionDialog({
+  open,
+  wedding,
+  onSubmit,
+  onCancel,
+  busy = false,
+  error = '',
+}) {
+  const [cartridgeJson, setCartridgeJson] = useState('');
+  const [parseError, setParseError] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    setCartridgeJson('');
+    setParseError('');
+  }, [open, wedding]);
+
+  const submit = () => {
+    setParseError('');
+    let cartridge;
+    try {
+      cartridge = JSON.parse(cartridgeJson);
+    } catch (err) {
+      setParseError(`Cartridge JSON is invalid: ${err.message}`);
+      return;
+    }
+    onSubmit(cartridge);
+  };
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title="Replace published cartridge"
+        description={`Publishes a new immutable revision for ${wedding?.wedding_id ?? 'this wedding'}. The room code, PINs, sessions and live progress are preserved.`}
+      >
+        <p className="mb-3 rounded border border-line bg-card px-3 py-2 font-mono text-[10px] text-slate-400">
+          current revision {Number(wedding?.cartridge_revision ?? 0)}
+          {wedding?.cartridge_source ? ` · source ${wedding.cartridge_source}` : ''}
+        </p>
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          Cartridge JSON
+          <textarea
+            value={cartridgeJson}
+            onChange={(event) => setCartridgeJson(event.target.value)}
+            rows={12}
+            spellCheck={false}
+            className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-[10px] text-white"
+          />
+        </label>
+        {parseError || error ? (
+          <p role="alert" className="mt-3 whitespace-pre-wrap rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {parseError || error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || !cartridgeJson.trim()}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+        >
+          {busy ? 'Publishing…' : 'Publish revision'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
 export function AdminDuplicateDialog({ open, wedding, onSubmit, onCancel, busy = false, error = '' }) {
   const [weddingId, setWeddingId] = useState('');
   const [couple, setCouple] = useState('');
