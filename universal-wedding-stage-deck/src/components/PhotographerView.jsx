@@ -1,7 +1,6 @@
 ﻿import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
-import GroupPhotoChecklist from './GroupPhotoChecklist';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SpeechesChip from './SpeechesChip';
@@ -266,8 +265,6 @@ export default function PhotographerView({
   authControl = null,
   mediaOverrides = {},
   onMiniSessionOverride,
-  checkedSubtasks = {},
-  onToggleSubtask,
 }) {
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
@@ -288,25 +285,10 @@ export default function PhotographerView({
   const miniSessionDone = miniSessionCompleted(now, miniSessionEnd, eventDateISO, timeZone);
   const planByStep = mapPhotoPlanToSteps(plan, timeline);
   const planBodies = Object.fromEntries(
-    Object.entries(planByStep).map(([stepId, entries]) => {
-      const groupEntry = entries.find((entry) => entry.type === 'groupPhotos');
-      const otherEntries = entries.filter((entry) => entry.type !== 'groupPhotos');
-      return [
-        stepId,
-        <div key={stepId} className="space-y-2">
-          {groupEntry ? (
-            <GroupPhotoChecklist
-              groups={groupEntry.data.groups}
-              location={groupEntry.data.location}
-              mediaTeam={wedding?.mediaTeam}
-              checked={checkedSubtasks}
-              onToggle={onToggleSubtask}
-            />
-          ) : null}
-          {otherEntries.length > 0 ? <PhotoPlanDetails entries={otherEntries} /> : null}
-        </div>,
-      ];
-    }),
+    Object.entries(planByStep).map(([stepId, entries]) => [
+      stepId,
+      <PhotoPlanDetails key={stepId} entries={entries} />,
+    ]),
   );
   const oczepinyStep = timeline.find(
     (entry) =>

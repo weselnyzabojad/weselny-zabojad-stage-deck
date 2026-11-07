@@ -345,22 +345,6 @@ const PHOTO_PLAN_MATCHERS = {
   guestCoverage: /guest|dinner|reception/i,
 };
 
-export function resolveGroupPhotoStepId(plan, steps = []) {
-  const groupPhotos = plan?.groupPhotos;
-  if (!groupPhotos) return null;
-  const stepIds = new Set(
-    (Array.isArray(steps) ? steps : [])
-      .map((step) => step?.id)
-      .filter(Boolean),
-  );
-  if (groupPhotos.stepId && stepIds.has(groupPhotos.stepId)) return groupPhotos.stepId;
-  return (
-    (Array.isArray(steps) ? steps : []).find((step) =>
-      PHOTO_PLAN_MATCHERS.groupPhotos.test(step?.title ?? ''),
-    )?.id ?? null
-  );
-}
-
 export function mapPhotoPlanToSteps(plan, timeline = []) {
   const byStep = {};
   if (!plan || !Array.isArray(timeline)) return byStep;
