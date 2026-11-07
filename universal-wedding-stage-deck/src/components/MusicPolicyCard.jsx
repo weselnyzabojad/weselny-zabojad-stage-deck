@@ -60,7 +60,7 @@ function CleanChip({ cleanVersions }) {
 export default function MusicPolicyCard({ policy, compact = false }) {
   if (!policy?.hasData) return null;
 
-  const { mustPlay, doNotPlay, requestStatus, cleanVersions } = policy;
+  const { mustPlay, doNotPlay, mainSongs = [], requestStatus, cleanVersions } = policy;
 
   if (compact) {
     return (
@@ -79,11 +79,23 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
             ✅ {mustPlay.length} must play
           </span>
+          <span className="rounded border border-brand-strong/50 bg-brand/10 px-1.5 py-0.5 text-brand-tint">
+            ⭐ {mainSongs.length} main songs
+          </span>
           <span className="rounded border border-alert/50 bg-alert/15 px-1.5 py-0.5 text-alert-tint">
             🚫 {doNotPlay.length} do not play
           </span>
           <CleanChip cleanVersions={cleanVersions} />
         </div>
+
+        {mainSongs.length > 0 ? (
+          <p
+            className="mt-1.5 truncate text-[10px] text-slate-400"
+            title={mainSongs.map((item) => `${item.stepTitle}: ${item.track ?? 'missing'}`).join(' · ')}
+          >
+            ⭐ {mainSongs.map((item) => item.track ?? `${item.stepTitle} — missing`).join(' · ')}
+          </p>
+        ) : null}
 
         {doNotPlay.length > 0 ? (
           <p className="mt-1.5 truncate text-[10px] text-slate-400" title={doNotPlay.map((item) => item.track).join(' · ')}>
@@ -116,6 +128,38 @@ export default function MusicPolicyCard({ policy, compact = false }) {
             ? ` · window ${policy.requestWindow.start}–${policy.requestWindow.end}`
             : ''}
         </p>
+      ) : null}
+
+      {mainSongs.length > 0 ? (
+        <div className="mt-3">
+          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
+            ⭐ Main songs by step ({mainSongs.length})
+          </h3>
+          <ul className="mt-1.5 space-y-1.5">
+            {mainSongs.map((item) => (
+              <li
+                key={item.id}
+                className="rounded border border-brand-strong/40 bg-brand/10 p-2"
+              >
+                <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
+                  {item.stepTitle}
+                </div>
+                {item.missing ? (
+                  <p className="mt-0.5 text-[11px] font-semibold text-amber-200">
+                    Main song not set for this step.
+                  </p>
+                ) : (
+                  <div className="mt-0.5 text-[11px] text-slate-200">
+                    <strong className="text-white">{item.title ?? item.artist}</strong>
+                    {item.title && item.artist ? (
+                      <span className="text-slate-400"> — {item.artist}</span>
+                    ) : null}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
 
       {mustPlay.length > 0 ? (
