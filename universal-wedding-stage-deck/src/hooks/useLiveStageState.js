@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   loadLiveState,
+  appendMutation,
   markStepDone,
   mergeMutationLogs,
   normalizeLiveState,
@@ -517,6 +518,33 @@ export function useLiveStageState({
     [apply, actor],
   );
 
+  // Shared, audited media override (for example the mini-session time chosen
+  // by a photographer). Stored in live state so every media device receives it.
+  const setMediaOverride = useCallback(
+    (key, value) => {
+      if (typeof key !== 'string' || !key) return;
+      apply(
+        (state) => {
+          const previous = state.media_overrides?.[key] ?? null;
+          const next = {
+            ...state,
+            media_overrides: {
+              ...(state.media_overrides ?? {}),
+              [key]: { value, updatedAt: new Date().toISOString(), role: actor.role },
+            },
+          };
+          return appendMutation(next, actor, 'media_override', {
+            key,
+            previous,
+            value,
+          });
+        },
+        { op: 'media_override', label: 'Media override changed' },
+      );
+    },
+    [apply, actor],
+  );
+
   const lastUndo = model.undo.length > 0 ? model.undo[model.undo.length - 1] : null;
 
   return {
@@ -529,6 +557,7 @@ export function useLiveStageState({
     sendStagePing,
     swapWithNext,
     selectSpeech,
+    setMediaOverride,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),

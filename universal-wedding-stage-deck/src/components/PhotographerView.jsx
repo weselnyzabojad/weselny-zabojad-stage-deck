@@ -13,6 +13,7 @@ import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import {
+  clockToEventDate,
   formatDuration,
   formatTimeOfDay,
   resolveEventDateISO,
@@ -169,6 +170,41 @@ function PhotoPlanBlock({ type, data }) {
   );
 }
 
+function MiniSessionOverride({ value, onSave }) {
+  return (
+    <form
+      className="mt-2 flex flex-wrap items-end gap-2 rounded-lg border border-line bg-page p-2"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const time = String(form.get('miniTime') ?? '').trim();
+        if (time) onSave?.(time);
+      }}
+    >
+      <label className="text-[10px] uppercase tracking-wider text-slate-500">
+        Chosen mini-session hour
+        <input
+          type="time"
+          name="miniTime"
+          defaultValue={value ?? ''}
+          className="mt-0.5 block rounded border border-line bg-card px-2 py-1 font-mono text-xs text-white"
+        />
+      </label>
+      <button
+        type="submit"
+        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 text-[10px] font-semibold text-white"
+      >
+        Save for all media
+      </button>
+      {value ? (
+        <span className="font-mono text-[10px] text-emerald-300">
+          Shared override: {value}
+        </span>
+      ) : null}
+    </form>
+  );
+}
+
 function PhotoPlanDetails({ entries = [] }) {
   if (entries.length === 0) return null;
   return (
@@ -200,6 +236,8 @@ export default function PhotographerView({
   speechMode = 'OFF',
   activeSpeechId = null,
   authControl = null,
+  mediaOverrides = {},
+  onMiniSessionOverride,
 }) {
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
@@ -208,6 +246,16 @@ export default function PhotographerView({
   const sunset = resolveSunset(wedding);
   const countdowns = buildSunsetCountdowns(sunset, { now, eventDateISO, timeZone });
   const plan = resolvePhotoPlan(wedding);
+  const miniSessionOverride = mediaOverrides?.miniSessionTime?.value ?? null;
+  const miniSessionDuration = plan?.miniSession?.durationMin ?? sunset?.miniSession?.durationMin ?? null;
+  const miniSessionStart = miniSessionOverride
+    ? clockToEventDate({ clock: miniSessionOverride, eventDateISO, timeZone, after: now })
+    : countdowns.latestMiniStartAt;
+  const miniSessionEnd =
+    miniSessionStart && Number.isFinite(miniSessionDuration)
+      ? new Date(miniSessionStart.getTime() + miniSessionDuration * 60000)
+      : null;
+  const miniSessionDone = Boolean(miniSessionEnd && now.getTime() > miniSessionEnd.getTime());
   const planByStep = mapPhotoPlanToSteps(plan, timeline);
   const planBodies = Object.fromEntries(
     Object.entries(planByStep).map(([stepId, entries]) => [
@@ -246,7 +294,7 @@ export default function PhotographerView({
         entryBodies={planBodies}
       />
 
-      {visibility.sunset && sunset?.usable ? (
+      {visibility.sunset && sunset?.usable && !miniSessionDone ? (
         <Card title="Light windows" icon="🌅">
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-lg border border-line bg-page p-2.5">
@@ -271,6 +319,10 @@ export default function PhotographerView({
               <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? '—'}</div>
             </div>
           </div>
+          <MiniSessionOverride
+            value={miniSessionOverride}
+            onSave={onMiniSessionOverride}
+          />
         </Card>
       ) : null}
 
@@ -316,7 +368,7 @@ export default function PhotographerView({
             entryBodies={planBodies}
           />
 
-          {visibility.sunset ? (
+          {visibility.sunset && !miniSessionDone ? (
             <Card
               title="Sunset & golden hour"
               icon="🌅"
@@ -406,6 +458,10 @@ export default function PhotographerView({
                     Venue timezone {timeZone}
                     {sunset.provider ? ` · source ${sunset.provider}` : ''}
                   </p>
+                  <MiniSessionOverride
+                    value={miniSessionOverride}
+                    onSave={onMiniSessionOverride}
+                  />
                 </>
               )}
             </Card>
