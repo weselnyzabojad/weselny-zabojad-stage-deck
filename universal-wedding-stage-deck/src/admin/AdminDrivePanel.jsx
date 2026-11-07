@@ -31,6 +31,7 @@ export default function AdminDrivePanel({
   onRequestMfa,
   onPublished,
   onNotify,
+  readOnly = false,
 }) {
   const [query, setQuery] = useState('');
   const [files, setFiles] = useState([]);
@@ -179,7 +180,7 @@ export default function AdminDrivePanel({
   };
 
   const publishNow = async () => {
-    if (!targetWedding || !preview?.cartridge) return;
+    if (readOnly || !targetWedding || !preview?.cartridge) return;
     setPublishBusy(true);
     setPublishError('');
     try {
@@ -211,7 +212,7 @@ export default function AdminDrivePanel({
   };
 
   const handlePublish = () => {
-    if (!targetWedding || !diff || !preview?.validation?.valid) return;
+    if (readOnly || !targetWedding || !diff || !preview?.validation?.valid) return;
     const impact = [];
     if (diff.impact.activeStepRemoved) impact.push('the current live step would disappear');
     if (diff.impact.activeSpeechRemoved) impact.push('the active speech would disappear');
@@ -489,7 +490,7 @@ export default function AdminDrivePanel({
                   <button
                     type="button"
                     onClick={handlePublish}
-                    disabled={!targetWedding || !diff || publishBusy}
+                    disabled={readOnly || !targetWedding || !diff || publishBusy}
                     className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
                   >
                     {publishBusy ? 'Publishing…' : 'Publish as new revision'}
