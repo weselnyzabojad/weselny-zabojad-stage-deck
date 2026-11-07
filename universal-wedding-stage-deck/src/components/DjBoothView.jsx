@@ -150,7 +150,7 @@ export default function DjBoothView({
         currentBody={djCurrentBody}
       />
 
-      <MusicPolicyCard policy={musicPolicy} />
+      {isVip ? <MusicPolicyCard policy={musicPolicy} /> : null}
     </div>
   );
 
@@ -221,10 +221,12 @@ export default function DjBoothView({
           />
 
           <div className="grid gap-4 lg:grid-cols-3">
-            <div className="space-y-4 lg:col-span-2">
-              <MusicPolicyCard policy={musicPolicy} />
-            </div>
-            <aside className="space-y-4">
+            {isVip ? (
+              <div className="space-y-4 lg:col-span-2">
+                <MusicPolicyCard policy={musicPolicy} />
+              </div>
+            ) : null}
+            <aside className={`space-y-4${isVip ? '' : ' lg:col-span-3'}`}>
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                   đźŽšď¸Ź Set notes

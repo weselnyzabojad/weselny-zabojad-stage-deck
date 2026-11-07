@@ -74,7 +74,7 @@ describe('issue #219 DJ Standard vs VIP restrictions', () => {
   it('keeps Standard free of VIP request and top-bar additions', () => {
     const html = renderDj({ servicePackage: 'HOST_AND_DJ_STANDARD' });
     expect(html).toContain('Set notes');
-    expect(html).toMatch(/Music policy/i);
+    expect(html).not.toMatch(/Music policy/i);
     expect(html).toContain('18:05:00');
     expect(html).not.toContain('Guest requests');
     expect(html).not.toContain('Sto Lat');
@@ -95,13 +95,17 @@ describe('issue #219 DJ Standard vs VIP restrictions', () => {
     expect(html).not.toContain('Key Songs');
   });
 
-  it('keeps both tiers on the shared timeline, clock, policy and notes', () => {
+  it('shows the shared timeline, clock and notes on both tiers', () => {
     for (const servicePackage of ['HOST_AND_DJ_STANDARD', 'HOST_AND_DJ_VIP']) {
       const html = renderDj({ servicePackage });
       expect(html).toContain('timeline-focus-stack');
       expect(html).toContain('18:05:00');
-      expect(html).toMatch(/Music policy/i);
       expect(html).toContain('Set notes');
     }
+  });
+
+  it('shows Music policy on VIP only', () => {
+    expect(renderDj({ servicePackage: 'HOST_AND_DJ_VIP' })).toMatch(/Music policy/i);
+    expect(renderDj({ servicePackage: 'HOST_AND_DJ_STANDARD' })).not.toMatch(/Music policy/i);
   });
 });
