@@ -143,14 +143,6 @@ describe('semantic validation rules', () => {
     expect(messages(errors)).toContain('CUSTOMER_FILE requires a fileRef');
   });
 
-  it('checks VIP counts against their lists', () => {
-    const errors = errorsFor((cartridge) => {
-      cartridge.vipRadarCount = 2;
-      cartridge.tact_and_vip_alerts = [];
-    });
-    expect(messages(errors)).toContain('vipRadarCount 2 does not match tact_and_vip_alerts.length 0');
-  });
-
   it('accepts both ISO and legacy actual timestamps structurally', async () => {
     const iso = clone(minimal);
     iso.liveSyncState = {

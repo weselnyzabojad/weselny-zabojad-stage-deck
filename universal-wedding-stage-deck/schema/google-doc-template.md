@@ -185,7 +185,6 @@ proposal.
 
 | Role | Section | Visible |
 | --- | --- | --- |
-| dj | vipAlerts | false |
 | photo | music | false |
 | mc | venueAccommodation | true |
 
@@ -298,13 +297,6 @@ Serve time: 20:45
 | Test Wiedzy | UNDECIDED |  | PL, FR, EN | Yes | Question list Doc: gdoc_test_wiedzy |
 | Test ZgodnoĹ›ci | UNDECIDED |  | PL, FR, EN | No | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
 
-## VENDOR CONTACTS
-
-| Contact ID | Role | Name | Phone | Email | Leaves at | Notes |
-| --- | --- | --- | --- | --- | --- | --- |
-| dj_mark | DJ | DJ Mark | +48 600 444 444 | dj@example.com | 00:30 | Needs a clean feed. |
-| photo_video | Photo / Video | Magda & Tomek | +48 600 000 000 | photo@studio.example | 23:30 | Group photo before 20:15. |
-
 ## KITCHEN
 
 ### Courses
@@ -332,15 +324,6 @@ Gluten free: 1
 | --- | --- | --- |
 | cake_service | 21:30 | Cake service |
 
-## VIP ALERTS
-
-Sensitive. The importer encrypts this section before cloud sync and never logs
-plaintext.
-
-| Alert ID | Tone | Tag | Title | Detail | Visibility |
-| --- | --- | --- | --- | --- | --- |
-| divorce | critical | FAMILY | Do not seat X and Y together | Sensitive family context. | mc |
-
 ## PRE-WEDDING TODOS
 
 | Todo ID | Task | Done | Due date | Owner |
@@ -350,16 +333,10 @@ plaintext.
 
 ## PRIVACY
 
-Sensitive fields: vipAlerts, contacts[].phone
 Cloud sync: ENCRYPTED_HOST_KEY
 Encryption algorithm: AES-GCM
 Encryption key holder: HOST
 Encryption version: 1
-
-### Sensitive Fields
-
-- vipAlerts
-- contacts[].phone
 
 ## LIVE SYNC STATE
 

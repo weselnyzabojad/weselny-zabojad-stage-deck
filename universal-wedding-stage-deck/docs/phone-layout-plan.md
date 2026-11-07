@@ -125,7 +125,7 @@ a phone.
 1. In the MC phone layout, show: reel clock, canonical drift pill, current step,
    real start/estimated end, next step peek, cake and music policy summary.
 2. Phone actions: **Hold to advance**, **Undo**, drift check and optional
-   script/teleprompter launcher. No VIP radar, stage pings, importer or admin.
+   script/teleprompter launcher. No stage pings, importer or admin.
 3. Keep hard-anchor collision banner; it is safety-critical.
 4. Use `HoldToConfirmButton` with localized labels.
 5. Reuse the shared bottom nav from P-02; do not resurrect the Pocket role.
@@ -134,7 +134,7 @@ a phone.
 **Acceptance**
 
 - MC phone layout can advance, undo and check drift only.
-- No stage pings, VIP radar or admin actions on the phone layout.
+- No stage pings or admin actions on the phone layout.
 - Same live state as the laptop MC view; syncs in production.
 - i18n covers the phone labels in EN/FR/PL.
 

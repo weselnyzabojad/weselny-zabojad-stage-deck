@@ -70,41 +70,6 @@ export const TEST_WIEDZY_GAME = {
   ]
 };
 
-export const VIP_ALERTS = [
-  {
-    id: "uncle-sylwek",
-    tone: "critical",
-    icon: "🎸",
-    tag: "Family",
-    title: "Uncle Sylwek — guitar limit",
-    detail: "May arrive with a guitar and ask to play. Allow MAX 1 short performance (a few minutes). Do not allow repeated concerts."
-  },
-  {
-    id: "uncle-dawid",
-    tone: "critical",
-    icon: "⚠️",
-    tag: "Family",
-    title: "Uncle Dawid Chmielewski",
-    detail: "Can become difficult to control after alcohol. If needed, discreetly alert Wojtek — he takes full responsibility for handling him."
-  },
-  {
-    id: "birthdays",
-    tone: "celebrate",
-    icon: "🎂",
-    tag: "Birthday",
-    title: "Guest birthdays today",
-    detail: "Call Melanie and Marzena to the center: “Joyeux Anniversaire” for Melanie, “Sto Lat” for Marzena. Best moment: cake."
-  },
-  {
-    id: "blind-grandmother",
-    tone: "care",
-    icon: "👵",
-    tag: "Care",
-    title: "Blind grandmother",
-    detail: "Groom's grandmother is elderly and nearly blind; groom's mother cares for her. Keep walkways clear and warn before loud moments."
-  }
-];
-
 export const DEMO_WEDDING = {
   weddingId: "2026-08-20_jennifer_guillaume",
   couple: "Jennifer & Guillaume",
@@ -247,8 +212,6 @@ export const DEMO_WEDDING = {
     gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
     bread_salt: { status: "YES", note: "Vodka vs water shot, break glasses" }
   },
-  vipRadarCount: VIP_ALERTS.length,
-  tact_and_vip_alerts: VIP_ALERTS,
   hardAnchors: [
     { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
     { id: "sunset", time: "21:10", label: "Sunset Window", alertBeforeMin: 30 },
@@ -425,33 +388,6 @@ export const DEMO_WEDDING = {
     photographerCue: "Front-left of the cake table",
     serveTime: "20:45"
   },
-  contacts: [
-    {
-      id: "photo_video",
-      role: "Photo / Video",
-      name: "Magda & Tomek",
-      phone: "+48 600 000 000",
-      email: "photo@studio.example",
-      leavesAt: "20:30",
-      notes: "Group photo before 20:15; leaves with the video team at the hard anchor."
-    },
-    {
-      id: "dj_mark",
-      role: "DJ",
-      name: "DJ Mark",
-      phone: "+48 600 444 444",
-      email: "dj@example.com",
-      notes: "Booth on the left; silent pings enabled."
-    },
-    {
-      id: "venue_manager",
-      role: "Venue manager",
-      name: "Anna Kowalska",
-      phone: "+48 600 111 111",
-      email: "anna@venue.example",
-      notes: "Key holder; service entrance at the back."
-    }
-  ],
   speechMode: "COMPLEX",
   speeches: [
     {

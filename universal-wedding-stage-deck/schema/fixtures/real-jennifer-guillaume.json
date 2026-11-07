@@ -41,25 +41,6 @@
       "note": "Vodka vs water shot, break glasses"
     }
   },
-  "vipRadarCount": 2,
-  "tact_and_vip_alerts": [
-    {
-      "id": "uncle-sylwek",
-      "tone": "critical",
-      "icon": "🎸",
-      "tag": "Family",
-      "title": "Uncle Sylwek — guitar limit",
-      "detail": "Allow MAX 1 short performance. Do not allow repeated concerts."
-    },
-    {
-      "id": "blind-grandmother",
-      "tone": "care",
-      "icon": "👵",
-      "tag": "Care",
-      "title": "Blind grandmother",
-      "detail": "Keep walkways clear and warn before loud moments."
-    }
-  ],
   "coHosts": [
     {
       "id": "zuzia",
@@ -494,10 +475,6 @@
     "notes": "10–15 kids; most guests understand English."
   },
   "privacy": {
-    "sensitiveFields": [
-      "vipAlerts",
-      "contacts[].phone"
-    ],
     "cloudSync": "ENCRYPTED_HOST_KEY",
     "encryption": {
       "alg": "AES-GCM",
@@ -505,25 +482,6 @@
       "version": 1
     }
   },
-  "contacts": [
-    {
-      "id": "dj_marc",
-      "role": "DJ",
-      "name": "DJ Marc",
-      "phone": "+33 6 00 00 00 00",
-      "email": "dj.marc@example.com",
-      "notes": "Booth on the left; silent pings enabled."
-    },
-    {
-      "id": "photo_video",
-      "role": "Photo / Video",
-      "name": "Magda & Tomek",
-      "phone": "+48 600 000 000",
-      "email": "photo@studio.example",
-      "leavesAt": "20:30",
-      "notes": "Group photo before 20:15; leaves with the video team at the photo/video anchor."
-    }
-  ],
   "preWeddingTodos": [
     {
       "task": "Confirm Test Wiedzy questions with witnesses",

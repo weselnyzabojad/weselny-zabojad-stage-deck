@@ -14,7 +14,7 @@ const fr = {
 
   'role.mc.label': 'Maître de cérémonie',
   'role.mc.short': 'MC',
-  'role.mc.blurb': 'Scripts, contrôle du décalage, radar VIP et timeline complète.',
+  'role.mc.blurb': 'Scripts, contrôle du décalage et timeline complète.',
   'role.dj.label': 'Cabine DJ',
   'role.dj.short': 'DJ',
   'role.dj.blurb': 'Timeline en lecture seule, playlists et coupures strictes.',

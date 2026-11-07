@@ -13,7 +13,6 @@ import {
 } from '../../src/lib/cartridgeValidation.js';
 import {
   collectSemanticErrors as collectServerSemanticErrors,
-  redactSensitive,
   sanitizeCartridge as serverSanitize,
 } from '../../supabase/functions/_shared/cartridgeSemantics.js';
 import { makeCartridgeValidator } from '../../supabase/functions/_shared/cartridgeValidator.js';
@@ -152,15 +151,6 @@ describe('issue #165 shared schema and semantic parity', () => {
     expect(invalid.errors.length).toBeGreaterThan(0);
   });
 
-  it('redacts sensitive fields from a published cartridge', () => {
-    const redacted = redactSensitive(
-      cartridge({ vipAlerts: [{ id: 'vip' }], contacts: [{ id: 'c' }], tact_and_vip_alerts: [] }),
-    );
-    expect(redacted).not.toHaveProperty('vipAlerts');
-    expect(redacted).not.toHaveProperty('contacts');
-    expect(redacted).not.toHaveProperty('tact_and_vip_alerts');
-    expect(redacted.couple).toBe('Jennifer & Guillaume');
-  });
 });
 
 describe('issue #165 publish request contract', () => {
@@ -228,7 +218,7 @@ describe('issue #165 publishCartridge', () => {
       p_actor: 'owner-1',
       p_source: 'admin_json',
     });
-    expect(calls.rpc[0].args.p_cartridge).not.toHaveProperty('contacts');
+    expect(calls.rpc[0].args.p_cartridge).toMatchObject({ weddingId: WEDDING_ID });
   });
 
   it('creates a brand-new wedding at revision 1', async () => {

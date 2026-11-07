@@ -91,9 +91,6 @@ export function summarizeCartridge(cartridge) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
   const flexibleSteps = steps.filter((step) => step?.type === 'FLEXIBLE');
   const anchors = Array.isArray(cartridge?.hardAnchors) ? cartridge.hardAnchors : [];
-  const vipAlerts = Array.isArray(cartridge?.tact_and_vip_alerts)
-    ? cartridge.tact_and_vip_alerts
-    : [];
   const preWedding = Array.isArray(cartridge?.preWeddingTodos)
     ? cartridge.preWeddingTodos
     : [];
@@ -101,7 +98,6 @@ export function summarizeCartridge(cartridge) {
     ? cartridge.musicPolicy.importantSongs
     : [];
   const cake = cartridge?.cake && typeof cartridge.cake === 'object' ? cartridge.cake : null;
-  const contacts = Array.isArray(cartridge?.contacts) ? cartridge.contacts : [];
   const musicPolicy =
     cartridge?.musicPolicy && typeof cartridge.musicPolicy === 'object'
       ? cartridge.musicPolicy
@@ -114,14 +110,11 @@ export function summarizeCartridge(cartridge) {
     stepCount: steps.length,
     flexibleStepCount: flexibleSteps.length,
     hardAnchorCount: anchors.length,
-    vipAlertCount: vipAlerts.length,
     preWeddingCount: preWedding.length,
     keySongCount: keySongs.length,
     hasCake: Boolean(cake),
     cakeTime: cake?.time ?? null,
     cakeServeTime: cake?.serveTime ?? null,
-    contactCount: contacts.length,
-    contactsWithDeparture: contacts.filter((contact) => contact?.leavesAt).length,
     mustPlayCount: Array.isArray(musicPolicy?.mustPlay) ? musicPolicy.mustPlay.length : 0,
     doNotPlayCount: Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay.length : 0,
     requestsOpen:

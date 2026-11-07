@@ -24,8 +24,8 @@ Files: `src/views/McMasterView.jsx`,
 
 ## 2. Modal focus trap, Escape and focus restore
 
-`src/components/ModalShell.jsx` is shared by the teleprompter, game clicker,
-VIP alerts and contacts. It now:
+`src/components/ModalShell.jsx` is shared by the teleprompter and game clicker.
+It now:
 
 1. Moves focus to the close button when the dialog opens.
 2. Traps `Tab` / `Shift+Tab` inside the dialog, cycling through visible,

@@ -21,7 +21,7 @@ export const ROLES = {
     label: 'MC Master',
     short: 'MC',
     icon: '🎤',
-    blurb: 'Scripts, drift controls, VIP radar and full timeline.',
+    blurb: 'Scripts, drift controls and full timeline.',
   },
   dj: {
     id: 'dj',

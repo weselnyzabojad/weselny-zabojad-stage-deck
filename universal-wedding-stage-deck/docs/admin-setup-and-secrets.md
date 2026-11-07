@@ -120,6 +120,7 @@ If you deploy SQL manually, at minimum apply:
 - `supabase/migrations/202611060002_song_requests.sql`
 - `supabase/migrations/202611060003_cartridge_revisions.sql`
 - `supabase/migrations/202611060004_drive_publication.sql`
+- `supabase/migrations/202611070001_drop_vip_contacts.sql`
 
 ---
 

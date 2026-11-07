@@ -17,8 +17,7 @@ import {
 } from '../lib/speakerCache.js';
 
 // Read-only speaker teleprompter. It uses large text and shows only the speech
-// the MC has made live, never the timeline
-// controls, VIP alerts or other speeches.
+// the MC has made live, never the timeline controls or other speeches.
 export default function SpeakerView({
   wedding,
   clock,

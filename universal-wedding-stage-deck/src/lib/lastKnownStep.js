@@ -2,8 +2,7 @@
 //
 // The live state already persists on this device. This small snapshot gives the
 // error boundary a human-readable "you were here" card without parsing the
-// whole cartridge. Only display metadata is stored: no notes, contacts, VIP
-// alerts or scripts.
+// whole cartridge. Only display metadata is stored: no notes or scripts.
 
 export const LAST_KNOWN_STEP_PREFIX = 'wzsd:v1:';
 const LAST_KNOWN_STEP_SUFFIX = ':last_known_step';

@@ -74,8 +74,6 @@ export function collectSemanticErrors(cartridge) {
   };
 
   uniqueList(cartridge?.hardAnchors, '/hardAnchors', 'hard anchor');
-  uniqueList(cartridge?.tact_and_vip_alerts, '/tact_and_vip_alerts', 'VIP alert');
-  uniqueList(cartridge?.contacts, '/contacts', 'contact');
 
   // Speeches (TODO 8): ids and explicit order values must be unique. A missing
   // COMPLEX script is a warning in the product spec, not an import blocker.
@@ -188,17 +186,6 @@ export function collectSemanticErrors(cartridge) {
     if (!Number.isFinite(sunset?.latitude) || !Number.isFinite(sunset?.longitude)) {
       pushError('/photoPlan/miniSession', 'mini session requires sunset latitude and longitude');
     }
-  }
-
-  if (
-    Number.isInteger(cartridge?.vipRadarCount) &&
-    Array.isArray(cartridge?.tact_and_vip_alerts) &&
-    cartridge.vipRadarCount !== cartridge.tact_and_vip_alerts.length
-  ) {
-    pushError(
-      '/vipRadarCount',
-      `vipRadarCount ${cartridge.vipRadarCount} does not match tact_and_vip_alerts.length ${cartridge.tact_and_vip_alerts.length}`,
-    );
   }
 
   if (steps.length > 0) {

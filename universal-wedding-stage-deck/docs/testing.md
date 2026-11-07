@@ -97,7 +97,7 @@ with a DOM environment without changing the command.
 For a real wedding:
 
 - get explicit approval to commit the cartridge,
-- remove/replace sensitive VIP notes if the copy is only for schema coverage,
+- keep personal guest details out of the fixture wherever possible,
 - keep the fixture deterministic (no live API data, no runtime values),
 - add it with the `real-` prefix and keep its ID/date.
 

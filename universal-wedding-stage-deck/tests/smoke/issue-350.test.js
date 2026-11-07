@@ -48,14 +48,14 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(result.cartridge.musicPolicy.doNotPlay.length).toBe(1);
   });
 
-  it('maps speeches, media, photo, contacts, VIP alerts and todos', () => {
+  it('maps speeches, media, photo and todos', () => {
     expect(result.cartridge.speeches[0].id).toBe('speech_witness');
     expect(result.cartridge.speeches[0].script.text).toContain('Drodzy');
     expect(result.cartridge.mediaTeam).toHaveLength(2);
     expect(result.cartridge.photoPlan.groupPhotos.groups).toHaveLength(3);
-    expect(result.cartridge.contacts).toHaveLength(2);
-    expect(result.cartridge.tact_and_vip_alerts).toHaveLength(1);
     expect(result.cartridge.preWeddingTodos).toHaveLength(2);
+    expect(result.cartridge).not.toHaveProperty('contacts');
+    expect(result.cartridge).not.toHaveProperty('tact_and_vip_alerts');
   });
 
   it('produces a cartridge that passes schema and semantic validation', async () => {

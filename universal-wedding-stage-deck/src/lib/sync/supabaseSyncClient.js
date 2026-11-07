@@ -89,31 +89,6 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data ?? null;
   }
 
-  // Encrypted sensitive notes (D4): ciphertext only, MC role only (RLS).
-  async function fetchSensitiveNotes(weddingId) {
-    const { data, error } = await supabase
-      .from('sensitive_notes')
-      .select('bundle, updated_at')
-      .eq('wedding_id', weddingId)
-      .maybeSingle();
-
-    if (error) throw new Error(describeError(error));
-    return data ?? null;
-  }
-
-  async function publishSensitiveNotes(weddingId, bundle) {
-    const { error } = await supabase.from('sensitive_notes').upsert(
-      {
-        wedding_id: weddingId,
-        bundle,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'wedding_id' },
-    );
-
-    if (error) throw new Error(describeError(error));
-  }
-
   // End-of-event wipe: the RPC validates the MC role claim server-side.
   async function wipeRoom() {
     const { error } = await supabase.rpc('stage_deck_wipe_my_room');
@@ -226,8 +201,6 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     provider: 'supabase',
     fetchLatest,
     fetchWedding,
-    fetchSensitiveNotes,
-    publishSensitiveNotes,
     fetchServerTime,
     touchPresence,
     publish,
