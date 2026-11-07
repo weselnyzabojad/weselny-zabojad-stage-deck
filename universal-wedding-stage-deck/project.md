@@ -74,6 +74,8 @@ Primary deployment path is `/deck/`; the owner surface is `/deck/admin`.
 | [#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201) | MC: Speeches as the only card below the timeline |
 | [#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202) | MC: remove summary cards and move Cake into its active step |
 | [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) | MC: hide the Speeches card when there are no speeches |
+| [#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210) | MC Master: switch to the DJ view (production, view-only) |
+| [#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211) | Development-only all-role view switcher |
 
 ### Responsive phone / pocket plan
 
@@ -413,6 +415,53 @@ Implementation issues:
 - [#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201) — Speeches as the only card below the timeline;
 - [#202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/202) — remove summary cards and embed Cake;
 - [#203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/203) — hide the Speeches card when empty.
+
+### Role view switching (decision, 2026-11-07)
+
+This decision distinguishes the **authenticated device role** from the
+**rendered view**. A view switch is local navigation only: it never changes the
+role token/JWT, PIN, sign-out target, persisted device role or synced state.
+The earlier "no role switching anywhere" rule from #188 continues to apply to
+real role/authentication changes.
+
+**Production — MC to DJ view.** The MC Master device may open the DJ view on the
+same device and return to MC:
+
+- the control is available only when the wedding package includes a DJ
+  (`availableRoleIds` includes `dj`); it is hidden for `HOST_ONLY`;
+- the DJ view is always the cartridge-configured tier — Standard or VIP via
+  `resolveServicePackage` / `djDetailTier`;
+- the authenticated role remains MC, the MC token remains in use and the DJ view
+  is read-only; no DJ credentials or additional data access are granted;
+- auth/sign-out actions continue to target MC; view-dependent labels and
+  read-only content use the effective view role;
+- the view override is device-local UI state, is not synced and is cleared on
+  sign-out/rejoin;
+- production still does not offer Photographer or Speaker view switching from
+  MC.
+([#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210))
+
+**Development-only all-role switcher (temporary).** Development builds get a
+clearly marked temporary control to preview every role view: MC, DJ,
+Photographer and Speaker. DJ follows the cartridge-configured tier.
+
+- Gate it through build-time development detection (for example
+  `import.meta.env.DEV`) so production builds dead-code-eliminate it. Do not
+  expose it through a URL, query parameter, localStorage flag or public runtime
+  configuration.
+- Label it explicitly as development-only, for example
+  "DEV VIEW SWITCHER — not for production".
+- It must not change the authenticated role, token, PIN, sign-out target, stored
+  role or synced state, and must not perform cloud writes.
+- The production bundle must contain neither the control nor its UI strings;
+  automated tests must verify the production-disabled result.
+- This is a temporary developer tool and must be removed before release; code
+  comments and the removal expectation stay with the implementation.
+([#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211))
+
+Implementation issues:
+- [#210](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/210) — production MC → DJ view-only switch;
+- [#211](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/211) — dev-only all-role view switcher, excluded from production.
 
 ### DJ Standard vs DJ VIP (decision, 2026-11-06)
 
