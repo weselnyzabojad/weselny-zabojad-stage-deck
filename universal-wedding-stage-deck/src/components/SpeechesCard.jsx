@@ -17,7 +17,9 @@ function countdownLabel(seconds) {
 // MC-only speech list. Selecting a row sets `active_speech_id`, which the
 // dedicated speaker device reads to show exactly one script.
 export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, onSelect, clock }) {
-  if (!speeches?.length && mode === 'OFF') return null;
+  // No speeches means no below-timeline card at all; the MC top-bar chip still
+  // communicates the OFF/no-speech state.
+  if (!speeches?.length) return null;
 
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
@@ -45,11 +47,8 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
         </p>
       ) : null}
 
-      {speeches.length === 0 ? (
-        <p className="mt-2 text-xs text-slate-400">No speeches captured in this cartridge.</p>
-      ) : (
-        <ol className="mt-2 space-y-2">
-          {speeches.map((speech) => {
+      <ol className="mt-2 space-y-2">
+        {speeches.map((speech) => {
             const active = speech.id === activeSpeechId;
             const timing = speechTiming(speech, { now, eventDateISO, timeZone });
             const missingComplexScript = speech.mode === 'COMPLEX' && !speech.script.ready;
@@ -136,8 +135,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
               </li>
             );
           })}
-        </ol>
-      )}
+      </ol>
 
       <p className="mt-2 text-[10px] text-slate-500">
         The speaker device only receives the speech that is live here.

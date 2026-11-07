@@ -410,14 +410,16 @@ export default function McMasterView({ model }) {
             aria-label="Stage details"
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
-            <SpeechesCard
-              wedding={WEDDING}
-              mode={speechMode}
-              speeches={speeches}
-              activeSpeechId={liveState.active_speech_id}
-              onSelect={selectSpeech}
-              clock={driftReport.clock}
-            />
+            {speeches?.length > 0 ? (
+              <SpeechesCard
+                wedding={WEDDING}
+                mode={speechMode}
+                speeches={speeches}
+                activeSpeechId={liveState.active_speech_id}
+                onSelect={selectSpeech}
+                clock={driftReport.clock}
+              />
+            ) : null}
           </section>
         </div>
       </main>
