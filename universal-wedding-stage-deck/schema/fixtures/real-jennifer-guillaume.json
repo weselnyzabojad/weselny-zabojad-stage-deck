@@ -339,6 +339,7 @@
       "type": "ELASTIC",
       "location": "Main Hall",
       "photographerCue": "Group photo before the toast",
+      "isMainSongRequired": true,
       "subTasks": [
         "Parents' thank-you speech + gifts (with mic)",
         "Rosół + Tartare with Vodka shot",
@@ -401,6 +402,7 @@
       "title": "Cake & Sparklers",
       "type": "HARD_ANCHOR",
       "location": "Terrace",
+      "isMainSongRequired": true,
       "dj": {
         "playlist": "Party Set",
         "track": "Dancing Queen — ABBA",
