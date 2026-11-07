@@ -309,6 +309,12 @@ const fr = {
   'pairing.errorDigits': 'Saisissez les quatre chiffres.',
   'pairing.errorGeneric': 'Impossible d’appairer cet appareil. Réessayez.',
   'pairing.errorIncorrect': 'PIN incorrect.',
+
+  'clock.currentTime': 'Heure actuelle',
+  'speaker.nowSpeaking': 'Au micro',
+  'speaker.scriptMissingTitle': 'Script pas encore fourni',
+  'speaker.scriptMissingBody': 'Vérifiez avec le MC ; le texte peut encore être ajouté au cartridge.',
+  'speaker.footer': 'Script en lecture seule · seul le discours assigné est affiché · aucun contrôle de timeline',
 };
 
 export default fr;
