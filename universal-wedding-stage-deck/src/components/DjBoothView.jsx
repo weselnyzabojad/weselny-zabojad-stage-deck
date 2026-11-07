@@ -124,6 +124,16 @@ export default function DjBoothView({
   // Compact (phone) read-only content: no step controls.
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
+      {isVip ? (
+        <DjSongRequestQueue
+          enabled={isVip}
+          variant="bar"
+          role={role}
+          accessToken={songRequestAccessToken}
+          roomCode={songRequestRoomCode}
+        />
+      ) : null}
+
       <ReelClock clock={clock} compact />
 
       <TimelineFocusStack
@@ -141,8 +151,9 @@ export default function DjBoothView({
   const wideContent = (
     <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
       <SkipLink />
+      <div className="sticky top-0 z-30">
       <header
-        className={`sticky top-0 z-30 border-b border-line bg-card px-4 py-3 ${
+        className={`border-b border-line bg-card px-4 py-3 ${
           isVip
             ? 'grid grid-cols-1 items-center gap-3 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
             : 'flex flex-wrap items-center justify-between gap-3'
@@ -183,6 +194,17 @@ export default function DjBoothView({
         </div>
       </header>
 
+      {isVip ? (
+        <DjSongRequestQueue
+          enabled={isVip}
+          variant="bar"
+          role={role}
+          accessToken={songRequestAccessToken}
+          roomCode={songRequestRoomCode}
+        />
+      ) : null}
+      </div>
+
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="mx-auto max-w-5xl space-y-4">
           {isSolo ? (
@@ -207,15 +229,6 @@ export default function DjBoothView({
               <MusicPolicyCard policy={musicPolicy} />
             </div>
             <aside className="space-y-4">
-              {isVip ? (
-                <DjSongRequestQueue
-                  enabled={isVip}
-                  role={role}
-                  accessToken={songRequestAccessToken}
-                  roomCode={songRequestRoomCode}
-                />
-              ) : null}
-
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
                   🎚️ Set notes

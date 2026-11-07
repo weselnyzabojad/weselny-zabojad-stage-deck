@@ -140,7 +140,7 @@ describe('issue #149 VIP song request queue', () => {
     ).toBe('');
   });
 
-  it('does not add the queue to pocket', () => {
+  it('adds the VIP request bar to desktop and pocket', () => {
     const source = read('src/components/DjBoothView.jsx');
     const compact = source.slice(
       source.indexOf('const compactContent'),
@@ -148,7 +148,8 @@ describe('issue #149 VIP song request queue', () => {
     );
     const wide = source.slice(source.indexOf('const wideContent'));
 
-    expect(compact).not.toContain('DjSongRequestQueue');
-    expect(wide).toContain('<DjSongRequestQueue');
+    expect(compact).toContain('variant="bar"');
+    expect(wide).toContain('variant="bar"');
+    expect(wide).not.toContain('<SongRequestQueueList');
   });
 });

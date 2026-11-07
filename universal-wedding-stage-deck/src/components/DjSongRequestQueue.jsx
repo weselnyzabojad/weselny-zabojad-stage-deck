@@ -173,6 +173,7 @@ export default function DjSongRequestQueue({
   role = 'dj',
   accessToken = null,
   roomCode = null,
+  variant = 'card',
 }) {
   const config = useMemo(() => getSyncConfig(), []);
   const connected = Boolean(
@@ -231,6 +232,118 @@ export default function DjSongRequestQueue({
   };
 
   if (!enabled || !canModerateSongRequests(role)) return null;
+
+  const { pending } = partitionSongRequests(requests);
+
+  if (variant === 'bar') {
+    if (!connected) {
+      return (
+        <section
+          aria-label="Guest song requests"
+          className="border-b border-line bg-card px-4 py-1.5 text-[10px] text-slate-500"
+        >
+          💬 Guest requests ·{' '}
+          {!config.enabled
+            ? 'cloud requests are not configured on this deployment.'
+            : 'connect in production with a DJ or MC PIN to load requests.'}
+        </section>
+      );
+    }
+
+    return (
+      <section
+        aria-label="Guest song requests"
+        className="border-b border-line bg-card px-4 py-2"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
+            💬 Guest requests
+          </span>
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+            {pending.length} pending
+          </span>
+
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+            {pending.length === 0 ? (
+              <span className="text-[10px] text-slate-500">
+                {loading ? 'Loading guest requests…' : 'No pending guest requests.'}
+              </span>
+            ) : (
+              pending.slice(0, 4).map((request) => (
+                <div
+                  key={request.id}
+                  className="flex min-w-0 items-center gap-1.5 rounded border border-line bg-page/70 px-2 py-1"
+                >
+                  <span className="max-w-[16rem] truncate text-[11px] text-slate-200">
+                    <strong className="font-semibold text-white">{request.song}</strong>
+                    <span className="text-slate-400"> · {request.artist}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => update(request.id, 'accepted')}
+                    disabled={updatingId === request.id}
+                    aria-label={`Accept ${request.song}`}
+                    className="rounded border border-emerald-700 bg-emerald-950/60 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200 disabled:opacity-50"
+                  >
+                    ✓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => update(request.id, 'declined')}
+                    disabled={updatingId === request.id}
+                    aria-label={`Decline ${request.song}`}
+                    className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft disabled:opacity-50"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))
+            )}
+            {pending.length > 4 ? (
+              <span className="font-mono text-[10px] text-slate-400">
+                +{pending.length - 4} more
+              </span>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            onClick={load}
+            disabled={loading}
+            className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 disabled:opacity-50"
+          >
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+
+          {requestUrl ? (
+            <details className="relative">
+              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200">
+                Guest QR
+              </summary>
+              <div className="absolute right-0 top-full z-50 mt-1 rounded-lg bg-white p-2 shadow-2xl">
+                <QrCodeImage
+                  text={requestUrl}
+                  size={160}
+                  label="QR code for the guest song request form"
+                />
+              </div>
+            </details>
+          ) : null}
+        </div>
+
+        {error ? (
+          <p className="mt-1 text-[10px] text-alert-soft" role="alert">
+            {error}
+          </p>
+        ) : null}
+        {notice ? (
+          <p className="mt-1 text-[10px] text-emerald-300" aria-live="polite">
+            {notice}
+          </p>
+        ) : null}
+      </section>
+    );
+  }
 
   if (!connected) {
     return (
