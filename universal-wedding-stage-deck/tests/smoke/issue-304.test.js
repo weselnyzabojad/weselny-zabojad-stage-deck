@@ -10,7 +10,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #304 Grand Entrance guest order', () => {
   it('validates both orders in the schema', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     expect(schema.$defs.step.properties.grandEntranceOrder.enum).toEqual([
       'GUESTS_FIRST',
       'NEWLYWEDS_FIRST',

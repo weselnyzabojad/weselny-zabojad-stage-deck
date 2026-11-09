@@ -20,7 +20,7 @@ const danceStep = (overrides = {}) => ({
 
 describe('issue #305 First Dance modes and timing', () => {
   it('validates both modes and timing fields in the schema', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     const step = schema.$defs.step.properties;
     expect(step.firstDanceMode.enum).toEqual(['FAKE', 'NORMAL']);
     expect(step.firstDanceStartAt.$ref).toContain(

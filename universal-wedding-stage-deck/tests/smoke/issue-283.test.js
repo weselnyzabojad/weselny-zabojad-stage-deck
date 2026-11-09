@@ -16,7 +16,7 @@ describe('issue #283 first guests arrival as a mandatory constraint', () => {
     expect(read('src/components/VenueManagerView.jsx')).not.toContain('label="First guests arrival"');
   });
   it('schema still supports ceremony context', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     expect(schema.$defs.step.properties.ceremonyType).toBeTruthy();
   });
 });
