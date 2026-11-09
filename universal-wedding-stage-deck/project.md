@@ -3348,7 +3348,33 @@ Notes:
 | --- | --- | --- |
 | `mediaTeam` | **No** | Drives `GroupPhotoChecklist`, the Photographer view, `resolveOczepiny` winner-photo timing, the Doc `MEDIA TEAM` mapping and both validators. |
 | `speechMode` | **No** | `resolveSpeechMode` gates the Speaker view (`OFF`/`LIGHT`/`COMPLEX`); the value flows through `RoleShell`, MC, DJ and Photographer views and into the i18n messages. It stays in the cartridge but its schema ownership moves into the speeches domain (#593). |
-| `hardAnchors` | **No** | Feeds the drift radar (`buildHardAnchorRadar`), the reel clock, the Oczepiny indicator, `resolveOczepiny` photo timing, the Doc `HARD ANCHORS` mapping and semantic validation. |
+| `hardAnchors` | **No** | Feeds the drift radar (`buildHardAnchorRadar`), the reel clock, the Oczepiny indicator, `resolveOczepiny` photo timing and semantic validation. It becomes a derived field in #595; the Doc `HARD ANCHORS` mapping is removed. |
 
 None of the three is removable today. They stay in the cartridge and are
 documented here so the question is not reopened without tracing these consumers.
+
+### 17.5 Hard anchors derived from mandatory steps (decision, 2026-11-09)
+
+Hard anchors are no longer authored in the Google Doc. `mandatorySteps` is the
+single source of truth:
+
+- `mandatorySteps.milestones[]` holds arbitrary admin-created milestones with
+  `id`, `time`, `label`, `kind`, `alertBeforeMin` and `isHardAnchor`.
+- `mandatorySteps.kitchenServices[]` gains `isHardAnchor`.
+- Photo and camera are separate milestones (`kind: "PHOTO"` / `"CAMERA"`); they
+  must never be collapsed into one object.
+- Oczepiny is a game step, not a hard anchor, and is never synthesized as a
+  milestone.
+- `deriveHardAnchors(mandatorySteps)` returns the flagged milestones plus
+  flagged kitchen courses (`kitchen_<id>`), and is used by the Google Doc
+  importer, demo/fixtures and the live mandatory override path.
+- `hardAnchors` remains an optional derived cartridge field so the radar, reel
+  clock, photoPlan and Oczepiny consumers keep their current shape.
+- Milestones are created on the admin/venue-manager surface, not in the Doc.
+
+The Doc `## HARD ANCHORS` section is removed from the template, manifest,
+validator and mapper. Tracked by
+[#595](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/595)
+and the admin editor in
+[#596](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/596)
+(blocked by #595).
