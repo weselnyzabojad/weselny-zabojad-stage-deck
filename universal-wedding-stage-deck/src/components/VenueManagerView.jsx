@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -12,6 +12,7 @@ import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
+import useCompact from '../hooks/useCompact';
 
 const STORAGE_PREFIX = 'wzsd:venue-manager:';
 
@@ -185,13 +186,7 @@ export default function VenueManagerView({
     </div>
   );
 
-  const compact = useMemo(
-    () =>
-      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
-        ? window.matchMedia('(max-width: 639px)').matches
-        : false,
-    [],
-  );
+  const compact = useCompact();
 
   if (compact) {
     return (

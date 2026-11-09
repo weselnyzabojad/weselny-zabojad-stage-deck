@@ -1,9 +1,9 @@
-﻿import logo from '../assets/img/logo.png';
-import { useEffect, useState } from 'react';
+import logo from '../assets/img/logo.png';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
+import useCompact from '../hooks/useCompact';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
@@ -87,8 +87,8 @@ export default function DjBoothView({
           <div className="text-[10px] uppercase tracking-wider text-muted">{t('dj.projected')}</div>
           <div className="text-sm font-semibold text-ink">
             {activeEntry
-              ? `${activeEntry.projectedStart ?? 'â€”'}â€“${activeEntry.projectedEnd ?? 'â€”'}`
-              : 'â€”'}
+              ? `${activeEntry.projectedStart ?? '—'}–${activeEntry.projectedEnd ?? '—'}`
+              : '—'}
           </div>
         </div>
         <div className="text-right text-[10px] uppercase tracking-wider text-muted">
@@ -131,18 +131,7 @@ export default function DjBoothView({
     </div>
   );
 
-  const [isCompact, setIsCompact] = useState(
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(max-width: 639px)').matches
-      : false,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)');
-    setIsCompact(mq.matches);
-    const listener = () => setIsCompact(mq.matches);
-    mq.addEventListener('change', listener);
-    return () => mq.removeEventListener('change', listener);
-  }, []);
+  const isCompact = useCompact();
 
   // Compact (phone) read-only content: no step controls.
   const compactContent = (
@@ -234,7 +223,7 @@ export default function DjBoothView({
           {isSolo ? (
             <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
               <strong className="font-heading">{t('dj.soloTitle')}</strong> {t('dj.soloBody')}
-              device â€” open the MC view for scripts and drift controls. Song detail stays at the
+              device — open the MC view for scripts and drift controls. Song detail stays at the
               Standard level.
             </div>
           ) : null}
@@ -256,11 +245,11 @@ export default function DjBoothView({
             <aside className={`space-y-4${isVip ? '' : ' lg:col-span-3'}`}>
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-                  đźŽšď¸Ź Set notes
+                  🎚️ Set notes
                 </h2>
                 <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
                   <li>Follow the projected times; the host advances the live state.</li>
-                  <li>Red cutoffs are hard stops â€” fade before the stated time.</li>
+                  <li>Red cutoffs are hard stops — fade before the stated time.</li>
                   <li>This view never exposes MC scripts or family alerts.</li>
                 </ul>
               </section>
@@ -270,7 +259,7 @@ export default function DjBoothView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-muted">
-        Read-only DJ view Â· no step controls Â· syncs with the host over the room PIN
+        Read-only DJ view · no step controls · syncs with the host over the room PIN
       </footer>
     </div>
   );

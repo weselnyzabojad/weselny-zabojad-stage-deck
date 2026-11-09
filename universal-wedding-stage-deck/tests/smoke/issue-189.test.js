@@ -21,7 +21,7 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
   });
 
   it('keeps the right stack aligned to the right on desktop', () => {
-    expect(read('src/components/TopBarShell.jsx')).toContain('xl:justify-end');
+    expect(read('src/components/TopBarShell.jsx')).toContain('lg:justify-end');
   });
 
   it('keeps per-role utility visibility', () => {

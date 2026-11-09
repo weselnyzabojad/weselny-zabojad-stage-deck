@@ -5,7 +5,6 @@
 // layer for the MC role. The `model` object carries the already-derived values
 // and callbacks so there is exactly one place to wire a future routed shell.
 
-import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -27,6 +26,7 @@ import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
 import { useI18n } from '../i18n/useI18n';
+import useCompact from '../hooks/useCompact';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
@@ -143,18 +143,7 @@ export default function McMasterView({ model }) {
       />
     ) : null;
 
-  const [isCompact, setIsCompact] = useState(
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(max-width: 639px)').matches
-      : false,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)');
-    setIsCompact(mq.matches);
-    const listener = () => setIsCompact(mq.matches);
-    mq.addEventListener('change', listener);
-    return () => mq.removeEventListener('change', listener);
-  }, []);
+  const isCompact = useCompact();
 
   const railEntries = driftReport.entries ?? [];
   const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);

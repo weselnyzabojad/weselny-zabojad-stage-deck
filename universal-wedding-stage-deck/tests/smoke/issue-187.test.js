@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import CoupleIdentity from '../../src/components/CoupleIdentity.jsx';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
-const centeredGrid = 'xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]';
+const centeredGrid = 'lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]';
 
 describe('issue #187 centered couple identity', () => {
   const mc = read('src/views/McMasterView.jsx');
