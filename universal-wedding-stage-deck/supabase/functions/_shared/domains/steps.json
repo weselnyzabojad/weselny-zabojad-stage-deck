@@ -303,9 +303,10 @@
           "enum": [
             "wishes",
             "games",
-            "oczepiny"
+            "oczepiny",
+            "dj_set"
           ],
-          "description": "Predefined step is shown only when the matching cartridge feature is enabled."
+          "description": "Predefined step is shown only when the matching cartridge feature is enabled; `dj_set` marks a basic DJ set step."
         },
         "gameId": {
           "$ref": "#/$defs/id",

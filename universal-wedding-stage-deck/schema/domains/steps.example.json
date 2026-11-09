@@ -143,6 +143,18 @@
       "location": "Main Hall",
       "optionalFlag": "games",
       "gameId": "test_zgodnosci"
+    },
+    {
+      "id": "step_12",
+      "time": "02:00",
+      "durationMin": 60,
+      "title": "DJ Set",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "optionalFlag": "dj_set",
+      "dj": {
+        "playlist": "Party Set"
+      }
     }
   ]
 }

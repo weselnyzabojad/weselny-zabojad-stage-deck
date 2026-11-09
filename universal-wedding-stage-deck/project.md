@@ -3212,6 +3212,13 @@ localized titles.
 | Test Zgodności | `optionalFlag: games` |
 | Oczepiny | `optionalFlag: oczepiny` |
 | Last Dance | FLEXIBLE |
+| DJ Set | `optionalFlag: dj_set` (basic placeholder; review TODO) |
+
+> **TODO (DJ set step):** the DJ set step is currently a basic placeholder
+> (`optionalFlag: "dj_set"`, `FLEXIBLE`, party-set playlist only). Review and
+> rework the final definition later: mandatory vs optional, duration/slot rules,
+> set-list/track metadata, Google Doc columns and the DJ VIP countdown contract
+> ([#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614)).
 
 Guest-flow moments (check-in, moving to the orangery, taking seats) are venue
 notes, not steps.
@@ -3479,3 +3486,21 @@ Shipped in
 key only to a valid speaker role session, and `SpeakerView` decrypts locally with
 a non-exportable `CryptoKey` cached in IndexedDB. Set the
 `SPEECH_SECRET_MASTER_KEY` Edge secret and deploy `reveal_speech_key`.
+
+### 17.9 DJ VIP DJ-set countdown (decision, 2026-11-09)
+
+The DJ set step is a basic placeholder for now: `optionalFlag: "dj_set"`,
+`FLEXIBLE`, with a party-set playlist. Its final shape is a TODO to review later
+(see the canonical step vocabulary).
+
+On the DJ VIP view, when the **current step is a DJ set**, show a live countdown
+to the **next step's projected start**:
+
+- only DJ VIP; DJ Standard, pocket and other roles never see it;
+- hidden when there is no next step or the current step is not a DJ set;
+- red and blinking at **6:00 (360 seconds) or less** remaining;
+- with `prefers-reduced-motion`, use a static red warning instead of blinking;
+- localized in `en`, `fr` and `pl`.
+
+Tracked by
+[#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614).
