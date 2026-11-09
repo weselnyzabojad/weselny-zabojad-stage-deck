@@ -3514,6 +3514,8 @@ to the **next step's projected start**:
 Shipped in
 [#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614):
 the DJ VIP current card shows the next-step countdown during a DJ set, turning
-red and pulsing at 6:00 with a reduced-motion fallback. DJ Standard timeline
-visibility is tracked by
-[#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616).
+red and pulsing at 6:00 with a reduced-motion fallback. The DJ set step is a
+normal timeline entry for DJ Standard in
+[#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616):
+it maps from the Google Doc (`step_12`, `optionalFlag: dj_set`) and renders in
+the Standard timeline without the countdown.
