@@ -272,6 +272,7 @@ const en = {
   'game.completeTitle': 'Game complete',
   'game.completeScore': '{score} of {total} matches',
   'game.completeCount': '{total} questions answered',
+  'game.export': 'Export results JSON',
   'game.reset': 'Reset game',
   'game.resetConfirm': 'Reset this game and clear its results?',
   'game.help': '← → navigate · Space reveals · M/N match · Esc closes',

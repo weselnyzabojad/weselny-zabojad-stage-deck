@@ -1981,6 +1981,37 @@
         "active_speech_id": {
           "$ref": "#/$defs/nullableId"
         },
+        "game_results": {
+          "type": "object",
+          "description": "Runtime game results keyed by game id. Questions and definitions stay in the cartridge.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gameId", "questions"],
+            "properties": {
+              "gameId": { "type": "string", "minLength": 1 },
+              "startedAt": { "type": ["string", "null"] },
+              "updatedAt": { "type": ["string", "null"] },
+              "completedAt": { "type": ["string", "null"] },
+              "totalQuestions": { "type": "integer", "minimum": 0 },
+              "answeredCount": { "type": "integer", "minimum": 0 },
+              "score": { "type": "integer", "minimum": 0 },
+              "questions": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["answeredAt"],
+                  "properties": {
+                    "answeredAt": { "type": "string" },
+                    "revealed": { "type": "boolean" },
+                    "isCompatible": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        },
         "mutation_log": {
           "type": "array",
           "description": "Append-only audit entries (device_id, role, op, timestamp, payload).",

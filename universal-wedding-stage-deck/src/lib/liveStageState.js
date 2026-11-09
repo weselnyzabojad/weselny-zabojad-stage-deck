@@ -126,9 +126,69 @@ export function createLiveState(steps, overrides = {}) {
     step_order: steps.map((step) => step.id),
     active_speech_id: null,
     media_overrides: {},
+    game_results: {},
     mutation_log: [],
     ...overrides,
   };
+}
+
+function cleanGameQuestionResult(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const answeredAt =
+    typeof entry.answeredAt === 'string' && Number.isFinite(Date.parse(entry.answeredAt))
+      ? entry.answeredAt
+      : null;
+  if (!answeredAt) return null;
+  const clean = { answeredAt };
+  if (typeof entry.revealed === 'boolean') clean.revealed = entry.revealed;
+  if (typeof entry.isCompatible === 'boolean') clean.isCompatible = entry.isCompatible;
+  return clean;
+}
+
+export function normalizeGameResults(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const results = {};
+  for (const [gameId, value] of Object.entries(raw)) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    const questions = {};
+    if (value.questions && typeof value.questions === 'object') {
+      for (const [questionId, entry] of Object.entries(value.questions)) {
+        const clean = cleanGameQuestionResult(entry);
+        if (clean) questions[questionId] = clean;
+      }
+    }
+    const entries = Object.values(questions);
+    results[gameId] = {
+      gameId,
+      startedAt: typeof value.startedAt === 'string' ? value.startedAt : null,
+      updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null,
+      completedAt: typeof value.completedAt === 'string' ? value.completedAt : null,
+      totalQuestions:
+        Number.isInteger(value.totalQuestions) && value.totalQuestions >= 0
+          ? value.totalQuestions
+          : entries.length,
+      answeredCount: entries.length,
+      ...(entries.some((entry) => typeof entry.isCompatible === 'boolean')
+        ? { score: entries.filter((entry) => entry.isCompatible === true).length }
+        : {}),
+      questions,
+    };
+  }
+  return results;
+}
+
+export function updateGameResult(state, gameId, result, actor = {}, now = new Date()) {
+  if (typeof gameId !== 'string' || !gameId) return state;
+  const results = { ...(state.game_results ?? {}) };
+  if (result == null) {
+    delete results[gameId];
+  } else {
+    const normalized = normalizeGameResults({ [gameId]: result })[gameId];
+    if (!normalized) return state;
+    results[gameId] = normalized;
+  }
+  const next = { ...state, game_results: results };
+  return appendMutation(next, actor, 'game_results', { gameId, reset: result == null }, now);
 }
 
 export function normalizeLiveState(raw, steps, context = {}) {
@@ -194,6 +254,7 @@ export function normalizeLiveState(raw, steps, context = {}) {
       raw.media_overrides && typeof raw.media_overrides === 'object'
         ? raw.media_overrides
         : {},
+    game_results: normalizeGameResults(raw.game_results),
     mutation_log: mutationLog,
   };
 }

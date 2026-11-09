@@ -272,6 +272,7 @@ const pl = {
   'game.completeTitle': 'Gra zakończona',
   'game.completeScore': '{score} zgodności na {total}',
   'game.completeCount': 'Odpowiedziano na {total} pytań',
+  'game.export': 'Eksportuj wyniki JSON',
   'game.reset': 'Resetuj grę',
   'game.resetConfirm': 'Zresetować tę grę i wyczyścić jej wyniki?',
   'game.help': '← → nawigacja · Spacja pokazuje · M/N zgodność · Esc zamyka',
