@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `1cbbdcb` (global architecture & UI/UX review)
+**Aligned with:** `master` @ `defbbe6` (issue #543 review follow-ups)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -2446,65 +2446,67 @@ impact outside MC.
 
 | Priority | Issue | Item | Status |
 | --- | --- | --- | --- |
-| P0 | [#426](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/426) | MC: remove hardcoded demo cues (follow-up to #80) | Open; blocks #80 view cleanup |
-| P0 | [#421](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/421) | Phone: single Advance CTA (remove duplicate in BottomNav) | Open |
-| P1 | [#422](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/422) | PWA: remove landscape orientation lock | Open |
-| P1 | [#423](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/423) | PWA: allow pinch zoom (remove `user-scalable=no`) | Open |
-| P1 | [#424](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/424) | Motion: restrict `CurrentStepTilt` to fine pointers | Open |
-| P1 | [#425](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/425) | Compact: disable focus-stack overlap under 640px | Open |
-| P1 | [#427](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/427) | Focus stack: add show-full-timeline expander | Open |
-| P1 | [#428](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/428) | i18n: hardcoded EN strings in `McMasterView` | Open |
-| P1 | [#429](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/429) | i18n: hardcoded strings in `BottomNav` + literal lint | Open |
-| P1 | [#430](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/430) | Day theme: migrate to `text-ink` tokens, drop `.text-white` override | Open |
-| P1 | [#431](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/431) | Card: `line-clamp-2` for `StageStepCard` title | Open; mobile time row added by audit |
-| P1 | [#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432) | Shell: TopBar `lg` breakpoint + `useCompact` hook + DJ encoding | Open; Photo SUNSET heading added by audit |
-| P1 | [#433](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/433) | Fonts: wire theme fonts + offline self-host | Open |
-| P1 | [#434](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/434) | Selection: scope `select-none` to chrome, allow content select | Open |
-| P1 | [#435](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/435) | Viewport: `h-dvh`/`min-h-dvh` + no clipped MC root | Open |
-| P1 | [#436](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/436) | i18n: hardcoded strings in Modal/Toast | Open |
-| P1 | [#437](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/437) | Overlays: z-index token scale (modal above toasts) | Open |
-| P1 | [#438](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/438) | Secondary bar: compact stacked variant | Open; confirms 375px audit |
-| P1 | [#439](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/439) | Hold button: screen-reader progress | Open |
-| P0 | [#440](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/440) | Mobile: hide DEV VIEW SWITCHER on small screens | Open |
-| P0 | [#441](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/441) | Mobile: 44px touch targets | Open |
-| P0 | [#443](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/443) | Mobile: MC footer HOLD/Undo/Swap ergonomics | Open |
-| P1 | [#442](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/442) | Mobile: collapse header under md | Open |
-| P1 | [#444](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/444) | i18n: MC Cues, Game Clicker and Speeches | Open; extends #428 |
-| P1 | [#445](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/445) | i18n: DJ Music Policy + Set notes title | Open; note body exempt |
-| P1 | [#446](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/446) | i18n: Photo Sunset & Golden Hour + number-free role label | Open |
-| P1 | [#447](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/447) | Venue: grouped mandatory-step courses, cake and closure layout | Open |
-| P1 | [#448](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/448) | Venue: extension checkbox + extension-until hour picker | Open; schema field, coordinate #77 |
-| P1 | [#449](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/449) | Mobile: pocket header cleanup, icon-only Sync, baby icon | Open; supersedes #442 logo/clock |
-| P1 | [#450](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/450) | Speaker: one-line name/relationship, script primary | Open |
-| P1 | [#451](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/451) | Children expected: permanent red/green state in every role view | Open; supersedes #449 visibility clause |
-| P1 | [#452](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/452) | Data: `childrenExpected` boolean from Google Doc to cartridge | Open; hardens #277 contract |
-| P1 | [#453](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/453) | Top bar: enlarge small role/status icons | Open; size only, encoding stays #432 |
-| P1 | [#454](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/454) | DJ Standard: top-bar role label is `DJ`, not MC/Standard | Open; VIP label unchanged |
-| P1 | [#455](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/455) | Song request: guest phone view, online check, device id, live status | Open |
-| P1 | [#456](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/456) | Song request backend: device id, 10-minute cooldown, realtime status | Open |
-| P1 | [#457](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/457) | DJ VIP: accept/deny, accepted list, Played action | Open |
-| P1 | [#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458) | Dev-only song request simulator on DJ VIP | Open |
+| P0 | [#426](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/426) | MC: remove hardcoded demo cues (follow-up to #80) | Shipped; blocks #80 view cleanup |
+| P0 | [#421](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/421) | Phone: single Advance CTA (remove duplicate in BottomNav) | Shipped |
+| P1 | [#422](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/422) | PWA: remove landscape orientation lock | Shipped |
+| P1 | [#423](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/423) | PWA: allow pinch zoom (remove `user-scalable=no`) | Shipped |
+| P1 | [#424](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/424) | Motion: restrict `CurrentStepTilt` to fine pointers | Shipped |
+| P1 | [#425](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/425) | Compact: disable focus-stack overlap under 640px | Shipped |
+| P1 | [#427](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/427) | Focus stack: add show-full-timeline expander | Shipped |
+| P1 | [#428](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/428) | i18n: hardcoded EN strings in `McMasterView` | Shipped |
+| P1 | [#429](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/429) | i18n: hardcoded strings in `BottomNav` + literal lint | Shipped |
+| P1 | [#430](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/430) | Day theme: migrate to `text-ink` tokens, drop `.text-white` override | Shipped |
+| P1 | [#431](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/431) | Card: `line-clamp-2` for `StageStepCard` title | Shipped; mobile time row added by audit |
+| P1 | [#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432) | Shell: TopBar `lg` breakpoint + `useCompact` hook + DJ encoding | Shipped; Photo SUNSET heading added by audit |
+| P1 | [#433](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/433) | Fonts: wire theme fonts + offline self-host | Shipped |
+| P1 | [#434](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/434) | Selection: scope `select-none` to chrome, allow content select | Shipped |
+| P1 | [#435](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/435) | Viewport: `h-dvh`/`min-h-dvh` + no clipped MC root | Shipped |
+| P1 | [#436](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/436) | i18n: hardcoded strings in Modal/Toast | Shipped |
+| P1 | [#437](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/437) | Overlays: z-index token scale (modal above toasts) | Shipped |
+| P1 | [#438](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/438) | Secondary bar: compact stacked variant | Shipped; confirms 375px audit |
+| P1 | [#439](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/439) | Hold button: screen-reader progress | Shipped |
+| P0 | [#440](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/440) | Mobile: hide DEV VIEW SWITCHER on small screens | Shipped |
+| P0 | [#441](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/441) | Mobile: 44px touch targets | Shipped |
+| P0 | [#443](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/443) | Mobile: MC footer HOLD/Undo/Swap ergonomics | Shipped |
+| P1 | [#442](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/442) | Mobile: collapse header under md | Shipped |
+| P1 | [#444](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/444) | i18n: MC Cues, Game Clicker and Speeches | Shipped; extends #428 |
+| P1 | [#445](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/445) | i18n: DJ Music Policy + Set notes title | Shipped; note body exempt |
+| P1 | [#446](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/446) | i18n: Photo Sunset & Golden Hour + number-free role label | Shipped |
+| P1 | [#447](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/447) | Venue: grouped mandatory-step courses, cake and closure layout | Shipped |
+| P1 | [#448](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/448) | Venue: extension checkbox + extension-until hour picker | Shipped; schema field, coordinate #77 |
+| P1 | [#449](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/449) | Mobile: pocket header cleanup, icon-only Sync, baby icon | Shipped; supersedes #442 logo/clock |
+| P1 | [#450](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/450) | Speaker: one-line name/relationship, script primary | Shipped |
+| P1 | [#451](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/451) | Children expected: permanent red/green state in every role view | Shipped; supersedes #449 visibility clause |
+| P1 | [#452](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/452) | Data: `childrenExpected` boolean from Google Doc to cartridge | Shipped; hardens #277 contract |
+| P1 | [#453](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/453) | Top bar: enlarge small role/status icons | Shipped; size only, encoding stays #432 |
+| P1 | [#454](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/454) | DJ Standard: top-bar role label is `DJ`, not MC/Standard | Shipped; VIP label unchanged |
+| P1 | [#455](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/455) | Song request: guest phone view, online check, device id, live status | Shipped |
+| P1 | [#456](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/456) | Song request backend: device id, 10-minute cooldown, realtime status | Shipped |
+| P1 | [#457](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/457) | DJ VIP: accept/deny, accepted list, Played action | Shipped |
+| P1 | [#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458) | Dev-only song request simulator on DJ VIP | Shipped |
 | Optional | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Planning TODO: free song metadata validation | Open; owner approval required |
-| P1 | [#460](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/460) | DJ VIP: Song's request QR button and fullscreen QR (laptop + pocket) | Open; pocket QR launcher exception |
-| P1 | [#461](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/461) | Data: `discoPoloPolicy` enum from Google Doc to cartridge | Open; no DB persistence |
-| P1 | [#462](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/462) | DJ VIP: Disco Polo policy in Music Policy + Guest requests bar | Open; display only |
-| P1 | [#463](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/463) | Data: parallel attractions from Google Doc to cartridge | Open; no DB persistence |
-| P1 | [#464](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/464) | MC: parallel attraction announcement + availability reminders | Open; MC only |
-| P1 | [#465](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/465) | Admin: per-wedding service provider registry | Open; admin-only Supabase data |
-| P1 | [#466](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/466) | Roles: auto-provision provider app access and expand role checks/RLS | Open |
-| P1 | [#467](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/467) | DJ VIP: hardcoded Mark/Szymoniak identity rule | Open; supersedes package-only tier |
-| P1 | [#468](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/468) | DJ Standard: strict UI/feature restriction audit | Open; UI-only |
-| P1 | [#469](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/469) | Games: predefined Test Wiedzy/Test Zgodności steps + Doc questions | Open |
-| P1 | [#470](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/470) | MC Game Clicker: level queue, override, scoring | Open |
-| P1 | [#471](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/471) | Games: persist results in live state + `isCompatible` export | Open |
+| P1 | [#460](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/460) | DJ VIP: Song's request QR button and fullscreen QR (laptop + pocket) | Shipped; pocket QR launcher exception |
+| P1 | [#461](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/461) | Data: `discoPoloPolicy` enum from Google Doc to cartridge | Shipped; no DB persistence |
+| P1 | [#462](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/462) | DJ VIP: Disco Polo policy in Music Policy + Guest requests bar | Shipped; display only |
+| P1 | [#463](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/463) | Data: parallel attractions from Google Doc to cartridge | Shipped; no DB persistence |
+| P1 | [#464](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/464) | MC: parallel attraction announcement + availability reminders | Shipped; MC only |
+| P1 | [#465](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/465) | Admin: per-wedding service provider registry | Shipped; admin-only Supabase data |
+| P1 | [#466](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/466) | Roles: auto-provision provider app access and expand role checks/RLS | Shipped |
+| P1 | [#467](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/467) | DJ VIP: hardcoded Mark/Szymoniak identity rule | Shipped; supersedes package-only tier |
+| P1 | [#468](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/468) | DJ Standard: strict UI/feature restriction audit | Shipped; UI-only |
+| P1 | [#469](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/469) | Games: predefined Test Wiedzy/Test Zgodności steps + Doc questions | Shipped |
+| P1 | [#470](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/470) | MC Game Clicker: level queue, override, scoring | Shipped |
+| P1 | [#471](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/471) | Games: persist results in live state + `isCompatible` export | Shipped |
 
 Alignment for this review: last aligned 2026-11-08 against `master` @
 `f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
 #77, #80, #245 and #459 stay open. The status column in the historical review
 table above is superseded: #421-#471 (except the optional #459) were delivered
 through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 was
-delivered through PR #532; #534/#535 through PRs #537/#538. #533 remains blocked
-on the owner's live Supabase/TOTP environment; #539 and #541 are open follow-ups.
+delivered through PR #532; #534/#535 through PRs #537/#538. #539 and #541 were
+delivered through PRs #544/#545, and the #543 follow-ups (residual i18n strings,
+stable step detection and this roadmap alignment) are delivered by the #543 PR.
+#533 remains blocked on the owner's live Supabase/TOTP environment.
 
 ---
 

@@ -36,18 +36,35 @@ import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
 
-function childrenWarningFor(step) {
-  const title = String(step?.title ?? '').toLowerCase();
-  if (/wedding cake|cake cutting/.test(title)) {
+// Detect the moment from stable cartridge signals, never from the localized
+// step title (issue #543). Titles are authored content and may be FR/PL.
+function childrenWarningFor(step, cakeProtocol) {
+  if (step?.id && cakeProtocol?.stepId && step.id === cakeProtocol.stepId) {
     return 'mc.step.childrenCake';
   }
-  if (/grand entrance/.test(title)) {
+  if (step?.grandEntranceOrder) {
     return 'mc.step.childrenEntrance';
   }
-  if (/first dance/.test(title)) {
+  if (step?.firstDanceMode) {
     return 'mc.step.childrenDancefloor';
   }
   return null;
+}
+
+// Undo labels are stored as data in the mutation log; translate the display
+// from the stable `op` instead of persisting a localized label.
+const UNDO_LABEL_KEYS = {
+  complete_step: 'mc.undo.stepCompleted',
+  swap: 'mc.undo.swappedSteps',
+  toggle_subtask: 'mc.undo.subtaskChanged',
+  select_speech: 'mc.undo.speechSelection',
+  media_override: 'mc.undo.mediaOverride',
+  game_results: 'mc.undo.gameResults',
+};
+
+function undoLabel(lastUndo, t) {
+  const key = UNDO_LABEL_KEYS[lastUndo?.op];
+  return key ? t(key) : lastUndo?.label ?? t('mc.undo.lastAction');
 }
 import SpeechesCard from '../components/SpeechesCard';
 import SpeechesChip from '../components/SpeechesChip';
@@ -129,16 +146,16 @@ export default function McMasterView({ model }) {
     override: mandatoryOverride,
   });
   const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
-  const isGameStep = Boolean(
-    currentStep &&
-      (currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title)),
-  );
+  const isGameStep = Boolean(currentStep && currentStep.optionalFlag === 'games');
   const hideMcCues = isPredefinedGameStep(currentStep);
   // #539: predefined game steps must not offer the More/swap control.
   const hideStepOverflow = isPredefinedGameStep(currentStep);
   const isCakeStep = Boolean(
     currentStep && cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId,
   );
+  const childrenWarning = childrenExpected
+    ? childrenWarningFor(currentStep, cakeProtocol)
+    : null;
   const groupPhotoBody =
     currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
       <GroupPhotoChecklist
@@ -302,10 +319,10 @@ export default function McMasterView({ model }) {
               <span>🗣️ {t('mc.step.cuesTitle')}</span>
             </h3>
             <ul className="space-y-2 text-sm text-ink">
-              {childrenExpected && childrenWarningFor(currentStep) ? (
+              {childrenWarning ? (
                 <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
                   <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
-                  <span>{t(childrenWarningFor(currentStep))}</span>
+                  <span>{t(childrenWarning)}</span>
                 </li>
               ) : null}
               <li className="flex items-start space-x-2 text-muted">
@@ -413,9 +430,7 @@ export default function McMasterView({ model }) {
       type="button"
       onClick={handleUnpair}
       title={
-        IS_PRODUCTION
-          ? 'Sign out of this role'
-          : 'Paired room PIN — click to forget this device'
+        IS_PRODUCTION ? t('mc.title.signOut') : t('mc.title.forgetPin')
       }
       className="inline-flex min-h-11 items-center text-muted hover:text-ink transition"
     >
@@ -542,10 +557,10 @@ export default function McMasterView({ model }) {
             </span>
           ) : null}
           <span
-            title="Timeline progress survives tablet lock or browser refresh"
+            title={t('mc.title.savedLocally')}
             className={`px-2.5 py-1.5 rounded-lg text-[10px] font-mono whitespace-nowrap border ${savedLocally ? 'bg-emerald-950/60 border-emerald-800 text-emerald-300' : 'bg-amber-950/70 border-amber-800 text-amber-300'}`}
           >
-            {savedLocally ? "💾 Saved locally" : "⚠️ Local save unavailable"}
+            {savedLocally ? t('mc.savedLocally') : t('mc.localSaveUnavailable')}
           </span>
         </div>
 
@@ -555,7 +570,11 @@ export default function McMasterView({ model }) {
             type="button"
             onClick={handleUndo}
             disabled={!canUndo}
-            title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
+            title={
+              canUndo
+                ? t('mc.undo.title', { label: undoLabel(lastUndo, t) })
+                : t('mc.undo.nothing')
+            }
             className={`min-h-12 px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
           >
             ↩ {t('mc.step.undo')}

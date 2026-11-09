@@ -208,16 +208,12 @@ export default function StageDeck({
 
   const handleUnpair = () => {
     if (isProduction) {
-      const confirmed = window.confirm(
-        'Sign out of this role? You will need the role PIN to rejoin.'
-      );
+      const confirmed = window.confirm(t('mc.confirm.signOut'));
       if (!confirmed) return;
       onSignOut?.();
       return;
     }
-    const confirmed = window.confirm(
-      "Forget the room PIN on this device? Timeline progress stays saved locally."
-    );
+    const confirmed = window.confirm(t('mc.confirm.forgetPin'));
     if (confirmed) pairing.unpair();
   };
 
@@ -361,24 +357,24 @@ export default function StageDeck({
 
   const handleSwap = () => {
     if (!currentStep || !nextEntry || swapBlock) return;
-    if (
-      swapWarn &&
-      !window.confirm(
-        'One of these steps carries a photographer cue. Swap anyway? The vendor may be waiting for that moment.',
-      )
-    ) {
+    if (swapWarn && !window.confirm(t('mc.confirm.swapCue'))) {
       return;
     }
     releaseLateFreeze();
-    setControlNotice(`Swapped ${currentStep.title} with ${nextEntry.step.title}.`);
+    setControlNotice(
+      t('mc.notice.swapped', {
+        current: currentStep.title,
+        next: nextEntry.step.title,
+      }),
+    );
     swapWithNext();
-    notifyUndo('Swapped steps');
+    notifyUndo(t('mc.undo.swappedSteps'));
   };
   const handleAdvance = () => {
     releaseLateFreeze();
     markCurrentDone();
-    setControlNotice('Step marked done.');
-    notifyUndo('Step completed');
+    setControlNotice(t('mc.notice.stepDone'));
+    notifyUndo(t('mc.undo.stepCompleted'));
   };
   const handleUndo = () => {
     if (!canUndo) return;
@@ -391,7 +387,7 @@ export default function StageDeck({
     }, 5000);
     undoLastStep();
     setUndoToast(null);
-    setControlNotice('Last action undone.');
+    setControlNotice(t('mc.notice.undone'));
   };
   const roleProps = {
     role: currentRole,

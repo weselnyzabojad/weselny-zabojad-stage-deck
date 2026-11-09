@@ -1,3 +1,5 @@
+import { useI18n } from '../i18n/useI18n';
+
 // Shared PIN / role sign-out control for role views that show the authenticated
 // identity. In production it displays the authenticated role; in local/demo
 // mode it displays the room PIN and forgets the pairing.
@@ -8,15 +10,12 @@ export default function RoleSignOutControl({
   onSignOut,
   className = '',
 }) {
+  const { t } = useI18n();
   return (
     <button
       type="button"
       onClick={onSignOut}
-      title={
-        isProduction
-          ? 'Sign out of this role'
-          : 'Paired room PIN — click to forget this device'
-      }
+      title={isProduction ? t('mc.title.signOut') : t('mc.title.forgetPin')}
       className={`text-muted transition hover:text-ink ${className}`}
     >
       {isProduction ? (

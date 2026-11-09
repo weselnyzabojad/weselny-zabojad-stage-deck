@@ -7,7 +7,7 @@ describe('issue #355 MC Cues children warnings and language tags', () => {
   const mc = read('src/views/McMasterView.jsx');
 
   it('adds a warning for cake, entrance and first dance when children are expected', () => {
-    expect(mc).toContain('childrenWarningFor(currentStep)');
+    expect(mc).toContain('childrenWarningFor(currentStep, cakeProtocol)');
     expect(mc).toContain("'mc.step.childrenCake'");
     expect(mc).toContain("'mc.step.childrenEntrance'");
     expect(mc).toContain("'mc.step.childrenDancefloor'");
