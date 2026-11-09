@@ -508,10 +508,26 @@ function mapImportantSongs(source) {
   });
 }
 
-function mapMusicPolicy(source, importantSongs) {
+function normalizeDiscoPoloPolicy(value) {
+  const clean = text(value)?.toLowerCase();
+  if (!clean) return null;
+  if (['no', 'false'].includes(clean)) return 'NO';
+  if (['yes', 'true'].includes(clean)) return 'YES';
+  if (['on request', 'on_request', 'on-request', 'request', 'by request'].includes(clean)) {
+    return 'ON_REQUEST';
+  }
+  return null;
+}
+
+function mapMusicPolicy(source, importantSongs, warnings = []) {
   const windowStart = clock(kv(source, 'Request window start'));
   const windowEnd = clock(kv(source, 'Request window end'));
+  const parsedDiscoPolo = normalizeDiscoPoloPolicy(kv(source, 'Disco Polo policy'));
+  if (!parsedDiscoPolo) {
+    warnings.push('MUSIC POLICY: Disco Polo policy missing or unrecognised; defaulting to NO');
+  }
   return {
+    discoPoloPolicy: parsedDiscoPolo ?? 'NO',
     mustPlay: subTable(source, 'Must Play', ['Song ID', 'Track', 'Note']).map((row) => ({
       id: slug(row['Song ID']),
       track: text(row.Track),
@@ -694,7 +710,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const importantSongs = mapImportantSongs(section(parsed, 'IMPORTANT SONGS'));
   const musicSource = section(parsed, 'MUSIC POLICY');
-  const musicPolicy = musicSource ? mapMusicPolicy(musicSource, importantSongs) : undefined;
+  const musicPolicy = musicSource ? mapMusicPolicy(musicSource, importantSongs, warnings) : undefined;
   const guestRequests = section(parsed, 'GUEST REQUESTS');
   if (guestRequests && musicPolicy) {
     const open = bool(kv(guestRequests, 'Requests open'));

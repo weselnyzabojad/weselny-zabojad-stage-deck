@@ -470,6 +470,7 @@
     }
   ],
   "musicPolicy": {
+    "discoPoloPolicy": "ON_REQUEST",
     "mustPlay": [
       {
         "id": "grand_entrance",

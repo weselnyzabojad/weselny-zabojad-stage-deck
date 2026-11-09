@@ -247,6 +247,7 @@ Guest coverage consent: Couple approved; announce before candid coverage.
 Requests open: true
 Request window start: 20:00
 Request window end: 23:00
+Disco Polo policy: No
 Clean versions: true
 Licensing: Venue ZAIKS license confirmed.
 

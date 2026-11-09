@@ -158,6 +158,9 @@ export function resolveMusicPolicy(
     typeof policy?.requestsOpen === 'boolean' ? policy.requestsOpen : null;
   const cleanVersions =
     typeof policy?.cleanVersions === 'boolean' ? policy.cleanVersions : null;
+  const discoPoloPolicy = ['NO', 'YES', 'ON_REQUEST'].includes(policy?.discoPoloPolicy)
+    ? policy.discoPoloPolicy
+    : 'NO';
   const licensing = text(policy?.licensing);
   const start = text(policy?.requestWindow?.start);
   const end = text(policy?.requestWindow?.end);
@@ -187,6 +190,7 @@ export function resolveMusicPolicy(
     requestWindow,
     requestStatus,
     cleanVersions,
+    discoPoloPolicy,
     licensing,
   };
 }

@@ -297,6 +297,7 @@ export const DEMO_WEDDING = {
     notes: "Full mass; MC introduces the couple at the church door.",
   },
   musicPolicy: {
+    discoPoloPolicy: "ON_REQUEST",
     mustPlay: [
       { id: "first_dance", track: "Perfect - Ed Sheeran", note: "First dance — duet version." },
       { id: "grand_entrance", track: "Marry You - Bruno Mars", note: "Grand entrance cue." }
