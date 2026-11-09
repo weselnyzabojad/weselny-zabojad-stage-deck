@@ -217,6 +217,39 @@ export const DEMO_WEDDING = {
     { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
   ],
   childrenExpected: true,
+  attractions: [
+    {
+      id: "photobooth",
+      type: "PHOTO_BOOTH",
+      name: "Fotobudka",
+      booked: true,
+      startTime: "20:00",
+      endTime: "23:30",
+      location: "Garden",
+      provider: "Foto Fun",
+      notes: "Unlimited prints"
+    },
+    {
+      id: "guestbook",
+      type: "GUEST_BOOK",
+      name: "Guest book",
+      booked: true,
+      startTime: "18:00",
+      endTime: "23:30",
+      location: "Hall foyer",
+      notes: "Signing pens on the table"
+    },
+    {
+      id: "polaroids",
+      type: "POLAROIDS",
+      name: "Polaroids / Instax",
+      booked: true,
+      startTime: "19:00",
+      endTime: "23:00",
+      location: "Garden",
+      notes: "One photo per guest"
+    }
+  ],
   mandatorySteps: {
     firstGuestsArrival: "15:30",
     cakeServiceMode: "KITCHEN_RETURN",
