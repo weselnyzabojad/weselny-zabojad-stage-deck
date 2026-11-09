@@ -885,17 +885,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     }
   }
 
-  const preWeddingTodos = table(section(parsed, 'PRE-WEDDING TODOS'), [
-    'Todo ID',
-    'Task',
-    'Done',
-    'Due date',
-    'Owner',
-  ]).map((row) => ({
-    task: text(row.Task) ?? row['Todo ID'],
-    done: bool(row.Done, false),
-  }));
-
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
     ? {
@@ -1001,7 +990,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     speeches,
     cake,
     games,
-    preWeddingTodos,
     privacy,
     mandatorySteps,
     ceremony: ceremony.type ? ceremony : undefined,

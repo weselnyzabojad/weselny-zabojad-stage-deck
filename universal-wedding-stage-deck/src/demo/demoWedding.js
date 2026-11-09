@@ -488,11 +488,6 @@ export const DEMO_WEDDING = {
       visibleToRoles: ["mc", "speaker"]
     }
   ],
-  preWeddingTodos: [
-    { task: "Confirm Test Wiedzy questions with witnesses", done: true },
-    { task: "Check XLR cables at 16:15", done: false },
-    { task: "Confirm the Instax cameras and guestbook are packed", done: false }
-  ],
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "FLEXIBLE", location: "Garden", dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "FLEXIBLE", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
@@ -534,13 +529,9 @@ export const INITIAL_LIVE_STATE = {
 
 export function buildInitialLiveState(wedding) {
   const base = wedding.liveSyncState ?? {};
-  const preWedding = Object.fromEntries(
-    (wedding.preWeddingTodos ?? []).map((todo) => [todo.task, todo.done])
-  );
   return {
     ...base,
     checked_subtasks: {
-      ...preWedding,
       ...(base.checked_subtasks ?? {})
     }
   };

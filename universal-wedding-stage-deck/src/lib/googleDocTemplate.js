@@ -157,13 +157,6 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Courses, dietary counts, vendor meals and service anchors.',
   },
   {
-    order: 22,
-    marker: 'PRE-WEDDING TODOS',
-    required: false,
-    schemaPath: ['preWeddingTodos'],
-    purpose: 'Pre-flight checklist with owners and due dates.',
-  },
-  {
     order: 23,
     marker: 'PRIVACY',
     required: false,
