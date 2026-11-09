@@ -36,7 +36,7 @@ describe('issue #159 pocket header', () => {
     );
 
     expect(html).toContain('MC');
-    expect(html).toContain('>Sync<');
+    expect(html).toContain('aria-label="Sync:');
     expect(html).toContain('>EN<');
     expect(html).toContain('>FR<');
     expect(html).toContain('>PL<');

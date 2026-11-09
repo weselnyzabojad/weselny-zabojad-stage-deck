@@ -59,23 +59,40 @@ export default function RoleShell({
     <div className="font-body min-h-dvh flex flex-col bg-page text-ink">
       <header className="bg-card border-b border-line px-3 py-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink">
-            {t(`role.${role}.short`)}
-          </span>
           <div className="flex min-w-0 items-center gap-1.5">
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-            <button
-              type="button"
-              aria-expanded={detailsOpen}
-              aria-controls={detailsId}
-              onClick={() => setDetailsOpen((open) => !open)}
-              className="inline-flex min-h-11 items-center gap-1 rounded border border-line-strong bg-raised px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink"
-            >
-              {t('pocket.details')}
-              <span aria-hidden="true">{detailsOpen ? '▴' : '▾'}</span>
-            </button>
+            <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink">
+              {t(`role.${role}.short`)}
+            </span>
+            {childrenExpected ? (
+              <ChildrenExpectedBadge
+                wedding={{ childrenExpected: true }}
+                role={childrenRole ?? role}
+                compact
+                allowMc={allowMcChildren}
+              />
+            ) : null}
+            <SyncStatusBadge
+              status={syncStatus}
+              error={syncError}
+              remoteUpdatedAt={remoteUpdatedAt}
+              outbox={outbox}
+              compact
+            />
           </div>
+          <button
+            type="button"
+            aria-expanded={detailsOpen}
+            aria-controls={detailsId}
+            onClick={() => setDetailsOpen((open) => !open)}
+            className="inline-flex min-h-11 items-center gap-1 rounded border border-line-strong bg-raised px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink"
+          >
+            {t('pocket.details')}
+            <span aria-hidden="true">{detailsOpen ? '▴' : '▾'}</span>
+          </button>
+        </div>
+        <div className="mt-1 flex items-center justify-end gap-1.5">
+          <LanguageToggle />
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         </div>
 
         <div
@@ -84,25 +101,9 @@ export default function RoleShell({
           className="mt-1.5 flex flex-col gap-1.5 border-t border-line pt-1.5"
         >
             <TopBarCenterIdentity wedding={wedding} compact />
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-                {viewSwitch}
-                {authControl}
-                {childrenExpected ? (
-                  <ChildrenExpectedBadge
-                    wedding={{ childrenExpected: true }}
-                    role={childrenRole ?? role}
-                    inline
-                    allowMc={allowMcChildren}
-                  />
-                ) : null}
-              </div>
-              <SyncStatusBadge
-                status={syncStatus}
-                error={syncError}
-                remoteUpdatedAt={remoteUpdatedAt}
-                outbox={outbox}
-              />
+            <div className="flex flex-wrap items-center gap-1.5">
+              {viewSwitch}
+              {authControl}
             </div>
             {culturalRules || speechMode != null ? (
               <CulturalRulesBar
