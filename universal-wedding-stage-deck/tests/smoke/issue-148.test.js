@@ -60,7 +60,7 @@ describe('issue #148 public guest song requests', () => {
     );
   });
 
-  it('submits only roomCode, song and artist', async () => {
+  it('submits roomCode, song, artist and the guest device id', async () => {
     let request = null;
     const fetchImpl = async (url, options) => {
       request = { url, options };
@@ -72,6 +72,7 @@ describe('issue #148 public guest song requests', () => {
       roomCode: 'ABC123',
       song: 'Perfect',
       artist: 'Ed Sheeran',
+      deviceId: 'device-1234',
       fetchImpl,
     });
 
@@ -81,6 +82,7 @@ describe('issue #148 public guest song requests', () => {
       roomCode: 'abc123',
       song: 'Perfect',
       artist: 'Ed Sheeran',
+      device_id: 'device-1234',
     });
     expect(request.options.headers.Authorization).toBe('Bearer anon-key');
   });
