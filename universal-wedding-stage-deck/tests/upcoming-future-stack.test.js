@@ -122,12 +122,15 @@ describe('upcoming future stack (#181)', () => {
     expect(stack.hidden.future).toBe(2);
   });
 
-  it('defines the mirrored overlap and scale behind the next step', () => {
+  it('defines the mirrored overlap and scale behind the next step on wide layouts', () => {
     const css = read('src/index.css');
 
     expect(css).toContain('[data-focus-zone="future"] [data-focus-depth="2"]');
     expect(css).toContain('margin-top: -1rem');
     expect(css).toContain('scale(0.95)');
     expect(css).toContain('transform-origin: 50% 0');
+    expect(css.indexOf('@media (min-width: 640px)')).toBeLessThan(
+      css.indexOf('[data-focus-zone="future"] [data-focus-depth="2"]'),
+    );
   });
 });
