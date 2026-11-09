@@ -134,6 +134,8 @@ export default function McMasterView({ model }) {
       (currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title)),
   );
   const hideMcCues = isPredefinedGameStep(currentStep);
+  // #539: predefined game steps must not offer the More/swap control.
+  const hideStepOverflow = isPredefinedGameStep(currentStep);
   const isCakeStep = Boolean(
     currentStep && cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId,
   );
@@ -195,12 +197,14 @@ export default function McMasterView({ model }) {
           className={`min-h-12 flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
-      <CurrentStepOverflow
-        onSwap={handleSwap}
-        swapBlock={swapBlock}
-        nextEntry={nextEntry}
-        currentStep={currentStep}
-      />
+      {hideStepOverflow ? null : (
+        <CurrentStepOverflow
+          onSwap={handleSwap}
+          swapBlock={swapBlock}
+          nextEntry={nextEntry}
+          currentStep={currentStep}
+        />
+      )}
       {script ? (
         <button
           type="button"
@@ -366,12 +370,14 @@ export default function McMasterView({ model }) {
         </div>
       ) : null}
 
-      <CurrentStepOverflow
-        onSwap={handleSwap}
-        swapBlock={swapBlock}
-        nextEntry={nextEntry}
-        currentStep={currentStep}
-      />
+      {hideStepOverflow ? null : (
+        <CurrentStepOverflow
+          onSwap={handleSwap}
+          swapBlock={swapBlock}
+          nextEntry={nextEntry}
+          currentStep={currentStep}
+        />
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
         <div className="flex flex-wrap items-center gap-2">
