@@ -68,6 +68,9 @@
         },
         "speedFoto": {
           "$ref": "https://weselnyzabojad.example/schemas/domains/speed-foto.json#/properties/speedFoto"
+        },
+        "guestCoverage": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/guest-coverage.json#/properties/guestCoverage"
         }
       },
       "required": [
