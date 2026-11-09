@@ -304,7 +304,7 @@
       }
     },
     "photoPlan": {
-      "$ref": "#/$defs/photoPlan"
+      "$ref": "https://weselnyzabojad.example/schemas/domains/photo-plan.json#/properties/photoPlan"
     },
     "oczepiny": {
       "$ref": "#/$defs/oczepiny"
