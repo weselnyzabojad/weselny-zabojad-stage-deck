@@ -7,7 +7,9 @@ export default function TopBarRoleLabel({ role = 'mc', tier = null, className = 
   const icon = ROLES[role]?.icon ?? ROLES.mc.icon;
   const label =
     role === 'dj'
-      ? `DJ ${String(tier).toUpperCase() === 'VIP' ? 'VIP' : 'Standard'}`
+      ? String(tier).toUpperCase() === 'VIP'
+        ? 'DJ VIP'
+        : 'DJ'
       : roleLabel(role);
 
   return (

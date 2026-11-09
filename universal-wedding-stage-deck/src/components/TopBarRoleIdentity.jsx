@@ -10,7 +10,9 @@ export default function TopBarRoleIdentity({ role = 'mc', tier = null, className
   const topBarRole = role === 'photo1' || role === 'photo2' ? 'photo' : role;
   const short =
     role === 'dj'
-      ? `DJ ${String(tier).toUpperCase() === 'VIP' ? 'VIP' : 'Standard'}`
+      ? String(tier).toUpperCase() === 'VIP'
+        ? 'DJ VIP'
+        : 'DJ'
       : roleShort(topBarRole);
 
   return (
