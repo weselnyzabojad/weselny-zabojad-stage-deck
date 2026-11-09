@@ -156,6 +156,7 @@ export default function McMasterView({ model }) {
   const childrenWarning = childrenExpected
     ? childrenWarningFor(currentStep, cakeProtocol)
     : null;
+  const mcCues = currentStep?.mcCues ?? [];
   const groupPhotoBody =
     currentStep?.id && currentStep.id === groupPhotoStepId && photoPlan?.groupPhotos ? (
       <GroupPhotoChecklist
@@ -325,9 +326,24 @@ export default function McMasterView({ model }) {
                   <span>{t(childrenWarning)}</span>
                 </li>
               ) : null}
-              <li className="flex items-start space-x-2 text-muted">
-                <span>{t('mc.cues.empty')}</span>
-              </li>
+              {mcCues.map((cue, index) => (
+                <li
+                  key={`${cue.language ?? 'cue'}_${index}`}
+                  className="flex items-start space-x-2"
+                >
+                  {cue.language ? (
+                    <span className="mt-0.5 shrink-0 rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
+                      {cue.language}
+                    </span>
+                  ) : null}
+                  <span>{cue.text}</span>
+                </li>
+              ))}
+              {mcCues.length === 0 && !childrenWarning ? (
+                <li className="flex items-start space-x-2 text-muted">
+                  <span>{t('mc.cues.empty')}</span>
+                </li>
+              ) : null}
             </ul>
           </div>
         </div>

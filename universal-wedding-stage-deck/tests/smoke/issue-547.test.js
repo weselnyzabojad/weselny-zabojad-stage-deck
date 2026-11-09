@@ -120,7 +120,7 @@ describe('issue #547 canonical step vocabulary & Plan-of-the-day mapping', () =>
     expect(steps[1].type).toBe('HARD_ANCHOR');
     expect(steps[2].optionalFlag).toBe('oczepiny');
 
-    const cues = result.cartridge.extensions.mcCues['step_01'];
+    const cues = result.cartridge.steps.find((step) => step.id === 'step_01').mcCues;
     expect(cues.map((cue) => cue.text)).toEqual([
       'Toast et lancer les verres derri\u00e8re soi.',
       'Sto lat!',
