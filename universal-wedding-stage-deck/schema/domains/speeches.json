@@ -35,6 +35,41 @@
       "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
       "description": "24-hour local clock time as HH:MM."
     },
+    "redaction": {
+      "type": "object",
+      "required": [
+        "id",
+        "alg",
+        "iv",
+        "ciphertext"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "alg": {
+          "type": "string",
+          "enum": [
+            "AES-256-GCM"
+          ]
+        },
+        "iv": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ciphertext": {
+          "type": "string",
+          "minLength": 1
+        },
+        "keyVersion": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      }
+    },
     "speech": {
       "type": "object",
       "required": [
@@ -116,6 +151,13 @@
             },
             "source": {
               "type": "string"
+            },
+            "redactions": {
+              "type": "array",
+              "description": "Secret spans replaced in text by {{secret:<id>}} tokens. Values are AES-256-GCM ciphertext only.",
+              "items": {
+                "$ref": "#/$defs/redaction"
+              }
             },
             "sourceDoc": {
               "type": "object",

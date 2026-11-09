@@ -247,7 +247,7 @@ describe('issue #168 admin-only wiring and secret hygiene', () => {
     expect(source).toContain('authorizeAdminSession');
     expect(source).toContain("from('app_admins')");
     expect(source).toContain('decodeJwt(token)');
-    expect(source).toContain("['status', 'metadata', 'list', 'children', 'preview', 'check']");
+    expect(source).toContain("'parse_speech'");
     expect(source).toContain('GOOGLE_SERVICE_ACCOUNT_EMAIL');
     expect(source).toContain('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY');
     expect(source).toContain('GOOGLE_DRIVE_TEST_FILE_ID');

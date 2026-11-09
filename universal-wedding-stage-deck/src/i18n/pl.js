@@ -664,6 +664,10 @@ const pl = {
   'speaker.nowSpeaking': 'Teraz mówi',
   'speaker.scriptMissingTitle': 'Skrypt nie został jeszcze dostarczony',
   'speaker.scriptMissingBody': 'Sprawdź z MC; tekst można jeszcze dodać do cartridge’u.',
+  'speaker.unlockScript': 'Odblokuj przemówienie',
+  'speaker.revealSecret': 'Pokaż',
+  'speaker.hideSecret': 'Ukryj sekrety',
+  'speaker.unlockError': 'Nie udało się odszyfrować przemówienia.',
   'speaker.footer': 'Skrypt tylko do odczytu · wyświetlana jest tylko przypisana mowa · brak sterowania timeline',
 };
 

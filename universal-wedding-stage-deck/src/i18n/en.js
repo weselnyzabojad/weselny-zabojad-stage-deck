@@ -662,6 +662,10 @@ const en = {
   'speaker.nowSpeaking': 'Now speaking',
   'speaker.scriptMissingTitle': 'Script not provided yet',
   'speaker.scriptMissingBody': 'Check with the MC; the text can still be added to the cartridge.',
+  'speaker.unlockScript': 'Unlock speech',
+  'speaker.revealSecret': 'Reveal',
+  'speaker.hideSecret': 'Hide secrets',
+  'speaker.unlockError': 'Could not decrypt this speech.',
   'speaker.footer': 'Read-only script · only the assigned speech is shown · no timeline controls',
 };
 

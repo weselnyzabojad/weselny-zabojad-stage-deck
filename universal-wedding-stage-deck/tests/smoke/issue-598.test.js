@@ -44,7 +44,7 @@ describe('issue #598 speech Google Doc import', () => {
 
   it('wires preview, import and publish in the admin panel', () => {
     const panel = read('src/admin/AdminSpeechesPanel.jsx');
-    expect(panel).toContain('previewDriveSource');
+    expect(panel).toContain('importSpeechSource');
     expect(panel).toContain('publishWedding');
     expect(panel).toContain('getRevisionContext');
     expect(panel).toContain('sourceDoc');

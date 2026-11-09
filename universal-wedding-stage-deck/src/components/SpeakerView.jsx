@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -17,6 +17,120 @@ import {
   clearSpeakerScript,
   saveSpeakerScript,
 } from '../lib/speakerCache.js';
+import { fetchSpeechKey } from '../lib/speechKeyApi.js';
+import { loadSpeechKey, saveSpeechKey, speechKeyId } from '../lib/speechKeyStore.js';
+import { decryptSpeechRedaction, importSpeechKey, splitSecretTokens } from '../lib/speechSecrets.js';
+
+function SecretScript({ text, redactions, weddingId, speechId, accessToken }) {
+  const { t } = useI18n();
+  const [key, setKey] = useState(null);
+  const [revealed, setRevealed] = useState({});
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const cacheId = speechKeyId({ weddingId, speechId });
+
+  useEffect(() => {
+    let active = true;
+    loadSpeechKey(cacheId).then((cached) => {
+      if (active && cached) setKey(cached);
+    });
+    return () => {
+      active = false;
+    };
+  }, [cacheId]);
+
+  const secrets = Array.isArray(redactions) ? redactions : [];
+  if (secrets.length === 0) {
+    return (
+      <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
+        {text}
+      </div>
+    );
+  }
+
+  const unlock = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      const result = await fetchSpeechKey({ accessToken, speechId });
+      const imported = await importSpeechKey(result.key);
+      await saveSpeechKey(cacheId, imported);
+      setKey(imported);
+    } catch (err) {
+      setError(err.message ?? t('speaker.unlockError'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const reveal = async (redactionId) => {
+    const redaction = secrets.find((entry) => entry.id === redactionId);
+    if (!key || !redaction) return;
+    setBusy(true);
+    setError('');
+    try {
+      const plaintext = await decryptSpeechRedaction(key, {
+        weddingId,
+        speechId,
+        redaction,
+      });
+      setRevealed((current) => ({ ...current, [redactionId]: plaintext ?? '' }));
+    } catch {
+      setError(t('speaker.unlockError'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const parts = splitSecretTokens(text);
+  return (
+    <div>
+      <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
+        {parts.map((part, index) =>
+          part.type === 'text' ? (
+            <span key={`text-${index}`}>{part.value}</span>
+          ) : revealed[part.id] != null ? (
+            <span key={`secret-${part.id}`}>{revealed[part.id]}</span>
+          ) : (
+            <button
+              key={`secret-${part.id}`}
+              type="button"
+              onClick={() => (key ? reveal(part.id) : unlock())}
+              disabled={busy}
+              className="mx-0.5 inline-flex items-center rounded-full border border-line-strong bg-raised px-2 py-0.5 align-baseline font-mono text-sm text-muted transition hover:text-ink disabled:opacity-40"
+              aria-label={t('speaker.revealSecret')}
+              title={t('speaker.revealSecret')}
+            >
+              •••••
+            </button>
+          ),
+        )}
+      </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        {!key ? (
+          <button
+            type="button"
+            onClick={unlock}
+            disabled={busy}
+            className="rounded border border-line-strong bg-raised px-3 py-1 font-semibold text-ink disabled:opacity-40"
+          >
+            {t('speaker.unlockScript')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setRevealed({})}
+            disabled={busy}
+            className="rounded border border-line-strong bg-raised px-3 py-1 font-semibold text-ink disabled:opacity-40"
+          >
+            {t('speaker.hideSecret')}
+          </button>
+        )}
+        {error ? <span className="text-alert-soft">{error}</span> : null}
+      </div>
+    </div>
+  );
+}
 
 // Read-only speaker teleprompter. It uses large text and shows only the speech
 // the MC has made live, never the timeline controls or other speeches.
@@ -36,6 +150,7 @@ export default function SpeakerView({
   onToggleTheme,
   pin = null,
   roomCode = null,
+  accessToken = null,
 }) {
   const { t } = useI18n();
 
@@ -134,9 +249,13 @@ export default function SpeakerView({
 
             {activeSpeech.script.text ? (
               <section className="max-w-prose">
-                <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
-                  {activeSpeech.script.text}
-                </div>
+                <SecretScript
+                  text={activeSpeech.script.text}
+                  redactions={activeSpeech.script.redactions}
+                  weddingId={wedding?.weddingId}
+                  speechId={activeSpeech.id}
+                  accessToken={accessToken}
+                />
               </section>
             ) : (
               <section className="rounded-xl border border-amber-800 bg-amber-950/40 p-4 text-center">

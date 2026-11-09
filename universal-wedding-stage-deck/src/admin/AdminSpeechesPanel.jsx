@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { validateCartridge } from '../lib/cartridgeImporter';
 import { buildSourceDoc, parseDriveFileId, sourceDocChanged } from '../lib/speechSource';
-import { getRevisionContext, previewDriveSource, publishWedding } from './adminApi';
+import { getRevisionContext, importSpeechSource, publishWedding } from './adminApi';
 
 export default function AdminSpeechesPanel({ wedding, readOnly = false, onChanged }) {
   const [open, setOpen] = useState(false);
@@ -78,7 +78,10 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     }
     setBusy(true);
     try {
-      const result = await previewDriveSource(fileId);
+      const result = await importSpeechSource(fileId, {
+        weddingId: wedding.wedding_id,
+        speechId: speech.id,
+      });
       setPreviews((current) => ({ ...current, [speech.id]: result }));
     } catch (err) {
       setError(err.message ?? 'Could not preview the Google Doc.');
@@ -106,6 +109,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
         ready: Boolean(String(result.text ?? '').trim()),
         source: 'GOOGLE_DRIVE',
         sourceDoc,
+        redactions: Array.isArray(result.redactions) ? result.redactions : [],
       },
     });
     setMessage(`Imported ${result.file.name ?? speech.id}.`);
