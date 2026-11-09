@@ -13,13 +13,6 @@
       "civilTwilightEnd": "20:48",
       "status": "LIVE"
     },
-    "miniSession": {
-      "enabled": true,
-      "latestStartMinutesBeforeSunset": 30,
-      "durationMin": 20,
-      "location": "Garden",
-      "backupLocation": "Ballroom window"
-    },
     "groupPhotos": {
       "location": "OUTDOOR",
       "groups": [

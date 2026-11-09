@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/mini-session.json",
+  "title": "Photo mini-session domain",
+  "description": "Mini-session photo plan support mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "miniSession": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "latestStartMinutesBeforeSunset": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "durationMin": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "location": {
+          "type": "string"
+        },
+        "backupLocation": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "miniSession"
+  ]
+}

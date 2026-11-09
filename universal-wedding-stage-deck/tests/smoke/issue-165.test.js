@@ -159,6 +159,9 @@ describe('issue #165 shared schema and semantic parity', () => {
     const photoPlanDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'photo-plan.json'), 'utf8'),
     );
+    const miniSessionDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'mini-session.json'), 'utf8'),
+    );
     const validate = makeCartridgeValidator(Ajv2020, schema, [
       oczepinyDomain,
       firstDanceDomain,
@@ -166,6 +169,7 @@ describe('issue #165 shared schema and semantic parity', () => {
       culturalRulesDomain,
       coupleProfileDomain,
       photoPlanDomain,
+      miniSessionDomain,
     ]);
 
     const valid = await validate(cartridge());

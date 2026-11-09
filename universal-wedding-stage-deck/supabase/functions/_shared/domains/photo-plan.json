@@ -59,6 +59,9 @@
             "timezone",
             "status"
           ]
+        },
+        "miniSession": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/mini-session.json#/properties/miniSession"
         }
       },
       "required": [
