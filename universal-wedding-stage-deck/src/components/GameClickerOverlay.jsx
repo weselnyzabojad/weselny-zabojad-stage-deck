@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 import ModalShell from './ModalShell';
 import {
   GAME_LEVELS,
+  buildGameResultsExport,
   gameCounters,
   orderGameItems,
   unansweredItems,
@@ -11,10 +12,20 @@ import {
 const LANGS = ['EN', 'PL', 'FR'];
 
 // One-question-at-a-time game runner for both predefined games.
-export default function GameClickerOverlay({ open, game, onClose }) {
+export default function GameClickerOverlay({
+  open,
+  game,
+  weddingId = null,
+  results = null,
+  onResultsChange = () => {},
+  onClose,
+}) {
   const { t } = useI18n();
   const [lang, setLang] = useState('EN');
-  const [answered, setAnswered] = useState({});
+  const [answered, setAnswered] = useState(() => results?.questions ?? {});
+  const [startedAt, setStartedAt] = useState(
+    () => results?.startedAt ?? new Date().toISOString(),
+  );
   const [displayId, setDisplayId] = useState(null);
   const [overrideId, setOverrideId] = useState(null);
   const [revealed, setRevealed] = useState(false);
@@ -32,8 +43,27 @@ export default function GameClickerOverlay({ open, game, onClose }) {
   const isCompatibility = game?.gameType === 'TEST_ZGODNOSCI';
   const complete = Boolean(current) === false && remaining.length === 0;
 
+  const persist = (nextAnswered, { completed = false } = {}) => {
+    if (!game?.id) return;
+    const entries = Object.values(nextAnswered);
+    const compatibility = game.gameType === 'TEST_ZGODNOSCI';
+    onResultsChange(game.id, {
+      gameId: game.id,
+      startedAt,
+      updatedAt: new Date().toISOString(),
+      completedAt: completed ? new Date().toISOString() : null,
+      totalQuestions: items.length,
+      answeredCount: entries.length,
+      ...(compatibility
+        ? { score: entries.filter((entry) => entry.isCompatible === true).length }
+        : {}),
+      questions: nextAnswered,
+    });
+  };
+
   useEffect(() => {
-    setAnswered({});
+    setAnswered(results?.questions ?? {});
+    setStartedAt(results?.startedAt ?? new Date().toISOString());
     setDisplayId(null);
     setOverrideId(null);
     setRevealed(false);
@@ -48,20 +78,27 @@ export default function GameClickerOverlay({ open, game, onClose }) {
 
   const reveal = useCallback(() => {
     if (!current) return;
+    const next = {
+      ...answered,
+      [current.id]: { answeredAt: new Date().toISOString(), revealed: true },
+    };
     setRevealed(true);
-    setAnswered((state) => ({ ...state, [current.id]: { id: current.id } }));
-  }, [current]);
+    setAnswered(next);
+    persist(next, { completed: Object.keys(next).length >= items.length });
+  }, [answered, current, items.length, persist]);
 
   const recordCompatibility = useCallback(
     (isCompatible) => {
       if (!current) return;
-      setAnswered((state) => ({
-        ...state,
-        [current.id]: { id: current.id, isCompatible },
-      }));
+      const next = {
+        ...answered,
+        [current.id]: { answeredAt: new Date().toISOString(), isCompatible },
+      };
+      setAnswered(next);
+      persist(next, { completed: Object.keys(next).length >= items.length });
       advance();
     },
-    [advance, current],
+    [advance, answered, current, items.length, persist],
   );
 
   const navigate = useCallback(
@@ -116,10 +153,37 @@ export default function GameClickerOverlay({ open, game, onClose }) {
   const reset = () => {
     if (typeof window !== 'undefined' && !window.confirm(t('game.resetConfirm'))) return;
     setAnswered({});
+    setStartedAt(new Date().toISOString());
     setDisplayId(null);
     setOverrideId(null);
     setRevealed(false);
     setLevelFilter('ALL');
+    onResultsChange(game?.id ?? null, null);
+  };
+
+  const exportResults = () => {
+    if (typeof window === 'undefined') return;
+    const entries = Object.values(answered);
+    const result = {
+      gameId: game?.id ?? null,
+      startedAt,
+      updatedAt: new Date().toISOString(),
+      completedAt: remaining.length === 0 ? new Date().toISOString() : null,
+      totalQuestions: items.length,
+      answeredCount: entries.length,
+      ...(isCompatibility
+        ? { score: entries.filter((entry) => entry.isCompatible === true).length }
+        : {}),
+      questions: answered,
+    };
+    const payload = buildGameResultsExport({ weddingId, game, result });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${weddingId ?? 'wedding'}-${game?.id ?? 'game'}-results.json`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -147,6 +211,13 @@ export default function GameClickerOverlay({ open, game, onClose }) {
               {t('game.score', { score })}
             </span>
           ) : null}
+          <button
+            type="button"
+            onClick={exportResults}
+            className="rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-ink"
+          >
+            {t('game.export')}
+          </button>
           <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
             {LANGS.map((option) => (
               <button

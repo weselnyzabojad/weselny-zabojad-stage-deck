@@ -274,6 +274,7 @@ const fr = {
   'game.completeTitle': 'Jeu terminé',
   'game.completeScore': '{score} réponses identiques sur {total}',
   'game.completeCount': '{total} questions répondues',
+  'game.export': 'Exporter les résultats JSON',
   'game.reset': 'Réinitialiser',
   'game.resetConfirm': 'Réinitialiser ce jeu et effacer ses résultats ?',
   'game.help': '← → naviguer · Espace révèle · M/N identique · Échap ferme',

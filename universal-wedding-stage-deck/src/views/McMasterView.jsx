@@ -97,6 +97,7 @@ export default function McMasterView({ model }) {
   speechMode,
   speeches,
   selectSpeech,
+  setGameResults,
   isComplete,
   handleSwap,
   swapBlock,
@@ -564,7 +565,14 @@ export default function McMasterView({ model }) {
         <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
       )}
       {overlay === "game" && isGameStep && (
-        <GameClickerOverlay open game={game} onClose={closeOverlay} />
+        <GameClickerOverlay
+          open
+          game={game}
+          weddingId={WEDDING.weddingId}
+          results={currentStep?.gameId ? liveState?.game_results?.[currentStep.gameId] ?? null : null}
+          onResultsChange={setGameResults}
+          onClose={closeOverlay}
+        />
       )}
       <UndoToast
         toast={undoToast}

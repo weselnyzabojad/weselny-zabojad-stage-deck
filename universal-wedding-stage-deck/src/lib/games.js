@@ -108,3 +108,19 @@ export function gameCounters(items = [], answered = {}) {
     currentNumber: Math.min(answeredCount + 1, items.length || 1),
   };
 }
+
+export function buildGameResultsExport({ weddingId = null, game = null, result = null } = {}) {
+  return {
+    weddingId,
+    gameId: result?.gameId ?? game?.id ?? null,
+    title: game?.title ?? null,
+    gameType: game?.gameType ?? null,
+    startedAt: result?.startedAt ?? null,
+    updatedAt: result?.updatedAt ?? null,
+    completedAt: result?.completedAt ?? null,
+    totalQuestions: result?.totalQuestions ?? game?.items?.length ?? 0,
+    answeredCount: result?.answeredCount ?? 0,
+    ...(typeof result?.score === 'number' ? { score: result.score } : {}),
+    questions: result?.questions ?? {},
+  };
+}

@@ -11,6 +11,7 @@ import {
   swapStepWithNext,
   toggleSubtask as toggleSubtaskState,
   undoSnapshot,
+  updateGameResult,
 } from '../lib/liveStageState';
 import { reconcileLiveStateWithCartridge } from '../lib/cartridgeReconciliation';
 import { getDeviceId } from '../lib/deviceId';
@@ -456,7 +457,10 @@ export function useLiveStageState({
       };
       return {
         state: next,
-        undo: [...current.undo.slice(-(MAX_UNDO_STEPS - 1)), entry],
+        undo:
+          meta.undo === false
+            ? current.undo
+            : [...current.undo.slice(-(MAX_UNDO_STEPS - 1)), entry],
       };
     });
   }, []);
@@ -518,6 +522,18 @@ export function useLiveStageState({
     [apply, actor],
   );
 
+  // Game results are durable state but never an undoable timeline command.
+  const setGameResults = useCallback(
+    (gameId, result) => {
+      apply((state) => updateGameResult(state, gameId, result, actor), {
+        op: 'game_results',
+        label: 'Game results',
+        undo: false,
+      });
+    },
+    [apply, actor],
+  );
+
   // Shared, audited media override (for example the mini-session time chosen
   // by a photographer). Stored in live state so every media device receives it.
   const setMediaOverride = useCallback(
@@ -557,6 +573,7 @@ export function useLiveStageState({
     sendStagePing,
     swapWithNext,
     selectSpeech,
+    setGameResults,
     setMediaOverride,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
