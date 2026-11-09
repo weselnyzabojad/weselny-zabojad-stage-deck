@@ -3272,7 +3272,6 @@ sub-blocks.
 | --- | --- | --- | --- |
 | miniSession | `schema/domains/mini-session.json` | `photoPlan.miniSession` | [#572](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/572) |
 | groupPhotos | `schema/domains/group-photos.json` | `photoPlan.groupPhotos` | [#573](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/573) |
-| speedFoto | `schema/domains/speed-foto.json` | `photoPlan.speedFoto` | [#574](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/574) |
 | guestCoverage | `schema/domains/guest-coverage.json` | `photoPlan.guestCoverage` | [#575](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/575) |
 | specialEffects | `schema/domains/special-effects.json` | `photoPlan.specialEffects` | [#576](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/576) |
 
@@ -3282,6 +3281,10 @@ Notes:
   `wedding-cartridge.example.json` already omits it, so these five blocks are
   moved out of `schema/domains/photo-plan.example.json` into per-sub-domain
   examples rather than deleted from the cartridge example again.
+- **`speedFoto` is a game, not a photo-plan sub-block.** It is modeled as a
+  timeline game step (`optionalFlag: 'games'`, no question list) like Dance with
+  Bride and Groom (#549); the photo plan references that step. Tracked by
+  [#574](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/574).
 - Each sub-schema uses draft 2020-12 and is registered with the browser, Node and
   Edge validators (mirrored to `supabase/functions/_shared/domains/`), with the
   byte-identical Edge schema copy regenerated.
