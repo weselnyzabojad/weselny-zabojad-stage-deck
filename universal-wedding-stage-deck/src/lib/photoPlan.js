@@ -160,12 +160,20 @@ export function resolvePhotoPlan(wedding) {
       }
     : null;
 
+  const speedFotoStepId = text(plan.speedFoto?.stepId);
+  const speedFotoStep = Array.isArray(wedding?.steps)
+    ? wedding.steps.find((step) => step?.id === speedFotoStepId) ?? null
+    : null;
   const speedFoto = plan.speedFoto && typeof plan.speedFoto === 'object'
     ? {
-        stepId: text(plan.speedFoto.stepId),
-        enabled: plan.speedFoto.enabled === true,
-        description: text(plan.speedFoto.description),
-        durationMin: Number.isFinite(plan.speedFoto.durationMin) ? plan.speedFoto.durationMin : null,
+        stepId: speedFotoStepId,
+        // speedFoto is a game timeline step; derive state/timing from the step
+        // so the photo plan does not duplicate them.
+        enabled: plan.speedFoto.enabled === true || Boolean(speedFotoStep),
+        description: text(plan.speedFoto.description) ?? text(speedFotoStep?.title),
+        durationMin: Number.isFinite(plan.speedFoto.durationMin)
+          ? plan.speedFoto.durationMin
+          : (Number.isFinite(speedFotoStep?.durationMin) ? speedFotoStep.durationMin : null),
         music: text(plan.speedFoto.music),
       }
     : null;

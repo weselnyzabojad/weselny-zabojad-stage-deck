@@ -1,0 +1,6 @@
+{
+  "$schema": "./speed-foto.json",
+  "speedFoto": {
+    "stepId": "step_speed_foto"
+  }
+}

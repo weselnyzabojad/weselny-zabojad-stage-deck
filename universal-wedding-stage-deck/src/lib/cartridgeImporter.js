@@ -7,6 +7,7 @@ import coupleProfileDomain from '../../schema/domains/couple-profile.json';
 import photoPlanDomain from '../../schema/domains/photo-plan.json';
 import miniSessionDomain from '../../schema/domains/mini-session.json';
 import groupPhotosDomain from '../../schema/domains/group-photos.json';
+import speedFotoDomain from '../../schema/domains/speed-foto.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -27,6 +28,7 @@ async function getValidator() {
       ajv.addSchema(photoPlanDomain);
       ajv.addSchema(miniSessionDomain);
       ajv.addSchema(groupPhotosDomain);
+      ajv.addSchema(speedFotoDomain);
       return ajv.compile(weddingSchema);
     });
   }
