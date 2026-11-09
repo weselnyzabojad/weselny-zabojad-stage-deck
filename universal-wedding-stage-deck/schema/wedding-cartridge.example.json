@@ -94,8 +94,6 @@
       "version": 1
     }
   },
-  "speechMode": "COMPLEX",
-
   "liveSyncState": {
     "active_step_id": "step_01",
     "active_speech_id": null,

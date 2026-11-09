@@ -1,5 +1,6 @@
 {
   "$schema": "./speeches.json",
+  "speechMode": "COMPLEX",
   "speeches": [
     {
       "id": "speech_witness",

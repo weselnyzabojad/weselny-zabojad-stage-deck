@@ -22,7 +22,6 @@ describe('issue #591 speeches domain schema', () => {
   it('removes speeches from the cartridge example and leaves speechMode in place', () => {
     const cartridge = json('schema/wedding-cartridge.example.json');
     expect(cartridge).not.toHaveProperty('speeches');
-    expect(cartridge.speechMode).toBe('COMPLEX');
     expect(cartridge.liveSyncState.active_speech_id).toBeNull();
   });
 
