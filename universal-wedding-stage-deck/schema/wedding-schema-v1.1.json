@@ -111,11 +111,7 @@
       "description": "Whether children are expected at the wedding."
     },
     "attractions": {
-      "type": "array",
-      "description": "Optional parallel attractions such as a photobooth, guest book or Polaroids. These never create timeline steps.",
-      "items": {
-        "$ref": "#/$defs/attraction"
-      }
+      "$ref": "https://weselnyzabojad.example/schemas/domains/attractions.json#/properties/attractions"
     },
     "steps": {
       "type": "array",
