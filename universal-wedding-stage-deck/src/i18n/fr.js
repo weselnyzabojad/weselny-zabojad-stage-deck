@@ -577,6 +577,8 @@ const fr = {
   'venueManager.course.firstSupper': 'Premier souper',
   'venueManager.course.secondSupper': 'Deuxième souper',
   'venueManager.course.thirdSupper': 'Troisième souper',
+  'venueManager.addCourse': 'Ajouter un service',
+  'venueManager.removeCourse': 'Retirer le service',
   'venueManager.serviceMode': 'Service : {course}',
   'venueManager.closure': 'Fermeture du mariage',
   'venueManager.extension': 'Prolongation en heures possible',

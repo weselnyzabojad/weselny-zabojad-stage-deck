@@ -9,7 +9,7 @@ describe('issue #447 venue course grouping', () => {
     expect(venue).toContain('function CourseCard');
     expect(venue).toContain('venueManager.time');
     expect(venue).toContain('venueManager.serviceModeLabel');
-    expect(venue).toContain('KITCHEN_MODE_FIELDS.map');
+    expect(venue).toContain('courses.map');
     const courseCard = venue.slice(
       venue.indexOf('function CourseCard'),
       venue.indexOf('export default function VenueManagerView'),
@@ -31,7 +31,7 @@ describe('issue #447 venue course grouping', () => {
     expect(venue).toContain('sm:grid-cols-2');
     expect(venue).toContain('lg:grid-cols-3');
     expect(venue).toContain('kitchenServices');
-    expect(venue).toContain('kitchenServiceModes');
+    expect(venue).toContain('serviceMode');
     expect(venue).toContain('cakeServiceMode');
     expect(venue).toContain('closureTime');
   });

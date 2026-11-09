@@ -24,8 +24,8 @@ describe('issue #302 mandatory constraints', () => {
     const constraints = resolveMandatoryConstraints(DEMO_WEDDING);
     expect(constraints.kitchenServices).toEqual([
       expect.objectContaining({ key: 'dinner', time: '18:30', mode: 'TABLE_SERVICE' }),
-      expect.objectContaining({ key: 'firstSupper', time: '21:30', mode: 'TABLE_SERVICE' }),
-      expect.objectContaining({ key: 'secondSupper', time: '23:30', mode: 'BUFFET' }),
+      expect.objectContaining({ key: 'supper_1', time: '21:30', mode: 'TABLE_SERVICE' }),
+      expect.objectContaining({ key: 'supper_2', time: '23:30', mode: 'BUFFET' }),
     ]);
   });
 
@@ -33,8 +33,7 @@ describe('issue #302 mandatory constraints', () => {
     const constraints = resolveMandatoryConstraints(DEMO_WEDDING, {
       value: {
         firstGuestsArrival: '16:00',
-        kitchenServices: { dinner: '19:00' },
-        kitchenServiceModes: { dinner: 'BUFFET' },
+        kitchenServices: [{ id: 'dinner', time: '19:00', serviceMode: 'BUFFET' }],
       },
     });
     expect(constraints.prestationReady).toBe('15:00');
@@ -50,7 +49,7 @@ describe('issue #302 mandatory constraints', () => {
     const html = render({ items: allItems(mapped) });
     expect(html).toContain('First guests arrival');
     expect(html).toContain('Prestation ready (derived)');
-    expect(html).toContain('Obiad weselny');
+    expect(html).toContain('Dinner');
     expect(html).toContain('Buffet');
     expect(html).toContain('Cake');
   });
@@ -64,7 +63,7 @@ describe('issue #302 mandatory constraints', () => {
     expect(items.map((item) => item.kind)).toEqual(['firstArrival']);
     const html = render({ items });
     expect(html).toContain('First guests arrival');
-    expect(html).not.toContain('Obiad weselny');
+    expect(html).not.toContain('Dinner');
     expect(html).not.toContain('Cake');
   });
 
@@ -83,8 +82,8 @@ describe('issue #302 mandatory constraints', () => {
 
   it('supports table service and buffet in schema and venue manager UI', () => {
     const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    const modes = schema.properties.mandatorySteps.properties.kitchenServiceModes;
-    expect(modes.properties.dinner.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
+    const courses = schema.properties.mandatorySteps.properties.kitchenServices;
+    expect(courses.items.properties.serviceMode.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
     const venue = read('src/components/VenueManagerView.jsx');
     expect(venue).toContain('mandatory.serviceMode.TABLE_SERVICE');
     expect(venue).toContain('mandatory.serviceMode.BUFFET');

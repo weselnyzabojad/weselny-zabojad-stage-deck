@@ -212,23 +212,18 @@
         "closureExtensionUntil": { "$ref": "#/$defs/clock" },
         "lastSong": { "type": "string" },
         "kitchenServices": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "dinner": { "$ref": "#/$defs/clock" },
-            "firstSupper": { "$ref": "#/$defs/clock" },
-            "secondSupper": { "$ref": "#/$defs/clock" },
-            "thirdSupper": { "$ref": "#/$defs/clock" }
-          }
-        },
-        "kitchenServiceModes": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "dinner": { "enum": ["TABLE_SERVICE", "BUFFET"] },
-            "firstSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] },
-            "secondSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] },
-            "thirdSupper": { "enum": ["TABLE_SERVICE", "BUFFET"] }
+          "type": "array",
+          "description": "Ordered meal-service courses (dinner and suppers). Each course is an exact-hour mandatory milestone.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "time"],
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "name": { "type": "string", "minLength": 1 },
+              "time": { "$ref": "#/$defs/clock" },
+              "serviceMode": { "enum": ["TABLE_SERVICE", "BUFFET"] }
+            }
           }
         }
       }

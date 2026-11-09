@@ -257,18 +257,11 @@ export const DEMO_WEDDING = {
     closureExtensionAllowed: true,
     closureExtensionUntil: "03:00",
     lastSong: "Perfect - Ed Sheeran",
-    kitchenServices: {
-      dinner: "18:30",
-      firstSupper: "21:30",
-      secondSupper: "23:30",
-      thirdSupper: null,
-    },
-    kitchenServiceModes: {
-      dinner: "TABLE_SERVICE",
-      firstSupper: "TABLE_SERVICE",
-      secondSupper: "BUFFET",
-      thirdSupper: "TABLE_SERVICE",
-    },
+    kitchenServices: [
+      { id: "dinner", name: "Dinner", time: "18:30", serviceMode: "TABLE_SERVICE" },
+      { id: "supper_1", name: "Supper I", time: "21:30", serviceMode: "TABLE_SERVICE" },
+      { id: "supper_2", name: "Supper II", time: "23:30", serviceMode: "BUFFET" },
+    ],
   },
   wishes: { enabled: true },
   games: {

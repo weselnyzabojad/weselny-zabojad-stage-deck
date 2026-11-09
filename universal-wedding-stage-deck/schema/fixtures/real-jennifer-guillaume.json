@@ -706,16 +706,11 @@
   },
   "mandatorySteps": {
     "firstGuestsArrival": "15:30",
-    "kitchenServices": {
-      "dinner": "18:30",
-      "firstSupper": "21:30",
-      "secondSupper": "23:30"
-    },
-    "kitchenServiceModes": {
-      "dinner": "TABLE_SERVICE",
-      "firstSupper": "TABLE_SERVICE",
-      "secondSupper": "BUFFET"
-    },
+    "kitchenServices": [
+      { "id": "dinner", "name": "Dinner", "time": "18:30", "serviceMode": "TABLE_SERVICE" },
+      { "id": "supper_1", "name": "Supper I", "time": "21:30", "serviceMode": "TABLE_SERVICE" },
+      { "id": "supper_2", "name": "Supper II", "time": "23:30", "serviceMode": "BUFFET" }
+    ],
     "closureTime": "02:00",
     "closureExtensionAllowed": true,
     "lastSong": "Perfect - Ed Sheeran"

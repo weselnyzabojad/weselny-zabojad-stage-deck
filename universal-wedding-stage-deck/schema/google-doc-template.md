@@ -367,14 +367,17 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 | Field | Time |
 | --- | --- |
 | First guests arrival | 15:30 |
-| Obiad weselny | 18:30 |
-| Pierwsza kolacja | 21:30 |
-| Druga kolacja | 23:30 |
-| Trzecia kolacja |  |
-| Obiad weselny service | TABLE_SERVICE |
-| Pierwsza kolacja service | TABLE_SERVICE |
-| Druga kolacja service | BUFFET |
-| Trzecia kolacja service | TABLE_SERVICE |
+
+### Kitchen Services
+
+One row per meal course, in serving order. The number of courses is not fixed —
+add or remove rows as needed. Each course is an exact-hour mandatory milestone.
+
+| Course ID | Name | Time | Service Mode |
+| --- | --- | --- | --- |
+| dinner | Dinner | 18:30 | TABLE_SERVICE |
+| supper_1 | Supper I | 21:30 | TABLE_SERVICE |
+| supper_2 | Supper II | 23:30 | BUFFET |
 
 ## ATTRACTIONS
 

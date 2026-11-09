@@ -7,16 +7,11 @@ const update = {
   updatedAt: '2026-11-07T18:00:00.000Z',
   value: {
     firstGuestsArrival: '15:30',
-    kitchenServices: {
-      dinner: '18:30',
-      firstSupper: '21:30',
-      secondSupper: '23:30',
-    },
-    kitchenServiceModes: {
-      dinner: 'TABLE_SERVICE',
-      firstSupper: 'TABLE_SERVICE',
-      secondSupper: 'BUFFET',
-    },
+    kitchenServices: [
+      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_1', name: 'Supper I', time: '21:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
+    ],
     cakeServiceMode: 'KITCHEN_RETURN',
     closureTime: '02:00',
     closureExtensionAllowed: true,
@@ -40,8 +35,8 @@ describe('issue #327 mandatory update popup role visibility', () => {
     const html = render('mc');
     expect(html).toContain('First guests arrival: 15:30');
     expect(html).toContain('Prestation ready (derived): 14:30');
-    expect(html).toContain('Obiad weselny · Table service: 18:30');
-    expect(html).toContain('Druga kolacja · Buffet: 23:30');
+    expect(html).toContain('Dinner · Table service: 18:30');
+    expect(html).toContain('Supper II · Buffet: 23:30');
     expect(html).toContain('Cake service: Kitchen return / plated pieces');
     expect(html).not.toContain('Last song:');
   });
@@ -52,7 +47,7 @@ describe('issue #327 mandatory update popup role visibility', () => {
     expect(html).toContain('Wedding closure: 02:00');
     expect(html).toContain('Closure extension: Until 03:00');
     expect(html).toContain('Last song: Perfect - Ed Sheeran');
-    expect(html).not.toContain('Obiad weselny');
+    expect(html).not.toContain('Dinner');
     expect(html).not.toContain('Cake service');
   });
 
@@ -65,7 +60,7 @@ describe('issue #327 mandatory update popup role visibility', () => {
   it('does not render when no permitted fields remain', () => {
     const empty = {
       updatedAt: '2026-11-07T18:00:00.000Z',
-      value: { kitchenServices: { dinner: '18:30' } },
+      value: { kitchenServices: [{ id: 'dinner', time: '18:30' }] },
     };
     const html = renderToStaticMarkup(
       createElement(MandatoryUpdatePopup, {

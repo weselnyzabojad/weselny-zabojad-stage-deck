@@ -8,8 +8,10 @@ const wedding = {
   weddingId: '2026-08-20_test',
   mandatorySteps: {
     firstGuestsArrival: '15:30',
-    kitchenServices: { dinner: '18:30', secondSupper: '23:30' },
-    kitchenServiceModes: { dinner: 'TABLE_SERVICE', secondSupper: 'BUFFET' },
+    kitchenServices: [
+      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
+    ],
     cakeServiceMode: 'CUT_IN_PLACE',
   },
   ceremony: {
@@ -50,7 +52,7 @@ describe('issue #384 mandatory data embedded in steps', () => {
     expect(mapped.step_05).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ kind: 'cakeServiceMode', mode: 'CUT_IN_PLACE' }),
-        expect.objectContaining({ kind: 'kitchenService', key: 'secondSupper', mode: 'BUFFET' }),
+        expect.objectContaining({ kind: 'kitchenService', key: 'supper_2', mode: 'BUFFET' }),
       ]),
     );
   });
@@ -72,8 +74,7 @@ describe('issue #384 mandatory data embedded in steps', () => {
       override: {
         value: {
           firstGuestsArrival: '16:00',
-          kitchenServices: { dinner: '19:00' },
-          kitchenServiceModes: { dinner: 'BUFFET' },
+          kitchenServices: [{ id: 'dinner', time: '19:00', serviceMode: 'BUFFET' }],
           cakeServiceMode: 'KITCHEN_RETURN',
         },
       },
