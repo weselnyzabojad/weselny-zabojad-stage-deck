@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/demographics.json",
+  "title": "Guest demographics domain",
+  "description": "Guest counts and languages mapped from the Google Doc. Display-only in the app today.",
+  "type": "object",
+  "properties": {
+    "demographics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pl": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fr": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "other": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "languages": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/language"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "demographics"
+  ],
+  "$defs": {
+    "language": {
+      "type": "string",
+      "enum": [
+        "PL",
+        "FR",
+        "EN"
+      ]
+    }
+  }
+}

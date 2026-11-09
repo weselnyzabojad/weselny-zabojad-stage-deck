@@ -1,0 +1,15 @@
+{
+  "$schema": "./demographics.json",
+  "demographics": {
+    "total": 100,
+    "pl": 50,
+    "fr": 40,
+    "other": 10,
+    "languages": [
+      "PL",
+      "FR",
+      "EN"
+    ],
+    "notes": "10–15 kids; most guests understand English."
+  }
+}
