@@ -255,6 +255,10 @@ const en = {
   'mc.step.childrenCake': 'Children expected — keep them clear of the cake table and cutting area.',
   'mc.step.childrenEntrance': 'Children expected — keep them out of the entrance aisle.',
   'mc.step.childrenDancefloor': 'Children expected — keep them clear of the dancefloor.',
+  'mc.step.more': 'More',
+  'mc.step.swapNext': 'Swap with next',
+  'mc.step.swapWith': 'Swap {current} with {next}',
+  'mc.step.noNext': 'No next step to swap',
   'mc.rail.showMore': 'Show {count} more',
   'mc.rail.showLess': 'Show less',
 
