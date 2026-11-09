@@ -15,10 +15,10 @@ describe('issue #274 Venue Manager role', () => {
     const view = read('src/components/VenueManagerView.jsx');
     expect(view).toContain('<TimelineFocusStack');
     expect(view).not.toContain('label="First guests arrival"');
-    expect(view).toContain('Obiad weselny');
-    expect(view).toContain('Pierwsza kolacja');
-    expect(view).toContain('Druga kolacja');
-    expect(view).toContain('Trzecia kolacja');
+    expect(view).toContain('venueManager.course.dinner');
+    expect(view).toContain('venueManager.course.firstSupper');
+    expect(view).toContain('venueManager.course.secondSupper');
+    expect(view).toContain('venueManager.course.thirdSupper');
     expect(view).toContain('venueManager.cakeService');
     expect(view).toContain('KITCHEN_RETURN');
     expect(view).toContain('CUT_IN_PLACE');

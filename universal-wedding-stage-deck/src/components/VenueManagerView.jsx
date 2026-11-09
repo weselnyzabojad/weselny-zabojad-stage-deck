@@ -24,10 +24,10 @@ const DEFAULT_KITCHEN = {
 };
 
 const KITCHEN_MODE_FIELDS = [
-  { key: 'dinner', course: 'Obiad weselny' },
-  { key: 'firstSupper', course: 'Pierwsza kolacja' },
-  { key: 'secondSupper', course: 'Druga kolacja' },
-  { key: 'thirdSupper', course: 'Trzecia kolacja' },
+  { key: 'dinner', labelKey: 'venueManager.course.dinner' },
+  { key: 'firstSupper', labelKey: 'venueManager.course.firstSupper' },
+  { key: 'secondSupper', labelKey: 'venueManager.course.secondSupper' },
+  { key: 'thirdSupper', labelKey: 'venueManager.course.thirdSupper' },
 ];
 
 function loadSettings(wedding) {
@@ -61,6 +61,29 @@ function TimeField({ label, value, onChange }) {
         className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
       />
     </label>
+  );
+}
+
+function CourseCard({ label, value, mode, onTime, onMode }) {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5">
+      <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
+        {label}
+      </h3>
+      <TimeField label={t('venueManager.time')} value={value} onChange={onTime} />
+      <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+        {t('venueManager.serviceModeLabel')}
+        <select
+          value={mode ?? 'TABLE_SERVICE'}
+          onChange={(event) => onMode(event.target.value)}
+          className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
+        >
+          <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
+          <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
+        </select>
+      </label>
+    </div>
   );
 }
 
@@ -111,74 +134,68 @@ export default function VenueManagerView({
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           {t('venueManager.mandatorySteps')}
         </h2>
+
         <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-          <TimeField
-            label="Obiad weselny"
-            value={kitchen.dinner}
-            onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, dinner: time } })}
-          />
-          <TimeField
-            label="Pierwsza kolacja"
-            value={kitchen.firstSupper}
-            onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, firstSupper: time } })}
-          />
-          <TimeField
-            label="Druga kolacja"
-            value={kitchen.secondSupper}
-            onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, secondSupper: time } })}
-          />
-          <TimeField
-            label="Trzecia kolacja"
-            value={kitchen.thirdSupper}
-            onChange={(time) => update({ ...settings, kitchenServices: { ...kitchen, thirdSupper: time } })}
-          />
-          {KITCHEN_MODE_FIELDS.map(({ key, course }) => (
-            <label
+          {KITCHEN_MODE_FIELDS.map(({ key, labelKey }) => (
+            <CourseCard
               key={key}
-              className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted"
-            >
-              {t('venueManager.serviceMode', { course })}
+              label={t(labelKey)}
+              value={kitchen[key]}
+              mode={kitchenModes[key]}
+              onTime={(time) =>
+                update({ ...settings, kitchenServices: { ...kitchen, [key]: time } })
+              }
+              onMode={(mode) =>
+                update({
+                  ...settings,
+                  kitchenServiceModes: { ...kitchenModes, [key]: mode },
+                })
+              }
+            />
+          ))}
+
+          <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5 sm:col-span-2 lg:col-span-1">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
+              {t('venueManager.cakeService')}
+            </h3>
+            <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+              {t('venueManager.cakeService')}
               <select
-                value={kitchenModes[key] ?? 'TABLE_SERVICE'}
+                value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
                 onChange={(event) =>
-                  update({
-                    ...settings,
-                    kitchenServiceModes: { ...kitchenModes, [key]: event.target.value },
-                  })
+                  update({ ...settings, cakeServiceMode: event.target.value })
                 }
                 className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
               >
-                <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
-                <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
+                <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
+                <option value="CUT_IN_PLACE">{t('venueManager.cake.CUT_IN_PLACE')}</option>
               </select>
             </label>
-          ))}
-          <TimeField
-            label={t('venueManager.closure')}
-            value={settings.closureTime}
-            onChange={(time) => update({ ...settings, closureTime: time })}
-          />
-          <label className="flex min-h-11 items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-muted">
-            <input
-              type="checkbox"
-              className="h-6 w-6"
-              checked={settings.closureExtensionAllowed === true}
-              onChange={(event) => update({ ...settings, closureExtensionAllowed: event.target.checked })}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5 sm:col-span-2 lg:col-span-1">
+            <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
+              {t('venueManager.closure')}
+            </h3>
+            <TimeField
+              label={t('venueManager.time')}
+              value={settings.closureTime}
+              onChange={(time) => update({ ...settings, closureTime: time })}
             />
-            {t('venueManager.extension')}
-          </label>
-          <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
-            {t('venueManager.cakeService')}
-            <select
-              value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
-              onChange={(event) => update({ ...settings, cakeServiceMode: event.target.value })}
-              className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
-            >
-              <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
-              <option value="CUT_IN_PLACE">{t('venueManager.cake.CUT_IN_PLACE')}</option>
-            </select>
-          </label>
+            <label className="flex min-h-11 items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-muted">
+              <input
+                type="checkbox"
+                className="h-6 w-6"
+                checked={settings.closureExtensionAllowed === true}
+                onChange={(event) =>
+                  update({ ...settings, closureExtensionAllowed: event.target.checked })
+                }
+              />
+              {t('venueManager.extension')}
+            </label>
+          </div>
         </div>
+
         <p className="mt-2 text-[10px] text-muted">
           {t('venueManager.prestationHelper')}
           {saved ? <span className="ml-2 text-emerald-300">{saved}</span> : null}

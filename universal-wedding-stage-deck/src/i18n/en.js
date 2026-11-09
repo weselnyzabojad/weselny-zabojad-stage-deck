@@ -393,6 +393,12 @@ const en = {
   'mandatoryUpdate.cakeService': 'Cake service',
 
   'venueManager.mandatorySteps': 'Mandatory steps',
+  'venueManager.time': 'Time',
+  'venueManager.serviceModeLabel': 'Service mode',
+  'venueManager.course.dinner': 'Wedding dinner',
+  'venueManager.course.firstSupper': 'First supper',
+  'venueManager.course.secondSupper': 'Second supper',
+  'venueManager.course.thirdSupper': 'Third supper',
   'venueManager.serviceMode': '{course} service',
   'venueManager.closure': 'Wedding closure',
   'venueManager.extension': '+1h extension allowed',
