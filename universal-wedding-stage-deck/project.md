@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `a0989fc` (admin dialogs and role-view i18n delivered)
+**Aligned with:** `master` @ `3a64da9` (MC game-step follow-up tracked)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -75,6 +75,7 @@ sections below and in git history.
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
 | [#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539) | MC: remove More/swap on Test Wiedzy/Test Zgodności steps | Implementation |
+| [#541](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/541) | App-wide: stop frequent full-page reloads/white flashes | Bug fix / stability |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -110,6 +111,8 @@ The operational, admin-dialog and i18n/data-boundary follow-ups are catalogued i
 [admin and i18n follow-ups](#admin-and-i18n-follow-ups-decision-2026-11-09).
 The MC game-step overflow removal is catalogued in
 [MC game-step overflow](#mc-game-step-overflow-decision-2026-11-09).
+The app-wide reload/white-flash stability issue is catalogued in
+[app-wide reload stability](#app-wide-reload-stability-decision-2026-11-09).
 Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -2501,7 +2504,7 @@ Alignment for this review: last aligned 2026-11-08 against `master` @
 table above is superseded: #421-#471 (except the optional #459) were delivered
 through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 was
 delivered through PR #532; #534/#535 through PRs #537/#538. #533 remains blocked
-on the owner's live Supabase/TOTP environment, and #539 is the new MC follow-up.
+on the owner's live Supabase/TOTP environment; #539 and #541 are open follow-ups.
 
 ---
 
@@ -2580,6 +2583,19 @@ current-step hero and the pocket current-step card, with no leftover gap. Detect
 the steps by stable \`gameId\`, not localized titles. Non-game steps keep the
 More/swap control unchanged. No timeline, drift, cartridge or schema changes.
 ([#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539))
+
+### App-wide reload stability (decision, 2026-11-09)
+
+Frequent full-document reloads and brief white flashes are unacceptable on the
+live stage. Routine live-state sync, cartridge checks, polling, visibility/focus
+catch-up and PWA update checks must not reload or remount the whole app. The
+PWA update stays behind the existing explicit **Reload now** prompt. Cartridge
+and live-state updates must preserve the current view, scroll, validated
+overlays, active step/speech/game and local UI state. Only a user-initiated safe
+reload may reload the document. Audit the PWA registration/update path, error
+boundary, router redirects and StageDeck/role-view remount triggers before
+changing behaviour.
+([#541](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/541))
 
 ---
 
