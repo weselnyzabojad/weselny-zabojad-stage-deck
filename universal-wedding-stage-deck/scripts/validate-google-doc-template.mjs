@@ -40,7 +40,6 @@ const EXPECTED_TABLES = {
   'DJ CUES': ['Step ID', 'Playlist', 'Track', 'Cutoff', 'CutoffSec', 'Note'],
   'MC CUES': ['Step ID', 'Language', 'Timing', 'Text'],
   'SUBTASKS': ['Step ID', 'Subtask ID', 'Label', 'Done'],
-  'HARD ANCHORS': ['Anchor ID', 'Time', 'Label', 'Alert before (min)', 'Kind'],
   'VENUE LOGISTICS': null,
   'VIEW VISIBILITY': ['Role', 'Section', 'Visible'],
   'MEDIA TEAM': ['Team ID', 'Role', 'Name', 'Phone', 'Start', 'End', 'Deliverables', 'Notes'],

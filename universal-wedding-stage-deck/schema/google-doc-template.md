@@ -135,14 +135,6 @@ the localized title.
 | step_03 | step_03_speech_mic | Confirm the speech mic is on | false |
 | step_03 | step_03_rosol | RosĂłĹ‚ + Tartare with Vodka shot | false |
 
-## HARD ANCHORS
-
-| Anchor ID | Time | Label | Alert before (min) | Kind |
-| --- | --- | --- | --- | --- |
-| ceremony_start | 17:00 | Civil ceremony | 30 | FAMILY |
-| cake_midnight | 21:30 | Cake service | 45 | VENDOR |
-| oczepiny_midnight | 00:00 | Oczepiny | 30 | OTHER |
-
 ## VENUE LOGISTICS
 
 Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor

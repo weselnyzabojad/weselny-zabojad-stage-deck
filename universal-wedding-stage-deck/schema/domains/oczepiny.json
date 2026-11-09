@@ -199,7 +199,6 @@
       "required": [
         "enabled",
         "order",
-        "anchorId",
         "toss",
         "ties",
         "winnerPhoto",

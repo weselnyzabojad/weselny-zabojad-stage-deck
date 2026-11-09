@@ -69,7 +69,6 @@ rejected; put app-specific data under `extensions`.
     "gorzko": { "status": "STRICT_NO" },
     "bread_salt": { "status": "YES" }
   },
-  "hardAnchors": [],
   "steps": []
 }
 ```
@@ -89,7 +88,7 @@ rejected; put app-specific data under `extensions`.
 | `role` | no | Legacy display hint only; device role is local. |
 | `venue` | no | Venue name / address. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
-| `hardAnchors` | no | Fixed real-world deadlines. |
+| `hardAnchors` | no | Derived by import from `mandatorySteps`; never authored in the Doc. |
 | `demographics` | no | Guest counts / languages. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
@@ -222,17 +221,31 @@ Each rule accepts an optional `note`.
 
 ## Hard anchors
 
+Hard anchors are derived from admin-managed mandatory steps, not read from the
+Google Doc. Set `isHardAnchor: true` on a `mandatorySteps.milestones[]` entry or
+on a `mandatorySteps.kitchenServices[]` course. Photo and camera are separate
+milestones (`kind: "PHOTO"` and `"CAMERA"`); Oczepiny is a game step, not an
+anchor.
+
 ```json
 {
-  "id": "sunset",
-  "time": "21:10",
-  "label": "Sunset Window",
-  "alertBeforeMin": 30,
-  "kind": "SUNSET"
+  "mandatorySteps": {
+    "milestones": [
+      {
+        "id": "photo_leave",
+        "time": "20:30",
+        "label": "Photographer leaves",
+        "kind": "PHOTO",
+        "alertBeforeMin": 45,
+        "isHardAnchor": true
+      }
+    ]
+  }
 }
 ```
 
-`kind` is one of `VENDOR`, `SUNSET`, `TRANSPORT`, `FAMILY`, `OTHER`.
+`deriveHardAnchors(mandatorySteps)` produces the `hardAnchors` array. `kind` is
+one of `PHOTO`, `CAMERA`, `VENDOR`, `SUNSET`, `TRANSPORT`, `FAMILY`, `OTHER`.
 `alertBeforeMin` defaults to 45. Anchors never move; the radar compares the
 projected end of the last block before each anchor and warns on collision or
 10-minute-or-less slack.

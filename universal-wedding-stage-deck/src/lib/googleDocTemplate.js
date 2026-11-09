@@ -73,13 +73,6 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Stable-ID checklist items per step.',
   },
   {
-    order: 10,
-    marker: 'HARD ANCHORS',
-    required: false,
-    schemaPath: ['hardAnchors'],
-    purpose: 'Fixed real-world deadlines and their alert window.',
-  },
-  {
     order: 11,
     marker: 'VENUE LOGISTICS',
     required: false,

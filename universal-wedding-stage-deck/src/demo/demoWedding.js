@@ -4,6 +4,8 @@
 // only: it is used by local/demo mode and tests, never as a production fallback
 // when the server-published cartridge is missing.
 
+import { deriveHardAnchors } from '../lib/hardAnchors.js';
+
 export const HALL_ENTRANCE_SCRIPT = {
   has_script: true,
   type: "SPEECH",
@@ -181,7 +183,6 @@ export const DEMO_WEDDING = {
     throwings: { veil: true, bouquet: true, bowTie: true, cravat: false },
     game: { enabled: true, type: "TEST_ZGODNOSCI", notes: "Test Zgodności with the guests." },
     countdown: { mode: "MC" },
-    anchorId: "ocsepiny",
     toss: "VEIL",
     ties: "BOW_TIE",
     winnerPhoto: {
@@ -212,10 +213,6 @@ export const DEMO_WEDDING = {
     gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
     bread_salt: { status: "YES", note: "Vodka vs water shot, break glasses" }
   },
-  hardAnchors: [
-    { id: "photo_video", time: "20:30", label: "Photo / Video Leaves", alertBeforeMin: 45 },
-    { id: "ocsepiny", time: "00:00", label: "Oczepiny (Exact)", alertBeforeMin: 30 }
-  ],
   childrenExpected: true,
   attractions: [
     {
@@ -261,6 +258,24 @@ export const DEMO_WEDDING = {
       { id: "dinner", name: "Dinner", time: "18:30", serviceMode: "TABLE_SERVICE" },
       { id: "supper_1", name: "Supper I", time: "21:30", serviceMode: "TABLE_SERVICE" },
       { id: "supper_2", name: "Supper II", time: "23:30", serviceMode: "BUFFET" },
+    ],
+    milestones: [
+      {
+        id: "photo_leave",
+        time: "20:30",
+        label: "Photographer leaves",
+        kind: "PHOTO",
+        alertBeforeMin: 45,
+        isHardAnchor: true
+      },
+      {
+        id: "camera_leave",
+        time: "20:30",
+        label: "Cameraman leaves",
+        kind: "CAMERA",
+        alertBeforeMin: 45,
+        isHardAnchor: true
+      }
     ],
   },
   wishes: { enabled: true },
@@ -526,6 +541,8 @@ export const INITIAL_LIVE_STATE = {
     [SUBTASKS[2]]: false
   }
 };
+
+DEMO_WEDDING.hardAnchors = deriveHardAnchors(DEMO_WEDDING.mandatorySteps);
 
 export function buildInitialLiveState(wedding) {
   const base = wedding.liveSyncState ?? {};
