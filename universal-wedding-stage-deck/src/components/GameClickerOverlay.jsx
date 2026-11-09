@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useI18n } from '../i18n/useI18n';
 import ModalShell from './ModalShell';
 
 const LANGS = ['EN', 'PL', 'FR'];
@@ -6,6 +7,7 @@ const LANGS = ['EN', 'PL', 'FR'];
 // One-question-at-a-time game clicker with reveal, language switch, and
 // keyboard control (arrows navigate, space reveals).
 export default function GameClickerOverlay({ open, game, onClose }) {
+  const { t } = useI18n();
   const [lang, setLang] = useState('EN');
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -51,10 +53,10 @@ export default function GameClickerOverlay({ open, game, onClose }) {
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-card px-5 py-3 pr-16">
         <div>
           <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
-            🎮 Game Clicker
+            🎮 {t('game.title')}
           </div>
           <h2 id="game-title" className="mt-0.5 font-heading text-lg font-bold text-ink">
-            {game?.title ?? 'Game questions'}
+            {game?.title ?? t('game.questions')}
           </h2>
         </div>
 
@@ -81,7 +83,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto flex min-h-full max-w-3xl flex-col justify-center">
           {total === 0 ? (
-            <p className="text-center text-sm text-muted">No game questions attached to this cartridge.</p>
+            <p className="text-center text-sm text-muted">{t('game.none')}</p>
           ) : (
             <>
               <div className="mb-5 flex flex-wrap justify-center gap-1.5" aria-hidden="true">
@@ -95,7 +97,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
 
               <div className="rounded-2xl border border-line bg-card p-6 text-center shadow-lg sm:p-8">
                 <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
-                  Question {index + 1}
+                  {t('game.question', { number: index + 1 })}
                 </span>
                 <p className="mt-3 font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
                   {question}
@@ -105,7 +107,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
                   {revealed ? (
                     <div className="rounded-xl border border-emerald-800 bg-emerald-950/60 px-4 py-4">
                       <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-                        Answer
+                        {t('game.answer')}
                       </div>
                       <div className="mt-1 font-heading text-3xl font-bold text-emerald-200">{item?.answer}</div>
                     </div>
@@ -115,7 +117,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
                       onClick={() => setRevealed(true)}
                       className="rounded-xl border border-brand-strong bg-brand/40 px-5 py-3 font-heading text-sm font-semibold text-ink transition hover:bg-brand/70"
                     >
-                      Reveal answer
+                      {t('game.reveal')}
                     </button>
                   )}
                 </div>
@@ -126,7 +128,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
       </div>
 
       <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-card px-4 py-3">
-        <span className="font-mono text-[10px] text-muted">← → navigate · Space reveals · Esc closes</span>
+        <span className="font-mono text-[10px] text-muted">{t('game.help')}</span>
 
         <div className="flex items-center gap-2">
           <button
@@ -135,7 +137,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             disabled={index === 0}
             className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-ink transition hover:bg-line disabled:cursor-not-allowed disabled:text-muted"
           >
-            ← Previous
+            ← {t('game.previous')}
           </button>
           <button
             type="button"
@@ -143,7 +145,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             disabled={total === 0}
             className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-ink transition hover:bg-line disabled:cursor-not-allowed disabled:text-muted"
           >
-            {revealed ? 'Hide answer' : 'Reveal answer'}
+            {revealed ? t('game.hide') : t('game.reveal')}
           </button>
           <button
             type="button"
@@ -151,7 +153,7 @@ export default function GameClickerOverlay({ open, game, onClose }) {
             disabled={total === 0}
             className="rounded-lg border border-brand-strong bg-brand px-5 py-2 font-heading text-xs font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:border-line disabled:bg-card disabled:text-muted"
           >
-            {isLast ? 'Finish ✓' : 'Next →'}
+            {isLast ? t('game.finish') : `${t('game.next')} →`}
           </button>
         </div>
       </footer>
