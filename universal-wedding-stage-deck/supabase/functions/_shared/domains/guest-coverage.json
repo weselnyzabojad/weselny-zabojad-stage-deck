@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/guest-coverage.json",
+  "title": "Guest coverage domain",
+  "description": "Photo guest-coverage plan mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "guestCoverage": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "allGuests": {
+          "type": "boolean"
+        },
+        "selectedGuests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "description": {
+          "type": "string"
+        },
+        "consent": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "guestCoverage"
+  ]
+}

@@ -21,12 +21,6 @@
       "permitRequired": false,
       "venueApproved": true,
       "safetyBriefing": "Briefed the venue manager and the photographer."
-    },
-    "guestCoverage": {
-      "allGuests": false,
-      "selectedGuests": 12,
-      "description": "Formal photos with immediate family and witnesses only.",
-      "consent": "Couple approved; announce before candid coverage."
     }
   }
 }
