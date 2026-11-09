@@ -3335,7 +3335,8 @@ Notes:
 - `steps` is required (`minItems: 1`). The full step catalogue moves to
   `schema/domains/steps.example.json`; `wedding-cartridge.example.json` keeps
   only a minimal valid steps sample so it still passes `validate:schema`.
-- `speeches` is optional and is removed from the cartridge example.
+- `speeches` is optional and is removed from the cartridge example. Each
+  speech may also carry `script.sourceDoc` (link + Drive metadata); see §17.6.
 - `speechMode` stays a top-level cartridge field (sibling of `speeches`); only
   schema ownership moves into the speeches domain. [#593](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/593)
   is blocked by #591.
@@ -3378,3 +3379,30 @@ validator and mapper. Tracked by
 and the admin editor in
 [#596](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/596)
 (blocked by #595).
+
+### 17.6 Speech text from Google Drive (decision, 2026-11-09)
+
+A speaker's script may live in a Google Doc. The admin page links that Doc to a
+speech, previews the exported text and imports it verbatim into the cartridge.
+The Speaker role reads the cached `script.text` and never calls Google, so it
+still works offline.
+
+- Link field: `speech.script.sourceDoc` with `provider`, `fileId`, `url`, `name`,
+  `mimeType`, `version`, `modifiedTime` and `retrievedAt`.
+- API: Drive API v3 `files.export` with `mimeType=text/plain` for native Google
+  Docs. Google caps exports at 10 MB; the existing connector enforces a stricter
+  5 MB limit. Reuse `readSource()` from
+  `supabase/functions/_shared/googleDrive.js`.
+- Scope: `https://www.googleapis.com/auth/drive.readonly` (already configured).
+- Auth: the browser calls the owner-only, AAL2 `admin_drive` function
+  (`preview` action); Google credentials stay in Edge Function secrets.
+- Change detection: `version` / `modifiedTime` (Google Docs have no
+  `md5Checksum`). No polling and no automatic overwrite; the admin confirms a
+  re-import.
+- Photo/camera-style document sharing still applies: the Doc must be shared with
+  the service-account email.
+
+Tracked by
+[#598](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/598),
+blocked by the `speeches` schema extraction
+([#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591)).
