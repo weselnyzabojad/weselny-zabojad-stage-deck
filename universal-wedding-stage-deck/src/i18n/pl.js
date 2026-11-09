@@ -227,6 +227,8 @@ const pl = {
   'mc.rail.expand': 'Rozwiń {title}',
   'mc.rail.collapse': 'Zwiń {title}',
   'mc.cues.empty': 'Brak kwestii MC',
+  'mc.rail.showMore': 'Pokaż jeszcze {count}',
+  'mc.rail.showLess': 'Pokaż mniej',
 
   'mandatory.title': 'Obowiązkowe ograniczenia',
   'mandatory.firstArrival': 'Przyjazd pierwszych gości',
