@@ -27,7 +27,7 @@ describe('issue #217 DJ section cleanup and scrolling', () => {
   });
 
   it('uses a single page scroll with a stable header', () => {
-    expect(dj).toContain('flex min-h-screen flex-col');
+    expect(dj).toContain('flex min-h-dvh flex-col');
     expect(dj).not.toContain('flex h-screen');
     expect(dj).not.toContain('overflow-hidden');
     expect(dj).toContain('sticky top-0 z-30');

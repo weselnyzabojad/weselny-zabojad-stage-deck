@@ -51,7 +51,7 @@ export default function RoleShell({
   }
 
   return (
-    <div className="font-body min-h-screen flex flex-col bg-page text-ink">
+    <div className="font-body min-h-dvh flex flex-col bg-page text-ink">
       <header className="bg-card border-b border-line px-3 py-2 flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
