@@ -394,12 +394,12 @@ export default function McMasterView({ model }) {
       {IS_PRODUCTION ? (
         <>
           ROLE: <strong className="text-ink">{roleSession.role.toUpperCase()}</strong>
-          <span className="ml-1 text-[10px]">🔐</span>
+          <span className="ml-1 text-sm">🔐</span>
         </>
       ) : (
         <>
           PIN: <strong className="text-ink">{pairing.pin}</strong>
-          <span className="ml-1 text-[10px]">🔓</span>
+          <span className="ml-1 text-sm">🔓</span>
         </>
       )}
     </button>
