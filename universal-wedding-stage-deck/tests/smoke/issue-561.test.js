@@ -15,7 +15,7 @@ describe('issue #561 first-dance domain schema', () => {
   });
 
   it('references the domain from the step schema', () => {
-    const schema = json('schema/wedding-schema-v1.1.json');
+    const schema = json('schema/domains/steps.json');
     const step = schema.$defs.step.properties;
     expect(step.firstDanceStartAt.$ref).toContain(
       'first-dance.json#/items/properties/firstDanceStartAt',
@@ -29,7 +29,7 @@ describe('issue #561 first-dance domain schema', () => {
   });
 
   it('removes the old integer-second fields from the cartridge example', () => {
-    const example = json('schema/wedding-cartridge.example.json');
+    const example = json('schema/domains/steps.example.json');
     const dance = example.steps.find((step) => step.id === 'step_08');
     expect(dance.firstDanceStartAtSec).toBeUndefined();
     expect(dance.firstDanceStopAfterSec).toBeUndefined();

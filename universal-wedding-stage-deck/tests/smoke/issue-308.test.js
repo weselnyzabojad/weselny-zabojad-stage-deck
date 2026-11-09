@@ -6,7 +6,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #308 simplified step types', () => {
   it('allows only FLEXIBLE and HARD_ANCHOR in the schema', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     expect(schema.$defs.step.properties.type.enum).toEqual(['FLEXIBLE', 'HARD_ANCHOR']);
     expect(schema.$defs.step.properties.buffer).toBeUndefined();
     expect(schema.$defs.buffer).toBeUndefined();

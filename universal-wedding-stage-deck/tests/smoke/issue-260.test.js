@@ -6,7 +6,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #260 isMainSongRequired schema flag', () => {
   it('defines the boolean step property with a false default', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     const prop = schema.$defs.step.properties.isMainSongRequired;
     expect(prop.type).toBe('boolean');
     expect(prop.default).toBe(false);

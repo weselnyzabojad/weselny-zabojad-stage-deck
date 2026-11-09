@@ -8,7 +8,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #550 per-step MC cues', () => {
   it('declares mcCues on the step schema with language, timing and text', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
+    const schema = JSON.parse(read('schema/domains/steps.json'));
     const step = schema.$defs.step;
     expect(step.properties.mcCues.items.$ref).toBe('#/$defs/mcCue');
     expect(schema.$defs.mcCue.required).toContain('text');

@@ -16,7 +16,7 @@ describe('issue #398 Game Clicker only on the games step', () => {
     const cake = DEMO_WEDDING.steps.find((step) => step.id === 'step_05');
     expect(cake.teleprompter).toBeUndefined();
     for (const file of [
-      'schema/wedding-cartridge.example.json',
+      'schema/domains/steps.example.json',
       'schema/fixtures/real-jennifer-guillaume.json',
     ]) {
       const cartridge = JSON.parse(read(file));

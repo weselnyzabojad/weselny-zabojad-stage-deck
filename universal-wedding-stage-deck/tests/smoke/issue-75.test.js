@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import weddingSchema from '../../schema/wedding-schema-v1.1.json';
+import stepsSchema from '../../schema/domains/steps.json';
 import { sanitizeCartridge, validateCartridge } from '../../src/lib/cartridgeImporter.js';
 
 const minimal = JSON.parse(
@@ -36,10 +37,10 @@ describe('issue #75 deprecated-feature cleanup', () => {
     expect(weddingSchema.properties.jokerGames).toBeUndefined();
     expect(weddingSchema.properties.weatherVariants).toBeUndefined();
     expect(weddingSchema.$defs.jokerGame).toBeUndefined();
-    expect(weddingSchema.$defs.step.properties.deferable).toBeUndefined();
-    expect(weddingSchema.$defs.step.properties.weatherOption).toBeUndefined();
-    expect(weddingSchema.$defs.step.properties.cateringNotes).toBeUndefined();
-    expect(weddingSchema.$defs.step.properties.propsAndFx).toBeUndefined();
+    expect(stepsSchema.$defs.step.properties.deferable).toBeUndefined();
+    expect(stepsSchema.$defs.step.properties.weatherOption).toBeUndefined();
+    expect(stepsSchema.$defs.step.properties.cateringNotes).toBeUndefined();
+    expect(stepsSchema.$defs.step.properties.propsAndFx).toBeUndefined();
     expect(weddingSchema.$defs.liveSyncState.properties.manual_offset_minutes).toBeUndefined();
     expect(weddingSchema.$defs.liveSyncState.properties.deferred_step_ids).toBeUndefined();
   });
