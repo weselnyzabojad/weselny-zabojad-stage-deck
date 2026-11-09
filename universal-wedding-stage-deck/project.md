@@ -69,8 +69,7 @@ sections below and in git history.
 
 | Issue | Item | Type |
 | --- | --- | --- |
-| [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
-| [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
+| [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
@@ -122,7 +121,7 @@ The app-wide reload/white-flash stability issue is catalogued in
 [app-wide reload stability](#app-wide-reload-stability-decision-2026-11-09).
 The Google Doc "Plan of the day" mapping for `example.pdf` is catalogued in
 [Google Doc plan-of-the-day mapping](#google-doc-plan-of-the-day-mapping-decision-2026-11-09).
-Both registers keep #77, #80, #245 and #459 open.
+Both registers keep #80, #245 and #459 open.
 
 ### Planning TODO register
 
