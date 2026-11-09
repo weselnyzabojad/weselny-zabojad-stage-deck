@@ -1,3 +1,4 @@
+import babyIcon from '../assets/icons/baby.svg?raw';
 import { isMediaRole } from '../lib/roles.js';
 import { useI18n } from '../i18n/useI18n';
 
@@ -6,11 +7,31 @@ export default function ChildrenExpectedBadge({
   wedding,
   role,
   inline = false,
+  compact = false,
   allowMc = false,
 }) {
   const { t } = useI18n();
   if (wedding?.childrenExpected !== true) return null;
   if (!isMediaRole(role) && !(allowMc && role === 'mc')) return null;
+
+  const label = t('children.expectedBadge');
+
+  if (compact) {
+    return (
+      <span
+        role="status"
+        aria-label={label}
+        title={label}
+        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-amber-600 bg-amber-950/95 p-1.5 text-amber-100"
+      >
+        <span
+          aria-hidden="true"
+          className="inline-flex [&>svg]:h-[18px] [&>svg]:w-[18px]"
+          dangerouslySetInnerHTML={{ __html: babyIcon }}
+        />
+      </span>
+    );
+  }
 
   return (
     <div
@@ -22,7 +43,7 @@ export default function ChildrenExpectedBadge({
       }
     >
       <span aria-hidden="true" className="text-base">🧒</span>
-      <span>{t('children.expectedBadge')}</span>
+      <span>{label}</span>
     </div>
   );
 }
