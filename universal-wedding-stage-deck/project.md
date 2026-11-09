@@ -3425,9 +3425,10 @@ metadata for the admin surface:
 - not rendered on stage role views;
 - optional, so older cartridges without it still validate.
 
-The schema field lives in the speeches domain. Tracked by
-[#600](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/600),
-blocked by #591.
+The schema field lives in the speeches domain. Shipped in
+[#600](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/600):
+the admin speeches panel edits the address, normalization keeps it, and the
+speaker cache omits it.
 
 ### 17.8 Encrypted speech redactions (decision, 2026-11-09)
 

@@ -30,7 +30,11 @@ export function saveSpeakerScript(weddingId, speech, storage) {
   const payload = {
     id: speech.id,
     mode: speech.mode ?? 'COMPLEX',
-    speaker: speech.speaker ?? { name: 'Speaker', relationship: null, contact: null },
+    speaker: {
+      name: speech.speaker?.name ?? 'Speaker',
+      relationship: speech.speaker?.relationship ?? null,
+      contact: speech.speaker?.contact ?? null,
+    },
     cue: speech.cue ?? null,
     time: speech.time ?? null,
     durationMin: Number.isFinite(speech.durationMin) ? speech.durationMin : null,

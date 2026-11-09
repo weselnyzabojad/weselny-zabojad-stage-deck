@@ -73,6 +73,10 @@
                 },
                 "contact": {
                   "type": "string"
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Admin-managed speaker email. Never mapped from the Google Doc."
                 }
               }
             }

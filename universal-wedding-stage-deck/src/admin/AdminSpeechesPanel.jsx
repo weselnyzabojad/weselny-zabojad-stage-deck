@@ -58,6 +58,16 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     });
   };
 
+  const updateSpeaker = (speech, patch) => {
+    const speaker =
+      typeof speech.speaker === 'string'
+        ? { name: speech.speaker }
+        : speech.speaker && typeof speech.speaker === 'object'
+          ? speech.speaker
+          : {};
+    updateSpeech(speech.id, { speaker: { ...speaker, ...patch } });
+  };
+
   const preview = async (speech) => {
     setError('');
     setMessage('');
@@ -167,6 +177,13 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                   </span>
                   <span className="font-mono text-[9px] text-muted">{speech.id}</span>
                 </div>
+                <input
+                  type="email"
+                  value={speech.speaker?.email ?? ''}
+                  onChange={(event) => updateSpeaker(speech, { email: event.target.value })}
+                  placeholder="Speaker email (admin only)"
+                  className="mt-1 w-full rounded border border-line bg-page px-2 py-1 font-mono text-[10px] text-ink"
+                />
                 <input
                   type="url"
                   value={links[speech.id] ?? ''}

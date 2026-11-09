@@ -34,15 +34,16 @@ export function resolveSpeechMode(wedding, speeches = []) {
 
 function normalizeSpeaker(raw) {
   if (typeof raw === 'string') {
-    return { name: text(raw) ?? 'Speaker', relationship: null, contact: null };
+    return { name: text(raw) ?? 'Speaker', relationship: null, contact: null, email: null };
   }
   if (!raw || typeof raw !== 'object') {
-    return { name: 'Speaker', relationship: null, contact: null };
+    return { name: 'Speaker', relationship: null, contact: null, email: null };
   }
   return {
     name: text(raw.name) ?? 'Speaker',
     relationship: text(raw.relationship) ?? text(raw.role),
     contact: text(raw.contact),
+    email: text(raw.email),
   };
 }
 
