@@ -6,7 +6,12 @@ export function filterEnabledSteps(wedding) {
     if (!step?.optionalFlag) return true;
     if (step.optionalFlag === 'oczepiny') return wedding?.oczepiny?.enabled === true;
     if (step.optionalFlag === 'wishes') return wedding?.wishes?.enabled === true;
-    if (step.optionalFlag === 'games') return wedding?.games?.enabled === true;
+    if (step.optionalFlag === 'games') {
+      if (wedding?.games?.enabled !== true) return false;
+      if (!step.gameId) return true;
+      const list = (wedding?.games?.questionLists ?? []).find((entry) => entry?.id === step.gameId);
+      return list ? list.enabled !== false : false;
+    }
     return true;
   });
 }

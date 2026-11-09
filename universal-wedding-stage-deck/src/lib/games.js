@@ -24,19 +24,60 @@ export function resolveGameQuestionLists(wedding, locale = 'PL') {
             .map((question) => ({
               id: question.id,
               prompt: localized(question.prompt, locale),
-              answer: localized(question.answer, locale),
+              ...(question.level ? { level: question.level } : {}),
+              ...(question.answer ? { answer: question.answer } : {}),
             }))
             .filter((question) => question.prompt)
         : [];
       return {
         id: list.id,
         title: list.title,
+        gameType: list.gameType ?? inferGameType(list),
+        enabled: list.enabled !== false,
         sourceDocId: list.sourceDocId ?? null,
         status,
         unavailable: status !== 'AVAILABLE' || questions.length === 0,
         questions,
       };
     });
+}
+
+function inferGameType(list) {
+  const key = `${list?.id ?? ''} ${list?.title ?? ''}`.toLowerCase();
+  if (/wiedz/.test(key)) return 'TEST_WIEDZY';
+  if (/zgodn/.test(key)) return 'TEST_ZGODNOSCI';
+  return 'OTHER';
+}
+
+function coupleNames(wedding, locale) {
+  const bride = localized(wedding?.coupleProfile?.bride?.firstName, locale) ?? 'Bride';
+  const groom = localized(wedding?.coupleProfile?.groom?.firstName, locale) ?? 'Groom';
+  return { bride, groom };
+}
+
+// Converts the cartridge question list into the existing clicker shape.
+export function buildGameClicker(wedding, gameId, locale = 'PL') {
+  const list = resolveGameQuestionLists(wedding, locale).find((entry) => entry.id === gameId);
+  if (!list) return null;
+  const names = coupleNames(wedding, locale);
+  return {
+    id: list.id,
+    title: list.title,
+    gameType: list.gameType,
+    unavailable: list.unavailable,
+    items: list.questions.map((question) => {
+      let answer = null;
+      if (question.answer === 'GROOM') answer = names.groom;
+      else if (question.answer === 'BRIDE') answer = names.bride;
+      else answer = localized(question.answer, locale);
+      return {
+        id: question.id,
+        question: question.prompt,
+        ...(question.level ? { level: question.level } : {}),
+        answer,
+      };
+    }),
+  };
 }
 
 export function gamesAvailable(wedding) {

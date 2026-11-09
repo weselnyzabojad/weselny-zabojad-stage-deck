@@ -330,9 +330,18 @@ function mapGames(source) {
     questionLists: rows.map((row) => {
       const notes = text(row.Notes) ?? '';
       const docId = /question list doc:\s*([^\s;,]+)/i.exec(notes)?.[1] ?? null;
+      const title = text(row.Game) ?? 'Game';
+      const normalizedTitle = title.toLowerCase();
+      const gameType = /wiedz/.test(normalizedTitle)
+        ? 'TEST_WIEDZY'
+        : /zgodn/.test(normalizedTitle)
+          ? 'TEST_ZGODNOSCI'
+          : 'OTHER';
       return {
-        id: slug(row.Game),
-        title: text(row.Game) ?? 'Game',
+        id: slug(title),
+        title,
+        gameType,
+        enabled: !/^no$/i.test(text(row.Requested) ?? ''),
         sourceDocId: docId ?? undefined,
         status: 'AVAILABLE',
         questions: [],

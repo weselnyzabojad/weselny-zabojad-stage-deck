@@ -38,6 +38,7 @@ import {
   createGoogleDriveConnector,
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
+import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 
 const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema);
 const driveConnector = createGoogleDriveConnector({
@@ -565,6 +566,24 @@ Deno.serve(async (req) => {
           );
         }
         cartridge = submitted;
+      }
+
+      // Fetch each game's dedicated question Doc at publish time and embed the
+      // parsed questions. Missing Docs stay MISSING/UNAVAILABLE rather than
+      // blocking the cartridge publication.
+      if (Array.isArray(cartridge?.games?.questionLists)) {
+        for (const list of cartridge.games.questionLists) {
+          if (!list?.sourceDocId) continue;
+          try {
+            const questionDoc = await driveConnector.readSource(list.sourceDocId);
+            const questions = parseGameQuestionDoc(questionDoc.text, list.gameType);
+            list.questions = questions;
+            list.status = questions.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE';
+          } catch {
+            list.questions = [];
+            list.status = 'UNAVAILABLE';
+          }
+        }
       }
 
       const { response } = await handlePublish(

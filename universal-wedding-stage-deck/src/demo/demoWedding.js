@@ -277,21 +277,20 @@ export const DEMO_WEDDING = {
       {
         id: "test_wiedzy",
         title: "Test Wiedzy",
+        gameType: "TEST_WIEDZY",
+        enabled: true,
         sourceDocId: "gdoc_test_wiedzy",
         status: "AVAILABLE",
         questions: [
           {
             id: "w01",
+            level: "EASY",
             prompt: {
               PL: "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
               FR: "Où Jennifer et Guillaume se sont-ils rencontrés ?",
               EN: "Where did Jennifer and Guillaume first meet?",
             },
-            answer: {
-              PL: "Na weselu przyjaciół w Krakowie",
-              FR: "Au mariage d'amis à Cracovie",
-              EN: "At a friend's wedding in Kraków",
-            },
+            answer: "GROOM",
           },
           {
             id: "w02",
@@ -300,10 +299,11 @@ export const DEMO_WEDDING = {
               FR: "Qui a dit « je t'aime » en premier ?",
               EN: "Who said I love you first?",
             },
-            answer: { PL: "Guillaume", FR: "Guillaume", EN: "Guillaume" },
+            answer: "BRIDE",
           },
           {
             id: "w03",
+            level: "HARD",
             prompt: {
               PL: "Jak nazywa się pies Jennifer i Guillaume?",
               FR: "Comment s'appelle le chien du couple ?",
@@ -316,9 +316,28 @@ export const DEMO_WEDDING = {
       {
         id: "test_zgodnosci",
         title: "Test Zgodności",
+        gameType: "TEST_ZGODNOSCI",
+        enabled: true,
         sourceDocId: "gdoc_test_zgodnosci",
-        status: "MISSING",
-        questions: [],
+        status: "AVAILABLE",
+        questions: [
+          {
+            id: "z01",
+            prompt: {
+              PL: "Kto chętniej planuje spontaniczny wyjazd?",
+              FR: "Qui planifie plus volontiers un voyage spontané ?",
+              EN: "Who is more likely to plan a spontaneous trip?",
+            },
+          },
+          {
+            id: "z02",
+            prompt: {
+              PL: "Kto dłużej się szykuje do wyjścia?",
+              FR: "Qui prend plus de temps pour se préparer ?",
+              EN: "Who takes longer to get ready?",
+            },
+          },
+        ],
       },
     ],
   },
