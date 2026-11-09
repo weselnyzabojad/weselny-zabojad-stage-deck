@@ -21,12 +21,13 @@ describe('responsive phone role shell', () => {
     expect(nav).toContain('if (!isCompact) return null');
   });
 
-  it('allows only the MC to advance/undo from the bottom bar', () => {
+  it('keeps step actions out of the bottom bar (issue #421)', () => {
     const nav = read('src/components/BottomNav.jsx');
-    expect(nav).toContain("role === 'mc'");
-    expect(nav).toContain('HoldToConfirmButton');
-    expect(nav).toContain('onUndo');
-    expect(nav).toContain('onAdvance');
+    expect(nav).not.toContain('HoldToConfirmButton');
+    expect(nav).not.toContain('onUndo');
+    expect(nav).not.toContain('onAdvance');
+    expect(nav).not.toContain('handleAdvance');
+    expect(nav).not.toContain('handleUndo');
   });
 
   it('wraps every role view with the shared shell', () => {
