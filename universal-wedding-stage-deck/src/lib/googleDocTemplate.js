@@ -118,8 +118,8 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 16,
     marker: 'MUSIC POLICY',
     required: false,
-    schemaPath: ['musicPolicy'],
-    purpose: 'Must-play, do-not-play, request window and licensing.',
+    schemaPath: ['musicPolicy', 'musicPolicy.discoPoloPolicy'],
+    purpose: 'Must-play, do-not-play, request window, Disco Polo policy and licensing.',
   },
   {
     order: 17,
