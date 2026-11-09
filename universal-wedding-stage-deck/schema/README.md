@@ -47,8 +47,7 @@ before it is published or cached.
    becomes the source for role devices. Manual JSON paste remains the
    offline/legacy fallback.
 
-The template uses this schema's canonical camelCase shape and also captures
-`preWeddingTodos`, which render in the MC **Pre-Wedding Checklist** card.
+The template uses this schema's canonical camelCase shape.
 
 
 ## Canonical shape
@@ -90,11 +89,8 @@ rejected; put app-specific data under `extensions`.
 | `role` | no | Legacy display hint only; device role is local. |
 | `venue` | no | Venue name / address. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
-| `coHosts` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
-| `contentCreators` | no | **Legacy (D10).** Accepted for backward compatibility; dropped when published or cached. |
 | `hardAnchors` | no | Fixed real-world deadlines. |
 | `demographics` | no | Guest counts / languages. |
-| `preWeddingTodos` | no | Pre-flight checklist. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
@@ -189,19 +185,6 @@ Notes:
 | `bread_salt` | `YES`, `NO`, `TBC` |
 
 Each rule accepts an optional `note`.
-
-## Legacy: co-hosts and content creators
-
-`coHosts` and `contentCreators` belonged to the removed Issue #16 module. They
-remain defined only so older v1.1 cartridges still pass structural validation.
-The app no longer renders them, the Google Doc template no longer emits them,
-and the shared validator drops both arrays when a cartridge is published or
-cached (D10 / TODO 20).
-
-```json
-"coHosts": [],
-"contentCreators": []
-```
 
 ## Speeches
 

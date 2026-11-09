@@ -4,9 +4,9 @@
 // wedding it joined, so the deck still works offline. This module deliberately
 // exposes no activation, import, edit or reset API: only the admin surface may
 // publish a cartridge, and only the server may decide which snapshot is current.
-// Deprecated D10 arrays are stripped on save so they never return to the app.
+// Deprecated fields are stripped on save so they never return to the app.
 
-import { dropDeprecatedCartridgeFields } from './cartridgeCompat.js';
+import { sanitizeCartridge } from './cartridgeImporter.js';
 
 const STORAGE_VERSION = 2;
 export const CARTRIDGE_CACHE_PREFIX = `wzsd:v${STORAGE_VERSION}:cartridge:`;
@@ -65,7 +65,7 @@ export function loadCachedCartridge(weddingId, storage) {
     if (parsed.cartridge.weddingId !== weddingId) return null;
 
     return {
-      cartridge: dropDeprecatedCartridgeFields(parsed.cartridge),
+      cartridge: sanitizeCartridge(parsed.cartridge),
       revision: normalizeRevision(parsed.revision),
       fetchedAt: normalizeTimestamp(parsed.fetchedAt),
     };
@@ -81,7 +81,7 @@ export function saveCachedCartridge(
   if (typeof weddingId !== 'string' || weddingId.length === 0) return false;
   if (!cartridge || cartridge.weddingId !== weddingId) return false;
 
-  const cleaned = dropDeprecatedCartridgeFields(cartridge);
+  const cleaned = sanitizeCartridge(cartridge);
   if (!isCartridgeLike(cleaned)) return false;
 
   const store = getStorage(storage);

@@ -8,52 +8,6 @@
   "role": "MC",
   "hostingMode": "HOST_AND_DJ",
   "venue": "Château de la Forêt",
-  "coHosts": [
-    {
-      "id": "zuzia",
-      "name": "Zuzia",
-      "role": "Co-MC",
-      "phone": "+48 600 111 222",
-      "responsibilities": [
-        "Bread & Salt",
-        "Games pool",
-        "Second microphone"
-      ],
-      "notes": "Shares the stage with the MC during the entrance and games."
-    },
-    {
-      "id": "val",
-      "name": "Val",
-      "role": "Co-host",
-      "phone": "+33 6 11 22 33 44",
-      "responsibilities": [
-        "Guest wrangling",
-        "Vendor coordination"
-      ]
-    }
-  ],
-  "contentCreators": [
-    {
-      "id": "paulina",
-      "name": "Paulina Nózka",
-      "platform": "INSTAGRAM",
-      "handle": "@paulinan",
-      "phone": "+48 600 333 444",
-      "arrivalTime": "16:00",
-      "departureTime": "22:00",
-      "deliverables": [
-        "Behind-the-scenes reel",
-        "Stories",
-        "Couple interviews"
-      ],
-      "boundaries": [
-        "Do not block the official photographer or videographer",
-        "No flash during the ceremony",
-        "Stay out of the aisle during the entrance"
-      ],
-      "notes": "Capture candid BTS moments and publish after the couple approves."
-    }
-  ],
   "hardAnchors": [
     {
       "id": "photo_video",
@@ -287,16 +241,6 @@
       "version": 1
     }
   },
-  "preWeddingTodos": [
-    {
-      "task": "Confirm Test Wiedzy questions with witnesses",
-      "done": true
-    },
-    {
-      "task": "Check XLR cables at 16:15",
-      "done": false
-    }
-  ],
   "musicPolicy": {
     "discoPoloPolicy": "ON_REQUEST",
     "mustPlay": [

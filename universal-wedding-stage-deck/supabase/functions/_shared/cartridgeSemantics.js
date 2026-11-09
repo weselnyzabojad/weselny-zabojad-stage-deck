@@ -7,7 +7,14 @@
 // Keep this file in sync with the browser rules. `tests/smoke/issue-165.test.js`
 // compares both implementations against every schema fixture.
 
-const DEPRECATED_TOP_LEVEL_FIELDS = ['jokersCount', 'jokerGames', 'weatherVariants'];
+const DEPRECATED_TOP_LEVEL_FIELDS = [
+  'jokersCount',
+  'jokerGames',
+  'weatherVariants',
+  'coHosts',
+  'contentCreators',
+  'preWeddingTodos',
+];
 const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', 'propsAndFx'];
 
 const MINUTES_PER_DAY = 24 * 60;

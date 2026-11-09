@@ -331,13 +331,6 @@ Gluten free: 1
 | --- | --- | --- |
 | cake_service | 21:30 | Cake service |
 
-## PRE-WEDDING TODOS
-
-| Todo ID | Task | Done | Due date | Owner |
-| --- | --- | --- | --- | --- |
-| confirm_test_questions | Confirm Test ZgodnoĹ›ci questions with the witnesses | false | 2026-08-18 | MC |
-| confirm_sunset | Confirm the sunset time with the photo team | false | 2026-08-19 | MC |
-
 ## PRIVACY
 
 Cloud sync: ENCRYPTED_HOST_KEY

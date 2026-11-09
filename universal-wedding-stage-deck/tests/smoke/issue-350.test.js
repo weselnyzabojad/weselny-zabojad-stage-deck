@@ -64,7 +64,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     ]);
     expect(result.cartridge.photoPlan.groupPhotos).not.toHaveProperty('minGroupSize');
     expect(result.cartridge.photoPlan.groupPhotos).not.toHaveProperty('durationMin');
-    expect(result.cartridge.preWeddingTodos).toHaveLength(2);
+    expect(result.cartridge).not.toHaveProperty('preWeddingTodos');
     expect(result.cartridge).not.toHaveProperty('contacts');
     expect(result.cartridge).not.toHaveProperty('tact_and_vip_alerts');
   });

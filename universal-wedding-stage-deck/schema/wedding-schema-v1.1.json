@@ -66,22 +66,6 @@
     "culturalRules": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/cultural-rules.json#/properties/culturalRules"
     },
-    "coHosts": {
-      "type": "array",
-      "deprecated": true,
-      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
-      "items": {
-        "$ref": "#/$defs/coHost"
-      }
-    },
-    "contentCreators": {
-      "type": "array",
-      "deprecated": true,
-      "description": "LEGACY (removed by D10 / TODO 20). Accepted only so existing v1.1 cartridges still validate; the importer drops the array on import.",
-      "items": {
-        "$ref": "#/$defs/contentCreator"
-      }
-    },
     "hardAnchors": {
       "type": "array",
       "items": {
@@ -104,12 +88,6 @@
     },
     "demographics": {
       "$ref": "#/$defs/demographics"
-    },
-    "preWeddingTodos": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/preWeddingTodo"
-      }
     },
     "musicPolicy": {
       "type": "object",
@@ -550,95 +528,6 @@
         }
       }
     },
-    "coHost": {
-      "type": "object",
-      "required": [
-        "id",
-        "name"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "role": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "responsibilities": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "notes": {
-          "type": "string"
-        }
-      }
-    },
-    "contentCreator": {
-      "type": "object",
-      "required": [
-        "id",
-        "name"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1
-        },
-        "platform": {
-          "type": "string",
-          "enum": [
-            "INSTAGRAM",
-            "TIKTOK",
-            "YOUTUBE",
-            "FACEBOOK",
-            "OTHER"
-          ]
-        },
-        "handle": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "arrivalTime": {
-          "$ref": "#/$defs/clock"
-        },
-        "departureTime": {
-          "$ref": "#/$defs/clock"
-        },
-        "deliverables": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "boundaries": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "notes": {
-          "type": "string"
-        }
-      }
-    },
     "demographics": {
       "type": "object",
       "additionalProperties": false,
@@ -668,23 +557,6 @@
         },
         "notes": {
           "type": "string"
-        }
-      }
-    },
-    "preWeddingTodo": {
-      "type": "object",
-      "required": [
-        "task",
-        "done"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "task": {
-          "type": "string",
-          "minLength": 1
-        },
-        "done": {
-          "type": "boolean"
         }
       }
     },

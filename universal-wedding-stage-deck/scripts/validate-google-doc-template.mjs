@@ -79,7 +79,6 @@ const EXPECTED_TABLES = {
   'CAKE': null,
   'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Notes'],
   'KITCHEN': ['Course ID', 'Name', 'Time', 'Dietary notes'],
-  'PRE-WEDDING TODOS': ['Todo ID', 'Task', 'Done', 'Due date', 'Owner'],
   'PRIVACY': null,
   'LIVE SYNC STATE': null,
   'EXTENSIONS': null,

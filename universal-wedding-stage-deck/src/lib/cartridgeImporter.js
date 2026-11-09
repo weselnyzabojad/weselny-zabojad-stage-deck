@@ -53,7 +53,14 @@ export function parseCartridgeJson(text) {
   }
 }
 
-const DEPRECATED_TOP_LEVEL_FIELDS = ['jokersCount', 'jokerGames', 'weatherVariants'];
+const DEPRECATED_TOP_LEVEL_FIELDS = [
+  'jokersCount',
+  'jokerGames',
+  'weatherVariants',
+  'coHosts',
+  'contentCreators',
+  'preWeddingTodos',
+];
 const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', 'propsAndFx'];
 
 // Issue #75: delete, do not migrate. Old v1.1 cartridges may still contain the
@@ -116,9 +123,6 @@ export function summarizeCartridge(cartridge) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
   const flexibleSteps = steps.filter((step) => step?.type === 'FLEXIBLE');
   const anchors = Array.isArray(cartridge?.hardAnchors) ? cartridge.hardAnchors : [];
-  const preWedding = Array.isArray(cartridge?.preWeddingTodos)
-    ? cartridge.preWeddingTodos
-    : [];
   const keySongs = Array.isArray(cartridge?.musicPolicy?.importantSongs)
     ? cartridge.musicPolicy.importantSongs
     : [];
@@ -135,7 +139,6 @@ export function summarizeCartridge(cartridge) {
     stepCount: steps.length,
     flexibleStepCount: flexibleSteps.length,
     hardAnchorCount: anchors.length,
-    preWeddingCount: preWedding.length,
     keySongCount: keySongs.length,
     hasCake: Boolean(cake),
     cakeTime: cake?.time ?? null,

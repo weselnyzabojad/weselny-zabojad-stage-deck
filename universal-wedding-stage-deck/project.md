@@ -1420,8 +1420,7 @@ cartridge:
 - EVENT, couple identity, languages, cultural rules, Oczepiny and timeline;
 - DJ/MC cues, subtasks, hard anchors, mandatory constraints and view visibility;
 - venue logistics, media team, photo plan, songs/music policy and guest requests;
-- speeches, cake, games/question lists, kitchen, pre-wedding todos, privacy and
-  extensions;
+- speeches, cake, games/question lists, kitchen, privacy and extensions;
 - live sync state only when explicitly supplied as a seed.
 
 Mapping is validation-first and deterministic. Missing required data must fail
@@ -2696,8 +2695,8 @@ Core top-level groups:
   `syncPin`, `role`, `hostingMode`;
 - venue and cultural rules: `venue`, `venueLogistics`, `culturalRules`;
 - schedule: `hardAnchors`, `steps` (`FLEXIBLE`, `HARD_ANCHOR`);
-- content: `cake`, `speeches`, `musicPolicy`, `preWeddingTodos`, `mediaTeam`,
-  `photoPlan`, `oczepiny`;
+- content: `cake`, `speeches`, `musicPolicy`, `mediaTeam`, `photoPlan`,
+  `oczepiny`;
 - optional/forward-compatible: `demographics`, `viewVisibility`, `privacy`,
   `speeches`, `extensions`;
 - live state: `liveSyncState` with `active_step_id`, `completed_step_ids`,
@@ -2732,7 +2731,7 @@ npm run validate:i18n
 ### Role views
 
 - MC Master: header identity, drift, controls, timeline, cake, music policy,
-  buffer accordion, pre-wedding checklist, speeches, radar, stage pings;
+  buffer accordion, speeches, radar, stage pings;
   the **Stage Rail** (current-step hero with done/upcoming accordions) is
   planned in #118–#121;
 - DJ Booth: read-only timeline, key songs and cutoffs;
@@ -3313,7 +3312,9 @@ validator. These are the Google Doc → JSON mapping contracts.
 | `mediaTeam` | **No** | Actively used by `GroupPhotoChecklist`, `PhotographerView`, `resolveOczepiny` (winner-photo timing) and the Doc `MEDIA TEAM` mapping. |
 | `preWeddingTodos` | **Yes — owner confirmed** | Imported and seeds `buildInitialLiveState.checked_subtasks`, but no UI renders it (the MC Pre-wedding Checklist card was removed in #202); removal also drops the Doc `## PRE-WEDDING TODOS` mapping. |
 
-The removal is tracked by
-[#583](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/583)
-(`coHosts`, `contentCreators` and `preWeddingTodos` are removed end to end;
-`mediaTeam` is explicitly kept).
+The removal shipped in
+[#583](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/583):
+`coHosts`, `contentCreators` and `preWeddingTodos` are gone from the schema,
+example and fixture, importer/converter, demo and template, and both validators
+drop the legacy team fields before validation. `mediaTeam` is explicitly kept
+and still drives the group-photo checklist.
