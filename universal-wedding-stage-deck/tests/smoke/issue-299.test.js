@@ -36,7 +36,7 @@ describe('issue #299 couple languages vs UI language switch', () => {
 
   it('hides the indicator on DJ Standard and keeps it on DJ VIP', () => {
     const dj = read('src/components/DjBoothView.jsx');
-    expect(dj).toContain('showCoupleLanguages={isVip}');
+    expect(dj).toContain('showCoupleLanguages={caps.coupleLanguages}');
   });
 
   it('localizes the label in EN/FR/PL', () => {

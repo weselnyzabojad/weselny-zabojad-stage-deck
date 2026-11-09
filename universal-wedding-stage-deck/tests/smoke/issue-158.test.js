@@ -14,7 +14,7 @@ describe('issue #158 non-MC desktop top bars', () => {
     expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} />');
     expect(dj).not.toContain('<TopBarRoleLabel');
     expect(dj).toContain('<OpenOnPhoneButton role={role} tier={tierLabel}');
-    expect(dj).toContain('{isVip ? (');
+    expect(dj).toContain('{caps.guestRequests ? (');
     expect(dj).toContain('<TopBarCenterIdentity');
     expect(dj).not.toContain('<DriftPill');
     expect(dj).not.toContain('<RoleSwitcher');

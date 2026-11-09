@@ -11,7 +11,7 @@ describe('issue #458 dev-only song request simulator', () => {
     const dj = read('src/components/DjBoothView.jsx');
     expect(dj).toContain("const SongRequestSimulator = import.meta.env.DEV");
     expect(dj).toContain("lazy(() => import('../dev/SongRequestSimulator.jsx'))");
-    expect(dj).toContain('{isVip && SongRequestSimulator ? (');
+    expect(dj).toContain('{caps.devSimulator && SongRequestSimulator ? (');
     expect(dj).not.toMatch(/^import SongRequestSimulator/m);
   });
 

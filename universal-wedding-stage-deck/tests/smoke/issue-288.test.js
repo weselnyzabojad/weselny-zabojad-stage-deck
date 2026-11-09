@@ -10,7 +10,7 @@ describe('issue #288 Oczepiny role cues', () => {
   });
   it('does not render the DJ cue for Standard', () => {
     const dj = read('src/components/DjBoothView.jsx');
-    expect(dj).toContain('{isVip &&');
+    expect(dj).toContain('{caps.boothCues &&');
   });
   it('shows throwings, game, countdown and winner photos conditionally', () => {
     const cue = read('src/components/OczepinyCueCard.jsx');

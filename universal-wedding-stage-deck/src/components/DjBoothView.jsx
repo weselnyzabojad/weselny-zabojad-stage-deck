@@ -24,6 +24,7 @@ import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import { djDetailTier, getImportantSongs, resolveServicePackage } from '../lib/importantSongs';
+import { djCapabilities } from '../lib/djCapabilities.js';
 
 // Build-time dev gate: production replaces this with `null` and drops the
 // dynamic import, its chunk and all simulator strings.
@@ -70,9 +71,9 @@ export default function DjBoothView({
 
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
   const detailTier = djDetailTier({ ...wedding, servicePackage: resolvedPackage });
-  const isVip = detailTier === 'vip';
+  const caps = djCapabilities(detailTier);
   const isSolo = resolvedPackage === 'HOST_AND_DJ_SOLO';
-  const tierLabel = isVip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
+  const tierLabel = caps.vip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
   const importantSongs = getImportantSongs(wedding);
   const mainSong = activeEntry
     ? importantSongs.find((song) => song.stepId === activeEntry.step.id) ?? null
@@ -81,7 +82,7 @@ export default function DjBoothView({
   const mandatoryByStep = mapMandatoryToSteps(
     wedding,
     timeline.map((entry) => entry?.step).filter(Boolean),
-    { role: 'dj', isVipDj: isVip, override: mandatoryOverride },
+    { role: 'dj', isVipDj: caps.vip, override: mandatoryOverride },
   );
   const mandatoryItems = activeEntry?.step?.id ? mandatoryByStep[activeEntry.step.id] ?? [] : [];
 
@@ -112,12 +113,12 @@ export default function DjBoothView({
           {activeEntry.step.dj.cutoff ?? `start + ${activeEntry.step.dj.cutoffSec}s`}
         </div>
       ) : null}
-      {isVip &&
+      {caps.boothCues &&
       (activeEntry?.step?.optionalFlag === 'oczepiny' ||
         /oczepiny/i.test(activeEntry?.step?.title ?? '')) ? (
         <OczepinyCueCard wedding={wedding} audience="dj-vip" />
       ) : null}
-      {isVip && activeEntry?.step?.firstDanceMode ? (
+      {caps.boothCues && activeEntry?.step?.firstDanceMode ? (
         <FirstDanceCueCard step={activeEntry.step} audience="dj-vip" />
       ) : null}
       <StepMandatoryNotes items={mandatoryItems} />
@@ -144,9 +145,9 @@ export default function DjBoothView({
   // Compact (phone) read-only content: no step controls.
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
-      {isVip ? (
+      {caps.guestRequests ? (
         <DjSongRequestQueue
-          enabled={isVip}
+          enabled={caps.guestRequests}
           variant="bar"
           role={role}
           accessToken={songRequestAccessToken}
@@ -154,7 +155,7 @@ export default function DjBoothView({
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
       ) : null}
-      {isVip && SongRequestSimulator ? (
+      {caps.devSimulator && SongRequestSimulator ? (
         <Suspense fallback={null}>
           <SongRequestSimulator />
         </Suspense>
@@ -169,7 +170,7 @@ export default function DjBoothView({
         currentBody={djCurrentBody}
       />
 
-      {isVip ? <MusicPolicyCard policy={musicPolicy} /> : null}
+      {caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}
     </div>
   );
 
@@ -187,13 +188,13 @@ export default function DjBoothView({
             <TopBarRoleIdentity role={role} tier={tierLabel} />
           </>
         )}
-        center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={isVip} />}
+        center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={caps.coupleLanguages} />}
         right={(
           <>
-            {isVip && culturalRules ? (
+            {caps.culturalChips && culturalRules ? (
               <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
             ) : null}
-            {isVip ? (
+            {caps.speeches ? (
               <SpeechesChip
                 mode={speechMode}
                 speeches={speeches}
@@ -209,7 +210,7 @@ export default function DjBoothView({
         left={(
           <>
             <SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />
-            {isVip && authControl ? authControl : null}
+            {caps.vipAuth && authControl ? authControl : null}
           </>
         )}
         center={(
@@ -224,9 +225,9 @@ export default function DjBoothView({
         )}
       />
 
-      {isVip ? (
+      {caps.guestRequests ? (
         <DjSongRequestQueue
-          enabled={isVip}
+          enabled={caps.guestRequests}
           variant="bar"
           role={role}
           accessToken={songRequestAccessToken}
@@ -234,7 +235,7 @@ export default function DjBoothView({
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
       ) : null}
-      {isVip && SongRequestSimulator ? (
+      {caps.devSimulator && SongRequestSimulator ? (
         <Suspense fallback={null}>
           <SongRequestSimulator />
         </Suspense>
@@ -260,12 +261,12 @@ export default function DjBoothView({
           />
 
           <div className="grid gap-4 lg:grid-cols-3">
-            {isVip ? (
+            {caps.musicPolicy ? (
               <div className="space-y-4 lg:col-span-2">
                 <MusicPolicyCard policy={musicPolicy} />
               </div>
             ) : null}
-            <aside className={`space-y-4${isVip ? '' : ' lg:col-span-3'}`}>
+            <aside className={`space-y-4${caps.musicPolicy ? '' : ' lg:col-span-3'}`}>
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
                   {t('dj.setNotes')}
@@ -291,7 +292,7 @@ export default function DjBoothView({
     return wideContent;
   }
 
-  if (!isVip) {
+  if (!caps.pocket) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-page px-4 text-center text-ink">
         <section className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
@@ -326,12 +327,12 @@ export default function DjBoothView({
       theme={theme}
       onRoleChange={onRoleChange}
       viewSwitch={viewSwitch}
-      culturalRules={isVip ? culturalRules : null}
+      culturalRules={caps.culturalChips ? culturalRules : null}
       oczepinyStatus={oczepinyStatus}
-      speeches={isVip ? speeches : null}
-      speechMode={isVip ? speechMode : null}
+      speeches={caps.speeches ? speeches : null}
+      speechMode={caps.speeches ? speechMode : null}
       activeSpeechId={activeSpeechId}
-      authControl={isVip ? authControl : null}
+      authControl={caps.vipAuth ? authControl : null}
     >
       {compactContent}
     </RoleShell>
