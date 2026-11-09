@@ -1,0 +1,10 @@
+{
+  "$schema": "./cake.json",
+  "cake": {
+    "time": "20:30",
+    "cuttingSong": "Cake - The Coup",
+    "sparklers": true,
+    "photographerCue": "Front-left of the cake table",
+    "serveTime": "20:45"
+  }
+}
