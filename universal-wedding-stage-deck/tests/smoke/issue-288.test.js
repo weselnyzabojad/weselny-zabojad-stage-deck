@@ -14,8 +14,13 @@ describe('issue #288 Oczepiny role cues', () => {
   });
   it('shows throwings, game, countdown and winner photos conditionally', () => {
     const cue = read('src/components/OczepinyCueCard.jsx');
-    for (const text of ['Throwings', 'Game', 'MC countdown', 'winners only']) {
-      expect(cue).toContain(text);
+    for (const key of [
+      'oczepiny.throwings',
+      'oczepiny.game',
+      'oczepiny.countdown',
+      'oczepiny.photoCue',
+    ]) {
+      expect(cue).toContain(key);
     }
   });
 });
