@@ -1,4 +1,4 @@
-﻿// Local, read-only admin preview used only when VITE_ADMIN_DEMO=1 in a dev
+// Local, read-only admin preview used only when VITE_ADMIN_DEMO=1 in a dev
 // build. It never contacts Supabase and never ships in production. Mutations
 // are intentionally disabled so nobody mistakes the sample data for real.
 
@@ -113,7 +113,7 @@ export function demoList() {
         target: 'demo-2026',
         actor_email: 'demo@local',
         created_at: hoursAgo(3),
-        detail: { note: 'Demo data only â€” no production records.' },
+        detail: { note: 'Demo data only — no production records.' },
       },
       {
         id: 'demo-audit-2',

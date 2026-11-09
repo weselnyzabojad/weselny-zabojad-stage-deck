@@ -1,5 +1,6 @@
 import logo from '../assets/img/logo.png';
 import { useI18n } from '../i18n/useI18n';
+import useCompact from '../hooks/useCompact';
 import SyncStatusBadge from './SyncStatusBadge';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -41,11 +42,8 @@ export default function RoleShell({
   allowMcChildren = false,
 }) {
   const { t } = useI18n();
-  const isCompact =
-    compact === true ||
-    (typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(max-width: 639px)').matches);
+  const mediaCompact = useCompact();
+  const isCompact = compact === true || mediaCompact;
 
   // Wide/desktop: the view owns its full layout. Do not add chrome.
   if (!isCompact) {

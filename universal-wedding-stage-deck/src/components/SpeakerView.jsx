@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -12,6 +12,7 @@ import LanguageToggle from './LanguageToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
+import useCompact from '../hooks/useCompact';
 import {
   clearSpeakerScript,
   saveSpeakerScript,
@@ -55,25 +56,14 @@ export default function SpeakerView({
     }
   }, [speechSnapshot, activeSpeechId, fromCache, wedding.weddingId]);
 
-  const [isCompact, setIsCompact] = useState(
-    typeof window !== 'undefined' && window.matchMedia
-      ? window.matchMedia('(max-width: 639px)').matches
-      : false,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)');
-    setIsCompact(mq.matches);
-    const listener = () => setIsCompact(mq.matches);
-    mq.addEventListener('change', listener);
-    return () => mq.removeEventListener('change', listener);
-  }, []);
+  const isCompact = useCompact();
 
   const speakerBody = (
     <>
         {speechMode === 'OFF' ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              đź”‡
+              🔇
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.offTitle')}</h1>
             <p className="mt-1 text-sm text-muted">
@@ -83,7 +73,7 @@ export default function SpeakerView({
         ) : speechCount === 0 ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              đź“ť
+              📝
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.noneTitle')}</h1>
             <p className="mt-1 text-sm text-muted">
@@ -93,7 +83,7 @@ export default function SpeakerView({
         ) : !activeSpeech ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              âŹł
+              ⏳
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.waitTitle')}
@@ -105,7 +95,7 @@ export default function SpeakerView({
         ) : !activeSpeech.speakerVisible ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              đź”’
+              🔒
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notSharedTitle')}
@@ -117,7 +107,7 @@ export default function SpeakerView({
         ) : !activeSpeech.scriptAllowed ? (
           <section className="rounded-2xl border border-line bg-card p-6 text-center">
             <div className="text-4xl" aria-hidden="true">
-              đź”’
+              🔒
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notStoredTitle')}
