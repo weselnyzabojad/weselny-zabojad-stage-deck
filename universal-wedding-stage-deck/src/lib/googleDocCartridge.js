@@ -488,6 +488,7 @@ function mapPhotoPlan(source) {
       groups,
     },
     speedFoto: {
+      stepId: text(kv(source, 'Speed foto step ID')),
       enabled: bool(kv(source, 'Speed foto enabled'), false),
       description: text(kv(source, 'Speed foto description')),
       durationMin: int(kv(source, 'Speed foto duration (min)')),
