@@ -403,7 +403,7 @@ export default function McMasterView({ model }) {
   const wideContent = (
     <>
       <SkipLink />
-      <div className="h-screen bg-page text-ink font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+      <div className="h-screen bg-page text-ink font-body flex flex-col justify-between overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
       <TopBarShell
