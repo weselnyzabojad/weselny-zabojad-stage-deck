@@ -76,10 +76,13 @@ sections below and in git history.
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
 | [#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539) | MC: remove More/swap on Test Wiedzy/Test Zgodności steps | Implementation |
 | [#541](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/541) | App-wide: stop frequent full-page reloads/white flashes | Bug fix / stability |
-| [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) | Google Doc "Plan of the day" → timeline/cue mapping (`example.pdf`) | Planning / template |
-| [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) | Display kitchen supper courses as mandatory timeline steps | Implementation |
+| [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) | Google Doc template blueprint: canonical step vocabulary + Plan-of-the-day mapping | Planning / template |
+| [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) | Kitchen courses: variable-length mandatory course list on the timeline | Implementation |
 | [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) | Add Bread and Salt and Dance-with-the-couple timeline steps | Implementation |
 | [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) | Surface per-step MC cues in the MC view | Implementation |
+| [#551](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/551) | Capture the ceremony script as the Ceremony step teleprompter | Implementation |
+| [#552](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/552) | Parser-mapper uniform edge-case rules | Implementation |
+| [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553) | Witnesses (świadkowie/témoins) as key persons | Planning TODO |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -3159,3 +3162,61 @@ are **venue notes, not timeline steps**.
 - [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) — kitchen supper courses as mandatory steps.
 - [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) — Bread and Salt + Dance-with-the-couple steps.
 - [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) — surface per-step MC cues in the MC view.
+
+## 14. Unified Google Doc template & parser-mapper (decision, 2026-11-09)
+
+The six example wedding docs in `exs/` (harmonogram / roadmap / scenario, mixed
+PL/FR/EN) are **reference material only**. The single input to the app is the
+standardized Google Doc template (27 `## SECTION` markers); the couple/planner
+fills it in, and a free-form harmonogram is transcribed into it by hand. There is
+**one** generalized parser-mapper — `googleDocToTemplateText` →
+`parseGoogleDocTemplate` → `validateGoogleDocTemplate` →
+`googleDocTemplateToCartridge` — with no per-file logic.
+
+### Canonical step vocabulary
+
+Free-form step names are normalized to a fixed set; detection never matches
+localized titles.
+
+| Canonical step | Flag / type |
+| --- | --- |
+| Ceremony | `ceremonyType` |
+| Vin d'honneur / Cocktail | FLEXIBLE |
+| Bread & Salt | FLEXIBLE |
+| Wishes | `optionalFlag: wishes` |
+| Grand Entrance | `grandEntranceOrder` |
+| Dinner | FLEXIBLE (speeches attach) + `kitchenServices.dinner` |
+| First Dance | `firstDanceMode` |
+| Wedding Cake | HARD_ANCHOR + `cake` |
+| Dance with Bride and Groom | game step |
+| Supper I / II / III… | mandatory kitchen course (variable-length list) |
+| Test Wiedzy | `optionalFlag: games` |
+| Test Zgodności | `optionalFlag: games` |
+| Oczepiny | `optionalFlag: oczepiny` |
+| Last Dance | FLEXIBLE |
+
+Guest-flow moments (check-in, moving to the orangery, taking seats) are venue
+notes, not steps.
+
+### Decisions from this review
+
+- The standardized template is the only input (no AI/LLM transcription step).
+- Canonical step titles are enforced.
+- DJ / photographer / cameraman contacts map to their existing role views and
+  are **not** added to the template now. Witnesses (świadkowie/témoins) are key
+  persons — tracked as a TODO.
+- Weather-variant timelines (Ola&Eddy) are single timeline + notes.
+- Kitchen courses become a variable-length ordered list (not the fixed 4 slots).
+- The trilingual ceremony script is stored as the Ceremony step's teleprompter.
+- Lettered bullets under a "Plan of the day" block map deterministically:
+  sub-task / MC cue / DJ song.
+
+### Follow-ups
+
+- [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) — template blueprint + canonical vocabulary + lettered-bullet mapping.
+- [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) — variable-length mandatory kitchen course list.
+- [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) — Bread & Salt + Dance-with-the-couple canonical steps.
+- [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) — surface per-step MC cues.
+- [#551](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/551) — ceremony script as Ceremony-step teleprompter.
+- [#552](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/552) — parser-mapper uniform edge-case rules.
+- [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553) — witnesses as key persons (TODO).
