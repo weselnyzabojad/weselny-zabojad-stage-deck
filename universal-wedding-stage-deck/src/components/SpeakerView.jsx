@@ -76,7 +76,7 @@ export default function SpeakerView({
               đź”‡
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.offTitle')}</h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               {t('speaker.offBody')}
             </p>
           </section>
@@ -86,7 +86,7 @@ export default function SpeakerView({
               đź“ť
             </div>
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.noneTitle')}</h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               {t('speaker.noneBody')}
             </p>
           </section>
@@ -98,7 +98,7 @@ export default function SpeakerView({
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.waitTitle')}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               {t('speaker.waitBody')}
             </p>
           </section>
@@ -110,7 +110,7 @@ export default function SpeakerView({
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notSharedTitle')}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               {t('speaker.notSharedBody')}
             </p>
           </section>
@@ -122,7 +122,7 @@ export default function SpeakerView({
             <h1 className="mt-2 font-heading text-xl font-bold text-ink">
               {t('speaker.notStoredTitle')}
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-muted">
               {t('speaker.notStoredBody')}
             </p>
           </section>
@@ -136,7 +136,7 @@ export default function SpeakerView({
                 {activeSpeech.speaker.name}
               </h1>
               {activeSpeech.speaker.relationship ? (
-                <div className="text-xs text-slate-400">{activeSpeech.speaker.relationship}</div>
+                <div className="text-xs text-muted">{activeSpeech.speaker.relationship}</div>
               ) : null}
             </section>
 
@@ -150,7 +150,7 @@ export default function SpeakerView({
                   <p className="font-heading text-sm font-semibold text-amber-200">
                     {t('speaker.scriptMissingTitle')}
                   </p>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-muted">
                     {t('speaker.scriptMissingBody')}
                   </p>
                 </div>
@@ -187,7 +187,7 @@ export default function SpeakerView({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+    <div className="flex min-h-screen flex-col bg-page text-ink antialiased select-none">
       <SkipLink />
       <TopBarShell
         left={(
@@ -218,7 +218,7 @@ export default function SpeakerView({
         {speakerBody}
       </main>
 
-      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-slate-500">
+      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-muted">
         {t('speaker.footer')}
       </footer>
     </div>

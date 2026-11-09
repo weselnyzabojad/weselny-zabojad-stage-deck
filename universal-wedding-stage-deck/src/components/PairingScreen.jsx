@@ -154,7 +154,7 @@ export default function PairingScreen({
   };
 
   return (
-    <div className="min-h-screen w-full bg-page text-slate-100 font-body flex items-center justify-center px-4 py-8 relative overflow-hidden select-none">
+    <div className="min-h-screen w-full bg-page text-ink font-body flex items-center justify-center px-4 py-8 relative overflow-hidden select-none">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
       <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
@@ -172,13 +172,13 @@ export default function PairingScreen({
             <span className="text-[10px] uppercase tracking-[0.25em] text-brand-soft font-heading font-semibold">
               {t('pairing.stageDeck')}
             </span>
-            <h1 className="text-2xl font-heading font-bold text-white mt-2">{wedding.couple}</h1>
-            <p className="text-xs text-slate-400 font-mono mt-1">{wedding.date} · {t('pairing.roomPairing')}</p>
+            <h1 className="text-2xl font-heading font-bold text-ink mt-2">{wedding.couple}</h1>
+            <p className="text-xs text-muted font-mono mt-1">{wedding.date} · {t('pairing.roomPairing')}</p>
           </div>
 
-          <p className="text-sm text-slate-300 text-center mt-6">
+          <p className="text-sm text-ink text-center mt-6">
             {t('pairing.instructionBefore')}{' '}
-            <strong className="text-white">{t('pairing.pinLabel')}</strong>{' '}
+            <strong className="text-ink">{t('pairing.pinLabel')}</strong>{' '}
             {t('pairing.instructionAfter')}
           </p>
 
@@ -208,7 +208,7 @@ export default function PairingScreen({
                   maxLength={1}
                   aria-label={t('pairing.digitLabel', { index: index + 1, total: PIN_LENGTH })}
                   aria-invalid={Boolean(error)}
-                  className={`w-16 h-[4.5rem] text-center text-4xl font-mono font-bold rounded-xl border-2 bg-page text-white outline-none transition focus:ring-2 focus:ring-brand/60 ${boxClass}`}
+                  className={`w-16 h-[4.5rem] text-center text-4xl font-mono font-bold rounded-xl border-2 bg-page text-ink outline-none transition focus:ring-2 focus:ring-brand/60 ${boxClass}`}
                 />
               );
             })}
@@ -224,21 +224,21 @@ export default function PairingScreen({
             disabled={!complete}
             className={`w-full mt-2 py-3.5 rounded-xl font-heading font-bold text-sm transition border ${
               complete
-                ? 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong shadow-lg shadow-blue-950/60'
-                : 'bg-raised text-slate-500 border-line cursor-not-allowed'
+                ? 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong shadow-lg shadow-blue-950/60'
+                : 'bg-raised text-muted border-line cursor-not-allowed'
             }`}
           >
             🔓 {t('pairing.submit')}
           </button>
 
-          <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-mono text-slate-400">
+          <div className="mt-5 flex items-center justify-center gap-2 text-[11px] font-mono text-muted">
             <span
               className={`h-2 w-2 rounded-full inline-block ${cloudConfigured ? 'bg-emerald-400' : 'bg-slate-500'}`}
             />
             <span>{cloudConfigured ? t('pairing.cloudConfigured') : t('pairing.localOnly')}</span>
           </div>
 
-          <p className="mt-2 text-center text-[11px] text-slate-500 leading-relaxed">
+          <p className="mt-2 text-center text-[11px] text-muted leading-relaxed">
             {t('pairing.helper')}
           </p>
         </div>

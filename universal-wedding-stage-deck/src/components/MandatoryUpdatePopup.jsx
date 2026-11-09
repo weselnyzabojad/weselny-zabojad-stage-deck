@@ -100,11 +100,11 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
       className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 px-4"
     >
       <section className="max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-brand-strong bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:p-5">
-        <h2 id="mandatory-update-title" className="font-heading text-lg font-bold text-white">
+        <h2 id="mandatory-update-title" className="font-heading text-lg font-bold text-ink">
           {t('mandatoryUpdate.title')}
         </h2>
-        <p className="mt-1 text-xs text-slate-400">{t('mandatoryUpdate.description')}</p>
-        <div className="mt-3 space-y-1 rounded-lg border border-line bg-page/70 p-3 font-mono text-[11px] text-slate-300">
+        <p className="mt-1 text-xs text-muted">{t('mandatoryUpdate.description')}</p>
+        <div className="mt-3 space-y-1 rounded-lg border border-line bg-page/70 p-3 font-mono text-[11px] text-ink">
           {rows.map((row) => (
             <div key={row.id}>
               {row.label}: {row.value ?? '—'}
@@ -115,7 +115,7 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
           <button
             type="button"
             onClick={acknowledge}
-            className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white hover:bg-brand-hover"
+            className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent hover:bg-brand-hover"
           >
             {t('mandatoryUpdate.acknowledge')}
           </button>

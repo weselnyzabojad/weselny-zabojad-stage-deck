@@ -31,8 +31,8 @@ export default function LanguageToggle({ className = '' }) {
               index > 0 ? 'border-l border-line' : ''
             } ${
               active
-                ? 'bg-brand/40 text-white'
-                : 'text-slate-400 hover:bg-line hover:text-slate-200'
+                ? 'bg-brand/40 text-ink'
+                : 'text-muted hover:bg-line hover:text-ink'
             }`}
           >
             {SHORT[code]}

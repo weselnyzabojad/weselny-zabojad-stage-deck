@@ -15,9 +15,9 @@ export default function FirstDanceCueCard({ step, audience = 'mc' }) {
         <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
           💃 {t('firstDance.title')} · {modeLabel}
         </div>
-        <p className="mt-0.5 text-slate-200">{t(`firstDance.explanation.${dance.mode}`)}</p>
+        <p className="mt-0.5 text-ink">{t(`firstDance.explanation.${dance.mode}`)}</p>
         {dance.notes ? (
-          <p className="mt-0.5 text-[10px] text-slate-400">{dance.notes}</p>
+          <p className="mt-0.5 text-[10px] text-muted">{dance.notes}</p>
         ) : null}
       </div>
     );
@@ -34,15 +34,15 @@ export default function FirstDanceCueCard({ step, audience = 'mc' }) {
         💃 {t('firstDance.title')} · {modeLabel}
       </div>
       <div className="mt-1 flex flex-wrap gap-2 font-mono text-[10px]">
-        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-white">
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
           {t('firstDance.start')}: {start ?? '—'}
         </span>
-        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-white">
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
           {t('firstDance.stopAfter')}: {stop ?? '—'}
         </span>
       </div>
       {dance.notes ? (
-        <p className="mt-0.5 text-[10px] text-slate-400">{dance.notes}</p>
+        <p className="mt-0.5 text-[10px] text-muted">{dance.notes}</p>
       ) : null}
     </div>
   );

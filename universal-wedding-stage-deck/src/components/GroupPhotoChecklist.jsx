@@ -38,8 +38,8 @@ function ChecklistRow({ item, checked, onToggle }) {
     <label
       className={`flex cursor-pointer items-start gap-3 rounded border p-2 transition ${
         checked
-          ? 'border-brand/40 bg-brand/20 text-slate-400'
-          : 'border-line bg-card text-slate-200 hover:border-line-strong'
+          ? 'border-brand/40 bg-brand/20 text-muted'
+          : 'border-line bg-card text-ink hover:border-line-strong'
       }`}
     >
       <input
@@ -80,14 +80,14 @@ export default function GroupPhotoChecklist({
       className="rounded-lg border border-line bg-page/70 p-3"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-xs font-heading font-bold uppercase tracking-wider text-white">
+        <h3 className="text-xs font-heading font-bold uppercase tracking-wider text-ink">
           📸 Group photo sequence
         </h3>
-        <span className="font-mono text-[10px] text-slate-400">
+        <span className="font-mono text-[10px] text-muted">
           {doneCount} / {items.length} done
         </span>
       </div>
-      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-400">
+      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">
         {location ? <span>Location: {location}</span> : null}
         {media.length ? <span>Media: {media.join(', ')}</span> : null}
       </div>

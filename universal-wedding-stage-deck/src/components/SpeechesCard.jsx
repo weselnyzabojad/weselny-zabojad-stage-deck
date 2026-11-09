@@ -2,7 +2,7 @@ import { formatDuration, resolveEventDateISO, resolveVenueTimeZone } from '../li
 import { speechTiming } from '../lib/speeches.js';
 
 const MODE_CHIPS = {
-  OFF: 'border-line-strong bg-raised text-slate-400',
+  OFF: 'border-line-strong bg-raised text-muted',
   LIGHT: 'border-cyan-800 bg-cyan-950/60 text-cyan-200',
   COMPLEX: 'border-brand-strong bg-brand/30 text-brand-tint',
 };
@@ -41,7 +41,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
       </div>
 
       {mode === 'OFF' ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-muted">
           Speeches are off for this wedding. Set <span className="font-mono">speechMode</span> to
           LIGHT or COMPLEX to enable the speaker view.
         </p>
@@ -67,12 +67,12 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                     <div className="font-heading text-sm font-semibold text-ink">
                       {speech.speaker.name}
                       {speech.speaker.relationship ? (
-                        <span className="ml-1 font-body text-[10px] font-normal text-slate-400">
+                        <span className="ml-1 font-body text-[10px] font-normal text-muted">
                           · {speech.speaker.relationship}
                         </span>
                       ) : null}
                     </div>
-                    <div className="mt-0.5 flex flex-wrap gap-1.5 font-mono text-[10px] text-slate-400">
+                    <div className="mt-0.5 flex flex-wrap gap-1.5 font-mono text-[10px] text-muted">
                       {speech.time ? (
                         <span>
                           {speech.time}
@@ -85,7 +85,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                       {speech.readFrom ? <span>Reads {speech.readFrom.toLowerCase()}</span> : null}
                     </div>
                     {speech.cue ? (
-                      <div className="mt-0.5 text-[10px] text-slate-400">Cue: {speech.cue}</div>
+                      <div className="mt-0.5 text-[10px] text-muted">Cue: {speech.cue}</div>
                     ) : null}
                   </div>
 
@@ -96,7 +96,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                       className={`rounded border px-2 py-1 text-[10px] font-semibold transition ${
                         active
                           ? 'border-alert/60 bg-alert/20 text-alert-tint hover:bg-alert/30'
-                          : 'border-brand-strong bg-brand/40 text-white hover:bg-brand/60'
+                          : 'border-brand-strong bg-brand/40 text-ink hover:bg-brand/60'
                       }`}
                     >
                       {active ? 'Stop live' : 'Go live'}
@@ -113,7 +113,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                     <span
                       className={`rounded border px-1.5 py-0.5 font-mono text-[9px] ${
                         speech.consent.storeScript
-                          ? 'border-line-strong bg-raised text-slate-400'
+                          ? 'border-line-strong bg-raised text-muted'
                           : 'border-amber-800 bg-amber-950/60 text-amber-200'
                       }`}
                     >
@@ -137,7 +137,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
           })}
       </ol>
 
-      <p className="mt-2 text-[10px] text-slate-500">
+      <p className="mt-2 text-[10px] text-muted">
         The speaker device only receives the speech that is live here.
       </p>
     </section>

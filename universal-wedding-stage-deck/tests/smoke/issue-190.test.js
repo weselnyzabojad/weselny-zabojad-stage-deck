@@ -35,11 +35,11 @@ describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
     expect(html).toContain('PIN + Sync');
   });
 
-  it('renders the banner detail in white', () => {
+  it('renders the banner detail with the on-accent token', () => {
     const html = renderToStaticMarkup(
       createElement(HardAnchorAlertBanner, { radar }),
     );
-    expect(html).toContain('text-white');
+    expect(html).toContain('text-on-accent');
     expect(html).not.toContain('opacity-90');
   });
 

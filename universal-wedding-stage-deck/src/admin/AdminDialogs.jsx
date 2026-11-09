@@ -7,8 +7,8 @@ function DialogBody({ title, description, children }) {
   return (
     <>
       <div className="border-b border-line px-5 py-4 pr-14">
-        <h2 className="font-heading text-base font-bold text-white">{title}</h2>
-        {description ? <p className="mt-1 text-xs leading-relaxed text-slate-400">{description}</p> : null}
+        <h2 className="font-heading text-base font-bold text-ink">{title}</h2>
+        {description ? <p className="mt-1 text-xs leading-relaxed text-muted">{description}</p> : null}
       </div>
       <div className="max-h-[55vh] overflow-y-auto px-5 py-4">{children}</div>
     </>
@@ -41,12 +41,12 @@ export function AdminConfirmDialog({
       <DialogBody title={title} description={description}>
         {children}
         {requireText ? (
-          <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
-            Type <span className="font-mono text-slate-200">{requireText}</span> to confirm
+          <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-muted">
+            Type <span className="font-mono text-ink">{requireText}</span> to confirm
             <input
               value={typed}
               onChange={(event) => setTyped(event.target.value)}
-              className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-white"
+              className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-ink"
               autoComplete="off"
               spellCheck={false}
             />
@@ -62,7 +62,7 @@ export function AdminConfirmDialog({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300"
+          className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink"
         >
           Cancel
         </button>
@@ -70,7 +70,7 @@ export function AdminConfirmDialog({
           type="button"
           onClick={onConfirm}
           disabled={blocked || busy}
-          className={`rounded border px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50 ${
+          className={`rounded border px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50 ${
             tone === 'danger'
               ? 'border-alert/60 bg-alert/40 hover:bg-alert/60'
               : 'border-brand-strong bg-brand hover:bg-brand-hover'
@@ -115,7 +115,7 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
         title={title}
         description={description ?? 'Enter the 6-digit code from your authenticator app.'}
       >
-        <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
           6-digit code
           <input
             value={code}
@@ -124,7 +124,7 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
             autoComplete="one-time-code"
             autoFocus
             placeholder="••••••"
-            className="mt-1 w-full rounded border border-line bg-card px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white"
+            className="mt-1 w-full rounded border border-line bg-card px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-ink"
           />
         </label>
         {error ? (
@@ -134,14 +134,14 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
         ) : null}
       </DialogBody>
       <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
-        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink">
           Cancel
         </button>
         <button
           type="button"
           onClick={submit}
           disabled={busy || code.length !== 6}
-          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {busy ? 'Verifying…' : 'Verify'}
         </button>
@@ -169,14 +169,14 @@ export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = fa
       >
         <div className="grid gap-2 sm:grid-cols-2">
           {roles.map((role) => (
-            <label key={role} className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            <label key={role} className="text-[10px] font-semibold uppercase tracking-widest text-muted">
               {roleShort(role)}
               <input
                 value={pins[role] ?? ''}
                 onChange={(event) => update(role, event.target.value)}
                 inputMode="numeric"
                 placeholder="auto"
-                className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-sm tracking-[0.25em] text-white"
+                className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-sm tracking-[0.25em] text-ink"
               />
             </label>
           ))}
@@ -188,14 +188,14 @@ export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = fa
         ) : null}
       </DialogBody>
       <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
-        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink">
           Cancel
         </button>
         <button
           type="button"
           onClick={() => onSubmit(pins)}
           disabled={busy}
-          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {busy ? 'Rotating…' : 'Continue'}
         </button>
@@ -239,18 +239,18 @@ export function AdminPublishRevisionDialog({
         title="Replace published cartridge"
         description={`Publishes a new immutable revision for ${wedding?.wedding_id ?? 'this wedding'}. The room code, PINs, sessions and live progress are preserved.`}
       >
-        <p className="mb-3 rounded border border-line bg-card px-3 py-2 font-mono text-[10px] text-slate-400">
+        <p className="mb-3 rounded border border-line bg-card px-3 py-2 font-mono text-[10px] text-muted">
           current revision {Number(wedding?.cartridge_revision ?? 0)}
           {wedding?.cartridge_source ? ` · source ${wedding.cartridge_source}` : ''}
         </p>
-        <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
           Cartridge JSON
           <textarea
             value={cartridgeJson}
             onChange={(event) => setCartridgeJson(event.target.value)}
             rows={12}
             spellCheck={false}
-            className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-[10px] text-white"
+            className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-[10px] text-ink"
           />
         </label>
         {parseError || error ? (
@@ -260,14 +260,14 @@ export function AdminPublishRevisionDialog({
         ) : null}
       </DialogBody>
       <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
-        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-slate-300">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink">
           Cancel
         </button>
         <button
           type="button"
           onClick={submit}
           disabled={busy || !cartridgeJson.trim()}
-          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {busy ? 'Publishing…' : 'Publish revision'}
         </button>

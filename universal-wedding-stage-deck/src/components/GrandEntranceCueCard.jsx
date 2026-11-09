@@ -12,10 +12,10 @@ export default function GrandEntranceCueCard({ step }) {
       <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
         🚪 {t('grandEntrance.title')}
       </div>
-      <div className="mt-0.5 font-semibold text-white">
+      <div className="mt-0.5 font-semibold text-ink">
         {t(`grandEntrance.${entrance.order}.label`)}
       </div>
-      <div className="mt-0.5 font-mono text-[10px] text-slate-300">
+      <div className="mt-0.5 font-mono text-[10px] text-ink">
         {t(`grandEntrance.${entrance.order}.sequence`)}
       </div>
     </div>

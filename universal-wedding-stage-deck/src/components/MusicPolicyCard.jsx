@@ -8,7 +8,7 @@ const STATUS_META = {
     dot: 'bg-cyan-300',
   },
   closed: {
-    chip: 'border-line-strong bg-raised text-slate-400',
+    chip: 'border-line-strong bg-raised text-muted',
     dot: 'bg-slate-500',
   },
   disabled: {
@@ -16,7 +16,7 @@ const STATUS_META = {
     dot: 'bg-alert',
   },
   unknown: {
-    chip: 'border-line-strong bg-raised text-slate-400',
+    chip: 'border-line-strong bg-raised text-muted',
     dot: 'bg-slate-500',
   },
 };
@@ -40,7 +40,7 @@ function StatusChip({ status, compact }) {
 function CleanChip({ cleanVersions }) {
   if (cleanVersions === null) {
     return (
-      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
+      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
         ✨ Clean versions —
       </span>
     );
@@ -50,7 +50,7 @@ function CleanChip({ cleanVersions }) {
       ✨ Clean versions ON
     </span>
   ) : (
-    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-400">
+    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
       ✨ Clean versions OFF
     </span>
   );
@@ -75,7 +75,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <StatusChip status={requestStatus} compact />
         </div>
 
-        <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-slate-300">
+        <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-ink">
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
             ✅ {mustPlay.length} must play
           </span>
@@ -90,7 +90,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
 
         {mainSongs.length > 0 ? (
           <p
-            className="mt-1.5 truncate text-[10px] text-slate-400"
+            className="mt-1.5 truncate text-[10px] text-muted"
             title={mainSongs.map((item) => `${item.stepTitle}: ${item.track ?? 'missing'}`).join(' · ')}
           >
             ⭐ {mainSongs.map((item) => item.track ?? `${item.stepTitle} — missing`).join(' · ')}
@@ -98,7 +98,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
         ) : null}
 
         {doNotPlay.length > 0 ? (
-          <p className="mt-1.5 truncate text-[10px] text-slate-400" title={doNotPlay.map((item) => item.track).join(' · ')}>
+          <p className="mt-1.5 truncate text-[10px] text-muted" title={doNotPlay.map((item) => item.track).join(' · ')}>
             🚫 {doNotPlay.map((item) => item.track).join(' · ')}
           </p>
         ) : null}
@@ -114,7 +114,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="music-policy-title"
-          className="font-heading text-xs font-bold uppercase tracking-widest text-white"
+          className="font-heading text-xs font-bold uppercase tracking-widest text-ink"
         >
           🎵 Music policy
         </h2>
@@ -122,7 +122,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       </div>
 
       {requestStatus?.detail ? (
-        <p className="mt-1 text-[10px] text-slate-400">
+        <p className="mt-1 text-[10px] text-muted">
           {requestStatus.detail}
           {policy.requestWindow
             ? ` · window ${policy.requestWindow.start}–${policy.requestWindow.end}`
@@ -149,10 +149,10 @@ export default function MusicPolicyCard({ policy, compact = false }) {
                     Main song not set for this step.
                   </p>
                 ) : (
-                  <div className="mt-0.5 text-[11px] text-slate-200">
-                    <strong className="text-white">{item.title ?? item.artist}</strong>
+                  <div className="mt-0.5 text-[11px] text-ink">
+                    <strong className="text-ink">{item.title ?? item.artist}</strong>
                     {item.title && item.artist ? (
-                      <span className="text-slate-400"> — {item.artist}</span>
+                      <span className="text-muted"> — {item.artist}</span>
                     ) : null}
                   </div>
                 )}
@@ -171,7 +171,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
             {mustPlay.map((item) => (
               <li key={item.id} className="rounded border border-line bg-page/70 p-2">
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-heading text-xs font-semibold text-white">
+                  <span className="font-heading text-xs font-semibold text-ink">
                     {item.track}
                   </span>
                   {item.linked ? (
@@ -184,7 +184,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
                   ) : null}
                 </div>
                 {item.note ? (
-                  <p className="mt-0.5 text-[10px] text-slate-400">{item.note}</p>
+                  <p className="mt-0.5 text-[10px] text-muted">{item.note}</p>
                 ) : null}
                 {item.conflict ? (
                   <p className="mt-0.5 text-[9px] text-amber-200">
@@ -212,7 +212,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
                   {item.track}
                 </div>
                 {item.reason ? (
-                  <p className="mt-0.5 text-[10px] text-slate-400">{item.reason}</p>
+                  <p className="mt-0.5 text-[10px] text-muted">{item.reason}</p>
                 ) : null}
               </li>
             ))}

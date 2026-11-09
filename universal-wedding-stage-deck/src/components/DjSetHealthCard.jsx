@@ -15,7 +15,7 @@ const STATUS_META = {
   },
   empty: {
     label: 'No key songs',
-    chip: 'border-line-strong bg-raised text-slate-400',
+    chip: 'border-line-strong bg-raised text-muted',
   },
 };
 
@@ -97,10 +97,10 @@ function DesktopHealth({ health }) {
     <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
+          <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
             📶 Offline set health
           </h2>
-          <p className="mt-0.5 text-[10px] text-slate-500">
+          <p className="mt-0.5 text-[10px] text-muted">
             Key-song sources only · no private links or MC data
           </p>
         </div>
@@ -118,10 +118,10 @@ function DesktopHealth({ health }) {
             <li key={item.id} className="rounded-lg border border-line bg-page/70 p-2 text-[11px]">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="truncate font-heading text-xs font-semibold text-white">
+                  <div className="truncate font-heading text-xs font-semibold text-ink">
                     {item.title}
                   </div>
-                  <div className="truncate text-[10px] text-slate-400">
+                  <div className="truncate text-[10px] text-muted">
                     {item.artist} · {item.moment}
                     {item.stepTitle ? ` · ${item.stepTitle}` : ''}
                   </div>
@@ -130,7 +130,7 @@ function DesktopHealth({ health }) {
                   {item.effective.label}
                 </span>
               </div>
-              <div className="mt-1 flex flex-wrap gap-1.5 text-[9px] text-slate-500">
+              <div className="mt-1 flex flex-wrap gap-1.5 text-[9px] text-muted">
                 <span>Primary: {item.primaryLabel || 'No source'}</span>
                 <span>State: {item.primary.label}</span>
                 {item.backup ? (

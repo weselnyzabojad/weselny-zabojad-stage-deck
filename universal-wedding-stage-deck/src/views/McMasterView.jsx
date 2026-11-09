@@ -169,8 +169,8 @@ export default function McMasterView({ model }) {
         {t('mc.step.type', { type: currentStep.type.replace('_', ' ') })}
       </span>
       <div className="flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
-        <span>{t('mc.step.realStart')}: <strong className="text-white">{realStart}</strong></span>
-        <span>{t('mc.step.estimatedEnd')}: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
+        <span>{t('mc.step.realStart')}: <strong className="text-ink">{realStart}</strong></span>
+        <span>{t('mc.step.estimatedEnd')}: <strong className="text-ink">{estimatedEnd ?? '—'}</strong></span>
       </div>
       {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       {currentStep.firstDanceMode ? (
@@ -189,7 +189,7 @@ export default function McMasterView({ model }) {
           type="button"
           onClick={handleUndo}
           disabled={!canUndo}
-          className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
+          className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
         >
           ↩ {t('mc.step.undo')}
         </button>
@@ -198,19 +198,19 @@ export default function McMasterView({ model }) {
           disabled={isComplete}
           label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
           holdLabel={t('mc.step.holdHint')}
-          className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong'}`}
+          className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
       {script ? (
         <button
           type="button"
           onClick={() => setOverlay('teleprompter')}
-          className="w-full bg-raised hover:bg-line text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
+          className="w-full bg-raised hover:bg-line text-ink px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
         >
           📖 {t('mc.step.openTeleprompter')}
         </button>
       ) : null}
-      <div className="text-xs text-slate-400 font-mono">
+      <div className="text-xs text-muted font-mono">
         {t('mc.step.completed', { done: completedCount, total: steps.length })}
       </div>
     </div>
@@ -239,7 +239,7 @@ export default function McMasterView({ model }) {
           <div className="text-xs uppercase tracking-widest text-emerald-300 font-semibold">
             {t('mc.step.eventCompleteTitle')}
           </div>
-          <div className="text-sm text-slate-400 mt-1">
+          <div className="text-sm text-muted mt-1">
             {t('mc.step.completed', { done: completedCount, total: steps.length })}
           </div>
         </div>
@@ -252,24 +252,24 @@ export default function McMasterView({ model }) {
   // centre card of the Stage Rail.
   const heroBody = currentStep ? (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/70 pb-2 text-[11px] text-slate-400">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/70 pb-2 text-[11px] text-muted">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span>
             {t('mc.step.planned')}:{' '}
-            <span className="line-through text-slate-500">
+            <span className="line-through text-muted">
               {currentStep.planned || currentStep.time}
             </span>
           </span>
-          <span className="text-slate-600">·</span>
+          <span className="text-muted">·</span>
           <span>
-            {t('mc.step.realStart')}: <span className="font-mono text-white">{realStart}</span>
+            {t('mc.step.realStart')}: <span className="font-mono text-ink">{realStart}</span>
           </span>
-          <span className="text-slate-600">·</span>
+          <span className="text-muted">·</span>
           <span>
-            {t('mc.step.estimatedEnd')}: <span className="font-mono text-white">{estimatedEnd ?? '—'}</span>
+            {t('mc.step.estimatedEnd')}: <span className="font-mono text-ink">{estimatedEnd ?? '—'}</span>
           </span>
         </div>
-        <span className="font-mono text-[10px] text-slate-500">
+        <span className="font-mono text-[10px] text-muted">
           {t('mc.step.completed', { done: completedCount, total: steps.length })}
         </span>
       </div>
@@ -277,18 +277,18 @@ export default function McMasterView({ model }) {
       <div className="grid grid-cols-1 gap-3">
         {/* MC Cues */}
         <div className="bg-page/60 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
+          <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2 flex items-center space-x-2">
             <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
             <span>🗣️ {t('mc.step.cuesTitle')}</span>
           </h3>
-          <ul className="space-y-2 text-sm text-slate-300">
+          <ul className="space-y-2 text-sm text-ink">
             {childrenExpected && childrenWarningFor(currentStep) ? (
               <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
                 <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
                 <span>{t(childrenWarningFor(currentStep))}</span>
               </li>
             ) : null}
-            <li className="flex items-start space-x-2 text-slate-500">
+            <li className="flex items-start space-x-2 text-muted">
               <span>{t('mc.cues.empty')}</span>
             </li>
           </ul>
@@ -316,7 +316,7 @@ export default function McMasterView({ model }) {
 
       {stepSubtasks.length > 0 ? (
         <div className="bg-page/70 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">
+          <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2">
             📋 {t('mc.step.subtasksTitle')}
           </h3>
           <div className="space-y-2">
@@ -325,7 +325,7 @@ export default function McMasterView({ model }) {
               return (
                 <label
                   key={task}
-                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-slate-400' : 'bg-card border border-line text-slate-200 hover:border-line-strong'}`}
+                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-muted' : 'bg-card border border-line text-ink hover:border-line-strong'}`}
                 >
                   <input
                     type="checkbox"
@@ -355,7 +355,7 @@ export default function McMasterView({ model }) {
             <button
               type="button"
               onClick={() => setOverlay('teleprompter')}
-              className="bg-raised hover:bg-line text-slate-200 px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
+              className="bg-raised hover:bg-line text-ink px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
             >
               📖 {t('mc.step.openTeleprompter')}
             </button>
@@ -364,13 +364,13 @@ export default function McMasterView({ model }) {
             <button
               type="button"
               onClick={() => setOverlay('game')}
-              className="bg-brand/40 hover:bg-brand/70 text-white px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
+              className="bg-brand/40 hover:bg-brand/70 text-ink px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
             >
               🎮 {t('mc.step.gameClicker', { count: game.items.length })}
             </button>
           )}
           {!script && !game && (
-            <span className="text-xs text-slate-500 font-mono">{t('mc.step.noScript')}</span>
+            <span className="text-xs text-muted font-mono">{t('mc.step.noScript')}</span>
           )}
         </div>
       </div>
@@ -387,16 +387,16 @@ export default function McMasterView({ model }) {
           ? 'Sign out of this role'
           : 'Paired room PIN — click to forget this device'
       }
-      className="text-slate-400 hover:text-white transition"
+      className="text-muted hover:text-ink transition"
     >
       {IS_PRODUCTION ? (
         <>
-          ROLE: <strong className="text-white">{roleSession.role.toUpperCase()}</strong>
+          ROLE: <strong className="text-ink">{roleSession.role.toUpperCase()}</strong>
           <span className="ml-1 text-[10px]">🔐</span>
         </>
       ) : (
         <>
-          PIN: <strong className="text-white">{pairing.pin}</strong>
+          PIN: <strong className="text-ink">{pairing.pin}</strong>
           <span className="ml-1 text-[10px]">🔓</span>
         </>
       )}
@@ -414,7 +414,7 @@ export default function McMasterView({ model }) {
   const wideContent = (
     <>
       <SkipLink />
-      <div className="h-screen bg-page text-slate-100 font-body flex flex-col justify-between select-none overflow-hidden antialiased">
+      <div className="h-screen bg-page text-ink font-body flex flex-col justify-between select-none overflow-hidden antialiased">
       
       {/* ================= TOP BAR ================= */}
       <TopBarShell
@@ -427,7 +427,7 @@ export default function McMasterView({ model }) {
                 className="h-12 w-auto object-contain max-w-[220px]"
               />
             </div>
-            <span className="text-slate-500 hidden sm:inline">|</span>
+            <span className="text-muted hidden sm:inline">|</span>
             <TopBarClock clock={driftReport.clock} />
             <TopBarRoleLabel role="mc" />
           </>
@@ -505,7 +505,7 @@ export default function McMasterView({ model }) {
         
         {/* Drift & Sequence Controls */}
         <div className="flex items-center space-x-2 overflow-x-auto py-1">
-          <span className="text-xs font-heading font-bold text-slate-400 uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
+          <span className="text-xs font-heading font-bold text-muted uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
           <button
             type="button"
             onClick={handleSwap}
@@ -517,7 +517,7 @@ export default function McMasterView({ model }) {
             className={`${CONTROL_BUTTON_BASE} ${
               !nextEntry || swapBlock
                 ? CONTROL_BUTTON_DISABLED
-                : "bg-raised hover:bg-line border-line-strong text-slate-200"
+                : "bg-raised hover:bg-line border-line-strong text-ink"
             }`}
           >
             🔀 Swap w/ Next
@@ -526,7 +526,7 @@ export default function McMasterView({ model }) {
             <span
               aria-live="polite"
               title={controlNotice}
-              className="max-w-[240px] truncate rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] text-slate-300"
+              className="max-w-[240px] truncate rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] text-ink"
             >
               {controlNotice}
             </span>
@@ -546,7 +546,7 @@ export default function McMasterView({ model }) {
             onClick={handleUndo}
             disabled={!canUndo}
             title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
-            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
+            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
           >
             ↩ {t('mc.step.undo')}
           </button>
@@ -555,7 +555,7 @@ export default function McMasterView({ model }) {
             disabled={isComplete}
             label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
             holdLabel={t('mc.step.holdHint')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent shadow-lg shadow-blue-950/60 border-brand-strong'}`}
           />
         </div>
 

@@ -21,7 +21,7 @@ export default function ViewSwitchControl({
       onClick={onClick}
       aria-label={title}
       title={title}
-      className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:border-brand-strong hover:bg-line ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-ink transition hover:border-brand-strong hover:bg-line ${className}`}
     >
       <span aria-hidden="true">{returning ? '🎤' : '🎧'}</span>
       <span>{label}</span>

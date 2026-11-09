@@ -53,14 +53,14 @@ export default function RoleShell({
   }
 
   return (
-    <div className="font-body min-h-screen flex flex-col bg-page text-slate-100">
+    <div className="font-body min-h-screen flex flex-col bg-page text-ink">
       <header className="bg-card border-b border-line px-3 py-2 flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <div className="flex items-center justify-center rounded-md bg-white px-1.5 py-0.5 shadow-sm">
               <img src={logo} alt="Weselny Żabojad" className="h-7 w-auto object-contain" />
             </div>
-            <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-white">
+            <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink">
               {t(`role.${role}.short`)}
             </span>
           </div>
@@ -69,7 +69,7 @@ export default function RoleShell({
             {pin ? (
               <span
                 title="Paired room PIN"
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-300"
+                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-ink"
               >
                 PIN {pin}
               </span>

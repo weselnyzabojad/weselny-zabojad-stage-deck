@@ -28,18 +28,18 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AppErrorBoundary scope="app">
       {LEGACY_ADMIN ? (
-        <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-200">
+        <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-ink">
           <div className="max-w-md rounded-2xl border border-line bg-card p-6">
-            <h1 className="font-heading text-lg font-bold text-white">Admin moved</h1>
-            <p className="mt-2 text-sm text-slate-400">
-              The owner admin panel is now available at <strong className="text-white">/admin</strong>.
+            <h1 className="font-heading text-lg font-bold text-ink">Admin moved</h1>
+            <p className="mt-2 text-sm text-muted">
+              The owner admin panel is now available at <strong className="text-ink">/admin</strong>.
             </p>
           </div>
         </div>
       ) : SONG_REQUEST_ROUTE ? (
         <Suspense
           fallback={
-            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-slate-400">
+            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
               Loading song request…
             </div>
           }
@@ -49,7 +49,7 @@ createRoot(document.getElementById('root')).render(
       ) : IS_ADMIN ? (
         <Suspense
           fallback={
-            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-slate-400">
+            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
               Loading owner admin…
             </div>
           }

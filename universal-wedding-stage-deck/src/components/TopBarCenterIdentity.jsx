@@ -15,7 +15,7 @@ function Flag({ code }) {
 
   if (!url) {
     return (
-      <span className="rounded border border-line-strong bg-raised px-1 font-mono text-[9px] text-slate-300">
+      <span className="rounded border border-line-strong bg-raised px-1 font-mono text-[9px] text-ink">
         {code}
       </span>
     );
@@ -41,7 +41,7 @@ function Person({ person }) {
 
   return (
     <span className="inline-flex items-center gap-1">
-      <span className="font-heading font-semibold text-white">{person.firstName}</span>
+      <span className="font-heading font-semibold text-ink">{person.firstName}</span>
       {visible.length > 0 ? (
         <span className="inline-flex items-center gap-0.5" aria-hidden="true">
           {visible.map((code) => (
@@ -66,9 +66,9 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
 
   if (!identity.hasProfile) {
     return (
-      <span className="inline-flex items-baseline gap-1 text-slate-300">
+      <span className="inline-flex items-baseline gap-1 text-ink">
         <span>{t('couple.wedding')}</span>
-        <strong className="font-heading font-semibold text-white">
+        <strong className="font-heading font-semibold text-ink">
           {identity.fallbackLabel}
         </strong>
       </span>
@@ -96,14 +96,14 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
 
       {showCoupleLanguages && identity.commonLanguages.length > 0 ? (
         <div
-          className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-slate-400"
+          className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-muted"
           aria-label={t('couple.languages')}
         >
-          <span className="inline-flex items-center gap-1 font-heading font-semibold uppercase tracking-[0.18em] text-slate-400">
+          <span className="inline-flex items-center gap-1 font-heading font-semibold uppercase tracking-[0.18em] text-muted">
             <span aria-hidden="true">🗣️</span>
             <span>{t('couple.languages')}</span>
           </span>
-          <span aria-hidden="true" className="text-slate-600">·</span>
+          <span aria-hidden="true" className="text-muted">·</span>
           {identity.commonLanguages.map((code) => (
             <span
               key={code}
@@ -117,7 +117,7 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
       ) : null}
 
       {dateLabel ? (
-        <div className="font-mono text-[10px] text-slate-300">{dateLabel}</div>
+        <div className="font-mono text-[10px] text-ink">{dateLabel}</div>
       ) : null}
     </div>
   );

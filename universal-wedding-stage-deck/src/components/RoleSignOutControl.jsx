@@ -17,16 +17,16 @@ export default function RoleSignOutControl({
           ? 'Sign out of this role'
           : 'Paired room PIN — click to forget this device'
       }
-      className={`text-slate-400 transition hover:text-white ${className}`}
+      className={`text-muted transition hover:text-ink ${className}`}
     >
       {isProduction ? (
         <>
-          ROLE: <strong className="text-white">{String(role).toUpperCase()}</strong>
+          ROLE: <strong className="text-ink">{String(role).toUpperCase()}</strong>
           <span className="ml-1 text-[10px]">🔐</span>
         </>
       ) : (
         <>
-          PIN: <strong className="text-white">{pin}</strong>
+          PIN: <strong className="text-ink">{pin}</strong>
           <span className="ml-1 text-[10px]">🔓</span>
         </>
       )}

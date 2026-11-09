@@ -12,12 +12,12 @@ const STATUS_META = {
   running: { label: 'RUNNING', chip: 'border-emerald-800 bg-emerald-950/60 text-emerald-300' },
   upcoming: { label: 'UPCOMING', chip: 'border-cyan-800 bg-cyan-950/60 text-cyan-200' },
   over: { label: 'OVER', chip: 'border-alert/60 bg-alert/20 text-alert-tint' },
-  pending: { label: 'PENDING', chip: 'border-line-strong bg-raised text-slate-400' },
-  done: { label: 'DONE', chip: 'border-line bg-page text-slate-500' },
+  pending: { label: 'PENDING', chip: 'border-line-strong bg-raised text-muted' },
+  done: { label: 'DONE', chip: 'border-line bg-page text-muted' },
 };
 
 function toneFor(seconds) {
-  if (seconds == null) return 'text-slate-400';
+  if (seconds == null) return 'text-muted';
   if (seconds <= 0) return 'text-alert-soft';
   if (seconds <= 300) return 'text-amber-200';
   return 'text-emerald-300';
@@ -38,7 +38,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           ⏱ Cutoff stopwatch
         </h2>
-        <p className="mt-2 text-xs text-slate-400">No DJ cutoffs in this cartridge.</p>
+        <p className="mt-2 text-xs text-muted">No DJ cutoffs in this cartridge.</p>
       </section>
     );
   }
@@ -49,7 +49,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-alert-soft">
           ⏱ Cutoff stopwatch
         </h2>
-        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-muted">
           {stopwatches.length} cue{stopwatches.length === 1 ? '' : 's'}
         </span>
       </div>
@@ -66,7 +66,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-              <span className="rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] text-slate-300">
+              <span className="rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] text-ink">
                 {active.source === 'relative' ? 'From start' : 'Absolute'}
               </span>
               {active.hasAbsolute && active.hasRelative ? (
@@ -84,7 +84,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
             <div className={`font-mono text-2xl font-bold tabular-nums ${toneFor(active.inSec)}`}>
               {active.inSec != null ? formatCountdown(active.inSec) : 'starts with step'}
             </div>
-            <div className="font-mono text-[10px] text-slate-400">
+            <div className="font-mono text-[10px] text-muted">
               {active.source === 'relative'
                 ? `start + ${formatDuration(active.cutoffSec ?? 0)}`
                 : `cutoff ${active.label}`}
@@ -107,7 +107,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
                 <div className="truncate font-heading text-xs font-semibold text-ink">
                   {item.title}
                 </div>
-                <div className="font-mono text-[9px] text-slate-500">
+                <div className="font-mono text-[9px] text-muted">
                   {item.source === 'relative'
                     ? `start + ${formatDuration(item.cutoffSec ?? 0)}`
                     : `cutoff ${item.label ?? '—'}`}
@@ -127,7 +127,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
         })}
       </ul>
 
-      <p className="mt-2 text-[10px] leading-snug text-slate-500">
+      <p className="mt-2 text-[10px] leading-snug text-muted">
         Absolute cutoff wins when both are set. Relative cutoffs count from the step&apos;s
         actual start (ISO timestamp), not the planned time.
       </p>

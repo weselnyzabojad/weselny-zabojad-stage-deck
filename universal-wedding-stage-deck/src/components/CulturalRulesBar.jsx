@@ -57,7 +57,7 @@ const TONES = {
   },
   pending: {
     chip: 'border-line-strong bg-raised',
-    text: 'text-slate-300',
+    text: 'text-ink',
     dot: 'bg-slate-400',
   },
 };
@@ -104,7 +104,7 @@ function RuleChip({
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-slate-100">
+          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-ink">
             {label}
           </span>
           {compact ? (

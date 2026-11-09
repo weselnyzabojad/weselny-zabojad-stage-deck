@@ -50,11 +50,11 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
         aria-expanded={open}
         aria-label={t('roles.switchAria', { role: roleLabel(role) })}
         title={t('roles.switchTitle')}
-        className="flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs text-slate-200 transition hover:border-brand-strong hover:bg-line"
+        className="flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs text-ink transition hover:border-brand-strong hover:bg-line"
       >
         <span aria-hidden="true">{current.icon}</span>
         <span>{t('roles.role', { short: roleShort(role) })}</span>
-        <span aria-hidden="true" className="text-[9px] text-slate-400">
+        <span aria-hidden="true" className="text-[9px] text-muted">
           ▼
         </span>
       </button>
@@ -65,7 +65,7 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
           aria-label={t('roles.menuAria')}
           className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-line bg-card shadow-2xl"
         >
-          <div className="border-b border-line px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          <div className="border-b border-line px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
             {t('roles.title')}
           </div>
           {availableRoles.map((id) => {
@@ -87,10 +87,10 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
                   {option.icon}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block font-heading text-xs font-bold text-white">
+                  <span className="block font-heading text-xs font-bold text-ink">
                     {roleLabel(id)}
                   </span>
-                  <span className="mt-0.5 block text-[11px] leading-snug text-slate-400">
+                  <span className="mt-0.5 block text-[11px] leading-snug text-muted">
                     {roleBlurb(id)}
                   </span>
                 </span>

@@ -40,7 +40,7 @@ export default function DevViewSwitcher({
               onClick={() => onChange?.(role)}
               className={`min-h-9 rounded border px-2 py-1 font-mono text-[10px] font-bold transition ${
                 active
-                  ? 'border-brand-strong bg-brand/50 text-white'
+                  ? 'border-brand-strong bg-brand/50 text-ink'
                   : 'border-amber-500/50 bg-amber-900/60 text-amber-100 hover:bg-amber-800/70'
               }`}
             >

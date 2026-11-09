@@ -51,13 +51,13 @@ function saveSettings(wedding, settings) {
 
 function TimeField({ label, value, onChange }) {
   return (
-    <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500">
+    <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
       {label}
       <input
         type="time"
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value)}
-        className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-white"
+        className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
       />
     </label>
   );
@@ -107,7 +107,7 @@ export default function VenueManagerView({
       <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
 
       <section className="rounded-xl border border-line bg-card p-3 shadow-lg sm:p-4">
-        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           {t('venueManager.mandatorySteps')}
         </h2>
         <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
@@ -134,7 +134,7 @@ export default function VenueManagerView({
           {KITCHEN_MODE_FIELDS.map(({ key, course }) => (
             <label
               key={key}
-              className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500"
+              className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted"
             >
               {t('venueManager.serviceMode', { course })}
               <select
@@ -145,7 +145,7 @@ export default function VenueManagerView({
                     kitchenServiceModes: { ...kitchenModes, [key]: event.target.value },
                   })
                 }
-                className="rounded border border-line bg-card px-2 py-1 text-xs text-white"
+                className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
               >
                 <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
                 <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
@@ -157,7 +157,7 @@ export default function VenueManagerView({
             value={settings.closureTime}
             onChange={(time) => update({ ...settings, closureTime: time })}
           />
-          <label className="flex items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-slate-400">
+          <label className="flex items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-muted">
             <input
               type="checkbox"
               checked={settings.closureExtensionAllowed === true}
@@ -165,19 +165,19 @@ export default function VenueManagerView({
             />
             {t('venueManager.extension')}
           </label>
-          <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-slate-500">
+          <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
             {t('venueManager.cakeService')}
             <select
               value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
               onChange={(event) => update({ ...settings, cakeServiceMode: event.target.value })}
-              className="rounded border border-line bg-card px-2 py-1 text-xs text-white"
+              className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
             >
               <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
               <option value="CUT_IN_PLACE">{t('venueManager.cake.CUT_IN_PLACE')}</option>
             </select>
           </label>
         </div>
-        <p className="mt-2 text-[10px] text-slate-500">
+        <p className="mt-2 text-[10px] text-muted">
           {t('venueManager.prestationHelper')}
           {saved ? <span className="ml-2 text-emerald-300">{saved}</span> : null}
         </p>
@@ -214,7 +214,7 @@ export default function VenueManagerView({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased">
+    <div className="flex min-h-screen flex-col bg-page text-ink antialiased">
       <SkipLink />
       <TopBarShell
         left={(

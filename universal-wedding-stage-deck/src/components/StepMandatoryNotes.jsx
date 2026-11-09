@@ -22,10 +22,10 @@ export default function StepMandatoryNotes({ items = [] }) {
             return (
               <span
                 key={key}
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-slate-300"
+                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-ink"
               >
                 {t(`mandatory.${item.kind === 'firstArrival' ? 'firstArrival' : 'prestation'}`)}:{' '}
-                <strong className="font-mono text-white">{item.time}</strong>
+                <strong className="font-mono text-ink">{item.time}</strong>
               </span>
             );
           }
@@ -33,9 +33,9 @@ export default function StepMandatoryNotes({ items = [] }) {
             return (
               <span
                 key={key}
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-slate-300"
+                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-ink"
               >
-                {item.label}: <strong className="font-mono text-white">{item.time}</strong>
+                {item.label}: <strong className="font-mono text-ink">{item.time}</strong>
                 <span className="ml-1 rounded border border-brand-strong/50 bg-brand/20 px-1 font-semibold text-brand-tint">
                   {t(`mandatory.serviceMode.${item.mode}`)}
                 </span>
@@ -46,10 +46,10 @@ export default function StepMandatoryNotes({ items = [] }) {
             return (
               <span
                 key={key}
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-slate-300"
+                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-ink"
               >
                 {t('mandatory.cake')}:{' '}
-                <strong className="text-white">{t(`mandatory.cakeMode.${item.mode}`)}</strong>
+                <strong className="text-ink">{t(`mandatory.cakeMode.${item.mode}`)}</strong>
               </span>
             );
           }

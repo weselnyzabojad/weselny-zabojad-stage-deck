@@ -55,11 +55,11 @@ function FocusZone({
       data-focus-zone={zone}
       className="flex min-h-0 flex-col gap-2"
     >
-      <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+      <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
         {label} ({entries.length})
       </h2>
       {entries.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-line bg-card/40 px-3 py-2 text-[11px] text-slate-500">
+        <p className="rounded-lg border border-dashed border-line bg-card/40 px-3 py-2 text-[11px] text-muted">
           {empty}
         </p>
       ) : (
@@ -100,7 +100,7 @@ function FocusZone({
               data-focus-expander={zone}
               aria-expanded={expanded}
               onClick={onToggleExpanded}
-              className="self-start rounded-lg border border-line-strong bg-raised px-3 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
+              className="self-start rounded-lg border border-line-strong bg-raised px-3 py-1.5 text-[11px] font-semibold text-ink hover:bg-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
             >
               {expanded ? showLessLabel : showMoreLabel}
             </button>
@@ -223,7 +223,7 @@ export default function TimelineFocusStack({
               </div>
             </CurrentStepTilt>
           ) : (
-            <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-slate-500">
+            <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-muted">
               {copy.noCurrent}
             </p>
           )}

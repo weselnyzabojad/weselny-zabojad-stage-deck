@@ -4,7 +4,7 @@ const STATE_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
   active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
   next: 'border-amber-800 bg-amber-950/60 text-amber-200',
-  planned: 'border-line-strong bg-raised text-slate-400',
+  planned: 'border-line-strong bg-raised text-muted',
 };
 
 const STATE_LABELS = {
@@ -24,13 +24,13 @@ function SparklersChip({ sparklers }) {
   }
   if (sparklers === false) {
     return (
-      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-400">
+      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
         ✨ Sparklers OFF
       </span>
     );
   }
   return (
-    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
+    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
       ✨ Sparklers —
     </span>
   );
@@ -51,7 +51,7 @@ function SyncNote({ cake, compact }) {
 
   if (cake.songSource === 'importantSongs') {
     return (
-      <p className={compact ? 'text-[9px] text-slate-500' : 'text-[10px] text-slate-500'}>
+      <p className={compact ? 'text-[9px] text-muted' : 'text-[10px] text-muted'}>
         🔗 Synced with the DJ Key Songs card
       </p>
     );
@@ -82,16 +82,16 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
             🎂 Cake
           </span>
         </div>
-        <div className="mt-1 font-heading text-sm font-semibold leading-tight text-white">
+        <div className="mt-1 font-heading text-sm font-semibold leading-tight text-ink">
           {song}
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
-            {t('mandatory.cake')}: <strong className="text-white">{serviceModeLabel}</strong>
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
+            {t('mandatory.cake')}: <strong className="text-ink">{serviceModeLabel}</strong>
           </span>
           <SparklersChip sparklers={cake.sparklers} />
           {cake.photographerCue ? (
-            <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
+            <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
               📷 {cake.photographerCue}
             </span>
           ) : null}
@@ -131,25 +131,25 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
         </div>
       </div>
 
-      <div className="mt-2 font-heading text-sm font-semibold leading-tight text-white">
+      <div className="mt-2 font-heading text-sm font-semibold leading-tight text-ink">
         {song}
       </div>
       <SyncNote cake={cake} />
 
       <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
-        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300">
-          {t('mandatory.cake')}: <strong className="text-white">{serviceModeLabel}</strong>
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
+          {t('mandatory.cake')}: <strong className="text-ink">{serviceModeLabel}</strong>
         </span>
         <SparklersChip sparklers={cake.sparklers} />
         {cake.photographerCue ? (
           <span
             title={cake.photographerCue}
-            className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-300"
+            className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink"
           >
             📷 {cake.photographerCue}
           </span>
         ) : (
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-slate-500">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
             📷 Photographer cue —
           </span>
         )}

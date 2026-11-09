@@ -19,15 +19,15 @@ export default function GamesCueCard({ wedding, role, gameId = null }) {
         {lists.map((list) => (
           <li key={list.id} className="rounded border border-line/70 bg-page/40 p-1.5">
             <div className="flex flex-wrap items-center gap-1.5">
-              <strong className="text-white">{list.title}</strong>
-              <span className="rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] text-slate-300">
+              <strong className="text-ink">{list.title}</strong>
+              <span className="rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] text-ink">
                 {list.unavailable
                   ? t('games.unavailable')
                   : t('games.questionCount', { count: list.questions.length })}
               </span>
             </div>
             {!list.unavailable ? (
-              <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[10px] text-slate-300">
+              <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[10px] text-ink">
                 {list.questions.map((question) => (
                   <li key={question.id}>{question.prompt}</li>
                 ))}

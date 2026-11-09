@@ -150,10 +150,10 @@ export default function AdminWeddingFolders() {
     <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
+          <h3 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
             Wedding folders
           </h3>
-          <p className="mt-1 text-[10px] text-slate-500">
+          <p className="mt-1 text-[10px] text-muted">
             Drive library · {totalWeddings} wedding folders in the selected year
             {lastLoaded ? ` · refreshed ${lastLoaded.toLocaleTimeString()}` : ''}
           </p>
@@ -166,7 +166,7 @@ export default function AdminWeddingFolders() {
             if (selectedYearId) void loadYear(selectedYearId);
           }}
           disabled={loading || Boolean(loadingYear)}
-          className="rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          className="rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-ink disabled:opacity-50"
         >
           {loading ? 'Refreshing…' : 'Refresh folders'}
         </button>
@@ -189,8 +189,8 @@ export default function AdminWeddingFolders() {
               onClick={() => setSelectedYearId(year.id)}
               className={`rounded border px-3 py-1.5 font-mono text-xs font-bold ${
                 active
-                  ? 'border-brand-strong bg-brand/40 text-white'
-                  : 'border-line bg-raised text-slate-400'
+                  ? 'border-brand-strong bg-brand/40 text-ink'
+                  : 'border-line bg-raised text-muted'
               }`}
             >
               {year.name}
@@ -200,9 +200,9 @@ export default function AdminWeddingFolders() {
       </div>
 
       {loadingYear ? (
-        <p className="mt-3 text-xs text-slate-500">Loading year folders…</p>
+        <p className="mt-3 text-xs text-muted">Loading year folders…</p>
       ) : months.length === 0 ? (
-        <p className="mt-3 rounded border border-dashed border-line px-3 py-4 text-center text-xs text-slate-500">
+        <p className="mt-3 rounded border border-dashed border-line px-3 py-4 text-center text-xs text-muted">
           No English month folders or wedding folders found for this year.
         </p>
       ) : (
@@ -210,13 +210,13 @@ export default function AdminWeddingFolders() {
           {months.map((month) => (
             <div key={month.id} className="rounded-lg border border-line bg-page/60 p-2.5">
               <div className="flex items-center justify-between gap-2">
-                <h4 className="font-heading text-xs font-bold text-white">{month.name}</h4>
-                <span className="font-mono text-[10px] text-slate-500">
+                <h4 className="font-heading text-xs font-bold text-ink">{month.name}</h4>
+                <span className="font-mono text-[10px] text-muted">
                   {month.weddings.length} weddings
                 </span>
               </div>
               {month.weddings.length === 0 ? (
-                <p className="mt-1 text-[10px] text-slate-500">No wedding folders.</p>
+                <p className="mt-1 text-[10px] text-muted">No wedding folders.</p>
               ) : (
                 <ul className="mt-1.5 space-y-1">
                   {month.weddings.map((wedding) => (
@@ -225,8 +225,8 @@ export default function AdminWeddingFolders() {
                       className="rounded border border-line/70 bg-card/60 px-2 py-1"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="font-mono text-[11px] text-slate-200">{wedding.name}</span>
-                        <span className="font-mono text-[9px] text-slate-500">
+                        <span className="font-mono text-[11px] text-ink">{wedding.name}</span>
+                        <span className="font-mono text-[9px] text-muted">
                           {wedding.wedding.cartridgeName}
                         </span>
                       </div>
@@ -236,12 +236,12 @@ export default function AdminWeddingFolders() {
                             type="button"
                             onClick={() => void loadSecret(wedding)}
                             disabled={secretLoadingId === wedding.id}
-                            className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[9px] font-semibold text-slate-300 disabled:opacity-50"
+                            className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[9px] font-semibold text-ink disabled:opacity-50"
                           >
                             {secretLoadingId === wedding.id ? 'Loading secrets…' : 'Load secrets'}
                           </button>
                           {secretsByWedding[wedding.id] ? (
-                            <span className="text-[9px] text-slate-400">
+                            <span className="text-[9px] text-muted">
                               {secretsByWedding[wedding.id].empty
                                 ? 'No secret Docs yet'
                                 : `${secretsByWedding[wedding.id].speechCount} speeches · ${secretsByWedding[wedding.id].questionCount} questions`}
@@ -249,7 +249,7 @@ export default function AdminWeddingFolders() {
                           ) : null}
                         </div>
                       ) : (
-                        <p className="mt-1 text-[9px] text-slate-500">No secrets folder for this wedding.</p>
+                        <p className="mt-1 text-[9px] text-muted">No secrets folder for this wedding.</p>
                       )}
                     </li>
                   ))}

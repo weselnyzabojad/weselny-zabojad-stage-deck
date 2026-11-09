@@ -11,4 +11,4 @@ export const STEP_TYPE_STYLES = {
 // Shared drift-control button base/disabled classes used by the MC footer.
 export const CONTROL_BUTTON_BASE =
   'px-3 py-2 rounded-lg text-xs font-medium transition whitespace-nowrap shadow border';
-export const CONTROL_BUTTON_DISABLED = 'bg-card text-slate-600 border-line cursor-not-allowed';
+export const CONTROL_BUTTON_DISABLED = 'bg-card text-muted border-line cursor-not-allowed';

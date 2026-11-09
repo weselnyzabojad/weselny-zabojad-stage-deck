@@ -16,7 +16,7 @@ export default function CeremonyCueCard({ wedding, role }) {
   return (
     <section
       aria-label={typeLabel}
-      className="border-b border-line bg-card px-4 py-2 text-[10px] text-slate-300"
+      className="border-b border-line bg-card px-4 py-2 text-[10px] text-ink"
     >
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-heading font-semibold uppercase tracking-widest text-brand-soft">
@@ -44,7 +44,7 @@ export default function CeremonyCueCard({ wedding, role }) {
         ) : null}
       </div>
       {ceremony.notes ? (
-        <p className="mt-1 text-[10px] text-slate-400">{ceremony.notes}</p>
+        <p className="mt-1 text-[10px] text-muted">{ceremony.notes}</p>
       ) : null}
     </section>
   );

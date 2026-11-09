@@ -26,13 +26,13 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
           <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
             Action applied
           </div>
-          <div className="truncate text-xs text-slate-200">{toast.label}</div>
+          <div className="truncate text-xs text-ink">{toast.label}</div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <button
             type="button"
             onClick={onUndo}
-            className="rounded border border-brand-strong bg-brand px-2.5 py-1 text-[11px] font-bold text-white transition hover:bg-brand-hover"
+            className="rounded border border-brand-strong bg-brand px-2.5 py-1 text-[11px] font-bold text-on-accent transition hover:bg-brand-hover"
           >
             Undo
           </button>
@@ -40,7 +40,7 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss"
-            className="rounded border border-line bg-raised px-2 py-1 text-[11px] text-slate-300 transition hover:bg-line"
+            className="rounded border border-line bg-raised px-2 py-1 text-[11px] text-ink transition hover:bg-line"
           >
             ✕
           </button>
