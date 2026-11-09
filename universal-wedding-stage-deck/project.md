@@ -76,6 +76,10 @@ sections below and in git history.
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
 | [#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539) | MC: remove More/swap on Test Wiedzy/Test Zgodności steps | Implementation |
 | [#541](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/541) | App-wide: stop frequent full-page reloads/white flashes | Bug fix / stability |
+| [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) | Google Doc "Plan of the day" → timeline/cue mapping (`example.pdf`) | Planning / template |
+| [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) | Display kitchen supper courses as mandatory timeline steps | Implementation |
+| [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) | Add Bread and Salt and Dance-with-the-couple timeline steps | Implementation |
+| [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) | Surface per-step MC cues in the MC view | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -113,6 +117,8 @@ The MC game-step overflow removal is catalogued in
 [MC game-step overflow](#mc-game-step-overflow-decision-2026-11-09).
 The app-wide reload/white-flash stability issue is catalogued in
 [app-wide reload stability](#app-wide-reload-stability-decision-2026-11-09).
+The Google Doc "Plan of the day" mapping for `example.pdf` is catalogued in
+[Google Doc plan-of-the-day mapping](#google-doc-plan-of-the-day-mapping-decision-2026-11-09).
 Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -3095,3 +3101,61 @@ Advance CTA lives in the current-step card (#421).
    still falls back to system fonts with a layout shift.
 9. **No automated browser/a11y E2E.** The axe/E2E suite noted in §10 remains
    absent.
+
+## 13. Google Doc "Plan of the day" mapping (decision, 2026-11-09)
+
+`example.pdf` (dev-only, repo root) is a real wedding Google Doc export used to
+define how the couple's free-form "Plan of the day" maps onto the app's timeline,
+sub-tasks, MC cues and DJ songs. The end goal is a deterministic template read
+through the Google Drive API.
+
+### Convention
+
+- Each **hour block** in "Plan of the day" is the planned start of one step.
+- **Lettered bullets** (`a.`, `b.`, …) are one of:
+  - **sub-tasks** (`step.subTasks`) — a checkable to-do;
+  - **MC cues** (`step.mcCues`) — an instruction the MC announces or performs;
+  - **a DJ song** (`step.dj.track`) — when the bullet begins with `Song -`.
+- Authored step names are unified to the app's stable names
+  (e.g. "Ilona and Adrien Enter the Room" → **Grand Entrance**), never matched
+  by localized title.
+
+### Confirmed mapping
+
+| Time | Step | Kind / flag | Bullets |
+| --- | --- | --- | --- |
+| 14:30 | Ceremony | FLEXIBLE (`ceremonyType: VENUE`) | confetti → MC cue |
+| 15:00 | Bread and Salt | FLEXIBLE (new step) | e/f → MC cues |
+| 15:15 | Wishes | `optionalFlag: wishes` | g → MC cue |
+| 15:30 | Cocktail / Vin d'honneur | FLEXIBLE | h–n → sub-tasks + attractions (instax, mirror, advice notes, photo challenge) |
+| 16:00 | Grand Entrance | `grandEntranceOrder: GUESTS_FIRST` | o → 2 sub-tasks; p → DJ song (ABBA Gimme!); q/r/s/t/u → MC cues |
+| 16:15 | Dinner | FLEXIBLE + `kitchenServices.dinner` | w → MC cue; x/y/z → speeches |
+| 18:00 | First Dance | `firstDanceMode: NORMAL` | aa → cue; bb → DJ song (Ellie Goulding); cc → cue |
+| 19:15 | Supper I | mandatory (kitchen course) | — |
+| 20:30 | Wedding Cake | HARD_ANCHOR | — |
+| 21:00 | Dance with Bride and Groom | new game step | dd → game; ee → cue |
+| 22:30 | Supper II / Test Wiedzy | mandatory + `optionalFlag: games` | gg → game; hh → cue |
+| 00:00 | Test Zgodności + Oczepiny | `games` + `oczepiny` | jj → sub-events |
+| 01:00 | Supper III | mandatory (kitchen course) | — |
+| 03:30 | Last Dance | FLEXIBLE | song = Les Lacs du Connemara |
+
+Guest-flow moments (13:30 Arrival, 14:15 Move-to-Orangery, 16:15 Guests-take-seats)
+are **venue notes, not timeline steps**.
+
+### Songs
+
+- Grand Entrance → ABBA — Gimme! Gimme! Gimme!
+- First Dance → Ellie Goulding — Love Me Like You Do
+- Last Dance → Michel Sardou — Les Lacs du Connemara
+
+### Speeches (page 1 / dinner block)
+
+- Zuzia (świadkowa) → PL · Valentin (témoin) → FR · Ilona → EN · Adrien → EN ·
+  parents thank-you + gifts (x).
+
+### Follow-ups
+
+- [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) — mapping convention + converter + fixture.
+- [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) — kitchen supper courses as mandatory steps.
+- [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) — Bread and Salt + Dance-with-the-couple steps.
+- [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) — surface per-step MC cues in the MC view.
