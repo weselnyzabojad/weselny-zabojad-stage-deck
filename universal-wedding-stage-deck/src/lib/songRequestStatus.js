@@ -9,12 +9,13 @@ export function normalizeGuestRequestStatus(row) {
   if (!row || typeof row !== 'object') return null;
   const playedAt = row.played_at ?? row.playedAt ?? null;
   const rawStatus = STATUSES.has(row.status) ? row.status : 'pending';
+  const status = playedAt ? 'played' : rawStatus;
   return {
     id: typeof row.id === 'string' ? row.id : null,
-    status: playedAt ? 'played' : rawStatus,
+    status,
     playedAt: typeof playedAt === 'string' ? playedAt : null,
-    song: typeof row.song === 'string' ? row.song.trim() : '',
-    artist: typeof row.artist === 'string' ? row.artist.trim() : '',
+    song: status === 'played' || typeof row.song !== 'string' ? '' : row.song.trim(),
+    artist: status === 'played' || typeof row.artist !== 'string' ? '' : row.artist.trim(),
   };
 }
 
@@ -27,12 +28,14 @@ export function loadGuestRequest(roomCode, {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return null;
     if (typeof parsed.deviceId !== 'string' || !parsed.deviceId) return null;
+    const status =
+      STATUSES.has(parsed.status) || parsed.status === 'played' ? parsed.status : 'pending';
     return {
       requestId: typeof parsed.requestId === 'string' ? parsed.requestId : null,
       deviceId: parsed.deviceId,
-      song: typeof parsed.song === 'string' ? parsed.song : '',
-      artist: typeof parsed.artist === 'string' ? parsed.artist : '',
-      status: STATUSES.has(parsed.status) || parsed.status === 'played' ? parsed.status : 'pending',
+      song: status === 'played' || typeof parsed.song !== 'string' ? '' : parsed.song,
+      artist: status === 'played' || typeof parsed.artist !== 'string' ? '' : parsed.artist,
+      status,
       submittedAt: typeof parsed.submittedAt === 'string' ? parsed.submittedAt : null,
     };
   } catch {
@@ -44,7 +47,11 @@ export function saveGuestRequest(roomCode, record, {
   storage = typeof window === 'undefined' ? null : window.localStorage,
 } = {}) {
   try {
-    storage?.setItem(guestRequestStorageKey(roomCode), JSON.stringify(record));
+    const safe =
+      record?.status === 'played'
+        ? { ...record, song: '', artist: '' }
+        : record;
+    storage?.setItem(guestRequestStorageKey(roomCode), JSON.stringify(safe));
     return true;
   } catch {
     return false;

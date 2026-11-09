@@ -2258,8 +2258,11 @@ The public `/request/:room` page is fully i18n compliant: it gets the shared
 immediately and persists through the existing locale storage, and time labels
 follow the selected locale.
 
-Tracked by
-[#612](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/612).
+Shipped in
+[#612](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/612):
+played requests stay in `song_requests` but the guest record and UI drop the
+song/artist; the public request page now has the shared language switch and
+locale-aware request times.
 
 #### Song request QR launcher (decision, 2026-11-08)
 

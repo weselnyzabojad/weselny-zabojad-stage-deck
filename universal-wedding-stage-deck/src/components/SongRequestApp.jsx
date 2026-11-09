@@ -8,6 +8,7 @@ import {
   submitSongRequest,
 } from '../lib/songRequests.js';
 import { getGuestDeviceId } from '../lib/guestDeviceId.js';
+import LanguageToggle from './LanguageToggle';
 import {
   clearGuestRequest,
   loadGuestRequest,
@@ -108,8 +109,8 @@ export default function SongRequestApp({ roomCode }) {
           const next = {
             ...current,
             status: update.status,
-            song: update.song || current.song,
-            artist: update.artist || current.artist,
+            song: update.status === 'played' ? '' : update.song || current.song,
+            artist: update.status === 'played' ? '' : update.artist || current.artist,
             playedAt: update.playedAt ?? current.playedAt ?? null,
           };
           saveGuestRequest(code, next);
@@ -211,10 +212,15 @@ export default function SongRequestApp({ roomCode }) {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-page px-4 py-8 text-ink">
       <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
-        <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
-          {t('songRequest.badge')}
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
+              {t('songRequest.badge')}
+            </div>
+            <h1 className="mt-1 font-heading text-2xl font-bold text-ink">{t('songRequest.title')}</h1>
+          </div>
+          <LanguageToggle />
         </div>
-        <h1 className="mt-1 font-heading text-2xl font-bold text-ink">{t('songRequest.title')}</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted">{t('songRequest.intro')}</p>
 
         {connection === 'checking' ? (
@@ -279,8 +285,6 @@ export default function SongRequestApp({ roomCode }) {
             tone="border-emerald-800 bg-emerald-950/50 text-emerald-200"
             title={t('songRequest.playedTitle')}
             body={t('songRequest.playedBody')}
-            song={record.song}
-            artist={record.artist}
           >
             <button
               type="button"
