@@ -222,6 +222,7 @@ export const DEMO_WEDDING = {
     cakeServiceMode: "KITCHEN_RETURN",
     closureTime: "02:00",
     closureExtensionAllowed: true,
+    closureExtensionUntil: "03:00",
     lastSong: "Perfect - Ed Sheeran",
     kitchenServices: {
       dinner: "18:30",

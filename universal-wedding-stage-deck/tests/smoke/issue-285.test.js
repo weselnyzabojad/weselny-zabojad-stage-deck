@@ -18,6 +18,6 @@ describe('issue #285 wedding closure step', () => {
     const banner = read('src/components/WeddingClosureBanner.jsx');
     expect(banner).toContain("role === 'mc'");
     expect(banner).toContain("role === 'dj' && isVipDj");
-    expect(banner).toContain('Last song');
+    expect(banner).toContain('closure.lastSong');
   });
 });

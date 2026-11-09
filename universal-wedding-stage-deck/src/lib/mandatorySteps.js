@@ -44,6 +44,7 @@ export function resolveMandatoryConstraints(wedding, override = null) {
     cakeServiceMode: data.cakeServiceMode ?? 'KITCHEN_RETURN',
     closureTime: data.closureTime ?? null,
     closureExtensionAllowed: data.closureExtensionAllowed === true,
+    closureExtensionUntil: data.closureExtensionUntil ?? null,
     lastSong: data.lastSong ?? null,
   };
 }
