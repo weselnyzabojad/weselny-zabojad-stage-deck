@@ -3407,10 +3407,12 @@ still works offline.
   the service-account email.
 - Personal spans are redacted and encrypted during the same import; see §17.8.
 
-Tracked by
-[#598](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/598),
-blocked by the `speeches` schema extraction
-([#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591)).
+Shipped in
+[#598](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/598):
+the admin speeches panel parses Docs/Drive links, previews the plain-text export,
+imports with confirmation, stores `script.sourceDoc`, and publishes a new
+cartridge revision. The `speeches` schema extraction is
+[#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591).
 
 ### 17.7 Speaker email is admin-managed (decision, 2026-11-09)
 
