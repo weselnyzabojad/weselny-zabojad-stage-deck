@@ -1,8 +1,8 @@
 # Universal Wedding Stage Deck — Project Status & Roadmap
 
-**Last aligned:** 2026-11-07
+**Last aligned:** 2026-11-08
 
-**Aligned with:** `master` @ `22ef9d1` (separate game steps and stable LATE)
+**Aligned with:** `master` @ `f1aa283` (separate game steps and stable LATE)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -73,7 +73,33 @@ sections below and in git history.
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 
-
+The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
+are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
+The owner's later i18n and Venue Manager rework request is catalogued in
+[i18n completion and venue mandatory-step rework](#i18n-completion-and-venue-mandatory-step-rework-decision-2026-11-08).
+The pocket-header and Speaker focus decisions are catalogued in
+[compact pocket header and Speaker focus](#compact-pocket-header-and-speaker-focus-decision-2026-11-08).
+The permanent red/green Children expected indicator is catalogued in
+[Children expected state indicator](#children-expected-state-indicator-decision-2026-11-08).
+Its Google Doc/cartridge boolean source is covered by
+[children expected data source](#children-expected-data-source-decision-2026-11-08).
+The top-bar icon-size adjustment is catalogued in
+[top-bar icon sizing](#top-bar-icon-sizing-decision-2026-11-08).
+The DJ Standard role-label correction is catalogued in
+[DJ Standard role label](#dj-standard-role-label-decision-2026-11-08).
+The guest song request v2 decision is catalogued in
+[guest song request v2](#guest-song-request-v2-decision-2026-11-08).
+The guest QR launcher is catalogued in
+[song request QR launcher](#song-request-qr-launcher-decision-2026-11-08).
+The DJ VIP Disco Polo policy is catalogued in
+[Disco Polo policy](#disco-polo-policy-decision-2026-11-08).
+The parallel attraction reminder is catalogued in
+[parallel attractions](#parallel-attractions-photobooth-decision-2026-11-08).
+The admin provider registry and DJ access model are catalogued in
+[service providers and DJ access](#service-providers-and-dj-access-decision-2026-11-08).
+The game concept rework is catalogued in
+[game concept rework](#game-concept-rework-decision-2026-11-08).
+Both registers keep #77, #80 and #245 open.
 
 ### Planning TODO register
 
@@ -86,6 +112,7 @@ follow-up implementation issue exists.
 | Dedicated Speaker speech cartridge | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Open; needs schema, validation, revision/publication and offline-cache contract |
 | Media-team visibility and restrictions | [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Closed; the Media team card stays removed and its data remains in the model |
 | Precise predefined-step definitions | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | Closed; see [`docs/predefined-step-audit.md`](docs/predefined-step-audit.md) for the current concept audit |
+| Optional free song metadata validation | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Open; iTunes Search/MusicBrainz research, owner approval required before implementation |
 
 There are no open TODO entries for schema, MC cues, group photos or
 predefined-step work: group photos were implemented in #378 and #379; #77 and
@@ -380,6 +407,11 @@ The top hard-anchor warning banner stays. The timeline, drift engine and the
 receiving Stage Ping banner in other roles stay. Remove MC-only components and
 related tests/imports once nothing references them.
 ([#201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/201))
+
+> **Exception (2026-11-08):** the MC-only parallel attraction strip (photobooth
+> and similar) lives inside/above the timeline area, not as a standalone card
+> below the timeline. It does not change this rule. See
+> [parallel attractions](#parallel-attractions-photobooth-decision-2026-11-08).
 
 **Cross-view disposition.**
 
@@ -1220,6 +1252,12 @@ payload. Timeline generation creates one step per enabled game; the Games cue
 card and clicker show only the current step's game.
 ([#414](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/414))
 
+> **Superseded in part on 2026-11-08:** the two games are now explicit
+> predefined steps with questions parsed from separate Google Docs, a level/queue
+> clicker flow and persisted game results. The generic teleprompter-game payload
+> is replaced. See
+> [game concept rework](#game-concept-rework-decision-2026-11-08).
+
 ### Music Policy key songs (decision, 2026-11-07)
 
 Every step flagged `isMainSongRequired` contributes its main song to the Music
@@ -1581,6 +1619,11 @@ as historical.
 This supersedes earlier pocket-header rules where they conflict, including the
 previous no-clock pocket header.
 
+> **Superseded on 2026-11-08:** the pocket logo, clock and PIN are removed, Sync
+> becomes icon-only and Children expected becomes a baby icon only. See
+> [compact pocket header and Speaker focus](#compact-pocket-header-and-speaker-focus-decision-2026-11-08).
+> Desktop headers keep this layout.
+
 **One compact mobile header for every stage role.** MC, DJ Standard, DJ VIP,
 Photographer 1, Photographer 2/Cameraman, Speaker and Venue Manager use the same
 phone header primitive. The utility row carries the brand logo, role short label,
@@ -1647,6 +1690,19 @@ cutoffs and music policy. DJ VIP adds these approved features:
   a room-scoped public QR form collecting only song and artist, with server-side
   rate limiting and only a "received" confirmation for guests. VIP desktop
   provides accept/decline triage; pocket has no request-queue UI.
+
+> **Superseded in part on 2026-11-08:** the guest form becomes an online-only
+> phone view with persistent device identity, per-device 10-minute cooldown,
+> realtime accepted/denied/played feedback, and DJ VIP Played handling. The QR,
+> room scoping, no-personal-data rule and no-pocket-moderation-queue rule stay;
+> DJ VIP pocket gets the QR launcher only (#460). See
+> [guest song request v2](#guest-song-request-v2-decision-2026-11-08).
+
+> **Superseded in part on 2026-11-08:** DJ VIP is no longer decided by the
+> service package alone. Only DJ Mark and DJ Szymoniak resolve to VIP; every
+> other DJ resolves to Standard even when the package says VIP. Standard's
+> restrictions are UI/feature gating only. See
+> [service providers and DJ access](#service-providers-and-dj-access-decision-2026-11-08).
 
 Not planned: Next Key Moment Cue, Advanced Mix Cues, Music Policy Guard,
 Must-play Coverage Tracker and Venue & Soundcheck Checklist.
@@ -1742,6 +1798,694 @@ Relations: #82's Drive transport/admin placement is superseded by #168–#170 an
 its role-side import removal by #166; #79 retains library-wide management, while
 #170 reuses its diff/backup primitives if available. WeddingSchema v1.2 (#77) is
 independent of this transport decision.
+
+---
+
+### UI review fixes 2026-11-08
+
+Review register opened 2026-11-08. All items below remain open; this section
+records the decisions and their tracking issues. Do **not** close #77 (schema
+v1.2), #80 (cartridge `mcCues`, P0) or #245 (speaker cartridge TODO) while
+working through this list.
+
+#### P0 - correctness
+
+1. **Remove hardcoded MC cues in the hero body.** `McMasterView.jsx`
+   `heroBody` still renders three hardcoded demo MC cue strings. They must come
+   from the cartridge `mcCues` contract instead, with a translated "No MC cue"
+   empty state. The cartridge contract stays in
+   [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80);
+   the view cleanup is tracked by
+   [#426](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/426).
+2. **One Advance CTA per view.** The compact current-step card and
+   `BottomNav.jsx` both expose an Advance action. Keep a single Advance CTA in
+   the current card; `BottomNav` must not carry step actions. Tracked by
+   [#421](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/421).
+
+#### P1 - PWA, motion, compact, i18n, theming and shell
+
+3. **PWA orientation.** The `vite.config.js` manifest locks
+   `orientation: 'landscape'`. Change it to `any` so phones can install and use
+   the app in portrait and tablets rotate freely. Tracked by
+   [#422](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/422).
+4. **PWA zoom.** `index.html` sets `user-scalable=no` and
+   `maximum-scale=1.0`. Remove both so pinch zoom works and WCAG 1.4.4 Resize
+   Text passes; this closes the accessibility follow-up from the pocket plan
+   (#109-#114). Tracked by
+   [#423](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/423).
+5. **Motion.** `CurrentStepTilt` may apply its 6-degree tilt only on devices
+   matching `hover: hover` and `pointer: fine`; remove the tilt everywhere else.
+   Hierarchy comes from border, ring and shadow instead. Also fix the
+   transition comment in `src/index.css` that contradicts the implemented
+   behaviour. Tracked by
+   [#424](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/424).
+6. **Compact focus stack.** Under 640px, remove the `-1rem` overlap and
+   `scale(0.95)` from `[data-focus-depth="2"]` in both history and future
+   zones. Render a plain list while keeping the same visible limits: 2 history
+   + 1 current + 2 future. Tracked by
+   [#425](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/425).
+7. **Focus stack expander.** Add the missing "show full timeline" expander
+   so hidden history and future steps can be revealed (spec items 2/3).
+   Tracked by
+   [#427](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/427).
+8. **i18n MC.** `McMasterView.jsx` still hardcodes EN strings:
+   `HOLD TO ADVANCE`, `Real start`, `Est. end` and `No script attached` (plus
+   the MC cue strings in item 1). Route all of them through `t()` and add the
+   EN/FR/PL keys. Tracked by
+   [#428](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/428).
+9. **i18n BottomNav and gate.** `BottomNav.jsx` hardcodes `Undo` and
+   `EVENT COMPLETE`. Move them through `t()`. `scripts/check-i18n.mjs`
+   currently checks dictionary completeness only, so propose a literal lint
+   for hardcoded JSX strings. Tracked by
+   [#429](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/429).
+10. **Theme migration.** Migrate remaining `text-white` / `text-slate-*`
+    utilities to the semantic `text-ink` / `text-muted` tokens, then delete the
+    `[data-theme="day"] .text-white` bridge and its brand/alert exceptions in
+    `src/index.css`. Tracked by
+    [#430](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/430).
+11. **Card title.** Replace `truncate` on the `StageStepCard.jsx` title with
+    `line-clamp-2` so long Polish step titles stay readable. Tracked by
+    [#431](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/431).
+12. **Shell.** `TopBarShell.jsx` switches its three-column layout from `xl` to
+    `lg`; add a shared `useCompact()` hook to replace the three repeated
+    `matchMedia` checks; save `DjBoothView.jsx` as UTF-8 without BOM and fix
+    its mojibake. Tracked by
+    [#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432).
+
+#### Re-review 2026-11-08 (new)
+
+These seven findings were verified by grep on 2026-11-08 after the first review
+pass. They are tracked separately from #421-#432 and remain open.
+
+13. **Theme fonts and offline fonts.** The `@theme` block in `src/index.css`
+    (line 14) defines only color tokens; `--font-heading` and `--font-body` are
+    never declared, so the `font-heading` / `font-body` utilities render
+    nothing. Montserrat and Lora load from `fonts.googleapis.com` in
+    `index.html` (lines 42-44), but the Workbox config in `vite.config.js`
+    (line 26) has no runtime caching for googleapis/gstatic, so the offline PWA
+    falls back to system fonts with layout shift. Tracked by
+    [#433](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/433).
+14. **Global `select-none`.** `index.html` line 46 puts `select-none` on
+    `<body>` and every role root repeats it (`McMasterView.jsx:412`,
+    `DjBoothView.jsx:174`, `PhotographerView.jsx:430`, `SpeakerView.jsx:190`,
+    `PairingScreen.jsx:157`, `RoleJoinScreen.jsx:66`). This blocks copy/paste
+    of speaker scripts, error IDs and admin values. Scope it to chrome and
+    leave content selectable. Tracked by
+    [#434](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/434).
+15. **Viewport units.** `McMasterView.jsx:412` uses `h-screen` plus
+    `overflow-hidden`, which clips the bottom bar behind the mobile URL bar; all
+    role roots use `min-h-screen`. Move to `h-dvh` / `min-h-dvh` so the visible
+    viewport wins. Tracked by
+    [#435](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/435).
+16. **i18n modal and toast holes.** Beyond #428 and #429,
+    `ModalShell.jsx:104` hardcodes `aria-label="Close overlay"` and
+    `UndoToast.jsx:27` hardcodes `Action applied` plus the Undo and Dismiss
+    buttons. Route all of them through `t()`; the dictionary-only
+    `check-i18n.mjs` gate does not see these literals. Tracked by
+    [#436](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/436).
+17. **z-index chaos.** `ModalShell` uses `z-50` while toasts and banners use
+    `z-[60]` through `z-[120]` (`UndoToast` and `KeySongsCard` z-60,
+    `DjNowPlayingOverlay` and `ChildrenExpectedBadge` z-80, `PwaUpdateNotice`
+    z-90/100, `DevViewSwitcher` z-100, `MandatoryUpdatePopup` and AdminToast
+    z-120). A modal can hide under a toast on stage. Define a `--z-*` token
+    scale in `src/index.css` and put modals above non-blocking toasts. Tracked
+    by [#437](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/437).
+18. **Secondary control bar on phone.** `SecondaryControlBar.jsx` always uses
+    `grid-cols-[1fr_auto_1fr]`, producing unreadable slivers at 360px. Add a
+    compact stacked variant while keeping the wide three-column composition.
+    Tracked by
+    [#438](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/438).
+19. **Hold button SR progress.** `HoldToConfirmButton.jsx` exposes only
+    `aria-label`; the progress bar is `aria-hidden` and there is no
+    `role="progressbar"`, `aria-valuenow`, `aria-valuemin`, `aria-valuemax` or
+    `aria-describedby`. A blind operator gets no feedback during the 1.2s hold.
+    Announce the hold hint and progress state. Tracked by
+    [#439](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/439).
+
+#### Mobile 375px audit (live)
+
+Verified live in Vite dev at `127.0.0.1:5173`, PIN 2008, viewport 375x812,
+across the MC, DJ, Photographer and Speaker roles. These findings are
+mobile-only.
+
+20. **Collapse the header under md.** The MC header consumes about three rows
+    and roughly 300px before the current step. Keep only logo, clock, role and
+    LATE visible; move COUPLE COMMON LANGUAGES, the date, SPEECHES LIVE and the
+    cultural pills under a disclosure. This saves roughly 150px and brings
+    CURRENT STEP above the fold at 375x812. Tracked by
+    [#442](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/442).
+21. **Secondary bar on phone.** `SecondaryControlBar.jsx` still puts roughly
+    600px of content into a 375px viewport. Use a single `overflow-x-auto`
+    nowrap row or an overflow menu for Open-on-phone, language and theme. This
+    is the same compact-bar problem as the stacked variant in
+    [#438](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/438);
+    extend that issue rather than duplicating it.
+22. **44px touch targets.** Measured at 375px: language EN/FR/PL is 24x23,
+    theme 32px, PIN/Sync/Open-on-phone under 44px tall, Stop/Go live 25px, Swap
+    34px, Undo 42px and checkboxes 16px. Raise every target to at least 44px,
+    Undo to 48px, and give checkboxes a 24px visual with a 44px row hit area.
+    Tracked by
+    [#441](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/441).
+23. **MC footer ergonomics.** Undo is 84x42 and only 8px from HOLD, while Swap
+    sits at 34px in the footer. Use a 48px Undo, a 12px gap between Undo and
+    HOLD, and move Swap into the current-step overflow. Keep the 1.2s hold.
+    Tracked by
+    [#443](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/443).
+24. **DEV VIEW SWITCHER on phone.** The fixed bottom-left switcher covers
+    HOLD, Undo and Go-live at 375px. Hide it below 640px or put it behind
+    `?dev=1`, and keep it out of the production bundle. Tracked by
+    [#440](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/440).
+25. **Step title and time truncation.** `StageStepCard.jsx:81` uses `truncate`,
+    so Cocktail, Vin d'honneur and time information ellipsize at 375px. The
+    title change is already tracked by
+    [#431](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/431);
+    extend it with `line-clamp-2` and a full time row below the title on mobile
+    instead of creating a duplicate.
+26. **Mojibake headings.** DjBoothView SET NOTES and the Photographer SUNSET
+    heading contain broken `a€` sequences, amplified by mobile truncation. The
+    DJ encoding is already tracked by
+    [#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432);
+    extend it to the Photographer heading and save UTF-8 without BOM.
+
+Alignment for this mobile audit: last aligned 2026-11-08 against `master` @
+`f1aa283`. Mobile roadmap rows are P0 for the dev switcher, touch targets and
+MC footer, and P1 for the header collapse. #77, #80 and #245 stay open.
+
+#### i18n completion and venue mandatory-step rework (decision, 2026-11-08)
+
+Owner review after the mobile audit. Per-device UI language must switch every
+listed element between EN, FR and PL; cartridge content stays in its authored
+language. Broken leading glyphs/mojibake in the affected titles are removed
+rather than translated. Generic file-encoding work remains in
+[#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432).
+
+**MC view.** Localise the **MC Cues** element and its children, the **Game
+Clicker** launcher and overlay, and the **Speeches** card/chip with all their
+labels, empty states, controls, warnings and countdowns. Cartridge cue, speech
+and game text remains authored content. This extends the existing MC i18n scope
+in [#428](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/428)
+without reopening #426 (hardcoded demo cues) or #80 (`mcCues`). Tracked by
+[#444](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/444).
+
+**DJ view.** Localise the **Music Policy** card and all its children in both
+full and compact layouts, including the English request-status labels currently
+produced by `resolveRequestStatus()`. Localise the **Set notes** title and
+delete the broken characters before it. The Set notes body text is explicitly
+exempt and stays as the owner-approved English guidance; track/artist/note
+content is cartridge data. Tracked by
+[#445](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/445).
+
+**Photographer / media views.** Localise **SUNSET & GOLDEN HOUR** and all its
+children on Photographer 1, Photographer 2 and Cameraman, including the compact
+`Light windows` rendering and the mini-session override. Delete the broken
+characters before the `SUNSET` title. The top-bar role element drops the
+trailing number for Photo 1 and Photo 2 (`Role: Photo`), while the internal
+`photo1`/`photo2` roles, auth, join/PIN and pocket badges stay unchanged.
+Tracked by
+[#446](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/446).
+
+**Venue Manager — Mandatory steps layout.** Regroup the four courses so each
+course time and its service mode are one unit: Obiad weselny, Pierwsza kolacja,
+Druga kolacja and Trzecia kolacja. Render **Cake service** in its own separate
+place and keep **Wedding closure** together with the extension control. All
+labels become localisable while persisted keys stay unchanged. Tracked by
+[#447](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/447).
+
+**Venue Manager — closure extension hours.** Replace the single
+`+1H EXTENSION ALLOWED` element with two elements:
+
+1. **Hours extension possible** — checkbox;
+2. **Up to which hour extension is possible** — hour picker, revealed only when
+   the checkbox is ticked.
+
+Add an optional `closureExtensionUntil` clock to `mandatorySteps` (schema,
+example fixture, Google Doc mapping, normaliser, mandatory resolver and
+mandatory-update popup), keep backward compatibility for cartridges without it,
+and coordinate the schema wording with #77. Tracked by
+[#448](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/448).
+
+#### Compact pocket header and Speaker focus (decision, 2026-11-08)
+
+Owner review after the i18n/venue pass. Scope confirmed with the owner: the
+header changes apply to **compact pocket layouts only**; desktop and tablet
+headers stay unchanged.
+
+**Pocket header simplification.** Every compact stage header uses the shared
+`RoleShell` and must drop the desktop-only chrome:
+
+- remove the brand logo and its white badge;
+- remove the live clock from the pocket header;
+- remove the visible `PIN` element (auth, role token and sign-out are unchanged);
+- replace the visible `Sync` text with a project-owned sync SVG icon as the only
+  visible child, keeping the existing status tones, translated tooltip and
+  `aria-label`; no visible count or status text;
+- show the **Children expected** element as a baby SVG icon only, with the
+  translated text kept in `aria-label`/`title`; the permanent red/green state
+  and all-role visibility are defined by #451.
+
+Applies to MC, DJ VIP, Photographer 1, Photographer 2, Cameraman, Venue Manager
+and Speaker. DJ Standard has no pocket view (#256). Keep the role short badge,
+language, theme, cultural/Speeches chips, view switch and role-specific auth
+control. This supersedes the logo/clock part of the earlier pocket-header
+decision (#331) and of [#442](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/442);
+#442 now covers the role/LATE/disclosure layout only and must not re-add the
+logo or clock. The icon-only Sync target still follows #441. Tracked by
+[#449](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/449).
+
+**Speaker focus.** The visible `Now speaking` / `Teraz mowi` card is reduced to a
+single line with the speaker name and relationship, for example
+`Bartek  Best man`; the label itself is removed. The Google Doc speech text
+becomes the primary and most prominent element on desktop and pocket, preserving
+paragraphs and never truncating or translating the script. Name/relationship and
+script remain cartridge/Google Doc content; the dedicated speech cartridge plan
+stays with #245. Tracked by
+[#450](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/450).
+
+#### Children expected state indicator (decision, 2026-11-08)
+
+The Children expected element becomes a permanent red/green state indicator in
+every stage role view, desktop and pocket:
+
+- **red** + `Children expected` when `childrenExpected === true`;
+- **green** + `Children not expected` when it is false or absent;
+- no amber state remains.
+
+It must appear for MC Master, DJ Standard, DJ VIP, Photographer 1, Photographer
+2, Cameraman, Venue Manager and Speaker. Admin, join/pairing and other
+non-stage surfaces are excluded. Desktop shows the text in the shared
+secondary-bar centre; add it where the role does not render it yet without
+duplicating or overflowing. Pocket keeps the baby-icon-only form from #449 with
+the translated text in `aria-label`/`title`, now coloured red/green.
+
+Implementation removes the `childrenExpected === true` early return and the
+media/MC role gate from `ChildrenExpectedBadge`, and the conditional in
+`RoleShell`/call sites, while keeping `wedding.childrenExpected` as the data
+source. State changes must stay announced via `role="status"`. The hard-anchor
+banner children notice removed by #392 stays removed. This supersedes the
+“only roles that already show it” clause in #449. Tracked by
+[#451](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/451).
+
+#### Children expected data source (decision, 2026-11-08)
+
+The indicator is cartridge-driven, never hardcoded in the UI:
+
+- Google Doc `EVENT` row: `Children expected: yes` / `Children expected: no`;
+- wedding cartridge root property: `"childrenExpected": true | false`;
+- schema: boolean, optional for backward compatibility, absent means `false`;
+- parser: `true`/`yes`/`y`/`1`/`on` → `true`, `false`/`no`/`n`/`0`/`off` →
+  `false`, missing/unrecognised → `false`;
+- every role view reads `wedding.childrenExpected`.
+
+The original wiring exists from #277. This decision confirms the contract and
+asks for end-to-end regression coverage of explicit true/false and missing
+values through parse → validate → publish. UI display remains in #451. Keep the
+property at the cartridge root when #77 freezes schema v1.2. Tracked by
+[#452](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/452).
+
+#### Top-bar icon sizing (decision, 2026-11-08)
+
+The small decorative icons/glyphs in the top bar are slightly too small. Enlarge
+them by roughly one type step without changing labels, colours, status logic or
+header height:
+
+| Element | Current | New |
+| --- | --- | --- |
+| Sto Lat / Gorzko / Oczepiny icons | 14px | 18px desktop, 16px pocket |
+| Speeches icon | 14px | 18px desktop, 16px pocket |
+| PIN / role sign-out glyph | 10px | 14px |
+| Couple common languages glyph | 9px | 13px |
+| MC Master / role identity icon | 12px | 16px |
+| Role identity arrow | 10px | 14px |
+
+This applies to the matching elements in MC, DJ Standard, DJ VIP, Photographer 1,
+Photographer 2, Cameraman, Venue Manager and Speaker. Pocket follows #449, so no
+removed logo/clock/PIN is reintroduced. Only sizes change here; glyph selection
+and any remaining mojibake stay with #432. Tracked by
+[#453](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/453).
+
+#### DJ Standard role label (decision, 2026-11-08)
+
+The DJ Standard top-left role element must show **`Role: DJ`**, localised through
+the existing `roles.role` format. It must not show `Role: MC`, `MC Master`,
+`Standard` or `DJ Standard`, including when the authenticated MC opens the
+read-only DJ Standard view.
+
+- `TopBarRoleIdentity` appends `VIP` only for the VIP tier; the Standard and Solo
+  tiers render `DJ` alone.
+- The element reflects the **rendered view role**, while PIN/sign-out and
+  permissions keep targeting the authenticated role.
+- DJ VIP keeps `Role: DJ VIP`; DJ Standard stays laptop-only (#256).
+- Auth, session, view switching and Standard/VIP feature gates are unchanged.
+
+This supersedes the earlier rule that the DJ role label includes the service
+tier for the Standard case. Tracked by
+[#454](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/454).
+
+#### Guest song request v2 (decision, 2026-11-08)
+
+The existing public guest form becomes a proper online-only phone view/role
+with device identity, live status and a durable history. This is a **public
+guest view** at `/request/:room`, not an authenticated stage role: no PIN, no
+role token and no wedding data beyond the room code.
+
+**Guest view/role.**
+
+- Check internet availability before enabling the form; disable Send offline
+  and recover automatically when the connection returns.
+- Artist and song-title fields, then **Send**.
+- Persistent `device_id` from `crypto.randomUUID()` (fallback supported),
+  stored under `wedding_guest_device_id`; send it with every request.
+- Pending confirmation asks the guest to keep the page open while the DJ
+  decides, with a `beforeunload` confirmation.
+- A second request inside the 10-minute cooldown receives `429` with the
+  remaining minutes and shows that wait.
+- Live **accepted** message confirms the DJ accepted the song while stating the
+  exact play time cannot be confirmed. **Denied** gets a kind message. **Played**
+  gets a final acknowledgement if the page is still open.
+- Refresh/reopen restores the pending/status state for the same device.
+- The guest sees only their own request. No names, emails, phone numbers or
+  other guests' queue rows. Tracked by
+  [#455](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/455).
+
+**Backend and persistence.**
+
+- Extend the existing `song_requests` table: add `device_id` and `played_at`
+  (plus audit timestamps as needed). The requested `song_name` maps to the
+  existing `song` column; keep `artist`, `wedding_id`, `status`, `source` and
+  timestamps. Add cooldown/queue indexes.
+- Enforce a 10-minute per-`wedding_id` + `device_id` cooldown server-side and
+  return `429` with `retryAfterSeconds`/`retryAfterMinutes`. Keep the existing
+  IP/room attempt limit as an abuse backstop.
+- Persist pending, accepted, denied and played requests. Denied/played rows are
+  never re-queued.
+- Guest status transport must not grant anon read access to the queue. A
+  per-device Realtime Broadcast channel or scoped status RPC is required;
+  `postgres_changes` filtered by `device_id` is only acceptable with an
+  RLS-safe guest read model. Tracked by
+  [#456](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/456).
+
+**DJ VIP queue.**
+
+- Pending: **Accept** or **Deny**. Accept persists and moves the song to the
+  accepted/up-next area; Deny persists and removes it from the DJ UI entirely.
+- Accepted: show until the DJ presses **Played**. Played records `played_at`,
+  removes it from the queue and keeps the database row for history.
+- Remove the current “Recent outcomes”/declined list. Denied requests never
+  appear in the DJ UI.
+- Realtime refresh with the existing manual refresh and polling fallback.
+  Accepted songs survive refresh/reconnect until played.
+- DJ VIP only; DJ Standard, MC and other roles never get request controls.
+  Pocket does not need the full moderation queue but does get the QR launcher
+  from #460. Tracked by
+  [#457](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/457).
+
+**Development-only simulator.** A clearly marked, `import.meta.env.DEV`-gated
+song-request simulator on DJ VIP can create fake pending requests, simulate
+accept/deny/played, preview guest messages and exercise two device ids. It
+performs no cloud writes, never changes auth/role/PIN state, and must be absent
+from production bundles. Tracked by
+[#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458).
+
+**Optional free metadata validation.** iTunes Search API (free, no key) is the
+recommended first choice for song/artist suggestions and canonical spelling,
+with MusicBrainz (free, no key, rate-limited) as fallback. Validation is
+advisory only, runs through a server proxy/cache and never blocks submission.
+Audio fingerprinting (for example AcoustID) is out of scope unless separately
+approved. This remains a planning TODO tracked by
+[#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459).
+
+**Supersession and retained rules.** This supersedes the “received-only”
+confirmation and declined-outcomes UI from #148/#149. The room-scoped QR, no
+personal data, no guest queue access and no pocket DJ **moderation** queue rules
+remain; the DJ VIP pocket QR launcher is the exception (#460).
+
+#### Song request QR launcher (decision, 2026-11-08)
+
+The DJ VIP Guest requests bar gets a permanent **`Song's request QR`** button on
+laptop and pocket. It is available in connected, loading and disconnected
+states whenever a room code/request URL exists.
+
+- Clicking opens a full-screen QR dialog with a large, scannable code
+  (target about 80% of the shortest viewport dimension), white background and
+  quiet zone.
+- Close with the visible X/Close button, backdrop click or Escape; trap focus
+  while open and restore focus to the button.
+- Show the request URL (and room code if useful) below the QR.
+- Disable the button with an explanatory tooltip if no room code is available.
+- QR generation stays local through `QrCodeImage`; no external QR service.
+- Pocket shows the QR launcher only; it does not need the full moderation queue.
+- Keep the existing queue actions and disconnected message unchanged.
+
+The button must fit the compact pocket bar without overflow and keep a 44px
+touch target (#441). Tracked by
+[#460](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/460).
+
+#### Disco Polo policy (decision, 2026-11-08)
+
+DJ VIP only. The newlyweds decide the Disco Polo policy; the value comes from the
+Google Doc `MUSIC POLICY` section and is parsed into the cartridge — no Supabase
+or live-state persistence.
+
+**Cartridge contract.**
+
+- Google Doc row: `Disco Polo policy: No` / `Yes` / `On request`.
+- JSON path: `musicPolicy.discoPoloPolicy` with enum `NO`, `YES`, `ON_REQUEST`.
+- Missing, blank or unrecognised values default to **`NO`** (fail closed).
+- Parser aliases include `ON_REQUEST`, `on-request`, `request` and `by request`
+  for `ON_REQUEST`; `true`/`false` map to `YES`/`NO`.
+- Update the schema, Google Doc template/manifest, parser, resolver, example and
+  demo fixtures. No migration, live-state field, outbox entry or realtime work.
+  Tracked by
+  [#461](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/461).
+
+**UI.**
+
+- **NO** — red — “Disco Polo: Strictly forbidden”.
+- **YES** — green — “Disco Polo: Allowed”.
+- **ON_REQUEST** — amber — “Disco Polo: Guest request only — one song”.
+
+Show the same badge in:
+
+1. the DJ VIP **Music Policy** card;
+2. the top **Guest requests** bar, visible on laptop and pocket, including while
+   the queue is disconnected or loading.
+
+Do not rely on colour alone; keep the text label, tooltip and accessible
+description, localised EN/FR/PL. The badge must not overflow the pocket request
+bar. No MC, DJ Standard, media or Speaker rendering.
+
+This iteration is display-only. The `ON_REQUEST` “one song” rule is guidance for
+the DJ; automatic play-count enforcement and persistence are out of scope and
+would need a separate approved issue. Tracked by
+[#462](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/462).
+
+#### Parallel attractions / photobooth (decision, 2026-11-08)
+
+Newlyweds often book a parallel attraction such as a photobooth/Fotobudka. It is
+customer-provided data from the Google Doc, parsed into the cartridge, and it
+runs alongside the timeline rather than as a timeline step.
+
+**Cartridge contract.**
+
+- New optional root array `attractions[]` with:
+  `id`, `type` (`PHOTO_BOOTH`, `GUEST_BOOK`, `POLAROIDS` or `OTHER`), `name`,
+  `booked`, `startTime`, `endTime`, optional `location`, `provider`, `notes`.
+- Google Doc `ATTRACTIONS` table row:
+  `Attraction ID | Type | Name | Booked | Start | End | Location | Provider | Notes`.
+- Supported parallel attractions include photobooth/Fotobudka, guest book and
+  Polaroids/Instax. Type aliases: `fotobudka`/`photo booth` → `PHOTO_BOOTH`;
+  `guestbook`/`księga gości` → `GUEST_BOOK`; `polaroid`/`polaroidy`/`instax`/
+  `instant photos` → `POLAROIDS`; unknown → `OTHER`.
+- `Booked: no` keeps the data but hides it from the MC UI; missing rows mean no
+  attraction. Invalid/missing times warn and skip the row.
+- Missing `booked` defaults to true when the row exists.
+- These are parallel tasks: no timeline step, no duration, drift, hard-anchor or
+  ordering impact. All attraction types share the same contract.
+- No Supabase table/column/migration, live-state, outbox or realtime work.
+  Tracked by
+  [#463](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/463).
+
+**MC Master reminder.**
+
+- Applies identically to photobooth, guest book, Polaroids and other parallel
+  attractions.
+- The MC must announce each attraction **at the latest 15 minutes before** its
+  start.
+- Reminder states: `UPCOMING` (hidden/muted), `ANNOUNCE` from start − 15 min to
+  start, `AVAILABLE` from start to end, `ENDED` after end.
+- During `ANNOUNCE`, show “Announce now / starts in X min”; during `AVAILABLE`,
+  show “Available now — remind guests” with the end/remaining time.
+- Support multiple attractions. If the clock is unavailable, show the scheduled
+  window without a countdown.
+- Render a compact MC-only strip inside/above the timeline area; do not displace
+  MC Cues, Sub-tasks, Speeches or the current-step controls and do not add a
+  standalone card below the timeline.
+- MC only. DJ, Photographer 1/2/Cameraman, Venue and Speaker are unchanged.
+- No database/localStorage persistence; state is derived from the cartridge and
+  shared event clock. Any dismissal is ephemeral.
+- No automatic announcement, sound or notification. Tracked by
+  [#464](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/464).
+
+#### Service providers and DJ access (decision, 2026-11-08)
+
+The owner manages external service providers per wedding directly in `/admin`.
+This is admin-only data, not a Google Doc/cartridge section, and it does not
+reintroduce the removed stage-level vendor/VIP-contact features.
+
+**Provider registry.**
+
+- New Supabase `wedding_service_providers` table, scoped to `wedding_id`.
+- Fields: first name, last name, phone, email, address, Instagram, category,
+  `function_label` for `other`, active flag and timestamps.
+- Categories: `dj`, `photo1`, `photo2`, `video`, `venue_manager`, `other`.
+- Role-bearing categories are unique per wedding; `other` can have many rows and
+  requires a **Function** value (for example saxophonist, photobooth provider).
+- Admin can add/edit/deactivate/delete, with validation, audit entries and
+  read-only archived weddings. No new wedding is created here; weddings remain
+  Drive-only submissions.
+- Provider data never enters the cartridge or live state. Tracked by
+  [#465](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/465).
+
+**Role provisioning.** Adding an active role-bearing provider auto-creates the
+matching role PIN and QR card: DJ → DJ view, Photo 1/Photo 2 → media views,
+Camera → Camera view, Venue → Venue Manager view. Deactivating/removing revokes
+sessions and the join PIN. `other` providers stay contact-only with no app
+access. This requires expanding role checks/RLS for `photo1`, `photo2`, `video`
+and `venue_manager`, which `join_room` already accepts. PINs stay bcrypt-hashed
+and are shown once; unrelated PINs and live progress are untouched. Tracked by
+[#466](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/466).
+
+**DJ VIP identity.** VIP is limited to two hardcoded DJs: **DJ Mark** and
+**DJ Szymoniak**, with name, phone and Instagram stored read-only in a
+source-controlled registry and not editable in admin. Any wedding assigned one
+of them resolves to DJ VIP; every other DJ resolves to DJ Standard even when the
+package says VIP. DJ Mark is the default for the customer-booked MC+DJ offer.
+Use stable ids, never name matching. Tracked by
+[#467](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/467).
+
+**DJ Standard restrictions.** Non-VIP DJs get UI/feature gating only (no auth/RLS
+change in this pass). Standard must never render guest requests/queue/QR, Disco
+Polo VIP policy, VIP Set Health/booth cues/export pack, cultural or Speeches
+chips, VIP PIN/Open-on-phone controls, VIP overlays or pocket layout. Use one
+shared `djCapabilities` helper and a test matrix for both tiers. Tracked by
+[#468](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/468).
+
+#### Game concept rework (decision, 2026-11-08)
+
+The generic game implementation is replaced by two explicit predefined steps.
+Both are normal optional timeline steps, one per game, with no new engine and no
+impact outside MC.
+
+**Predefined steps.**
+
+| Step | `gameId` | Questions |
+| --- | --- | --- |
+| **Test Wiedzy** | `test_wiedzy` | separate Google Doc |
+| **Test Zgodności** | `test_zgodnosci` | separate Google Doc |
+
+- Each game has its own enabled flag (per question-list entry) with backward
+  compatibility for the existing global `games.enabled`; disabled games are
+  omitted from the timeline.
+- Questions are fetched through the admin Drive/publish path and parsed into the
+  cartridge. No runtime Doc scraping.
+- Test Wiedzy question: id, localized prompt, level `EASY`/`MEDIUM`/`HARD`,
+  answer `GROOM`/`BRIDE`; the displayed answer name comes from `coupleProfile`.
+- Test Zgodności question: id and localized prompt only; the MC records match/no
+  match at runtime.
+- Keep normal time, duration, drift, hard-anchor and focus-stack behaviour.
+  Tracked by
+  [#469](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/469).
+
+**MC Game Clicker.**
+
+- Test Wiedzy default order is EASY → MEDIUM → HARD, Doc order within a level.
+  Answers are revealed by the MC and already-answered questions never reappear.
+- Test Zgodności uses Doc order. The MC presses **Match** or **No match** per
+  question; Match adds one point. Record `isCompatible` true/false.
+- MC may pick any unanswered question out of order (including another level);
+  after it, the normal main queue resumes unchanged.
+- Show total, current, answered and remaining counts; Zgodności also shows the
+  running score. Completion and per-game reset states are required.
+- MC only; other roles unchanged. Tracked by
+  [#470](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/470).
+
+**Results persistence.**
+
+- Published cartridges are immutable and only admin may create a revision; the
+  MC cannot mutate the cartridge during the event.
+- Results therefore live in a schema-defined `liveSyncState.game_results` object:
+  per-question answered/revealed data for Wiedzy, and
+  `isCompatible`/score for Zgodności.
+- This JSON persists through the existing live-state path (local localStorage,
+  plus existing optional Supabase sync) — no new database table, migration or
+  realtime channel. `isCompatible` is a runtime result, not a static question
+  property in the cartridge.
+- Undo/timeline changes must not erase results; per-game reset clears only that
+  game. MC can export/download the results JSON for future reference.
+- If a permanent cartridge archive is wanted later, the exported JSON can be
+  attached to a new admin-published revision; that is a separate admin action.
+  Tracked by
+  [#471](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/471).
+
+#### Roadmap rows
+
+| Priority | Issue | Item | Status |
+| --- | --- | --- | --- |
+| P0 | [#426](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/426) | MC: remove hardcoded demo cues (follow-up to #80) | Open; blocks #80 view cleanup |
+| P0 | [#421](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/421) | Phone: single Advance CTA (remove duplicate in BottomNav) | Open |
+| P1 | [#422](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/422) | PWA: remove landscape orientation lock | Open |
+| P1 | [#423](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/423) | PWA: allow pinch zoom (remove `user-scalable=no`) | Open |
+| P1 | [#424](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/424) | Motion: restrict `CurrentStepTilt` to fine pointers | Open |
+| P1 | [#425](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/425) | Compact: disable focus-stack overlap under 640px | Open |
+| P1 | [#427](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/427) | Focus stack: add show-full-timeline expander | Open |
+| P1 | [#428](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/428) | i18n: hardcoded EN strings in `McMasterView` | Open |
+| P1 | [#429](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/429) | i18n: hardcoded strings in `BottomNav` + literal lint | Open |
+| P1 | [#430](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/430) | Day theme: migrate to `text-ink` tokens, drop `.text-white` override | Open |
+| P1 | [#431](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/431) | Card: `line-clamp-2` for `StageStepCard` title | Open; mobile time row added by audit |
+| P1 | [#432](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/432) | Shell: TopBar `lg` breakpoint + `useCompact` hook + DJ encoding | Open; Photo SUNSET heading added by audit |
+| P1 | [#433](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/433) | Fonts: wire theme fonts + offline self-host | Open |
+| P1 | [#434](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/434) | Selection: scope `select-none` to chrome, allow content select | Open |
+| P1 | [#435](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/435) | Viewport: `h-dvh`/`min-h-dvh` + no clipped MC root | Open |
+| P1 | [#436](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/436) | i18n: hardcoded strings in Modal/Toast | Open |
+| P1 | [#437](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/437) | Overlays: z-index token scale (modal above toasts) | Open |
+| P1 | [#438](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/438) | Secondary bar: compact stacked variant | Open; confirms 375px audit |
+| P1 | [#439](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/439) | Hold button: screen-reader progress | Open |
+| P0 | [#440](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/440) | Mobile: hide DEV VIEW SWITCHER on small screens | Open |
+| P0 | [#441](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/441) | Mobile: 44px touch targets | Open |
+| P0 | [#443](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/443) | Mobile: MC footer HOLD/Undo/Swap ergonomics | Open |
+| P1 | [#442](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/442) | Mobile: collapse header under md | Open |
+| P1 | [#444](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/444) | i18n: MC Cues, Game Clicker and Speeches | Open; extends #428 |
+| P1 | [#445](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/445) | i18n: DJ Music Policy + Set notes title | Open; note body exempt |
+| P1 | [#446](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/446) | i18n: Photo Sunset & Golden Hour + number-free role label | Open |
+| P1 | [#447](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/447) | Venue: grouped mandatory-step courses, cake and closure layout | Open |
+| P1 | [#448](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/448) | Venue: extension checkbox + extension-until hour picker | Open; schema field, coordinate #77 |
+| P1 | [#449](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/449) | Mobile: pocket header cleanup, icon-only Sync, baby icon | Open; supersedes #442 logo/clock |
+| P1 | [#450](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/450) | Speaker: one-line name/relationship, script primary | Open |
+| P1 | [#451](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/451) | Children expected: permanent red/green state in every role view | Open; supersedes #449 visibility clause |
+| P1 | [#452](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/452) | Data: `childrenExpected` boolean from Google Doc to cartridge | Open; hardens #277 contract |
+| P1 | [#453](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/453) | Top bar: enlarge small role/status icons | Open; size only, encoding stays #432 |
+| P1 | [#454](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/454) | DJ Standard: top-bar role label is `DJ`, not MC/Standard | Open; VIP label unchanged |
+| P1 | [#455](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/455) | Song request: guest phone view, online check, device id, live status | Open |
+| P1 | [#456](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/456) | Song request backend: device id, 10-minute cooldown, realtime status | Open |
+| P1 | [#457](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/457) | DJ VIP: accept/deny, accepted list, Played action | Open |
+| P1 | [#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458) | Dev-only song request simulator on DJ VIP | Open |
+| Optional | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Planning TODO: free song metadata validation | Open; owner approval required |
+| P1 | [#460](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/460) | DJ VIP: Song's request QR button and fullscreen QR (laptop + pocket) | Open; pocket QR launcher exception |
+| P1 | [#461](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/461) | Data: `discoPoloPolicy` enum from Google Doc to cartridge | Open; no DB persistence |
+| P1 | [#462](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/462) | DJ VIP: Disco Polo policy in Music Policy + Guest requests bar | Open; display only |
+| P1 | [#463](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/463) | Data: parallel attractions from Google Doc to cartridge | Open; no DB persistence |
+| P1 | [#464](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/464) | MC: parallel attraction announcement + availability reminders | Open; MC only |
+| P1 | [#465](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/465) | Admin: per-wedding service provider registry | Open; admin-only Supabase data |
+| P1 | [#466](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/466) | Roles: auto-provision provider app access and expand role checks/RLS | Open |
+| P1 | [#467](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/467) | DJ VIP: hardcoded Mark/Szymoniak identity rule | Open; supersedes package-only tier |
+| P1 | [#468](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/468) | DJ Standard: strict UI/feature restriction audit | Open; UI-only |
+| P1 | [#469](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/469) | Games: predefined Test Wiedzy/Test Zgodności steps + Doc questions | Open |
+| P1 | [#470](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/470) | MC Game Clicker: level queue, override, scoring | Open |
+| P1 | [#471](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/471) | Games: persist results in live state + `isCompatible` export | Open |
+
+Alignment for this review: last aligned 2026-11-08 against `master` @
+`f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
+#77, #80 and #245 stay open, and #421-#471 remain open follow-ups.
 
 ---
 
