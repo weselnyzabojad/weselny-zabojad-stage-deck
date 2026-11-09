@@ -97,7 +97,7 @@ describe('issue #149 VIP song request queue', () => {
     expect(result.error).toContain('already handled');
   });
 
-  it('renders pending requests and keeps declined outcomes separate', () => {
+  it('renders pending and accepted requests without denied rows', () => {
     const html = renderToStaticMarkup(
       createElement(SongRequestQueueList, {
         requests: rows,
@@ -109,12 +109,13 @@ describe('issue #149 VIP song request queue', () => {
     expect(html).toContain('First');
     expect(html).toContain('Later');
     expect(html).toContain('Accept');
-    expect(html).toContain('Decline');
+    expect(html).toContain('Deny');
     expect(html).toContain('Guest request QR');
-    expect(html).toContain('Accepted');
-    expect(html).toContain('Declined');
+    expect(html).toContain('Up next');
+    expect(html).toContain('Played');
     expect(html).toContain('Yes');
-    expect(html).toContain('No');
+    expect(html).not.toContain('Declined');
+    expect(html).not.toContain('>No<');
   });
 
   it('does not mount for Standard or non-moderator roles', () => {

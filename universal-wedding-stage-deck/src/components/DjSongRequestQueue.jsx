@@ -2,10 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import QrCodeImage from './QrCodeImage';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import { buildSongRequestUrl } from '../lib/songRequests.js';
+import { useI18n } from '../i18n/useI18n.js';
 import {
   canModerateSongRequests,
   fetchSongRequests,
+  markSongRequestPlayed,
   partitionSongRequests,
+  subscribeSongRequestChanges,
   updateSongRequestStatus,
 } from '../lib/songRequestQueue.js';
 
@@ -29,24 +32,27 @@ export function SongRequestQueueList({
   requestUrl = null,
   onAccept = () => {},
   onDecline = () => {},
+  onPlayed = () => {},
   onRefresh = () => {},
 }) {
-  const { pending, accepted, declined } = partitionSongRequests(requests);
+  const { t } = useI18n();
+  const { pending, accepted } = partitionSongRequests(requests);
+  const upNext = accepted.filter((request) => !request.playedAt);
 
   return (
     <section className="rounded-xl border border-brand-strong/50 bg-card/95 p-4 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
-            💬 Guest requests
+            💬 {t('dj.requests.title')}
           </h2>
           <p className="mt-0.5 text-[10px] text-muted">
-            {pending.length} pending · accept or decline
+            {t('dj.requests.pendingCount', { count: pending.length })}
           </p>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
-            VIP · desktop
+            {t('dj.requests.vipDesktop')}
           </span>
           <button
             type="button"
@@ -54,7 +60,7 @@ export function SongRequestQueueList({
             disabled={loading}
             className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[10px] font-semibold text-ink transition hover:bg-line disabled:opacity-50"
           >
-            {loading ? 'Loading…' : 'Refresh'}
+            {loading ? t('dj.requests.loading') : t('dj.requests.refresh')}
           </button>
         </div>
       </div>
@@ -65,15 +71,15 @@ export function SongRequestQueueList({
             <QrCodeImage
               text={requestUrl}
               size={74}
-              label="QR code for the guest song request form"
+              label={t('dj.requests.qrLabel')}
             />
           </div>
           <div className="min-w-0">
             <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-ink">
-              Guest request QR
+              {t('dj.requests.qrTitle')}
             </div>
             <p className="mt-0.5 text-[10px] leading-snug text-muted">
-              Guests scan this to open the public song request form. No event or queue data is exposed.
+              {t('dj.requests.qrBody')}
             </p>
           </div>
         </div>
@@ -90,14 +96,17 @@ export function SongRequestQueueList({
         </p>
       ) : null}
 
+      <h3 className="mt-3 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
+        {t('dj.requests.pendingHeading')}
+      </h3>
       {loading && requests.length === 0 ? (
-        <p className="mt-3 text-[11px] text-muted">Loading guest requests…</p>
+        <p className="mt-1 text-[11px] text-muted">{t('dj.requests.loadingHint')}</p>
       ) : pending.length === 0 ? (
-        <p className="mt-3 rounded border border-line bg-page/70 px-2.5 py-2 text-[11px] text-muted">
-          No pending guest requests.
+        <p className="mt-1 rounded border border-line bg-page/70 px-2.5 py-2 text-[11px] text-muted">
+          {t('dj.requests.noPending')}
         </p>
       ) : (
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-1 space-y-2">
           {pending.map((request) => {
             const busy = updatingId === request.id;
             return (
@@ -115,17 +124,19 @@ export function SongRequestQueueList({
                       type="button"
                       onClick={() => onAccept(request.id)}
                       disabled={busy}
+                      aria-label={t('dj.requests.acceptAria', { song: request.song })}
                       className="rounded border border-emerald-700 bg-emerald-950/60 px-2 py-1 text-[10px] font-bold text-emerald-300 transition hover:bg-emerald-900/60 disabled:opacity-50"
                     >
-                      Accept
+                      {t('dj.requests.accept')}
                     </button>
                     <button
                       type="button"
                       onClick={() => onDecline(request.id)}
                       disabled={busy}
+                      aria-label={t('dj.requests.denyAria', { song: request.song })}
                       className="rounded border border-alert/60 bg-alert/20 px-2 py-1 text-[10px] font-bold text-alert-soft transition hover:bg-alert/30 disabled:opacity-50"
                     >
-                      Decline
+                      {t('dj.requests.deny')}
                     </button>
                   </div>
                 </div>
@@ -135,33 +146,42 @@ export function SongRequestQueueList({
         </ul>
       )}
 
-      {accepted.length > 0 || declined.length > 0 ? (
-        <div className="mt-3 border-t border-line pt-2">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
-            Recent outcomes
-          </h3>
-          <ul className="mt-1 space-y-1 text-[10px]">
-            {accepted.slice(0, 5).map((request) => (
-              <li key={request.id} className="flex items-center gap-1.5 text-emerald-300">
-                <span aria-hidden="true">✓</span>
-                <span className="font-bold">Accepted</span>
-                <span className="truncate text-muted">
-                  {request.song} · {request.artist}
-                </span>
+      <h3 className="mt-3 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
+        {t('dj.requests.acceptedHeading')}
+      </h3>
+      {upNext.length === 0 ? (
+        <p className="mt-1 rounded border border-line bg-page/70 px-2.5 py-2 text-[11px] text-muted">
+          {t('dj.requests.noAccepted')}
+        </p>
+      ) : (
+        <ul className="mt-1 space-y-2">
+          {upNext.map((request) => {
+            const busy = updatingId === request.id;
+            return (
+              <li key={request.id} className="rounded-lg border border-emerald-900/60 bg-emerald-950/30 p-2.5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="truncate font-heading text-sm font-semibold text-ink">
+                      {request.song}
+                    </div>
+                    <div className="truncate text-[11px] text-muted">{request.artist}</div>
+                    <RequestTime value={request.createdAt} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onPlayed(request.id)}
+                    disabled={busy}
+                    aria-label={t('dj.requests.playedAria', { song: request.song })}
+                    className="shrink-0 rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-bold text-brand-tint transition hover:bg-brand/50 disabled:opacity-50"
+                  >
+                    {t('dj.requests.played')}
+                  </button>
+                </div>
               </li>
-            ))}
-            {declined.slice(0, 5).map((request) => (
-              <li key={request.id} className="flex items-center gap-1.5 text-muted">
-                <span aria-hidden="true">✕</span>
-                <span className="font-bold">Declined</span>
-                <span className="truncate">
-                  {request.song} · {request.artist}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }
@@ -176,6 +196,7 @@ export default function DjSongRequestQueue({
   variant = 'card',
 }) {
   const config = useMemo(() => getSyncConfig(), []);
+  const { t } = useI18n();
   const connected = Boolean(
     enabled && canModerateSongRequests(role) && config.enabled && accessToken,
   );
@@ -211,62 +232,112 @@ export default function DjSongRequestQueue({
     if (!connected) return undefined;
     load();
     const timer = window.setInterval(load, 30000);
-    return () => window.clearInterval(timer);
-  }, [connected, load]);
+    const unsubscribe = subscribeSongRequestChanges({
+      config,
+      accessToken,
+      channelName: `song-requests:${roomCode ?? 'room'}`,
+      onChange: load,
+    });
+    return () => {
+      window.clearInterval(timer);
+      unsubscribe();
+    };
+  }, [accessToken, config, connected, load, roomCode]);
 
   const update = async (id, status) => {
     if (updatingId) return;
+    const snapshot = requests;
     setUpdatingId(id);
     setError('');
-    const result = await updateSongRequestStatus({ config, accessToken, id, status });
-    setUpdatingId(null);
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
+    setNotice('');
+    // Optimistic move/removal; denied rows disappear immediately.
     setRequests((current) =>
       current.map((request) => (request.id === id ? { ...request, status } : request)),
     );
-    setNotice(status === 'accepted' ? 'Request accepted.' : 'Request declined.');
+    const result = await updateSongRequestStatus({ config, accessToken, id, status });
+    setUpdatingId(null);
+    if (!result.ok) {
+      setRequests(snapshot);
+      setError(result.error || t('dj.requests.error'));
+      return;
+    }
+    setNotice(
+      status === 'accepted' ? t('dj.requests.acceptedNotice') : t('dj.requests.declinedNotice'),
+    );
     window.setTimeout(() => setNotice(''), 2500);
+    load();
+  };
+
+  const markPlayed = async (id) => {
+    if (updatingId) return;
+    const snapshot = requests;
+    setUpdatingId(id);
+    setError('');
+    setNotice('');
+    // Optimistically remove from up-next; played_at keeps the DB history.
+    setRequests((current) =>
+      current.map((request) =>
+        request.id === id ? { ...request, playedAt: new Date().toISOString() } : request,
+      ),
+    );
+    const result = await markSongRequestPlayed({ config, accessToken, id });
+    setUpdatingId(null);
+    if (!result.ok) {
+      setRequests(snapshot);
+      setError(result.error || t('dj.requests.error'));
+      return;
+    }
+    setNotice(t('dj.requests.playedNotice'));
+    window.setTimeout(() => setNotice(''), 2500);
+    load();
   };
 
   if (!enabled || !canModerateSongRequests(role)) return null;
 
-  const { pending } = partitionSongRequests(requests);
+  const { pending, accepted } = partitionSongRequests(requests);
+  const upNext = accepted.filter((request) => !request.playedAt);
 
   if (variant === 'bar') {
     if (!connected) {
       return (
         <section
-          aria-label="Guest song requests"
-          className="border-b border-line bg-card px-4 py-1.5 text-[10px] text-muted"
+          aria-label={t('dj.requests.title')}
+          className="flex flex-wrap items-center gap-2 border-b border-line bg-card px-4 py-1.5 text-[10px] text-muted"
         >
-          💬 Guest requests ·{' '}
-          {!config.enabled
-            ? 'cloud requests are not configured on this deployment.'
-            : 'connect in production with a DJ or MC PIN to load requests.'}
+          <span>💬 {t('dj.requests.title')} ·{' '}
+            {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
+          </span>
+          {requestUrl ? (
+            <details className="relative ml-auto">
+              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
+                {t('dj.requests.qrButton')}
+              </summary>
+              <div className="absolute right-0 top-full z-raised mt-1 rounded-lg bg-white p-2 shadow-2xl">
+                <QrCodeImage text={requestUrl} size={160} label={t('dj.requests.qrLabel')} />
+              </div>
+            </details>
+          ) : null}
         </section>
       );
     }
 
     return (
       <section
-        aria-label="Guest song requests"
+        aria-label={t('dj.requests.title')}
         className="border-b border-line bg-card px-4 py-2"
       >
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-            💬 Guest requests
+            💬 {t('dj.requests.title')}
           </span>
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-ink">
-            {pending.length} pending
+            {t('dj.requests.pendingCount', { count: pending.length })}
           </span>
 
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
             {pending.length === 0 ? (
               <span className="text-[10px] text-muted">
-                {loading ? 'Loading guest requests…' : 'No pending guest requests.'}
+                {loading ? t('dj.requests.loadingHint') : t('dj.requests.noPending')}
               </span>
             ) : (
               pending.slice(0, 4).map((request) => (
@@ -282,26 +353,26 @@ export default function DjSongRequestQueue({
                     type="button"
                     onClick={() => update(request.id, 'accepted')}
                     disabled={updatingId === request.id}
-                    aria-label={`Accept ${request.song}`}
+                    aria-label={t('dj.requests.acceptAria', { song: request.song })}
                     className="rounded border border-emerald-700 bg-emerald-950/60 px-1.5 py-0.5 text-[10px] font-bold text-emerald-200 disabled:opacity-50"
                   >
-                    ✓
+                    {t('dj.requests.accept')}
                   </button>
                   <button
                     type="button"
                     onClick={() => update(request.id, 'declined')}
                     disabled={updatingId === request.id}
-                    aria-label={`Decline ${request.song}`}
+                    aria-label={t('dj.requests.denyAria', { song: request.song })}
                     className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft disabled:opacity-50"
                   >
-                    ✕
+                    {t('dj.requests.deny')}
                   </button>
                 </div>
               ))
             )}
             {pending.length > 4 ? (
               <span className="font-mono text-[10px] text-muted">
-                +{pending.length - 4} more
+                +{pending.length - 4}
               </span>
             ) : null}
           </div>
@@ -312,24 +383,51 @@ export default function DjSongRequestQueue({
             disabled={loading}
             className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink disabled:opacity-50"
           >
-            {loading ? 'Loading…' : 'Refresh'}
+            {loading ? t('dj.requests.loading') : t('dj.requests.refresh')}
           </button>
 
           {requestUrl ? (
             <details className="relative">
               <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
-                Guest QR
+                {t('dj.requests.qrButton')}
               </summary>
               <div className="absolute right-0 top-full z-raised mt-1 rounded-lg bg-white p-2 shadow-2xl">
-                <QrCodeImage
-                  text={requestUrl}
-                  size={160}
-                  label="QR code for the guest song request form"
-                />
+                <QrCodeImage text={requestUrl} size={160} label={t('dj.requests.qrLabel')} />
               </div>
             </details>
           ) : null}
         </div>
+
+        {upNext.length > 0 ? (
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 border-t border-line pt-1.5">
+            <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
+              {t('dj.requests.acceptedHeading')}
+            </span>
+            {upNext.slice(0, 4).map((request) => (
+              <div
+                key={request.id}
+                className="flex min-w-0 items-center gap-1.5 rounded border border-emerald-900/60 bg-emerald-950/30 px-2 py-1"
+              >
+                <span className="max-w-[16rem] truncate text-[11px] text-ink">
+                  <strong className="font-semibold text-ink">{request.song}</strong>
+                  <span className="text-muted"> · {request.artist}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => markPlayed(request.id)}
+                  disabled={updatingId === request.id}
+                  aria-label={t('dj.requests.playedAria', { song: request.song })}
+                  className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 text-[10px] font-bold text-brand-tint disabled:opacity-50"
+                >
+                  {t('dj.requests.played')}
+                </button>
+              </div>
+            ))}
+            {upNext.length > 4 ? (
+              <span className="font-mono text-[10px] text-muted">+{upNext.length - 4}</span>
+            ) : null}
+          </div>
+        ) : null}
 
         {error ? (
           <p className="mt-1 text-[10px] text-alert-soft" role="alert">
@@ -349,12 +447,10 @@ export default function DjSongRequestQueue({
     return (
       <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-          💬 Guest requests
+          💬 {t('dj.requests.title')}
         </h2>
         <p className="mt-1 text-[10px] leading-snug text-muted">
-          {!config.enabled
-            ? 'Cloud requests are not configured on this deployment.'
-            : 'The request queue connects after joining in production with a DJ or MC PIN.'}
+          {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
         </p>
       </section>
     );
@@ -370,6 +466,7 @@ export default function DjSongRequestQueue({
       requestUrl={requestUrl}
       onAccept={(id) => update(id, 'accepted')}
       onDecline={(id) => update(id, 'declined')}
+      onPlayed={markPlayed}
       onRefresh={load}
     />
   );
