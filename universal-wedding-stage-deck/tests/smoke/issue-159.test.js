@@ -9,11 +9,12 @@ const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), '
 describe('issue #159 pocket header', () => {
   const shell = read('src/components/RoleShell.jsx');
 
-  it('contains role, clock, Sync, language and theme in the header', () => {
+  it('keeps role, Sync, language, theme and the details disclosure in the header', () => {
     expect(shell).toContain('<SyncStatusBadge');
     expect(shell).toContain('<LanguageToggle');
     expect(shell).toContain('<ThemeToggle');
-    expect(shell).toContain('<TopBarClock');
+    expect(shell).toContain('<TopBarCenterIdentity');
+    expect(shell).toContain('aria-expanded={detailsOpen}');
     expect(shell).not.toContain('<OpenOnPhoneButton');
     expect(shell).not.toContain('<RoleSwitcher');
     expect(shell).not.toContain('RoleSwitcher');
@@ -40,6 +41,7 @@ describe('issue #159 pocket header', () => {
     expect(html).toContain('>FR<');
     expect(html).toContain('>PL<');
     expect(html).toContain('<svg');
+    expect(html).toContain('aria-expanded="false"');
     expect(html).not.toContain('Open on phone');
     expect(html).not.toContain('Switch role');
     expect(html).not.toContain('Current time');

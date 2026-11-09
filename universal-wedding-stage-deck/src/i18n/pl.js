@@ -47,6 +47,7 @@ const pl = {
   'common.wedding': 'Wesele',
   'common.retry': 'Ponów',
   'common.unknown': 'Nieznane',
+  'pocket.details': 'Szczegóły',
   'modal.close': 'Zamknij okno',
   'toast.actionApplied': 'Wykonano akcję',
   'toast.undo': 'Cofnij',
