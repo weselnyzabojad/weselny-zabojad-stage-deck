@@ -51,6 +51,11 @@ const en = {
   'toast.actionApplied': 'Action applied',
   'toast.undo': 'Undo',
   'toast.dismiss': 'Dismiss',
+  'hold.hint': 'Hold for {seconds} seconds to confirm.',
+  'hold.progress': 'Hold progress {percent}%',
+  'hold.progressLabel': 'Hold progress',
+  'hold.complete': 'Action confirmed',
+  'hold.cancelled': 'Hold released — action not confirmed',
   'couple.wedding': 'Wedding:',
   'couple.languages': 'Couple common languages',
 

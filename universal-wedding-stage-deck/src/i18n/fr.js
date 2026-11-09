@@ -51,6 +51,11 @@ const fr = {
   'toast.actionApplied': 'Action appliquée',
   'toast.undo': 'Annuler',
   'toast.dismiss': 'Fermer',
+  'hold.hint': 'Maintenez pendant {seconds} secondes pour confirmer.',
+  'hold.progress': 'Progression du maintien {percent} %',
+  'hold.progressLabel': 'Progression du maintien',
+  'hold.complete': 'Action confirmée',
+  'hold.cancelled': 'Relâché — action non confirmée',
   'couple.wedding': 'Mariage :',
   'couple.languages': 'Langues communes du couple',
 

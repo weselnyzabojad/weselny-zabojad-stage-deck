@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { useI18n } from '../i18n/useI18n';
 
 // Hold-to-confirm action button (P0.7). A tap does nothing; the operator must
 // press and hold for ~1.2s. Works with pointer and keyboard (Space/Enter).
@@ -10,8 +11,13 @@ export default function HoldToConfirmButton({
   holdMs = 1200,
   className = '',
 }) {
+  const { t } = useI18n();
+  const baseId = useId();
+  const hintId = `${baseId}-hint`;
+  const progressId = `${baseId}-progress`;
   const [progress, setProgress] = useState(0);
   const [holding, setHolding] = useState(false);
+  const [announcement, setAnnouncement] = useState('');
   const timerRef = useRef(null);
   const startedAtRef = useRef(0);
   const completedRef = useRef(false);
@@ -31,6 +37,7 @@ export default function HoldToConfirmButton({
     startedAtRef.current = Date.now();
     setHolding(true);
     setProgress(0);
+    setAnnouncement('');
 
     timerRef.current = setInterval(() => {
       const value = Math.min(1, (Date.now() - startedAtRef.current) / holdMs);
@@ -40,6 +47,7 @@ export default function HoldToConfirmButton({
         completedRef.current = true;
         setHolding(false);
         setProgress(1);
+        setAnnouncement(t('hold.complete'));
         onConfirm?.();
         window.setTimeout(() => setProgress(0), 350);
       }
@@ -48,6 +56,9 @@ export default function HoldToConfirmButton({
 
   const cancel = () => {
     clearTimer();
+    if (!completedRef.current && (holding || progress > 0)) {
+      setAnnouncement(t('hold.cancelled'));
+    }
     setHolding(false);
     setProgress(0);
   };
@@ -65,35 +76,61 @@ export default function HoldToConfirmButton({
     completedRef.current = false;
   };
 
+  const percent = Math.round(progress * 100);
+  const valueText = percent >= 100
+    ? t('hold.complete')
+    : t('hold.progress', { percent });
+
   return (
-    <button
-      type="button"
-      disabled={disabled}
-      aria-label={label}
-      title={disabled ? undefined : label}
-      onPointerDown={begin}
-      onPointerUp={cancel}
-      onPointerLeave={cancel}
-      onPointerCancel={cancel}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-      onBlur={() => {
-        if (!completedRef.current) cancel();
-      }}
-      onContextMenu={(event) => event.preventDefault()}
-      className={`relative overflow-hidden select-none touch-none disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
-    >
-      <span
-        aria-hidden="true"
-        className="absolute inset-y-0 left-0 bg-white/25 transition-[width] duration-75"
-        style={{ width: `${Math.round(progress * 100)}%` }}
-      />
-      <span className="relative z-raised flex flex-col items-center leading-tight">
-        <span>{label}</span>
-        <span className="text-[9px] font-normal uppercase tracking-wider opacity-80">
-          {holding ? `${Math.round(progress * 100)}%` : holdLabel}
+    <>
+      <button
+        type="button"
+        disabled={disabled}
+        aria-label={label}
+        aria-describedby={hintId}
+        title={disabled ? undefined : label}
+        onPointerDown={begin}
+        onPointerUp={cancel}
+        onPointerLeave={cancel}
+        onPointerCancel={cancel}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        onBlur={() => {
+          if (!completedRef.current) cancel();
+        }}
+        onContextMenu={(event) => event.preventDefault()}
+        className={`relative overflow-hidden select-none touch-none disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      >
+        <span
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 bg-white/25 transition-[width] duration-75"
+          style={{ width: `${percent}%` }}
+        />
+        <span className="relative z-raised flex flex-col items-center leading-tight">
+          <span>{label}</span>
+          <span className="text-[9px] font-normal uppercase tracking-wider opacity-80">
+            {holding ? `${percent}%` : holdLabel}
+          </span>
         </span>
+      </button>
+      <span id={hintId} className="sr-only">
+        {t('hold.hint', { seconds: (holdMs / 1000).toFixed(1) })}
       </span>
-    </button>
+      <span
+        id={progressId}
+        role="progressbar"
+        aria-label={t('hold.progressLabel')}
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={percent}
+        aria-valuetext={valueText}
+        className="sr-only"
+      >
+        {valueText}
+      </span>
+      <span role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </span>
+    </>
   );
 }
