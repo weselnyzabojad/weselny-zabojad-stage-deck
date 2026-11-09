@@ -19,15 +19,15 @@ export default function PwaUpdateNotice({
         role="alertdialog"
         aria-live="assertive"
         aria-label={t('pwa.title')}
-        className="fixed bottom-4 left-1/2 z-[100] w-[min(92vw,30rem)] -translate-x-1/2 rounded-xl border border-brand-strong bg-card p-4 text-slate-100 shadow-2xl"
+        className="fixed bottom-4 left-1/2 z-[100] w-[min(92vw,30rem)] -translate-x-1/2 rounded-xl border border-brand-strong bg-card p-4 text-ink shadow-2xl"
       >
         <div className="flex items-start gap-1.5">
           <span aria-hidden="true" className="text-lg leading-none">
             ⬆️
           </span>
           <div className="min-w-0">
-            <h2 className="font-heading text-sm font-bold text-white">{t('pwa.title')}</h2>
-            <p className="mt-1 text-xs text-slate-400">{t('pwa.body')}</p>
+            <h2 className="font-heading text-sm font-bold text-ink">{t('pwa.title')}</h2>
+            <p className="mt-1 text-xs text-muted">{t('pwa.body')}</p>
             {blocked ? (
               <p role="status" className="mt-2 rounded border border-amber-800 bg-amber-950/70 px-2 py-1 text-[11px] text-amber-200">
                 {blockedReason}
@@ -39,7 +39,7 @@ export default function PwaUpdateNotice({
           <button
             type="button"
             onClick={onLater}
-            className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-line"
+            className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-ink transition hover:bg-line"
           >
             {t('pwa.later')}
           </button>
@@ -62,7 +62,7 @@ export default function PwaUpdateNotice({
       onClick={onCheck}
       title={t('pwa.check')}
       aria-label={checking ? t('pwa.checking') : t('pwa.check')}
-      className="fixed bottom-3 right-3 z-[90] rounded-full border border-line-strong bg-card/90 px-2.5 py-1.5 text-[10px] font-semibold text-slate-300 shadow-lg backdrop-blur transition hover:bg-raised hover:text-white"
+      className="fixed bottom-3 right-3 z-[90] rounded-full border border-line-strong bg-card/90 px-2.5 py-1.5 text-[10px] font-semibold text-ink shadow-lg backdrop-blur transition hover:bg-raised hover:text-ink"
     >
       <span aria-hidden="true">↻</span>{' '}
       <span className="hidden sm:inline">{checking ? t('pwa.checking') : t('pwa.check')}</span>

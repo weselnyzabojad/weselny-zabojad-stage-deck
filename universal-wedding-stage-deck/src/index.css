@@ -18,6 +18,8 @@
   --color-line: var(--border);
   --color-line-strong: var(--border-strong);
   --color-ink: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-on-accent: var(--on-accent);
   --color-brand: var(--brand);
   --color-brand-strong: var(--brand-strong);
   --color-brand-hover: var(--brand-hover);
@@ -59,11 +61,6 @@
   --focus-shadow:
     0 18px 40px -12px rgb(0 0 0 / 0.65),
     0 40px 80px -24px rgb(0 0 0 / 0.55);
-
-  /* Contrast audit (TODO 26): small muted labels on the dark card were below
-     WCAG AA at the default slate-500/600 values. Raise only those two steps. */
-  --color-slate-500: #8b9bb0;
-  --color-slate-600: #7c8ba1;
 }
 
 [data-theme="day"] {
@@ -94,17 +91,6 @@
   --focus-shadow:
     0 18px 40px -14px rgb(15 23 42 / 0.25),
     0 40px 80px -28px rgb(15 23 42 / 0.18);
-
-  /* Bridge for legacy slate utilities until each view is migrated. The scale
-     mirrors so "muted" stays muted and primary text becomes navy. */
-  --color-slate-100: #0b132b;
-  --color-slate-200: #1e293b;
-  --color-slate-300: #334155;
-  --color-slate-400: #475569;
-  --color-slate-500: #64748b;
-  --color-slate-600: #5b6b80;
-  --color-slate-700: #cbd5e1;
-  --color-slate-950: #eef2f7;
 }
 
 body {
@@ -112,21 +98,8 @@ body {
   color: var(--text-primary);
 }
 
-/* Daylight compatibility bridge: primary text flips to navy, except on solid
-   brand/alert surfaces and the red stage-ping banner. Migrated views use
-   `text-ink` / `text-on-accent` directly instead of relying on this rule. */
-[data-theme="day"] .text-white {
-  color: var(--text-primary);
-}
-
-[data-theme="day"] .bg-brand.text-white,
-[data-theme="day"] .bg-brand-strong.text-white,
-[data-theme="day"] .bg-brand-hover.text-white,
-[data-theme="day"] .bg-brand-active.text-white,
-[data-theme="day"] .bg-alert.text-white,
-[data-theme="day"] .stage-ping-flash.text-white {
-  color: var(--on-accent);
-}
+/* Primary, muted and on-accent text now resolve through `text-ink`,
+   `text-muted` and `text-on-accent`; no day-theme `.text-white` bridge. */
 
 /* Keyboard visibility (TODO 26): every interactive control gets a high-contrast
    ring that is independent of the theme and of hover/focus colour changes. */

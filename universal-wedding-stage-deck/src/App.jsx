@@ -110,15 +110,15 @@ export default function App() {
         weddingId={roleSession?.weddingId ?? null}
         lastKnownStep={null}
       >
-        <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+        <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-ink">
           <div className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
             <div className="text-3xl" aria-hidden="true">
               {failed ? '⚠️' : '🎧'}
             </div>
-            <h1 className="mt-2 font-heading text-lg font-bold text-white">
+            <h1 className="mt-2 font-heading text-lg font-bold text-ink">
               {failed ? t('app.errorWedding') : t('app.loadingWedding')}
             </h1>
-            <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            <p className="mt-2 text-xs leading-relaxed text-muted">
               {failed
                 ? activeCartridgeState.error ?? t('app.errorWedding')
                 : t('app.loadingWeddingBody')}
@@ -127,7 +127,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => publishedCartridge.retry()}
-                className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+                className="mt-4 rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
               >
                 {t('app.retry')}
               </button>

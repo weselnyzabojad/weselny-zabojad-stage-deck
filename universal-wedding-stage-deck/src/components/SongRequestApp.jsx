@@ -39,10 +39,10 @@ export default function SongRequestApp({ roomCode }) {
 
   if (!code) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-slate-100">
+      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
         <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
-          <h1 className="font-heading text-xl font-bold text-white">Song request</h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <h1 className="font-heading text-xl font-bold text-ink">Song request</h1>
+          <p className="mt-2 text-sm text-muted">
             This request link is incomplete. Scan the QR code again.
           </p>
         </section>
@@ -52,10 +52,10 @@ export default function SongRequestApp({ roomCode }) {
 
   if (!config.enabled) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-slate-100">
+      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
         <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
-          <h1 className="font-heading text-xl font-bold text-white">Song request</h1>
-          <p className="mt-2 text-sm text-slate-400">
+          <h1 className="font-heading text-xl font-bold text-ink">Song request</h1>
+          <p className="mt-2 text-sm text-muted">
             Song requests are not available right now. Please ask the MC or DJ.
           </p>
         </section>
@@ -64,13 +64,13 @@ export default function SongRequestApp({ roomCode }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-slate-100">
+    <main className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-ink">
       <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
           Guest request
         </div>
-        <h1 className="mt-1 font-heading text-2xl font-bold text-white">Request a song</h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-400">
+        <h1 className="mt-1 font-heading text-2xl font-bold text-ink">Request a song</h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
           Send one song and artist to the DJ. No account or personal details are needed.
         </p>
 
@@ -85,7 +85,7 @@ export default function SongRequestApp({ roomCode }) {
             <button
               type="button"
               onClick={() => setStatus('idle')}
-              className="mt-3 rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-slate-200 transition hover:bg-line"
+              className="mt-3 rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-ink transition hover:bg-line"
             >
               Send another request
             </button>
@@ -93,7 +93,7 @@ export default function SongRequestApp({ roomCode }) {
         ) : (
           <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
             <label className="block">
-              <span className="font-heading text-xs font-semibold uppercase tracking-widest text-slate-400">
+              <span className="font-heading text-xs font-semibold uppercase tracking-widest text-muted">
                 Song
               </span>
               <input
@@ -103,13 +103,13 @@ export default function SongRequestApp({ roomCode }) {
                 maxLength={120}
                 autoComplete="off"
                 required
-                className="mt-1 w-full rounded-lg border border-line-strong bg-page px-3 py-2 text-sm text-white outline-none transition focus:border-brand-strong"
+                className="mt-1 w-full rounded-lg border border-line-strong bg-page px-3 py-2 text-sm text-ink outline-none transition focus:border-brand-strong"
                 placeholder="Song title"
               />
             </label>
 
             <label className="block">
-              <span className="font-heading text-xs font-semibold uppercase tracking-widest text-slate-400">
+              <span className="font-heading text-xs font-semibold uppercase tracking-widest text-muted">
                 Artist
               </span>
               <input
@@ -119,7 +119,7 @@ export default function SongRequestApp({ roomCode }) {
                 maxLength={120}
                 autoComplete="off"
                 required
-                className="mt-1 w-full rounded-lg border border-line-strong bg-page px-3 py-2 text-sm text-white outline-none transition focus:border-brand-strong"
+                className="mt-1 w-full rounded-lg border border-line-strong bg-page px-3 py-2 text-sm text-ink outline-none transition focus:border-brand-strong"
                 placeholder="Artist"
               />
             </label>
@@ -133,14 +133,14 @@ export default function SongRequestApp({ roomCode }) {
             <button
               type="submit"
               disabled={status === 'sending'}
-              className="w-full rounded-lg border border-brand-strong bg-brand px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-lg border border-brand-strong bg-brand px-4 py-2.5 text-sm font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {status === 'sending' ? 'Sending…' : 'Send request'}
             </button>
           </form>
         )}
 
-        <p className="mt-5 text-[10px] leading-relaxed text-slate-500">
+        <p className="mt-5 text-[10px] leading-relaxed text-muted">
           Only the song and artist are sent. The queue and event details stay private.
         </p>
       </section>

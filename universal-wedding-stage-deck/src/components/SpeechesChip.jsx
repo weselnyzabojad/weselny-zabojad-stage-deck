@@ -69,7 +69,7 @@ export default function SpeechesChip({
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-slate-100">
+          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-ink">
             {t('speeches.chip')}
           </span>
           {compact ? (

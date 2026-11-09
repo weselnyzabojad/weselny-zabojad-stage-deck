@@ -52,21 +52,21 @@ export default function StagePingBanner({ ping, step }) {
       role="status"
       aria-live="assertive"
       aria-atomic="true"
-      className="stage-ping-flash relative z-20 flex flex-wrap items-center justify-between gap-3 border-y-2 border-alert-tint px-4 py-3 text-white shadow-2xl"
+      className="stage-ping-flash relative z-20 flex flex-wrap items-center justify-between gap-3 border-y-2 border-alert-tint px-4 py-3 text-on-accent shadow-2xl"
     >
       <div className="flex min-w-0 items-center gap-3">
         <span aria-hidden="true" className="text-3xl leading-none">
           {meta.icon}
         </span>
         <div className="min-w-0">
-          <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80">
+          <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-on-accent/80">
             {t('ping.header')}
           </div>
           <div className="font-heading text-2xl font-black leading-tight tracking-wide">
             {meta.banner}
           </div>
           {track ? (
-            <div className="mt-0.5 truncate font-mono text-xs text-white/90">🎵 {track}</div>
+            <div className="mt-0.5 truncate font-mono text-xs text-on-accent/90">🎵 {track}</div>
           ) : null}
           {remaining != null ? (
             <div className="mt-0.5 font-mono text-sm font-bold">
@@ -76,7 +76,7 @@ export default function StagePingBanner({ ping, step }) {
         </div>
       </div>
 
-      <div className="text-right font-mono text-xs text-white/80">
+      <div className="text-right font-mono text-xs text-on-accent/80">
         <div>{formatTime(ping.sent_at)}</div>
         <div className="text-[10px] uppercase tracking-wider">{t('ping.autoClears')}</div>
       </div>

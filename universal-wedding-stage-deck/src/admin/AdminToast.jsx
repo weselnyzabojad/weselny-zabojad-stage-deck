@@ -1,7 +1,7 @@
 const TONES = {
   success: 'border-emerald-700 bg-emerald-950/90 text-emerald-100',
   error: 'border-alert/70 bg-alert/20 text-alert-soft',
-  info: 'border-line-strong bg-raised text-slate-200',
+  info: 'border-line-strong bg-raised text-ink',
 };
 
 export default function AdminToast({ toasts = [], onDismiss }) {

@@ -25,10 +25,10 @@ export default function BottomNav({ role, isCompact }) {
       <SkipLink />
 
       <div className="flex items-center gap-2">
-        <span className="text-slate-500 font-mono">
+        <span className="text-muted font-mono">
           {t('role.' + role + '.short')} {'·'}{' '}
         </span>
-        <span className="font-mono text-slate-400">
+        <span className="font-mono text-muted">
           {t('role.' + role + '.label')}
         </span>
       </div>

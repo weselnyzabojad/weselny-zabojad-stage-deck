@@ -78,7 +78,7 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
             🖨️ Export &amp; print pack
           </h2>
-          <p className="mt-0.5 text-[10px] text-slate-500">
+          <p className="mt-0.5 text-[10px] text-muted">
             Planned set only · no played-song reporting
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
         <button
           type="button"
           onClick={downloadCsv}
-          className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-line"
+          className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink transition hover:bg-line"
         >
           Download CSV
         </button>
@@ -111,11 +111,11 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
       ) : null}
 
       <div className="mt-3 border-t border-line pt-2">
-        <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
           Source &amp; backup checklist
         </h3>
         {checklist.length === 0 ? (
-          <p className="mt-1 text-[10px] text-slate-500">No key songs in this cartridge.</p>
+          <p className="mt-1 text-[10px] text-muted">No key songs in this cartridge.</p>
         ) : (
           <ul className="mt-1.5 space-y-1.5">
             {checklist.map((item) => {
@@ -127,10 +127,10 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
                 <li key={item.id} className="rounded border border-line bg-page/70 p-2 text-[10px]">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <div className="truncate font-heading text-xs font-semibold text-white">
+                      <div className="truncate font-heading text-xs font-semibold text-ink">
                         {item.title}
                       </div>
-                      <div className="truncate text-slate-500">
+                      <div className="truncate text-muted">
                         {item.moment} · {item.artist}
                       </div>
                     </div>
@@ -138,10 +138,10 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
                       {STATUS_LABEL[item.primaryStatus] ?? item.primaryStatus}
                     </span>
                   </div>
-                  <div className="mt-1 flex flex-wrap gap-1.5 text-[9px] text-slate-500">
+                  <div className="mt-1 flex flex-wrap gap-1.5 text-[9px] text-muted">
                     <span>Primary: {item.primary}</span>
                     {item.backup ? (
-                      <span className={item.backupStatus === 'ready' ? 'text-slate-400' : 'text-amber-200'}>
+                      <span className={item.backupStatus === 'ready' ? 'text-muted' : 'text-amber-200'}>
                         Backup: {item.backup}
                         {backupTone ? ` · ${STATUS_LABEL[item.backupStatus] ?? item.backupStatus}` : ''}
                       </span>

@@ -14,7 +14,7 @@ function RequestTime({ value }) {
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return null;
   return (
-    <span className="font-mono text-[9px] text-slate-500">
+    <span className="font-mono text-[9px] text-muted">
       {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
     </span>
   );
@@ -40,7 +40,7 @@ export function SongRequestQueueList({
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
             💬 Guest requests
           </h2>
-          <p className="mt-0.5 text-[10px] text-slate-500">
+          <p className="mt-0.5 text-[10px] text-muted">
             {pending.length} pending · accept or decline
           </p>
         </div>
@@ -52,7 +52,7 @@ export function SongRequestQueueList({
             type="button"
             onClick={onRefresh}
             disabled={loading}
-            className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[10px] font-semibold text-slate-200 transition hover:bg-line disabled:opacity-50"
+            className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[10px] font-semibold text-ink transition hover:bg-line disabled:opacity-50"
           >
             {loading ? 'Loading…' : 'Refresh'}
           </button>
@@ -69,10 +69,10 @@ export function SongRequestQueueList({
             />
           </div>
           <div className="min-w-0">
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-300">
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-ink">
               Guest request QR
             </div>
-            <p className="mt-0.5 text-[10px] leading-snug text-slate-500">
+            <p className="mt-0.5 text-[10px] leading-snug text-muted">
               Guests scan this to open the public song request form. No event or queue data is exposed.
             </p>
           </div>
@@ -91,9 +91,9 @@ export function SongRequestQueueList({
       ) : null}
 
       {loading && requests.length === 0 ? (
-        <p className="mt-3 text-[11px] text-slate-500">Loading guest requests…</p>
+        <p className="mt-3 text-[11px] text-muted">Loading guest requests…</p>
       ) : pending.length === 0 ? (
-        <p className="mt-3 rounded border border-line bg-page/70 px-2.5 py-2 text-[11px] text-slate-500">
+        <p className="mt-3 rounded border border-line bg-page/70 px-2.5 py-2 text-[11px] text-muted">
           No pending guest requests.
         </p>
       ) : (
@@ -104,10 +104,10 @@ export function SongRequestQueueList({
               <li key={request.id} className="rounded-lg border border-line bg-page/70 p-2.5">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <div className="truncate font-heading text-sm font-semibold text-white">
+                    <div className="truncate font-heading text-sm font-semibold text-ink">
                       {request.song}
                     </div>
-                    <div className="truncate text-[11px] text-slate-400">{request.artist}</div>
+                    <div className="truncate text-[11px] text-muted">{request.artist}</div>
                     <RequestTime value={request.createdAt} />
                   </div>
                   <div className="flex shrink-0 gap-1.5">
@@ -137,7 +137,7 @@ export function SongRequestQueueList({
 
       {accepted.length > 0 || declined.length > 0 ? (
         <div className="mt-3 border-t border-line pt-2">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
             Recent outcomes
           </h3>
           <ul className="mt-1 space-y-1 text-[10px]">
@@ -145,13 +145,13 @@ export function SongRequestQueueList({
               <li key={request.id} className="flex items-center gap-1.5 text-emerald-300">
                 <span aria-hidden="true">✓</span>
                 <span className="font-bold">Accepted</span>
-                <span className="truncate text-slate-400">
+                <span className="truncate text-muted">
                   {request.song} · {request.artist}
                 </span>
               </li>
             ))}
             {declined.slice(0, 5).map((request) => (
-              <li key={request.id} className="flex items-center gap-1.5 text-slate-400">
+              <li key={request.id} className="flex items-center gap-1.5 text-muted">
                 <span aria-hidden="true">✕</span>
                 <span className="font-bold">Declined</span>
                 <span className="truncate">
@@ -240,7 +240,7 @@ export default function DjSongRequestQueue({
       return (
         <section
           aria-label="Guest song requests"
-          className="border-b border-line bg-card px-4 py-1.5 text-[10px] text-slate-500"
+          className="border-b border-line bg-card px-4 py-1.5 text-[10px] text-muted"
         >
           💬 Guest requests ·{' '}
           {!config.enabled
@@ -259,13 +259,13 @@ export default function DjSongRequestQueue({
           <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
             💬 Guest requests
           </span>
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-ink">
             {pending.length} pending
           </span>
 
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
             {pending.length === 0 ? (
-              <span className="text-[10px] text-slate-500">
+              <span className="text-[10px] text-muted">
                 {loading ? 'Loading guest requests…' : 'No pending guest requests.'}
               </span>
             ) : (
@@ -274,9 +274,9 @@ export default function DjSongRequestQueue({
                   key={request.id}
                   className="flex min-w-0 items-center gap-1.5 rounded border border-line bg-page/70 px-2 py-1"
                 >
-                  <span className="max-w-[16rem] truncate text-[11px] text-slate-200">
-                    <strong className="font-semibold text-white">{request.song}</strong>
-                    <span className="text-slate-400"> · {request.artist}</span>
+                  <span className="max-w-[16rem] truncate text-[11px] text-ink">
+                    <strong className="font-semibold text-ink">{request.song}</strong>
+                    <span className="text-muted"> · {request.artist}</span>
                   </span>
                   <button
                     type="button"
@@ -300,7 +300,7 @@ export default function DjSongRequestQueue({
               ))
             )}
             {pending.length > 4 ? (
-              <span className="font-mono text-[10px] text-slate-400">
+              <span className="font-mono text-[10px] text-muted">
                 +{pending.length - 4} more
               </span>
             ) : null}
@@ -310,14 +310,14 @@ export default function DjSongRequestQueue({
             type="button"
             onClick={load}
             disabled={loading}
-            className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 disabled:opacity-50"
+            className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink disabled:opacity-50"
           >
             {loading ? 'Loading…' : 'Refresh'}
           </button>
 
           {requestUrl ? (
             <details className="relative">
-              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200">
+              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
                 Guest QR
               </summary>
               <div className="absolute right-0 top-full z-50 mt-1 rounded-lg bg-white p-2 shadow-2xl">
@@ -348,10 +348,10 @@ export default function DjSongRequestQueue({
   if (!connected) {
     return (
       <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
-        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-slate-300">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           💬 Guest requests
         </h2>
-        <p className="mt-1 text-[10px] leading-snug text-slate-500">
+        <p className="mt-1 text-[10px] leading-snug text-muted">
           {!config.enabled
             ? 'Cloud requests are not configured on this deployment.'
             : 'The request queue connects after joining in production with a DJ or MC PIN.'}

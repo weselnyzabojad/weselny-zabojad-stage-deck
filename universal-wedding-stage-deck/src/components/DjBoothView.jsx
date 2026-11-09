@@ -84,16 +84,16 @@ export default function DjBoothView({
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-start justify-between gap-2 font-mono">
         <div className="rounded-lg border border-line bg-page/80 p-2">
-          <div className="text-[10px] uppercase tracking-wider text-slate-400">{t('dj.projected')}</div>
-          <div className="text-sm font-semibold text-white">
+          <div className="text-[10px] uppercase tracking-wider text-muted">{t('dj.projected')}</div>
+          <div className="text-sm font-semibold text-ink">
             {activeEntry
               ? `${activeEntry.projectedStart ?? 'â€”'}â€“${activeEntry.projectedEnd ?? 'â€”'}`
               : 'â€”'}
           </div>
         </div>
-        <div className="text-right text-[10px] uppercase tracking-wider text-slate-500">
+        <div className="text-right text-[10px] uppercase tracking-wider text-muted">
           <div>
-            {t('dj.finish')} <span className="text-slate-200">{projectedFinish ?? '-'}</span>
+            {t('dj.finish')} <span className="text-ink">{projectedFinish ?? '-'}</span>
           </div>
           <div>{t('dj.stepsDone', { done: completedCount, total: timeline.length })}</div>
         </div>
@@ -119,9 +119,9 @@ export default function DjBoothView({
             Main song
           </div>
           {mainSong ? (
-            <div className="mt-0.5 text-slate-200">
-              <strong className="text-white">{mainSong.title ?? 'Untitled'}</strong>
-              {mainSong.artist ? <span className="text-slate-400"> — {mainSong.artist}</span> : null}
+            <div className="mt-0.5 text-ink">
+              <strong className="text-ink">{mainSong.title ?? 'Untitled'}</strong>
+              {mainSong.artist ? <span className="text-muted"> — {mainSong.artist}</span> : null}
             </div>
           ) : (
             <div className="mt-0.5 text-amber-200">Main song not set for this step.</div>
@@ -171,7 +171,7 @@ export default function DjBoothView({
   );
 
   const wideContent = (
-    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+    <div className="flex min-h-screen flex-col bg-page text-ink antialiased select-none">
       <SkipLink />
       <div className="sticky top-0 z-30">
       <TopBarShell
@@ -255,10 +255,10 @@ export default function DjBoothView({
             ) : null}
             <aside className={`space-y-4${isVip ? '' : ' lg:col-span-3'}`}>
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
-                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-white">
+                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
                   đźŽšď¸Ź Set notes
                 </h2>
-                <ul className="mt-2 space-y-1.5 text-[11px] text-slate-400">
+                <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
                   <li>Follow the projected times; the host advances the live state.</li>
                   <li>Red cutoffs are hard stops â€” fade before the stated time.</li>
                   <li>This view never exposes MC scripts or family alerts.</li>
@@ -269,7 +269,7 @@ export default function DjBoothView({
         </div>
       </main>
 
-      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
+      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-muted">
         Read-only DJ view Â· no step controls Â· syncs with the host over the room PIN
       </footer>
     </div>
@@ -281,13 +281,13 @@ export default function DjBoothView({
 
   if (!isVip) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-ink">
         <section className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
           <div className="text-3xl" aria-hidden="true">💻</div>
-          <h1 className="mt-2 font-heading text-lg font-bold text-white">
+          <h1 className="mt-2 font-heading text-lg font-bold text-ink">
             {t('dj.laptopRequiredTitle')}
           </h1>
-          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          <p className="mt-2 text-xs leading-relaxed text-muted">
             {t('dj.laptopRequiredBody')}
           </p>
         </section>

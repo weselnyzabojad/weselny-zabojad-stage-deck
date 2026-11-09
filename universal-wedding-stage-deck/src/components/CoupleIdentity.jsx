@@ -14,7 +14,7 @@ function Flag({ code }) {
   if (!url) {
     // Unknown / unbundled code: plain text, never a guessed flag.
     return (
-      <span className="rounded border border-line-strong bg-raised px-1 font-mono text-[9px] text-slate-300">
+      <span className="rounded border border-line-strong bg-raised px-1 font-mono text-[9px] text-ink">
         {code}
       </span>
     );
@@ -41,14 +41,14 @@ function Person({ person }) {
 
   return (
     <span className="inline-flex items-center gap-1">
-      <span className="font-heading font-semibold text-white">{person.firstName}</span>
+      <span className="font-heading font-semibold text-ink">{person.firstName}</span>
       {visible.length > 0 ? (
         <span className="inline-flex items-center gap-0.5" aria-hidden="true">
           {visible.map((code) => (
             <Flag key={code} code={code} />
           ))}
           {extra > 0 ? (
-            <span className="font-mono text-[9px] text-slate-400">+{extra}</span>
+            <span className="font-mono text-[9px] text-muted">+{extra}</span>
           ) : null}
         </span>
       ) : null}
@@ -69,9 +69,9 @@ export default function CoupleIdentity({ wedding, className = '' }) {
 
   if (!identity.hasProfile) {
     return (
-      <span className={`inline-flex items-baseline gap-1 text-slate-300 ${className}`}>
+      <span className={`inline-flex items-baseline gap-1 text-ink ${className}`}>
         <span>{t('couple.wedding')}</span>
-        <strong className="font-heading font-semibold text-white">
+        <strong className="font-heading font-semibold text-ink">
           {identity.fallbackLabel}
         </strong>
       </span>
@@ -85,7 +85,7 @@ export default function CoupleIdentity({ wedding, className = '' }) {
       {identity.people.map((person, index) => (
         <span key={person.role} className="inline-flex items-center gap-1.5">
           {index > 0 ? (
-            <span aria-hidden="true" className="text-slate-500">
+            <span aria-hidden="true" className="text-muted">
               &amp;
             </span>
           ) : null}
@@ -95,10 +95,10 @@ export default function CoupleIdentity({ wedding, className = '' }) {
 
       {identity.commonLanguages.length > 0 ? (
         <span className="hidden items-center gap-1 sm:inline-flex">
-          <span aria-hidden="true" className="text-slate-600">
+          <span aria-hidden="true" className="text-muted">
             ·
           </span>
-          <span aria-hidden="true" className="text-[11px] text-slate-400">
+          <span aria-hidden="true" className="text-[11px] text-muted">
             🌐
           </span>
           {identity.commonLanguages.map((code) => (

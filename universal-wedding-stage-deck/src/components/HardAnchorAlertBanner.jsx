@@ -28,7 +28,7 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
           <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] opacity-80">
             {collision ? t('anchor.collision') : t('anchor.compression')}
           </div>
-          <div className="font-heading text-sm font-bold text-white">
+          <div className="font-heading text-sm font-bold text-on-accent">
             {warning.label} · {warning.time}
             <span className="ml-2 font-mono text-xs font-semibold">
               {collision
@@ -40,7 +40,7 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
       </div>
 
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
-        <div className="min-w-0 text-xs text-white">
+        <div className="min-w-0 text-xs text-on-accent">
           {warning.workEntry ? (
             <>
               {t('anchor.ends', {

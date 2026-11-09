@@ -22,7 +22,7 @@ const VARIANTS = {
   },
   later: {
     card: 'border-line border-l-4 border-l-transparent bg-card/60',
-    chip: 'border-line-strong bg-raised text-slate-400',
+    chip: 'border-line-strong bg-raised text-muted',
     status: 'planned',
   },
 };
@@ -78,16 +78,16 @@ export default function StageStepCard({
               {statusLabel}
             </span>
           </div>
-          <div className="mt-1 truncate font-heading text-sm font-semibold text-white">
+          <div className="mt-1 truncate font-heading text-sm font-semibold text-ink">
             {title}
           </div>
         </div>
-        <span className="shrink-0 font-mono text-[11px] text-slate-300">{summary}</span>
+        <span className="shrink-0 font-mono text-[11px] text-ink">{summary}</span>
       </div>
       {collapsible ? (
         <span
           aria-hidden="true"
-          className={`ml-2 mt-0.5 shrink-0 text-slate-400 transition-transform duration-150 motion-reduce:transition-none ${isOpen ? 'rotate-90' : ''}`}
+          className={`ml-2 mt-0.5 shrink-0 text-muted transition-transform duration-150 motion-reduce:transition-none ${isOpen ? 'rotate-90' : ''}`}
         >
           ▸
         </span>
@@ -118,11 +118,11 @@ export default function StageStepCard({
         hidden={!isOpen}
         className={`mt-2 ${variant === 'current' ? 'current-step-body' : ''}`}
       >
-        <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line/60 pt-2 text-[11px] text-slate-400">
+        <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line/60 pt-2 text-[11px] text-muted">
           <span className="truncate">📍 {step.location ?? '—'}</span>
           <div className="flex items-center gap-1.5 font-mono">
             {typeof step.durationMin === 'number' ? (
-              <span className="text-slate-500">{step.durationMin} min</span>
+              <span className="text-muted">{step.durationMin} min</span>
             ) : null}
             {drift ? (
               <span

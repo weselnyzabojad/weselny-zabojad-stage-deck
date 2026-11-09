@@ -14,7 +14,7 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
   const showWinner = ocz.winnerPhoto?.enabled && ocz.winnerPhoto?.photographerAvailable;
 
   return (
-    <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2.5 text-[11px] text-slate-200">
+    <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2.5 text-[11px] text-ink">
       <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
         Oczepiny · {ocz.variant ?? ocz.order ?? 'MIDNIGHT'}
       </div>
@@ -43,7 +43,7 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
         </div>
       ) : null}
       {audience === 'dj-vip' ? (
-        <div className="mt-0.5 text-slate-400">
+        <div className="mt-0.5 text-muted">
           DJ VIP cue — follow the MC countdown/music for the throwing sequence.
         </div>
       ) : null}

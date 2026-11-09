@@ -63,7 +63,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
   const errorText = error?.key ? t(error.key) : error?.text ?? '';
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-slate-100 select-none">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-ink select-none">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
       <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
@@ -83,14 +83,14 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
             {t('join.production')}
           </span>
-          <h1 className="mt-2 font-heading text-2xl font-bold text-white">{t('join.title')}</h1>
-          <p className="mt-1 font-mono text-xs text-slate-400">{t('join.subtitle')}</p>
+          <h1 className="mt-2 font-heading text-2xl font-bold text-ink">{t('join.title')}</h1>
+          <p className="mt-1 font-mono text-xs text-muted">{t('join.subtitle')}</p>
         </div>
 
         <div className="mt-5">
           <label
             htmlFor="join-room-code"
-            className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400"
+            className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted"
           >
             {t('join.roomCode')}
           </label>
@@ -106,12 +106,12 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             autoCapitalize="off"
             spellCheck={false}
             placeholder={t('join.roomPlaceholder')}
-            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 font-mono text-sm text-white outline-none transition focus:border-brand-strong"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 font-mono text-sm text-ink outline-none transition focus:border-brand-strong"
           />
         </div>
 
         <div className="mt-4">
-          <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+          <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
             {t('join.role')}
           </span>
           <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('join.deviceRole')}>
@@ -131,8 +131,8 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
                   }}
                   className={`rounded-lg border px-2 py-2.5 text-center transition ${
                     active
-                      ? 'border-brand-strong bg-brand/40 text-white'
-                      : 'border-line bg-raised text-slate-300 hover:border-line-strong'
+                      ? 'border-brand-strong bg-brand/40 text-ink'
+                      : 'border-line bg-raised text-ink hover:border-line-strong'
                   }`}
                 >
                   <span aria-hidden="true" className="block text-lg leading-none">
@@ -150,7 +150,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
         <div className="mt-4">
           <label
             htmlFor="join-role-pin"
-            className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400"
+            className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted"
           >
             {t('join.pin', { role: roleShort(role) })}
           </label>
@@ -171,13 +171,13 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
               autoComplete="one-time-code"
               placeholder={t('join.pinPlaceholder')}
               aria-invalid={Boolean(error)}
-              className="w-full rounded-lg border border-line bg-page px-3 py-3 pr-16 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none transition focus:border-brand-strong"
+              className="w-full rounded-lg border border-line bg-page px-3 py-3 pr-16 text-center font-mono text-2xl tracking-[0.4em] text-ink outline-none transition focus:border-brand-strong"
             />
             <button
               type="button"
               onClick={() => setShowPin((value) => !value)}
               aria-pressed={showPin}
-              className="absolute right-2 top-1/2 min-h-11 -translate-y-1/2 rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+              className="absolute right-2 top-1/2 min-h-11 -translate-y-1/2 rounded border border-line px-2 py-1 text-[10px] font-semibold text-ink"
             >
               {showPin ? t('join.hidePin') : t('join.showPin')}
             </button>
@@ -188,7 +188,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             </p>
           ) : null}
           {intent?.roomCode ? (
-            <p className="mt-1 text-center text-[10px] text-slate-500">{t('join.qrHint')}</p>
+            <p className="mt-1 text-center text-[10px] text-muted">{t('join.qrHint')}</p>
           ) : null}
         </div>
 
@@ -199,12 +199,12 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
         <button
           type="submit"
           disabled={busy}
-          className="mt-2 w-full rounded-xl border border-brand-strong bg-brand py-3.5 font-heading text-sm font-bold text-white shadow-lg shadow-blue-950/60 transition hover:bg-brand-hover active:bg-brand-active disabled:cursor-wait disabled:opacity-60"
+          className="mt-2 w-full rounded-xl border border-brand-strong bg-brand py-3.5 font-heading text-sm font-bold text-on-accent shadow-lg shadow-blue-950/60 transition hover:bg-brand-hover active:bg-brand-active disabled:cursor-wait disabled:opacity-60"
         >
           {busy ? t('join.checking') : t('join.submit')}
         </button>
 
-        <p className="mt-4 text-center text-[11px] leading-relaxed text-slate-500">
+        <p className="mt-4 text-center text-[11px] leading-relaxed text-muted">
           {t('join.footnote')}
         </p>
       </form>

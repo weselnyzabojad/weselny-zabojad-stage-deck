@@ -19,7 +19,7 @@ const STATE_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
   active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
   next: 'border-amber-800 bg-amber-950/60 text-amber-200',
-  planned: 'border-line-strong bg-raised text-slate-400',
+  planned: 'border-line-strong bg-raised text-muted',
 };
 
 const STATE_LABELS = {
@@ -75,7 +75,7 @@ function ActionLink({ href, children }) {
       href={href}
       target="_blank"
       rel="noreferrer noopener"
-      className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-semibold text-slate-200 transition hover:bg-line"
+      className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-semibold text-ink transition hover:bg-line"
     >
       {children}
     </a>
@@ -87,7 +87,7 @@ function ActionButton({ onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-semibold text-slate-200 transition hover:bg-line"
+      className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-semibold text-ink transition hover:bg-line"
     >
       {children}
     </button>
@@ -137,26 +137,26 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
             ) : null}
           </div>
 
-          <div className="mt-1 font-heading text-sm font-semibold leading-tight text-white">
+          <div className="mt-1 font-heading text-sm font-semibold leading-tight text-ink">
             {typeof song.title === 'string' && song.title.trim() ? song.title : 'Title TBC'}
           </div>
-          <div className="text-[11px] text-slate-300">
+          <div className="text-[11px] text-ink">
             {typeof song.artist === 'string' && song.artist.trim() ? song.artist : 'Artist TBC'}
-            {vip && song.version ? <span className="text-slate-500"> · {song.version}</span> : null}
+            {vip && song.version ? <span className="text-muted"> · {song.version}</span> : null}
           </div>
 
           {vip ? (
-            <div className="mt-2 space-y-1.5 text-[10px] text-slate-400">
+            <div className="mt-2 space-y-1.5 text-[10px] text-muted">
               <div className="flex flex-wrap items-center gap-1.5">
                 {song.plannedTime ? (
-                  <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-slate-300">
+                  <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-ink">
                     ⏱ {song.plannedTime}
                   </span>
                 ) : null}
                 {cues.map((cue) => (
                   <span
                     key={cue.key}
-                    className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-slate-300"
+                    className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-ink"
                   >
                     {cue.label}
                   </span>
@@ -168,25 +168,25 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
 
               {source && isCustomerFile(source) ? (
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-mono text-slate-300" title={source.fileRef || source.filename}>
+                  <span className="font-mono text-ink" title={source.fileRef || source.filename}>
                     📁 {source.filename || source.fileRef || 'file'}
                   </span>
                   {source.durationSec ? (
-                    <span className="font-mono text-slate-500">
+                    <span className="font-mono text-muted">
                       ⏲ {formatCueSeconds(source.durationSec)}
                     </span>
                   ) : null}
                   {source.availability ? (
-                    <span className="font-mono text-slate-500">{source.availability}</span>
+                    <span className="font-mono text-muted">{source.availability}</span>
                   ) : null}
                   {formatChecksum(source.checksum) ? (
-                    <span className="font-mono text-slate-600" title={source.checksum}>
+                    <span className="font-mono text-muted" title={source.checksum}>
                       {formatChecksum(source.checksum)}
                     </span>
                   ) : null}
                   {source.url ? <ActionLink href={source.url}>Open file</ActionLink> : null}
                   {!source.url && source.fileRef ? (
-                    <span className="text-slate-500">Locate file on the DJ device</span>
+                    <span className="text-muted">Locate file on the DJ device</span>
                   ) : null}
                   {link ? <ActionButton onClick={() => onCopy(link, 'File link')}>Copy link</ActionButton> : null}
                 </div>
@@ -206,7 +206,7 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
 
               {showBackup ? (
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-semibold text-slate-300">
+                  <span className="font-semibold text-ink">
                     Backup: {sourceLabel(backup)}
                   </span>
                   {songLink(backup) ? <ActionLink href={songLink(backup)}>Open backup</ActionLink> : null}
@@ -214,7 +214,7 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
                     <ActionButton onClick={() => onCopy(songLink(backup), 'Backup link')}>Copy</ActionButton>
                   ) : null}
                   {isCustomerFile(backup) && backup.filename ? (
-                    <span className="font-mono text-slate-500">{backup.filename}</span>
+                    <span className="font-mono text-muted">{backup.filename}</span>
                   ) : null}
                 </div>
               ) : null}
@@ -225,8 +225,8 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
                 </p>
               ) : null}
 
-              {source?.notes ? <p className="text-slate-500">📝 {source.notes}</p> : null}
-              {song.note ? <p className="text-slate-400">📝 {song.note}</p> : null}
+              {source?.notes ? <p className="text-muted">📝 {source.notes}</p> : null}
+              {song.note ? <p className="text-muted">📝 {song.note}</p> : null}
             </div>
           ) : null}
         </div>
@@ -251,10 +251,10 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
         {vip && !qr.url ? (
           <span
             title={qr.unavailable}
-            className="w-[72px] shrink-0 rounded border border-line-strong bg-raised px-1.5 py-2 text-center font-mono text-[8px] leading-tight text-slate-400"
+            className="w-[72px] shrink-0 rounded border border-line-strong bg-raised px-1.5 py-2 text-center font-mono text-[8px] leading-tight text-muted"
           >
             QR unavailable
-            {isCustomerFile(source) ? <span className="block text-slate-500">protected file</span> : null}
+            {isCustomerFile(source) ? <span className="block text-muted">protected file</span> : null}
           </span>
         ) : null}
       </div>
@@ -295,16 +295,16 @@ function QrOverlay({ song, onClose, onCopy }) {
         <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
           {moment.icon} {moment.label} · {sourceLabel(song.source)}
         </div>
-        <h2 id="key-song-qr-title" className="mt-1 font-heading text-lg font-bold text-white">
+        <h2 id="key-song-qr-title" className="mt-1 font-heading text-lg font-bold text-ink">
           {song.title || 'Title TBC'}
         </h2>
-        <div className="text-sm text-slate-300">{song.artist || 'Artist TBC'}</div>
+        <div className="text-sm text-ink">{song.artist || 'Artist TBC'}</div>
 
         <div className="mx-auto mt-4 w-fit rounded-xl bg-white p-3">
           <QrCodeImage text={target.url} size={280} label={`Large QR code to open ${song.title || 'key song'}`} />
         </div>
 
-        <p className="mt-3 text-[11px] text-slate-400">
+        <p className="mt-3 text-[11px] text-muted">
           {streaming
             ? 'Opens online on the playback device — scan it with the phone or controller.'
             : 'Opens the shared file on the playback device.'}
@@ -315,7 +315,7 @@ function QrOverlay({ song, onClose, onCopy }) {
             <button
               type="button"
               onClick={() => onCopy(link, 'Link')}
-              className="flex-1 rounded-lg border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-line"
+              className="flex-1 rounded-lg border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-ink transition hover:bg-line"
             >
               Copy link
             </button>
@@ -323,7 +323,7 @@ function QrOverlay({ song, onClose, onCopy }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+            className="flex-1 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
           >
             Close
           </button>
@@ -366,7 +366,7 @@ export default function KeySongsCard({ songs = [], tier, timeline = [], activeIn
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="key-songs-title"
-          className="font-heading text-xs font-bold uppercase tracking-widest text-white"
+          className="font-heading text-xs font-bold uppercase tracking-widest text-ink"
         >
           🔑 Key songs
         </h2>
@@ -374,7 +374,7 @@ export default function KeySongsCard({ songs = [], tier, timeline = [], activeIn
           className={`rounded border px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide ${
             vip
               ? 'border-alert/60 bg-alert/20 text-alert-tint'
-              : 'border-line-strong bg-raised text-slate-300'
+              : 'border-line-strong bg-raised text-ink'
           }`}
         >
           {vip ? 'VIP · source + cues + QR' : 'Standard · title + artist'}
@@ -382,9 +382,9 @@ export default function KeySongsCard({ songs = [], tier, timeline = [], activeIn
       </div>
 
       {sortedSongs.length === 0 ? (
-        <p className="mt-2 text-xs text-slate-400">
+        <p className="mt-2 text-xs text-muted">
           No key songs in this cartridge. Add them under{' '}
-          <span className="font-mono text-slate-300">musicPolicy.importantSongs[]</span>.
+          <span className="font-mono text-ink">musicPolicy.importantSongs[]</span>.
         </p>
       ) : (
         <ol className="mt-2.5 space-y-2">

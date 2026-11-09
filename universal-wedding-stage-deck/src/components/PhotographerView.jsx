@@ -93,10 +93,10 @@ function Card({ title, icon, children, aside, className = '' }) {
   );
 }
 
-function Row({ label, value, tone = 'text-slate-300' }) {
+function Row({ label, value, tone = 'text-ink' }) {
   return (
     <div className="flex items-baseline justify-between gap-3 text-[11px]">
-      <span className="shrink-0 uppercase tracking-wider text-slate-500">{label}</span>
+      <span className="shrink-0 uppercase tracking-wider text-muted">{label}</span>
       <span className={`text-right font-semibold ${tone}`}>{value}</span>
     </div>
   );
@@ -104,7 +104,7 @@ function Row({ label, value, tone = 'text-slate-300' }) {
 
 function DeferredBadge({ children }) {
   return (
-    <span className="rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] text-slate-400">
+    <span className="rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] text-muted">
       {children}
     </span>
   );
@@ -156,7 +156,7 @@ function PhotoPlanBlock({ type, data }) {
         ) : null}
         {type === 'speedFoto' ? (
           <>
-            {data.description ? <p className="text-slate-300">{data.description}</p> : null}
+            {data.description ? <p className="text-ink">{data.description}</p> : null}
             <Row label="Duration" value={`${data.durationMin ?? 'â€”'} min`} />
             <Row label="Music" value={data.music ?? 'â€”'} />
           </>
@@ -192,7 +192,7 @@ function PhotoPlanBlock({ type, data }) {
             />
             <Row label="Consent" value={data.consent ?? 'â€”'} />
             {data.description ? (
-              <p className="text-slate-400">{data.description}</p>
+              <p className="text-muted">{data.description}</p>
             ) : null}
           </>
         ) : null}
@@ -212,18 +212,18 @@ function MiniSessionOverride({ value, onSave }) {
         if (time) onSave?.(time);
       }}
     >
-      <label className="text-[10px] uppercase tracking-wider text-slate-500">
+      <label className="text-[10px] uppercase tracking-wider text-muted">
         Chosen mini-session hour
         <input
           type="time"
           name="miniTime"
           defaultValue={value ?? ''}
-          className="mt-0.5 block rounded border border-line bg-card px-2 py-1 font-mono text-xs text-white"
+          className="mt-0.5 block rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
         />
       </label>
       <button
         type="submit"
-        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 text-[10px] font-semibold text-white"
+        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 text-[10px] font-semibold text-ink"
       >
         Save for all media
       </button>
@@ -384,7 +384,7 @@ export default function PhotographerView({
           {!sunset?.usable ? (
             <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
               <p className="font-semibold">Sunset unavailable — check connection.</p>
-              <p className="mt-1 text-[11px] text-slate-400">
+              <p className="mt-1 text-[11px] text-muted">
                 The card stays visible; refresh the cartridge after the online lookup succeeds.
               </p>
             </div>
@@ -392,25 +392,25 @@ export default function PhotographerView({
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">Sunset</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
-                  <div className="font-mono text-[10px] text-slate-400">{countdownText(sunsetSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(sunsetSeconds) ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Golden hour</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">Golden hour</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
-                  <div className="font-mono text-[10px] text-slate-400">{countdownText(goldenSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(goldenSeconds) ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Civil twilight</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">Civil twilight</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-slate-500">Mini latest start</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">Mini latest start</div>
                   <div className="font-mono text-xl font-bold text-ink">
                     {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
                   </div>
-                  <div className="font-mono text-[10px] text-slate-400">{countdownText(latestStartSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(latestStartSeconds) ?? '—'}</div>
                 </div>
               </div>
               <MiniSessionOverride
@@ -427,7 +427,7 @@ export default function PhotographerView({
   );
 
   const wideContent = (
-    <div className="flex min-h-screen flex-col bg-page text-slate-100 antialiased select-none">
+    <div className="flex min-h-screen flex-col bg-page text-ink antialiased select-none">
       <SkipLink />
       <TopBarShell
         left={(
@@ -498,7 +498,7 @@ export default function PhotographerView({
               {!sunset || !sunset.usable ? (
                 <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
                   <p className="font-semibold">Sunset unavailable â€” check connection.</p>
-                  <p className="mt-1 text-[11px] text-slate-400">
+                  <p className="mt-1 text-[11px] text-muted">
                     D6: the app never estimates a sunset offline. Refresh the cartridge after the
                     online lookup succeeds.
                   </p>
@@ -514,27 +514,27 @@ export default function PhotographerView({
                   ) : null}
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <div className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="text-[9px] uppercase tracking-wider text-slate-500">Sunset</div>
+                      <div className="text-[9px] uppercase tracking-wider text-muted">Sunset</div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.sunsetTime ?? 'â€”'}
                       </div>
-                      <div className="font-mono text-[10px] text-slate-400">
+                      <div className="font-mono text-[10px] text-muted">
                         {countdownText(sunsetSeconds) ?? 'â€”'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="text-[9px] uppercase tracking-wider text-slate-500">
+                      <div className="text-[9px] uppercase tracking-wider text-muted">
                         Golden hour
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.goldenHourStart ?? 'â€”'}
                       </div>
-                      <div className="font-mono text-[10px] text-slate-400">
+                      <div className="font-mono text-[10px] text-muted">
                         {countdownText(goldenSeconds) ?? 'â€”'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="text-[9px] uppercase tracking-wider text-slate-500">
+                      <div className="text-[9px] uppercase tracking-wider text-muted">
                         Civil twilight
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
@@ -542,7 +542,7 @@ export default function PhotographerView({
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="text-[9px] uppercase tracking-wider text-slate-500">
+                      <div className="text-[9px] uppercase tracking-wider text-muted">
                         Mini session latest start
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
@@ -550,7 +550,7 @@ export default function PhotographerView({
                           ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone)
                           : 'â€”'}
                       </div>
-                      <div className="font-mono text-[10px] text-slate-400">
+                      <div className="font-mono text-[10px] text-muted">
                         {countdownText(latestStartSeconds) ?? 'â€”'}
                       </div>
                     </div>
@@ -567,7 +567,7 @@ export default function PhotographerView({
                       />
                     </div>
                   ) : null}
-                  <p className="mt-2 text-[10px] text-slate-500">
+                  <p className="mt-2 text-[10px] text-muted">
                     Venue timezone {timeZone}
                     {sunset.provider ? ` Â· source ${sunset.provider}` : ''}
                   </p>
@@ -584,7 +584,7 @@ export default function PhotographerView({
         </div>
       </main>
 
-      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-slate-500">
+      <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-muted">
         Read-only media view Â· step timeline, shot plan and light windows
       </footer>
     </div>

@@ -20,10 +20,10 @@ export default function MiniSessionTwinTask({
           {Number.isFinite(durationMin) ? ` · ${durationMin} min` : ''}
         </span>
       </div>
-      <p className="mt-1 text-[11px] text-slate-300">
+      <p className="mt-1 text-[11px] text-ink">
         Take the newlyweds outside for private pictures.
       </p>
-      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-400">
+      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-muted">
         {location ? <span>Location: {location}</span> : null}
         {backupLocation ? <span>Backup: {backupLocation}</span> : null}
       </div>

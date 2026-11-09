@@ -109,7 +109,7 @@ export default class AppErrorBoundary extends React.Component {
     const totalSteps = Number.isFinite(step?.totalSteps) && step.totalSteps > 0 ? step.totalSteps : null;
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-slate-100">
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-ink">
         <section
           role="alert"
           aria-live="assertive"
@@ -119,28 +119,28 @@ export default class AppErrorBoundary extends React.Component {
             <span className="rounded border border-alert/60 bg-alert/20 px-2 py-0.5 font-mono text-[10px] font-bold tracking-widest text-alert-soft">
               {t('error.recovered')}
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-muted">
               {scopeLabel}
             </span>
           </div>
 
-          <h1 className="mt-3 font-heading text-xl font-bold text-white">
+          <h1 className="mt-3 font-heading text-xl font-bold text-ink">
             {t('error.title')}
           </h1>
-          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          <p className="mt-2 text-xs leading-relaxed text-muted">
             {t('error.body')}
           </p>
 
           <div className="mt-3 rounded-lg border border-line bg-page/80 p-3">
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
               {t('error.lastKnownStep')}
             </div>
             {step?.title ? (
               <>
-                <div className="mt-1 font-heading text-base font-semibold text-white">
+                <div className="mt-1 font-heading text-base font-semibold text-ink">
                   {step.title}
                 </div>
-                <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-slate-400">
+                <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 font-mono text-[11px] text-muted">
                   <span>{t('error.planned', { time: step.plannedTime ?? '—' })}</span>
                   <span>·</span>
                   <span>{step.location ?? '—'}</span>
@@ -152,13 +152,13 @@ export default class AppErrorBoundary extends React.Component {
                   ) : null}
                 </div>
                 {completedCount != null && totalSteps ? (
-                  <div className="mt-1 font-mono text-[10px] text-slate-500">
+                  <div className="mt-1 font-mono text-[10px] text-muted">
                     {t('error.stepsCompleted', { done: completedCount, total: totalSteps })}
                   </div>
                 ) : null}
               </>
             ) : (
-              <div className="mt-1 text-sm text-slate-300">
+              <div className="mt-1 text-sm text-ink">
                 {t('error.noSnapshot')}
               </div>
             )}
@@ -168,20 +168,20 @@ export default class AppErrorBoundary extends React.Component {
             <button
               type="button"
               onClick={this.safeReload}
-              className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+              className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
             >
               {t('error.safeReload')}
             </button>
             <button
               type="button"
               onClick={this.resetView}
-              className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-semibold text-slate-200 transition hover:bg-line"
+              className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-semibold text-ink transition hover:bg-line"
             >
               {t('error.tryAgain')}
             </button>
           </div>
 
-          <p className="mt-3 text-[10px] leading-snug text-slate-500">
+          <p className="mt-3 text-[10px] leading-snug text-muted">
             {t('error.safeReloadHelp')}
           </p>
 
@@ -190,20 +190,20 @@ export default class AppErrorBoundary extends React.Component {
             open={this.state.showLog}
             onToggle={(event) => this.setState({ showLog: event.currentTarget.open })}
           >
-            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-slate-400">
+            <summary className="cursor-pointer font-mono text-[10px] uppercase tracking-wider text-muted">
               {t('error.logTitle', { count: entries.length })}
             </summary>
 
             {recent.length === 0 ? (
-              <p className="mt-2 text-[11px] text-slate-500">{t('error.noErrors')}</p>
+              <p className="mt-2 text-[11px] text-muted">{t('error.noErrors')}</p>
             ) : (
               <ul className="mt-2 space-y-1.5">
                 {recent.map((entry) => (
                   <li key={entry.id ?? entry.at} className="rounded border border-line bg-card p-2">
-                    <div className="font-mono text-[9px] text-slate-500">
+                    <div className="font-mono text-[9px] text-muted">
                       {entry.at ?? '—'} · {entry.scope ?? 'app'}
                     </div>
-                    <div className="mt-0.5 break-words text-[11px] text-slate-300">
+                    <div className="mt-0.5 break-words text-[11px] text-ink">
                       {entry.message ?? t('error.unknown')}
                     </div>
                   </li>
@@ -215,14 +215,14 @@ export default class AppErrorBoundary extends React.Component {
               <button
                 type="button"
                 onClick={this.copyDiagnostics}
-                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 transition hover:bg-line"
+                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink transition hover:bg-line"
               >
                 {t('error.copyDiagnostics')}
               </button>
               <button
                 type="button"
                 onClick={this.clearLog}
-                className="rounded border border-line bg-page px-2 py-1 text-[10px] font-semibold text-slate-400 transition hover:text-white"
+                className="rounded border border-line bg-page px-2 py-1 text-[10px] font-semibold text-muted transition hover:text-ink"
               >
                 {t('error.clearLog')}
               </button>
@@ -235,7 +235,7 @@ export default class AppErrorBoundary extends React.Component {
           </details>
 
           {this.state.errorId ? (
-            <p className="mt-3 font-mono text-[9px] text-slate-600">
+            <p className="mt-3 font-mono text-[9px] text-muted">
               {t('error.reference', { id: this.state.errorId })}
             </p>
           ) : null}

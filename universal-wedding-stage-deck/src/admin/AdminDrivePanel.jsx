@@ -234,8 +234,8 @@ export default function AdminDrivePanel({
       <section className="space-y-3 rounded-xl border border-line bg-card p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="font-heading text-sm font-bold text-white">Google Drive source</h2>
-          <p className="mt-1 text-[10px] text-slate-400">
+          <h2 className="font-heading text-sm font-bold text-ink">Google Drive source</h2>
+          <p className="mt-1 text-[10px] text-muted">
             Browse files shared with the service-account email. Preview only — publishing is a
             separate confirmed admin action.
           </p>
@@ -252,19 +252,19 @@ export default function AdminDrivePanel({
           void loadSources();
         }}
       >
-        <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
           Search shared sources
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="File or Doc name"
-            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
           />
         </label>
         <button
           type="submit"
           disabled={loading}
-          className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+          className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {loading ? 'Searching…' : 'Search Drive'}
         </button>
@@ -277,7 +277,7 @@ export default function AdminDrivePanel({
       ) : null}
 
       {!loading && files.length === 0 && !error ? (
-        <p className="rounded border border-dashed border-line bg-page px-3 py-4 text-center text-xs text-slate-400">
+        <p className="rounded border border-dashed border-line bg-page px-3 py-4 text-center text-xs text-muted">
           No supported shared sources found. Share cartridge JSON files or Google Docs with the
           service-account email.
         </p>
@@ -290,10 +290,10 @@ export default function AdminDrivePanel({
               <button
                 type="button"
                 onClick={() => void selectFile(file)}
-                className={`min-w-0 flex-1 text-left ${selectedId === file.id ? 'text-brand-tint' : 'text-slate-200'}`}
+                className={`min-w-0 flex-1 text-left ${selectedId === file.id ? 'text-brand-tint' : 'text-ink'}`}
               >
                 <span className="block truncate text-xs font-semibold">{file.name ?? file.id}</span>
-                <span className="mt-0.5 block font-mono text-[9px] text-slate-500">
+                <span className="mt-0.5 block font-mono text-[9px] text-muted">
                   {file.mimeType === 'application/vnd.google-apps.document' ? 'Google Doc' : 'JSON'}
                   {' · '}modified {file.modifiedTime ?? '—'}
                   {file.version ? ` · v${file.version}` : ''}
@@ -304,7 +304,7 @@ export default function AdminDrivePanel({
                 type="button"
                 onClick={() => void selectFile(file)}
                 disabled={previewLoading && selectedId === file.id}
-                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200 disabled:opacity-50"
+                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink disabled:opacity-50"
               >
                 {previewLoading && selectedId === file.id ? 'Previewing…' : 'Preview'}
               </button>
@@ -318,7 +318,7 @@ export default function AdminDrivePanel({
           type="button"
           onClick={() => void loadSources({ append: true })}
           disabled={loading}
-          className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-slate-200 disabled:opacity-50"
+          className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-50"
         >
           Load more
         </button>
@@ -327,8 +327,8 @@ export default function AdminDrivePanel({
       {preview ? (
         <div className="space-y-3 rounded border border-line bg-page p-3">
           <div>
-            <h3 className="text-xs font-bold text-white">{preview.file?.name ?? 'Drive source'}</h3>
-            <p className="mt-1 font-mono text-[9px] leading-relaxed text-slate-500">
+            <h3 className="text-xs font-bold text-ink">{preview.file?.name ?? 'Drive source'}</h3>
+            <p className="mt-1 font-mono text-[9px] leading-relaxed text-muted">
               id {preview.file?.id ?? '—'} · {preview.kind ?? '—'}
               {preview.bytes != null ? ` · ${preview.bytes} B` : ''}
               {preview.retrievedAt ? ` · retrieved ${preview.retrievedAt}` : ''}
@@ -336,7 +336,7 @@ export default function AdminDrivePanel({
           </div>
 
           {preview.loading ? (
-            <p className="text-xs text-slate-400">Retrieving and parsing this source…</p>
+            <p className="text-xs text-muted">Retrieving and parsing this source…</p>
           ) : (
             <>
               <p
@@ -353,16 +353,16 @@ export default function AdminDrivePanel({
               </p>
 
               {preview.summary?.couple ? (
-                <dl className="grid grid-cols-2 gap-2 text-[10px] text-slate-300 sm:grid-cols-4">
-                  <div><dt className="text-slate-500">Couple</dt><dd>{preview.summary.couple}</dd></div>
-                  <div><dt className="text-slate-500">Date</dt><dd>{preview.summary.date}</dd></div>
-                  <div><dt className="text-slate-500">PIN</dt><dd>{preview.summary.syncPin}</dd></div>
-                  <div><dt className="text-slate-500">Steps</dt><dd>{preview.summary.stepCount}</dd></div>
+                <dl className="grid grid-cols-2 gap-2 text-[10px] text-ink sm:grid-cols-4">
+                  <div><dt className="text-muted">Couple</dt><dd>{preview.summary.couple}</dd></div>
+                  <div><dt className="text-muted">Date</dt><dd>{preview.summary.date}</dd></div>
+                  <div><dt className="text-muted">PIN</dt><dd>{preview.summary.syncPin}</dd></div>
+                  <div><dt className="text-muted">Steps</dt><dd>{preview.summary.stepCount}</dd></div>
                 </dl>
               ) : null}
 
               {preview.summary?.sections?.length ? (
-                <p className="font-mono text-[9px] leading-relaxed text-slate-400">
+                <p className="font-mono text-[9px] leading-relaxed text-muted">
                   {preview.summary.sections.join(' · ')}
                 </p>
               ) : null}
@@ -371,7 +371,7 @@ export default function AdminDrivePanel({
                 <ul className="max-h-40 space-y-1 overflow-auto text-[10px] text-alert-soft">
                   {preview.validation.errors.map((item, index) => (
                     <li key={`${item.location}-${index}`}>
-                      <span className="font-mono text-slate-500">{item.location}</span> {item.message}
+                      <span className="font-mono text-muted">{item.location}</span> {item.message}
                     </li>
                   ))}
                 </ul>
@@ -386,8 +386,8 @@ export default function AdminDrivePanel({
               ) : null}
 
               {preview.text ? (
-                <details className="text-[10px] text-slate-400">
-                  <summary className="cursor-pointer font-semibold text-slate-300">
+                <details className="text-[10px] text-muted">
+                  <summary className="cursor-pointer font-semibold text-ink">
                     Source text (transient)
                   </summary>
                   <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-card p-2 font-mono text-[9px]">
@@ -400,12 +400,12 @@ export default function AdminDrivePanel({
                 <button
                   type="button"
                   onClick={() => void handleCheckDrive()}
-                  className="rounded border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-slate-200"
+                  className="rounded border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-ink"
                 >
                   Check Drive for changes
                 </button>
                 {checkResult?.loading ? (
-                  <span className="text-[10px] text-slate-400">Checking metadata…</span>
+                  <span className="text-[10px] text-muted">Checking metadata…</span>
                 ) : null}
                 {checkResult?.error ? (
                   <span role="alert" className="text-[10px] text-alert-soft">{checkResult.error}</span>
@@ -421,12 +421,12 @@ export default function AdminDrivePanel({
 
               {preview.kind === 'json' && preview.validation?.valid ? (
                 <div className="space-y-3 border-t border-line pt-3">
-                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
                     Publish as new revision to
                     <select
                       value={targetWeddingId}
                       onChange={(event) => setTargetWeddingId(event.target.value)}
-                      className="mt-1 block w-full rounded border border-line bg-card px-2.5 py-2 text-xs text-white"
+                      className="mt-1 block w-full rounded border border-line bg-card px-2.5 py-2 text-xs text-ink"
                     >
                       <option value="">Select a wedding…</option>
                       {weddings
@@ -440,16 +440,16 @@ export default function AdminDrivePanel({
                   </label>
 
                   {contextLoading ? (
-                    <p className="text-[10px] text-slate-400">Loading current revision and diff…</p>
+                    <p className="text-[10px] text-muted">Loading current revision and diff…</p>
                   ) : null}
                   {context?.error ? (
                     <p role="alert" className="text-[10px] text-alert-soft">{context.error}</p>
                   ) : null}
 
                   {diff ? (
-                    <div className="space-y-2 rounded border border-line bg-card p-3 text-[10px] text-slate-300">
-                      <h4 className="text-xs font-bold text-white">Diff against current revision</h4>
-                      <p className="font-mono text-[9px] text-slate-500">
+                    <div className="space-y-2 rounded border border-line bg-card p-3 text-[10px] text-ink">
+                      <h4 className="text-xs font-bold text-ink">Diff against current revision</h4>
+                      <p className="font-mono text-[9px] text-muted">
                         current rev {Number(context?.wedding?.cartridge_revision ?? 0)} · identity changes:{' '}
                         {diff.identity.length ? diff.identity.join(', ') : 'none'}
                       </p>
@@ -491,11 +491,11 @@ export default function AdminDrivePanel({
                     type="button"
                     onClick={handlePublish}
                     disabled={readOnly || !targetWedding || !diff || publishBusy}
-                    className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                    className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent disabled:opacity-50"
                   >
                     {publishBusy ? 'Publishing…' : 'Publish as new revision'}
                   </button>
-                  <p className="text-[9px] text-slate-500">
+                  <p className="text-[9px] text-muted">
                     Requires fresh TOTP re-authentication. The server re-reads the Drive file and
                     rejects it if the version/checksum changed after preview.
                   </p>
@@ -503,7 +503,7 @@ export default function AdminDrivePanel({
               ) : null}
 
               {preview.kind === 'google_doc' ? (
-                <p className="border-t border-line pt-3 text-[10px] text-slate-400">
+                <p className="border-t border-line pt-3 text-[10px] text-muted">
                   Google Doc sources are mapped to a cartridge draft, validated against the
                   schema and diffed before publication. Publishing also binds the exported
                   Doc text hash so a changed source must be previewed again.

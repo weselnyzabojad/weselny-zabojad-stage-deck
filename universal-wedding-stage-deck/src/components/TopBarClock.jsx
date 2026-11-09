@@ -6,7 +6,7 @@ export default function TopBarClock({ clock, className = '' }) {
 
   return (
     <span
-      className={`font-mono text-2xl leading-none font-semibold tabular-nums text-white ${className}`}
+      className={`font-mono text-2xl leading-none font-semibold tabular-nums text-ink ${className}`}
       aria-label={t('clock.currentTime')}
       title={t('clock.currentTime')}
     >

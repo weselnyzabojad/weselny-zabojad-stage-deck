@@ -30,7 +30,7 @@ export default function AdminQrCards({ cards = [] }) {
   }, [cards]);
 
   if (cards.length === 0) {
-    return <p className="text-xs text-slate-400">No roles to print.</p>;
+    return <p className="text-xs text-muted">No roles to print.</p>;
   }
 
   return (
@@ -42,14 +42,14 @@ export default function AdminQrCards({ cards = [] }) {
         >
           <div className="flex items-start justify-between gap-2 border-b border-slate-200 pb-2">
             <div>
-              <div className="font-heading text-[10px] font-bold uppercase tracking-[0.25em] text-slate-500">
+              <div className="font-heading text-[10px] font-bold uppercase tracking-[0.25em] text-muted">
                 {card.couple || 'Wedding'}
               </div>
               <h3 className="font-heading text-lg font-black uppercase tracking-wide">
                 {card.label}
               </h3>
             </div>
-            <div className="text-right font-mono text-[10px] text-slate-500">
+            <div className="text-right font-mono text-[10px] text-muted">
               <div>{card.date || '—'}</div>
               <div>{card.venue || ''}</div>
             </div>
@@ -63,17 +63,17 @@ export default function AdminQrCards({ cards = [] }) {
                 className="h-32 w-32 shrink-0"
               />
             ) : (
-              <div className="flex h-32 w-32 shrink-0 items-center justify-center rounded border border-dashed border-slate-300 font-mono text-[10px] text-slate-400">
+              <div className="flex h-32 w-32 shrink-0 items-center justify-center rounded border border-dashed border-slate-300 font-mono text-[10px] text-muted">
                 QR…
               </div>
             )}
             <div className="min-w-0 text-xs">
-              <div className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
+              <div className="font-mono text-[10px] uppercase tracking-wider text-muted">
                 Room code
               </div>
               <div className="font-mono text-2xl font-bold tracking-widest">{card.roomCode}</div>
-              <div className="mt-2 font-mono text-[9px] break-all text-slate-500">{card.url}</div>
-              <div className="mt-2 text-[10px] text-slate-600">
+              <div className="mt-2 font-mono text-[9px] break-all text-muted">{card.url}</div>
+              <div className="mt-2 text-[10px] text-muted">
                 Scan, then enter the 6-digit PIN. PINs are never printed.
               </div>
             </div>

@@ -1,7 +1,7 @@
 import { formatCountdown, formatDuration } from '../lib/eventTime.js';
 
 const TONE = {
-  normal: 'text-white',
+  normal: 'text-ink',
   good: 'text-emerald-300',
   warn: 'text-amber-200',
   bad: 'text-alert-soft',
@@ -10,7 +10,7 @@ const TONE = {
 function Metric({ label, value, tone = 'normal', title }) {
   return (
     <div className="rounded-lg border border-line bg-page" title={title}>
-      <div className="px-2 pt-1.5 text-[9px] uppercase tracking-wider text-slate-500">{label}</div>
+      <div className="px-2 pt-1.5 text-[9px] uppercase tracking-wider text-muted">{label}</div>
       <div className={`px-2 pb-1.5 font-mono text-sm font-semibold tabular-nums ${TONE[tone]}`}>
         {value}
       </div>
@@ -24,7 +24,7 @@ function Chip({ label, value, tone = 'normal', title }) {
       title={title}
       className="inline-flex items-center gap-1 rounded border border-line-strong bg-raised px-1.5 py-0.5"
     >
-      <span className="text-[9px] uppercase tracking-wider text-slate-500">{label}</span>
+      <span className="text-[9px] uppercase tracking-wider text-muted">{label}</span>
       <span className={`font-semibold tabular-nums ${TONE[tone]}`}>{value}</span>
     </span>
   );
@@ -75,7 +75,7 @@ export default function ReelClock({ clock, compact = false }) {
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-baseline gap-2">
-            <span className="font-mono text-2xl font-bold tabular-nums text-white">
+            <span className="font-mono text-2xl font-bold tabular-nums text-ink">
               {clock.nowClock}
             </span>
           </div>
@@ -92,10 +92,10 @@ export default function ReelClock({ clock, compact = false }) {
             <Chip label="DJ cutoff" value={cutoffLabel} tone={cutoffTone} />
           </div>
         </div>
-        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-slate-400">
+        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-muted">
           <Chip label="Finish" value={clock.projectedFinish ?? '—'} />
           <Chip label="Next anchor" value={anchorLabel} />
-          <span className="text-slate-600">{clock.timeZone}</span>
+          <span className="text-muted">{clock.timeZone}</span>
         </div>
         <SkewWarning clock={clock} />
       </section>
@@ -109,15 +109,15 @@ export default function ReelClock({ clock, compact = false }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
-          <div className="font-mono text-4xl font-bold leading-none tabular-nums text-white">
+          <div className="font-mono text-4xl font-bold leading-none tabular-nums text-ink">
             {clock.nowClock}
           </div>
-          <div className="mt-1 truncate font-heading text-sm font-semibold text-slate-200">
+          <div className="mt-1 truncate font-heading text-sm font-semibold text-ink">
             {active ? active.title : clock.isComplete ? 'Event complete' : 'Event in progress'}
           </div>
         </div>
 
-        <span className="rounded border border-line-strong bg-raised px-2 py-0.5 font-mono text-[9px] text-slate-400">
+        <span className="rounded border border-line-strong bg-raised px-2 py-0.5 font-mono text-[9px] text-muted">
           {clock.timeZone}
         </span>
       </div>

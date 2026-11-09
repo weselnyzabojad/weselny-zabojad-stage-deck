@@ -8,11 +8,11 @@ const TONES = {
     icon: '▼',
   },
   ontime: {
-    chip: 'border-line-strong bg-raised text-slate-200',
+    chip: 'border-line-strong bg-raised text-ink',
     icon: '●',
   },
   unknown: {
-    chip: 'border-line-strong bg-raised text-slate-400',
+    chip: 'border-line-strong bg-raised text-muted',
     icon: '·',
   },
 };

@@ -90,17 +90,17 @@ function AdminLogin({ onSignedIn }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
       <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
           Owner admin
         </div>
-        <h1 className="mt-1 font-heading text-xl font-bold text-white">Sign in</h1>
-        <p className="mt-1 text-xs text-slate-400">
+        <h1 className="mt-1 font-heading text-xl font-bold text-ink">Sign in</h1>
+        <p className="mt-1 text-xs text-muted">
           Allowlisted owners only. No self-signup.
         </p>
 
-        <label className="mt-4 block font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="mt-4 block font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
           Email
           <input
             type="email"
@@ -108,11 +108,11 @@ function AdminLogin({ onSignedIn }) {
             onChange={(event) => setEmail(event.target.value)}
             autoComplete="username"
             required
-            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 text-sm text-white outline-none focus:border-brand-strong"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 text-sm text-ink outline-none focus:border-brand-strong"
           />
         </label>
 
-        <label className="mt-3 block font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="mt-3 block font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
           Password
           <input
             type="password"
@@ -120,7 +120,7 @@ function AdminLogin({ onSignedIn }) {
             onChange={(event) => setPassword(event.target.value)}
             autoComplete="current-password"
             required
-            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 text-sm text-white outline-none focus:border-brand-strong"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2.5 text-sm text-ink outline-none focus:border-brand-strong"
           />
         </label>
 
@@ -131,7 +131,7 @@ function AdminLogin({ onSignedIn }) {
         <button
           type="submit"
           disabled={busy}
-          className="mt-3 w-full rounded-xl border border-brand-strong bg-brand py-3 font-heading text-sm font-bold text-white transition hover:bg-brand-hover disabled:opacity-60"
+          className="mt-3 w-full rounded-xl border border-brand-strong bg-brand py-3 font-heading text-sm font-bold text-on-accent transition hover:bg-brand-hover disabled:opacity-60"
         >
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
@@ -180,15 +180,15 @@ function MfaGate({ mfa, onVerified }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
       <form onSubmit={submit} className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
           Owner admin
         </div>
-        <h1 className="mt-1 font-heading text-xl font-bold text-white">
+        <h1 className="mt-1 font-heading text-xl font-bold text-ink">
           {enrollment ? 'Set up TOTP MFA' : 'Two-factor check'}
         </h1>
-        <p className="mt-1 text-xs leading-relaxed text-slate-400">
+        <p className="mt-1 text-xs leading-relaxed text-muted">
           {enrollment
             ? 'Scan the QR code with an authenticator app, then enter the 6-digit code. This factor is required on every admin session.'
             : 'Enter the 6-digit code from your authenticator app.'}
@@ -199,13 +199,13 @@ function MfaGate({ mfa, onVerified }) {
             {enrollment.qrCode ? (
               <img src={enrollment.qrCode} alt="TOTP enrollment QR code" className="h-44 w-44 rounded bg-white p-2" />
             ) : null}
-            <div className="break-all font-mono text-[10px] text-slate-400">
+            <div className="break-all font-mono text-[10px] text-muted">
               {enrollment.secret}
             </div>
           </div>
         ) : null}
 
-        <label className="mt-4 block font-heading text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+        <label className="mt-4 block font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
           6-digit code
           <input
             value={code}
@@ -213,7 +213,7 @@ function MfaGate({ mfa, onVerified }) {
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder="••••••"
-            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-white outline-none focus:border-brand-strong"
+            className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-3 text-center font-mono text-2xl tracking-[0.4em] text-ink outline-none focus:border-brand-strong"
           />
         </label>
 
@@ -224,7 +224,7 @@ function MfaGate({ mfa, onVerified }) {
         <button
           type="submit"
           disabled={busy || code.length !== 6}
-          className="mt-3 w-full rounded-xl border border-brand-strong bg-brand py-3 font-heading text-sm font-bold text-white transition hover:bg-brand-hover disabled:opacity-60"
+          className="mt-3 w-full rounded-xl border border-brand-strong bg-brand py-3 font-heading text-sm font-bold text-on-accent transition hover:bg-brand-hover disabled:opacity-60"
         >
           {busy ? 'Verifying…' : 'Verify'}
         </button>
@@ -261,37 +261,37 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
       <div className="w-full max-w-3xl rounded-2xl border border-line bg-card p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-heading text-lg font-bold text-white">
+            <h2 className="font-heading text-lg font-bold text-ink">
               {result.qrOnly ? 'QR cards' : 'PINs shown once'}
             </h2>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-muted">
               {result.qrOnly
                 ? 'Print these cards for the crew. The PIN is never printed; each device enters it after scanning.'
                 : 'Store these now. Only bcrypt hashes are saved; republishing rotates them.'}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded border border-line px-2 py-1 text-xs text-slate-300">
+          <button type="button" onClick={onClose} className="rounded border border-line px-2 py-1 text-xs text-ink">
             Close
           </button>
         </div>
 
         <div className={result.qrOnly ? 'hidden' : 'mt-4'}>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-muted">
               Re-publishing rotates these PINs and invalidates old cards.
             </p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setRevealed((value) => !value)}
-                className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+                className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-ink"
               >
                 {revealed ? 'Hide PINs' : 'Reveal PINs'}
               </button>
               <button
                 type="button"
                 onClick={() => copy(rows.map(([role, pin]) => `${role}: ${pin}`).join('\n'), 'All PINs copied.')}
-                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-slate-200"
+                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink"
               >
                 Copy all PINs
               </button>
@@ -300,17 +300,17 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
           <div className="grid gap-2 sm:grid-cols-2">
             {rows.map(([role, pin]) => (
               <div key={role} className="rounded-lg border border-line bg-page p-3">
-                <div className="font-heading text-[10px] uppercase tracking-widest text-slate-400">
+                <div className="font-heading text-[10px] uppercase tracking-widest text-muted">
                   {roleLabel(role)}
                 </div>
                 <div className="mt-1 flex items-center justify-between gap-2">
-                  <span className="font-mono text-2xl font-bold tracking-[0.3em] text-white">
+                  <span className="font-mono text-2xl font-bold tracking-[0.3em] text-ink">
                     {revealed ? pin : '••••••'}
                   </span>
                   <button
                     type="button"
                     onClick={() => copy(pin, `${roleLabel(role)} PIN copied.`)}
-                    className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-slate-300"
+                    className="rounded border border-line px-2 py-1 text-[10px] font-semibold text-ink"
                   >
                     Copy
                   </button>
@@ -327,11 +327,11 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
 
         <div className="mt-5">
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="font-heading text-sm font-bold text-white">Printable QR cards</h3>
+            <h3 className="font-heading text-sm font-bold text-ink">Printable QR cards</h3>
             <button
               type="button"
               onClick={() => window.print()}
-              className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-slate-200"
+              className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-ink"
             >
               Print cards
             </button>
@@ -345,16 +345,16 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
 
 function AdminViewportBlocked() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-ink">
       <section
         role="alert"
         className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl"
       >
         <div className="text-3xl" aria-hidden="true">💻</div>
-        <h1 className="mt-3 font-heading text-lg font-bold text-white">
+        <h1 className="mt-3 font-heading text-lg font-bold text-ink">
           Laptop or desktop required
         </h1>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-muted">
           The owner admin panel is not available on mobile or narrow-tablet
           screens. Open this page on a laptop or desktop.
         </p>
@@ -808,10 +808,10 @@ function AdminAppContent() {
 
   if (!configured) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-slate-100">
+      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
         <div className="max-w-md rounded-2xl border border-line bg-card p-6 text-center">
-          <h1 className="font-heading text-lg font-bold text-white">Admin is not configured</h1>
-          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+          <h1 className="font-heading text-lg font-bold text-ink">Admin is not configured</h1>
+          <p className="mt-2 text-xs leading-relaxed text-muted">
             Set <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code>, deploy the
             <code> admin_api</code> function, and apply the owner-admin migration.
           </p>
@@ -822,7 +822,7 @@ function AdminAppContent() {
 
   if (booting) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page text-sm text-slate-400">
+      <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
         Loading owner admin…
       </div>
     );
@@ -837,7 +837,7 @@ function AdminAppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-page text-slate-100">
+    <div className="min-h-screen bg-page text-ink">
       <header className="sticky top-0 z-20 border-b border-line bg-card px-4 py-3">
         {ADMIN_DEMO ? (
           <div className="mx-auto mb-2 max-w-6xl rounded border border-amber-700 bg-amber-950/60 px-3 py-1.5 text-[11px] text-amber-200">
@@ -849,10 +849,10 @@ function AdminAppContent() {
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
               Owner admin
             </div>
-            <h1 className="font-heading text-lg font-bold text-white">Wedding library</h1>
+            <h1 className="font-heading text-lg font-bold text-ink">Wedding library</h1>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-slate-400">
+            <span className="rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-muted">
               idle {Math.ceil(sessionState.idleRemainingMs / 60000)}m · absolute{' '}
               {Math.floor(sessionState.absoluteRemainingMs / 3600000)}h
             </span>
@@ -860,14 +860,14 @@ function AdminAppContent() {
               type="button"
               onClick={() => load()}
               disabled={loading}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-slate-200 disabled:opacity-50"
+              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink disabled:opacity-50"
             >
               Refresh
             </button>
             <button
               type="button"
               onClick={signOut}
-              className="rounded border border-line px-2.5 py-1 text-slate-400"
+              className="rounded border border-line px-2.5 py-1 text-muted"
             >
               Sign out
             </button>
@@ -885,8 +885,8 @@ function AdminAppContent() {
               onClick={() => changeTab(id)}
               className={`rounded border px-3 py-1.5 font-semibold ${
                 tab === id
-                  ? 'border-brand-strong bg-brand/40 text-white'
-                  : 'border-line bg-raised text-slate-400'
+                  ? 'border-brand-strong bg-brand/40 text-ink'
+                  : 'border-line bg-raised text-muted'
               }`}
             >
               {label}
@@ -944,7 +944,7 @@ function AdminAppContent() {
               <button
                 type="button"
                 onClick={signOut}
-                className="rounded border border-line px-3 py-1.5 text-slate-300"
+                className="rounded border border-line px-3 py-1.5 text-ink"
               >
                 Sign out now
               </button>
@@ -956,39 +956,39 @@ function AdminAppContent() {
         {tab === 'weddings' ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-heading text-sm font-bold text-white">
+              <h2 className="font-heading text-sm font-bold text-ink">
                 {filteredWeddings.length} of {data?.weddings?.length ?? 0} weddings
               </h2>
             </div>
 
             <div className="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-card p-3">
-              <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Search
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Couple, wedding id or room code"
-                  className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                  className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 />
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Status
                 <select
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="active">Active</option>
                   <option value="archived">Archived</option>
                   <option value="all">All</option>
                 </select>
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Role
                 <select
                   value={roleFilter}
                   onChange={(event) => setRoleFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-white"
+                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="">All roles</option>
                   {ROLE_IDS.map((role) => (
@@ -1008,7 +1008,7 @@ function AdminAppContent() {
 
             <div className="space-y-3">
               {filteredWeddings.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
+                <div className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-muted">
                   <p>No weddings match this filter. Switch to All or refresh the Drive library.</p>
                 </div>
               ) : null}
@@ -1022,19 +1022,19 @@ function AdminAppContent() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-heading text-base font-bold text-white">{wedding.couple || '—'}</h3>
+                        <h3 className="font-heading text-base font-bold text-ink">{wedding.couple || '—'}</h3>
                         {wedding.archived_at ? (
                           <span className="rounded border border-amber-700 bg-amber-950/60 px-1.5 py-0.5 text-[9px] font-bold text-amber-200">
                             ARCHIVED
                           </span>
                         ) : null}
                       </div>
-                      <div className="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-slate-400">
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5 font-mono text-[10px] text-muted">
                         <span>{wedding.wedding_id} · {wedding.date || '—'} · room {wedding.room_code}</span>
                         <button
                           type="button"
                           onClick={() => copyRoomCode(wedding.room_code)}
-                          className="rounded border border-line px-1.5 py-0.5 text-[9px] font-semibold text-slate-300 hover:bg-line"
+                          className="rounded border border-line px-1.5 py-0.5 text-[9px] font-semibold text-ink hover:bg-line"
                         >
                           Copy code
                         </button>
@@ -1052,14 +1052,14 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleRotate(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200 disabled:opacity-40"
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
                       >
                         Rotate PINs
                       </button>
                       <button
                         type="button"
                         onClick={() => showQr(wedding)}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200"
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink"
                       >
                         QR cards
                       </button>
@@ -1067,7 +1067,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handlePublishRevision(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-white disabled:opacity-40"
+                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-ink disabled:opacity-40"
                       >
                         Replace cartridge
                       </button>
@@ -1075,7 +1075,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleRestorePrevious(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-slate-200 disabled:opacity-40"
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
                       >
                         Restore previous
                       </button>
@@ -1097,7 +1097,7 @@ function AdminAppContent() {
                       </button>
                     </div>
                   </div>
-                  <div className="mt-2 font-mono text-[9px] text-slate-500">
+                  <div className="mt-2 font-mono text-[9px] text-muted">
                     rev {Number(wedding.cartridge_revision ?? 0)} · updated {formatAdminTime(wedding.updated_at)} · expires {formatAdminTime(wedding.expires_at)}
                     {wedding.cartridge_published_at ? ` · published ${formatAdminTime(wedding.cartridge_published_at)}` : ''}
                   </div>
@@ -1110,8 +1110,8 @@ function AdminAppContent() {
         {tab === 'presence' ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="font-heading text-sm font-bold text-white">Live presence</h2>
-              <span className="inline-flex items-center gap-1.5 rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-slate-400">
+              <h2 className="font-heading text-sm font-bold text-ink">Live presence</h2>
+              <span className="inline-flex items-center gap-1.5 rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-muted">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" aria-hidden="true" />
                 Live · updated{' '}
                 {lastLoadedAt ? `${Math.max(0, Math.round((nowTick - lastLoadedAt) / 1000))}s ago` : '—'}
@@ -1119,12 +1119,12 @@ function AdminAppContent() {
             </div>
           <section className="overflow-x-auto rounded-xl border border-line bg-card">
             {(data?.sessions ?? []).length === 0 ? (
-              <p className="p-6 text-center text-xs text-slate-400">
+              <p className="p-6 text-center text-xs text-muted">
                 No devices have joined yet. Share a QR card or room code.
               </p>
             ) : (
             <table className="min-w-full text-left text-xs">
-              <thead className="border-b border-line font-heading text-[9px] uppercase tracking-widest text-slate-400">
+              <thead className="border-b border-line font-heading text-[9px] uppercase tracking-widest text-muted">
                 <tr>
                   <th className="px-3 py-2">Role / device</th>
                   <th className="px-3 py-2">Wedding</th>
@@ -1148,12 +1148,12 @@ function AdminAppContent() {
                   return (
                     <tr key={entry.jti} className="border-b border-line/60">
                       <td className="px-3 py-2">
-                        <div className="font-semibold text-white">{roleLabel(entry.role)}</div>
-                        <div className="font-mono text-[9px] text-slate-500">
+                        <div className="font-semibold text-ink">{roleLabel(entry.role)}</div>
+                        <div className="font-mono text-[9px] text-muted">
                           {entry.device_label || entry.device_id}
                         </div>
                       </td>
-                      <td className="px-3 py-2 font-mono text-[10px] text-slate-400">{entry.wedding_id}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{entry.wedding_id}</td>
                       <td className="px-3 py-2">
                         <span
                           className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold ${
@@ -1161,19 +1161,19 @@ function AdminAppContent() {
                               ? 'bg-emerald-950/60 text-emerald-300'
                               : status === 'idle'
                                 ? 'bg-amber-950/60 text-amber-200'
-                                : 'bg-slate-900 text-slate-400'
+                                : 'bg-slate-900 text-muted'
                           }`}
                         >
                           {status}
                         </span>
                       </td>
-                      <td className="px-3 py-2 font-mono text-[10px] text-slate-400">
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">
                         {presence?.current_view ?? '—'}
                       </td>
-                      <td className="px-3 py-2 font-mono text-[10px] text-slate-400">
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">
                         {formatAdminTime(presence?.last_seen ?? entry.issued_at)}
                       </td>
-                      <td className="px-3 py-2 font-mono text-[10px] text-slate-400">
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">
                         {formatAdminTime(entry.expires_at)}
                       </td>
                       <td className="px-3 py-2 text-right">
@@ -1187,7 +1187,7 @@ function AdminAppContent() {
                             Revoke
                           </button>
                         ) : (
-                          <span className="font-mono text-[9px] text-slate-600">revoked</span>
+                          <span className="font-mono text-[9px] text-muted">revoked</span>
                         )}
                       </td>
                     </tr>
@@ -1203,23 +1203,23 @@ function AdminAppContent() {
         {tab === 'audit' ? (
           <section className="space-y-2">
             {(data?.audit ?? []).length === 0 ? (
-              <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-slate-400">
+              <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-xs text-muted">
                 No admin actions recorded on this deployment.
               </p>
             ) : null}
             {(data?.audit ?? []).map((entry) => (
               <article key={entry.id} className="rounded-lg border border-line bg-card p-3">
-                <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-slate-500">
+                <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-muted">
                   <span>
                     {entry.action} · {entry.target || '—'}
                   </span>
                   <span>{formatAdminTime(entry.created_at)}</span>
                 </div>
-                <div className="mt-1 text-xs text-slate-300">
+                <div className="mt-1 text-xs text-ink">
                   {entry.actor_email || entry.actor_id || 'unknown actor'}
                 </div>
                 {entry.detail ? (
-                  <pre className="mt-1 overflow-x-auto rounded bg-page p-2 font-mono text-[9px] text-slate-500">
+                  <pre className="mt-1 overflow-x-auto rounded bg-page p-2 font-mono text-[9px] text-muted">
                     {JSON.stringify(entry.detail, null, 2)}
                   </pre>
                 ) : null}

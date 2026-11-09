@@ -49,10 +49,10 @@ export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode =
         <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
           {t('openOnPhone.pocketView')}
         </div>
-        <h2 id="open-on-phone-title" className="mt-1 font-heading text-xl font-bold text-white">
+        <h2 id="open-on-phone-title" className="mt-1 font-heading text-xl font-bold text-ink">
           {t('openOnPhone.title', { role: title })}
         </h2>
-        <p className="mt-1 text-xs text-slate-400">{t('openOnPhone.description')}</p>
+        <p className="mt-1 text-xs text-muted">{t('openOnPhone.description')}</p>
 
         <div className="mx-auto mt-5 w-fit rounded-xl bg-white p-3">
           <QrCodeImage
@@ -62,7 +62,7 @@ export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode =
           />
         </div>
 
-        <p className="mt-4 break-all rounded border border-line bg-page/70 px-2 py-1.5 font-mono text-[10px] text-slate-400">
+        <p className="mt-4 break-all rounded border border-line bg-page/70 px-2 py-1.5 font-mono text-[10px] text-muted">
           {url}
         </p>
 
@@ -70,7 +70,7 @@ export function OpenOnPhoneDialog({ open, onClose, role, tier = null, roomCode =
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-hover"
+            className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
           >
             {t('openOnPhone.close')}
           </button>
@@ -96,7 +96,7 @@ export default function OpenOnPhoneButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-slate-200 transition hover:bg-line ${className}`}
+        className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-ink transition hover:bg-line ${className}`}
         title={t('openOnPhone.buttonTitle')}
       >
         <PhoneIcon />

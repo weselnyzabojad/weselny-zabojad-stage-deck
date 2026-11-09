@@ -75,7 +75,7 @@ export default function DjNowPlayingOverlay({
       role="dialog"
       aria-modal="true"
       aria-labelledby="dj-now-playing-title"
-      className="fixed inset-0 z-[80] overflow-y-auto bg-black text-white"
+      className="fixed inset-0 z-[80] overflow-y-auto bg-black text-on-accent"
     >
       <div className="flex min-h-full flex-col p-5 sm:p-8">
         <header className="flex items-start justify-between gap-4">
@@ -83,14 +83,14 @@ export default function DjNowPlayingOverlay({
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
               VIP fullscreen now playing
             </div>
-            <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-widest text-on-accent/60">
               Read-only · live state follows the MC
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-bold text-white transition hover:bg-line"
+            className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-bold text-ink transition hover:bg-line"
           >
             Close
           </button>
@@ -102,18 +102,18 @@ export default function DjNowPlayingOverlay({
           </div>
           <h1
             id="dj-now-playing-title"
-            className="mt-2 max-w-6xl font-heading text-4xl font-bold leading-tight text-white sm:text-6xl xl:text-7xl"
+            className="mt-2 max-w-6xl font-heading text-4xl font-bold leading-tight text-on-accent sm:text-6xl xl:text-7xl"
           >
             {view.title ?? 'Waiting for the live step'}
           </h1>
           {view.artist ? (
-            <div className="mt-2 text-xl text-slate-300 sm:text-3xl">{view.artist}</div>
+            <div className="mt-2 text-xl text-on-accent/80 sm:text-3xl">{view.artist}</div>
           ) : null}
           {view.stepTitle && view.stepTitle !== view.title ? (
-            <div className="mt-2 font-mono text-sm text-slate-500">{view.stepTitle}</div>
+            <div className="mt-2 font-mono text-sm text-on-accent/60">{view.stepTitle}</div>
           ) : null}
           {view.track && view.track !== view.title ? (
-            <div className="mt-1 font-mono text-sm text-slate-400">▶ {view.track}</div>
+            <div className="mt-1 font-mono text-sm text-on-accent/70">▶ {view.track}</div>
           ) : null}
 
           {view.cues.length > 0 ? (
@@ -139,14 +139,14 @@ export default function DjNowPlayingOverlay({
           ) : null}
 
           <div className="mt-8 border-t border-line pt-5">
-            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-500">
+            <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-on-accent/60">
               Next
             </div>
-            <div className="mt-1 font-heading text-2xl font-semibold text-slate-200 sm:text-3xl">
+            <div className="mt-1 font-heading text-2xl font-semibold text-on-accent/90 sm:text-3xl">
               {view.nextTitle ?? 'No next track'}
             </div>
             {view.nextStepTitle || view.nextStart ? (
-              <div className="mt-1 font-mono text-xs text-slate-500">
+              <div className="mt-1 font-mono text-xs text-on-accent/60">
                 {view.nextStart ? `${view.nextStart} · ` : ''}
                 {view.nextStepTitle ?? ''}
               </div>
@@ -154,7 +154,7 @@ export default function DjNowPlayingOverlay({
           </div>
         </main>
 
-        <footer className="font-mono text-[10px] uppercase tracking-widest text-slate-600">
+        <footer className="font-mono text-[10px] uppercase tracking-widest text-on-accent/60">
           VIP fullscreen · no step controls · screen wake lock when supported
         </footer>
       </div>
