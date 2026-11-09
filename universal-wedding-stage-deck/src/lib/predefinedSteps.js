@@ -5,6 +5,8 @@ export function filterEnabledSteps(wedding) {
   return steps.filter((step) => {
     if (!step?.optionalFlag) return true;
     if (step.optionalFlag === 'oczepiny') return wedding?.oczepiny?.enabled === true;
+    // A DJ set is a regular timeline block, not a feature-gated optional step.
+    if (step.optionalFlag === 'dj_set') return true;
     if (step.optionalFlag === 'wishes') return wedding?.wishes?.enabled === true;
     if (step.optionalFlag === 'games') {
       if (wedding?.games?.enabled !== true) return false;

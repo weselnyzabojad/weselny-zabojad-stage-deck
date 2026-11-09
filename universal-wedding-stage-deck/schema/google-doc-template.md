@@ -112,6 +112,7 @@ the localized title.
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
 | step_10 | 01:00 | 30 | Test Wiedzy | FLEXIBLE | Main Hall |  | false | games |  |
 | step_11 | 01:30 | 30 | Test Zgodności | FLEXIBLE | Main Hall |  | false | games |  |
+| step_12 | 02:00 | 60 | DJ Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
 
 ## DJ CUES
 
