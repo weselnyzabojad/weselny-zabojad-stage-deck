@@ -26,6 +26,7 @@ import culturalRulesDomain from '../_shared/domains/cultural-rules.json' with { 
 import coupleProfileDomain from '../_shared/domains/couple-profile.json' with { type: 'json' };
 import photoPlanDomain from '../_shared/domains/photo-plan.json' with { type: 'json' };
 import miniSessionDomain from '../_shared/domains/mini-session.json' with { type: 'json' };
+import groupPhotosDomain from '../_shared/domains/group-photos.json' with { type: 'json' };
 import {
   authorizeAdminSession,
   decodeJwt,
@@ -47,7 +48,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',

@@ -13,14 +13,6 @@
       "civilTwilightEnd": "20:48",
       "status": "LIVE"
     },
-    "groupPhotos": {
-      "location": "OUTDOOR",
-      "groups": [
-        { "id": "bride_family", "label": "Bride's family" },
-        { "id": "groom_family", "label": "Groom's family" },
-        { "id": "friends", "label": "Friends" }
-      ]
-    },
     "speedFoto": {
       "enabled": true,
       "description": "Couple in the middle of the dance floor; guests run in, pose, and clear.",

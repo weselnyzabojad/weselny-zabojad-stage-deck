@@ -62,6 +62,9 @@
         },
         "miniSession": {
           "$ref": "https://weselnyzabojad.example/schemas/domains/mini-session.json#/properties/miniSession"
+        },
+        "groupPhotos": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/group-photos.json#/properties/groupPhotos"
         }
       },
       "required": [

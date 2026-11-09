@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/group-photos.json",
+  "title": "Group photos domain",
+  "description": "Group-photo plan and guest groups mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "groupPhotos": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "stepId": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "groupPhotos"
+  ]
+}
