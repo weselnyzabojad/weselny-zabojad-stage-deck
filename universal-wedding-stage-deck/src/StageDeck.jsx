@@ -13,6 +13,7 @@ import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
+import { deriveHardAnchors } from './lib/hardAnchors';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds, isMediaRole } from './lib/roles';
@@ -265,8 +266,11 @@ export default function StageDeck({
   ) : null;
 
   const steps = activeSteps(WEDDING.steps, liveState);
+  const mandatorySettings =
+    liveState.media_overrides?.mandatorySteps?.value ?? WEDDING.mandatorySteps ?? {};
+  const hardAnchors = deriveHardAnchors(mandatorySettings);
   const driftReport = buildDriftReport(steps, liveState, {
-    hardAnchors: WEDDING.hardAnchors,
+    hardAnchors,
     now,
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
@@ -286,7 +290,7 @@ export default function StageDeck({
   const nextEntry =
     activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : timeline.find((entry) => !entry.isDone) ?? null;
   const djOczepinyStatus = resolveOczepinyIndicator({
-    wedding: WEDDING,
+    wedding: { ...WEDDING, hardAnchors },
     now: driftReport.clock?.now ?? null,
     eventDateISO: EVENT_DATE_ISO,
     timeZone: VENUE_TIME_ZONE,
@@ -306,8 +310,6 @@ export default function StageDeck({
     timeline,
   });
   const speechMode = resolveSpeechMode(WEDDING, speeches);
-  const mandatorySettings =
-    liveState.media_overrides?.mandatorySteps?.value ?? WEDDING.mandatorySteps ?? {};
   const cakeServiceMode = mandatorySettings.cakeServiceMode ?? 'KITCHEN_RETURN';
   const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
   // The visible sync badge is only fully green after BOTH the cartridge and

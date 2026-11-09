@@ -113,8 +113,16 @@
               "id": { "$ref": "#/$defs/id" },
               "name": { "type": "string", "minLength": 1 },
               "time": { "$ref": "#/$defs/clock" },
-              "serviceMode": { "enum": ["TABLE_SERVICE", "BUFFET"] }
+              "serviceMode": { "enum": ["TABLE_SERVICE", "BUFFET"] },
+              "isHardAnchor": { "type": "boolean", "default": false }
             }
+          }
+        },
+        "milestones": {
+          "type": "array",
+          "description": "Admin-managed mandatory milestones. Photo and camera are separate entries; set isHardAnchor to derive a hard anchor.",
+          "items": {
+            "$ref": "#/$defs/mandatoryMilestone"
           }
         }
       }
@@ -434,6 +442,48 @@
             "FAMILY",
             "OTHER"
           ]
+        }
+      }
+    },
+    "mandatoryMilestone": {
+      "type": "object",
+      "required": [
+        "id",
+        "time",
+        "label"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "PHOTO",
+            "CAMERA",
+            "VENDOR",
+            "TRANSPORT",
+            "FAMILY",
+            "SUNSET",
+            "OTHER"
+          ]
+        },
+        "alertBeforeMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
+        },
+        "isHardAnchor": {
+          "type": "boolean",
+          "default": false
         }
       }
     },

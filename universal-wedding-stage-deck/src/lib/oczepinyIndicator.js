@@ -51,7 +51,15 @@ export function resolveOczepinyIndicator({
   }
 
   const anchors = Array.isArray(wedding?.hardAnchors) ? wedding.hardAnchors : [];
-  const anchor = anchors.find((entry) => entry?.id === oczepiny.anchorId) ?? null;
+  const anchor =
+    anchors.find((entry) => entry?.id === oczepiny.anchorId) ??
+    (Array.isArray(wedding?.steps)
+      ? wedding.steps.find(
+          (step) =>
+            step?.optionalFlag === 'oczepiny' || /oczepiny|ocsepiny/i.test(step?.title ?? ''),
+        )
+      : null) ??
+    null;
   const blockMinutes = blockMinutesFor(oczepiny);
   const dateISO = eventDateISO ?? resolveEventDateISO(wedding);
   const zone = timeZone ?? resolveVenueTimeZone(wedding);

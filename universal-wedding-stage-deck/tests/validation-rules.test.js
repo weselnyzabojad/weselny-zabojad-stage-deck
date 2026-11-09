@@ -78,7 +78,7 @@ describe('semantic validation rules', () => {
     const errors = errorsFor((cartridge) => {
       cartridge.oczepiny = { enabled: true, order: 'MIDNIGHT' };
     });
-    expect(messages(errors)).toContain('MIDNIGHT Oczepiny requires an anchorId');
+    expect(messages(errors)).toContain('MIDNIGHT Oczepiny requires an anchorId or an oczepiny step');
   });
 
   it('rejects fire effects without permit, approval or briefing', () => {

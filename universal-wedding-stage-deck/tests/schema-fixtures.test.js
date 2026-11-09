@@ -19,7 +19,7 @@ const EXPECTED_INVALID_REASONS = {
   'invalid-iso-timestamp.json': 'must match pattern',
   'invalid-missing-cultural-rule.json': 'bread_salt',
   'invalid-music-window.json': 'requestWindow.end must be after start',
-  'invalid-oczepiny-anchor.json': 'MIDNIGHT Oczepiny requires an anchorId',
+  'invalid-oczepiny-anchor.json': 'MIDNIGHT Oczepiny requires an anchorId or an oczepiny step',
   'invalid-song-step-ref.json': 'unknown step id',
   'invalid-speech-order.json': 'duplicate speech order',
   'invalid-sync-pin.json': 'must match pattern',
@@ -68,7 +68,8 @@ describe('schema fixture suite', () => {
     expect(errors).toEqual([]);
     expect(cartridge.couple).toBe('Jennifer & Guillaume');
     expect(cartridge.steps).toHaveLength(10);
-    expect(cartridge.hardAnchors).toHaveLength(2);
+    expect(cartridge.mandatorySteps.milestones).toHaveLength(2);
+    expect(cartridge.hardAnchors).toBeUndefined();
     expect(cartridge.liveSyncState.actual_timestamps.step_03).toBe(
       '2026-08-20T18:25:00+02:00',
     );

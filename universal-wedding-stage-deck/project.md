@@ -3375,9 +3375,11 @@ single source of truth:
 - Milestones are created on the admin/venue-manager surface, not in the Doc.
 
 The Doc `## HARD ANCHORS` section is removed from the template, manifest,
-validator and mapper. Tracked by
-[#595](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/595)
-and the admin editor in
+validator and mapper. Implemented in
+[#595](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/595):
+`deriveHardAnchors(mandatorySteps)` feeds the radar from admin milestones and
+flagged kitchen courses; the demo/fixtures use separate photo and camera
+milestones and no Oczepiny anchor. The admin editor is
 [#596](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/596)
 (blocked by #595).
 

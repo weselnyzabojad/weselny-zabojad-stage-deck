@@ -157,14 +157,22 @@ export function collectSemanticErrors(cartridge) {
   uniqueList(cartridge?.mediaTeam, '/mediaTeam', 'media team member');
 
   const oczepiny = cartridge?.oczepiny;
+  const hasOczepinyStep = (Array.isArray(cartridge?.steps) ? cartridge.steps : []).some(
+    (step) =>
+      step?.optionalFlag === 'oczepiny' || /oczepiny|ocsepiny/i.test(step?.title ?? ''),
+  );
   if (
     oczepiny &&
     typeof oczepiny === 'object' &&
     oczepiny.enabled === true &&
     oczepiny.order === 'MIDNIGHT' &&
-    !oczepiny.anchorId
+    !oczepiny.anchorId &&
+    !hasOczepinyStep
   ) {
-    pushError('/oczepiny/anchorId', 'MIDNIGHT Oczepiny requires an anchorId');
+    pushError(
+      '/oczepiny/anchorId',
+      'MIDNIGHT Oczepiny requires an anchorId or an oczepiny step',
+    );
   }
 
   const effects = cartridge?.photoPlan?.specialEffects;

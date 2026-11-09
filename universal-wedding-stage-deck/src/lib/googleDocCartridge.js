@@ -1,4 +1,5 @@
 import { applyCalculatedDurations } from './stepDurations.js';
+import { deriveHardAnchors } from './hardAnchors.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
 // `22.15`, `15h00`, ranges (`15:40/16:00`, `22:00-22:30`, `18:00–20:00`) and
@@ -778,24 +779,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const { steps, anchorIds } = mapTimeline(timeline, warnings);
   if (!steps.length) errors.push('TIMELINE: no valid steps mapped');
 
-  const hardAnchors = table(section(parsed, 'HARD ANCHORS'), [
-    'Anchor ID',
-    'Time',
-    'Label',
-    'Alert before (min)',
-    'Kind',
-  ]).map((row) => ({
-    id: slug(row['Anchor ID']),
-    time: clock(row.Time),
-    label: text(row.Label) ?? row['Anchor ID'],
-    alertBeforeMin: int(row['Alert before (min)'], 45),
-    kind: ['VENDOR', 'SUNSET', 'TRANSPORT', 'FAMILY', 'OTHER'].includes(
-      text(row.Kind)?.toUpperCase(),
-    )
-      ? text(row.Kind).toUpperCase()
-      : 'OTHER',
-  }));
-
   const djRows = table(section(parsed, 'DJ CUES'), [
     'Step ID',
     'Playlist',
@@ -898,6 +881,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     : undefined;
 
   const mandatorySteps = mapMandatory(section(parsed, 'MANDATORY STEPS'));
+  const hardAnchors = deriveHardAnchors(mandatorySteps);
   const ceremony = mapCeremony(event);
   const ceremonyScript = section(parsed, 'CEREMONY SCRIPT');
   if (ceremonyScript) mapCeremonyScript(ceremonyScript, steps);

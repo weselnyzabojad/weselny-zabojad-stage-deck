@@ -41,22 +41,6 @@
       "note": "Vodka vs water shot, break glasses"
     }
   },
-  "hardAnchors": [
-    {
-      "id": "photo_video",
-      "time": "20:30",
-      "label": "Photo / Video Leaves",
-      "alertBeforeMin": 45,
-      "kind": "VENDOR"
-    },
-    {
-      "id": "ocsepiny",
-      "time": "00:00",
-      "label": "Oczepiny (Exact)",
-      "alertBeforeMin": 30,
-      "kind": "FAMILY"
-    }
-  ],
   "venueLogistics": {
     "address": "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
     "coordinates": {
@@ -171,7 +155,6 @@
   "oczepiny": {
     "enabled": true,
     "order": "MIDNIGHT",
-    "anchorId": "ocsepiny",
     "toss": "VEIL",
     "ties": "BOW_TIE",
     "winnerPhoto": {
@@ -657,7 +640,25 @@
     ],
     "closureTime": "02:00",
     "closureExtensionAllowed": true,
-    "lastSong": "Perfect - Ed Sheeran"
+    "lastSong": "Perfect - Ed Sheeran",
+    "milestones": [
+      {
+        "id": "photo_leave",
+        "time": "20:30",
+        "label": "Photographer leaves",
+        "kind": "PHOTO",
+        "alertBeforeMin": 45,
+        "isHardAnchor": true
+      },
+      {
+        "id": "camera_leave",
+        "time": "20:30",
+        "label": "Cameraman leaves",
+        "kind": "CAMERA",
+        "alertBeforeMin": 45,
+        "isHardAnchor": true
+      }
+    ]
   },
   "ceremony": {
     "type": "RELIGIOUS",
