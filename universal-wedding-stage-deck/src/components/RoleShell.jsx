@@ -36,11 +36,6 @@ export default function RoleShell({
   activeSpeechId = null,
   viewSwitch = null,
   authControl = null,
-  onUndo,
-  canUndo,
-  lastUndoLabel,
-  onAdvance,
-  isComplete,
   childrenExpected = false,
   childrenRole = null,
   allowMcChildren = false,
@@ -132,15 +127,7 @@ export default function RoleShell({
         {children}
       </main>
 
-      <BottomNav
-        role={role}
-        isCompact
-        onUndo={onUndo}
-        canUndo={canUndo}
-        lastUndoLabel={lastUndoLabel}
-        onAdvance={onAdvance}
-        isComplete={isComplete}
-      />
+      <BottomNav role={role} isCompact />
     </div>
   );
 }

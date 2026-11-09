@@ -595,11 +595,6 @@ export default function McMasterView({ model }) {
       speechMode={speechMode}
       activeSpeechId={liveState.active_speech_id}
       viewSwitch={viewSwitch}
-      onUndo={handleUndo}
-      canUndo={canUndo}
-      lastUndoLabel={lastUndo?.label}
-      onAdvance={handleAdvance}
-      isComplete={isComplete}
       childrenExpected={childrenExpected}
       childrenRole={currentRole}
       allowMcChildren
