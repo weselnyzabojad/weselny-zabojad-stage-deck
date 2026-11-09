@@ -2183,7 +2183,7 @@ role token and no wedding data beyond the room code.
   remaining minutes and shows that wait.
 - Live **accepted** message confirms the DJ accepted the song while stating the
   exact play time cannot be confirmed. **Denied** gets a kind message. **Played**
-  gets a final acknowledgement if the page is still open.
+  gets a generic acknowledgement without re-displaying the song title or artist.
 - Refresh/reopen restores the pending/status state for the same device.
 - The guest sees only their own request. No names, emails, phone numbers or
   other guests' queue rows. Tracked by
@@ -2240,6 +2240,26 @@ approved. This remains a planning TODO tracked by
 confirmation and declined-outcomes UI from #148/#149. The room-scoped QR, no
 personal data, no guest queue access and no pocket DJ **moderation** queue rules
 remain; the DJ VIP pocket QR launcher is the exception (#460).
+
+#### Played visibility and guest language switch (decision, 2026-11-09)
+
+Once the DJ confirms **Played**, the request row stays in `song_requests` with
+`played_at` for history/reporting, but the song is never rendered again:
+
+- the DJ queue keeps filtering `playedAt` and has no played-history list;
+- the guest page does not show the played song title/artist; it shows a generic
+  acknowledgement or returns to the form, and strips song/artist from the local
+  guest record;
+- denied/played rows are visible only through admin/reporting paths, never a
+  stage role.
+
+The public `/request/:room` page is fully i18n compliant: it gets the shared
+`LanguageToggle`, every string goes through `t()`, the switch applies
+immediately and persists through the existing locale storage, and time labels
+follow the selected locale.
+
+Tracked by
+[#612](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/612).
 
 #### Song request QR launcher (decision, 2026-11-08)
 
