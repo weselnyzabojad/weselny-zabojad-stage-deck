@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import DiscoPoloBadge from './DiscoPoloBadge';
 import ModalShell from './ModalShell';
 import QrCodeImage from './QrCodeImage';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
@@ -35,6 +36,7 @@ export function SongRequestQueueList({
   onDecline = () => {},
   onPlayed = () => {},
   onRefresh = () => {},
+  discoPoloPolicy = 'NO',
 }) {
   const { t } = useI18n();
   const { pending, accepted } = partitionSongRequests(requests);
@@ -50,6 +52,9 @@ export function SongRequestQueueList({
           <p className="mt-0.5 text-[10px] text-muted">
             {t('dj.requests.pendingCount', { count: pending.length })}
           </p>
+          <div className="mt-1">
+            <DiscoPoloBadge value={discoPoloPolicy} compact />
+          </div>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
@@ -195,6 +200,7 @@ export default function DjSongRequestQueue({
   accessToken = null,
   roomCode = null,
   variant = 'card',
+  discoPoloPolicy = 'NO',
 }) {
   const config = useMemo(() => getSyncConfig(), []);
   const { t } = useI18n();
@@ -371,6 +377,7 @@ export default function DjSongRequestQueue({
           <span>💬 {t('dj.requests.title')} ·{' '}
             {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
           </span>
+          <DiscoPoloBadge value={discoPoloPolicy} compact />
           {qrButton}
           {qrDialog}
         </section>
@@ -389,6 +396,7 @@ export default function DjSongRequestQueue({
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-ink">
             {t('dj.requests.pendingCount', { count: pending.length })}
           </span>
+          <DiscoPoloBadge value={discoPoloPolicy} compact />
 
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
             {pending.length === 0 ? (
@@ -497,6 +505,9 @@ export default function DjSongRequestQueue({
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           💬 {t('dj.requests.title')}
         </h2>
+        <div className="mt-1">
+          <DiscoPoloBadge value={discoPoloPolicy} compact />
+        </div>
         <p className="mt-1 text-[10px] leading-snug text-muted">
           {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
         </p>
@@ -518,6 +529,7 @@ export default function DjSongRequestQueue({
       onDecline={(id) => update(id, 'declined')}
       onPlayed={markPlayed}
       onRefresh={load}
+      discoPoloPolicy={discoPoloPolicy}
     />
   );
 }
