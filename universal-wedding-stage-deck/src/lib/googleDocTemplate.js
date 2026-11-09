@@ -189,7 +189,7 @@ export const SECTION_MANIFEST = Object.freeze([
     marker: 'MANDATORY STEPS',
     required: false,
     schemaPath: ['mandatorySteps'],
-    purpose: 'Exact-hour first-arrival and kitchen service obligations.',
+    purpose: 'Exact-hour first-arrival, kitchen service and closure-extension obligations.',
   },
 ]);
 

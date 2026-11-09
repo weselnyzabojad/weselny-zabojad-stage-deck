@@ -188,6 +188,20 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
+  const mandatory = cartridge?.mandatorySteps;
+  if (mandatory?.closureTime && mandatory?.closureExtensionUntil) {
+    const extensionDelta = clockDeltaMinutes(
+      mandatory.closureTime,
+      mandatory.closureExtensionUntil,
+    );
+    if (extensionDelta == null || extensionDelta <= 0) {
+      pushError(
+        '/mandatorySteps/closureExtensionUntil',
+        'closure extension must end after closureTime',
+      );
+    }
+  }
+
   if (steps.length > 0) {
     const durations = calculateStepDurations(steps, {
       closureTime: cartridge?.mandatorySteps?.closureTime ?? null,

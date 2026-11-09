@@ -193,6 +193,7 @@
         },
         "closureTime": { "$ref": "#/$defs/clock" },
         "closureExtensionAllowed": { "type": "boolean" },
+        "closureExtensionUntil": { "$ref": "#/$defs/clock" },
         "lastSong": { "type": "string" },
         "kitchenServices": {
           "type": "object",

@@ -584,6 +584,7 @@ function mapMandatory(source) {
     },
     closureTime: clock(get('Wedding closure')),
     closureExtensionAllowed: bool(get('Closure extension allowed'), false),
+    closureExtensionUntil: clock(get('Closure extension until')),
     cakeServiceMode: ['KITCHEN_RETURN', 'CUT_IN_PLACE'].includes(text(get('Cake service mode'))?.toUpperCase())
       ? text(get('Cake service mode')).toUpperCase()
       : undefined,

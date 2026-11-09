@@ -69,7 +69,9 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
       rows.push({
         id: 'extension',
         label: t('mandatoryUpdate.extension'),
-        value: t('mandatoryUpdate.extensionValue'),
+        value: constraints.closureExtensionUntil
+          ? t('mandatoryUpdate.extensionUntil', { time: constraints.closureExtensionUntil })
+          : t('mandatoryUpdate.extensionValue'),
       });
     }
     if (constraints.lastSong) {

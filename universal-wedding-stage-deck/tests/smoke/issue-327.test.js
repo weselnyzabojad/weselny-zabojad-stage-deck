@@ -20,6 +20,7 @@ const update = {
     cakeServiceMode: 'KITCHEN_RETURN',
     closureTime: '02:00',
     closureExtensionAllowed: true,
+    closureExtensionUntil: '03:00',
     lastSong: 'Perfect - Ed Sheeran',
   },
 };
@@ -49,7 +50,7 @@ describe('issue #327 mandatory update popup role visibility', () => {
     const html = render('dj', true);
     expect(html).toContain('First guests arrival: 15:30');
     expect(html).toContain('Wedding closure: 02:00');
-    expect(html).toContain('Closure extension: +1h allowed');
+    expect(html).toContain('Closure extension: Until 03:00');
     expect(html).toContain('Last song: Perfect - Ed Sheeran');
     expect(html).not.toContain('Obiad weselny');
     expect(html).not.toContain('Cake service');

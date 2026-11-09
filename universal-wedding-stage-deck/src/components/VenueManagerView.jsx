@@ -187,12 +187,28 @@ export default function VenueManagerView({
                 type="checkbox"
                 className="h-6 w-6"
                 checked={settings.closureExtensionAllowed === true}
-                onChange={(event) =>
-                  update({ ...settings, closureExtensionAllowed: event.target.checked })
+                onChange={(event) => {
+                  const allowed = event.target.checked;
+                  update({
+                    ...settings,
+                    closureExtensionAllowed: allowed,
+                    closureExtensionUntil: allowed
+                      ? settings.closureExtensionUntil ?? null
+                      : null,
+                  });
+                }}
+              />
+              {t('venueManager.extensionPossible')}
+            </label>
+            {settings.closureExtensionAllowed === true ? (
+              <TimeField
+                label={t('venueManager.extensionUntil')}
+                value={settings.closureExtensionUntil}
+                onChange={(time) =>
+                  update({ ...settings, closureExtensionUntil: time })
                 }
               />
-              {t('venueManager.extension')}
-            </label>
+            ) : null}
           </div>
         </div>
 

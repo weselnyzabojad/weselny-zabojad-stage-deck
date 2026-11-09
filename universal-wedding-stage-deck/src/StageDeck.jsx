@@ -442,6 +442,7 @@ export default function StageDeck({
         isVipDj={djDetailTier(WEDDING) === 'vip'}
         closureTime={mandatorySettings.closureTime}
         extensionAllowed={mandatorySettings.closureExtensionAllowed === true}
+        extensionUntil={mandatorySettings.closureExtensionUntil ?? null}
         lastSong={mandatorySettings.lastSong}
       />
     </>
