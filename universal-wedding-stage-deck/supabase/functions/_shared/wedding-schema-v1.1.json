@@ -110,6 +110,13 @@
       "type": "boolean",
       "description": "Whether children are expected at the wedding."
     },
+    "attractions": {
+      "type": "array",
+      "description": "Optional parallel attractions such as a photobooth, guest book or Polaroids. These never create timeline steps.",
+      "items": {
+        "$ref": "#/$defs/attraction"
+      }
+    },
     "steps": {
       "type": "array",
       "minItems": 1,
@@ -1811,6 +1818,55 @@
           "minLength": 1
         },
         "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "attraction": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "name",
+        "booked",
+        "startTime",
+        "endTime"
+      ],
+      "additionalProperties": false,
+      "description": "A booked parallel attraction with its availability window. Never a timeline step.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "PHOTO_BOOTH",
+            "GUEST_BOOK",
+            "POLAROIDS",
+            "OTHER"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "booked": {
+          "type": "boolean"
+        },
+        "startTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "endTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "location": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "notes": {
           "type": "string"
         }
       }

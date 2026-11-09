@@ -519,6 +519,75 @@ function normalizeDiscoPoloPolicy(value) {
   return null;
 }
 
+function normalizeAttractionType(value) {
+  const clean = text(value)?.toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (['photo booth', 'photobooth', 'fotobudka'].includes(clean)) return 'PHOTO_BOOTH';
+  if (['guest book', 'guestbook', 'księga gości', 'ksiega gosci'].includes(clean)) {
+    return 'GUEST_BOOK';
+  }
+  if (['polaroid', 'polaroids', 'polaroidy', 'instax', 'instant photos'].includes(clean)) {
+    return 'POLAROIDS';
+  }
+  return 'OTHER';
+}
+
+function paddedClock(value) {
+  const clean = clock(value);
+  if (!clean) return null;
+  const [hour, minute] = clean.split(':');
+  return `${hour.padStart(2, '0')}:${minute}`;
+}
+
+function clockMinutes(value) {
+  const [hour, minute] = value.split(':').map(Number);
+  return hour * 60 + minute;
+}
+
+function mapAttractions(source, warnings = []) {
+  const rows = table(source, [
+    'Attraction ID',
+    'Type',
+    'Name',
+    'Booked',
+    'Start',
+    'End',
+    'Location',
+    'Provider',
+    'Notes',
+  ]);
+
+  return rows.reduce((items, row) => {
+    const name = text(row.Name);
+    const startTime = paddedClock(row.Start);
+    const endTime = paddedClock(row.End);
+    if (!name) {
+      warnings.push('ATTRACTIONS row skipped: missing name');
+      return items;
+    }
+    if (!startTime || !endTime) {
+      warnings.push(`attraction ${name}: invalid start/end time; row skipped`);
+      return items;
+    }
+    if (clockMinutes(endTime) <= clockMinutes(startTime)) {
+      warnings.push(`attraction ${name}: end must be after start; row skipped`);
+      return items;
+    }
+
+    items.push({
+      id: slug(text(row['Attraction ID']) ?? name, 'attraction'),
+      type: normalizeAttractionType(row.Type),
+      name,
+      booked: bool(row.Booked, true),
+      startTime,
+      endTime,
+      location: text(row.Location) ?? undefined,
+      provider: text(row.Provider) ?? undefined,
+      notes: text(row.Notes) ?? undefined,
+    });
+    return items;
+  }, []);
+}
+
 function mapMusicPolicy(source, importantSongs, warnings = []) {
   const windowStart = clock(kv(source, 'Request window start'));
   const windowEnd = clock(kv(source, 'Request window end'));
@@ -711,6 +780,8 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const importantSongs = mapImportantSongs(section(parsed, 'IMPORTANT SONGS'));
   const musicSource = section(parsed, 'MUSIC POLICY');
   const musicPolicy = musicSource ? mapMusicPolicy(musicSource, importantSongs, warnings) : undefined;
+  const attractionsSource = section(parsed, 'ATTRACTIONS');
+  const attractions = attractionsSource ? mapAttractions(attractionsSource, warnings) : undefined;
   const guestRequests = section(parsed, 'GUEST REQUESTS');
   if (guestRequests && musicPolicy) {
     const open = bool(kv(guestRequests, 'Requests open'));
@@ -870,6 +941,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     mandatorySteps,
     ceremony: ceremony.type ? ceremony : undefined,
     musicPolicy,
+    attractions,
     extensions,
     ...(liveSyncState ? { liveSyncState } : {}),
     demographics: { notes: text(kv(privacySource, 'Demographics notes')) ?? undefined },

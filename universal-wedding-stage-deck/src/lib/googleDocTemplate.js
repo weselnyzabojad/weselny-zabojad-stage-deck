@@ -191,6 +191,13 @@ export const SECTION_MANIFEST = Object.freeze([
     schemaPath: ['mandatorySteps'],
     purpose: 'Exact-hour first-arrival, kitchen service and closure-extension obligations.',
   },
+  {
+    order: 27,
+    marker: 'ATTRACTIONS',
+    required: false,
+    schemaPath: ['attractions'],
+    purpose: 'Parallel attractions (photobooth, guest book, Polaroids) with booked state and windows.',
+  },
 ]);
 
 export const SECTION_ORDER = Object.freeze(SECTION_MANIFEST.map((section) => section.marker));

@@ -369,3 +369,15 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 | Pierwsza kolacja service | TABLE_SERVICE |
 | Druga kolacja service | BUFFET |
 | Trzecia kolacja service | TABLE_SERVICE |
+
+## ATTRACTIONS
+
+Optional parallel attractions. They never create timeline steps. Delete rows you
+do not need; `Booked: no` keeps the row in the cartridge without showing it in
+the MC UI.
+
+| Attraction ID | Type | Name | Booked | Start | End | Location | Provider | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| photobooth | PHOTO_BOOTH | Fotobudka | yes | 20:00 | 23:30 | Garden | Foto Fun | Unlimited prints |
+| guestbook | GUEST_BOOK | Guest book | yes | 18:00 | 23:30 | Hall foyer |  | Signing pens on the table |
+| polaroids | POLAROIDS | Polaroids / Instax | yes | 19:00 | 23:00 | Garden |  | One photo per guest |
