@@ -112,6 +112,21 @@ Keyboard only (no mouse):
 - [ ] Night and Daylight themes both show visible focus outlines and readable
       muted labels.
 
+## 6a. Pinch zoom (WCAG 1.4.4 Resize Text)
+
+`index.html` now keeps only `width=device-width, initial-scale=1.0` on the
+viewport meta tag. The previous `maximum-scale=1.0, user-scalable=no` lockdown
+blocked pinch zoom on iOS and Android and failed WCAG 1.4.4. All role views use
+fluid layouts, so text and controls reflow without horizontal scrolling at 200%
+zoom.
+
+Manual checks:
+
+- [ ] Pinch zoom works on iOS Safari and Android Chrome.
+- [ ] At 200% browser zoom every role view stays usable and scrolls instead of
+      clipping.
+- [ ] The on-stage Advance and Undo controls remain reachable at 200% zoom.
+
 ## 7. Follow-ups (not in this pass)
 
 - Full component-by-component colour token migration (TODO 27) and a
