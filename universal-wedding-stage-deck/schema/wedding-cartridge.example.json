@@ -3,25 +3,6 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_jennifer_guillaume",
   "couple": "Jennifer & Guillaume",
-  "coupleProfile": {
-    "bride": {
-      "firstName": "Jennifer",
-      "nationalities": [
-        "FR"
-      ]
-    },
-    "groom": {
-      "firstName": "Guillaume",
-      "nationalities": [
-        "FR"
-      ]
-    },
-    "commonLanguages": [
-      "FR",
-      "PL",
-      "EN"
-    ]
-  },
   "date": "20.08.2026",
   "syncPin": "2008",
   "role": "MC",

@@ -3,6 +3,7 @@ import oczepinyDomain from '../../schema/domains/oczepiny.json';
 import firstDanceDomain from '../../schema/domains/first-dance.json';
 import attractionsDomain from '../../schema/domains/attractions.json';
 import culturalRulesDomain from '../../schema/domains/cultural-rules.json';
+import coupleProfileDomain from '../../schema/domains/couple-profile.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -19,6 +20,7 @@ async function getValidator() {
       ajv.addSchema(firstDanceDomain);
       ajv.addSchema(attractionsDomain);
       ajv.addSchema(culturalRulesDomain);
+      ajv.addSchema(coupleProfileDomain);
       return ajv.compile(weddingSchema);
     });
   }
