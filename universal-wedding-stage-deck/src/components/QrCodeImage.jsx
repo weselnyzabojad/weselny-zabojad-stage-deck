@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 // service and no network call: generation works offline; opening the target
 // does not. The encoder is loaded on demand so the main deck bundle stays lean
 // (the PWA precaches the chunk, so QR generation still works offline).
-export default function QrCodeImage({ text, size = 60, label = 'QR code' }) {
+export default function QrCodeImage({ text, size = 60, label = 'QR code', fill = false }) {
   const renderKey = `${text ?? ''}|${size}`;
   const [result, setResult] = useState({ key: '', markup: '', failed: false });
 
@@ -39,11 +39,13 @@ export default function QrCodeImage({ text, size = 60, label = 'QR code' }) {
   // Ignore stale markup from a previous song while the new QR is generated.
   const current = result.key === renderKey ? result : { markup: '', failed: false };
 
+  const boxStyle = fill ? { width: '100%', height: '100%' } : { width: size, height: size };
+
   if (current.failed) {
     return (
       <div
         className="flex items-center justify-center rounded border border-amber-700 bg-amber-950/60 text-center font-mono text-[8px] leading-tight text-amber-200"
-        style={{ width: size, height: size }}
+        style={boxStyle}
       >
         QR
         <br />
@@ -56,7 +58,7 @@ export default function QrCodeImage({ text, size = 60, label = 'QR code' }) {
     return (
       <div
         className="animate-pulse rounded bg-raised"
-        style={{ width: size, height: size }}
+        style={boxStyle}
         aria-hidden="true"
       />
     );
@@ -67,7 +69,7 @@ export default function QrCodeImage({ text, size = 60, label = 'QR code' }) {
       role="img"
       aria-label={label}
       className="overflow-hidden rounded bg-white [&>svg]:block [&>svg]:h-full [&>svg]:w-full"
-      style={{ width: size, height: size }}
+      style={boxStyle}
       dangerouslySetInnerHTML={{ __html: current.markup }}
     />
   );
