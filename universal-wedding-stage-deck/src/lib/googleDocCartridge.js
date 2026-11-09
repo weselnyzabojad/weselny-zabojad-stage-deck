@@ -1,6 +1,9 @@
 import { applyCalculatedDurations } from './stepDurations.js';
 
-const CLOCK = /^([01]?\d|2[0-3]):[0-5]\d$/;
+// Matches the first HH:MM clock at the start of a loose time string. Accepts
+// `22.15`, `15h00`, ranges (`15:40/16:00`, `22:00-22:30`, `18:00–20:00`) and
+// single-digit hours; the importer normalizes them to a strict `HH:MM`.
+const CLOCK_TOKEN = /^([01]?\d|2[0-3])[:.hH]([0-5]\d)/;
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function text(value) {
@@ -19,9 +22,19 @@ function int(value, fallback = null) {
   return Number.isInteger(number) ? number : fallback;
 }
 
-function clock(value) {
+// Normalizes a loose time string to a strict `HH:MM` clock, or returns null.
+// For a range it takes the first clock (the planned start); the importer never
+// invents a time when none parses.
+export function normalizeClock(value) {
   const clean = text(value);
-  return clean && CLOCK.test(clean) ? clean : null;
+  if (!clean) return null;
+  const match = CLOCK_TOKEN.exec(clean);
+  if (!match) return null;
+  return `${String(match[1]).padStart(2, '0')}:${match[2]}`;
+}
+
+function clock(value) {
+  return normalizeClock(value);
 }
 
 function list(value) {
