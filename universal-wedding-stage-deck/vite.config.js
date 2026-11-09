@@ -23,7 +23,34 @@ export default defineConfig({
       // The couple-identity flags are self-hosted SVGs; precache them so the
       // header still renders offline for any cartridge.
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Self-hosted assets are precached above. The Montserrat/Lora families
+        // still come from Google Fonts, so cache the stylesheet and font files
+        // at runtime; the installed PWA then keeps the intended typography
+        // offline instead of falling back to system fonts.
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-stylesheets'
+            }
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: {
+                maxEntries: 12,
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       },
       manifest: {
         name: 'Universal Wedding Stage Deck',
