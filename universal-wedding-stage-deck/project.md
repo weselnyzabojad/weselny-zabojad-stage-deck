@@ -3493,14 +3493,23 @@ The DJ set step is a basic placeholder for now: `optionalFlag: "dj_set"`,
 `FLEXIBLE`, with a party-set playlist. Its final shape is a TODO to review later
 (see the canonical step vocabulary).
 
+The DJ set step is a **normal timeline step**: every role that renders the
+timeline sees it, including DJ Standard. DJ Standard shows its time, duration,
+title, location and playlist but **no countdown**. Only the DJ VIP view adds the
+countdown.
+
 On the DJ VIP view, when the **current step is a DJ set**, show a live countdown
 to the **next step's projected start**:
 
-- only DJ VIP; DJ Standard, pocket and other roles never see it;
+- the countdown is only DJ VIP; DJ Standard, pocket and other roles never see it
+  (they still see the step itself);
 - hidden when there is no next step or the current step is not a DJ set;
 - red and blinking at **6:00 (360 seconds) or less** remaining;
 - with `prefers-reduced-motion`, use a static red warning instead of blinking;
 - localized in `en`, `fr` and `pl`.
 
 Tracked by
-[#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614).
+[#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614)
+(VIP countdown) and
+[#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616)
+(DJ Standard timeline visibility without the countdown).
