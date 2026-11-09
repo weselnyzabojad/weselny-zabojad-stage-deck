@@ -491,6 +491,30 @@ const pl = {
   'mc.step.noNext': 'Brak następnego kroku do zamiany',
   'mc.rail.showMore': 'Pokaż jeszcze {count}',
   'mc.rail.showLess': 'Pokaż mniej',
+  'mc.title.signOut': 'Wyloguj z tej roli',
+  'mc.title.forgetPin': 'PIN sali jest sparowany — kliknij, aby zapomnieć to urządzenie',
+  'mc.title.savedLocally':
+    'Postęp osi czasu przetrwa blokadę tabletu lub odświeżenie przeglądarki',
+  'mc.savedLocally': '💾 Zapisano lokalnie',
+  'mc.localSaveUnavailable': '⚠️ Zapis lokalny niedostępny',
+  'mc.undo.title': 'Cofnij: {label}',
+  'mc.undo.nothing': 'Nie ma czego cofnąć',
+  'mc.undo.lastAction': 'ostatnia akcja',
+  'mc.undo.stepCompleted': 'Krok ukończony',
+  'mc.undo.swappedSteps': 'Zamieniono kroki',
+  'mc.undo.subtaskChanged': 'Zmieniono podzadanie',
+  'mc.undo.speechSelection': 'Wybór przemówienia',
+  'mc.undo.mediaOverride': 'Zmieniono nadpisanie mediów',
+  'mc.undo.gameResults': 'Wyniki gry',
+  'mc.confirm.signOut':
+    'Wylogować z tej roli? Aby dołączyć ponownie, potrzebny będzie PIN roli.',
+  'mc.confirm.forgetPin':
+    'Zapomnieć PIN sali na tym urządzeniu? Postęp pozostanie zapisany lokalnie.',
+  'mc.confirm.swapCue':
+    'Jedna z tych czynności ma wskazówkę dla fotografa. Zamienić mimo to? Wykonawca może czekać na ten moment.',
+  'mc.notice.swapped': 'Zamieniono {current} z {next}.',
+  'mc.notice.stepDone': 'Krok oznaczony jako wykonany.',
+  'mc.notice.undone': 'Cofnięto ostatnią akcję.',
 
   'mandatory.title': 'Obowiązkowe ograniczenia',
   'mandatory.firstArrival': 'Przyjazd pierwszych gości',
