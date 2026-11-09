@@ -69,7 +69,7 @@ export default function DjBoothView({
   const completedCount = timeline.filter((entry) => entry.isDone).length;
 
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
-  const detailTier = djDetailTier(resolvedPackage);
+  const detailTier = djDetailTier({ ...wedding, servicePackage: resolvedPackage });
   const isVip = detailTier === 'vip';
   const isSolo = resolvedPackage === 'HOST_AND_DJ_SOLO';
   const tierLabel = isVip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';

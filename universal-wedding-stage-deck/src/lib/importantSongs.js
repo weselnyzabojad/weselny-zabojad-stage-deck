@@ -5,6 +5,8 @@
 // mini QR; Standard and Solo only see title + artist. Nothing in this module
 // touches the network — the QR is generated locally from the stored link.
 
+import { defaultVipDjId, isVipDjId } from './vipDjs.js';
+
 export const IMPORTANT_MOMENTS = {
   GRAND_ENTRANCE: { label: 'Grand entrance', icon: '🚪', order: 1 },
   CAKE: { label: 'Cake cutting', icon: '🎂', order: 2 },
@@ -42,12 +44,29 @@ export function resolveServicePackage(wedding) {
 
 // VIP is the only package with source/root, cues, backup source and QR.
 // Standard and Solo deliberately share the title + artist detail level.
+export function resolveDjIdentityId(wedding) {
+  const candidate =
+    wedding?.djIdentityId ?? wedding?.dj?.identityId ?? wedding?.providers?.dj?.vipDjId ?? null;
+  return typeof candidate === 'string' && candidate.trim() ? candidate.trim() : null;
+}
+
+// VIP is decided by the assigned DJ identity. An explicit non-VIP identity wins
+// over a VIP package; with no assignment, only the VIP/MC+DJ package defaults
+// to DJ Mark.
 export function djDetailTier(weddingOrPackage) {
   const servicePackage =
     typeof weddingOrPackage === 'string'
       ? weddingOrPackage
       : resolveServicePackage(weddingOrPackage);
-  return servicePackage === 'HOST_AND_DJ_VIP'
+  if (typeof weddingOrPackage === 'string') {
+    return servicePackage === 'HOST_AND_DJ_VIP'
+      ? DJ_DETAIL_TIERS.VIP
+      : DJ_DETAIL_TIERS.STANDARD;
+  }
+
+  const assigned = resolveDjIdentityId(weddingOrPackage);
+  if (assigned) return isVipDjId(assigned) ? DJ_DETAIL_TIERS.VIP : DJ_DETAIL_TIERS.STANDARD;
+  return defaultVipDjId(servicePackage)
     ? DJ_DETAIL_TIERS.VIP
     : DJ_DETAIL_TIERS.STANDARD;
 }
