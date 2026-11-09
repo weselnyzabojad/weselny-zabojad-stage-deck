@@ -685,20 +685,47 @@
       {
         "id": "test_wiedzy",
         "title": "Test Wiedzy",
+        "gameType": "TEST_WIEDZY",
+        "enabled": true,
         "sourceDocId": "gdoc_test_wiedzy",
         "status": "AVAILABLE",
         "questions": [
           {
             "id": "w01",
+            "level": "EASY",
             "prompt": {
-              "PL": "Gdzie poznali się Jennifer i Guillaume?",
+              "PL": "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
               "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
               "EN": "Where did Jennifer and Guillaume first meet?"
             },
-            "answer": {
-              "PL": "W Krakowie",
-              "FR": "À Cracovie",
-              "EN": "In Kraków"
+            "answer": "GROOM"
+          },
+          {
+            "id": "w02",
+            "level": "HARD",
+            "prompt": {
+              "PL": "Kto powiedział „kocham cię” pierwszy?",
+              "FR": "Qui a dit « je t’aime » en premier ?",
+              "EN": "Who said “I love you” first?"
+            },
+            "answer": "BRIDE"
+          }
+        ]
+      },
+      {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodności",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "sourceDocId": "gdoc_test_zgodnosci",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "z01",
+            "prompt": {
+              "PL": "Kto chętniej planuje spontaniczny wyjazd?",
+              "FR": "Qui planifie plus volontiers un voyage spontané ?",
+              "EN": "Who is more likely to plan a spontaneous trip?"
             }
           }
         ]

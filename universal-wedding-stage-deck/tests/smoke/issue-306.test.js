@@ -26,12 +26,12 @@ describe('issue #306 games question-list Docs', () => {
     expect(quiz.questions[0].prompt).toContain('Jennifer');
   });
 
-  it('fails safely for missing question lists', () => {
+  it('parses both predefined question lists', () => {
     const lists = resolveGameQuestionLists(DEMO_WEDDING);
-    const missing = lists.find((list) => list.id === 'test_zgodnosci');
-    expect(missing.status).toBe('MISSING');
-    expect(missing.unavailable).toBe(true);
-    expect(missing.questions).toEqual([]);
+    const compat = lists.find((list) => list.id === 'test_zgodnosci');
+    expect(compat.status).toBe('AVAILABLE');
+    expect(compat.unavailable).toBe(false);
+    expect(compat.questions.length).toBeGreaterThan(0);
   });
 
   it('honours the optional games flag', () => {
@@ -44,7 +44,7 @@ describe('issue #306 games question-list Docs', () => {
     );
     expect(html).toContain('Test Wiedzy');
     expect(html).toContain('3 questions');
-    expect(html).toContain('Questions unavailable');
+    expect(html).toContain('Test Zgodności');
     expect(html).not.toContain('gdoc_test_wiedzy');
     expect(html).not.toContain('http');
   });

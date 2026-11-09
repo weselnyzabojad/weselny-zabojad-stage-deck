@@ -266,6 +266,8 @@
             "properties": {
               "id": { "type": "string", "minLength": 1 },
               "title": { "type": "string", "minLength": 1 },
+              "gameType": { "enum": ["TEST_WIEDZY", "TEST_ZGODNOSCI", "OTHER"] },
+              "enabled": { "type": "boolean" },
               "sourceDocId": { "type": "string" },
               "status": { "enum": ["AVAILABLE", "MISSING", "UNAVAILABLE"] },
               "questions": {
@@ -280,6 +282,7 @@
                       "type": ["string", "object"],
                       "additionalProperties": { "type": "string" }
                     },
+                    "level": { "enum": ["EASY", "MEDIUM", "HARD"] },
                     "answer": {
                       "type": ["string", "object"],
                       "additionalProperties": { "type": "string" }

@@ -27,7 +27,7 @@ import { resolveCakeProtocol } from './lib/cake';
 import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
 import { filterEnabledSteps } from './lib/predefinedSteps';
 import { resolveMusicPolicy } from './lib/musicPolicy';
-import {
+import { buildGameClicker } from './lib/games.js';import {
   resolveActiveSpeech,
   resolveSpeechMode,
   resolveSpeeches,
@@ -338,7 +338,11 @@ export default function StageDeck({
   const estimatedEnd = currentEntry?.projectedEnd ?? null;
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.FLEXIBLE : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
-  const game = currentStep?.teleprompter?.type === "GAME_QUESTIONS" ? currentStep.teleprompter : null;
+  const game = currentStep?.gameId
+    ? buildGameClicker(WEDDING, currentStep.gameId)
+    : currentStep?.teleprompter?.type === "GAME_QUESTIONS"
+      ? currentStep.teleprompter
+      : null;
   const stepSubtasks = currentStep?.subTasks ?? [];
 
   // P0.7: block hard anchors, warn on photographer cues.
