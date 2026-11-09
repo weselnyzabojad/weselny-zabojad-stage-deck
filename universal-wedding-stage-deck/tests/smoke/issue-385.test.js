@@ -67,7 +67,6 @@ describe('issue #385 shared secondary control bar', () => {
     expect(photo).not.toContain('fixed bottom-3 right-3');
     const bar = photo.slice(photo.indexOf('<SecondaryControlBar'), photo.indexOf('<main'));
     expect(bar).toContain('<ChildrenExpectedBadge');
-    expect(photo).toContain('childrenExpected={wedding?.childrenExpected === true}');
     expect(read('src/components/RoleShell.jsx')).toContain('<ChildrenExpectedBadge');
   });
 

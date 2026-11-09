@@ -457,7 +457,7 @@ export default function PhotographerView({
           </>
         )}
         center={(
-          <ChildrenExpectedBadge wedding={wedding} role={role} inline />
+          <ChildrenExpectedBadge wedding={wedding} inline />
         )}
         right={(
           <>
@@ -611,8 +611,6 @@ export default function PhotographerView({
       speeches={speeches}
       speechMode={speechMode}
       activeSpeechId={activeSpeechId}
-      childrenExpected={wedding?.childrenExpected === true}
-      childrenRole={role}
       authControl={authControl}
     >
       {compactContent}

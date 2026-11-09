@@ -44,6 +44,7 @@ const fr = {
   'roles.fixed': 'Rôle fixé sur cet appareil',
 
   'children.expectedBadge': 'Enfants attendus',
+  'children.notExpectedBadge': 'Enfants non attendus',
   'common.wedding': 'Mariage',
   'common.retry': 'Réessayer',
   'common.unknown': 'Inconnu',

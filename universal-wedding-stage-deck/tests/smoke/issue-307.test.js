@@ -17,16 +17,16 @@ describe('issue #307 children expected media wording', () => {
     }
   });
 
-  it('hides the badge when children are not expected or role is not media', () => {
+  it('shows the not-expected state instead of hiding for non-media roles', () => {
     expect(
       renderToStaticMarkup(createElement(ChildrenExpectedBadge, {
         wedding: { childrenExpected: false },
         role: 'photo1',
       })),
-    ).toBe('');
+    ).toContain('Children not expected');
     expect(
       renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'dj' })),
-    ).toBe('');
+    ).toContain('Children expected');
   });
 
   it('localizes the short label', () => {

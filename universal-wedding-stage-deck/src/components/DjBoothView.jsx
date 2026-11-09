@@ -1,4 +1,5 @@
 import logo from '../assets/img/logo.png';
+import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import FirstDanceCueCard from './FirstDanceCueCard';
@@ -198,6 +199,9 @@ export default function DjBoothView({
             {isVip && authControl ? authControl : null}
           </>
         )}
+        center={(
+          <ChildrenExpectedBadge wedding={wedding} inline />
+        )}
         right={(
           <>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
@@ -279,6 +283,9 @@ export default function DjBoothView({
           <p className="mt-2 text-xs leading-relaxed text-muted">
             {t('dj.laptopRequiredBody')}
           </p>
+          <div className="mt-3 flex justify-center">
+            <ChildrenExpectedBadge wedding={wedding} compact />
+          </div>
         </section>
       </div>
     );

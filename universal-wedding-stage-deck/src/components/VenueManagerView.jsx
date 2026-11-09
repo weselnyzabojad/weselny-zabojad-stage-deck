@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import logo from '../assets/img/logo.png';
+import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -261,6 +262,9 @@ export default function VenueManagerView({
 
       <SecondaryControlBar
         left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
+        center={(
+          <ChildrenExpectedBadge wedding={wedding} inline />
+        )}
         right={(
           <>
             <LanguageToggle />
