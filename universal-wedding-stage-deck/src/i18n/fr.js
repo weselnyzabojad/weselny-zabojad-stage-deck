@@ -257,6 +257,10 @@ const fr = {
   'mc.step.childrenCake': 'Enfants attendus — éloignez-les de la table du gâteau et de la zone de découpe.',
   'mc.step.childrenEntrance': 'Enfants attendus — tenez-les à l’écart de l’allée d’entrée.',
   'mc.step.childrenDancefloor': 'Enfants attendus — éloignez-les de la piste de danse.',
+  'mc.step.more': 'Plus',
+  'mc.step.swapNext': 'Échanger avec la suivante',
+  'mc.step.swapWith': 'Échanger {current} avec {next}',
+  'mc.step.noNext': 'Aucune étape suivante à échanger',
   'mc.rail.showMore': 'Afficher {count} de plus',
   'mc.rail.showLess': 'Afficher moins',
 

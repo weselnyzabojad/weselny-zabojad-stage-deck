@@ -12,6 +12,7 @@ import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
 import GamesCueCard from '../components/GamesCueCard';
 import CulturalRulesBar from '../components/CulturalRulesBar';
+import CurrentStepOverflow from '../components/CurrentStepOverflow';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import GroupPhotoChecklist from '../components/GroupPhotoChecklist';
@@ -55,7 +56,6 @@ import LanguageToggle from '../components/LanguageToggle';
 import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
-import { CONTROL_BUTTON_BASE, CONTROL_BUTTON_DISABLED } from '../lib/styleConstants';
 
 export default function McMasterView({ model }) {
   const {
@@ -173,7 +173,7 @@ export default function McMasterView({ model }) {
       ) : null}
       {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}
       {groupPhotoBody}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={handleUndo}
@@ -190,6 +190,12 @@ export default function McMasterView({ model }) {
           className={`min-h-12 flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
+      <CurrentStepOverflow
+        onSwap={handleSwap}
+        swapBlock={swapBlock}
+        nextEntry={nextEntry}
+        currentStep={currentStep}
+      />
       {script ? (
         <button
           type="button"
@@ -337,6 +343,13 @@ export default function McMasterView({ model }) {
           </div>
         </div>
       ) : null}
+
+      <CurrentStepOverflow
+        onSwap={handleSwap}
+        swapBlock={swapBlock}
+        nextEntry={nextEntry}
+        currentStep={currentStep}
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -489,28 +502,10 @@ export default function McMasterView({ model }) {
         </div>
       </main>
 
-      {/* ================= BOTTOM BAR (DRIFT CONTROLS & PRIMARY ACTION) ================= */}
+      {/* ================= BOTTOM BAR (STATUS & PRIMARY ACTION) ================= */}
       <footer className="bg-card border-t border-line px-4 py-3 flex flex-wrap items-center justify-between gap-3 shadow-2xl">
         
-        {/* Drift & Sequence Controls */}
         <div className="flex items-center space-x-2 overflow-x-auto py-1">
-          <span className="text-xs font-heading font-bold text-muted uppercase tracking-wider mr-1 hidden sm:inline">Drift Controls:</span>
-          <button
-            type="button"
-            onClick={handleSwap}
-            disabled={!nextEntry || Boolean(swapBlock)}
-            title={
-              swapBlock ??
-              (nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap")
-            }
-            className={`${CONTROL_BUTTON_BASE} min-h-11 ${
-              !nextEntry || swapBlock
-                ? CONTROL_BUTTON_DISABLED
-                : "bg-raised hover:bg-line border-line-strong text-ink"
-            }`}
-          >
-            🔀 Swap w/ Next
-          </button>
           {controlNotice ? (
             <span
               aria-live="polite"

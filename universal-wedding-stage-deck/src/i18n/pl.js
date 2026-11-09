@@ -255,6 +255,10 @@ const pl = {
   'mc.step.childrenCake': 'Dzieci przewidziane — trzymaj je z dala od stołu z tortem i strefy krojenia.',
   'mc.step.childrenEntrance': 'Dzieci przewidziane — trzymaj je z dala od przejścia wejściowego.',
   'mc.step.childrenDancefloor': 'Dzieci przewidziane — trzymaj je z dala od parkietu.',
+  'mc.step.more': 'Więcej',
+  'mc.step.swapNext': 'Zamień z następnym',
+  'mc.step.swapWith': 'Zamień {current} z {next}',
+  'mc.step.noNext': 'Brak następnego kroku do zamiany',
   'mc.rail.showMore': 'Pokaż jeszcze {count}',
   'mc.rail.showLess': 'Pokaż mniej',
 
