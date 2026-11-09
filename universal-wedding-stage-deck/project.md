@@ -3318,3 +3318,33 @@ The removal shipped in
 example and fixture, importer/converter, demo and template, and both validators
 drop the legacy team fields before validation. `mediaTeam` is explicitly kept
 and still drives the group-photo checklist.
+
+### 17.3 Construction schemas: `steps`, `speeches`
+
+The timeline and speech blocks are the next Google Doc to JSON mapping contracts
+to extract into dedicated domain schemas.
+
+| Domain | Schema file | Cartridge path | Issue |
+| --- | --- | --- | --- |
+| steps | `schema/domains/steps.json` | `steps` | [#590](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/590) |
+| speeches | `schema/domains/speeches.json` | `speeches` | [#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591) |
+
+Notes:
+
+- `steps` is required (`minItems: 1`). The full step catalogue moves to
+  `schema/domains/steps.example.json`; `wedding-cartridge.example.json` keeps
+  only a minimal valid steps sample so it still passes `validate:schema`.
+- `speeches` is optional and is removed from the cartridge example.
+- Both domain schemas are self-contained and registered with the browser, Node
+  and Edge validators, with the byte-identical Edge schema copy mirrored.
+
+### 17.4 Can we safely delete `mediaTeam`, `speechMode`, `hardAnchors`?
+
+| Block | Safe to delete? | Why |
+| --- | --- | --- |
+| `mediaTeam` | **No** | Drives `GroupPhotoChecklist`, the Photographer view, `resolveOczepiny` winner-photo timing, the Doc `MEDIA TEAM` mapping and both validators. |
+| `speechMode` | **No** | `resolveSpeechMode` gates the Speaker view (`OFF`/`LIGHT`/`COMPLEX`); the value flows through `RoleShell`, MC, DJ and Photographer views and into the i18n messages. |
+| `hardAnchors` | **No** | Feeds the drift radar (`buildHardAnchorRadar`), the reel clock, the Oczepiny indicator, `resolveOczepiny` photo timing, the Doc `HARD ANCHORS` mapping and semantic validation. |
+
+None of the three is removable today. They stay in the cartridge and are
+documented here so the question is not reopened without tracing these consumers.
