@@ -1,4 +1,3 @@
-import syncIcon from '../assets/icons/sync.svg?raw';
 import { useI18n } from '../i18n/useI18n.js';
 
 const SYNC_STATUS_STYLES = {
@@ -24,13 +23,7 @@ const STATUS_KEY = {
   error: 'status.syncError',
 };
 
-export default function SyncStatusBadge({
-  status,
-  error,
-  remoteUpdatedAt,
-  outbox = null,
-  compact = false,
-}) {
+export default function SyncStatusBadge({ status, error, remoteUpdatedAt, outbox = null }) {
   const { t, tp, formatTime } = useI18n();
   const pending = Boolean(outbox);
   const attempts = pending ? outbox.attempts ?? 0 : 0;
@@ -71,19 +64,9 @@ export default function SyncStatusBadge({
       aria-atomic="true"
       aria-label={`Sync: ${label}`}
       title={title}
-      className={`inline-flex min-h-11 items-center rounded border font-semibold ${
-        compact ? 'min-w-11 justify-center p-1.5' : 'px-2.5 py-1 text-xs'
-      } ${tone}`}
+      className={`inline-flex min-h-11 items-center rounded border px-2.5 py-1 text-xs font-semibold ${tone}`}
     >
-      {compact ? (
-        <span
-          aria-hidden="true"
-          className="inline-flex [&>svg]:h-[18px] [&>svg]:w-[18px]"
-          dangerouslySetInnerHTML={{ __html: syncIcon }}
-        />
-      ) : (
-        'Sync'
-      )}
+      Sync
     </span>
   );
 }
