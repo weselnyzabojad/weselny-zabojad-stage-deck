@@ -19,7 +19,7 @@ export default function PwaUpdateNotice({
         role="alertdialog"
         aria-live="assertive"
         aria-label={t('pwa.title')}
-        className="fixed bottom-4 left-1/2 z-[100] w-[min(92vw,30rem)] -translate-x-1/2 rounded-xl border border-brand-strong bg-card p-4 text-ink shadow-2xl"
+        className="fixed bottom-4 left-1/2 z-toast w-[min(92vw,30rem)] -translate-x-1/2 rounded-xl border border-brand-strong bg-card p-4 text-ink shadow-2xl"
       >
         <div className="flex items-start gap-1.5">
           <span aria-hidden="true" className="text-lg leading-none">
@@ -62,7 +62,7 @@ export default function PwaUpdateNotice({
       onClick={onCheck}
       title={t('pwa.check')}
       aria-label={checking ? t('pwa.checking') : t('pwa.check')}
-      className="fixed bottom-3 right-3 z-[90] rounded-full border border-line-strong bg-card/90 px-2.5 py-1.5 text-[10px] font-semibold text-ink shadow-lg backdrop-blur transition hover:bg-raised hover:text-ink"
+      className="fixed bottom-3 right-3 z-toast rounded-full border border-line-strong bg-card/90 px-2.5 py-1.5 text-[10px] font-semibold text-ink shadow-lg backdrop-blur transition hover:bg-raised hover:text-ink"
     >
       <span aria-hidden="true">↻</span>{' '}
       <span className="hidden sm:inline">{checking ? t('pwa.checking') : t('pwa.check')}</span>

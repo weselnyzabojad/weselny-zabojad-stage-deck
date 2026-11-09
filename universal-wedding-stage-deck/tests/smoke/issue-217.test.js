@@ -30,7 +30,7 @@ describe('issue #217 DJ section cleanup and scrolling', () => {
     expect(dj).toContain('flex min-h-dvh flex-col');
     expect(dj).not.toContain('flex h-screen');
     expect(dj).not.toContain('overflow-hidden');
-    expect(dj).toContain('sticky top-0 z-30');
+    expect(dj).toContain('sticky top-0 z-banner');
     expect(dj).not.toContain('overflow-y-auto');
   });
 

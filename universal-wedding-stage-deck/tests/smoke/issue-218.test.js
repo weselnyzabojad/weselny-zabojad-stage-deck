@@ -18,7 +18,7 @@ describe('issue #218 DJ VIP guest request bar', () => {
   });
 
   it('keeps the sticky header and request bar together', () => {
-    expect(dj).toContain('<div className="sticky top-0 z-30">');
+    expect(dj).toContain('<div className="sticky top-0 z-banner">');
   });
 
   it('renders an unavailable bar state through the existing queue component', () => {

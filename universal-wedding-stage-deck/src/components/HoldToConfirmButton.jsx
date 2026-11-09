@@ -88,7 +88,7 @@ export default function HoldToConfirmButton({
         className="absolute inset-y-0 left-0 bg-white/25 transition-[width] duration-75"
         style={{ width: `${Math.round(progress * 100)}%` }}
       />
-      <span className="relative z-10 flex flex-col items-center leading-tight">
+      <span className="relative z-raised flex flex-col items-center leading-tight">
         <span>{label}</span>
         <span className="text-[9px] font-normal uppercase tracking-wider opacity-80">
           {holding ? `${Math.round(progress * 100)}%` : holdLabel}

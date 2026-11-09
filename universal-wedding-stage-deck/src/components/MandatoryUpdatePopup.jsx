@@ -97,7 +97,7 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="mandatory-update-title"
-      className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-critical flex items-center justify-center bg-black/60 px-4"
     >
       <section className="max-h-[calc(100dvh-1rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-brand-strong bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-2xl sm:p-5">
         <h2 id="mandatory-update-title" className="font-heading text-lg font-bold text-ink">

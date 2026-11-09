@@ -38,6 +38,15 @@
 [data-theme="night"] {
   color-scheme: dark;
 
+  /* Overlay stacking scale (issue #437). */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-banner: 20;
+  --z-toast: 60;
+  --z-modal: 70;
+  --z-critical: 120;
+  --z-skip: 200;
+
   --bg-page: #070b19;
   --bg-card: #0b132b;
   --bg-raised: #111d3b;
@@ -93,6 +102,30 @@
   --focus-shadow:
     0 18px 40px -14px rgb(15 23 42 / 0.25),
     0 40px 80px -28px rgb(15 23 42 / 0.18);
+}
+
+@utility z-base {
+  z-index: var(--z-base);
+}
+
+@utility z-raised {
+  z-index: var(--z-raised);
+}
+
+@utility z-banner {
+  z-index: var(--z-banner);
+}
+
+@utility z-toast {
+  z-index: var(--z-toast);
+}
+
+@utility z-modal {
+  z-index: var(--z-modal);
+}
+
+@utility z-critical {
+  z-index: var(--z-critical);
 }
 
 body {
@@ -192,7 +225,7 @@ input[type="checkbox"] {
   position: fixed;
   top: -4rem;
   left: 1rem;
-  z-index: 200;
+  z-index: var(--z-skip);
   border-radius: 0.5rem;
   border: 2px solid var(--brand-strong);
   background: var(--bg-card);

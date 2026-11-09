@@ -320,7 +320,7 @@ export default function DjSongRequestQueue({
               <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
                 Guest QR
               </summary>
-              <div className="absolute right-0 top-full z-50 mt-1 rounded-lg bg-white p-2 shadow-2xl">
+              <div className="absolute right-0 top-full z-raised mt-1 rounded-lg bg-white p-2 shadow-2xl">
                 <QrCodeImage
                   text={requestUrl}
                   size={160}
