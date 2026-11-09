@@ -8,7 +8,7 @@ describe('issue #217 DJ section cleanup and scrolling', () => {
   const stack = read('src/components/TimelineFocusStack.jsx');
 
   it('keeps only the approved sections', () => {
-    for (const kept of ['TimelineFocusStack', 'MusicPolicyCard', 'Set notes']) {
+    for (const kept of ['TimelineFocusStack', 'MusicPolicyCard', "dj.setNotes"]) {
       expect(dj).toContain(kept);
     }
     for (const removed of [

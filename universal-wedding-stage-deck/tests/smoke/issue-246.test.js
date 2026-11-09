@@ -9,8 +9,8 @@ describe('issue #246 remove ZAIKS/licensing from Music Policy', () => {
     expect(card).not.toContain('ZAIKS');
   });
   it('keeps the other policy sections', () => {
-    expect(card).toContain('Must play');
-    expect(card).toContain('Do not play');
+    expect(card).toContain("music.mustPlay.title");
+    expect(card).toContain("music.doNotPlay.title");
     expect(card).toContain('CleanChip');
   });
 });
