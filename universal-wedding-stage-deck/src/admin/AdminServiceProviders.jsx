@@ -5,6 +5,7 @@ import {
   listProviders,
   upsertProvider,
 } from './adminApi.js';
+import { VIP_DJS } from '../lib/vipDjs.js';
 
 const CATEGORIES = [
   ['dj', 'DJ'],
@@ -19,6 +20,7 @@ const EMPTY_FORM = {
   id: null,
   category: 'other',
   functionLabel: '',
+  vipDjId: '',
   firstName: '',
   lastName: '',
   phone: '',
@@ -68,6 +70,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
       id: provider.id,
       category: provider.category,
       functionLabel: provider.function_label ?? '',
+      vipDjId: provider.vip_dj_id ?? '',
       firstName: provider.first_name ?? '',
       lastName: provider.last_name ?? '',
       phone: provider.phone ?? '',
@@ -156,6 +159,25 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
         Service providers
         {readOnly ? ' · read-only' : ''}
       </summary>
+
+      <div className="mt-2 rounded border border-line bg-card/70 px-2 py-1.5">
+        <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-muted">
+          VIP DJ registry · read-only
+        </p>
+        <ul className="mt-1 space-y-0.5">
+          {VIP_DJS.map((dj) => (
+            <li key={dj.id} className="flex flex-wrap items-center gap-1.5 text-[10px]">
+              <span className="font-semibold text-ink">{dj.displayName}</span>
+              <span className="rounded border border-brand-strong bg-brand/30 px-1 py-0.5 font-mono text-[8px] font-bold text-brand-tint">
+                {dj.tier}
+              </span>
+              <span className="font-mono text-[9px] text-muted">
+                {dj.phone} · {dj.instagram}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {error ? (
         <p className="mt-2 rounded border border-alert/60 bg-alert/15 px-2 py-1 text-[10px] text-alert-soft" role="alert">
@@ -268,6 +290,21 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
                 placeholder="Saxophonist"
                 className="mt-0.5 w-full rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
               />
+            </label>
+          ) : null}
+          {form.category === 'dj' ? (
+            <label className="text-[9px] text-muted">
+              VIP DJ identity
+              <select
+                value={form.vipDjId}
+                onChange={(event) => setForm((current) => ({ ...current, vipDjId: event.target.value }))}
+                className="mt-0.5 w-full rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
+              >
+                <option value="">Package default (DJ Mark for VIP/MC+DJ)</option>
+                {VIP_DJS.map((dj) => (
+                  <option key={dj.id} value={dj.id}>{dj.displayName}</option>
+                ))}
+              </select>
             </label>
           ) : null}
           {[

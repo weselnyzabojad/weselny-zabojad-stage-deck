@@ -115,10 +115,17 @@ function normalizeProviderPayload(body: any) {
     return { error: 'A function label is required for Other providers.' };
   }
 
+  const requestedVipDjId = cleanProviderField(body?.vipDjId, 40);
+  if (requestedVipDjId && !['dj_mark', 'dj_szymoniak'].includes(requestedVipDjId)) {
+    return { error: 'Choose a known VIP DJ.' };
+  }
+  const vipDjId = category === 'dj' ? requestedVipDjId : null;
+
   return {
     provider: {
       category,
       function_label: category === 'other' ? functionLabel : null,
+      vip_dj_id: vipDjId,
       first_name: firstName,
       last_name: lastName,
       phone: cleanProviderField(body?.phone, 60),
