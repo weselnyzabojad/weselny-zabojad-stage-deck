@@ -37,7 +37,7 @@ create index if not exists weddings_expires_idx on public.weddings (expires_at);
 
 create table if not exists public.wedding_roles (
   wedding_id  text not null references public.weddings(wedding_id) on delete cascade,
-  role        text not null check (role in ('mc', 'dj', 'photo', 'speaker')),
+  role        text not null check (role in ('mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker')),
   pin_hash    text not null,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
@@ -230,7 +230,7 @@ create policy "room read"
   to authenticated
   using (
     wedding_id = 'wzsd:' || public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker')
   );
 
 create policy "room insert"
@@ -272,7 +272,7 @@ create policy "wedding read"
   to authenticated
   using (
     wedding_id = public.current_wedding_id()
-    and public.current_app_role() in ('mc', 'dj', 'photo', 'speaker')
+    and public.current_app_role() in ('mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker')
   );
 
 -- `wedding_roles` and `join_attempts` intentionally have NO client policies:

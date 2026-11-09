@@ -1105,6 +1105,7 @@ function AdminAppContent() {
                   <AdminServiceProviders
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onChanged={load}
                   />
                 </article>
               ))}
