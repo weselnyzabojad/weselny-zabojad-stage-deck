@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/oczepiny.json",
+  "title": "Oczepiny domain",
+  "description": "Oczepini / midnight tradition cues mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "oczepiny": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "order": {
+          "type": "string"
+        },
+        "anchorId": {
+          "type": "string"
+        },
+        "toss": {
+          "type": "string"
+        },
+        "ties": {
+          "type": "string"
+        },
+        "winnerPhoto": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "replacesWinnersDance": {
+              "type": "boolean"
+            },
+            "photographerCue": {
+              "type": "string"
+            },
+            "winnersOnly": {
+              "type": "boolean"
+            },
+            "winnersWithCouple": {
+              "type": "boolean"
+            },
+            "photographerAvailable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "enabled",
+            "replacesWinnersDance",
+            "photographerCue",
+            "winnersOnly",
+            "winnersWithCouple",
+            "photographerAvailable"
+          ]
+        },
+        "photographerBriefed": {
+          "type": "object",
+          "properties": {
+            "confirmed": {
+              "type": "boolean"
+            },
+            "confirmedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "confirmed",
+            "confirmedAt",
+            "confirmedBy",
+            "notes"
+          ]
+        },
+        "props": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "music": {
+          "type": "object",
+          "properties": {
+            "track": {
+              "type": "string"
+            },
+            "playlist": {
+              "type": "string"
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "track",
+            "playlist",
+            "enabled"
+          ]
+        },
+        "subEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "durationMin": {
+                "type": "integer"
+              },
+              "deferable": {
+                "type": "boolean"
+              },
+              "skippable": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "durationMin",
+              "deferable",
+              "skippable"
+            ]
+          }
+        },
+        "variant": {
+          "type": "string",
+          "enum": [
+            "EARLY",
+            "MIDNIGHT"
+          ]
+        },
+        "throwings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "veil": {
+              "type": "boolean"
+            },
+            "bouquet": {
+              "type": "boolean"
+            },
+            "bowTie": {
+              "type": "boolean"
+            },
+            "cravat": {
+              "type": "boolean"
+            }
+          }
+        },
+        "game": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "TEST_ZGODNOSCI",
+                "OTHER"
+              ]
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "countdown": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "MC",
+                "NONE"
+              ]
+            }
+          }
+        },
+        "testZgodnosci": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "enabled",
+        "order",
+        "anchorId",
+        "toss",
+        "ties",
+        "winnerPhoto",
+        "photographerBriefed",
+        "props",
+        "music",
+        "subEvents"
+      ]
+    }
+  },
+  "required": [
+    "oczepiny"
+  ]
+}

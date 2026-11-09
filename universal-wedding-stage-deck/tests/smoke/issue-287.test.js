@@ -5,8 +5,8 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #287 Oczepiny variant schema', () => {
   it('defines Early/Midnight fields', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    const ocz = schema.$defs.oczepiny.properties;
+    const domain = JSON.parse(read('schema/domains/oczepiny.json'));
+    const ocz = domain.properties.oczepiny.properties;
     expect(ocz.variant.enum).toEqual(['EARLY', 'MIDNIGHT']);
     expect(ocz.throwings).toBeTruthy();
     expect(ocz.game).toBeTruthy();
