@@ -39,7 +39,7 @@ export default function SongRequestApp({ roomCode }) {
 
   if (!code) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-page px-4 text-ink">
         <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
           <h1 className="font-heading text-xl font-bold text-ink">Song request</h1>
           <p className="mt-2 text-sm text-muted">
@@ -52,7 +52,7 @@ export default function SongRequestApp({ roomCode }) {
 
   if (!config.enabled) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
+      <main className="flex min-h-dvh items-center justify-center bg-page px-4 text-ink">
         <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
           <h1 className="font-heading text-xl font-bold text-ink">Song request</h1>
           <p className="mt-2 text-sm text-muted">
@@ -64,7 +64,7 @@ export default function SongRequestApp({ roomCode }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-page px-4 py-8 text-ink">
+    <main className="flex min-h-dvh items-center justify-center bg-page px-4 py-8 text-ink">
       <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
           Guest request

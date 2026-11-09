@@ -177,7 +177,7 @@ export default function SpeakerView({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-page text-ink antialiased">
+    <div className="flex min-h-dvh flex-col bg-page text-ink antialiased">
       <SkipLink />
       <TopBarShell
         left={(

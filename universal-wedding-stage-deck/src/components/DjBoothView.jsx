@@ -160,7 +160,7 @@ export default function DjBoothView({
   );
 
   const wideContent = (
-    <div className="flex min-h-screen flex-col bg-page text-ink antialiased">
+    <div className="flex min-h-dvh flex-col bg-page text-ink antialiased">
       <SkipLink />
       <div className="sticky top-0 z-30">
       <TopBarShell
@@ -270,7 +270,7 @@ export default function DjBoothView({
 
   if (!isVip) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-page px-4 text-center text-ink">
+      <div className="flex min-h-dvh items-center justify-center bg-page px-4 text-center text-ink">
         <section className="max-w-sm rounded-2xl border border-line bg-card p-6 shadow-2xl">
           <div className="text-3xl" aria-hidden="true">💻</div>
           <h1 className="mt-2 font-heading text-lg font-bold text-ink">
