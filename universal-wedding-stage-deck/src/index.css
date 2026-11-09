@@ -12,6 +12,8 @@
    (together with the App.jsx split, TODO 22).
 --------------------------------------------------------------------------- */
 @theme inline {
+  --font-heading: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", serif;
   --color-page: var(--bg-page);
   --color-card: var(--bg-card);
   --color-raised: var(--bg-raised);
