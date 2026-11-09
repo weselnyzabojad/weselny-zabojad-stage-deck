@@ -35,7 +35,12 @@ describe('issue #155 shared top-bar controls', () => {
       renderToStaticMarkup(
         createElement(TopBarRoleLabel, { role: 'dj', tier: 'STANDARD' }),
       ),
-    ).toContain('DJ Standard');
+    ).toContain('DJ');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleLabel, { role: 'dj', tier: 'STANDARD' }),
+      ),
+    ).not.toContain('DJ Standard');
   });
 
   it('shows only Sync text with the approved color mapping', () => {

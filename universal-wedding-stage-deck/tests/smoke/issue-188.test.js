@@ -51,6 +51,11 @@ describe('issue #188 static role element', () => {
       renderToStaticMarkup(
         createElement(TopBarRoleIdentity, { role: 'dj', tier: 'STANDARD' }),
       ),
-    ).toContain('Role: DJ Standard');
+    ).toContain('Role: DJ');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleIdentity, { role: 'dj', tier: 'STANDARD' }),
+      ),
+    ).not.toContain('Standard');
   });
 });

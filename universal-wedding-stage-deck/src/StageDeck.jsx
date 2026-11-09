@@ -471,7 +471,7 @@ export default function StageDeck({
             servicePackage={
               currentRole === 'dj_standard' ? 'HOST_AND_DJ_STANDARD' : WEDDING.servicePackage
             }
-            role={currentRole === 'dj_standard' ? 'dj' : role}
+            role="dj"
             theme={theme}
             onToggleTheme={toggleTheme}
             songRequestAccessToken={sessionValid ? roleSession?.token ?? null : null}
