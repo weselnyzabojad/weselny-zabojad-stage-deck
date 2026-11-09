@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/couple-profile.json",
+  "title": "Couple profile domain",
+  "description": "Bride and groom names, nationalities and shared languages mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "coupleProfile": {
+      "type": "object",
+      "properties": {
+        "bride": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "nationalities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "firstName",
+            "nationalities"
+          ]
+        },
+        "groom": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "nationalities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "firstName",
+            "nationalities"
+          ]
+        },
+        "commonLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "bride",
+        "groom",
+        "commonLanguages"
+      ]
+    }
+  },
+  "required": [
+    "coupleProfile"
+  ]
+}

@@ -32,7 +32,7 @@
       "description": "Display name, e.g. Jennifer & Guillaume."
     },
     "coupleProfile": {
-      "$ref": "#/$defs/coupleProfile"
+      "$ref": "https://weselnyzabojad.example/schemas/domains/couple-profile.json#/properties/coupleProfile"
     },
     "date": {
       "$ref": "#/$defs/date"

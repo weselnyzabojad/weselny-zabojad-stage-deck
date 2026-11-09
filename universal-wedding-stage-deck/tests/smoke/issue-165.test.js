@@ -153,11 +153,15 @@ describe('issue #165 shared schema and semantic parity', () => {
     const culturalRulesDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'cultural-rules.json'), 'utf8'),
     );
+    const coupleProfileDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'couple-profile.json'), 'utf8'),
+    );
     const validate = makeCartridgeValidator(Ajv2020, schema, [
       oczepinyDomain,
       firstDanceDomain,
       attractionsDomain,
       culturalRulesDomain,
+      coupleProfileDomain,
     ]);
 
     const valid = await validate(cartridge());
