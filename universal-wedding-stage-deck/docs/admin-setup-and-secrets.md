@@ -121,6 +121,7 @@ If you deploy SQL manually, at minimum apply:
 - `supabase/migrations/202611060003_cartridge_revisions.sql`
 - `supabase/migrations/202611060004_drive_publication.sql`
 - `supabase/migrations/202611070001_drop_vip_contacts.sql`
+- `supabase/migrations/202611090001_song_request_lifecycle.sql`
 
 ---
 
@@ -134,6 +135,7 @@ The application uses these functions:
 | `admin_drive` | Drive folder tree, Google Doc preview and publication |
 | `join_room` | Production per-role PIN join and role JWT |
 | `submit_song_request` | Guest song requests |
+| `get_song_request_status` | Guest-only status lookup for the guest's own request |
 
 Deploy all of them:
 
@@ -142,6 +144,7 @@ supabase functions deploy admin_api
 supabase functions deploy admin_drive
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
+supabase functions deploy get_song_request_status
 ```
 
 Verify the admin endpoints return a CORS preflight response:
@@ -305,6 +308,7 @@ Those functions are not deployed:
 ```sh
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
+supabase functions deploy get_song_request_status
 ```
 
 ---
