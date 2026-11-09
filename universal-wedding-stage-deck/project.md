@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `3a64da9` (MC game-step follow-up tracked)
+**Aligned with:** `master` @ `1cbbdcb` (global architecture & UI/UX review)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -2929,3 +2929,167 @@ CI runs the same checks on pushes and pull requests to `master`.
 | Tests | `tests/`, `docs/testing.md` |
 | Accessibility | `docs/accessibility-audit.md` |
 | MC Stage Rail plan | `docs/mc-stage-rail-plan.md`, `scripts/create-stage-rail-issues.mjs` |
+
+---
+
+## 12. Global architecture & UI/UX review (2026-11-09)
+
+A whole-codebase pass over the current `master` (`1cbbdcb`). This section is the
+living architectural + UX reference; it supersedes any stale directory map in
+section 3 where the two conflict.
+
+### 12.1 Architecture overview
+
+**Stack.** React 19 + Vite 8 + Tailwind CSS 4 (CSS-first config via
+`@theme inline` / `@utility` in `src/index.css`; there is no
+`tailwind.config.js`), `vite-plugin-pwa`, Supabase (optional cloud), Ajv for
+cartridge validation, `qrcode` and `flag-icons`. Vitest + oxlint for tests and
+lint.
+
+**No router library.** `src/main.jsx` branches on `window.location.pathname` to
+select three lazy-loaded surfaces — owner admin (`/admin`), guest song request
+(`/request/:room`), and the stage deck (everything else). The legacy
+`/deck/admin` path issues a hard redirect to `/admin` in `main.jsx`. Deck deep
+links are parsed by `parseDeckIntent` in `lib/sync/roleSession.js` and carried
+into `App.jsx`.
+
+**Entry gating (`App.jsx`).** The single stage entry decides between production
+role join (`RoleJoinScreen`, per-role PIN → JWT) and local/demo pairing
+(`PairingScreen`, DDMM display PIN), then owns the cartridge loading/error
+states before ever mounting the deck. Production never falls back to the demo
+cartridge; the wrong-wedding guard nulls the cartridge instead.
+
+**Controller (`StageDeck.jsx`).** The single orchestration layer: it derives the
+event clock, drift report, time-aware timeline, cake protocol, music policy,
+speeches, game clicker and swap/undo guards, holds all handlers
+(advance/undo/swap/subtask/speech/game/media-override), and dispatches to the
+role views (`DjBoothView`, `PhotographerView`, `VenueManagerView`,
+`SpeakerView`, `McMasterView`). It is the largest client module (~680 lines) and
+passes a ~40-key `model` object to `McMasterView`; functional but the densest
+point of coupling.
+
+**State management.** React hooks only — no external store. `useLiveStageState`
+is the core: it normalises live state, persists to `localStorage`
+(`wzsd:v1:*`), and drives the optional Supabase outbox/Realtime sync. Companion
+hooks are `useRole`, `useTheme`, `usePairing`, `usePublishedCartridge`,
+`useEventClock` and `useCompact`. Role, theme and locale are per-device and never
+part of the synced live state.
+
+**Modularity.** `src/lib/` holds ~64 pure, mostly testable helpers (drift engine,
+cake, speeches, music policy, games, photo plan, focus stack, stage rail, PWA,
+sync). `src/components/` holds presentational stage UI and the shared shells.
+`src/admin/` is the lazily-loaded owner panel. `src/views/` currently holds only
+`McMasterView`; the other role views still live in `src/components/` (a mild
+inconsistency, see 12.4).
+
+**i18n.** Custom `useI18n` with `en`/`fr`/`pl` dictionaries, `t()`/`tp()` and
+`formatTime()`, persisted per device. Cartridge content is authored data and is
+never translated. `scripts/check-i18n.mjs` checks dictionary parity only; a
+hardcoded-literal lint is still only a proposal (`docs/i18n-literal-lint.md`).
+
+**Theming.** CSS variables under `[data-theme="night"|"day"]` with a pre-paint
+inline script in `index.html` that avoids theme flash; semantic colour tokens
+(`bg-page/card/raised`, `border-line`, `text-ink/muted`, `brand`, `alert`) are
+mapped in `@theme inline`.
+
+### 12.2 Component layout status
+
+**Laptop vs pocket.** The single shared breakpoint is `(max-width: 639px)` via
+`useCompact()` (`src/hooks/useCompact.js`), so `RoleShell`, the view layout and
+the bottom bar can never disagree at 639/640px. Every role view calls
+`useCompact` and returns either its own full `wideContent` (TopBarShell +
+SecondaryControlBar + timeline) or `<RoleShell compact>` + `compactContent`.
+`RoleShell` is a pass-through above 640px; below it renders a compact header
+(role badge, Children-expected icon, icon-only Sync, a Details disclosure, and
+language/theme) plus the persistent `BottomNav`. Per #449 the pocket header drops
+logo, clock and PIN; date, couple languages, cultural/speeches chips and auth
+live behind the disclosure so the current step stays above the fold. DJ Standard
+is laptop-only (#256).
+
+**Top bar.** `TopBarShell` is the shared three-zone shell
+(`lg:grid-cols-[1fr_auto_1fr]`). Desktop MC: left = logo + `TopBarClock`
+(`text-2xl` monospace `HH:MM:SS`, `tabular-nums`) + role label; center =
+`TopBarCenterIdentity` (first names + flags, ring separator, couple languages,
+localised weekday date); right = cultural chips + Speeches chip + view switch.
+`SecondaryControlBar` sits under the top bar: left = `DriftPill` (LATE) +
+PIN/sign-out + `SyncStatusBadge`; center = `ChildrenExpectedBadge`; right =
+Open-on-phone + language + theme. It uses a compact stacked variant below `sm`.
+
+**Role identity.** Two related but distinct components:
+`TopBarRoleLabel` (MC's "MC Master" chip) and `TopBarRoleIdentity`
+(companion "Role: X" chip with lock, number-free media label). Both derive DJ
+tier text (`DJ`/`DJ VIP`); see 12.4 for the consolidation note.
+
+**Step handler components.** The universal `TimelineFocusStack` (2 history + 1
+current + 2 future, `buildFocusStack` in `lib/focusStack.js`, "show more"
+expander) is shared by every role/viewport. `StageStepCard` is the disclosure
+card with done/current/next/later variants and roving keyboard focus.
+`CurrentStepTilt` applies a 6° tilt only on fine hover pointers and honours
+`prefers-reduced-motion`. `HoldToConfirmButton` is the 1.2s advance gate with
+pointer + keyboard support and a screen-reader `role="progressbar"`.
+`CurrentStepOverflow` owns the desktop More/swap action (removed on predefined
+game steps per #539). `BottomNav` carries role identity only — the single
+Advance CTA lives in the current-step card (#421).
+
+### 12.3 UI/UX assessment summary
+
+- **Responsiveness.** Strong: one shared breakpoint, a dedicated compact shell,
+  and a compact stacked secondary bar keep 375px layouts usable. The focus stack
+  drops desktop-only overlap/scale under 640px (#425) so compact lists stay
+  clean.
+- **Visual hierarchy.** The current step is the unmistakable focal point via
+  ring, glow, elevation and (desktop-only) pointer tilt; completed/future cards
+  recede behind it with opacity/scale tiers.
+- **Styling consistency.** Semantic Tailwind tokens are the norm; night/day
+  themes share one palette. The high-contrast, low-light stage design is
+  appropriate for the venue context.
+- **Typography.** Montserrat headings + Lora body, loaded from Google Fonts with
+  Workbox runtime caching so the PWA keeps its intended type offline. (Not yet
+  self-hosted — see 12.4.)
+- **Accessibility.** Skip link, `:focus-visible` ring, reduced-motion guards,
+  `role="status"`/`aria-live` on drift/sync/children indicators, disclosure
+  semantics and roving focus in the rail, and SR progress on the hold button.
+  Touch targets have been raised to ≥44px in the recent pass (#441).
+- **Interaction flow.** Local pairing / production join → cartridge load →
+  role-scoped deck, with a single advance CTA, hold-to-confirm against
+  accidental taps, and an undo toast. Sign-out/forget are deliberately
+  confirm-gated.
+
+### 12.4 Technical debt & findings
+
+1. **Residual hardcoded UI strings.** `StageDeck.jsx` still has native
+   `window.confirm` copy and untranslated control notices ("Step marked done.",
+   "Last action undone.", `Swapped ${…}`), and `McMasterView.jsx`/
+   `RoleSignOutControl.jsx` keep hardcoded `title`/`aria` text and the
+   "Saved locally" footer. #535 (translate UI chrome) is closed but these remain;
+   the literal lint is still only a proposal.
+2. **Fragile English-title step detection.** `childrenWarningFor()` in
+   `McMasterView.jsx` matches step titles with English regexes (`wedding cake`,
+   `grand entrance`, `first dance`). Authored step titles can be French/Polish,
+   so the children warning silently fails; this contradicts the "stable ids, never
+   localised titles" rule already applied to game steps (#525, #539). The cake
+   warning already has a stable signal (`cakeProtocol.stepId`), and entrance/
+   dance have flags (`grandEntranceOrder`, `firstDanceMode`). `isGameStep`
+   retains a `/games/i` title-regex fallback alongside the stable
+   `optionalFlag === 'games'`.
+3. **Documentation drift.** `project.md`'s roadmap tables (12.1-era rows) still
+   show "Open" for items the adjacent note says were delivered through PRs
+   #473–#522 etc.; the "Last aligned" hash was one commit behind before this
+   update. `## 3`'s directory map also predates `views/McMasterView.jsx` and
+   `hooks/useCompact.js`.
+4. **Role views split across folders.** `McMasterView` is in `src/views/` while
+   `DjBoothView`, `PhotographerView`, `VenueManagerView` and `SpeakerView` live
+   in `src/components/`.
+5. **Overlapping role-label components.** `TopBarRoleLabel` and
+   `TopBarRoleIdentity` duplicate DJ-tier derivation and role display logic.
+6. **`StageDeck` is a dense controller.** ~680 lines with a ~40-key `model` bag
+   into `McMasterView`; the highest-coupling module and a candidate for a later
+   extraction pass.
+7. **Minor token inconsistency.** `STEP_TYPE_STYLES.FLEXIBLE` still uses
+   `text-white` rather than the semantic `text-on-accent` (readable today because
+   `bg-brand` stays dark blue in both themes, but inconsistent).
+8. **Fonts remain remote.** Self-hosting (#433) is incomplete: the families load
+   from Google Fonts with runtime caching only, so a cold-cache offline launch
+   still falls back to system fonts with a layout shift.
+9. **No automated browser/a11y E2E.** The axe/E2E suite noted in §10 remains
+   absent.
