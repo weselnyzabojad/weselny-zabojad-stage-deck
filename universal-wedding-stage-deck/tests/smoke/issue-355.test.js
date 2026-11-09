@@ -22,9 +22,9 @@ describe('issue #355 MC Cues children warnings and language tags', () => {
     expect(mc).not.toContain('[ALL]');
   });
 
-  it('keeps the cue text itself', () => {
-    expect(mc).toContain('Inform guests: NO Sto Lat tonight!');
-    expect(mc).toContain('Explain Polish Steak Tartare + Vodka tradition.');
-    expect(mc).toContain('Announce Instax + Guestbook + 1st Anniv Bottle.');
+  it('no longer hardcodes demo cue text (#426)', () => {
+    expect(mc).not.toContain('Inform guests: NO Sto Lat tonight!');
+    expect(mc).not.toContain('Explain Polish Steak Tartare + Vodka tradition.');
+    expect(mc).not.toContain('Announce Instax + Guestbook + 1st Anniv Bottle.');
   });
 });

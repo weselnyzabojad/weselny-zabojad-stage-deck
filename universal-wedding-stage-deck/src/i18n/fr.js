@@ -228,6 +228,7 @@ const fr = {
   'mc.rail.noCurrent': 'Aucune étape active.',
   'mc.rail.expand': 'Développer {title}',
   'mc.rail.collapse': 'Réduire {title}',
+  'mc.cues.empty': 'Aucune réplique MC',
 
   'mandatory.title': 'Contraintes obligatoires',
   'mandatory.firstArrival': 'Arrivée des premiers invités',
