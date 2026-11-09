@@ -5,10 +5,13 @@ import { useI18n } from '../i18n/useI18n';
 // the join token/device choice, so there is no role-switching control here.
 export default function TopBarRoleIdentity({ role = 'mc', tier = null, className = '' }) {
   const { t } = useI18n();
+  // Photographer 1 and 2 keep distinct ids internally but share a number-free
+  // top-bar label; auth, join cards, PINs and pocket badges keep the real ids.
+  const topBarRole = role === 'photo1' || role === 'photo2' ? 'photo' : role;
   const short =
     role === 'dj'
       ? `DJ ${String(tier).toUpperCase() === 'VIP' ? 'VIP' : 'Standard'}`
-      : roleShort(role);
+      : roleShort(topBarRole);
 
   return (
     <span

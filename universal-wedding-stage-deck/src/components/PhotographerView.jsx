@@ -4,6 +4,7 @@ import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
 import MiniSessionTwinTask from './MiniSessionTwinTask';
 import useCompact from '../hooks/useCompact';
+import { useI18n } from '../i18n/useI18n';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -74,9 +75,12 @@ function secondsUntil(date, now) {
   return (date.getTime() - now.getTime()) / 1000;
 }
 
-function countdownText(seconds) {
+function countdownText(seconds, t) {
   if (seconds == null) return null;
-  return seconds < 0 ? `${formatDuration(seconds)} ago` : `in ${formatDuration(seconds)}`;
+  const duration = formatDuration(seconds);
+  return seconds < 0
+    ? t('photo.ago', { duration })
+    : t('photo.in', { duration });
 }
 
 function Card({ title, icon, children, aside, className = '' }) {
@@ -202,6 +206,7 @@ function PhotoPlanBlock({ type, data }) {
 }
 
 function MiniSessionOverride({ value, onSave }) {
+  const { t } = useI18n();
   return (
     <form
       className="mx-auto mt-2 flex max-w-xl flex-wrap items-center justify-center gap-2 rounded-lg border border-line bg-page p-2 text-center"
@@ -213,7 +218,7 @@ function MiniSessionOverride({ value, onSave }) {
       }}
     >
       <label className="text-[10px] uppercase tracking-wider text-muted">
-        Chosen mini-session hour
+        {t('photo.chosenMiniHour')}
         <input
           type="time"
           name="miniTime"
@@ -225,15 +230,15 @@ function MiniSessionOverride({ value, onSave }) {
         type="submit"
         className="rounded border border-brand-strong bg-brand/40 px-2 py-1 text-[10px] font-semibold text-ink"
       >
-        Save for all media
+        {t('photo.saveForAllMedia')}
       </button>
       {value ? (
         <span className="font-mono text-[10px] text-emerald-300">
-          Shared override: {value}
+          {t('photo.sharedOverride', { time: value })}
         </span>
       ) : (
         <p className="w-full text-[10px] text-amber-300">
-          Unscheduled — choose the hour to place the mini session on the timeline.
+          {t('photo.unscheduled')}
         </p>
       )}
     </form>
@@ -277,6 +282,7 @@ export default function PhotographerView({
   checkedSubtasks = {},
   onToggleSubtask,
 }) {
+  const { t } = useI18n();
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
   const timeZone = resolveVenueTimeZone(wedding);
@@ -369,37 +375,37 @@ export default function PhotographerView({
       />
 
       {visibility.sunset && !miniSessionDone ? (
-        <Card title="Light windows" icon="🌅">
+        <Card title={t('photo.lightWindows')} icon="🌅">
           {!sunset?.usable ? (
             <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
-              <p className="font-semibold">Sunset unavailable — check connection.</p>
+              <p className="font-semibold">{t('photo.sunsetUnavailable')}</p>
               <p className="mt-1 text-[11px] text-muted">
-                The card stays visible; refresh the cartridge after the online lookup succeeds.
+                {t('photo.offlineExplainCompact')}
               </p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-muted">Sunset</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.sunset')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
-                  <div className="font-mono text-[10px] text-muted">{countdownText(sunsetSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(sunsetSeconds, t) ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-muted">Golden hour</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.goldenHour')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
-                  <div className="font-mono text-[10px] text-muted">{countdownText(goldenSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(goldenSeconds, t) ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-muted">Civil twilight</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.civilTwilight')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
                 </div>
                 <div className="rounded-lg border border-line bg-page p-2.5">
-                  <div className="text-[9px] uppercase tracking-wider text-muted">Mini latest start</div>
+                  <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.miniLatestStart')}</div>
                   <div className="font-mono text-xl font-bold text-ink">
                     {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
                   </div>
-                  <div className="font-mono text-[10px] text-muted">{countdownText(latestStartSeconds) ?? '—'}</div>
+                  <div className="font-mono text-[10px] text-muted">{countdownText(latestStartSeconds, t) ?? '—'}</div>
                 </div>
               </div>
               <MiniSessionOverride
@@ -472,7 +478,7 @@ export default function PhotographerView({
 
           {visibility.sunset && !miniSessionDone ? (
             <Card
-              title="Sunset & golden hour"
+              title={t('photo.sunsetGolden')}
               icon="🌅"
               aside={
                 sunset ? (
@@ -486,45 +492,45 @@ export default function PhotographerView({
             >
               {!sunset || !sunset.usable ? (
                 <div className="rounded-lg border border-[#ED2939]/50 bg-[#ED2939]/10 p-3 text-sm text-alert-tint">
-                  <p className="font-semibold">Sunset unavailable — check connection.</p>
+                  <p className="font-semibold">{t('photo.sunsetUnavailable')}</p>
                   <p className="mt-1 text-[11px] text-muted">
-                    D6: the app never estimates a sunset offline. Refresh the cartridge after the
-                    online lookup succeeds.
+                    {t('photo.offlineExplain')}
                   </p>
                 </div>
               ) : (
                 <>
                   {sunset.status === 'STALE' ? (
                     <p className="mb-2 rounded border border-amber-700 bg-amber-950/60 px-2 py-1 text-[10px] text-amber-200">
-                      Cached sunset data is stale
-                      {sunset.lastFetchedAt ? ` · fetched ${sunset.lastFetchedAt}` : ''}. Treat the
-                      window as approximate.
+                      {t('photo.stale')}
+                      {sunset.lastFetchedAt
+                        ? ` · ${t('photo.fetched', { time: sunset.lastFetchedAt })}`
+                        : ''}
                     </p>
                   ) : null}
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <div className="rounded-lg border border-line bg-page p-2.5">
-                      <div className="text-[9px] uppercase tracking-wider text-muted">Sunset</div>
+                      <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.sunset')}</div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.sunsetTime ?? '—'}
                       </div>
                       <div className="font-mono text-[10px] text-muted">
-                        {countdownText(sunsetSeconds) ?? '—'}
+                        {countdownText(sunsetSeconds, t) ?? '—'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
-                        Golden hour
+                        {t('photo.goldenHour')}
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.goldenHourStart ?? '—'}
                       </div>
                       <div className="font-mono text-[10px] text-muted">
-                        {countdownText(goldenSeconds) ?? '—'}
+                        {countdownText(goldenSeconds, t) ?? '—'}
                       </div>
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
-                        Civil twilight
+                        {t('photo.civilTwilight')}
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.civilTwilightEnd ?? '—'}
@@ -532,7 +538,7 @@ export default function PhotographerView({
                     </div>
                     <div className="rounded-lg border border-line bg-page p-2.5">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
-                        Mini session latest start
+                        {t('photo.miniSessionLatestStart')}
                       </div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {countdowns.latestMiniStartAt
@@ -540,25 +546,27 @@ export default function PhotographerView({
                           : '—'}
                       </div>
                       <div className="font-mono text-[10px] text-muted">
-                        {countdownText(latestStartSeconds) ?? '—'}
+                        {countdownText(latestStartSeconds, t) ?? '—'}
                       </div>
                     </div>
                   </div>
                   {sunset.miniSession ? (
                     <div className="mt-2 grid gap-1.5 text-[11px] sm:grid-cols-2">
                       <Row
-                        label="Mini session"
-                        value={`${sunset.miniSession.durationMin ?? '—'} min · ${sunset.miniSession.location ?? 'location TBC'}`}
+                        label={t('photo.miniSession')}
+                        value={`${t('photo.minutes', { minutes: sunset.miniSession.durationMin ?? '—' })} · ${sunset.miniSession.location ?? t('photo.locationTbc')}`}
                       />
                       <Row
-                        label="Backup location"
+                        label={t('photo.backupLocation')}
                         value={sunset.miniSession.backupLocation ?? '—'}
                       />
                     </div>
                   ) : null}
                   <p className="mt-2 text-[10px] text-muted">
-                    Venue timezone {timeZone}
-                    {sunset.provider ? ` · source ${sunset.provider}` : ''}
+                    {t('photo.venueTimezone', { zone: timeZone })}
+                    {sunset.provider
+                      ? ` · ${t('photo.source', { provider: sunset.provider })}`
+                      : ''}
                   </p>
                   <MiniSessionOverride
                     value={miniSessionOverride}

@@ -23,10 +23,10 @@ const render = (wedding, role = 'photo1') =>
 describe('issue #311 photographer sunset UI', () => {
   it('keeps the sunset card visible on desktop and pocket sources', () => {
     const photo = read('src/components/PhotographerView.jsx');
-    expect(photo).toContain('Sunset & golden hour');
-    expect(photo).toContain('Light windows');
-    expect(photo).toContain('Golden hour');
-    expect(photo).toContain('Civil twilight');
+    expect(photo).toContain('photo.sunsetGolden');
+    expect(photo).toContain('photo.lightWindows');
+    expect(photo).toContain('photo.goldenHour');
+    expect(photo).toContain('photo.civilTwilight');
   });
 
   it('renders sunset data for Photographer 1/2 and Cameraman', () => {
