@@ -1,0 +1,20 @@
+[
+  {
+    "id": "step_08",
+    "time": "21:45",
+    "title": "First Dance",
+    "type": "FLEXIBLE",
+    "location": "Main Hall",
+    "isMainSongRequired": true,
+    "firstDanceMode": "NORMAL",
+    "firstDanceStartAt": "00:12",
+    "firstDanceStopAt": "04:30",
+    "firstDanceNotes": "Key song for the DJ; fade under the applause.",
+    "song": {
+      "artist": "Ed Sheeran",
+      "title": "Perfect",
+      "Note": "Duet version if available.",
+      "source": "STREAMING"
+    }
+  }
+]

@@ -327,11 +327,7 @@
       "title": "First Dance",
       "type": "FLEXIBLE",
       "location": "Main Hall",
-      "isMainSongRequired": true,
-      "firstDanceMode": "NORMAL",
-      "firstDanceStartAtSec": 12,
-      "firstDanceStopAfterSec": 270,
-      "firstDanceNotes": "Key song for the DJ; fade under the applause."
+      "isMainSongRequired": true
     },
     {
       "id": "step_09",

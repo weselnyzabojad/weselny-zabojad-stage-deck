@@ -1004,13 +1004,14 @@
           "enum": ["FAKE", "NORMAL"],
           "description": "First Dance variant from the Google Doc."
         },
-        "firstDanceStartAtSec": {
-          "type": "integer",
-          "minimum": 0
+        "firstDanceStartAt": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/first-dance.json#/items/properties/firstDanceStartAt"
         },
-        "firstDanceStopAfterSec": {
-          "type": "integer",
-          "minimum": 0
+        "firstDanceStopAt": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/first-dance.json#/items/properties/firstDanceStopAt"
+        },
+        "song": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/first-dance.json#/items/properties/song"
         },
         "firstDanceNotes": {
           "type": "string"

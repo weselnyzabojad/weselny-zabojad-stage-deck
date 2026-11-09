@@ -144,7 +144,10 @@ describe('issue #165 shared schema and semantic parity', () => {
     const oczepinyDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'oczepiny.json'), 'utf8'),
     );
-    const validate = makeCartridgeValidator(Ajv2020, schema, [oczepinyDomain]);
+    const firstDanceDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'first-dance.json'), 'utf8'),
+    );
+    const validate = makeCartridgeValidator(Ajv2020, schema, [oczepinyDomain, firstDanceDomain]);
 
     const valid = await validate(cartridge());
     expect(valid.valid).toBe(true);

@@ -13,8 +13,8 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 const danceStep = (overrides = {}) => ({
   id: 'step_08',
   firstDanceMode: 'NORMAL',
-  firstDanceStartAtSec: 12,
-  firstDanceStopAfterSec: 270,
+  firstDanceStartAt: '00:12',
+  firstDanceStopAt: '04:30',
   ...overrides,
 });
 
@@ -23,8 +23,12 @@ describe('issue #305 First Dance modes and timing', () => {
     const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
     const step = schema.$defs.step.properties;
     expect(step.firstDanceMode.enum).toEqual(['FAKE', 'NORMAL']);
-    expect(step.firstDanceStartAtSec.type).toBe('integer');
-    expect(step.firstDanceStopAfterSec.type).toBe('integer');
+    expect(step.firstDanceStartAt.$ref).toContain(
+      'first-dance.json#/items/properties/firstDanceStartAt',
+    );
+    expect(step.firstDanceStopAt.$ref).toContain(
+      'first-dance.json#/items/properties/firstDanceStopAt',
+    );
   });
 
   it('resolves normal and fake modes', () => {
@@ -86,8 +90,8 @@ describe('issue #305 First Dance modes and timing', () => {
     const step = DEMO_WEDDING.steps.find((entry) => entry.id === 'step_08');
     expect(step).toMatchObject({
       firstDanceMode: 'NORMAL',
-      firstDanceStartAtSec: 12,
-      firstDanceStopAfterSec: 270,
+      firstDanceStartAt: '00:12',
+      firstDanceStopAt: '04:30',
     });
     expect(read('schema/google-doc-template.md')).toContain(
       'Mode NORMAL; start at 12s; stop after 4m 30s.',

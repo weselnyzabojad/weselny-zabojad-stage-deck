@@ -37,6 +37,12 @@ function clock(value) {
   return normalizeClock(value);
 }
 
+// Formats a whole number of seconds as a `MM:SS` timestamp (first-dance fields).
+function toMmss(totalSeconds) {
+  const seconds = Number.isInteger(totalSeconds) && totalSeconds >= 0 ? totalSeconds : 0;
+  return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
 function list(value) {
   return String(value ?? '')
     .split(/[,;]+/)
@@ -239,10 +245,10 @@ function parseTimelineNotes(step, notes, warnings) {
   const mode = /mode\s+(fake|normal)/i.exec(clean);
   if (mode) step.firstDanceMode = mode[1].toUpperCase();
   const start = /start at\s+(\d+)\s*s/i.exec(clean);
-  if (start) step.firstDanceStartAtSec = Number(start[1]);
+  if (start) step.firstDanceStartAt = toMmss(Number(start[1]));
   const stop = /stop after\s+(?:(\d+)\s*m)?\s*(?:(\d+)\s*s)?/i.exec(clean);
   if (stop && (stop[1] || stop[2])) {
-    step.firstDanceStopAfterSec = Number(stop[1] ?? 0) * 60 + Number(stop[2] ?? 0);
+    step.firstDanceStopAt = toMmss(Number(stop[1] ?? 0) * 60 + Number(stop[2] ?? 0));
   }
   if (!step.firstDanceMode && /first dance/i.test(step.title) && !step.firstDanceNotes) {
     warnings.push(`step ${step.id}: First Dance notes did not declare a mode`);

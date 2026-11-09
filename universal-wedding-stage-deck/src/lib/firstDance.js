@@ -10,8 +10,9 @@ export const FIRST_DANCE_MODES = {
   },
 };
 
-function seconds(value) {
-  return Number.isInteger(value) && value >= 0 ? value : null;
+function mmssToSeconds(value) {
+  const match = /^([0-5]\d):([0-5]\d)$/.exec(typeof value === 'string' ? value.trim() : '');
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
 }
 
 export function resolveFirstDance(step) {
@@ -19,8 +20,8 @@ export function resolveFirstDance(step) {
   return {
     mode,
     meta: mode ? FIRST_DANCE_MODES[mode] : null,
-    startAtSec: seconds(step?.firstDanceStartAtSec),
-    stopAfterSec: seconds(step?.firstDanceStopAfterSec),
+    startAtSec: mmssToSeconds(step?.firstDanceStartAt),
+    stopAfterSec: mmssToSeconds(step?.firstDanceStopAt),
     notes: typeof step?.firstDanceNotes === 'string' && step.firstDanceNotes.trim()
       ? step.firstDanceNotes.trim()
       : null,
