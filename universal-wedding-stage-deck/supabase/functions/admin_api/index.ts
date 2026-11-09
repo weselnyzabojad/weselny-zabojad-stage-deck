@@ -22,6 +22,7 @@ import weddingSchema from '../_shared/wedding-schema-v1.1.json' with { type: 'js
 import oczepinyDomain from '../_shared/domains/oczepiny.json' with { type: 'json' };
 import firstDanceDomain from '../_shared/domains/first-dance.json' with { type: 'json' };
 import attractionsDomain from '../_shared/domains/attractions.json' with { type: 'json' };
+import culturalRulesDomain from '../_shared/domains/cultural-rules.json' with { type: 'json' };
 import {
   authorizeAdminSession,
   decodeJwt,
@@ -43,7 +44,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
