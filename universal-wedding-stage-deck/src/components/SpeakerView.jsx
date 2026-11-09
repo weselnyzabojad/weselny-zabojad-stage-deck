@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import logo from '../assets/img/logo.png';
-import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -170,6 +169,7 @@ export default function SpeakerView({
         outbox={outbox}
         onToggleTheme={onToggleTheme}
         theme={theme}
+        showChildrenExpected={false}
       >
         <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl">
           <SkipLink />
@@ -198,7 +198,6 @@ export default function SpeakerView({
 
       <SecondaryControlBar
         left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
-        center={<ChildrenExpectedBadge wedding={wedding} inline />}
         right={(
           <>
             <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
