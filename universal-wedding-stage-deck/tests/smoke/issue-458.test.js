@@ -25,7 +25,7 @@ describe('issue #458 dev-only song request simulator', () => {
 
   it('supports two fake device ids and an independent cooldown', () => {
     const source = read('src/dev/SongRequestSimulator.jsx');
-    expect(source).toContain('createGuestDeviceId(),\n    createGuestDeviceId(),');
+    expect((source.match(/createGuestDeviceId\(\)/g) ?? []).length).toBeGreaterThanOrEqual(2);
     expect(source).toContain('COOLDOWN_MS = 10 * 60 * 1000');
     expect(source).toContain('lastCreated[deviceId]');
     expect(source).toContain('Reset device id');

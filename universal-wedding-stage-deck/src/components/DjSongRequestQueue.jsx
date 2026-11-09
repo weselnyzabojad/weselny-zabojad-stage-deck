@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import ModalShell from './ModalShell';
 import QrCodeImage from './QrCodeImage';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import { buildSongRequestUrl } from '../lib/songRequests.js';
@@ -205,6 +206,8 @@ export default function DjSongRequestQueue({
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const requestUrl = useMemo(() => {
     if (!roomCode) return null;
@@ -297,6 +300,67 @@ export default function DjSongRequestQueue({
   const { pending, accepted } = partitionSongRequests(requests);
   const upNext = accepted.filter((request) => !request.playedAt);
 
+  const qrButton = (
+    <button
+      type="button"
+      onClick={() => setQrOpen(true)}
+      disabled={!requestUrl}
+      title={requestUrl ? t('dj.requests.qrButton') : t('dj.requests.qrUnavailable')}
+      aria-label={requestUrl ? t('dj.requests.qrButton') : t('dj.requests.qrUnavailable')}
+      className="inline-flex min-h-11 items-center rounded border border-line-strong bg-raised px-2.5 py-1 text-[10px] font-semibold text-ink disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {t('dj.requests.qrButton')}
+    </button>
+  );
+
+  const qrDialog = (
+    <ModalShell
+      open={qrOpen}
+      onClose={() => setQrOpen(false)}
+      labelledBy="song-request-qr-title"
+      size="full"
+    >
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 overflow-y-auto px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-16 text-center">
+        <h2 id="song-request-qr-title" className="font-heading text-xl font-bold text-ink">
+          {t('dj.requests.qrButton')}
+        </h2>
+        <p className="max-w-md text-sm text-muted">{t('dj.requests.qrDialogBody')}</p>
+        {requestUrl ? (
+          <div
+            className="shrink-0 overflow-hidden rounded-xl bg-white p-2 shadow-2xl"
+            style={{ width: 'min(80vmin, 80dvh)', height: 'min(80vmin, 80dvh)' }}
+          >
+            <QrCodeImage
+              text={requestUrl}
+              size={720}
+              fill
+              label={t('dj.requests.qrLabel')}
+            />
+          </div>
+        ) : null}
+        <div className="w-full max-w-xl break-all rounded-lg border border-line bg-raised px-3 py-2 font-mono text-[11px] text-ink">
+          {requestUrl ?? t('dj.requests.qrUnavailable')}
+        </div>
+        <button
+          type="button"
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(requestUrl);
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 2000);
+            } catch {
+              setCopied(false);
+            }
+          }}
+          disabled={!requestUrl}
+          className="rounded border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-ink disabled:opacity-50"
+        >
+          {copied ? t('dj.requests.qrCopied') : t('dj.requests.qrCopy')}
+        </button>
+      </div>
+    </ModalShell>
+  );
+
   if (variant === 'bar') {
     if (!connected) {
       return (
@@ -307,16 +371,8 @@ export default function DjSongRequestQueue({
           <span>💬 {t('dj.requests.title')} ·{' '}
             {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
           </span>
-          {requestUrl ? (
-            <details className="relative ml-auto">
-              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
-                {t('dj.requests.qrButton')}
-              </summary>
-              <div className="absolute right-0 top-full z-raised mt-1 rounded-lg bg-white p-2 shadow-2xl">
-                <QrCodeImage text={requestUrl} size={160} label={t('dj.requests.qrLabel')} />
-              </div>
-            </details>
-          ) : null}
+          {qrButton}
+          {qrDialog}
         </section>
       );
     }
@@ -386,16 +442,8 @@ export default function DjSongRequestQueue({
             {loading ? t('dj.requests.loading') : t('dj.requests.refresh')}
           </button>
 
-          {requestUrl ? (
-            <details className="relative">
-              <summary className="cursor-pointer rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink">
-                {t('dj.requests.qrButton')}
-              </summary>
-              <div className="absolute right-0 top-full z-raised mt-1 rounded-lg bg-white p-2 shadow-2xl">
-                <QrCodeImage text={requestUrl} size={160} label={t('dj.requests.qrLabel')} />
-              </div>
-            </details>
-          ) : null}
+          {qrButton}
+          {qrDialog}
         </div>
 
         {upNext.length > 0 ? (
@@ -452,6 +500,8 @@ export default function DjSongRequestQueue({
         <p className="mt-1 text-[10px] leading-snug text-muted">
           {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
         </p>
+        <div className="mt-2">{qrButton}</div>
+        {qrDialog}
       </section>
     );
   }
