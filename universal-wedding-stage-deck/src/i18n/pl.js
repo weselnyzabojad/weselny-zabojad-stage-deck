@@ -51,6 +51,11 @@ const pl = {
   'toast.actionApplied': 'Wykonano akcję',
   'toast.undo': 'Cofnij',
   'toast.dismiss': 'Zamknij',
+  'hold.hint': 'Przytrzymaj przez {seconds} s, aby potwierdzić.',
+  'hold.progress': 'Postęp przytrzymania {percent}%',
+  'hold.progressLabel': 'Postęp przytrzymania',
+  'hold.complete': 'Akcja potwierdzona',
+  'hold.cancelled': 'Zwolniono — akcja niepotwierdzona',
   'couple.wedding': 'Wesele:',
   'couple.languages': 'Wspólne języki pary',
 
