@@ -226,6 +226,7 @@ const en = {
   'mc.rail.noCurrent': 'No active step.',
   'mc.rail.expand': 'Expand {title}',
   'mc.rail.collapse': 'Collapse {title}',
+  'mc.cues.empty': 'No MC cue',
 
   'mandatory.title': 'Mandatory constraints',
   'mandatory.firstArrival': 'First guests arrival',

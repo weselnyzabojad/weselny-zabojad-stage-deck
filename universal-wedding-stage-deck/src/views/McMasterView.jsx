@@ -26,6 +26,7 @@ import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
+import { useI18n } from '../i18n/useI18n';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
@@ -108,6 +109,8 @@ export default function McMasterView({ model }) {
   undoToast,
   setUndoToast,
 } = model;
+
+  const { t } = useI18n();
 
   const oczepinyStatus = resolveOczepinyIndicator({
     wedding: WEDDING,
@@ -279,14 +282,8 @@ export default function McMasterView({ model }) {
                 <span>{childrenWarningFor(currentStep)}</span>
               </li>
             ) : null}
-            <li className="flex items-start space-x-2">
-              <span>Inform guests: NO Sto Lat tonight!</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <span>Explain Polish Steak Tartare + Vodka tradition.</span>
-            </li>
-            <li className="flex items-start space-x-2">
-              <span>Announce Instax + Guestbook + 1st Anniv Bottle.</span>
+            <li className="flex items-start space-x-2 text-slate-500">
+              <span>{t('mc.cues.empty')}</span>
             </li>
           </ul>
         </div>

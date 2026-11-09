@@ -226,6 +226,7 @@ const pl = {
   'mc.rail.noCurrent': 'Brak aktywnego kroku.',
   'mc.rail.expand': 'Rozwiń {title}',
   'mc.rail.collapse': 'Zwiń {title}',
+  'mc.cues.empty': 'Brak kwestii MC',
 
   'mandatory.title': 'Obowiązkowe ograniczenia',
   'mandatory.firstArrival': 'Przyjazd pierwszych gości',
