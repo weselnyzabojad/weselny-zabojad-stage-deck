@@ -3259,3 +3259,29 @@ Decisions:
 - [#564](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/564) — couple-profile.
 - [#563](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/563) — cultural-rules.
 - [#565](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/565) — photo-plan.
+
+## 16. Photo-plan sub-domain schemas (decision, 2026-11-09)
+
+The photo plan is decomposed into five focused sub-domain schemas, each in
+`schema/domains/<name>.json` and `$ref`'d from `schema/domains/photo-plan.json`.
+The cartridge shape stays nested (`photoPlan.<name>`); only the schema files are
+extracted. These are the Google Doc → JSON mapping contracts for the photo-plan
+sub-blocks.
+
+| Sub-domain | Schema file | Cartridge path | Issue |
+| --- | --- | --- | --- |
+| miniSession | `schema/domains/mini-session.json` | `photoPlan.miniSession` | [#572](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/572) |
+| groupPhotos | `schema/domains/group-photos.json` | `photoPlan.groupPhotos` | [#573](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/573) |
+| speedFoto | `schema/domains/speed-foto.json` | `photoPlan.speedFoto` | [#574](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/574) |
+| guestCoverage | `schema/domains/guest-coverage.json` | `photoPlan.guestCoverage` | [#575](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/575) |
+| specialEffects | `schema/domains/special-effects.json` | `photoPlan.specialEffects` | [#576](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/576) |
+
+Notes:
+
+- `photoPlan` itself was extracted in [#565](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/565);
+  `wedding-cartridge.example.json` already omits it, so these five blocks are
+  moved out of `schema/domains/photo-plan.example.json` into per-sub-domain
+  examples rather than deleted from the cartridge example again.
+- Each sub-schema uses draft 2020-12 and is registered with the browser, Node and
+  Edge validators (mirrored to `supabase/functions/_shared/domains/`), with the
+  byte-identical Edge schema copy regenerated.
