@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useI18n } from '../i18n/useI18n';
 
 const SIZES = {
   full: 'w-full h-full sm:h-[calc(100dvh-2rem)] sm:max-w-6xl rounded-none sm:rounded-2xl',
@@ -17,6 +18,7 @@ const FOCUSABLE_SELECTOR = [
 // Shared dialog shell: backdrop dismiss, Escape to close, Tab/Shift+Tab focus
 // trap, initial focus on the close button, and focus restored on unmount.
 export default function ModalShell({ open, onClose, labelledBy, size = 'panel', children }) {
+  const { t } = useI18n();
   const closeRef = useRef(null);
   const dialogRef = useRef(null);
   const previouslyFocused = useRef(null);
@@ -101,7 +103,7 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
           ref={closeRef}
           type="button"
           onClick={onClose}
-          aria-label="Close overlay"
+          aria-label={t('modal.close')}
           className="absolute right-3 top-3 z-20 h-10 w-10 rounded-lg border border-line-strong bg-raised text-lg font-bold text-ink transition hover:bg-line"
         >
           ✕

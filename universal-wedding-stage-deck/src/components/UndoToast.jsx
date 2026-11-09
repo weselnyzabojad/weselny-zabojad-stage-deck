@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react';
+import { useI18n } from '../i18n/useI18n';
 
 // Five-second undo toast for destructive stage commands (P0.7).
 export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 }) {
+  const { t } = useI18n();
   const dismissRef = useRef(onDismiss);
   useEffect(() => {
     dismissRef.current = onDismiss;
@@ -24,7 +26,7 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
       <div className="flex items-center justify-between gap-3 px-3 py-2.5">
         <div className="min-w-0">
           <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-            Action applied
+            {t('toast.actionApplied')}
           </div>
           <div className="truncate text-xs text-ink">{toast.label}</div>
         </div>
@@ -34,12 +36,12 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
             onClick={onUndo}
             className="rounded border border-brand-strong bg-brand px-2.5 py-1 text-[11px] font-bold text-on-accent transition hover:bg-brand-hover"
           >
-            Undo
+            {t('toast.undo')}
           </button>
           <button
             type="button"
             onClick={onDismiss}
-            aria-label="Dismiss"
+            aria-label={t('toast.dismiss')}
             className="rounded border border-line bg-raised px-2 py-1 text-[11px] text-ink transition hover:bg-line"
           >
             ✕
