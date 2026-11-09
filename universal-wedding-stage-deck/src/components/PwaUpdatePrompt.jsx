@@ -15,6 +15,10 @@ export default function PwaUpdatePrompt() {
   const [checking, setChecking] = useState(false);
   const updateSWRef = useRef(null);
   const registrationRef = useRef(null);
+  // Issue #541: a service worker can take control without this tab asking for
+  // it (another tab sends SKIP_WAITING, or the browser activates a waiting
+  // worker). Only the tab whose operator pressed "Reload now" may reload.
+  const reloadRequestedRef = useRef(false);
   const intervalRef = useRef(null);
   const visibilityHandlerRef = useRef(null);
   const context = useSyncExternalStore(
@@ -33,6 +37,14 @@ export default function PwaUpdatePrompt() {
         if (disposed) return;
         setNeedRefresh(true);
         setDismissed(false);
+      },
+      onNeedReload() {
+        // The library calls this when a new worker takes control. Without this
+        // callback it reloads unconditionally, which is the #541 white-flash
+        // loop. Reload only after this tab explicitly requested it.
+        if (disposed || !reloadRequestedRef.current) return;
+        reloadRequestedRef.current = false;
+        window.location.reload();
       },
       onOfflineReady() {
         // Offline readiness needs no interruption; the PWA is still usable.
@@ -96,6 +108,9 @@ export default function PwaUpdatePrompt() {
       overlay: context.overlay,
       scrollY: typeof window === 'undefined' ? 0 : window.scrollY,
     });
+    // Mark this tab as the one that asked for the update so the library's
+    // `controlling` handler (see onNeedReload) is allowed to reload it.
+    reloadRequestedRef.current = true;
     updateSWRef.current?.(true);
   };
 
