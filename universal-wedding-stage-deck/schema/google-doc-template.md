@@ -94,6 +94,12 @@ steps: keep them in the MANDATORY STEPS table below. Every remaining predefined
 step below is sourced from this Google Doc. Duration (min) is generated from the
 next step's time (and the closure time for the final step), not authored here.
 
+Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
+Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
+Test Wiedzy, Test Zgodności, Oczepiny, Last Dance) — see
+`docs/google-doc-template-conventions.md` §6. Detection reads the flags, never
+the localized title.
+
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | step_01 | 16:30 | 30 | Cocktail / Vin d'honneur | FLEXIBLE | Garden |  | false |  |  |
