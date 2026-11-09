@@ -12,15 +12,6 @@
       "goldenHourStart": "19:32",
       "civilTwilightEnd": "20:48",
       "status": "LIVE"
-    },
-    "specialEffects": {
-      "sparklers": true,
-      "fire": false,
-      "heavySmoke": true,
-      "other": "Cold sparks",
-      "permitRequired": false,
-      "venueApproved": true,
-      "safetyBriefing": "Briefed the venue manager and the photographer."
     }
   }
 }

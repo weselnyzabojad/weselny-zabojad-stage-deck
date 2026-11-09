@@ -71,6 +71,9 @@
         },
         "guestCoverage": {
           "$ref": "https://weselnyzabojad.example/schemas/domains/guest-coverage.json#/properties/guestCoverage"
+        },
+        "specialEffects": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/special-effects.json#/properties/specialEffects"
         }
       },
       "required": [
