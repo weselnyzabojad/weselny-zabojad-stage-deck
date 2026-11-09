@@ -658,24 +658,28 @@ function mapMandatory(source) {
     const row = rows.find((entry) => normalizeKey(entry.Field) === target);
     return row?.Time ?? null;
   };
-  const mode = (name) => {
-    const value = text(get(name))?.toUpperCase();
-    return value === 'TABLE_SERVICE' || value === 'BUFFET' ? value : undefined;
-  };
+  const kitchenServices = subTable(
+    source,
+    'Kitchen Services',
+    ['Course ID', 'Name', 'Time', 'Service Mode'],
+  )
+    .map((row) => {
+      const id = slug(row['Course ID']);
+      const time = clock(row.Time);
+      if (!id || !time) return null;
+      const serviceMode = ['TABLE_SERVICE', 'BUFFET'].includes(
+        text(row['Service Mode'])?.toUpperCase(),
+      )
+        ? text(row['Service Mode']).toUpperCase()
+        : 'TABLE_SERVICE';
+      const course = { id, time, serviceMode };
+      if (text(row.Name)) course.name = text(row.Name);
+      return course;
+    })
+    .filter(Boolean);
   return {
     firstGuestsArrival: clock(get('First guests arrival')),
-    kitchenServices: {
-      dinner: clock(get('Obiad weselny')),
-      firstSupper: clock(get('Pierwsza kolacja')),
-      secondSupper: clock(get('Druga kolacja')),
-      thirdSupper: clock(get('Trzecia kolacja')),
-    },
-    kitchenServiceModes: {
-      dinner: mode('Obiad weselny service'),
-      firstSupper: mode('Pierwsza kolacja service'),
-      secondSupper: mode('Druga kolacja service'),
-      thirdSupper: mode('Trzecia kolacja service'),
-    },
+    kitchenServices,
     closureTime: clock(get('Wedding closure')),
     closureExtensionAllowed: bool(get('Closure extension allowed'), false),
     closureExtensionUntil: clock(get('Closure extension until')),

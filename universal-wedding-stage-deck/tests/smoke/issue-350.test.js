@@ -42,7 +42,11 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
 
   it('maps mandatory constraints, kitchen and music content', () => {
     expect(result.cartridge.mandatorySteps.firstGuestsArrival).toBe('15:30');
-    expect(result.cartridge.mandatorySteps.kitchenServiceModes.secondSupper).toBe('BUFFET');
+    expect(result.cartridge.mandatorySteps.kitchenServices).toEqual([
+      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_1', name: 'Supper I', time: '21:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
+    ]);
     expect(result.cartridge.extensions.kitchen.courses).toHaveLength(2);
     expect(result.cartridge.musicPolicy.importantSongs.length).toBe(3);
     expect(result.cartridge.musicPolicy.mustPlay.length).toBe(2);

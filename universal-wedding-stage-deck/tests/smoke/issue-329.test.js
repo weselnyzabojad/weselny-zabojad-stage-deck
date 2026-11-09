@@ -14,8 +14,10 @@ const wedding = {
   weddingId: 'w1',
   mandatorySteps: {
     firstGuestsArrival: '15:30',
-    kitchenServices: { dinner: '18:30', secondSupper: '23:30' },
-    kitchenServiceModes: { dinner: 'TABLE_SERVICE', secondSupper: 'BUFFET' },
+    kitchenServices: [
+      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
+      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
+    ],
     cakeServiceMode: 'KITCHEN_RETURN',
     closureTime: '02:00',
     closureExtensionAllowed: true,

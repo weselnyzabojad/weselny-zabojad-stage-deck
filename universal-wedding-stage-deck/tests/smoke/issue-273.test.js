@@ -16,10 +16,10 @@ describe('issue #273 mandatory steps', () => {
 
   it('includes the kitchen service hours and skips missing third supper', () => {
     const labels = buildMandatorySteps(DEMO_WEDDING).map((step) => step.label);
-    expect(labels).toContain('Obiad weselny');
-    expect(labels).toContain('Pierwsza kolacja');
-    expect(labels).toContain('Druga kolacja');
-    expect(labels).not.toContain('Trzecia kolacja');
+    expect(labels).toContain('Dinner');
+    expect(labels).toContain('Supper I');
+    expect(labels).toContain('Supper II');
+    expect(labels).not.toContain('Supper III');
   });
 
   it('validates the schema block', () => {

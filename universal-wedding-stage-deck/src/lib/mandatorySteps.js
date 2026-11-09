@@ -1,15 +1,6 @@
 import { firstArrivalCeremonyNote, resolveCeremony } from './ceremony.js';
 import { addMinutesToClock } from './liveStageState.js';
 
-const KITCHEN_LABELS = {
-  dinner: 'Obiad weselny',
-  firstSupper: 'Pierwsza kolacja',
-  secondSupper: 'Druga kolacja',
-  thirdSupper: 'Trzecia kolacja',
-};
-
-export const KITCHEN_SERVICE_KEYS = ['dinner', 'firstSupper', 'secondSupper', 'thirdSupper'];
-
 export const KITCHEN_SERVICE_MODE_LABELS = {
   TABLE_SERVICE: 'Table service',
   BUFFET: 'Buffet',
@@ -23,24 +14,38 @@ function resolveMandatoryData(wedding, override) {
   return wedding?.mandatorySteps ?? {};
 }
 
+// `kitchenServices` is an ordered array of `{ id, name, time, serviceMode }`.
+function normalizeKitchenServices(value) {
+  return Array.isArray(value)
+    ? value.filter((course) => course && course.time).map((course) => ({
+        id: course.id ?? 'course',
+        name: course.name,
+        time: course.time,
+        serviceMode: course.serviceMode,
+      }))
+    : [];
+}
+
 // Normalized mandatory-constraint view shared by MC and DJ VIP. First arrival
 // and kitchen/cake data stay here; prestation ready is always derived.
 export function resolveMandatoryConstraints(wedding, override = null) {
   const data = resolveMandatoryData(wedding, override);
   const arrival = data.firstGuestsArrival ?? null;
-  const kitchen = data.kitchenServices ?? {};
-  const modes = data.kitchenServiceModes ?? {};
+  const kitchenServices = normalizeKitchenServices(data.kitchenServices);
 
   return {
     firstGuestsArrival: arrival,
     prestationReady: arrival ? addMinutesToClock(arrival, -60) : null,
-    kitchenServices: KITCHEN_SERVICE_KEYS.filter((key) => kitchen[key]).map((key) => ({
-      key,
-      label: KITCHEN_LABELS[key],
-      time: kitchen[key],
-      mode: modes[key] ?? 'TABLE_SERVICE',
-      modeLabel: KITCHEN_SERVICE_MODE_LABELS[modes[key]] ?? KITCHEN_SERVICE_MODE_LABELS.TABLE_SERVICE,
-    })),
+    kitchenServices: kitchenServices.map((course) => {
+      const mode = course.serviceMode ?? 'TABLE_SERVICE';
+      return {
+        key: course.id,
+        label: course.name ?? course.id,
+        time: course.time,
+        mode,
+        modeLabel: KITCHEN_SERVICE_MODE_LABELS[mode] ?? KITCHEN_SERVICE_MODE_LABELS.TABLE_SERVICE,
+      };
+    }),
     cakeServiceMode: data.cakeServiceMode ?? 'KITCHEN_RETURN',
     closureTime: data.closureTime ?? null,
     closureExtensionAllowed: data.closureExtensionAllowed === true,
@@ -155,14 +160,12 @@ export function buildMandatorySteps(wedding) {
     });
   }
 
-  for (const key of ['dinner', 'firstSupper', 'secondSupper', 'thirdSupper']) {
-    const time = data.kitchenServices?.[key];
-    if (!time) continue;
+  for (const course of normalizeKitchenServices(data.kitchenServices)) {
     result.push({
-      id: `kitchen_${key}`,
+      id: `kitchen_${course.id}`,
       kind: 'KITCHEN_SERVICE',
-      label: KITCHEN_LABELS[key],
-      time,
+      label: course.name ?? course.id,
+      time: course.time,
     });
   }
   return result;

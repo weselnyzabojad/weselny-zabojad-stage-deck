@@ -17,19 +17,25 @@ import useCompact from '../hooks/useCompact';
 
 const STORAGE_PREFIX = 'wzsd:venue-manager:';
 
-const DEFAULT_KITCHEN = {
-  dinner: '',
-  firstSupper: '',
-  secondSupper: '',
-  thirdSupper: '',
+const DEFAULT_KITCHEN_COURSES = [
+  { id: 'dinner', name: '', time: '', serviceMode: 'TABLE_SERVICE' },
+  { id: 'supper_1', name: '', time: '', serviceMode: 'TABLE_SERVICE' },
+  { id: 'supper_2', name: '', time: '', serviceMode: 'TABLE_SERVICE' },
+  { id: 'supper_3', name: '', time: '', serviceMode: 'TABLE_SERVICE' },
+];
+
+const COURSE_LABEL_KEYS = {
+  dinner: 'venueManager.course.dinner',
+  supper_1: 'venueManager.course.firstSupper',
+  supper_2: 'venueManager.course.secondSupper',
+  supper_3: 'venueManager.course.thirdSupper',
 };
 
-const KITCHEN_MODE_FIELDS = [
-  { key: 'dinner', labelKey: 'venueManager.course.dinner' },
-  { key: 'firstSupper', labelKey: 'venueManager.course.firstSupper' },
-  { key: 'secondSupper', labelKey: 'venueManager.course.secondSupper' },
-  { key: 'thirdSupper', labelKey: 'venueManager.course.thirdSupper' },
-];
+function courseLabel(course, t) {
+  if (course?.name) return course.name;
+  const key = COURSE_LABEL_KEYS[course?.id];
+  return key ? t(key) : course?.id ?? '';
+}
 
 function loadSettings(wedding) {
   if (typeof window === 'undefined') return wedding.mandatorySteps ?? {};
@@ -123,9 +129,33 @@ export default function VenueManagerView({
     window.setTimeout(() => setSaved(''), 1500);
   };
 
-  const kitchen = { ...DEFAULT_KITCHEN, ...(settings.kitchenServices ?? {}) };
-  const kitchenModes = settings.kitchenServiceModes ?? {};
+  const courses = Array.isArray(settings.kitchenServices)
+    ? settings.kitchenServices
+    : DEFAULT_KITCHEN_COURSES;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
+
+  const updateCourse = (index, patch) => {
+    const next = courses.map((course, i) => (i === index ? { ...course, ...patch } : course));
+    update({ ...settings, kitchenServices: next });
+  };
+
+  const addCourse = () => {
+    const next = [
+      ...courses,
+      {
+        id: `supper_${courses.length + 1}`,
+        name: '',
+        time: '',
+        serviceMode: 'TABLE_SERVICE',
+      },
+    ];
+    update({ ...settings, kitchenServices: next });
+  };
+
+  const removeCourse = (index) => {
+    const next = courses.filter((_, i) => i !== index);
+    update({ ...settings, kitchenServices: next });
+  };
 
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
@@ -137,23 +167,34 @@ export default function VenueManagerView({
         </h2>
 
         <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-          {KITCHEN_MODE_FIELDS.map(({ key, labelKey }) => (
-            <CourseCard
-              key={key}
-              label={t(labelKey)}
-              value={kitchen[key]}
-              mode={kitchenModes[key]}
-              onTime={(time) =>
-                update({ ...settings, kitchenServices: { ...kitchen, [key]: time } })
-              }
-              onMode={(mode) =>
-                update({
-                  ...settings,
-                  kitchenServiceModes: { ...kitchenModes, [key]: mode },
-                })
-              }
-            />
+          {courses.map((course, index) => (
+            <div key={course.id ?? index} className="relative">
+              <CourseCard
+                label={courseLabel(course, t)}
+                value={course.time}
+                mode={course.serviceMode}
+                onTime={(time) => updateCourse(index, { time })}
+                onMode={(mode) => updateCourse(index, { serviceMode: mode })}
+              />
+              <button
+                type="button"
+                onClick={() => removeCourse(index)}
+                aria-label={t('venueManager.removeCourse')}
+                title={t('venueManager.removeCourse')}
+                className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-line bg-card text-xs text-muted transition hover:text-ink"
+              >
+                ×
+              </button>
+            </div>
           ))}
+
+          <button
+            type="button"
+            onClick={addCourse}
+            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
+          >
+            + {t('venueManager.addCourse')}
+          </button>
 
           <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5 sm:col-span-2 lg:col-span-1">
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">

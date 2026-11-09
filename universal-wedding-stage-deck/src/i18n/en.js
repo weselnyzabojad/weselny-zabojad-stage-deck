@@ -573,6 +573,8 @@ const en = {
   'venueManager.course.firstSupper': 'First supper',
   'venueManager.course.secondSupper': 'Second supper',
   'venueManager.course.thirdSupper': 'Third supper',
+  'venueManager.addCourse': 'Add course',
+  'venueManager.removeCourse': 'Remove course',
   'venueManager.serviceMode': '{course} service',
   'venueManager.closure': 'Wedding closure',
   'venueManager.extension': 'Hours extension possible',

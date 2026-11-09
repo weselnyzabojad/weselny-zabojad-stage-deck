@@ -575,6 +575,8 @@ const pl = {
   'venueManager.course.firstSupper': 'Pierwsza kolacja',
   'venueManager.course.secondSupper': 'Druga kolacja',
   'venueManager.course.thirdSupper': 'Trzecia kolacja',
+  'venueManager.addCourse': 'Dodaj posiłek',
+  'venueManager.removeCourse': 'Usuń posiłek',
   'venueManager.serviceMode': 'Obsługa: {course}',
   'venueManager.closure': 'Zakończenie wesela',
   'venueManager.extension': 'Możliwe przedłużenie w godzinach',
