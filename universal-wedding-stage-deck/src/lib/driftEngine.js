@@ -201,22 +201,6 @@ export function buildDriftReport(
   // event is complete, keep showing the final step's sample.
   const currentEntry = activeEntry ?? lastCompletedEntry;
 
-  // P0.5: one canonical drift value for the header, radar, Pocket and DJ.
-  // `startDrift` is the newest actual-vs-planned sample; the projected start is
-  // reported separately. The live overrun is a separate live-clock metric and
-  // never replaces the schedule drift.
-  const startDriftMinutes = currentEntry?.actualDriftMinutes ?? null;
-  const projectedDriftMinutes = currentEntry?.projectedDriftMinutes ?? null;
-  const canonicalDriftMinutes = startDriftMinutes;
-  const canonicalDriftLabel = driftLabel(canonicalDriftMinutes);
-  const canonicalDriftTone = driftTone(canonicalDriftMinutes);
-  const canonicalDriftSource = startDriftMinutes != null ? 'actual' : 'none';
-
-  const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
-    currentEntry,
-    compressionSlackMinutes,
-  });
-
   const projectedFinish = entries.length > 0 ? entries[entries.length - 1].projectedEnd : null;
   const plannedFinish = entries.length > 0 ? entries[entries.length - 1].plannedEnd : null;
 
@@ -234,9 +218,27 @@ export function buildDriftReport(
     serverTimeAvailable,
     isComplete: eventComplete,
   });
-
-  const currentDriftMinutes = startDriftMinutes;
   const liveOverrunMinutes = clock.active ? clock.active.overrunSec / 60 : 0;
+
+  // P0.5: one canonical drift value for the header, radar, Pocket and DJ.
+  // The displayed lateness is the newest actual-vs-planned sample plus any live
+  // overrun of the active step. Keeping only the start sample made the header
+  // stay at the step-start value while the live schedule slipped further.
+  const startDriftMinutes = currentEntry?.actualDriftMinutes ?? null;
+  const projectedDriftMinutes = currentEntry?.projectedDriftMinutes ?? null;
+  const canonicalDriftMinutes =
+    startDriftMinutes == null ? null : Math.round(startDriftMinutes + liveOverrunMinutes);
+  const canonicalDriftLabel = driftLabel(canonicalDriftMinutes);
+  const canonicalDriftTone = driftTone(canonicalDriftMinutes);
+  const canonicalDriftSource =
+    canonicalDriftMinutes == null ? 'none' : liveOverrunMinutes > 0 ? 'live' : 'actual';
+
+  const hardAnchorRadar = buildHardAnchorRadar(hardAnchors, entries, {
+    currentEntry,
+    compressionSlackMinutes,
+  });
+
+  const currentDriftMinutes = canonicalDriftMinutes;
   const liveRemainingMinutes =
     clock.active && clock.active.remainingSec != null ? clock.active.remainingSec / 60 : null;
 
