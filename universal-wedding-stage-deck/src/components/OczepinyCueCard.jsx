@@ -1,19 +1,16 @@
-import { useI18n } from '../i18n/useI18n.js';
-
-function throwingLabels(throwings = {}, t) {
+function throwingLabels(throwings = {}) {
   const labels = [];
-  if (throwings.veil) labels.push(t('oczepiny.veil'));
-  if (throwings.bouquet) labels.push(t('oczepiny.bouquet'));
-  if (throwings.bowTie) labels.push(t('oczepiny.bowTie'));
-  if (throwings.cravat) labels.push(t('oczepiny.cravat'));
+  if (throwings.veil) labels.push('Veil');
+  if (throwings.bouquet) labels.push('Bouquet');
+  if (throwings.bowTie) labels.push('Bow tie');
+  if (throwings.cravat) labels.push('Cravat');
   return labels;
 }
 
 export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
-  const { t } = useI18n();
   const ocz = wedding?.oczepiny;
   if (!ocz?.enabled) return null;
-  const throwings = throwingLabels(ocz.throwings, t);
+  const throwings = throwingLabels(ocz.throwings);
   const showWinner = ocz.winnerPhoto?.enabled && ocz.winnerPhoto?.photographerAvailable;
 
   return (
@@ -22,34 +19,32 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
         Oczepiny · {ocz.variant ?? ocz.order ?? 'MIDNIGHT'}
       </div>
       {throwings.length > 0 ? (
-        <div className="mt-1">{t('oczepiny.throwings', { labels: throwings.join(' · ') })}</div>
+        <div className="mt-1">Throwings: {throwings.join(' · ')}</div>
       ) : null}
       {ocz.game?.enabled ? (
         <div className="mt-0.5">
-          {t('oczepiny.game', {
-            game: ocz.game.type === 'TEST_ZGODNOSCI' ? 'Test Zgodności' : ocz.game.type ?? '',
-          })}
+          Game: {ocz.game.type === 'TEST_ZGODNOSCI' ? 'Test Zgodności' : ocz.game.type ?? 'Game'}
           {ocz.game.notes ? ` — ${ocz.game.notes}` : ''}
         </div>
       ) : null}
       {ocz.music?.enabled ? (
         <div className="mt-0.5">
-          {t('oczepiny.music', {
-            music: ocz.music.track ?? ocz.music.playlist ?? t('oczepiny.enabled'),
-          })}
+          Music: {ocz.music.track ?? ocz.music.playlist ?? 'enabled'}
         </div>
       ) : null}
       {ocz.countdown?.mode === 'MC' ? (
-        <div className="mt-0.5">{t('oczepiny.countdown')}</div>
+        <div className="mt-0.5">MC countdown</div>
       ) : null}
       {showWinner ? (
         <div className="mt-0.5">
-          {audience === 'photo' ? t('oczepiny.photoCue') : t('oczepiny.winnerPhotoCue')}
+          {audience === 'photo'
+            ? 'Photos: winners only + winners with the couple.'
+            : 'Winner photo cue: winners only + winners with the couple.'}
         </div>
       ) : null}
       {audience === 'dj-vip' ? (
         <div className="mt-0.5 text-muted">
-          {t('oczepiny.djVipCue')}
+          DJ VIP cue — follow the MC countdown/music for the throwing sequence.
         </div>
       ) : null}
     </div>

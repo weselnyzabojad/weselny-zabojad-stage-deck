@@ -14,7 +14,7 @@ describe('issue #259 DJ current-step song info', () => {
   });
   it('shows a main song only for flagged steps', () => {
     expect(dj).toContain('isMainSongRequired');
-    expect(dj).toContain("t('dj.mainSong')");
+    expect(dj).toContain('Main song');
     expect(dj).toContain('getImportantSongs');
     expect(dj).toContain('song.stepId');
   });
