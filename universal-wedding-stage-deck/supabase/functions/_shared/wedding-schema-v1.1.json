@@ -962,6 +962,13 @@
             "minLength": 1
           }
         },
+        "mcCues": {
+          "type": "array",
+          "description": "Localized MC lines for this step (language, timing, text).",
+          "items": {
+            "$ref": "#/$defs/mcCue"
+          }
+        },
         "photographerCue": {
           "type": "string",
           "description": "Optional photographer/vendor cue for this step. Swap warns and defer skips protected steps."
@@ -1007,6 +1014,25 @@
         },
         "firstDanceNotes": {
           "type": "string"
+        }
+      }
+    },
+    "mcCue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "timing": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },

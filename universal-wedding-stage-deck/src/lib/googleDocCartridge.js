@@ -767,18 +767,22 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     };
   });
 
-  const mcCues = {};
-  const mcRows = table(section(parsed, 'MC CUES'), ['Step ID', 'Language', 'Timing', 'Text']);
-  for (const row of mcRows) {
-    const id = text(row['Step ID']);
-    if (!id) continue;
-    mcCues[id] = mcCues[id] ?? [];
-    mcCues[id].push({
-      language: text(row.Language),
-      timing: text(row.Timing),
-      text: text(row.Text),
-    });
-  }
+  mergeStepRows(
+    steps,
+    table(section(parsed, 'MC CUES'), ['Step ID', 'Language', 'Timing', 'Text']),
+    (step, row) => {
+      const cueText = text(row.Text);
+      if (!cueText) return;
+      step.mcCues = step.mcCues ?? [];
+      const language = text(row.Language);
+      const timing = text(row.Timing);
+      step.mcCues.push({
+        ...(language ? { language } : {}),
+        ...(timing ? { timing } : {}),
+        text: cueText,
+      });
+    },
+  );
 
   mergeStepRows(
     steps,
@@ -866,7 +870,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const extensions = {
     ...(extensionJson && typeof extensionJson === 'object' ? extensionJson : {}),
     stepAnchorIds: anchorIds,
-    mcCues,
     dateISO,
     servicePackage: text(kv(event, 'Service package')),
     ...(languagesSource
