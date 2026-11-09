@@ -98,6 +98,6 @@ describe('issue #384 mandatory data embedded in steps', () => {
 
     const dj = read('src/components/DjBoothView.jsx');
     expect(dj).toContain('<StepMandatoryNotes items={mandatoryItems} />');
-    expect(dj).toContain("role: 'dj', isVipDj: isVip");
+    expect(dj).toContain("role: 'dj', isVipDj: caps.vip");
   });
 });

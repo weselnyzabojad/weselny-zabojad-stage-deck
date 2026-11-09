@@ -12,7 +12,7 @@ describe('issue #218 DJ VIP guest request bar', () => {
   it('renders a compact request bar below the top bar for VIP only', () => {
     const barCalls = dj.match(/variant="bar"/g) ?? [];
     expect(barCalls.length).toBe(2);
-    expect(dj).toContain('{isVip ? (');
+    expect(dj).toContain('{caps.guestRequests ? (');
     expect(dj).toContain('<DjSongRequestQueue');
     expect(dj).not.toContain('<SongRequestQueueList');
   });

@@ -68,8 +68,8 @@ describe('issue #462 DJ VIP Disco Polo policy display', () => {
   it('passes the cartridge value only to the DJ VIP surfaces', () => {
     const dj = read('src/components/DjBoothView.jsx');
     expect((dj.match(/discoPoloPolicy=\{musicPolicy\?\.discoPoloPolicy \?\? 'NO'\}/g) ?? []).length).toBe(2);
-    expect(dj).toContain('{isVip ? <MusicPolicyCard policy={musicPolicy} /> : null}');
-    expect(dj).toContain('{isVip ? (');
+    expect(dj).toContain('{caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}');
+    expect(dj).toContain('{caps.guestRequests ? (');
   });
 
   it('localizes all states, descriptions and the one-song rule', () => {

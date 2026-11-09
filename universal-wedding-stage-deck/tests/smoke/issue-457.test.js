@@ -60,7 +60,7 @@ describe('issue #457 DJ VIP song request moderation', () => {
 
   it('mounts the queue only for DJ VIP', () => {
     const dj = read('src/components/DjBoothView.jsx');
-    const matches = dj.match(/\{isVip \? \(\s*<DjSongRequestQueue/g) ?? [];
+    const matches = dj.match(/\{caps\.guestRequests \? \(\s*<DjSongRequestQueue/g) ?? [];
     expect(matches).toHaveLength(2);
   });
 

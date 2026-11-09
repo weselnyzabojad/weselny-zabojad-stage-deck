@@ -16,11 +16,11 @@ describe('issue #215 DJ top bar rework', () => {
   });
 
   it('adds cultural, Speeches and auth controls only for VIP', () => {
-    expect(dj).toContain('{isVip && culturalRules ? (');
+    expect(dj).toContain('{caps.culturalChips && culturalRules ? (');
     expect(dj).toContain('<CulturalRulesBar rules={culturalRules}');
-    expect(dj).toContain('{isVip ? (');
+    expect(dj).toContain('{caps.guestRequests ? (');
     expect(dj).toContain('<SpeechesChip');
-    expect(dj).toContain('{isVip && authControl ? authControl : null}');
+    expect(dj).toContain('{caps.vipAuth && authControl ? authControl : null}');
   });
 
   it('does not add the MC drift pill', () => {

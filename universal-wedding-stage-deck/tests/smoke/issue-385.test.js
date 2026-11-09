@@ -72,7 +72,7 @@ describe('issue #385 shared secondary control bar', () => {
 
   it('keeps role-specific controls in their bars', () => {
     const dj = read('src/components/DjBoothView.jsx');
-    expect(dj).toContain('{isVip && authControl ? authControl : null}');
+    expect(dj).toContain('{caps.vipAuth && authControl ? authControl : null}');
     expect(dj).toContain('<SyncStatusBadge');
     const speaker = read('src/components/SpeakerView.jsx');
     expect(speaker).toContain('<SecondaryControlBar');
