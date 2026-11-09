@@ -71,14 +71,14 @@ export default function StageStepCard({
 
   const header = (
     <>
-      <div className="flex min-w-0 flex-1 items-start justify-between gap-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}>
               {statusLabel}
             </span>
           </div>
-          <div className="mt-1 truncate font-heading text-sm font-semibold text-ink">
+          <div className="mt-1 line-clamp-2 break-words font-heading text-sm font-semibold text-ink">
             {title}
           </div>
         </div>
