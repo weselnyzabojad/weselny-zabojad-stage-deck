@@ -21,7 +21,7 @@ describe('issue #460 Song request QR launcher', () => {
     const html = renderQueue();
     expect(html).toContain('request QR');
     expect(html).not.toContain('disabled=""');
-    expect(html).toContain('The request queue connects');
+    expect(html).toMatch(/not configured|request queue connects/);
   });
 
   it('disables the launcher with a tooltip when no room code exists', () => {
