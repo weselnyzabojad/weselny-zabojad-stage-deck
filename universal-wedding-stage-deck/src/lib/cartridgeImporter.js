@@ -11,6 +11,7 @@ import speedFotoDomain from '../../schema/domains/speed-foto.json';
 import guestCoverageDomain from '../../schema/domains/guest-coverage.json';
 import specialEffectsDomain from '../../schema/domains/special-effects.json';
 import cakeDomain from '../../schema/domains/cake.json';
+import musicPolicyDomain from '../../schema/domains/music-policy.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -35,6 +36,7 @@ async function getValidator() {
       ajv.addSchema(guestCoverageDomain);
       ajv.addSchema(specialEffectsDomain);
       ajv.addSchema(cakeDomain);
+      ajv.addSchema(musicPolicyDomain);
       return ajv.compile(weddingSchema);
     });
   }
