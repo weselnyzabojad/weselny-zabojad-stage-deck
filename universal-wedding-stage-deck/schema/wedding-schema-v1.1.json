@@ -90,68 +90,7 @@
       "$ref": "#/$defs/demographics"
     },
     "musicPolicy": {
-      "type": "object",
-      "description": "Music requests, blacklist and the key songs pinned in the DJ Booth (project.md TODO 2 / TODO 18 / Phase 1.5d). v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
-      "additionalProperties": true,
-      "properties": {
-        "importantSongs": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/importantSong"
-          }
-        },
-        "mustPlay": {
-          "type": "array",
-          "description": "Songs the couple wants. Reuse the importantSongs id when the entry is a key moment (first_dance, grand_entrance, cake_cutting).",
-          "items": {
-            "$ref": "#/$defs/mustPlayTrack"
-          }
-        },
-        "doNotPlay": {
-          "type": "array",
-          "description": "Guest-request blacklist with the reason.",
-          "items": {
-            "$ref": "#/$defs/doNotPlayTrack"
-          }
-        },
-        "requestsOpen": {
-          "type": "boolean",
-          "description": "Whether guest requests are accepted at all."
-        },
-        "discoPoloPolicy": {
-          "type": "string",
-          "enum": [
-            "NO",
-            "YES",
-            "ON_REQUEST"
-          ],
-          "description": "Newlyweds' Disco Polo policy: NO (forbidden), YES (allowed) or ON_REQUEST (one song only when a guest requests it)."
-        },
-        "requestWindow": {
-          "type": "object",
-          "required": [
-            "start",
-            "end"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "start": {
-              "$ref": "#/$defs/clock"
-            },
-            "end": {
-              "$ref": "#/$defs/clock"
-            }
-          }
-        },
-        "cleanVersions": {
-          "type": "boolean",
-          "description": "Play clean/radio edits only."
-        },
-        "licensing": {
-          "type": "string",
-          "description": "Licensing note, e.g. Venue ZAIKS license confirmed."
-        }
-      }
+      "$ref": "https://weselnyzabojad.example/schemas/domains/music-policy.json#/properties/musicPolicy"
     },
     "mandatorySteps": {
       "type": "object",

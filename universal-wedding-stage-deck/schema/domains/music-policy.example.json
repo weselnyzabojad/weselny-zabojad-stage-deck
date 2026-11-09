@@ -1,0 +1,29 @@
+{
+  "$schema": "./music-policy.json",
+  "musicPolicy": {
+    "discoPoloPolicy": "ON_REQUEST",
+    "mustPlay": [
+      { "id": "grand_entrance", "track": "Marry You - Bruno Mars", "note": "Grand entrance cue." }
+    ],
+    "doNotPlay": [
+      { "id": "no_macarena", "track": "Macarena - Los del Río", "reason": "Couple's request." }
+    ],
+    "requestsOpen": true,
+    "requestWindow": { "start": "20:00", "end": "23:00" },
+    "cleanVersions": true,
+    "licensing": "Venue ZAIKS license confirmed.",
+    "importantSongs": [
+      {
+        "id": "grand_entrance",
+        "moment": "GRAND_ENTRANCE",
+        "title": "Marry You",
+        "artist": "Bruno Mars",
+        "stepId": "step_03",
+        "plannedTime": "18:00",
+        "startAtSec": 0,
+        "fadeOutSec": 215,
+        "source": { "type": "SPOTIFY", "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE" }
+      }
+    ]
+  }
+}

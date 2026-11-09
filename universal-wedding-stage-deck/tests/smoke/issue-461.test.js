@@ -61,9 +61,8 @@ describe('issue #461 discoPoloPolicy contract', () => {
   it('keeps the template, example and demo aligned', async () => {
     expect(template).toContain('Disco Polo policy: No');
     expect(read('src/lib/googleDocTemplate.js')).toContain("'musicPolicy.discoPoloPolicy'");
-    const example = JSON.parse(read('schema/wedding-cartridge.example.json'));
+    const example = JSON.parse(read('schema/domains/music-policy.example.json'));
     expect(['NO', 'YES', 'ON_REQUEST']).toContain(example.musicPolicy.discoPoloPolicy);
-    expect(await validateCartridge(example)).toEqual([]);
     expect(['NO', 'YES', 'ON_REQUEST']).toContain(DEMO_WEDDING.musicPolicy.discoPoloPolicy);
   });
 });

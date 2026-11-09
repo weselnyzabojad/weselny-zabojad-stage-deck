@@ -1,0 +1,240 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/music-policy.json",
+  "title": "Music policy domain",
+  "description": "Music requests, blacklist and key songs mapped from the Google Doc. The cutting song stays in sync with cake.cuttingSong (moment CAKE).",
+  "type": "object",
+  "properties": {
+    "musicPolicy": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
+      "properties": {
+        "importantSongs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/importantSong"
+          }
+        },
+        "mustPlay": {
+          "type": "array",
+          "description": "Songs the couple wants. Reuse the importantSongs id when the entry is a key moment (first_dance, grand_entrance, cake_cutting).",
+          "items": {
+            "$ref": "#/$defs/mustPlayTrack"
+          }
+        },
+        "doNotPlay": {
+          "type": "array",
+          "description": "Guest-request blacklist with the reason.",
+          "items": {
+            "$ref": "#/$defs/doNotPlayTrack"
+          }
+        },
+        "requestsOpen": {
+          "type": "boolean",
+          "description": "Whether guest requests are accepted at all."
+        },
+        "discoPoloPolicy": {
+          "type": "string",
+          "enum": [
+            "NO",
+            "YES",
+            "ON_REQUEST"
+          ],
+          "description": "Newlyweds' Disco Polo policy: NO (forbidden), YES (allowed) or ON_REQUEST (one song only when a guest requests it)."
+        },
+        "requestWindow": {
+          "type": "object",
+          "required": [
+            "start",
+            "end"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "start": {
+              "$ref": "#/$defs/clock"
+            },
+            "end": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "cleanVersions": {
+          "type": "boolean",
+          "description": "Play clean/radio edits only."
+        },
+        "licensing": {
+          "type": "string",
+          "description": "Licensing note, e.g. Venue ZAIKS license confirmed."
+        }
+      }
+    }
+  },
+  "required": [
+    "musicPolicy"
+  ],
+  "$defs": {
+    "clock": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+      "description": "24-hour local clock time as HH:MM."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "songSource": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false,
+      "description": "Where a key song comes from. Customer files keep a stable fileRef (never audio bytes); streaming sources keep the exact customer URL. shortUrl is an optional pre-approved stable redirect for the QR.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "CUSTOMER_FILE",
+            "YOUTUBE",
+            "SPOTIFY",
+            "DEEZER",
+            "OTHER"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https?://"
+        },
+        "shortUrl": {
+          "type": "string",
+          "pattern": "^https?://"
+        },
+        "fileRef": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksum": {
+          "type": "string"
+        },
+        "durationSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "LOCAL",
+            "MISSING"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "mustPlayTrack": {
+      "type": "object",
+      "required": [
+        "id",
+        "track"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "doNotPlayTrack": {
+      "type": "object",
+      "required": [
+        "id",
+        "track"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "track": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "importantSong": {
+      "type": "object",
+      "required": [
+        "id",
+        "moment"
+      ],
+      "additionalProperties": false,
+      "description": "One key moment pinned in the DJ Booth. title/artist/source may be missing at import time (warn, do not block); the UI shows TBC and keeps the row editable.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "moment": {
+          "type": "string",
+          "enum": [
+            "GRAND_ENTRANCE",
+            "CAKE",
+            "FIRST_DANCE",
+            "PARENTS_DANCE",
+            "LAST_DANCE",
+            "CUSTOM"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "stepId": {
+          "$ref": "#/$defs/id"
+        },
+        "plannedTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "startAtSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fadeOutSec": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source": {
+          "$ref": "#/$defs/songSource"
+        },
+        "backupSource": {
+          "$ref": "#/$defs/songSource"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
