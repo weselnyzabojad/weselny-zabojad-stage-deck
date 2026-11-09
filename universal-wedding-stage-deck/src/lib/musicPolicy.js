@@ -6,7 +6,7 @@
 // `id` (Phase 1.5d), so a first-dance song is never shown with two different
 // titles.
 
-import { clockToEventDate, formatDuration } from './eventTime.js';
+import { clockToEventDate } from './eventTime.js';
 import { getImportantSongs } from './importantSongs.js';
 
 function text(value) {
@@ -63,14 +63,16 @@ function resolveDoNotPlay(policy) {
     }));
 }
 
+// Returns structured status/time data only. The component renders human text
+// through t() so the same state can be localized without changing the engine.
 function resolveRequestStatus({ requestsOpen, start, end, now, eventDateISO, timeZone }) {
   if (requestsOpen === false) {
-    return { key: 'disabled', label: 'Requests closed', detail: 'Guest requests are turned off.' };
+    return { key: 'disabled' };
   }
 
   if (!start || !end) {
     if (requestsOpen === true) {
-      return { key: 'open', label: 'Requests open', detail: 'No request window set.' };
+      return { key: 'open', hasWindow: false };
     }
     return null;
   }
@@ -78,27 +80,27 @@ function resolveRequestStatus({ requestsOpen, start, end, now, eventDateISO, tim
   const startAt = clockToEventDate({ clock: start, eventDateISO, timeZone });
   const endAt = clockToEventDate({ clock: end, eventDateISO, timeZone, after: startAt });
   if (!startAt || !endAt) {
-    return { key: 'unknown', label: `${start}–${end}`, detail: 'Request window' };
+    return { key: 'unknown', start, end };
   }
 
   if (now < startAt) {
     const toStartSec = (startAt.getTime() - now.getTime()) / 1000;
     return {
       key: 'upcoming',
-      label: `Opens ${start}`,
+      start,
       // Avoid a multi-day countdown when the cartridge is opened days early.
-      detail: toStartSec <= 24 * 3600 ? `in ${formatDuration(toStartSec)}` : null,
+      countdownSec: toStartSec <= 24 * 3600 ? toStartSec : null,
     };
   }
 
   if (now > endAt) {
-    return { key: 'closed', label: `Closed at ${end}`, detail: 'Request window has ended.' };
+    return { key: 'closed', end };
   }
 
   return {
     key: 'open',
-    label: `Open until ${end}`,
-    detail: `${formatDuration((endAt.getTime() - now.getTime()) / 1000)} left`,
+    end,
+    countdownSec: (endAt.getTime() - now.getTime()) / 1000,
   };
 }
 

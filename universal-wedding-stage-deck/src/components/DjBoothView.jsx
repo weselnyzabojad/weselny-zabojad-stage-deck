@@ -245,7 +245,7 @@ export default function DjBoothView({
             <aside className={`space-y-4${isVip ? '' : ' lg:col-span-3'}`}>
               <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
                 <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-                  🎚️ Set notes
+                  {t('dj.setNotes')}
                 </h2>
                 <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
                   <li>Follow the projected times; the host advances the live state.</li>
