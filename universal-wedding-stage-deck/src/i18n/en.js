@@ -205,6 +205,7 @@ const en = {
   'dj.requests.qrTitle': 'Guest request QR',
   'dj.requests.qrLabel': 'QR code for the guest song request form',
   'dj.requests.qrBody': 'Guests scan this to open the public song request form. No event or queue data is exposed.',
+  'dj.set.nextStepIn': 'Next step in',
   'dj.requests.vipDesktop': 'VIP · desktop',
   'dj.requests.acceptedNotice': 'Request accepted.',
   'dj.requests.declinedNotice': 'Request denied.',

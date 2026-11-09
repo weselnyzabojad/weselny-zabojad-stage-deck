@@ -207,6 +207,7 @@ const fr = {
   'dj.requests.qrTitle': 'QR de demande invité',
   'dj.requests.qrLabel': 'Code QR vers le formulaire public de demande de chanson',
   'dj.requests.qrBody': "Les invités le scannent pour ouvrir le formulaire public. Aucune donnée d'événement ou de file n'est exposée.",
+  'dj.set.nextStepIn': 'Prochaine étape dans',
   'dj.requests.vipDesktop': 'VIP · bureau',
   'dj.requests.acceptedNotice': 'Demande acceptée.',
   'dj.requests.declinedNotice': 'Demande refusée.',

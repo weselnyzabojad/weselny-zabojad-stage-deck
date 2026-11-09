@@ -205,6 +205,7 @@ const pl = {
   'dj.requests.qrTitle': 'QR prośby gościa',
   'dj.requests.qrLabel': 'Kod QR do publicznego formularza próśb o piosenki',
   'dj.requests.qrBody': 'Goście skanują go, aby otworzyć publiczny formularz. Dane wydarzenia ani kolejki nie są ujawniane.',
+  'dj.set.nextStepIn': 'Następny krok za',
   'dj.requests.vipDesktop': 'VIP · komputer',
   'dj.requests.acceptedNotice': 'Prośba zaakceptowana.',
   'dj.requests.declinedNotice': 'Prośba odrzucona.',
