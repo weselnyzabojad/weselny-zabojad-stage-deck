@@ -395,6 +395,12 @@ const fr = {
   'mandatoryUpdate.cakeService': 'Service de la pièce montée',
 
   'venueManager.mandatorySteps': 'Étapes obligatoires',
+  'venueManager.time': 'Heure',
+  'venueManager.serviceModeLabel': 'Mode de service',
+  'venueManager.course.dinner': 'Dîner de mariage',
+  'venueManager.course.firstSupper': 'Premier souper',
+  'venueManager.course.secondSupper': 'Deuxième souper',
+  'venueManager.course.thirdSupper': 'Troisième souper',
   'venueManager.serviceMode': 'Service : {course}',
   'venueManager.closure': 'Fermeture du mariage',
   'venueManager.extension': 'Prolongation de 1 h autorisée',
