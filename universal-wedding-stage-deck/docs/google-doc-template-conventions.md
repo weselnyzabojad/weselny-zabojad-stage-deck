@@ -393,6 +393,26 @@ becomes one `TIMELINE` row titled `Grand Entrance` (16:00), two `SUBTASKS` rows
 (napkin welcome; Sto lat explanation), one `DJ CUES` row (ABBA), and three
 `MC CUES` rows (toast, Sto lat, glass toss).
 
+### 6.3 Uniform fallback rules
+
+Every field that fails to map cleanly is handled the same way — never silently
+invented and never a per-file special case:
+
+- **Missing / ambiguous start time.** A step without a parseable `HH:MM` is an
+  error; the importer never invents a time. A range (`15:40/16:00`,
+  `22:00-22:30`, `18:00–20:00`) maps to its **first** clock (the planned start);
+  the remainder is kept in the step `Notes`.
+- **Clock normalization.** The importer accepts `HH:MM`, `HH.MM` (`22.15`) and
+  `HHhMM` (`15h00`) and normalizes them to `HH:MM`. After-midnight clocks
+  before `06:00` belong to the next service day.
+- **Unstructured notes.** A bullet that is neither a subtask, an MC cue nor a
+  `Song -` becomes a step `Notes` line or an MC cue with its original language —
+  never dropped silently.
+- **Missing duration.** Durations stay derived from the next step's time (and the
+  closure time for the final step); never hardcoded per file.
+- **Malformed rows / unknown markers.** Already fail validation; the same policy
+  extends to any new section (kitchen course list, ceremony script).
+
 ---
 
 ## 7. Approval gate
