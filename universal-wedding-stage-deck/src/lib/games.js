@@ -85,3 +85,26 @@ export function gamesAvailable(wedding) {
     (list) => !list.unavailable && list.questions.length > 0,
   );
 }
+
+export const GAME_LEVELS = ['EASY', 'MEDIUM', 'HARD'];
+
+export function orderGameItems(items = [], gameType = 'OTHER') {
+  if (gameType !== 'TEST_WIEDZY') return [...items];
+  return [...items].sort(
+    (a, b) => GAME_LEVELS.indexOf(a.level) - GAME_LEVELS.indexOf(b.level),
+  );
+}
+
+export function unansweredItems(items = [], answered = {}) {
+  return items.filter((item) => !answered[item.id]);
+}
+
+export function gameCounters(items = [], answered = {}) {
+  const answeredCount = items.filter((item) => answered[item.id]).length;
+  return {
+    total: items.length,
+    answered: answeredCount,
+    remaining: items.length - answeredCount,
+    currentNumber: Math.min(answeredCount + 1, items.length || 1),
+  };
+}

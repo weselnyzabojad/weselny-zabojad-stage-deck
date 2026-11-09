@@ -1,52 +1,126 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
 import ModalShell from './ModalShell';
+import {
+  GAME_LEVELS,
+  gameCounters,
+  orderGameItems,
+  unansweredItems,
+} from '../lib/games.js';
 
 const LANGS = ['EN', 'PL', 'FR'];
 
-// One-question-at-a-time game clicker with reveal, language switch, and
-// keyboard control (arrows navigate, space reveals).
+// One-question-at-a-time game runner for both predefined games.
 export default function GameClickerOverlay({ open, game, onClose }) {
   const { t } = useI18n();
   const [lang, setLang] = useState('EN');
-  const [index, setIndex] = useState(0);
+  const [answered, setAnswered] = useState({});
+  const [displayId, setDisplayId] = useState(null);
+  const [overrideId, setOverrideId] = useState(null);
   const [revealed, setRevealed] = useState(false);
+  const [levelFilter, setLevelFilter] = useState('ALL');
 
-  const items = game?.items ?? [];
-  const total = items.length;
-  const item = items[index];
-  const isLast = total === 0 || index === total - 1;
-  const question = item?.question?.[lang] ?? item?.question?.EN ?? item?.question ?? '';
+  const items = useMemo(
+    () => orderGameItems(game?.items ?? [], game?.gameType),
+    [game?.items, game?.gameType],
+  );
+  const remaining = useMemo(() => unansweredItems(items, answered), [items, answered]);
+  const counters = gameCounters(items, answered);
+  const current =
+    items.find((item) => item.id === displayId) ?? remaining[0] ?? null;
+  const score = Object.values(answered).filter((result) => result?.isCompatible === true).length;
+  const isCompatibility = game?.gameType === 'TEST_ZGODNOSCI';
+  const complete = Boolean(current) === false && remaining.length === 0;
 
-  const goNext = useCallback(() => {
+  useEffect(() => {
+    setAnswered({});
+    setDisplayId(null);
+    setOverrideId(null);
     setRevealed(false);
-    setIndex((current) => (current < total - 1 ? current + 1 : current));
-  }, [total]);
+    setLevelFilter('ALL');
+  }, [game?.id]);
 
-  const goPrev = useCallback(() => {
+  const advance = useCallback(() => {
     setRevealed(false);
-    setIndex((current) => (current > 0 ? current - 1 : current));
+    setDisplayId(null);
+    setOverrideId(null);
   }, []);
+
+  const reveal = useCallback(() => {
+    if (!current) return;
+    setRevealed(true);
+    setAnswered((state) => ({ ...state, [current.id]: { id: current.id } }));
+  }, [current]);
+
+  const recordCompatibility = useCallback(
+    (isCompatible) => {
+      if (!current) return;
+      setAnswered((state) => ({
+        ...state,
+        [current.id]: { id: current.id, isCompatible },
+      }));
+      advance();
+    },
+    [advance, current],
+  );
+
+  const navigate = useCallback(
+    (direction) => {
+      const pool = remaining;
+      if (pool.length === 0) return;
+      const index = pool.findIndex((item) => item.id === current?.id);
+      const nextIndex =
+        index === -1
+          ? 0
+          : (index + direction + pool.length) % pool.length;
+      const next = pool[nextIndex];
+      if (!next) return;
+      setDisplayId(next.id);
+      setOverrideId(next.id);
+      setRevealed(false);
+    },
+    [current?.id, remaining],
+  );
 
   useEffect(() => {
     if (!open) return undefined;
-
     const handleKeyDown = (event) => {
       if (event.key === 'ArrowRight') {
         event.preventDefault();
-        goNext();
+        navigate(1);
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
-        goPrev();
+        navigate(-1);
       } else if (event.key === ' ') {
         event.preventDefault();
-        setRevealed((value) => !value);
+        if (isCompatibility) return;
+        if (revealed) advance();
+        else reveal();
+      } else if (isCompatibility && (event.key === 'm' || event.key === 'M')) {
+        event.preventDefault();
+        recordCompatibility(true);
+      } else if (isCompatibility && (event.key === 'n' || event.key === 'N')) {
+        event.preventDefault();
+        recordCompatibility(false);
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, goNext, goPrev]);
+  }, [advance, isCompatibility, navigate, open, recordCompatibility, reveal, revealed]);
+
+  const pickerItems = remaining.filter(
+    (item) => !isCompatibility && (levelFilter === 'ALL' || item.level === levelFilter)
+      || isCompatibility,
+  );
+
+  const reset = () => {
+    if (typeof window !== 'undefined' && !window.confirm(t('game.resetConfirm'))) return;
+    setAnswered({});
+    setDisplayId(null);
+    setOverrideId(null);
+    setRevealed(false);
+    setLevelFilter('ALL');
+  };
 
   return (
     <ModalShell open={open} onClose={onClose} labelledBy="game-title" size="full">
@@ -60,10 +134,19 @@ export default function GameClickerOverlay({ open, game, onClose }) {
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 font-mono text-xs text-ink">
-            {total === 0 ? '0 / 0' : `${index + 1} / ${total}`}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 font-mono text-[10px] text-ink">
+            {t('game.counters', {
+              answered: counters.answered,
+              remaining: counters.remaining,
+              total: counters.total,
+            })}
           </span>
+          {isCompatibility ? (
+            <span className="rounded-lg border border-emerald-700 bg-emerald-950/50 px-2.5 py-1.5 font-mono text-[10px] font-bold text-emerald-200">
+              {t('game.score', { score })}
+            </span>
+          ) : null}
           <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
             {LANGS.map((option) => (
               <button
@@ -82,78 +165,174 @@ export default function GameClickerOverlay({ open, game, onClose }) {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto flex min-h-full max-w-3xl flex-col justify-center">
-          {total === 0 ? (
+          {game?.unavailable ? (
+            <p className="rounded-xl border border-amber-700 bg-amber-950/50 p-4 text-center text-sm text-amber-100">
+              {t('games.unavailableHelp')}
+            </p>
+          ) : null}
+          {!game?.unavailable && items.length === 0 ? (
             <p className="text-center text-sm text-muted">{t('game.none')}</p>
-          ) : (
-            <>
-              <div className="mb-5 flex flex-wrap justify-center gap-1.5" aria-hidden="true">
-                {items.map((entry, dotIndex) => (
-                  <span
-                    key={entry.id ?? dotIndex}
-                    className={`h-1.5 rounded-full transition-all ${dotIndex === index ? 'w-6 bg-brand-soft' : dotIndex < index ? 'w-1.5 bg-brand-strong' : 'w-1.5 bg-line-strong'}`}
-                  />
-                ))}
-              </div>
+          ) : null}
 
-              <div className="rounded-2xl border border-line bg-card p-6 text-center shadow-lg sm:p-8">
+          {!game?.unavailable && complete ? (
+            <div className="rounded-2xl border border-emerald-800 bg-emerald-950/40 p-8 text-center">
+              <h3 className="font-heading text-2xl font-bold text-emerald-200">
+                {t('game.completeTitle')}
+              </h3>
+              <p className="mt-2 text-sm text-emerald-100">
+                {isCompatibility
+                  ? t('game.completeScore', {
+                      score,
+                      total: counters.total,
+                    })
+                  : t('game.completeCount', { total: counters.total })}
+              </p>
+              <button
+                type="button"
+                onClick={reset}
+                className="mt-4 rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-semibold text-ink"
+              >
+                {t('game.reset')}
+              </button>
+            </div>
+          ) : null}
+
+          {!game?.unavailable && current ? (
+            <div className="rounded-2xl border border-line bg-card p-6 text-center shadow-lg sm:p-8">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
-                  {t('game.question', { number: index + 1 })}
+                  {t('game.question', { number: items.indexOf(current) + 1 })}
                 </span>
-                <p className="mt-3 font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
-                  {question}
-                </p>
+                {current.level ? (
+                  <span className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
+                    {t(`game.level.${current.level}`)}
+                  </span>
+                ) : null}
+                {overrideId ? (
+                  <span className="rounded border border-amber-700 bg-amber-950/50 px-1.5 py-0.5 font-mono text-[9px] text-amber-200">
+                    {t('game.override')}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-3 font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
+                {current.question?.[lang] ?? current.question?.EN ?? current.question ?? ''}
+              </p>
 
-                <div className="mt-6 min-h-[92px]">
-                  {revealed ? (
-                    <div className="rounded-xl border border-emerald-800 bg-emerald-950/60 px-4 py-4">
-                      <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
-                        {t('game.answer')}
-                      </div>
-                      <div className="mt-1 font-heading text-3xl font-bold text-emerald-200">{item?.answer}</div>
-                    </div>
-                  ) : (
+              <div className="mt-6 min-h-[92px]">
+                {isCompatibility ? (
+                  <div className="flex flex-wrap justify-center gap-2">
                     <button
                       type="button"
-                      onClick={() => setRevealed(true)}
-                      className="rounded-xl border border-brand-strong bg-brand/40 px-5 py-3 font-heading text-sm font-semibold text-ink transition hover:bg-brand/70"
+                      onClick={() => recordCompatibility(true)}
+                      className="rounded-xl border border-emerald-700 bg-emerald-950/60 px-5 py-3 font-heading text-sm font-bold text-emerald-200"
                     >
-                      {t('game.reveal')}
+                      ✓ {t('game.match')}
                     </button>
-                  )}
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => recordCompatibility(false)}
+                      className="rounded-xl border border-alert/60 bg-alert/20 px-5 py-3 font-heading text-sm font-bold text-alert-soft"
+                    >
+                      ✕ {t('game.noMatch')}
+                    </button>
+                  </div>
+                ) : revealed ? (
+                  <div className="rounded-xl border border-emerald-800 bg-emerald-950/60 px-4 py-4">
+                    <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
+                      {t('game.answer')}
+                    </div>
+                    <div className="mt-1 font-heading text-3xl font-bold text-emerald-200">
+                      {current.answer}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setRevealed(false)}
+                      className="mt-2 rounded border border-line-strong bg-raised px-2 py-1 text-[10px] text-ink"
+                    >
+                      {t('game.hide')}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={reveal}
+                    className="rounded-xl border border-brand-strong bg-brand/40 px-5 py-3 font-heading text-sm font-semibold text-ink transition hover:bg-brand/70"
+                  >
+                    {t('game.reveal')}
+                  </button>
+                )}
               </div>
-            </>
-          )}
+            </div>
+          ) : null}
         </div>
       </div>
 
+      <details className="border-t border-line bg-card px-4 py-2">
+        <summary className="cursor-pointer font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
+          {t('game.picker')}
+        </summary>
+        {!isCompatibility ? (
+          <label className="mt-2 inline-flex items-center gap-1.5 text-[10px] text-muted">
+            {t('game.levelFilter')}
+            <select
+              value={levelFilter}
+              onChange={(event) => setLevelFilter(event.target.value)}
+              className="rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
+            >
+              <option value="ALL">{t('game.levels.all')}</option>
+              {GAME_LEVELS.map((level) => (
+                <option key={level} value={level}>{t(`game.level.${level}`)}</option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+        <ul className="mt-2 flex flex-wrap gap-1.5">
+          {pickerItems.map((item) => (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  setDisplayId(item.id);
+                  setOverrideId(item.id);
+                  setRevealed(false);
+                }}
+                className={`rounded border px-2 py-1 text-left text-[10px] ${item.id === current?.id ? 'border-brand-strong bg-brand/20 text-ink' : 'border-line bg-page text-muted'}`}
+              >
+                <span className="font-mono text-[9px]">{items.indexOf(item) + 1}.</span>{' '}
+                {item.level ? `${t(`game.level.${item.level}`)} · ` : ''}
+                {item.question?.[lang] ?? item.question?.EN ?? item.question}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </details>
+
       <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-card px-4 py-3">
         <span className="font-mono text-[10px] text-muted">{t('game.help')}</span>
-
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={goPrev}
-            disabled={index === 0}
-            className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-ink transition hover:bg-line disabled:cursor-not-allowed disabled:text-muted"
+            onClick={reset}
+            className="rounded-lg border border-line-strong bg-raised px-3 py-2 font-heading text-xs font-semibold text-ink"
+          >
+            {t('game.reset')}
+          </button>
+          <button
+            type="button"
+            onClick={() => (revealed ? advance() : navigate(-1))}
+            className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-ink"
           >
             ← {t('game.previous')}
           </button>
           <button
             type="button"
-            onClick={() => setRevealed((value) => !value)}
-            disabled={total === 0}
-            className="rounded-lg border border-line-strong bg-raised px-4 py-2 font-heading text-xs font-semibold text-ink transition hover:bg-line disabled:cursor-not-allowed disabled:text-muted"
+            onClick={() => (revealed ? advance() : navigate(1))}
+            disabled={!current}
+            className="rounded-lg border border-brand-strong bg-brand px-5 py-2 font-heading text-xs font-bold text-on-accent disabled:cursor-not-allowed disabled:border-line disabled:bg-card disabled:text-muted"
           >
-            {revealed ? t('game.hide') : t('game.reveal')}
-          </button>
-          <button
-            type="button"
-            onClick={isLast ? onClose : goNext}
-            disabled={total === 0}
-            className="rounded-lg border border-brand-strong bg-brand px-5 py-2 font-heading text-xs font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:border-line disabled:bg-card disabled:text-muted"
-          >
-            {isLast ? t('game.finish') : `${t('game.next')} →`}
+            {revealed && remaining.length <= 1
+              ? t('game.finish')
+              : `${t('game.next')} →`}
           </button>
         </div>
       </footer>
