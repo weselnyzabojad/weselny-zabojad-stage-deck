@@ -405,8 +405,8 @@
       "location": "Main Hall",
       "isMainSongRequired": true,
       "firstDanceMode": "NORMAL",
-      "firstDanceStartAtSec": 12,
-      "firstDanceStopAfterSec": 270,
+      "firstDanceStartAt": "00:12",
+      "firstDanceStopAt": "04:30",
       "firstDanceNotes": "Key song for the DJ; fade under the applause."
     },
     {

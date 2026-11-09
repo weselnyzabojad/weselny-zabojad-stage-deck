@@ -36,8 +36,8 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(entrance.grandEntranceOrder).toBe('NEWLYWEDS_FIRST');
     const firstDance = result.cartridge.steps.find((step) => step.id === 'step_08');
     expect(firstDance.firstDanceMode).toBe('NORMAL');
-    expect(firstDance.firstDanceStartAtSec).toBe(12);
-    expect(firstDance.firstDanceStopAfterSec).toBe(270);
+    expect(firstDance.firstDanceStartAt).toBe('00:12');
+    expect(firstDance.firstDanceStopAt).toBe('04:30');
   });
 
   it('maps mandatory constraints, kitchen and music content', () => {

@@ -1,5 +1,6 @@
 import weddingSchema from '../../schema/wedding-schema-v1.1.json';
 import oczepinyDomain from '../../schema/domains/oczepiny.json';
+import firstDanceDomain from '../../schema/domains/first-dance.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -13,6 +14,7 @@ async function getValidator() {
       const ajv = new Ajv2020({ allErrors: true, strict: false });
       // Register the per-domain schemas the main schema `$ref`s.
       ajv.addSchema(oczepinyDomain);
+      ajv.addSchema(firstDanceDomain);
       return ajv.compile(weddingSchema);
     });
   }
