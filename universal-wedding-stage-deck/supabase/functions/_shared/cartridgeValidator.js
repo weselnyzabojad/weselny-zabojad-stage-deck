@@ -7,8 +7,9 @@
 
 import { collectSemanticErrors, sanitizeCartridge } from './cartridgeSemantics.js';
 
-export function makeCartridgeValidator(Ajv2020, schema) {
+export function makeCartridgeValidator(Ajv2020, schema, extraSchemas = []) {
   const ajv = new Ajv2020({ allErrors: true, strict: false });
+  for (const extra of extraSchemas) ajv.addSchema(extra);
   const validate = ajv.compile(schema);
 
   // Normalize first (strip retired fields), then run the same structural and

@@ -19,6 +19,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
 import Ajv2020 from 'npm:ajv@8.20.0/dist/2020.js';
 import weddingSchema from '../_shared/wedding-schema-v1.1.json' with { type: 'json' };
+import oczepinyDomain from '../_shared/domains/oczepiny.json' with { type: 'json' };
 import {
   authorizeAdminSession,
   decodeJwt,
@@ -40,7 +41,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',

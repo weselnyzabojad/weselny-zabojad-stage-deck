@@ -1,4 +1,5 @@
 import weddingSchema from '../../schema/wedding-schema-v1.1.json';
+import oczepinyDomain from '../../schema/domains/oczepiny.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -10,6 +11,8 @@ async function getValidator() {
   if (!validatorPromise) {
     validatorPromise = import('ajv/dist/2020.js').then(({ default: Ajv2020 }) => {
       const ajv = new Ajv2020({ allErrors: true, strict: false });
+      // Register the per-domain schemas the main schema `$ref`s.
+      ajv.addSchema(oczepinyDomain);
       return ajv.compile(weddingSchema);
     });
   }

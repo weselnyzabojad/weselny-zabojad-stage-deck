@@ -218,6 +218,7 @@ function mapOczepiny(source) {
         ? text(kv(source, 'Photographer briefed at'))
         : undefined,
       confirmedBy: text(kv(source, 'Photographer briefed by')),
+      notes: text(kv(source, 'Photographer briefed notes')) ?? '',
     },
     music: {
       track: text(kv(source, 'Music track')),
