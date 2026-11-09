@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useI18n } from '../i18n/useI18n.js';
 import {
   buildCueSheetHtml,
   buildSetListCsv,
@@ -11,13 +12,6 @@ const STATUS_META = {
   backup: 'border-amber-800 bg-amber-950/60 text-amber-200',
   missing: 'border-alert/60 bg-alert/20 text-alert-tint',
   unavailable: 'border-alert/60 bg-alert/20 text-alert-tint',
-};
-
-const STATUS_LABEL = {
-  ready: 'Ready',
-  backup: 'Backup',
-  missing: 'Missing',
-  unavailable: 'Unavailable',
 };
 
 function downloadText(text, filename, type) {
@@ -33,6 +27,7 @@ function downloadText(text, filename, type) {
 }
 
 export default function DjExportPack({ wedding, timeline = [], enabled = true }) {
+  const { t } = useI18n();
   const [notice, setNotice] = useState('');
   const checklist = buildSourceChecklist(wedding);
 
@@ -47,7 +42,7 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
     try {
       const win = window.open('', '_blank');
       if (!win) {
-        flash('Popup blocked — allow popups to open the printable cue sheet.');
+        flash(t('exportPack.popupBlocked'));
         return;
       }
       win.document.open();
@@ -56,18 +51,18 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
       win.opener = null;
       win.focus();
       win.print();
-      flash('Printable cue sheet opened.');
+      flash(t('exportPack.opened'));
     } catch {
-      flash('Could not open the printable cue sheet.');
+      flash(t('exportPack.openFailed'));
     }
   };
 
   const downloadCsv = () => {
     try {
       downloadText(buildSetListCsv(timeline), setListFilename(wedding), 'text/csv;charset=utf-8');
-      flash('CSV set list downloaded.');
+      flash(t('exportPack.csvDownloaded'));
     } catch {
-      flash('Could not download the CSV set list.');
+      flash(t('exportPack.csvFailed'));
     }
   };
 
@@ -76,14 +71,14 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-brand-soft">
-            🖨️ Export &amp; print pack
+            🖨️ {t('exportPack.title')}
           </h2>
           <p className="mt-0.5 text-[10px] text-muted">
-            Planned set only · no played-song reporting
+            {t('exportPack.subtitle')}
           </p>
         </div>
         <span className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
-          VIP · desktop
+          {t('exportPack.vip')}
         </span>
       </div>
 
@@ -93,14 +88,14 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
           onClick={openCueSheet}
           className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-semibold text-brand-tint transition hover:bg-brand/50"
         >
-          Print cue sheet
+          {t('exportPack.print')}
         </button>
         <button
           type="button"
           onClick={downloadCsv}
           className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink transition hover:bg-line"
         >
-          Download CSV
+          {t('exportPack.downloadCsv')}
         </button>
       </div>
 
@@ -112,10 +107,10 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
 
       <div className="mt-3 border-t border-line pt-2">
         <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
-          Source &amp; backup checklist
+          {t('exportPack.checklist')}
         </h3>
         {checklist.length === 0 ? (
-          <p className="mt-1 text-[10px] text-muted">No key songs in this cartridge.</p>
+          <p className="mt-1 text-[10px] text-muted">{t('exportPack.empty')}</p>
         ) : (
           <ul className="mt-1.5 space-y-1.5">
             {checklist.map((item) => {
@@ -135,18 +130,18 @@ export default function DjExportPack({ wedding, timeline = [], enabled = true })
                       </div>
                     </div>
                     <span className={`shrink-0 rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold ${primaryTone}`}>
-                      {STATUS_LABEL[item.primaryStatus] ?? item.primaryStatus}
+                      {t(`exportPack.status.${item.primaryStatus}`)}
                     </span>
                   </div>
                   <div className="mt-1 flex flex-wrap gap-1.5 text-[9px] text-muted">
-                    <span>Primary: {item.primary}</span>
+                    <span>{t('exportPack.primary', { label: item.primary })}</span>
                     {item.backup ? (
                       <span className={item.backupStatus === 'ready' ? 'text-muted' : 'text-amber-200'}>
-                        Backup: {item.backup}
-                        {backupTone ? ` · ${STATUS_LABEL[item.backupStatus] ?? item.backupStatus}` : ''}
+                        {t('exportPack.backup', { label: item.backup })}
+                        {backupTone ? ` · ${t(`exportPack.status.${item.backupStatus}`)}` : ''}
                       </span>
                     ) : (
-                      <span>No backup</span>
+                      <span>{t('exportPack.noBackup')}</span>
                     )}
                   </div>
                 </li>

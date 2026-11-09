@@ -125,7 +125,7 @@ export default function DjBoothView({
       {mainSongRequired ? (
         <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2 text-[11px]">
           <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
-            Main song
+            {t('dj.mainSong')}
           </div>
           {mainSong ? (
             <div className="mt-0.5 text-ink">
@@ -133,7 +133,7 @@ export default function DjBoothView({
               {mainSong.artist ? <span className="text-muted"> — {mainSong.artist}</span> : null}
             </div>
           ) : (
-            <div className="mt-0.5 text-amber-200">Main song not set for this step.</div>
+            <div className="mt-0.5 text-amber-200">{t('music.mainSongMissing')}</div>
           )}
         </div>
       ) : null}
@@ -272,9 +272,9 @@ export default function DjBoothView({
                   {t('dj.setNotes')}
                 </h2>
                 <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
-                  <li>Follow the projected times; the host advances the live state.</li>
-                  <li>Red cutoffs are hard stops — fade before the stated time.</li>
-                  <li>This view never exposes MC scripts or family alerts.</li>
+                  <li>{t('dj.setNotes.project')}</li>
+                  <li>{t('dj.setNotes.cutoffs')}</li>
+                  <li>{t('dj.setNotes.private')}</li>
                 </ul>
               </section>
             </aside>
@@ -283,7 +283,7 @@ export default function DjBoothView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-muted">
-        Read-only DJ view · no step controls · syncs with the host over the room PIN
+        {t('dj.footer')}
       </footer>
     </div>
   );
