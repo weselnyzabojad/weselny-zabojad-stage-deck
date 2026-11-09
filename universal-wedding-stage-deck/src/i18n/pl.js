@@ -47,6 +47,10 @@ const pl = {
   'common.wedding': 'Wesele',
   'common.retry': 'Ponów',
   'common.unknown': 'Nieznane',
+  'modal.close': 'Zamknij okno',
+  'toast.actionApplied': 'Wykonano akcję',
+  'toast.undo': 'Cofnij',
+  'toast.dismiss': 'Zamknij',
   'couple.wedding': 'Wesele:',
   'couple.languages': 'Wspólne języki pary',
 

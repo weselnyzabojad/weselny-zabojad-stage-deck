@@ -47,6 +47,10 @@ const en = {
   'common.wedding': 'Wedding',
   'common.retry': 'Retry',
   'common.unknown': 'Unknown',
+  'modal.close': 'Close overlay',
+  'toast.actionApplied': 'Action applied',
+  'toast.undo': 'Undo',
+  'toast.dismiss': 'Dismiss',
   'couple.wedding': 'Wedding:',
   'couple.languages': 'Couple common languages',
 

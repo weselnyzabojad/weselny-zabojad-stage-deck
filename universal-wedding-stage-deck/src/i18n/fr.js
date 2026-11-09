@@ -47,6 +47,10 @@ const fr = {
   'common.wedding': 'Mariage',
   'common.retry': 'Réessayer',
   'common.unknown': 'Inconnu',
+  'modal.close': 'Fermer la fenêtre',
+  'toast.actionApplied': 'Action appliquée',
+  'toast.undo': 'Annuler',
+  'toast.dismiss': 'Fermer',
   'couple.wedding': 'Mariage :',
   'couple.languages': 'Langues communes du couple',
 
