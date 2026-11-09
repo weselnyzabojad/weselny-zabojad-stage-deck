@@ -206,13 +206,7 @@
       "$ref": "#/$defs/privacy"
     },
     "speechMode": {
-      "type": "string",
-      "enum": [
-        "OFF",
-        "LIGHT",
-        "COMPLEX"
-      ],
-      "description": "Wedding-level speech mode (TODO 8); per-speech `mode` may override LIGHT/COMPLEX."
+      "$ref": "https://weselnyzabojad.example/schemas/domains/speeches.json#/properties/speechMode"
     },
     "speeches": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/speeches.json#/properties/speeches"

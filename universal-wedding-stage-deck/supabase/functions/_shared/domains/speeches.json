@@ -5,6 +5,15 @@
   "description": "Speech records mapped from the Google Doc and consumed by the MC and Speaker views.",
   "type": "object",
   "properties": {
+    "speechMode": {
+      "type": "string",
+      "enum": [
+        "OFF",
+        "LIGHT",
+        "COMPLEX"
+      ],
+      "description": "Wedding-level speech mode; per-speech mode may override LIGHT/COMPLEX."
+    },
     "speeches": {
       "type": "array",
       "description": "Speech records. Scripts are stored verbatim; the speaker role sees only the active, consented speech.",
