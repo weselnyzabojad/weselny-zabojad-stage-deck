@@ -1,0 +1,12 @@
+{
+  "$schema": "./special-effects.json",
+  "specialEffects": {
+    "sparklers": true,
+    "fire": false,
+    "heavySmoke": true,
+    "other": "Cold sparks",
+    "permitRequired": false,
+    "venueApproved": true,
+    "safetyBriefing": "Briefed the venue manager and the photographer."
+  }
+}

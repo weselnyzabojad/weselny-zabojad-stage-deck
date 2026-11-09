@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/special-effects.json",
+  "title": "Special effects domain",
+  "description": "Photo-plan special effects (sparklers, fire, smoke) mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "specialEffects": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "sparklers": {
+          "type": "boolean"
+        },
+        "fire": {
+          "type": "boolean"
+        },
+        "heavySmoke": {
+          "type": "boolean"
+        },
+        "other": {
+          "type": "string"
+        },
+        "permitRequired": {
+          "type": "boolean"
+        },
+        "venueApproved": {
+          "type": "boolean"
+        },
+        "safetyBriefing": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "specialEffects"
+  ]
+}
