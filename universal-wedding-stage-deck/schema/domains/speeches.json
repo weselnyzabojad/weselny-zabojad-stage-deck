@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/speeches.json",
+  "title": "Speeches domain",
+  "description": "Speech records mapped from the Google Doc and consumed by the MC and Speaker views.",
+  "type": "object",
+  "properties": {
+    "speeches": {
+      "type": "array",
+      "description": "Speech records. Scripts are stored verbatim; the speaker role sees only the active, consented speech.",
+      "items": {
+        "$ref": "#/$defs/speech"
+      }
+    }
+  },
+  "required": [
+    "speeches"
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "clock": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+      "description": "24-hour local clock time as HH:MM."
+    },
+    "speech": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "additionalProperties": true,
+      "description": "Speech record (TODO 8). Script text is stored verbatim; consent and visibility gate the speaker view.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "LIGHT",
+            "COMPLEX"
+          ]
+        },
+        "speaker": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": [
+                "name"
+              ],
+              "additionalProperties": true,
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "relationship": {
+                  "type": "string"
+                },
+                "contact": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "order": {
+          "type": "integer"
+        },
+        "time": {
+          "$ref": "#/$defs/clock"
+        },
+        "durationMin": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "language": {
+          "type": "string"
+        },
+        "mic": {
+          "type": "string"
+        },
+        "cue": {
+          "type": "string"
+        },
+        "script": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "format": {
+              "type": "string"
+            },
+            "ready": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string"
+            },
+            "sourceDoc": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "provider",
+                "fileId"
+              ],
+              "description": "Drive document provenance; the Speaker role reads only script.text.",
+              "properties": {
+                "provider": {
+                  "type": "string",
+                  "enum": [
+                    "GOOGLE_DRIVE"
+                  ]
+                },
+                "fileId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "url": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "mimeType": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "modifiedTime": {
+                  "type": "string"
+                },
+                "retrievedAt": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "delivery": {
+          "type": "string",
+          "enum": [
+            "READ",
+            "MEMORIZE",
+            "NOTES"
+          ]
+        },
+        "readFrom": {
+          "type": "string",
+          "enum": [
+            "PHONE",
+            "TABLET",
+            "PAPER",
+            "MEMORY",
+            "OTHER"
+          ],
+          "description": "Where the speaker reads from: phone/tablet, printed paper or memory."
+        },
+        "consent": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Couple consent to store the script on the speaker device. `storeScript: false` locks it.",
+          "properties": {
+            "storeScript": {
+              "type": "boolean"
+            },
+            "confirmedBy": {
+              "type": "string"
+            },
+            "confirmedAt": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "mcIntro": {
+          "type": "boolean"
+        },
+        "visibleToRoles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "teleprompterRef": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    }
+  }
+}

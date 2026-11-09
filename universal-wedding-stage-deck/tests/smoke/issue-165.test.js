@@ -186,6 +186,9 @@ describe('issue #165 shared schema and semantic parity', () => {
     const stepsDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'steps.json'), 'utf8'),
     );
+    const speechesDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'speeches.json'), 'utf8'),
+    );
     const validate = makeCartridgeValidator(Ajv2020, schema, [
       oczepinyDomain,
       firstDanceDomain,
@@ -202,6 +205,7 @@ describe('issue #165 shared schema and semantic parity', () => {
       musicPolicyDomain,
       demographicsDomain,
       stepsDomain,
+      speechesDomain,
     ]);
 
     const valid = await validate(cartridge());
