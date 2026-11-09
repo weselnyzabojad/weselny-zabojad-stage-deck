@@ -390,3 +390,36 @@ the MC UI.
 | photobooth | PHOTO_BOOTH | Fotobudka | yes | 20:00 | 23:30 | Garden | Foto Fun | Unlimited prints |
 | guestbook | GUEST_BOOK | Guest book | yes | 18:00 | 23:30 | Hall foyer |  | Signing pens on the table |
 | polaroids | POLAROIDS | Polaroids / Instax | yes | 19:00 | 23:00 | Garden |  | One photo per guest |
+
+## CEREMONY SCRIPT
+
+Optional verbatim ceremony script, attached to the Ceremony step by `Step ID`.
+Each `###` heading is one ceremony part; its fenced blocks are the per-language
+lines (the fence language is `pl`, `fr` or `en`). Copy the script **verbatim** —
+never summarize or translate it.
+
+Step ID: step_02
+
+### Welcome and Introduction
+
+```pl
+Drodzy goście, witamy was bardzo serdecznie w tym wyjątkowym dniu.
+```
+```fr
+Chère famille, chers amis, soyez les bienvenus en ce jour si spécial.
+```
+```en
+Welcome, family and friends — we are gathered here to celebrate this couple.
+```
+
+### The Pronouncement
+
+```pl
+Ogłaszam, że jesteście małżeństwem!
+```
+```fr
+Je vous déclare officiellement mari et femme !
+```
+```en
+I now pronounce you married!
+```

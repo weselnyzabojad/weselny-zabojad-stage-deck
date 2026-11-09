@@ -128,6 +128,32 @@ function mapCeremony(event) {
   };
 }
 
+// Maps the verbatim trilingual ceremony script onto the Ceremony step's
+// teleprompter. Each `### <heading>` is one speech item; its fenced blocks are
+// the per-language lines (fence language is the ISO code). Copied verbatim,
+// never summarized or translated.
+function mapCeremonyScript(source, steps) {
+  const stepId = text(kv(source, 'Step ID'));
+  const step = steps.find((entry) => entry.id === stepId);
+  if (!step) return;
+  const items = (source?.subSections ?? [])
+    .map((sub) => {
+      const lines = (sub.codeBlocks ?? [])
+        .filter((block) => ['PL', 'FR', 'EN'].includes(block.lang?.toUpperCase()))
+        .map((block) => ({ lang: block.lang.toUpperCase(), text: block.text.trim() }));
+      if (lines.length === 0) return null;
+      return { id: slug(sub.title), heading: sub.title.trim(), lines };
+    })
+    .filter(Boolean);
+  if (items.length === 0) return;
+  step.teleprompter = {
+    has_script: true,
+    type: 'SPEECH',
+    title: 'Ceremony script',
+    items,
+  };
+}
+
 function mapOczepiny(source) {
   const throwings = {};
   const rawThrowings = text(kv(source, 'Throwings')) ?? '';
@@ -863,6 +889,8 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const mandatorySteps = mapMandatory(section(parsed, 'MANDATORY STEPS'));
   const ceremony = mapCeremony(event);
+  const ceremonyScript = section(parsed, 'CEREMONY SCRIPT');
+  if (ceremonyScript) mapCeremonyScript(ceremonyScript, steps);
   const languagesSource = section(parsed, 'LANGUAGES');
   const kitchenSource = section(parsed, 'KITCHEN');
   const extensionSource = section(parsed, 'EXTENSIONS');
