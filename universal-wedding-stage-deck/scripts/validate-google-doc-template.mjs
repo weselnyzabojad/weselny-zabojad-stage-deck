@@ -83,6 +83,7 @@ const EXPECTED_TABLES = {
   'PRIVACY': null,
   'LIVE SYNC STATE': null,
   'EXTENSIONS': null,
+  'CEREMONY SCRIPT': null,
 };
 
 const text = await readFile(templatePath, 'utf8');

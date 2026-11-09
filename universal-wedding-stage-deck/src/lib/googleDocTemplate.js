@@ -198,6 +198,13 @@ export const SECTION_MANIFEST = Object.freeze([
     schemaPath: ['attractions'],
     purpose: 'Parallel attractions (photobooth, guest book, Polaroids) with booked state and windows.',
   },
+  {
+    order: 28,
+    marker: 'CEREMONY SCRIPT',
+    required: false,
+    schemaPath: ['steps[].teleprompter'],
+    purpose: 'Verbatim trilingual ceremony script attached to the Ceremony step.',
+  },
 ]);
 
 export const SECTION_ORDER = Object.freeze(SECTION_MANIFEST.map((section) => section.marker));
