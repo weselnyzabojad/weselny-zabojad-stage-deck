@@ -35,7 +35,7 @@ function categoryLabel(provider) {
     : base;
 }
 
-export default function AdminServiceProviders({ wedding, readOnly = false }) {
+export default function AdminServiceProviders({ wedding, readOnly = false, onChanged = null }) {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [providers, setProviders] = useState([]);
@@ -43,6 +43,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [accessResult, setAccessResult] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -94,9 +95,12 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
       await upsertProvider({
         weddingId: wedding.wedding_id,
         ...form,
+      }).then((result) => {
+        setAccessResult(result?.roleAccess ?? null);
       });
       setForm(EMPTY_FORM);
       await load();
+      onChanged?.();
     } catch (cause) {
       setError(cause?.message ?? 'Could not save the provider.');
     } finally {
@@ -109,6 +113,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
     try {
       await deactivateProvider(wedding.wedding_id, provider.id);
       await load();
+      onChanged?.();
     } catch (cause) {
       setError(cause?.message ?? 'Could not deactivate the provider.');
     }
@@ -122,6 +127,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
     try {
       await deleteProvider(wedding.wedding_id, provider.id);
       await load();
+      onChanged?.();
     } catch (cause) {
       setError(cause?.message ?? 'Could not delete the provider.');
     }
@@ -132,6 +138,14 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
     label,
     rows: providers.filter((provider) => provider.category === category),
   })).filter((group) => group.rows.length > 0);
+  const weddingRoles = new Set(wedding?.roles ?? []);
+  const roleForCategory = {
+    dj: 'dj',
+    photo1: 'photo1',
+    photo2: 'photo2',
+    video: 'video',
+    venue_manager: 'venue_manager',
+  };
 
   return (
     <details
@@ -146,6 +160,16 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
       {error ? (
         <p className="mt-2 rounded border border-alert/60 bg-alert/15 px-2 py-1 text-[10px] text-alert-soft" role="alert">
           {error}
+        </p>
+      ) : null}
+      {accessResult?.pin ? (
+        <p className="mt-2 rounded border border-emerald-700 bg-emerald-950/40 px-2 py-1 text-[10px] text-emerald-200" role="status">
+          Role <strong>{accessResult.role}</strong> PIN: <strong className="font-mono">{accessResult.pin}</strong> — shown once.
+        </p>
+      ) : null}
+      {accessResult?.revoked ? (
+        <p className="mt-2 rounded border border-amber-700 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-200" role="status">
+          Role {accessResult.role} access revoked.
         </p>
       ) : null}
 
@@ -207,6 +231,11 @@ export default function AdminServiceProviders({ wedding, readOnly = false }) {
                   {[provider.phone, provider.email, provider.address, provider.instagram]
                     .filter(Boolean)
                     .join(' · ') || 'No contact details'}
+                </div>
+                <div className="mt-0.5 font-mono text-[9px] text-muted">
+                  {roleForCategory[provider.category]
+                    ? `Role access: ${weddingRoles.has(roleForCategory[provider.category]) ? 'active' : 'none'}`
+                    : 'Contact only — no app access'}
                 </div>
               </li>
             ))}

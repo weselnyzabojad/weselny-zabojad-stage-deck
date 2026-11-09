@@ -158,6 +158,55 @@ async function assertProviderCategoryFree(admin: any, weddingId: string, categor
     : null;
 }
 
+// Provider categories map 1:1 to stage roles; `other` grants no access.
+function providerRole(category: string) {
+  return PROVIDER_ROLE_CATEGORIES.has(category) ? category : null;
+}
+
+async function ensureProviderRole(admin: any, weddingId: string, role: string) {
+  const { data: existing, error } = await admin
+    .from('wedding_roles')
+    .select('role')
+    .eq('wedding_id', weddingId)
+    .eq('role', role)
+    .maybeSingle();
+  if (error) throw error;
+  if (existing) return { role, pin: null, created: false };
+
+  const pin = randomPin();
+  const { error: upsertError } = await admin.from('wedding_roles').upsert(
+    { wedding_id: weddingId, role, pin_hash: bcrypt.hashSync(pin, 10) },
+    { onConflict: 'wedding_id,role' },
+  );
+  if (upsertError) throw upsertError;
+  return { role, pin, created: true };
+}
+
+async function revokeProviderRole(admin: any, weddingId: string, role: string) {
+  const { error: deleteError } = await admin
+    .from('wedding_roles')
+    .delete()
+    .eq('wedding_id', weddingId)
+    .eq('role', role);
+  if (deleteError) throw deleteError;
+
+  const now = new Date().toISOString();
+  const { error: sessionError } = await admin
+    .from('role_sessions')
+    .update({ revoked_at: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', role)
+    .is('revoked_at', null);
+  if (sessionError) throw sessionError;
+
+  const { error: presenceError } = await admin
+    .from('role_presence')
+    .update({ status: 'offline', session_jti: null, last_seen: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', role);
+  if (presenceError) throw presenceError;
+}
+
 function pinFor(role: string, requestedPins: Record<string, unknown> | null | undefined) {
   const requested = requestedPins?.[role];
   return typeof requested === 'string' && /^\d{6}$/.test(requested) ? requested : randomPin();
@@ -750,12 +799,24 @@ Deno.serve(async (req) => {
       const { data, error } = await query.select('*').single();
       if (error) throw error;
 
+      const role = providerRole(data.category);
+      let roleAccess = null;
+      if (role) {
+        if (data.active) {
+          roleAccess = await ensureProviderRole(admin, weddingId, role);
+        } else {
+          await revokeProviderRole(admin, weddingId, role);
+          roleAccess = { role, pin: null, revoked: true };
+        }
+      }
+
       await writeAudit(admin, allowlisted, 'provider_upsert', weddingId, {
         providerId: data.id,
         before,
         after: data,
+        roleAccess,
       });
-      return json({ provider: data });
+      return json({ provider: data, roleAccess });
     }
 
     if (action === 'deactivate_provider') {
@@ -781,12 +842,16 @@ Deno.serve(async (req) => {
         .select('*')
         .maybeSingle();
       if (error) throw error;
+      if (!data) return json({ error: 'Provider not found.' }, 404);
+      const role = providerRole(data.category);
+      if (role) await revokeProviderRole(admin, weddingId, role);
       await writeAudit(admin, allowlisted, 'provider_deactivate', weddingId, {
         providerId: id,
         before,
         after: data,
+        revokedRole: role,
       });
-      return json({ provider: data });
+      return json({ provider: data, roleAccess: role ? { role, revoked: true } : null });
     }
 
     if (action === 'delete_provider') {
@@ -804,6 +869,8 @@ Deno.serve(async (req) => {
         .maybeSingle();
       if (readError) throw readError;
       if (!before) return json({ error: 'Provider not found.' }, 404);
+      const role = providerRole(before.category);
+      if (role) await revokeProviderRole(admin, weddingId, role);
       const { error } = await admin
         .from('wedding_service_providers')
         .delete()
@@ -813,6 +880,7 @@ Deno.serve(async (req) => {
       await writeAudit(admin, allowlisted, 'provider_delete', weddingId, {
         providerId: id,
         before,
+        revokedRole: role,
       });
       return json({ ok: true });
     }
