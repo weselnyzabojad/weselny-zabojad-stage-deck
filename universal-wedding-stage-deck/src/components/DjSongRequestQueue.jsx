@@ -14,13 +14,13 @@ import {
   updateSongRequestStatus,
 } from '../lib/songRequestQueue.js';
 
-function RequestTime({ value }) {
+function RequestTime({ value, locale }) {
   if (!value) return null;
   const date = new Date(value);
   if (!Number.isFinite(date.getTime())) return null;
   return (
     <span className="font-mono text-[9px] text-muted">
-      {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      {date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
     </span>
   );
 }
@@ -38,7 +38,7 @@ export function SongRequestQueueList({
   onRefresh = () => {},
   discoPoloPolicy = 'NO',
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { pending, accepted } = partitionSongRequests(requests);
   const upNext = accepted.filter((request) => !request.playedAt);
 
@@ -123,7 +123,7 @@ export function SongRequestQueueList({
                       {request.song}
                     </div>
                     <div className="truncate text-[11px] text-muted">{request.artist}</div>
-                    <RequestTime value={request.createdAt} />
+                    <RequestTime value={request.createdAt} locale={locale} />
                   </div>
                   <div className="flex shrink-0 gap-1.5">
                     <button
@@ -171,7 +171,7 @@ export function SongRequestQueueList({
                       {request.song}
                     </div>
                     <div className="truncate text-[11px] text-muted">{request.artist}</div>
-                    <RequestTime value={request.createdAt} />
+                    <RequestTime value={request.createdAt} locale={locale} />
                   </div>
                   <button
                     type="button"
