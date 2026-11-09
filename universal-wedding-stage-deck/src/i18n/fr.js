@@ -229,8 +229,6 @@ const fr = {
   'mc.rail.expand': 'Développer {title}',
   'mc.rail.collapse': 'Réduire {title}',
   'mc.cues.empty': 'Aucune réplique MC',
-  'mc.rail.showMore': 'Afficher {count} de plus',
-  'mc.rail.showLess': 'Afficher moins',
 
   'mandatory.title': 'Contraintes obligatoires',
   'mandatory.firstArrival': 'Arrivée des premiers invités',

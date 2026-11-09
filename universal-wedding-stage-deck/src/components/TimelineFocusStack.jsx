@@ -43,11 +43,6 @@ function FocusZone({
   compact,
   zoneScroll,
   entryBodies,
-  hiddenCount = 0,
-  expanded = false,
-  onToggleExpanded,
-  showMoreLabel,
-  showLessLabel,
 }) {
   return (
     <section
@@ -63,49 +58,36 @@ function FocusZone({
           {empty}
         </p>
       ) : (
-        <>
-          <ol
-            className={`${compact || !zoneScroll ? '' : 'stage-rail-scroll '}flex flex-col gap-2`}
-            onKeyDown={(event) => handleZoneKeyDown(event, onCollapse)}
-          >
-            {entries.map((entry, position) => {
-              const key = cardKey(entry);
-              const tier = focusStackTier(zone, position);
-              return (
-                <li
-                  key={key}
-                  className="relative"
-                  data-focus-card
-                  data-focus-depth={tier?.depth ?? position + 1}
-                  data-focus-opacity={tier?.opacity ?? 1}
-                  data-focus-scale={tier?.scale ?? 1}
-                  style={{ opacity: tier?.opacity ?? 1, zIndex: tier?.zIndex ?? 1 }}
+        <ol
+          className={`${compact || !zoneScroll ? '' : 'stage-rail-scroll '}flex flex-col gap-2`}
+          onKeyDown={(event) => handleZoneKeyDown(event, onCollapse)}
+        >
+          {entries.map((entry, position) => {
+            const key = cardKey(entry);
+            const tier = focusStackTier(zone, position);
+            return (
+              <li
+                key={key}
+                className="relative"
+                data-focus-card
+                data-focus-depth={tier?.depth ?? position + 1}
+                data-focus-opacity={tier?.opacity ?? 1}
+                data-focus-scale={tier?.scale ?? 1}
+                style={{ opacity: tier?.opacity ?? 1, zIndex: tier?.zIndex ?? 1 }}
+              >
+                <StageStepCard
+                  entry={entry}
+                  variant={typeof variant === 'function' ? variant(entry, position) : variant}
+                  collapsible
+                  expanded={openKey === key}
+                  onToggle={() => onToggle(zone, key)}
                 >
-                  <StageStepCard
-                    entry={entry}
-                    variant={typeof variant === 'function' ? variant(entry, position) : variant}
-                    collapsible
-                    expanded={openKey === key}
-                    onToggle={() => onToggle(zone, key)}
-                  >
-                    {entryBodies?.[key] ?? null}
-                  </StageStepCard>
-                </li>
-              );
-            })}
-          </ol>
-          {hiddenCount > 0 || expanded ? (
-            <button
-              type="button"
-              data-focus-expander={zone}
-              aria-expanded={expanded}
-              onClick={onToggleExpanded}
-              className="self-start rounded-lg border border-line-strong bg-raised px-3 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
-            >
-              {expanded ? showLessLabel : showMoreLabel}
-            </button>
-          ) : null}
-        </>
+                  {entryBodies?.[key] ?? null}
+                </StageStepCard>
+              </li>
+            );
+          })}
+        </ol>
       )}
     </section>
   );
@@ -134,12 +116,7 @@ export default function TimelineFocusStack({
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
-  const [expandedByZone, setExpandedByZone] = useState({ history: false, future: false });
   const stack = buildFocusStack(entries, activeIndex);
-  const expandedStack = buildFocusStack(entries, activeIndex, {
-    historyLimit: entries.length,
-    futureLimit: entries.length,
-  });
 
   const copy = {
     rail: t('mc.rail.rail'),
@@ -150,10 +127,6 @@ export default function TimelineFocusStack({
     noUpcoming: t('mc.rail.noUpcoming'),
     noCurrent: t('mc.rail.noCurrent'),
     ...labels,
-  };
-
-  const toggleExpanded = (zone) => {
-    setExpandedByZone((prev) => ({ ...prev, [zone]: !prev[zone] }));
   };
 
   const toggle = (zone, key) => {
@@ -180,7 +153,7 @@ export default function TimelineFocusStack({
         <FocusZone
           zone="history"
           label={copy.done}
-          entries={expandedByZone.history ? expandedStack.history : stack.history}
+          entries={stack.history}
           variant="done"
           empty={copy.noDone}
           openKey={openByZone.history}
@@ -189,11 +162,6 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
-          hiddenCount={stack.hidden.history}
-          expanded={expandedByZone.history}
-          onToggleExpanded={() => toggleExpanded('history')}
-          showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.history })}
-          showLessLabel={t('mc.rail.showLess')}
         />
       </div>
 
@@ -234,7 +202,7 @@ export default function TimelineFocusStack({
         <FocusZone
           zone="future"
           label={copy.upcoming}
-          entries={expandedByZone.future ? expandedStack.future : stack.future}
+          entries={stack.future}
           variant={(_entry, position) => (position === 0 ? 'next' : 'later')}
           empty={copy.noUpcoming}
           openKey={openByZone.future}
@@ -243,11 +211,6 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
-          hiddenCount={stack.hidden.future}
-          expanded={expandedByZone.future}
-          onToggleExpanded={() => toggleExpanded('future')}
-          showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.future })}
-          showLessLabel={t('mc.rail.showLess')}
         />
       </div>
     </section>
