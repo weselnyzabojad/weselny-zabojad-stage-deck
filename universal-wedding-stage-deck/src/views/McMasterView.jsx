@@ -7,6 +7,7 @@
 
 import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
+import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
 import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
@@ -29,6 +30,7 @@ import TopBarShell from '../components/TopBarShell';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
+import { resolveEventDateISO, resolveVenueTimeZone } from '../lib/eventTime.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
@@ -219,6 +221,14 @@ export default function McMasterView({ model }) {
 
       <DriftPill drift={driftReport.drift} compact />
 
+      <AttractionStrip
+        attractions={WEDDING.attractions}
+        now={driftReport.clock?.now}
+        eventDateISO={resolveEventDateISO(WEDDING)}
+        timeZone={resolveVenueTimeZone(WEDDING)}
+        compact
+      />
+
       {railEntries.length > 0 ? (
         <TimelineFocusStack
           compact
@@ -268,6 +278,13 @@ export default function McMasterView({ model }) {
           {t('mc.step.completed', { done: completedCount, total: steps.length })}
         </span>
       </div>
+
+      <AttractionStrip
+        attractions={WEDDING.attractions}
+        now={driftReport.clock?.now}
+        eventDateISO={resolveEventDateISO(WEDDING)}
+        timeZone={resolveVenueTimeZone(WEDDING)}
+      />
 
       <div className="grid grid-cols-1 gap-3">
         {/* MC Cues */}
