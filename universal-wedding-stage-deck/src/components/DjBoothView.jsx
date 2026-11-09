@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import logo from '../assets/img/logo.png';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
@@ -23,6 +24,12 @@ import LanguageToggle from './LanguageToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import { djDetailTier, getImportantSongs, resolveServicePackage } from '../lib/importantSongs';
+
+// Build-time dev gate: production replaces this with `null` and drops the
+// dynamic import, its chunk and all simulator strings.
+const SongRequestSimulator = import.meta.env.DEV
+  ? lazy(() => import('../dev/SongRequestSimulator.jsx'))
+  : null;
 
 // Read-only companion screen for the DJ: projected timeline, playlists, track
 // titles and hard cutoffs only. There are deliberately no step controls, no MC
@@ -146,6 +153,11 @@ export default function DjBoothView({
           roomCode={songRequestRoomCode}
         />
       ) : null}
+      {isVip && SongRequestSimulator ? (
+        <Suspense fallback={null}>
+          <SongRequestSimulator />
+        </Suspense>
+      ) : null}
 
 
       <TimelineFocusStack
@@ -219,6 +231,11 @@ export default function DjBoothView({
           accessToken={songRequestAccessToken}
           roomCode={songRequestRoomCode}
         />
+      ) : null}
+      {isVip && SongRequestSimulator ? (
+        <Suspense fallback={null}>
+          <SongRequestSimulator />
+        </Suspense>
       ) : null}
       </div>
 
