@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `d1f9d4a` (2026-11-09 UI follow-ups delivered)
+**Aligned with:** `master` @ `76ed46e` (MC game-card heading delivered; operational follow-ups tracked)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -60,7 +60,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | PWA icons + favicon (#74) | Complete |
 | Per-device i18n EN/FR/PL (#78) | Complete |
 | Deprecated-feature cleanup (#75) | Complete |
-| Owner admin panel `/admin` (#76) | Complete in code; live Supabase smoke test still required |
+| Owner admin panel `/admin` (#76) | Complete in code; live Supabase smoke test tracked by #533 |
 
 ### Open roadmap issues
 
@@ -73,7 +73,9 @@ sections below and in git history.
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
-| [#530](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/530) | MC games card: use the game name as the heading | Implementation |
+| [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
+| [#534](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/534) | Admin: remaining native confirm/prompt flows | Accessibility / UI |
+| [#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535) | i18n: role-view labels without translating cartridge content | i18n / data-boundary hardening |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -105,6 +107,8 @@ The 2026-11-09 Speaker/LATE/MC Cues corrections are catalogued in
 [Speaker, LATE and game-step Cues](#speaker-late-and-game-step-cues-decision-2026-11-09).
 The MC game-card heading correction is catalogued in
 [MC game card heading](#mc-game-card-heading-decision-2026-11-09).
+The operational, admin-dialog and i18n/data-boundary follow-ups are catalogued in
+[admin and i18n follow-ups](#admin-and-i18n-follow-ups-decision-2026-11-09).
 Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -1809,10 +1813,10 @@ independent of this transport decision.
 
 ### UI review fixes 2026-11-08
 
-Review register opened 2026-11-08. All items below remain open; this section
-records the decisions and their tracking issues. Do **not** close #77 (schema
-v1.2), #80 (cartridge `mcCues`, P0) or #245 (speaker cartridge TODO) while
-working through this list.
+Review register opened 2026-11-08. This section is historical: the tracked
+items were delivered through PRs #473-#522 (except the optional #459). Do
+**not** close #77 (schema v1.2), #80 (cartridge `mcCues`, P0) or #245 (speaker
+cartridge TODO) while working through this list.
 
 #### P0 - correctness
 
@@ -1881,7 +1885,8 @@ working through this list.
 #### Re-review 2026-11-08 (new)
 
 These seven findings were verified by grep on 2026-11-08 after the first review
-pass. They are tracked separately from #421-#432 and remain open.
+pass. They were tracked separately from #421-#432 and have since been delivered
+through the #473-#522 PR batch.
 
 13. **Theme fonts and offline fonts.** The `@theme` block in `src/index.css`
     (line 14) defines only color tokens; `--font-heading` and `--font-body` are
@@ -2493,8 +2498,8 @@ Alignment for this review: last aligned 2026-11-08 against `master` @
 `f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
 #77, #80, #245 and #459 stay open. The status column in the historical review
 table above is superseded: #421-#471 (except the optional #459) were delivered
-through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 is
-the remaining 2026-11-09 follow-up.
+through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 was
+delivered through PR #532. The remaining operational follow-ups are #533-#535.
 
 ---
 
@@ -2539,6 +2544,31 @@ The generic \`games.title\` heading remains only for the no-\`gameId\` fallback
 that shows multiple lists. No schema, data, parser, clicker, persistence or
 timeline changes.
 ([#530](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/530))
+
+### Admin and i18n follow-ups (decision, 2026-11-09)
+
+**Live Supabase smoke test is a release gate.** The admin panel is complete in
+code but has not been exercised against the live project. Run sign-in → TOTP →
+library → publish → QR join → PIN rotation → session revoke → archive/provider
+revocation against production, record pass/fail and fix or file any defect.
+Never paste secrets, PINs or private URLs into the issue.
+([#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533))
+
+**Admin destructive confirmations and TOTP re-auth use accessible dialogs.**
+Most admin paths already use \`AdminConfirmDialog\`/\`AdminMfaDialog\`; replace the
+remaining native \`window.confirm\` calls in the Drive publish and provider delete
+paths. Preserve TOTP re-auth and audit logging. Keyboard, Escape/backdrop,
+focus trap/restore, busy and error states are required.
+([#534](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/534))
+
+**Translate UI chrome, never cartridge content.** Finish the remaining
+hardcoded English role-view domain labels through \`t()\` with EN/FR/PL keys.
+Cartridge-sourced values — step titles/notes, MC cues, speeches/scripts, speaker
+names, song metadata, venue/attraction/provider data, game questions and
+answers — are authored content and must render verbatim. Do not wrap them in
+\`t()\`, locale normalization or case conversion. Add a regression guard for both
+directions.
+([#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535))
 
 ---
 
@@ -2829,13 +2859,15 @@ CI runs the same checks on pushes and pull requests to `master`.
 ## 10. Known limitations and follow-ups
 
 - Admin panel has not been smoke-tested against the live Supabase project yet.
-  First run should cover sign-in → TOTP enrollment → publish → QR join → revoke.
-- Admin destructive confirmations and TOTP re-auth currently use native
-  `window.prompt` / `window.confirm` dialogs; a proper modal flow is a UI
-  improvement candidate.
+  The release-gate checklist is tracked in
+  [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533).
+- Most admin destructive actions already use accessible in-app dialogs; the
+  remaining native confirms in Drive publish and provider delete are tracked in
+  [#534](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/534).
 - i18n covers UI chrome, roles, drift/status labels, errors, PWA, join and
-  admin-adjacent components. Cartridge content remains in its authored
-  language; some role-view domain strings are still English.
+  admin-adjacent components. Remaining role-view domain strings are tracked in
+  [#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535).
+  Cartridge content is authored data and must never be translated.
 - Test Wiedzy and Test Zgodności are predefined game steps with parsed question
   Docs and runtime results in \`liveSyncState.game_results\` (#469-#471).
 - Google Docs-first import (#82) has deterministic API-to-template parsing and
