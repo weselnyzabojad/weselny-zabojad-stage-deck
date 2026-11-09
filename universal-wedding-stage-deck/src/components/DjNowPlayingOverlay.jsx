@@ -75,7 +75,7 @@ export default function DjNowPlayingOverlay({
       role="dialog"
       aria-modal="true"
       aria-labelledby="dj-now-playing-title"
-      className="fixed inset-0 z-[80] overflow-y-auto bg-black text-on-accent"
+      className="fixed inset-0 z-modal overflow-y-auto bg-black text-on-accent"
     >
       <div className="flex min-h-full flex-col p-5 sm:p-8">
         <header className="flex items-start justify-between gap-4">

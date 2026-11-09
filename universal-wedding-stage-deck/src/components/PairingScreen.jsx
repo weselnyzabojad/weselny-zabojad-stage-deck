@@ -157,7 +157,7 @@ export default function PairingScreen({
     <div className="min-h-dvh w-full bg-page text-ink font-body flex items-center justify-center px-4 py-8 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
-      <div className="absolute right-4 top-4 z-10 flex items-center gap-2">
+      <div className="absolute right-4 top-4 z-raised flex items-center gap-2">
         <LanguageToggle />
         <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
       </div>

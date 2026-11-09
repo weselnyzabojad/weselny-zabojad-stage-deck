@@ -21,7 +21,7 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-20 left-1/2 z-[60] w-[min(92vw,26rem)] -translate-x-1/2 overflow-hidden rounded-xl border border-line-strong bg-card shadow-2xl"
+      className="fixed bottom-20 left-1/2 z-toast w-[min(92vw,26rem)] -translate-x-1/2 overflow-hidden rounded-xl border border-line-strong bg-card shadow-2xl"
     >
       <div className="flex items-center justify-between gap-3 px-3 py-2.5">
         <div className="min-w-0">

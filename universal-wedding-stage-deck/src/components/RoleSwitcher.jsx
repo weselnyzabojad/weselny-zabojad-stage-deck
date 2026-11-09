@@ -63,7 +63,7 @@ export default function RoleSwitcher({ role, onChange, roles = ['mc', 'dj'] }) {
         <div
           role="menu"
           aria-label={t('roles.menuAria')}
-          className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-line bg-card shadow-2xl"
+          className="absolute right-0 z-raised mt-2 w-72 overflow-hidden rounded-xl border border-line bg-card shadow-2xl"
         >
           <div className="border-b border-line px-3 py-2 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
             {t('roles.title')}

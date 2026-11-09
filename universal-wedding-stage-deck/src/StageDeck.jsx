@@ -411,7 +411,7 @@ export default function StageDeck({
       <div
         role="status"
         aria-live="polite"
-        className="fixed bottom-16 left-1/2 z-[70] w-[min(92vw,34rem)] -translate-x-1/2 rounded-lg border border-sky-700 bg-sky-950/95 px-3 py-2 text-center font-mono text-[11px] leading-snug text-sky-100 shadow-2xl"
+        className="fixed bottom-16 left-1/2 z-banner w-[min(92vw,34rem)] -translate-x-1/2 rounded-lg border border-sky-700 bg-sky-950/95 px-3 py-2 text-center font-mono text-[11px] leading-snug text-sky-100 shadow-2xl"
       >
         {cartridgeMessages.join(' ')}
       </div>
@@ -420,7 +420,7 @@ export default function StageDeck({
   const staleBanner = cartridgeStale ? (
     <div
       role="status"
-      className="fixed bottom-3 left-1/2 z-[70] -translate-x-1/2 rounded-lg border border-amber-700 bg-amber-950/95 px-3 py-2 text-center font-mono text-[11px] leading-snug text-amber-100 shadow-2xl"
+      className="fixed bottom-3 left-1/2 z-banner -translate-x-1/2 rounded-lg border border-amber-700 bg-amber-950/95 px-3 py-2 text-center font-mono text-[11px] leading-snug text-amber-100 shadow-2xl"
     >
       {t('app.offlineCartridge')}
     </div>

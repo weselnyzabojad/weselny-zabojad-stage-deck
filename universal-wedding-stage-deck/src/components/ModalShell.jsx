@@ -86,7 +86,7 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-0 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:p-4"
+      className="fixed inset-0 z-modal flex items-center justify-center bg-black/80 p-0 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -104,7 +104,7 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
           type="button"
           onClick={onClose}
           aria-label={t('modal.close')}
-          className="absolute right-3 top-3 z-20 h-10 w-10 rounded-lg border border-line-strong bg-raised text-lg font-bold text-ink transition hover:bg-line"
+          className="absolute right-3 top-3 z-raised h-10 w-10 rounded-lg border border-line-strong bg-raised text-lg font-bold text-ink transition hover:bg-line"
         >
           ✕
         </button>

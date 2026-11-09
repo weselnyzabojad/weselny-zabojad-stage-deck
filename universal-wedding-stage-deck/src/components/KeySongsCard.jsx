@@ -289,7 +289,7 @@ function QrOverlay({ song, onClose, onCopy }) {
       role="dialog"
       aria-modal="true"
       aria-labelledby="key-song-qr-title"
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-modal flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
     >
       <div className="w-full max-w-sm rounded-2xl border border-line bg-card p-5 text-center shadow-2xl">
         <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
@@ -361,7 +361,7 @@ export default function KeySongsCard({ songs = [], tier, timeline = [], activeIn
   return (
     <section
       aria-labelledby="key-songs-title"
-      className="sticky top-0 z-20 rounded-xl border border-alert/40 bg-card p-4 shadow-lg shadow-black/40"
+      className="sticky top-0 z-banner rounded-xl border border-alert/40 bg-card p-4 shadow-lg shadow-black/40"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2

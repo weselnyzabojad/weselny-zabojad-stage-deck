@@ -162,7 +162,7 @@ export default function DjBoothView({
   const wideContent = (
     <div className="flex min-h-dvh flex-col bg-page text-ink antialiased">
       <SkipLink />
-      <div className="sticky top-0 z-30">
+      <div className="sticky top-0 z-banner">
       <TopBarShell
         left={(
           <>

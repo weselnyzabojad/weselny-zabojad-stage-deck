@@ -257,7 +257,7 @@ function PinResult({ result, wedding, publicDeckUrl, onClose }) {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4">
+    <div className="fixed inset-0 z-modal flex items-start justify-center overflow-y-auto bg-black/70 p-4">
       <div className="w-full max-w-3xl rounded-2xl border border-line bg-card p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -838,7 +838,7 @@ function AdminAppContent() {
 
   return (
     <div className="min-h-screen bg-page text-ink">
-      <header className="sticky top-0 z-20 border-b border-line bg-card px-4 py-3">
+      <header className="sticky top-0 z-banner border-b border-line bg-card px-4 py-3">
         {ADMIN_DEMO ? (
           <div className="mx-auto mb-2 max-w-6xl rounded border border-amber-700 bg-amber-950/60 px-3 py-1.5 text-[11px] text-amber-200">
             Demo preview — sample data only. Actions are disabled and nothing is sent to Supabase.

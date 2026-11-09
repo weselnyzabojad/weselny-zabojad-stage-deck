@@ -24,7 +24,7 @@ export default function DevViewSwitcher({
     <aside
       data-testid="dev-view-switcher"
       aria-label="Development view switcher — not for production"
-      className="fixed bottom-20 left-2 z-[100] max-h-[45dvh] w-[calc(100vw-1rem)] max-w-xs overflow-y-auto rounded-xl border border-amber-500/70 bg-amber-950/95 p-2 text-amber-50 shadow-2xl sm:bottom-3 sm:left-3 sm:w-auto sm:max-w-[calc(100vw-1.5rem)] sm:p-2.5"
+      className="fixed bottom-20 left-2 z-toast max-h-[45dvh] w-[calc(100vw-1rem)] max-w-xs overflow-y-auto rounded-xl border border-amber-500/70 bg-amber-950/95 p-2 text-amber-50 shadow-2xl sm:bottom-3 sm:left-3 sm:w-auto sm:max-w-[calc(100vw-1.5rem)] sm:p-2.5"
     >
       <div className="font-mono text-[9px] font-bold uppercase tracking-widest text-amber-300">
         DEV VIEW SWITCHER — not for production
