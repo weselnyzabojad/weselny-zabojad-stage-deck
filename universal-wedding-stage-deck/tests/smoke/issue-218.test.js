@@ -32,7 +32,7 @@ describe('issue #218 DJ VIP guest request bar', () => {
       }),
     );
     expect(html).toContain('Guest requests');
-    expect(html).toMatch(/cloud requests are not configured|connect in production/);
+    expect(html).toMatch(/not configured|request queue connects/);
   });
 
   it('does not render for non-moderator roles', () => {

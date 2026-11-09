@@ -1,7 +1,48 @@
+import { createClient } from '@supabase/supabase-js';
+
 const STATUSES = new Set(['pending', 'accepted', 'declined']);
 
 export function canModerateSongRequests(role) {
   return role === 'mc' || role === 'dj';
+}
+
+// Realtime hint for the joined MC/DJ queue. RLS scopes postgres_changes to the
+// token's wedding, so the listener receives only this room. The caller still
+// refetches authoritative rows; a 30s poll is the fallback when the socket drops.
+export function subscribeSongRequestChanges({
+  config,
+  accessToken,
+  onChange,
+  onStatus = null,
+  channelName = 'song-requests',
+} = {}) {
+  if (!config?.enabled || !config?.url || !config?.anonKey || !accessToken) {
+    return () => {};
+  }
+
+  const client = createClient(config.url, config.anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
+    realtime: { params: { access_token: accessToken } },
+  });
+  client.realtime.setAuth(accessToken);
+
+  const channel = client
+    .channel(`wzsd:${channelName}`)
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'song_requests' },
+      () => onChange?.(),
+    )
+    .subscribe((status) => onStatus?.(status));
+
+  return () => {
+    void client.removeChannel(channel);
+  };
 }
 
 export function normalizeSongRequestRow(row) {
