@@ -103,12 +103,13 @@ describe('issue #463 parallel attractions contract', () => {
   });
 
   it('keeps example, demo and the database surface aligned', async () => {
-    const example = JSON.parse(read('schema/wedding-cartridge.example.json'));
-    expect(example.attractions.map((item) => item.type)).toEqual([
+    const domainExample = JSON.parse(read('schema/domains/attractions.example.json'));
+    expect(domainExample.attractions.map((item) => item.type)).toEqual([
       'PHOTO_BOOTH',
       'GUEST_BOOK',
       'POLAROIDS',
     ]);
+    const example = JSON.parse(read('schema/wedding-cartridge.example.json'));
     expect(await validateCartridge(example)).toEqual([]);
     expect(DEMO_WEDDING.attractions).toHaveLength(3);
     expect(read('supabase/schema.sql')).not.toContain('attractions');
