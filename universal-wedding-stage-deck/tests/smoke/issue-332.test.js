@@ -4,13 +4,14 @@ import { describe, expect, it } from 'vitest';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #332 dev and secondary mobile density', () => {
-  it('keeps the dev switcher inside the narrow viewport above bottom nav', () => {
+  it('hides the dev switcher on phones and keeps it bounded on larger screens', () => {
     const source = read('src/components/DevViewSwitcher.jsx');
-    expect(source).toContain('bottom-20');
+    expect(source).toContain('hidden');
+    expect(source).toContain('sm:block');
+    expect(source).toContain('bottom-3');
     expect(source).toContain('max-h-[45dvh]');
     expect(source).toContain('overflow-y-auto');
     expect(source).toContain('grid-cols-2');
-    expect(source).toContain('sm:bottom-3');
   });
 
   it('keeps dev controls at touch-friendly height', () => {
