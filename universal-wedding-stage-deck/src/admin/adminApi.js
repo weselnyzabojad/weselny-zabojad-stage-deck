@@ -427,6 +427,38 @@ export async function rotatePins(weddingId, roles, pins = null) {
   return callAdmin('rotate_pins', { weddingId, roles, ...(pins ? { pins } : {}) });
 }
 
+export async function listProviders(weddingId) {
+  if (ADMIN_DEMO) return { providers: [] };
+  return callAdmin('list_providers', { weddingId });
+}
+
+export async function upsertProvider(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('provider_upsert');
+    return { provider: payload };
+  }
+  return callAdmin('upsert_provider', payload);
+}
+
+export async function deactivateProvider(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('provider_deactivate');
+    return { ok: true };
+  }
+  return callAdmin('deactivate_provider', { weddingId, id });
+}
+
+export async function deleteProvider(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('provider_delete');
+    return { ok: true };
+  }
+  return callAdmin('delete_provider', { weddingId, id });
+}
+
 export async function revokeSession(jti) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');
