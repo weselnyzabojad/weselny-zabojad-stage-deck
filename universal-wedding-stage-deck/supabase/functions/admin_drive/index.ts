@@ -20,6 +20,7 @@ import {
   createGoogleDriveConnector,
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
+import { encryptSecret, parseSecretMarkers } from '../_shared/speechSecrets.js';
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
 const connector = createGoogleDriveConnector({
@@ -83,7 +84,11 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const action = typeof body?.action === 'string' ? body.action : '';
-    if (!['status', 'metadata', 'list', 'children', 'preview', 'check'].includes(action)) {
+    if (
+      !['status', 'metadata', 'list', 'children', 'preview', 'check', 'parse_speech'].includes(
+        action,
+      )
+    ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
     }
 
@@ -170,6 +175,50 @@ Deno.serve(async (req) => {
         file: source.file,
         kind: source.kind,
         text: source.text,
+        bytes: source.bytes,
+        retrievedAt: source.retrievedAt,
+      });
+    }
+
+    if (action === 'parse_speech') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      if (!weddingId || !speechId) {
+        return json({ error: 'weddingId and speechId are required.' }, 400);
+      }
+      const source = await connector.readSource(fileId);
+      const parsed = parseSecretMarkers(source.text);
+      const masterKey = Deno.env.get('SPEECH_SECRET_MASTER_KEY') ?? '';
+      if (parsed.secrets.length > 0 && !masterKey) {
+        return json(
+          {
+            error: 'Speech secret encryption is not configured.',
+            code: 'speech_secrets_not_configured',
+          },
+          503,
+        );
+      }
+      const redactions = [];
+      for (const secret of parsed.secrets) {
+        redactions.push(
+          await encryptSecret({
+            masterKey,
+            weddingId,
+            speechId,
+            redactionId: secret.id,
+            plaintext: secret.plaintext,
+          }),
+        );
+      }
+      return json({
+        ok: true,
+        action,
+        checkedAt: new Date().toISOString(),
+        file: source.file,
+        kind: source.kind,
+        text: parsed.text,
+        redactions,
+        secretCount: redactions.length,
         bytes: source.bytes,
         retrievedAt: source.retrievedAt,
       });

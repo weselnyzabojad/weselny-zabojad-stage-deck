@@ -363,6 +363,11 @@ export async function previewDriveSource(fileId) {
   return callAdminDrive('preview', { fileId });
 }
 
+export async function importSpeechSource(fileId, { weddingId, speechId } = {}) {
+  if (ADMIN_DEMO) throw new Error('Google Drive import is unavailable in demo mode.');
+  return callAdminDrive('parse_speech', { fileId, weddingId, speechId });
+}
+
 export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
   if (ADMIN_DEMO) return { changed: false, reason: 'unchanged', file: null };
   return callAdminDrive('check', { fileId, expectedVersion, expectedChecksum });

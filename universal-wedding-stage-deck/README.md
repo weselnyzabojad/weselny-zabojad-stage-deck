@@ -205,6 +205,7 @@ Deploy every function the admin and stage roles use:
 ```sh
 supabase functions deploy admin_api
 supabase functions deploy admin_drive
+supabase functions deploy reveal_speech_key
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
 ```
@@ -218,8 +219,13 @@ supabase secrets set \
   SUPABASE_SERVICE_ROLE_KEY=... \
   SUPABASE_JWT_SECRET=... \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=... \
-  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=...
+  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=... \
+  SPEECH_SECRET_MASTER_KEY=...
 ```
+
+`SPEECH_SECRET_MASTER_KEY` is a 32-byte random value used to derive per-speech
+AES-256-GCM keys for redacted speech text. Rotate it only with a re-import of
+affected speeches; `keyVersion` in each redaction supports staged rotation.
 
 For production, `ALLOWED_ORIGIN` must be the deployed admin origin, not only
 localhost. Verify CORS `OPTIONS` responses and the `admin_drive` `status` action.

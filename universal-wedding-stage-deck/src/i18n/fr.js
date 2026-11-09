@@ -666,6 +666,10 @@ const fr = {
   'speaker.nowSpeaking': 'Au micro',
   'speaker.scriptMissingTitle': 'Script pas encore fourni',
   'speaker.scriptMissingBody': 'Vérifiez avec le MC ; le texte peut encore être ajouté au cartridge.',
+  'speaker.unlockScript': 'Déverrouiller le discours',
+  'speaker.revealSecret': 'Révéler',
+  'speaker.hideSecret': 'Masquer les secrets',
+  'speaker.unlockError': 'Impossible de déchiffrer ce discours.',
   'speaker.footer': 'Script en lecture seule · seul le discours assigné est affiché · aucun contrôle de timeline',
 };
 

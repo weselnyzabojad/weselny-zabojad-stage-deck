@@ -3453,6 +3453,9 @@ This is not zero-knowledge: the Edge Function and admin owner (AAL2) are trusted
 A passphrase-based zero-knowledge variant can be added later on the same
 redaction schema without changing the cartridge shape.
 
-Tracked by
-[#602](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/602),
-blocked by #591 and #598.
+Shipped in
+[#602](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/602):
+`parse_speech` runs in `admin_drive`, `reveal_speech_key` returns a per-speech
+key only to a valid speaker role session, and `SpeakerView` decrypts locally with
+a non-exportable `CryptoKey` cached in IndexedDB. Set the
+`SPEECH_SECRET_MASTER_KEY` Edge secret and deploy `reveal_speech_key`.

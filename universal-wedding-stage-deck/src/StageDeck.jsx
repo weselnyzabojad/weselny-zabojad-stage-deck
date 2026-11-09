@@ -582,6 +582,7 @@ export default function StageDeck({
             clock={driftReport.clock}
             speechMode={speechMode}
             speechCount={speeches.length}
+            accessToken={sessionValid ? roleSession?.token ?? null : null}
             activeSpeech={speakerSpeech}
             activeSpeechId={liveState.active_speech_id}
             fromCache={!activeSpeech && Boolean(speakerSpeech)}
