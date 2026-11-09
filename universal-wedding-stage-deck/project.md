@@ -3288,3 +3288,32 @@ Notes:
 - Each sub-schema uses draft 2020-12 and is registered with the browser, Node and
   Edge validators (mirrored to `supabase/functions/_shared/domains/`), with the
   byte-identical Edge schema copy regenerated.
+
+## 17. Additional domain schemas & legacy-block assessment (decision, 2026-11-09)
+
+### 17.1 `cake`, `musicPolicy`, `demographics`
+
+Three more cartridge blocks are extracted into dedicated domain schemas under
+`schema/domains/`, `$ref`'d from `schema/wedding-schema-v1.1.json`, with their
+blocks removed from `wedding-cartridge.example.json` and mirrored to the Edge
+validator. These are the Google Doc → JSON mapping contracts.
+
+| Domain | Schema file | Issue |
+| --- | --- | --- |
+| cake | `schema/domains/cake.json` | [#582](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/582) |
+| musicPolicy | `schema/domains/music-policy.json` | [#584](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/584) |
+| demographics | `schema/domains/demographics.json` | [#585](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/585) |
+
+### 17.2 Can we safely delete `mediaTeam`, `contentCreators`, `coHosts`, `preWeddingTodos`?
+
+| Block | Safe to delete? | Why |
+| --- | --- | --- |
+| `coHosts` | **Yes** | Deprecated; dropped on load by `cartridgeStorage` → `dropDeprecatedCartridgeFields`; not rendered. |
+| `contentCreators` | **Yes** | Same as `coHosts`. |
+| `mediaTeam` | **No** | Actively used by `GroupPhotoChecklist`, `PhotographerView`, `resolveOczepiny` (winner-photo timing) and the Doc `MEDIA TEAM` mapping. |
+| `preWeddingTodos` | **Yes, with confirmation** | Imported and seeds `buildInitialLiveState.checked_subtasks`, but no UI renders it (the MC Pre-wedding Checklist card was removed in #202); removal also drops the Doc `## PRE-WEDDING TODOS` mapping. |
+
+The removal is tracked by
+[#583](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/583)
+(`coHosts` + `contentCreators` now; `preWeddingTodos` pending owner confirmation;
+`mediaTeam` explicitly kept).
