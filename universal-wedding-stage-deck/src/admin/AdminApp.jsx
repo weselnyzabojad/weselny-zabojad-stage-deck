@@ -36,6 +36,7 @@ import {
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminDrivePanel from './AdminDrivePanel';
+import AdminServiceProviders from './AdminServiceProviders';
 import { AdminPublishRevisionDialog } from './AdminDialogs';
 
 // Inlined so production builds drop the demo banner and never reference it.
@@ -1101,6 +1102,10 @@ function AdminAppContent() {
                     rev {Number(wedding.cartridge_revision ?? 0)} · updated {formatAdminTime(wedding.updated_at)} · expires {formatAdminTime(wedding.expires_at)}
                     {wedding.cartridge_published_at ? ` · published ${formatAdminTime(wedding.cartridge_published_at)}` : ''}
                   </div>
+                  <AdminServiceProviders
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                  />
                 </article>
               ))}
             </div>

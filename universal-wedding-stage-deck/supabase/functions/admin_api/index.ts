@@ -87,6 +87,77 @@ function randomPin() {
   return String(100000 + value);
 }
 
+const PROVIDER_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'other']);
+const PROVIDER_ROLE_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager']);
+
+function cleanProviderField(value: unknown, max = 200) {
+  if (value == null) return null;
+  if (typeof value !== 'string') return null;
+  const text = value.trim();
+  return text ? text.slice(0, max) : null;
+}
+
+function normalizeProviderPayload(body: any) {
+  const category = typeof body?.category === 'string' ? body.category.trim().toLowerCase() : '';
+  if (!PROVIDER_CATEGORIES.has(category)) return { error: 'Choose a valid provider category.' };
+
+  const firstName = cleanProviderField(body?.firstName, 120);
+  const lastName = cleanProviderField(body?.lastName, 120);
+  if (!firstName || !lastName) return { error: 'First and last name are required.' };
+
+  const email = cleanProviderField(body?.email, 200);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { error: 'Enter a valid email address.' };
+  }
+
+  const functionLabel = cleanProviderField(body?.functionLabel, 120);
+  if (category === 'other' && !functionLabel) {
+    return { error: 'A function label is required for Other providers.' };
+  }
+
+  return {
+    provider: {
+      category,
+      function_label: category === 'other' ? functionLabel : null,
+      first_name: firstName,
+      last_name: lastName,
+      phone: cleanProviderField(body?.phone, 60),
+      email,
+      address: cleanProviderField(body?.address, 300),
+      instagram: cleanProviderField(body?.instagram, 200),
+      active: body?.active === false ? false : true,
+    },
+  };
+}
+
+async function requireWritableWedding(admin: any, weddingId: string) {
+  const { data, error } = await admin
+    .from('weddings')
+    .select('wedding_id, archived_at')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { error: 'Wedding not found.', status: 404 };
+  if (data.archived_at) return { error: 'Archived weddings are read-only.', status: 409 };
+  return { wedding: data };
+}
+
+async function assertProviderCategoryFree(admin: any, weddingId: string, category: string, id?: string) {
+  if (!PROVIDER_ROLE_CATEGORIES.has(category)) return null;
+  let query = admin
+    .from('wedding_service_providers')
+    .select('id')
+    .eq('wedding_id', weddingId)
+    .eq('category', category)
+    .limit(1);
+  if (id) query = query.neq('id', id);
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data?.length ?? 0) > 0
+    ? `A ${category} provider already exists for this wedding.`
+    : null;
+}
+
 function pinFor(role: string, requestedPins: Record<string, unknown> | null | undefined) {
   const requested = requestedPins?.[role];
   return typeof requested === 'string' && /^\d{6}$/.test(requested) ? requested : randomPin();
@@ -619,6 +690,129 @@ Deno.serve(async (req) => {
         jti,
         role: session.role,
         deviceId: session.device_id,
+      });
+      return json({ ok: true });
+    }
+
+    if (action === 'list_providers') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const { data, error } = await admin
+        .from('wedding_service_providers')
+        .select('*')
+        .eq('wedding_id', weddingId)
+        .order('category', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return json({ providers: data ?? [] });
+    }
+
+    if (action === 'upsert_provider') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+
+      const normalized = normalizeProviderPayload(body);
+      if (normalized.error) return json({ error: normalized.error }, 400);
+
+      const id = typeof body?.id === 'string' && body.id.trim() ? body.id.trim() : null;
+      let before = null;
+      if (id) {
+        const { data, error } = await admin
+          .from('wedding_service_providers')
+          .select('*')
+          .eq('id', id)
+          .eq('wedding_id', weddingId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) return json({ error: 'Provider not found.' }, 404);
+        before = data;
+      }
+
+      const conflict = await assertProviderCategoryFree(
+        admin,
+        weddingId,
+        normalized.provider.category,
+        id ?? undefined,
+      );
+      if (conflict) return json({ error: conflict }, 409);
+
+      const query = id
+        ? admin
+            .from('wedding_service_providers')
+            .update(normalized.provider)
+            .eq('id', id)
+            .eq('wedding_id', weddingId)
+        : admin
+            .from('wedding_service_providers')
+            .insert({ wedding_id: weddingId, ...normalized.provider });
+      const { data, error } = await query.select('*').single();
+      if (error) throw error;
+
+      await writeAudit(admin, allowlisted, 'provider_upsert', weddingId, {
+        providerId: data.id,
+        before,
+        after: data,
+      });
+      return json({ provider: data });
+    }
+
+    if (action === 'deactivate_provider') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Provider id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_service_providers')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Provider not found.' }, 404);
+      const { data, error } = await admin
+        .from('wedding_service_providers')
+        .update({ active: false })
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'provider_deactivate', weddingId, {
+        providerId: id,
+        before,
+        after: data,
+      });
+      return json({ provider: data });
+    }
+
+    if (action === 'delete_provider') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Provider id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_service_providers')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Provider not found.' }, 404);
+      const { error } = await admin
+        .from('wedding_service_providers')
+        .delete()
+        .eq('id', id)
+        .eq('wedding_id', weddingId);
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'provider_delete', weddingId, {
+        providerId: id,
+        before,
       });
       return json({ ok: true });
     }
