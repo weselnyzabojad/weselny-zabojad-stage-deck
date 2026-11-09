@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/cultural-rules.json",
+  "title": "Cultural rules domain",
+  "description": "Sto Lat, Gorzko and Bread & Salt decisions mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "culturalRules": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "sto_lat": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        },
+        "gorzko": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        },
+        "bread_salt": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string"
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status"
+          ]
+        }
+      },
+      "required": [
+        "sto_lat",
+        "gorzko",
+        "bread_salt"
+      ]
+    }
+  },
+  "required": [
+    "culturalRules"
+  ]
+}

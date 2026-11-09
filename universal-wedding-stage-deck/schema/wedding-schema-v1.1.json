@@ -12,7 +12,6 @@
     "date",
     "syncPin",
     "hostingMode",
-    "culturalRules",
     "steps"
   ],
   "properties": {
@@ -65,24 +64,7 @@
       "description": "Optional demo/seed drift. Live drift is always computed from actual timestamps."
     },
     "culturalRules": {
-      "type": "object",
-      "required": [
-        "sto_lat",
-        "gorzko",
-        "bread_salt"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "sto_lat": {
-          "$ref": "#/$defs/stoLatRule"
-        },
-        "gorzko": {
-          "$ref": "#/$defs/gorzkoRule"
-        },
-        "bread_salt": {
-          "$ref": "#/$defs/breadSaltRule"
-        }
-      }
+      "$ref": "https://weselnyzabojad.example/schemas/domains/cultural-rules.json#/properties/culturalRules"
     },
     "coHosts": {
       "type": "array",
