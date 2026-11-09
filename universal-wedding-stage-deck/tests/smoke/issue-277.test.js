@@ -8,16 +8,11 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 const wedding = { childrenExpected: true };
 
 describe('issue #277 children expected badge', () => {
-  it('shows for MC and all media roles only when true', () => {
-    for (const role of ['photo1', 'photo2', 'video']) {
-      expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role }))).toContain('Children');
+  it('renders a state indicator for every role regardless of the boolean', () => {
+    for (const role of ['photo1', 'photo2', 'video', 'mc', 'dj']) {
+      expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role }))).toContain('Children expected');
     }
-    expect(
-      renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'mc', allowMc: true })),
-    ).toContain('Children');
-    expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'mc' }))).toBe('');
-    expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: false }, role: 'mc' }))).toBe('');
-    expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding, role: 'dj' }))).toBe('');
+    expect(renderToStaticMarkup(createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: false }, role: 'mc' }))).toContain('Children not expected');
   });
 
   it('adds the schema and Google Doc boolean', () => {

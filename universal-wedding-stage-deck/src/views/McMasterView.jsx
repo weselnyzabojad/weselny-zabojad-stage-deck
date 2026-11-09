@@ -462,9 +462,7 @@ export default function McMasterView({ model }) {
         center={(
           <ChildrenExpectedBadge
             wedding={WEDDING}
-            role={currentRole}
             inline
-            allowMc
           />
         )}
         right={(
@@ -584,9 +582,6 @@ export default function McMasterView({ model }) {
       speechMode={speechMode}
       activeSpeechId={liveState.active_speech_id}
       viewSwitch={viewSwitch}
-      childrenExpected={childrenExpected}
-      childrenRole={currentRole}
-      allowMcChildren
     >
       {compactContent}
     </RoleShell>

@@ -1,20 +1,19 @@
 import babyIcon from '../assets/icons/baby.svg?raw';
-import { isMediaRole } from '../lib/roles.js';
 import { useI18n } from '../i18n/useI18n';
 
-// Global, read-only reminder for roles that work the floor with children.
+// Permanent read-only state indicator for children at the wedding. Red means
+// children are expected; green means they are not. Shown in every stage role.
 export default function ChildrenExpectedBadge({
   wedding,
-  role,
   inline = false,
   compact = false,
-  allowMc = false,
 }) {
   const { t } = useI18n();
-  if (wedding?.childrenExpected !== true) return null;
-  if (!isMediaRole(role) && !(allowMc && role === 'mc')) return null;
-
-  const label = t('children.expectedBadge');
+  const expected = wedding?.childrenExpected === true;
+  const label = t(expected ? 'children.expectedBadge' : 'children.notExpectedBadge');
+  const tone = expected
+    ? 'border-red-600 bg-red-950/95 text-red-100'
+    : 'border-emerald-600 bg-emerald-950/95 text-emerald-100';
 
   if (compact) {
     return (
@@ -22,7 +21,7 @@ export default function ChildrenExpectedBadge({
         role="status"
         aria-label={label}
         title={label}
-        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-amber-600 bg-amber-950/95 p-1.5 text-amber-100"
+        className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border p-1.5 ${tone}`}
       >
         <span
           aria-hidden="true"
@@ -36,10 +35,12 @@ export default function ChildrenExpectedBadge({
   return (
     <div
       role="status"
+      aria-label={label}
+      title={label}
       className={
         inline
-          ? 'inline-flex items-center gap-1.5 rounded-lg border border-amber-600 bg-amber-950/95 px-2.5 py-1 text-[10px] font-semibold text-amber-100'
-          : 'fixed bottom-3 right-3 z-banner flex items-center gap-2 rounded-lg border border-amber-600 bg-amber-950/95 px-3 py-2 text-xs font-semibold text-amber-100 shadow-2xl'
+          ? `inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[10px] font-semibold ${tone}`
+          : `fixed bottom-3 right-3 z-banner flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold shadow-2xl ${tone}`
       }
     >
       <span aria-hidden="true" className="text-base">🧒</span>

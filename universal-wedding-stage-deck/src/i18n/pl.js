@@ -44,6 +44,7 @@ const pl = {
   'roles.fixed': 'Rola jest stała na tym urządzeniu',
 
   'children.expectedBadge': 'Dzieci będą obecne',
+  'children.notExpectedBadge': 'Dzieci nie będą obecne',
   'common.wedding': 'Wesele',
   'common.retry': 'Ponów',
   'common.unknown': 'Nieznane',

@@ -44,6 +44,7 @@ const en = {
   'roles.fixed': 'Role is fixed on this device',
 
   'children.expectedBadge': 'Children expected',
+  'children.notExpectedBadge': 'Children not expected',
   'common.wedding': 'Wedding',
   'common.retry': 'Retry',
   'common.unknown': 'Unknown',
