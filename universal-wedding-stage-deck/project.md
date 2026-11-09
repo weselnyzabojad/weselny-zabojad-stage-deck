@@ -3337,6 +3337,7 @@ Notes:
   only a minimal valid steps sample so it still passes `validate:schema`.
 - `speeches` is optional and is removed from the cartridge example. Each
   speech may also carry `script.sourceDoc` (link + Drive metadata); see §17.6.
+  Each speaker may carry an admin-managed `email`; see §17.7.
 - `speechMode` stays a top-level cartridge field (sibling of `speeches`); only
   schema ownership moves into the speeches domain. [#593](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/593)
   is blocked by #591.
@@ -3406,3 +3407,18 @@ Tracked by
 [#598](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/598),
 blocked by the `speeches` schema extraction
 ([#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591)).
+
+### 17.7 Speaker email is admin-managed (decision, 2026-11-09)
+
+Each speech's `speaker` object may carry an optional `email`. It is contact
+metadata for the admin surface:
+
+- added and edited on the admin page;
+- **never** mapped from the Google Doc and never overwritten by a Doc import or
+  re-import;
+- not rendered on stage role views;
+- optional, so older cartridges without it still validate.
+
+The schema field lives in the speeches domain. Tracked by
+[#600](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/600),
+blocked by #591.
