@@ -63,7 +63,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
   const errorText = error?.key ? t(error.key) : error?.text ?? '';
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-ink select-none">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-page px-4 py-8 font-body text-ink">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(0,35,149,0.45),transparent_55%),radial-gradient(circle_at_90%_100%,rgba(237,41,57,0.18),transparent_50%)]" />
 
       <div className="absolute right-4 top-4 z-10 flex items-center gap-2">

@@ -416,7 +416,7 @@ export default function PhotographerView({
   );
 
   const wideContent = (
-    <div className="flex min-h-screen flex-col bg-page text-ink antialiased select-none">
+    <div className="flex min-h-screen flex-col bg-page text-ink antialiased">
       <SkipLink />
       <TopBarShell
         left={(
