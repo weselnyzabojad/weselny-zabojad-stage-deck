@@ -34,7 +34,7 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
           <button
             type="button"
             onClick={onUndo}
-            className="rounded border border-brand-strong bg-brand px-2.5 py-1 text-[11px] font-bold text-on-accent transition hover:bg-brand-hover"
+            className="min-h-11 min-w-11 rounded border border-brand-strong bg-brand px-2.5 py-1 text-[11px] font-bold text-on-accent transition hover:bg-brand-hover"
           >
             {t('toast.undo')}
           </button>
@@ -42,7 +42,7 @@ export default function UndoToast({ toast, onUndo, onDismiss, durationMs = 5000 
             type="button"
             onClick={onDismiss}
             aria-label={t('toast.dismiss')}
-            className="rounded border border-line bg-raised px-2 py-1 text-[11px] text-ink transition hover:bg-line"
+            className="min-h-11 min-w-11 rounded border border-line bg-raised px-2 py-1 text-[11px] text-ink transition hover:bg-line"
           >
             ✕
           </button>

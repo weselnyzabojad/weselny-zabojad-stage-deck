@@ -93,7 +93,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                     <button
                       type="button"
                       onClick={() => onSelect(active ? null : speech.id)}
-                      className={`rounded border px-2 py-1 text-[10px] font-semibold transition ${
+                      className={`min-h-11 rounded border px-3 py-2 text-[10px] font-semibold transition ${
                         active
                           ? 'border-alert/60 bg-alert/20 text-alert-tint hover:bg-alert/30'
                           : 'border-brand-strong bg-brand/40 text-ink hover:bg-brand/60'

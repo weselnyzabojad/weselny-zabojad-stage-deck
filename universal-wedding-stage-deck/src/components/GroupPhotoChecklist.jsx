@@ -36,7 +36,7 @@ export function buildGroupPhotoItems(groups = []) {
 function ChecklistRow({ item, checked, onToggle }) {
   return (
     <label
-      className={`flex cursor-pointer items-start gap-3 rounded border p-2 transition ${
+      className={`flex min-h-11 cursor-pointer items-start gap-3 rounded border p-2 transition ${
         checked
           ? 'border-brand/40 bg-brand/20 text-muted'
           : 'border-line bg-card text-ink hover:border-line-strong'
@@ -46,7 +46,7 @@ function ChecklistRow({ item, checked, onToggle }) {
         type="checkbox"
         checked={checked}
         onChange={() => onToggle?.(item.key)}
-        className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-700 bg-page"
+        className="mt-0.5 h-6 w-6 shrink-0 rounded border-slate-700 bg-page"
       />
       <span className="min-w-0 flex-1">
         <span className={`block text-sm ${checked ? 'line-through' : ''}`}>{item.label}</span>

@@ -178,7 +178,7 @@ export default function McMasterView({ model }) {
           type="button"
           onClick={handleUndo}
           disabled={!canUndo}
-          className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
+          className={`min-h-12 px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
         >
           ↩ {t('mc.step.undo')}
         </button>
@@ -187,7 +187,7 @@ export default function McMasterView({ model }) {
           disabled={isComplete}
           label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
           holdLabel={t('mc.step.holdHint')}
-          className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
+          className={`min-h-12 flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
       {script ? (
@@ -314,13 +314,13 @@ export default function McMasterView({ model }) {
               return (
                 <label
                   key={task}
-                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-muted' : 'bg-card border border-line text-ink hover:border-line-strong'}`}
+                  className={`flex min-h-11 items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-muted' : 'bg-card border border-line text-ink hover:border-line-strong'}`}
                 >
                   <input
                     type="checkbox"
                     checked={checked}
                     onChange={() => toggleSubtask(task)}
-                    className="w-4 h-4 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
+                    className="h-6 w-6 shrink-0 rounded bg-page border-slate-700 focus:ring-brand"
                   />
                   <span className={`text-sm ${checked ? 'line-through' : ''}`}>{task}</span>
                   {checked ? (
@@ -376,7 +376,7 @@ export default function McMasterView({ model }) {
           ? 'Sign out of this role'
           : 'Paired room PIN — click to forget this device'
       }
-      className="text-muted hover:text-ink transition"
+      className="inline-flex min-h-11 items-center text-muted hover:text-ink transition"
     >
       {IS_PRODUCTION ? (
         <>
@@ -503,7 +503,7 @@ export default function McMasterView({ model }) {
               swapBlock ??
               (nextEntry ? `Swap ${currentStep?.title} with ${nextEntry.step.title}` : "No next step to swap")
             }
-            className={`${CONTROL_BUTTON_BASE} ${
+            className={`${CONTROL_BUTTON_BASE} min-h-11 ${
               !nextEntry || swapBlock
                 ? CONTROL_BUTTON_DISABLED
                 : "bg-raised hover:bg-line border-line-strong text-ink"
@@ -535,7 +535,7 @@ export default function McMasterView({ model }) {
             onClick={handleUndo}
             disabled={!canUndo}
             title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
-            className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
+            className={`min-h-12 px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
           >
             ↩ {t('mc.step.undo')}
           </button>
@@ -544,7 +544,7 @@ export default function McMasterView({ model }) {
             disabled={isComplete}
             label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
             holdLabel={t('mc.step.holdHint')}
-            className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent shadow-lg shadow-blue-950/60 border-brand-strong'}`}
+            className={`min-h-12 px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent shadow-lg shadow-blue-950/60 border-brand-strong'}`}
           />
         </div>
 
