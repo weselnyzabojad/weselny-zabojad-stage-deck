@@ -62,11 +62,43 @@ export function buildSongRequestUrl({ origin = '', baseUrl = '/', roomCode } = {
   return `${base}${path}`;
 }
 
+export function normalizeGuestDeviceId(value) {
+  if (typeof value !== 'string') return null;
+  const id = value.trim();
+  return /^[A-Za-z0-9-]{8,64}$/.test(id) ? id : null;
+}
+
+function retryAfter(data) {
+  const seconds = Number(data?.retryAfterSeconds ?? data?.retry_after_seconds);
+  const minutes = Number(data?.retryAfterMinutes ?? data?.retry_after_minutes);
+  if (Number.isFinite(minutes) && minutes > 0) return Math.ceil(minutes);
+  if (Number.isFinite(seconds) && seconds > 0) return Math.ceil(seconds / 60);
+  return null;
+}
+
+export async function probeSongRequestService({
+  config,
+  fetchImpl = globalThis.fetch,
+} = {}) {
+  if (!config?.enabled || !config?.functionsUrl || typeof fetchImpl !== 'function') {
+    return false;
+  }
+  try {
+    const response = await fetchImpl(`${config.functionsUrl}/submit_song_request`, {
+      method: 'OPTIONS',
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
 export async function submitSongRequest({
   config,
   roomCode,
   song,
   artist,
+  deviceId = null,
   fetchImpl = globalThis.fetch,
 } = {}) {
   const code = normalizeRoomCode(roomCode);
@@ -93,6 +125,7 @@ export async function submitSongRequest({
         roomCode: code,
         song: input.value.song,
         artist: input.value.artist,
+        ...(normalizeGuestDeviceId(deviceId) ? { device_id: normalizeGuestDeviceId(deviceId) } : {}),
       }),
     });
 
@@ -104,6 +137,20 @@ export async function submitSongRequest({
     }
 
     if (!response.ok) {
+      if (response.status === 429) {
+        const minutes = retryAfter(data);
+        if (minutes) {
+          return {
+            ok: false,
+            code: 'cooldown',
+            retryAfterMinutes: minutes,
+            error:
+              typeof data?.error === 'string' && data.error.trim()
+                ? data.error.trim()
+                : 'Please wait before sending another request.',
+          };
+        }
+      }
       return {
         ok: false,
         error:
@@ -113,7 +160,9 @@ export async function submitSongRequest({
       };
     }
 
-    return { ok: true };
+    const requestId =
+      data?.requestId ?? data?.request_id ?? data?.request?.id ?? data?.id ?? null;
+    return requestId ? { ok: true, requestId: String(requestId) } : { ok: true };
   } catch {
     return {
       ok: false,
