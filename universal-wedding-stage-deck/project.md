@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `5f36901` (persisted game results and 2026-11-09 UI follow-ups)
+**Aligned with:** `master` @ `d1f9d4a` (2026-11-09 UI follow-ups delivered)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -73,9 +73,7 @@ sections below and in git history.
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
-| [#523](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/523) | Speaker: remove Children expected UI | Implementation |
-| [#524](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/524) | MC: correct the LATE pill value | Bug fix |
-| [#525](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/525) | MC: remove MC Cues on Test Wiedzy/Test Zgodności steps | Implementation |
+| [#530](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/530) | MC games card: use the game name as the heading | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -105,6 +103,8 @@ The game concept rework is catalogued in
 [game concept rework](#game-concept-rework-decision-2026-11-08).
 The 2026-11-09 Speaker/LATE/MC Cues corrections are catalogued in
 [Speaker, LATE and game-step Cues](#speaker-late-and-game-step-cues-decision-2026-11-09).
+The MC game-card heading correction is catalogued in
+[MC game card heading](#mc-game-card-heading-decision-2026-11-09).
 Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -2493,7 +2493,8 @@ Alignment for this review: last aligned 2026-11-08 against `master` @
 `f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
 #77, #80, #245 and #459 stay open. The status column in the historical review
 table above is superseded: #421-#471 (except the optional #459) were delivered
-through PRs #473-#522. The new 2026-11-09 follow-ups are #523-#525.
+through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 is
+the remaining 2026-11-09 follow-up.
 
 ---
 
@@ -2524,6 +2525,20 @@ when the current step's stable \`gameId\` is \`test_wiedzy\` or
 and MC controls; non-game steps keep MC Cues unchanged. Detection is by stable
 ids, never by localized titles.
 ([#525](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/525))
+
+### MC game card heading (decision, 2026-11-09)
+
+The predefined game card must not render a generic **Games** heading with a
+nested **Test Wiedzy** / **Test Zgodności** block. When \`GamesCueCard\` receives
+a single stable \`gameId\`, the cartridge game title is the card heading and the
+inner duplicate title is removed. Test Wiedzy therefore reads **Test Wiedzy**;
+Test Zgodności reads **Test Zgodności**. Question count/status, question preview,
+unavailable state and the Game Clicker launcher stay unchanged.
+
+The generic \`games.title\` heading remains only for the no-\`gameId\` fallback
+that shows multiple lists. No schema, data, parser, clicker, persistence or
+timeline changes.
+([#530](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/530))
 
 ---
 
