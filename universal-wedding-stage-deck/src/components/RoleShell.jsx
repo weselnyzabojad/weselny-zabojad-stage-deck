@@ -40,6 +40,7 @@ export default function RoleShell({
   activeSpeechId = null,
   viewSwitch = null,
   authControl = null,
+  showChildrenExpected = true,
 }) {
   const { t } = useI18n();
   const mediaCompact = useCompact();
@@ -60,7 +61,7 @@ export default function RoleShell({
             <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink">
               {t(`role.${role}.short`)}
             </span>
-            <ChildrenExpectedBadge wedding={wedding} compact />
+            {showChildrenExpected ? <ChildrenExpectedBadge wedding={wedding} compact /> : null}
             <SyncStatusBadge
               status={syncStatus}
               error={syncError}

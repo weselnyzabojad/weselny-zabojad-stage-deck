@@ -47,13 +47,15 @@ describe('issue #451 permanent children state indicator', () => {
       'src/components/DjBoothView.jsx',
       'src/components/PhotographerView.jsx',
       'src/components/VenueManagerView.jsx',
-      'src/components/SpeakerView.jsx',
     ]) {
       expect(read(file), file).toContain('<ChildrenExpectedBadge');
     }
+    const speaker = read('src/components/SpeakerView.jsx');
+    expect(speaker).not.toContain('<ChildrenExpectedBadge');
+    expect(speaker).toContain('showChildrenExpected={false}');
     const shell = read('src/components/RoleShell.jsx');
-    expect(shell).toContain('<ChildrenExpectedBadge wedding={wedding} compact />');
-    expect(shell).not.toContain('childrenExpected ?');
+    expect(shell).toContain('{showChildrenExpected ? <ChildrenExpectedBadge wedding={wedding} compact /> : null}');
+    expect(shell).toContain('showChildrenExpected = true');
   });
 
   it('localizes the not-expected state', () => {
