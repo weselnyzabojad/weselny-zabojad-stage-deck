@@ -100,7 +100,7 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
           aria-label={t('couple.languages')}
         >
           <span className="inline-flex items-center gap-1 font-heading font-semibold uppercase tracking-[0.18em] text-muted">
-            <span aria-hidden="true">🗣️</span>
+            <span aria-hidden="true" className="shrink-0 text-[13px] leading-none">🗣️</span>
             <span>{t('couple.languages')}</span>
           </span>
           <span aria-hidden="true" className="text-muted">·</span>

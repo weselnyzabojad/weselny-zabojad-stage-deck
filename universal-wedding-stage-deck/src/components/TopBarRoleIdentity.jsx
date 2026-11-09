@@ -19,7 +19,7 @@ export default function TopBarRoleIdentity({ role = 'mc', tier = null, className
       className={`inline-flex items-center gap-1 rounded border border-line bg-raised/60 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink ${className}`}
     >
       {t('roles.role', { short })}
-      <span aria-hidden="true" className="text-[10px]">
+      <span aria-hidden="true" className="shrink-0 text-sm leading-none">
         🔒
       </span>
     </span>

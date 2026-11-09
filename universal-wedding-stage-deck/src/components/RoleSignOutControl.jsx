@@ -22,12 +22,12 @@ export default function RoleSignOutControl({
       {isProduction ? (
         <>
           ROLE: <strong className="text-ink">{String(role).toUpperCase()}</strong>
-          <span className="ml-1 text-[10px]">🔐</span>
+          <span className="ml-1 text-sm">🔐</span>
         </>
       ) : (
         <>
           PIN: <strong className="text-ink">{pin}</strong>
-          <span className="ml-1 text-[10px]">🔓</span>
+          <span className="ml-1 text-sm">🔓</span>
         </>
       )}
     </button>

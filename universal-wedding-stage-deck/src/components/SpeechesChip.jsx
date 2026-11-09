@@ -64,7 +64,7 @@ export default function SpeechesChip({
       title={description}
       className={`flex items-center gap-2 rounded-lg border ${compact ? 'px-2 py-1' : 'px-2.5 py-1.5 items-start'} ${tone.chip} ${className}`}
     >
-      <span aria-hidden="true" className={`text-sm leading-none ${compact ? '' : 'mt-0.5'}`}>
+      <span aria-hidden="true" className={`shrink-0 leading-none ${compact ? 'text-base' : 'text-lg'} ${compact ? '' : 'mt-0.5'}`}>
         🗣️
       </span>
       <div className="min-w-0">
