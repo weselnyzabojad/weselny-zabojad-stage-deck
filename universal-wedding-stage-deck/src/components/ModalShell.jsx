@@ -17,7 +17,7 @@ const FOCUSABLE_SELECTOR = [
 
 // Shared dialog shell: backdrop dismiss, Escape to close, Tab/Shift+Tab focus
 // trap, initial focus on the close button, and focus restored on unmount.
-export default function ModalShell({ open, onClose, labelledBy, size = 'panel', children }) {
+export default function ModalShell({ open, onClose, labelledBy, describedBy, size = 'panel', children }) {
   const { t } = useI18n();
   const closeRef = useRef(null);
   const dialogRef = useRef(null);
@@ -96,6 +96,7 @@ export default function ModalShell({ open, onClose, labelledBy, size = 'panel', 
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
+        aria-describedby={describedBy}
         tabIndex={-1}
         className={`relative flex flex-col overflow-hidden border border-line bg-page shadow-2xl ${SIZES[size] ?? SIZES.panel}`}
       >

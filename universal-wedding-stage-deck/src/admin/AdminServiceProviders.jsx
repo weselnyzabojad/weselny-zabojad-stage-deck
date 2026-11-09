@@ -6,6 +6,7 @@ import {
   upsertProvider,
 } from './adminApi.js';
 import { VIP_DJS } from '../lib/vipDjs.js';
+import { AdminConfirmDialog } from './AdminDialogs';
 
 const CATEGORIES = [
   ['dj', 'DJ'],
@@ -46,6 +47,9 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [accessResult, setAccessResult] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const load = async () => {
     setLoading(true);
@@ -122,17 +126,24 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
     }
   };
 
-  const remove = async (provider) => {
-    if (typeof window !== 'undefined' && !window.confirm(`Delete ${provider.first_name} ${provider.last_name}?`)) {
-      return;
-    }
-    setError('');
+  const remove = (provider) => {
+    setDeleteError('');
+    setDeleteTarget(provider);
+  };
+
+  const confirmRemove = async () => {
+    if (!deleteTarget) return;
+    setDeleteBusy(true);
+    setDeleteError('');
     try {
-      await deleteProvider(wedding.wedding_id, provider.id);
+      await deleteProvider(wedding.wedding_id, deleteTarget.id);
+      setDeleteTarget(null);
       await load();
       onChanged?.();
     } catch (cause) {
-      setError(cause?.message ?? 'Could not delete the provider.');
+      setDeleteError(cause?.message ?? 'Could not delete the provider.');
+    } finally {
+      setDeleteBusy(false);
     }
   };
 
@@ -347,6 +358,28 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
           </div>
         </form>
       ) : null}
+
+      <AdminConfirmDialog
+        open={Boolean(deleteTarget)}
+        title="Delete service provider"
+        description={
+          deleteTarget
+            ? `Delete ${deleteTarget.first_name} ${deleteTarget.last_name}? This removes the contact record and revokes any linked role access. The provider history cannot be restored from the admin UI.`
+            : ''
+        }
+        confirmLabel="Delete provider"
+        tone="danger"
+        requireText={
+          deleteTarget ? `${deleteTarget.first_name} ${deleteTarget.last_name}` : null
+        }
+        busy={deleteBusy}
+        error={deleteError}
+        onConfirm={confirmRemove}
+        onCancel={() => {
+          setDeleteTarget(null);
+          setDeleteError('');
+        }}
+      />
     </details>
   );
 }

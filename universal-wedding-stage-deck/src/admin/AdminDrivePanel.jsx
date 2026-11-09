@@ -14,6 +14,7 @@ import {
 import { googleDocTemplateToCartridge } from '../lib/googleDocCartridge';
 import { diffCartridges } from '../lib/cartridgeDiff';
 import AdminWeddingFolders from './AdminWeddingFolders';
+import { AdminConfirmDialog } from './AdminDialogs';
 
 async function hashSourceText(text) {
   if (typeof crypto === 'undefined' || !crypto.subtle) return null;
@@ -47,6 +48,8 @@ export default function AdminDrivePanel({
   const [checkResult, setCheckResult] = useState(null);
   const [publishBusy, setPublishBusy] = useState(false);
   const [publishError, setPublishError] = useState('');
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [publishWarning, setPublishWarning] = useState('');
 
   const loadSources = useCallback(
     async ({ append = false } = {}) => {
@@ -180,7 +183,7 @@ export default function AdminDrivePanel({
   };
 
   const publishNow = async () => {
-    if (readOnly || !targetWedding || !preview?.cartridge) return;
+    if (readOnly || !targetWedding || !preview?.cartridge) return false;
     setPublishBusy(true);
     setPublishError('');
     try {
@@ -203,9 +206,11 @@ export default function AdminDrivePanel({
       setSelectedId(null);
       setContext(null);
       setTargetWeddingId('');
+      return true;
     } catch (err) {
       setPublishError(err.message ?? 'Could not publish the Drive revision.');
       if (err.status === 409) await selectFile(preview.file);
+      return false;
     } finally {
       setPublishBusy(false);
     }
@@ -216,16 +221,19 @@ export default function AdminDrivePanel({
     const impact = [];
     if (diff.impact.activeStepRemoved) impact.push('the current live step would disappear');
     if (diff.impact.activeSpeechRemoved) impact.push('the active speech would disappear');
-    const warning = impact.length ? `\n\nWarning: ${impact.join(' and ')}.` : '';
-    if (
-      !window.confirm(
-        `Publish a new revision for ${targetWedding.couple || targetWedding.wedding_id}?${warning}`,
-      )
-    ) {
+    setPublishWarning(impact.length ? `Warning: ${impact.join(' and ')}.` : '');
+    setPublishError('');
+    setPublishConfirmOpen(true);
+  };
+
+  const confirmPublish = async () => {
+    if (onRequestMfa) {
+      setPublishConfirmOpen(false);
+      onRequestMfa(publishNow);
       return;
     }
-    if (onRequestMfa) onRequestMfa(publishNow);
-    else void publishNow();
+    const published = await publishNow();
+    if (published) setPublishConfirmOpen(false);
   };
 
   return (
@@ -514,6 +522,19 @@ export default function AdminDrivePanel({
         </div>
       ) : null}
       </section>
+      <AdminConfirmDialog
+        open={publishConfirmOpen}
+        title="Publish Drive revision"
+        description={`Publish a new immutable revision for ${targetWedding?.couple || targetWedding?.wedding_id || 'this wedding'}. ${publishWarning}`.trim()}
+        confirmLabel="Publish revision"
+        busy={publishBusy}
+        error={publishError}
+        onConfirm={confirmPublish}
+        onCancel={() => {
+          setPublishConfirmOpen(false);
+          setPublishError('');
+        }}
+      />
     </>
   );
 }

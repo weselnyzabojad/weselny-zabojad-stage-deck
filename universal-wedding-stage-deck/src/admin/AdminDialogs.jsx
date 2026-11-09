@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import ModalShell from '../components/ModalShell';
 import { challengeExistingFactor } from './adminApi';
 import { roleShort } from '../lib/roles';
 
-function DialogBody({ title, description, children }) {
+function DialogBody({ title, description, titleId = undefined, descriptionId = undefined, children }) {
   return (
     <>
       <div className="border-b border-line px-5 py-4 pr-14">
-        <h2 className="font-heading text-base font-bold text-ink">{title}</h2>
-        {description ? <p className="mt-1 text-xs leading-relaxed text-muted">{description}</p> : null}
+        <h2 id={titleId} className="font-heading text-base font-bold text-ink">{title}</h2>
+        {description ? (
+          <p id={descriptionId} className="mt-1 text-xs leading-relaxed text-muted">{description}</p>
+        ) : null}
       </div>
       <div className="max-h-[55vh] overflow-y-auto px-5 py-4">{children}</div>
     </>
@@ -29,6 +31,8 @@ export function AdminConfirmDialog({
   children,
 }) {
   const [typed, setTyped] = useState('');
+  const titleId = useId();
+  const descriptionId = useId();
 
   useEffect(() => {
     if (open) setTyped('');
@@ -37,8 +41,13 @@ export function AdminConfirmDialog({
   const blocked = Boolean(requireText) && typed !== requireText;
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
-      <DialogBody title={title} description={description}>
+    <ModalShell
+      open={open}
+      onClose={onCancel}
+      labelledBy={titleId}
+      describedBy={description ? descriptionId : undefined}
+    >
+      <DialogBody title={title} description={description} titleId={titleId} descriptionId={descriptionId}>
         {children}
         {requireText ? (
           <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-muted">
