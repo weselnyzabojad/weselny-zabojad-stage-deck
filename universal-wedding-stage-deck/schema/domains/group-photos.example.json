@@ -1,0 +1,11 @@
+{
+  "$schema": "./group-photos.json",
+  "groupPhotos": {
+    "location": "OUTDOOR",
+    "groups": [
+      { "id": "bride_family", "label": "Bride's family" },
+      { "id": "groom_family", "label": "Groom's family" },
+      { "id": "friends", "label": "Friends" }
+    ]
+  }
+}
