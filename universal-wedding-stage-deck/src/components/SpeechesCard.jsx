@@ -1,3 +1,4 @@
+import { useI18n } from '../i18n/useI18n';
 import { formatDuration, resolveEventDateISO, resolveVenueTimeZone } from '../lib/eventTime.js';
 import { speechTiming } from '../lib/speeches.js';
 
@@ -9,14 +10,18 @@ const MODE_CHIPS = {
 
 const FALLBACK_NOW = new Date(0);
 
-function countdownLabel(seconds) {
+function countdownLabel(seconds, t) {
   if (seconds == null) return null;
-  return seconds >= 0 ? `in ${formatDuration(seconds)}` : `${formatDuration(seconds)} ago`;
+  const duration = formatDuration(seconds);
+  return seconds >= 0
+    ? t('speeches.in', { duration })
+    : t('speeches.ago', { duration });
 }
 
 // MC-only speech list. Selecting a row sets `active_speech_id`, which the
 // dedicated speaker device reads to show exactly one script.
 export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, onSelect, clock }) {
+  const { t } = useI18n();
   // No speeches means no below-timeline card at all; the MC top-bar chip still
   // communicates the OFF/no-speech state.
   if (!speeches?.length) return null;
@@ -29,22 +34,19 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
     <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-          🗣️ Speeches
+          🗣️ {t('speeches.title')}
         </h2>
         <span
           className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${
             MODE_CHIPS[mode] ?? MODE_CHIPS.OFF
           }`}
         >
-          {mode}
+          {t(`speeches.mode.${mode}`)}
         </span>
       </div>
 
       {mode === 'OFF' ? (
-        <p className="mt-2 text-xs text-muted">
-          Speeches are off for this wedding. Set <span className="font-mono">speechMode</span> to
-          LIGHT or COMPLEX to enable the speaker view.
-        </p>
+        <p className="mt-2 text-xs text-muted">{t('speeches.offBody')}</p>
       ) : null}
 
       <ol className="mt-2 space-y-2">
@@ -62,7 +64,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="font-mono text-[9px] uppercase tracking-widest text-brand-soft">
-                      #{speech.order} · {speech.mode}
+                      #{speech.order} · {t(`speeches.mode.${speech.mode}`)}
                     </div>
                     <div className="font-heading text-sm font-semibold text-ink">
                       {speech.speaker.name}
@@ -76,16 +78,24 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                       {speech.time ? (
                         <span>
                           {speech.time}
-                          {timing.startsInSec != null ? ` (${countdownLabel(timing.startsInSec)})` : ''}
+                          {timing.startsInSec != null
+                            ? ` (${countdownLabel(timing.startsInSec, t)})`
+                            : ''}
                         </span>
                       ) : null}
-                      {speech.durationMin != null ? <span>{speech.durationMin} min</span> : null}
+                      {speech.durationMin != null ? (
+                        <span>{t('speeches.minutes', { minutes: speech.durationMin })}</span>
+                      ) : null}
                       {speech.mic ? <span>🎙 {speech.mic}</span> : null}
                       {speech.language ? <span>{speech.language}</span> : null}
-                      {speech.readFrom ? <span>Reads {speech.readFrom.toLowerCase()}</span> : null}
+                      {speech.readFrom ? (
+                        <span>{t('speeches.reads', { source: speech.readFrom.toLowerCase() })}</span>
+                      ) : null}
                     </div>
                     {speech.cue ? (
-                      <div className="mt-0.5 text-[10px] text-muted">Cue: {speech.cue}</div>
+                      <div className="mt-0.5 text-[10px] text-muted">
+                        {t('speeches.cue', { cue: speech.cue })}
+                      </div>
                     ) : null}
                   </div>
 
@@ -99,15 +109,15 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                           : 'border-brand-strong bg-brand/40 text-ink hover:bg-brand/60'
                       }`}
                     >
-                      {active ? 'Stop live' : 'Go live'}
+                      {active ? t('speeches.stopLive') : t('speeches.goLive')}
                     </button>
                     {speech.script.ready ? (
                       <span className="rounded border border-emerald-800 bg-emerald-950/60 px-1.5 py-0.5 font-mono text-[9px] text-emerald-300">
-                        Script ready
+                        {t('speeches.scriptReady')}
                       </span>
                     ) : (
                       <span className="rounded border border-amber-800 bg-amber-950/60 px-1.5 py-0.5 font-mono text-[9px] text-amber-200">
-                        Script missing
+                        {t('speeches.scriptMissing')}
                       </span>
                     )}
                     <span
@@ -117,11 +127,11 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                           : 'border-amber-800 bg-amber-950/60 text-amber-200'
                       }`}
                     >
-                      {speech.consent.storeScript ? 'Consent ✓' : 'Consent pending'}
+                      {speech.consent.storeScript ? t('speeches.consent') : t('speeches.consentPending')}
                     </span>
                     {!speech.speakerVisible ? (
                       <span className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 font-mono text-[9px] text-alert-tint">
-                        Speaker hidden
+                        {t('speeches.speakerHidden')}
                       </span>
                     ) : null}
                   </div>
@@ -129,7 +139,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
 
                 {missingComplexScript ? (
                   <p className="mt-1.5 rounded border border-amber-800 bg-amber-950/50 px-1.5 py-1 text-[10px] text-amber-200">
-                    COMPLEX speech has no script yet — add it to the cartridge before the event.
+                    {t('speeches.complexMissing')}
                   </p>
                 ) : null}
               </li>
@@ -138,7 +148,7 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
       </ol>
 
       <p className="mt-2 text-[10px] text-muted">
-        The speaker device only receives the speech that is live here.
+        {t('speeches.footer')}
       </p>
     </section>
   );

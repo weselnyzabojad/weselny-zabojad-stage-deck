@@ -48,7 +48,7 @@ export default function SpeechesChip({
   const activeSpeech = activeSpeechId
     ? list.find((speech) => speech?.id === activeSpeechId) ?? null
     : null;
-  const statusLabel = toneKey === 'live' ? t('speeches.live') : mode;
+  const statusLabel = toneKey === 'live' ? t('speeches.live') : t(`speeches.mode.${mode}`);
   const description = [
     `${t('speeches.chip')}: ${statusLabel}`,
     list.length > 0 ? `${list.length}` : t('speeches.none'),
