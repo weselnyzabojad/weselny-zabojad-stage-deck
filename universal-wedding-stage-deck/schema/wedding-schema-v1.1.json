@@ -87,7 +87,7 @@
       }
     },
     "demographics": {
-      "$ref": "#/$defs/demographics"
+      "$ref": "https://weselnyzabojad.example/schemas/domains/demographics.json#/properties/demographics"
     },
     "musicPolicy": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/music-policy.json#/properties/musicPolicy"
