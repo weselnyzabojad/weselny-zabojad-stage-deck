@@ -1,10 +1,11 @@
 // Supabase Edge Function: submit_song_request
 //
-// Public, room-scoped guest request intake. Guests submit only a song and an
-// artist. The function validates input, rate-limits by hashed IP and room, checks
-// that the room is live, inserts a pending request with the service role, and
-// returns only `{ received: true }`. Guests can never read the queue or wedding
-// data.
+// Public, room-scoped guest request intake. Guests submit a song, an artist and
+// a persistent device correlation id. The function validates input, rate-limits
+// by hashed IP/room as an abuse backstop, enforces a 10-minute per-device
+// cooldown, checks that the room is live, and inserts a pending request with the
+// service role. It returns the request id so the guest view can follow status.
+// Guests can never read the queue or wedding data.
 //
 // Deploy:
 //   supabase functions deploy submit_song_request
@@ -14,10 +15,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
+const DEVICE_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 const MAX_LENGTH = 120;
 const MAX_IP_ATTEMPTS = 8;
 const MAX_ROOM_ATTEMPTS = 120;
 const WINDOW_MS = 10 * 60 * 1000;
+const DEVICE_COOLDOWN_MS = 10 * 60 * 1000;
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
 
@@ -77,9 +80,13 @@ Deno.serve(async (req) => {
       typeof body?.roomCode === 'string' ? body.roomCode.trim().toLowerCase() : '';
     const song = cleanField(body?.song);
     const artist = cleanField(body?.artist);
+    const deviceId = typeof body?.device_id === 'string' ? body.device_id.trim() : '';
 
     if (!ROOM_CODE_PATTERN.test(roomCode) || !song || !artist) {
-      return json({ error: 'Enter both the song and the artist.' }, 400);
+      return json({ code: 'invalid_input', error: 'Enter both the song and the artist.' }, 400);
+    }
+    if (!DEVICE_ID_PATTERN.test(deviceId)) {
+      return json({ code: 'invalid_device', error: 'This device could not be identified.' }, 400);
     }
 
     const admin = createClient(serverEnv('SUPABASE_URL'), serverEnv('SUPABASE_SERVICE_ROLE_KEY'), {
@@ -107,7 +114,10 @@ Deno.serve(async (req) => {
     if (ipError) throw ipError;
     if (roomError) throw roomError;
     if ((ipCount ?? 0) >= MAX_IP_ATTEMPTS || (roomCount ?? 0) >= MAX_ROOM_ATTEMPTS) {
-      return json({ error: 'Too many requests. Please wait a few minutes and try again.' }, 429);
+      return json(
+        { code: 'rate_limited', error: 'Too many requests. Please wait a few minutes and try again.' },
+        429,
+      );
     }
 
     // Count every well-formed attempt, including invalid/expired room codes, so
@@ -122,26 +132,56 @@ Deno.serve(async (req) => {
 
     if (weddingError) throw weddingError;
     if (!wedding) {
-      return json({ error: 'This request link is no longer active.' }, 404);
+      return json({ code: 'inactive_room', error: 'This request link is no longer active.' }, 404);
     }
     if (wedding.archived_at) {
-      return json({ error: 'This request link is no longer active.' }, 410);
+      return json({ code: 'inactive_room', error: 'This request link is no longer active.' }, 410);
     }
     if (wedding.expires_at && Date.parse(wedding.expires_at) < Date.now()) {
-      return json({ error: 'This request link is no longer active.' }, 410);
+      return json({ code: 'inactive_room', error: 'This request link is no longer active.' }, 410);
     }
 
-    const { error: insertError } = await admin.from('song_requests').insert({
-      wedding_id: wedding.wedding_id,
-      song,
-      artist,
-      status: 'pending',
-      source: 'guest_qr',
-    });
+    const { data: recent, error: cooldownError } = await admin
+      .from('song_requests')
+      .select('created_at')
+      .eq('wedding_id', wedding.wedding_id)
+      .eq('device_id', deviceId)
+      .gte('created_at', new Date(Date.now() - DEVICE_COOLDOWN_MS).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (cooldownError) throw cooldownError;
+    if (recent?.created_at) {
+      const elapsedMs = Date.now() - Date.parse(recent.created_at);
+      const retryAfterSeconds = Math.max(1, Math.ceil((DEVICE_COOLDOWN_MS - elapsedMs) / 1000));
+      return json(
+        {
+          code: 'cooldown',
+          retryAfterSeconds,
+          retryAfterMinutes: Math.ceil(retryAfterSeconds / 60),
+          error: 'Please wait before sending another request.',
+        },
+        429,
+      );
+    }
+
+    const { data: inserted, error: insertError } = await admin
+      .from('song_requests')
+      .insert({
+        wedding_id: wedding.wedding_id,
+        song,
+        artist,
+        status: 'pending',
+        source: 'guest_qr',
+        device_id: deviceId,
+      })
+      .select('id')
+      .single();
 
     if (insertError) throw insertError;
 
-    return json({ received: true }, 202);
+    return json({ received: true, requestId: inserted.id }, 202);
   } catch (error) {
     console.error('submit_song_request failed', error);
     return json({ error: 'The request could not be sent. Try again shortly.' }, 500);

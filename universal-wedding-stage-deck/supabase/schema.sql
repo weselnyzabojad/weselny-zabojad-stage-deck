@@ -78,12 +78,20 @@ create table if not exists public.song_requests (
   artist      text not null check (char_length(artist) between 1 and 120),
   status      text not null default 'pending' check (status in ('pending', 'accepted', 'declined')),
   source      text not null default 'guest_qr' check (source in ('guest_qr')),
+  device_id   text check (device_id is null or char_length(device_id) between 8 and 64),
+  played_at   timestamptz,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );
 
 create index if not exists song_requests_queue_idx
   on public.song_requests (wedding_id, status, created_at);
+
+create index if not exists song_requests_device_cooldown_idx
+  on public.song_requests (wedding_id, device_id, created_at desc);
+
+create index if not exists song_requests_queue_state_idx
+  on public.song_requests (wedding_id, status, played_at, created_at);
 
 -- Rate-limit log for submit_song_request. IPs are hashed before insert and this
 -- table has no client policies.
@@ -273,7 +281,7 @@ revoke all on public.song_request_attempts from anon, authenticated;
 grant select, insert, update on public.live_sync_state to authenticated;
 grant select on public.weddings to authenticated;
 grant select on public.song_requests to authenticated;
-grant update (status) on public.song_requests to authenticated;
+grant update (status, played_at) on public.song_requests to authenticated;
 
 grant execute on function public.stage_deck_server_time() to anon, authenticated;
 revoke all on function public.current_wedding_id() from public, anon;

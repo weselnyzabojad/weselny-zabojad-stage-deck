@@ -15,6 +15,8 @@ export function normalizeSongRequestRow(row) {
     song: row.song.trim(),
     artist: row.artist.trim(),
     status: row.status,
+    deviceId: typeof row.device_id === 'string' ? row.device_id : row.deviceId ?? null,
+    playedAt: typeof row.played_at === 'string' ? row.played_at : row.playedAt ?? null,
     createdAt: typeof row.created_at === 'string' ? row.created_at : row.createdAt ?? null,
   };
 }
@@ -52,7 +54,7 @@ export async function fetchSongRequests({
   }
 
   try {
-    const url = `${config.url.replace(/\/+$/, '')}/rest/v1/song_requests?select=id,song,artist,status,created_at&order=created_at.asc&limit=100`;
+    const url = `${config.url.replace(/\/+$/, '')}/rest/v1/song_requests?select=id,song,artist,status,device_id,played_at,created_at&order=created_at.asc&limit=100`;
     const response = await fetchImpl(url, {
       method: 'GET',
       headers: headers(config, accessToken),
@@ -125,3 +127,49 @@ export async function updateSongRequestStatus({
     return { ok: false, error: 'Could not update the request. Check the connection.' };
   }
 }
+
+export async function markSongRequestPlayed({
+  config,
+  accessToken,
+  id,
+  playedAt = new Date().toISOString(),
+  fetchImpl = globalThis.fetch,
+} = {}) {
+  if (!id || !config?.enabled || !config?.url || !accessToken || typeof fetchImpl !== 'function') {
+    return { ok: false, error: 'The guest request queue is not connected.' };
+  }
+
+  try {
+    const url = `${config.url.replace(/\/+$/, '')}/rest/v1/song_requests?id=eq.${encodeURIComponent(id)}&status=eq.accepted&played_at=is.null`;
+    const response = await fetchImpl(url, {
+      method: 'PATCH',
+      headers: headers(config, accessToken, {
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      }),
+      body: JSON.stringify({ played_at: playedAt }),
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+    if (!response.ok) {
+      return {
+        ok: false,
+        error:
+          typeof data?.message === 'string' && data.message.trim()
+            ? data.message.trim()
+            : 'Could not mark the request as played.',
+      };
+    }
+    if (!Array.isArray(data) || data.length === 0) {
+      return { ok: false, error: 'This request was already handled. Refresh the queue.' };
+    }
+    return { ok: true, request: normalizeSongRequestRow(data[0]) };
+  } catch {
+    return { ok: false, error: 'Could not mark the request as played. Check the connection.' };
+  }
+}
+

@@ -129,7 +129,9 @@ describe('issue #148 public guest song requests', () => {
     const fn = read('supabase/functions/submit_song_request/index.ts');
     expect(fn).toContain('MAX_IP_ATTEMPTS');
     expect(fn).toContain('song_request_attempts');
-    expect(fn).toContain('return json({ received: true }, 202)');
+    expect(fn).toContain('received: true');
+    expect(fn).toContain('requestId: inserted.id');
+    expect(fn).toContain('DEVICE_COOLDOWN_MS');
     expect(fn).toContain("status: 'pending'");
     expect(fn).not.toContain('select(*');
 
