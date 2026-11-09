@@ -333,7 +333,69 @@ section that has one.
 
 ---
 
-## 6. Approval gate
+## 6. Canonical step vocabulary & Plan-of-the-day transcription
+
+### 6.1 Canonical step vocabulary
+
+The couple's harmonogram uses free-form, often localized step names
+(`Ceremonia`, `Zaślubiny`, `Msza`, `Ceremony`, `Tort`, `Gâteau`, `Kolacja`,
+`Supper`, …). Transcribe them to a **fixed canonical title** so the app can map
+them deterministically. Detection never matches localized titles — it reads the
+structured flags below.
+
+| Canonical step | Flag / type |
+| --- | --- |
+| Ceremony | `ceremonyType` (`RELIGIOUS` / `CIVIL` / `HUMANIST`) |
+| Vin d'honneur / Cocktail | FLEXIBLE |
+| Bread & Salt | FLEXIBLE |
+| Wishes | `optionalFlag: wishes` |
+| Grand Entrance | `grandEntranceOrder` (`GUESTS_FIRST` / `NEWLYWEDS_FIRST`) |
+| Dinner | FLEXIBLE (speeches attach) + a mandatory kitchen course |
+| First Dance | `firstDanceMode` (`NORMAL` / `FAKE`) |
+| Wedding Cake | HARD_ANCHOR + the `CAKE` section |
+| Dance with Bride and Groom | game step |
+| Supper I / II / III… | mandatory kitchen course (variable-length list) |
+| Test Wiedzy | `optionalFlag: games` |
+| Test Zgodności | `optionalFlag: games` |
+| Oczepiny | `optionalFlag: oczepiny` |
+| Last Dance | FLEXIBLE |
+
+Guest-flow moments (guest check-in, moving to the orangery, taking seats) are
+venue notes, not timeline steps.
+
+### 6.2 Plan-of-the-day transcription
+
+A free-form "Plan of the day" is a list of time blocks with lettered bullets
+(`a.`, `b.`, …). Each block is one step (its hour is the step `Time`); each
+lettered bullet is transcribed to exactly one structured table:
+
+- a **checkable to-do** → a `SUBTASKS` row (`step.subTasks`);
+- an **instruction the MC announces or performs** → an `MC CUES` row
+  (`step.mcCues`);
+- a bullet that begins `Song -` → a `DJ CUES` row (`step.dj.track`).
+
+Never keep the letters in the template; the importer reads only the stable
+tables. Anything that is neither a subtask, a cue nor a song stays as a `Notes`
+cell or a venue-logistics note — it is never dropped silently.
+
+Example (Grand Entrance):
+
+```text
+16:00  Ilona and Adrien Enter the Room
+o. Guests use napkins (serviettes) for an Italian welcome
+   — with explanations of Sto lat in French
+p. Song — ABBA — Gimme! Gimme! Gimme!
+q. Toast and throwing glass behind
+r. Sto lat singing
+```
+
+becomes one `TIMELINE` row titled `Grand Entrance` (16:00), two `SUBTASKS` rows
+(napkin welcome; Sto lat explanation), one `DJ CUES` row (ABBA), and three
+`MC CUES` rows (toast, Sto lat, glass toss).
+
+---
+
+## 7. Approval gate
 
 This template is **not** wired into the v1.1 schema or
 the runtime importer yet. When v1.2 is approved:
