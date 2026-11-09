@@ -321,20 +321,24 @@ input[type="checkbox"] {
 /* Completed-history depth stack (issue #180): the most recent completed step
    sits fully visible, while the second-to-last tucks behind it with reduced
    opacity and scale. Older completed steps are never rendered at all. */
-[data-focus-zone="history"] [data-focus-depth="2"] {
-  margin-top: -1rem;
-  transform: scale(0.95);
-  transform-origin: 50% 0;
-}
-
 /* Upcoming-future depth stack (issue #181): the immediate next step is fully
    visible, while the second-next step layers behind it with the same reduced
    opacity and scale as the second-to-last completed step. Farther-future
    planned steps are never rendered at all. */
-[data-focus-zone="future"] [data-focus-depth="2"] {
-  margin-top: -1rem;
-  transform: scale(0.95);
-  transform-origin: 50% 0;
+/* The overlap and scale are desktop-only (issue #425): compact focus stacks
+   render a plain, non-overlapping list. */
+@media (min-width: 640px) {
+  [data-focus-zone="history"] [data-focus-depth="2"] {
+    margin-top: -1rem;
+    transform: scale(0.95);
+    transform-origin: 50% 0;
+  }
+
+  [data-focus-zone="future"] [data-focus-depth="2"] {
+    margin-top: -1rem;
+    transform: scale(0.95);
+    transform-origin: 50% 0;
+  }
 }
 
 /* MC Stage Rail: independent rail scrolling with soft edge fades on desktop. */

@@ -97,13 +97,16 @@ describe('completed history stack (#180)', () => {
     expect(html).toContain('data-viewport="compact"');
   });
 
-  it('defines the overlap and scale behind the last completed card', () => {
+  it('defines the overlap and scale behind the last completed card on wide layouts', () => {
     const css = read('src/index.css');
 
     expect(css).toContain('[data-focus-zone="history"] [data-focus-depth="2"]');
     expect(css).toContain('margin-top: -1rem');
     expect(css).toContain('scale(0.95)');
     expect(css).toContain('transform-origin: 50% 0');
+    expect(css.indexOf('@media (min-width: 640px)')).toBeLessThan(
+      css.indexOf('[data-focus-zone="history"] [data-focus-depth="2"]'),
+    );
   });
 
   it('keeps the last completed card fully opaque', () => {
