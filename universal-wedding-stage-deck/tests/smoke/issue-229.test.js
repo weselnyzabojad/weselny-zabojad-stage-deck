@@ -30,6 +30,6 @@ describe('issue #229 sunset lifecycle and shared mini-session override', () => {
     expect(photo).toContain('visibility.sunset && !miniSessionDone');
     expect(photo).not.toContain('visibility.sunset && sunset?.usable && !miniSessionDone');
     expect(photo).toContain('MiniSessionOverride');
-    expect(photo).toContain('Save for all media');
+    expect(photo).toContain('photo.saveForAllMedia');
   });
 });

@@ -47,7 +47,7 @@ describe('issue #401 mini-session timeline twin task', () => {
     expect(photo).toContain('resolveMiniSessionTwinStepId');
     expect(photo).toContain('<MiniSessionTwinTask');
     expect(photo).toContain("entry.type !== 'miniSession'");
-    expect(photo).toContain('Unscheduled — choose the hour');
+    expect(photo).toContain('photo.unscheduled');
     expect(read('src/lib/stepDurations.js')).not.toContain('miniSession');
     expect(read('src/lib/driftEngine.js')).not.toContain('miniSession');
   });
