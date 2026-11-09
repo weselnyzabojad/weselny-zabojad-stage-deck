@@ -3402,6 +3402,7 @@ still works offline.
   re-import.
 - Photo/camera-style document sharing still applies: the Doc must be shared with
   the service-account email.
+- Personal spans are redacted and encrypted during the same import; see §17.8.
 
 Tracked by
 [#598](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/598),
@@ -3422,3 +3423,30 @@ metadata for the admin surface:
 The schema field lives in the speeches domain. Tracked by
 [#600](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/600),
 blocked by #591.
+
+### 17.8 Encrypted speech redactions (decision, 2026-11-09)
+
+Speech text can contain personal data. The chosen model is **tokenized selective
+encryption with a speaker-only unlock**:
+
+- Doc authors mark sensitive spans with `{{secret}}...{{/secret}}`.
+- The server import replaces each span with `{{secret:<id>}}` and stores the value
+  only as AES-256-GCM ciphertext in `script.redactions[]`.
+- Per-speech keys are derived with HKDF-SHA256 from a
+  `SPEECH_SECRET_MASTER_KEY` Edge secret. The key never ships in the cartridge.
+- A role-authorized Edge function returns the key only to a valid `speaker` role
+  JWT for the matching wedding. The browser imports it as a non-exportable
+  `CryptoKey` and caches it in IndexedDB, so reveal and offline decryption work
+  after one online unlock.
+- `SpeakerView` renders tokens as masked chips with Unlock / Reveal / Hide. MC
+  and other roles always see masked tokens and never receive keys.
+- The published cartridge, logs and speaker cache contain no plaintext secrets
+  or key material.
+
+This is not zero-knowledge: the Edge Function and admin owner (AAL2) are trusted.
+A passphrase-based zero-knowledge variant can be added later on the same
+redaction schema without changing the cartridge shape.
+
+Tracked by
+[#602](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/602),
+blocked by #591 and #598.
