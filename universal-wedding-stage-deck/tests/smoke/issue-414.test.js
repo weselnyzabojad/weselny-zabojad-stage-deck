@@ -49,7 +49,7 @@ describe('issue #414 one timeline step per game', () => {
 
   it('passes the current game id to the cue card', () => {
     expect(read('src/views/McMasterView.jsx')).toContain(
-      'gameId={currentStep.gameId ?? null}',
+      'gameId={currentStep.gameId}',
     );
   });
 });
