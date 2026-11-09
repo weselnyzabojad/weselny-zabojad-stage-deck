@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react';
+import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/eventTime.js';
 import logo from '../assets/img/logo.png';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
@@ -31,6 +32,40 @@ import { djCapabilities } from '../lib/djCapabilities.js';
 const SongRequestSimulator = import.meta.env.DEV
   ? lazy(() => import('../dev/SongRequestSimulator.jsx'))
   : null;
+
+export function DjSetCountdown({ wedding, clock, nextEntry }) {
+  const { t } = useI18n();
+  if (!nextEntry?.projectedStart) return null;
+
+  const now = clock?.now instanceof Date ? clock.now : new Date();
+  const nextAt = clockToEventDate({
+    clock: nextEntry.projectedStart,
+    eventDateISO: resolveEventDateISO(wedding),
+    timeZone: clock?.timeZone ?? null,
+    after: now,
+  });
+  if (!nextAt) return null;
+
+  const seconds = Math.round((nextAt.getTime() - now.getTime()) / 1000);
+  const urgent = seconds <= 360;
+  return (
+    <div
+      role="timer"
+      aria-live="off"
+      className={`flex w-fit flex-wrap items-center gap-2 rounded-lg border px-2.5 py-1.5 ${
+        urgent
+          ? 'animate-pulse border-alert bg-alert/20 text-alert-soft motion-reduce:animate-none'
+          : 'border-line bg-page/80 text-ink'
+      }`}
+    >
+      <span className="text-[10px] uppercase tracking-wider text-muted">
+        {t('dj.set.nextStepIn')}
+      </span>
+      <span className="font-mono text-lg font-bold">{formatCountdown(seconds)}</span>
+      <span className="text-[10px] text-muted">{nextEntry.step?.title ?? ''}</span>
+    </div>
+  );
+}
 
 // Read-only companion screen for the DJ: projected timeline, playlists, track
 // titles and hard cutoffs only. There are deliberately no step controls, no MC
@@ -67,6 +102,11 @@ export default function DjBoothView({
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
+  const nextEntry =
+    activeIndex >= 0
+      ? timeline.slice(activeIndex + 1).find((entry) => !entry.isDone) ?? null
+      : null;
+  const isDjSet = activeEntry?.step?.optionalFlag === 'dj_set';
   const completedCount = timeline.filter((entry) => entry.isDone).length;
 
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
@@ -91,6 +131,9 @@ export default function DjBoothView({
   // projected timing and booth cues.
   const djCurrentBody = (
     <div className="flex flex-col gap-2">
+      {caps.vip && isDjSet && nextEntry ? (
+        <DjSetCountdown wedding={wedding} clock={clock} nextEntry={nextEntry} />
+      ) : null}
       <div className="flex flex-wrap items-start justify-between gap-2 font-mono">
         <div className="rounded-lg border border-line bg-page/80 p-2">
           <div className="text-[10px] uppercase tracking-wider text-muted">{t('dj.projected')}</div>

@@ -3511,8 +3511,9 @@ to the **next step's projected start**:
 - with `prefers-reduced-motion`, use a static red warning instead of blinking;
 - localized in `en`, `fr` and `pl`.
 
-Tracked by
-[#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614)
-(VIP countdown) and
-[#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616)
-(DJ Standard timeline visibility without the countdown).
+Shipped in
+[#614](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/614):
+the DJ VIP current card shows the next-step countdown during a DJ set, turning
+red and pulsing at 6:00 with a reduced-motion fallback. DJ Standard timeline
+visibility is tracked by
+[#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616).
