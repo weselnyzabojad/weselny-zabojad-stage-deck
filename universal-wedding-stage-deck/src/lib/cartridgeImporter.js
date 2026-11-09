@@ -4,6 +4,7 @@ import firstDanceDomain from '../../schema/domains/first-dance.json';
 import attractionsDomain from '../../schema/domains/attractions.json';
 import culturalRulesDomain from '../../schema/domains/cultural-rules.json';
 import coupleProfileDomain from '../../schema/domains/couple-profile.json';
+import photoPlanDomain from '../../schema/domains/photo-plan.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -21,6 +22,7 @@ async function getValidator() {
       ajv.addSchema(attractionsDomain);
       ajv.addSchema(culturalRulesDomain);
       ajv.addSchema(coupleProfileDomain);
+      ajv.addSchema(photoPlanDomain);
       return ajv.compile(weddingSchema);
     });
   }
