@@ -8,14 +8,14 @@ describe('issue #355 MC Cues children warnings and language tags', () => {
 
   it('adds a warning for cake, entrance and first dance when children are expected', () => {
     expect(mc).toContain('childrenWarningFor(currentStep)');
-    expect(mc).toContain('keep them clear of the cake table');
-    expect(mc).toContain('keep them out of the entrance aisle');
-    expect(mc).toContain('keep them clear of the dancefloor');
+    expect(mc).toContain("'mc.step.childrenCake'");
+    expect(mc).toContain("'mc.step.childrenEntrance'");
+    expect(mc).toContain("'mc.step.childrenDancefloor'");
     expect(mc).toContain('childrenExpected');
   });
 
   it('removes the language suffix and cue-line tags', () => {
-    expect(mc).toContain('🗣️ MC Cues');
+    expect(mc).toContain("t('mc.step.cuesTitle')");
     expect(mc).not.toContain('MC Cues (FR / PL / EN)');
     expect(mc).not.toContain('[FR/PL]');
     expect(mc).not.toContain('>[FR]<');

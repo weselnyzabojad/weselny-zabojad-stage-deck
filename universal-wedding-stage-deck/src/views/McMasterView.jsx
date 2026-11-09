@@ -35,13 +35,13 @@ import { orderSubtasks } from '../lib/subtasks.js';
 function childrenWarningFor(step) {
   const title = String(step?.title ?? '').toLowerCase();
   if (/wedding cake|cake cutting/.test(title)) {
-    return 'Children expected — keep them clear of the cake table and cutting area.';
+    return 'mc.step.childrenCake';
   }
   if (/grand entrance/.test(title)) {
-    return 'Children expected — keep them out of the entrance aisle.';
+    return 'mc.step.childrenEntrance';
   }
   if (/first dance/.test(title)) {
-    return 'Children expected — keep them clear of the dancefloor.';
+    return 'mc.step.childrenDancefloor';
   }
   return null;
 }
@@ -166,11 +166,11 @@ export default function McMasterView({ model }) {
       <span
         className={`w-fit rounded border px-2.5 py-1 font-heading text-xs font-semibold uppercase tracking-wider ${stepTypeClass}`}
       >
-        {currentStep.type.replace('_', ' ')} STEP
+        {t('mc.step.type', { type: currentStep.type.replace('_', ' ') })}
       </span>
       <div className="flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
-        <span>Real start: <strong className="text-white">{realStart}</strong></span>
-        <span>Est. end: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
+        <span>{t('mc.step.realStart')}: <strong className="text-white">{realStart}</strong></span>
+        <span>{t('mc.step.estimatedEnd')}: <strong className="text-white">{estimatedEnd ?? '—'}</strong></span>
       </div>
       {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       {currentStep.firstDanceMode ? (
@@ -191,13 +191,13 @@ export default function McMasterView({ model }) {
           disabled={!canUndo}
           className={`px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
         >
-          ↩ Undo
+          ↩ {t('mc.step.undo')}
         </button>
         <HoldToConfirmButton
           onConfirm={handleAdvance}
           disabled={isComplete}
-          label={isComplete ? 'EVENT COMPLETE ✓' : 'HOLD TO ADVANCE ➔'}
-          holdLabel="hold 1.2s"
+          label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
+          holdLabel={t('mc.step.holdHint')}
           className={`flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white border-brand-strong'}`}
         />
       </div>
@@ -207,10 +207,12 @@ export default function McMasterView({ model }) {
           onClick={() => setOverlay('teleprompter')}
           className="w-full bg-raised hover:bg-line text-slate-200 px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
         >
-          📖 Open teleprompter / script
+          📖 {t('mc.step.openTeleprompter')}
         </button>
       ) : null}
-      <div className="text-xs text-slate-400 font-mono">{completedCount} / {steps.length} completed</div>
+      <div className="text-xs text-slate-400 font-mono">
+        {t('mc.step.completed', { done: completedCount, total: steps.length })}
+      </div>
     </div>
   ) : null;
 
@@ -234,8 +236,12 @@ export default function McMasterView({ model }) {
       {!currentStep ? (
         <div className="bg-card/95 border border-line rounded-xl p-4 text-center">
           <div className="text-4xl mb-2">🎉</div>
-          <div className="text-xs uppercase tracking-widest text-emerald-300 font-semibold">Event complete</div>
-          <div className="text-sm text-slate-400 mt-1">{completedCount} / {steps.length} completed</div>
+          <div className="text-xs uppercase tracking-widest text-emerald-300 font-semibold">
+            {t('mc.step.eventCompleteTitle')}
+          </div>
+          <div className="text-sm text-slate-400 mt-1">
+            {t('mc.step.completed', { done: completedCount, total: steps.length })}
+          </div>
         </div>
       ) : null}
 
@@ -249,22 +255,22 @@ export default function McMasterView({ model }) {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/70 pb-2 text-[11px] text-slate-400">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span>
-            Planned:{' '}
+            {t('mc.step.planned')}:{' '}
             <span className="line-through text-slate-500">
               {currentStep.planned || currentStep.time}
             </span>
           </span>
           <span className="text-slate-600">·</span>
           <span>
-            Real start: <span className="font-mono text-white">{realStart}</span>
+            {t('mc.step.realStart')}: <span className="font-mono text-white">{realStart}</span>
           </span>
           <span className="text-slate-600">·</span>
           <span>
-            Est. end: <span className="font-mono text-white">{estimatedEnd ?? '—'}</span>
+            {t('mc.step.estimatedEnd')}: <span className="font-mono text-white">{estimatedEnd ?? '—'}</span>
           </span>
         </div>
         <span className="font-mono text-[10px] text-slate-500">
-          {completedCount} / {steps.length} completed
+          {t('mc.step.completed', { done: completedCount, total: steps.length })}
         </span>
       </div>
 
@@ -273,13 +279,13 @@ export default function McMasterView({ model }) {
         <div className="bg-page/60 p-3 rounded-lg border border-line">
           <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2 flex items-center space-x-2">
             <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
-            <span>🗣️ MC Cues</span>
+            <span>🗣️ {t('mc.step.cuesTitle')}</span>
           </h3>
           <ul className="space-y-2 text-sm text-slate-300">
             {childrenExpected && childrenWarningFor(currentStep) ? (
               <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
                 <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
-                <span>{childrenWarningFor(currentStep)}</span>
+                <span>{t(childrenWarningFor(currentStep))}</span>
               </li>
             ) : null}
             <li className="flex items-start space-x-2 text-slate-500">
@@ -310,7 +316,9 @@ export default function McMasterView({ model }) {
 
       {stepSubtasks.length > 0 ? (
         <div className="bg-page/70 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">📋 Sub-tasks</h3>
+          <h3 className="text-xs font-heading font-bold text-white uppercase tracking-wider mb-2">
+            📋 {t('mc.step.subtasksTitle')}
+          </h3>
           <div className="space-y-2">
             {orderSubtasks(stepSubtasks, liveState.checked_subtasks).map((task) => {
               const checked = Boolean(liveState.checked_subtasks[task]);
@@ -349,7 +357,7 @@ export default function McMasterView({ model }) {
               onClick={() => setOverlay('teleprompter')}
               className="bg-raised hover:bg-line text-slate-200 px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
             >
-              📖 Open Teleprompter / Script
+              📖 {t('mc.step.openTeleprompter')}
             </button>
           )}
           {isGameStep && game && (
@@ -358,11 +366,11 @@ export default function McMasterView({ model }) {
               onClick={() => setOverlay('game')}
               className="bg-brand/40 hover:bg-brand/70 text-white px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
             >
-              🎮 Game Clicker ({game.items.length} Qs)
+              🎮 {t('mc.step.gameClicker', { count: game.items.length })}
             </button>
           )}
           {!script && !game && (
-            <span className="text-xs text-slate-500 font-mono">No script attached to this step.</span>
+            <span className="text-xs text-slate-500 font-mono">{t('mc.step.noScript')}</span>
           )}
         </div>
       </div>
@@ -540,13 +548,13 @@ export default function McMasterView({ model }) {
             title={canUndo ? `Undo: ${lastUndo?.label ?? 'last action'}` : "Nothing to undo"}
             className={`px-3 py-2.5 rounded-xl text-sm font-heading font-semibold transition border ${!canUndo ? 'bg-card text-slate-600 border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-slate-200 border-line-strong'}`}
           >
-            ↩ Undo
+            ↩ {t('mc.step.undo')}
           </button>
           <HoldToConfirmButton
             onConfirm={handleAdvance}
             disabled={isComplete}
-            label={isComplete ? "EVENT COMPLETE ✓" : "HOLD TO ADVANCE ➔"}
-            holdLabel="hold 1.2s"
+            label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
+            holdLabel={t('mc.step.holdHint')}
             className={`px-6 py-2.5 rounded-xl text-sm font-heading font-bold transition border ${isComplete ? 'bg-card text-slate-500 border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-white shadow-lg shadow-blue-950/60 border-brand-strong'}`}
           />
         </div>

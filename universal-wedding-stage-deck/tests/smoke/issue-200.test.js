@@ -30,7 +30,7 @@ describe('issue #200 MC subtasks rename and ordering', () => {
 
   it('renames the heading and marks completed tasks', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('📋 Sub-tasks');
+    expect(mc).toContain("t('mc.step.subtasksTitle')");
     expect(mc).not.toContain('Catering & Sub-Tasks');
     expect(mc).toContain('orderSubtasks(stepSubtasks');
     expect(mc).toContain('line-through');
