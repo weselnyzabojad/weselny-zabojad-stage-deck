@@ -33,7 +33,7 @@ export default defineConfig({
         theme_color: '#070b19',
         background_color: '#070b19',
         display: 'standalone',
-        orientation: 'landscape',
+        orientation: 'any',
         // Relative URLs make the manifest install from whatever directory serves
         // it: `/` in local/demo mode and `/deck/` in the production deployment.
         // This keeps a single build valid for both without hard-coding a scope.
