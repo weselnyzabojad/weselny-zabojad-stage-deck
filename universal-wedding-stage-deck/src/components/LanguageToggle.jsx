@@ -27,7 +27,7 @@ export default function LanguageToggle({ className = '' }) {
             aria-label={t(`language.${code}`)}
             title={t(`language.${code}`)}
             onClick={() => setLocale(code)}
-            className={`px-1.5 py-1 font-mono text-[10px] font-bold tracking-wide transition ${
+            className={`min-h-11 min-w-11 px-2 py-2 font-mono text-[10px] font-bold tracking-wide transition ${
               index > 0 ? 'border-l border-line' : ''
             } ${
               active

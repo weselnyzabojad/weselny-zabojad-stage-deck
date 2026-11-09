@@ -67,7 +67,7 @@ export default function RoleShell({
             {pin ? (
               <span
                 title="Paired room PIN"
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-ink"
+                className="inline-flex min-h-11 items-center rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-ink"
               >
                 PIN {pin}
               </span>

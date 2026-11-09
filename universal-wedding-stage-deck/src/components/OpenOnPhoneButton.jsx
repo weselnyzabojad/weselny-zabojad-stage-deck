@@ -96,7 +96,7 @@ export default function OpenOnPhoneButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 text-xs font-semibold text-ink transition hover:bg-line ${className}`}
+        className={`inline-flex min-h-11 items-center gap-1.5 rounded border border-line-strong bg-raised px-3 py-2 text-xs font-semibold text-ink transition hover:bg-line ${className}`}
         title={t('openOnPhone.buttonTitle')}
       >
         <PhoneIcon />

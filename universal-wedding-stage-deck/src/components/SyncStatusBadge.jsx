@@ -64,7 +64,7 @@ export default function SyncStatusBadge({ status, error, remoteUpdatedAt, outbox
       aria-atomic="true"
       aria-label={`Sync: ${label}`}
       title={title}
-      className={`inline-flex items-center rounded border px-2.5 py-1 text-xs font-semibold ${tone}`}
+      className={`inline-flex min-h-11 items-center rounded border px-2.5 py-1 text-xs font-semibold ${tone}`}
     >
       Sync
     </span>
