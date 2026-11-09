@@ -30,6 +30,7 @@ import TopBarShell from '../components/TopBarShell';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
+import { isPredefinedGameStep } from '../lib/gameQuestions.js';
 import { resolveEventDateISO, resolveVenueTimeZone } from '../lib/eventTime.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
 import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
@@ -132,6 +133,7 @@ export default function McMasterView({ model }) {
     currentStep &&
       (currentStep.optionalFlag === 'games' || /games/i.test(currentStep.title)),
   );
+  const hideMcCues = isPredefinedGameStep(currentStep);
   const isCakeStep = Boolean(
     currentStep && cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId,
   );
@@ -287,26 +289,28 @@ export default function McMasterView({ model }) {
         timeZone={resolveVenueTimeZone(WEDDING)}
       />
 
-      <div className="grid grid-cols-1 gap-3">
-        {/* MC Cues */}
-        <div className="bg-page/60 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2 flex items-center space-x-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
-            <span>🗣️ {t('mc.step.cuesTitle')}</span>
-          </h3>
-          <ul className="space-y-2 text-sm text-ink">
-            {childrenExpected && childrenWarningFor(currentStep) ? (
-              <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
-                <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
-                <span>{t(childrenWarningFor(currentStep))}</span>
+      {hideMcCues ? null : (
+        <div className="grid grid-cols-1 gap-3">
+          {/* MC Cues */}
+          <div className="bg-page/60 p-3 rounded-lg border border-line">
+            <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2 flex items-center space-x-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
+              <span>🗣️ {t('mc.step.cuesTitle')}</span>
+            </h3>
+            <ul className="space-y-2 text-sm text-ink">
+              {childrenExpected && childrenWarningFor(currentStep) ? (
+                <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
+                  <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
+                  <span>{t(childrenWarningFor(currentStep))}</span>
+                </li>
+              ) : null}
+              <li className="flex items-start space-x-2 text-muted">
+                <span>{t('mc.cues.empty')}</span>
               </li>
-            ) : null}
-            <li className="flex items-start space-x-2 text-muted">
-              <span>{t('mc.cues.empty')}</span>
-            </li>
-          </ul>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
 
       {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       {currentStep.firstDanceMode ? (

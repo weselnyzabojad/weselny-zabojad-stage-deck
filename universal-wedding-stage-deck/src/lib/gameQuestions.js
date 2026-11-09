@@ -134,3 +134,9 @@ export const PREDEFINED_GAME_STEPS = Object.freeze([
     optionalFlag: 'games',
   },
 ]);
+
+const PREDEFINED_GAME_IDS = new Set(PREDEFINED_GAME_STEPS.map((step) => step.gameId));
+
+export function isPredefinedGameStep(step) {
+  return PREDEFINED_GAME_IDS.has(step?.gameId);
+}
