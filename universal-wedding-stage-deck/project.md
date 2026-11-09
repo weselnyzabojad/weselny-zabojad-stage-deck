@@ -3219,3 +3219,43 @@ notes, not steps.
 - [#551](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/551) — ceremony script as Ceremony-step teleprompter.
 - [#552](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/552) — parser-mapper uniform edge-case rules.
 - [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553) — witnesses as key persons (TODO).
+
+## 15. Per-domain JSON schemas for Google Doc mapping (decision, 2026-11-09)
+
+The Google Doc → JSON mapping is split into six focused **domain schemas**, each
+in `schema/domains/<name>.json` and referenced by `$ref` from
+`schema/wedding-schema-v1.1.json`. Each domain keeps a per-domain example; the
+matching block is removed from `schema/wedding-cartridge.example.json` so the
+cartridge example stays lean and every mapping unit is validated on its own.
+
+| Domain | Schema file | Cartridge block | Example removed from main cartridge |
+| --- | --- | --- | --- |
+| first-dance | `schema/domains/first-dance.json` | `steps[].firstDance*` | First Dance step fields |
+| attractions | `schema/domains/attractions.json` | `attractions` | `attractions` |
+| oczepiny | `schema/domains/oczepiny.json` | `oczepiny` | `oczepiny` |
+| couple-profile | `schema/domains/couple-profile.json` | `coupleProfile` | `coupleProfile` |
+| cultural-rules | `schema/domains/cultural-rules.json` | `culturalRules` | `culturalRules` |
+| photo-plan | `schema/domains/photo-plan.json` | `photoPlan` | `photoPlan` |
+
+Decisions:
+
+- Schemas live under `schema/domains/` and are `$ref`'d from the main schema; the
+  browser and Edge validators must resolve the refs, and the byte-identical Edge
+  schema copy is regenerated.
+- The matching block is removed from `wedding-cartridge.example.json` and
+  demonstrated in a per-domain example file.
+- First dance stays a **timeline step**, but its fields become
+  `firstDanceStartAt` / `firstDanceStopAt` (mm:ss strings) plus a
+  `song` object; the integer `firstDanceStartAtSec` / `firstDanceStopAfterSec`
+  fields are retired.
+- The authored schemas use draft-07; adapt to the app's 2020-12 validator where
+  required.
+
+### Follow-ups
+
+- [#561](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/561) — first-dance.
+- [#562](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/562) — attractions.
+- [#560](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/560) — oczepiny.
+- [#564](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/564) — couple-profile.
+- [#563](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/563) — cultural-rules.
+- [#565](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/565) — photo-plan.
