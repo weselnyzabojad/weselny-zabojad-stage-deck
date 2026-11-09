@@ -12,10 +12,12 @@ export default function SecondaryControlBar({
 
   return (
     <div className={`border-b border-line bg-card/95 px-4 py-1.5 ${className}`}>
-      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-center gap-2">
+      {/* Compact: stacked rows so controls stay readable at 360px. Wide:
+          the original 1fr / auto / 1fr composition. */}
+      <div className="grid w-full grid-cols-1 items-center gap-1.5 sm:grid-cols-[1fr_auto_1fr] sm:gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1.5">{left}</div>
-        <div className="flex items-center justify-center">{center}</div>
-        <div className="flex min-w-0 flex-wrap items-center justify-end gap-1.5">{right}</div>
+        <div className="flex min-w-0 items-center justify-start sm:justify-center">{center}</div>
+        <div className="flex min-w-0 flex-wrap items-center justify-start gap-1.5 sm:justify-end">{right}</div>
       </div>
     </div>
   );
