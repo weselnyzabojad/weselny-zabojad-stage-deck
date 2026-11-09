@@ -2,12 +2,22 @@ import { useEffect, useRef } from 'react';
 
 const MAX_TILT_DEG = 6;
 
-function reducedMotion() {
+function matchesQuery(query) {
   return (
     typeof window !== 'undefined' &&
     typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.matchMedia(query).matches
   );
+}
+
+function reducedMotion() {
+  return matchesQuery('(prefers-reduced-motion: reduce)');
+}
+
+// The 6-degree tilt is only for precise hovering pointers (mouse/trackpad).
+// Touch and coarse-pointer devices keep the flat border/ring/shadow hierarchy.
+function finePointer() {
+  return matchesQuery('(hover: hover) and (pointer: fine)');
 }
 
 // Lightweight pointer-driven tilt for the current step. CSS variables are
@@ -24,7 +34,7 @@ export default function CurrentStepTilt({ children }) {
   };
 
   const onPointerMove = (event) => {
-    if (event.pointerType === 'touch' || reducedMotion()) return;
+    if (event.pointerType === 'touch' || !finePointer() || reducedMotion()) return;
     const node = rootRef.current;
     if (!node) return;
     const rect = node.getBoundingClientRect();
