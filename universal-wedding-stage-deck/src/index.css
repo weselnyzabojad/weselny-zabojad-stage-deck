@@ -259,27 +259,18 @@ input[type="checkbox"] {
 }
 
 /* Universal timeline focus stack (issue #179): the current step floats above
-   the history and future cards with layered depth and a subtle static
-   perspective tilt. There is deliberately no transition, so live timeline
-   updates never animate or jitter; reduced motion removes the tilt while the
-   border, ring and shadows keep the hierarchy intact. */
+   the history and future cards with layered depth. The 6-degree pointer tilt is
+   limited to hover-capable fine pointers; touch and coarse-pointer devices stay
+   flat and rely on the border, ring and shadows for hierarchy. The 120ms
+   transform transition smooths pointer tilt only — live timeline updates do not
+   change the transform variables. Reduced motion removes all transforms. */
 .current-step-tilt {
-  perspective: 1000px;
-}
-
-.current-step-header {
-  transform: translateZ(26px);
-}
-
-.current-step-body {
-  transform: translateZ(8px);
+  perspective: none;
 }
 
 .timeline-focus-current {
   position: relative;
-  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-2px);
-  transform-style: preserve-3d;
-  transform-origin: 50% 50%;
+  transform: translateY(-2px);
   transition: transform 120ms ease-out;
   will-change: transform;
   box-shadow:
@@ -289,21 +280,24 @@ input[type="checkbox"] {
     var(--focus-shadow);
 }
 
-/* Mobile-only current-step depth: touch devices keep a subtle static tilt and
-   a press settle. Desktop pointer tracking is untouched, and reduced motion
-   still removes all transforms below. */
-@media (max-width: 639px) {
+/* Fine pointers only: mouse/trackpad tilt and Z-axis elevation. */
+@media (hover: hover) and (pointer: fine) {
   .current-step-tilt {
-    perspective: 900px;
+    perspective: 1000px;
+  }
+
+  .current-step-header {
+    transform: translateZ(26px);
+  }
+
+  .current-step-body {
+    transform: translateZ(8px);
   }
 
   .timeline-focus-current {
-    transform: rotateX(1.5deg) translateY(-1px);
-    transition: transform 160ms ease-out;
-  }
-
-  .current-step-tilt:active .timeline-focus-current {
-    transform: rotateX(0.6deg) scale(0.995) translateY(0);
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-2px);
+    transform-style: preserve-3d;
+    transform-origin: 50% 50%;
   }
 }
 

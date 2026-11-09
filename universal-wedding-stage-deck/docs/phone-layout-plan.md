@@ -260,12 +260,11 @@ Manual checks:
 
 Check at 320×568 and 375×667:
 
+- Touch and coarse-pointer devices render the current step flat: no pointer tilt
+  or static rotation. Border, ring and shadow keep the hierarchy.
 - MC, DJ Standard/VIP, Photographer 1/2, Cameraman, Speaker and Venue Manager
-  show the same subtle current-step tilt.
-- Scrolling does not jitter or change the tilt continuously.
-- Pressing/advancing the step gives a short settle animation without layout
-  shift or clipped text.
-- Desktop pointer tracking at ≥1024px is unchanged.
+  share the same flat touch card.
+- Fine-pointer devices (mouse/trackpad) keep the subtle 6-degree pointer tilt.
 - `prefers-reduced-motion` renders the card flat while retaining elevation.
 - Dev role previews inherit the effect; blocked mobile admin and non-step admin
   cards stay flat.

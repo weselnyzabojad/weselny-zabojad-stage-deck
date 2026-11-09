@@ -24,8 +24,9 @@ describe('issue #336 mobile 3D parity and regression coverage', () => {
     expect(plan).toContain('prefers-reduced-motion');
   });
 
-  it('keeps overflow protection on the mobile card', () => {
-    expect(read('src/index.css')).toContain('@media (max-width: 639px)');
-    expect(read('src/index.css')).toContain('current-step-tilt:active');
+  it('keeps touch cards flat while fine pointers keep the tilt', () => {
+    const css = read('src/index.css');
+    expect(css).toContain('@media (hover: hover) and (pointer: fine)');
+    expect(css).not.toContain('current-step-tilt:active');
   });
 });
