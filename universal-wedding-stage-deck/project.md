@@ -2,7 +2,7 @@
 
 **Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `76ed46e` (MC game-card heading delivered; operational follow-ups tracked)
+**Aligned with:** `master` @ `a0989fc` (admin dialogs and role-view i18n delivered)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -74,8 +74,7 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#534](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/534) | Admin: remaining native confirm/prompt flows | Accessibility / UI |
-| [#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535) | i18n: role-view labels without translating cartridge content | i18n / data-boundary hardening |
+| [#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539) | MC: remove More/swap on Test Wiedzy/Test Zgodności steps | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -109,6 +108,8 @@ The MC game-card heading correction is catalogued in
 [MC game card heading](#mc-game-card-heading-decision-2026-11-09).
 The operational, admin-dialog and i18n/data-boundary follow-ups are catalogued in
 [admin and i18n follow-ups](#admin-and-i18n-follow-ups-decision-2026-11-09).
+The MC game-step overflow removal is catalogued in
+[MC game-step overflow](#mc-game-step-overflow-decision-2026-11-09).
 Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -2499,7 +2500,8 @@ Alignment for this review: last aligned 2026-11-08 against `master` @
 #77, #80, #245 and #459 stay open. The status column in the historical review
 table above is superseded: #421-#471 (except the optional #459) were delivered
 through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 was
-delivered through PR #532. The remaining operational follow-ups are #533-#535.
+delivered through PR #532; #534/#535 through PRs #537/#538. #533 remains blocked
+on the owner's live Supabase/TOTP environment, and #539 is the new MC follow-up.
 
 ---
 
@@ -2569,6 +2571,15 @@ answers — are authored content and must render verbatim. Do not wrap them in
 \`t()\`, locale normalization or case conversion. Add a regression guard for both
 directions.
 ([#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535))
+
+### MC game-step overflow (decision, 2026-11-09)
+
+On the MC Test Wiedzy and Test Zgodności steps, remove the **More** disclosure
+and its **Swap with next step** action entirely. This applies to the desktop
+current-step hero and the pocket current-step card, with no leftover gap. Detect
+the steps by stable \`gameId\`, not localized titles. Non-game steps keep the
+More/swap control unchanged. No timeline, drift, cartridge or schema changes.
+([#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539))
 
 ---
 
@@ -2861,13 +2872,12 @@ CI runs the same checks on pushes and pull requests to `master`.
 - Admin panel has not been smoke-tested against the live Supabase project yet.
   The release-gate checklist is tracked in
   [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533).
-- Most admin destructive actions already use accessible in-app dialogs; the
-  remaining native confirms in Drive publish and provider delete are tracked in
+- Admin destructive actions and TOTP re-auth use accessible in-app dialogs;
+  the remaining native confirms were removed in
   [#534](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/534).
-- i18n covers UI chrome, roles, drift/status labels, errors, PWA, join and
-  admin-adjacent components. Remaining role-view domain strings are tracked in
+- Role-view UI labels are localized EN/FR/PL. Cartridge content remains authored
+  data and is never translated; regression coverage was added in
   [#535](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/535).
-  Cartridge content is authored data and must never be translated.
 - Test Wiedzy and Test Zgodności are predefined game steps with parsed question
   Docs and runtime results in \`liveSyncState.game_results\` (#469-#471).
 - Google Docs-first import (#82) has deterministic API-to-template parsing and
