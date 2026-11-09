@@ -3379,9 +3379,10 @@ validator and mapper. Implemented in
 [#595](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/595):
 `deriveHardAnchors(mandatorySteps)` feeds the radar from admin milestones and
 flagged kitchen courses; the demo/fixtures use separate photo and camera
-milestones and no Oczepiny anchor. The admin editor is
+milestones and no Oczepiny anchor. The admin/venue-manager editor shipped in
 [#596](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/596)
-(blocked by #595).
+(separate photo/camera milestones, kind, alert window, hard-anchor toggle and
+kitchen-course flags).
 
 ### 17.6 Speech text from Google Drive (decision, 2026-11-09)
 

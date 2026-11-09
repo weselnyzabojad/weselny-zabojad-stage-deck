@@ -71,7 +71,9 @@ function TimeField({ label, value, onChange }) {
   );
 }
 
-function CourseCard({ label, value, mode, onTime, onMode }) {
+const MILESTONE_KINDS = ['PHOTO', 'CAMERA', 'VENDOR', 'TRANSPORT', 'FAMILY', 'SUNSET', 'OTHER'];
+
+function CourseCard({ label, value, mode, hardAnchor, onTime, onMode, onHardAnchor }) {
   const { t } = useI18n();
   return (
     <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5">
@@ -90,6 +92,85 @@ function CourseCard({ label, value, mode, onTime, onMode }) {
           <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
         </select>
       </label>
+      <label className="flex min-h-8 items-center gap-2 text-[10px] uppercase tracking-wider text-muted">
+        <input
+          type="checkbox"
+          className="h-5 w-5"
+          checked={hardAnchor === true}
+          onChange={(event) => onHardAnchor(event.target.checked)}
+        />
+        {t('venueManager.isHardAnchor')}
+      </label>
+    </div>
+  );
+}
+
+function MilestoneCard({ milestone, onChange, onRemove }) {
+  const { t } = useI18n();
+  return (
+    <div className="relative flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5">
+      <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
+        {milestone.label || t('venueManager.milestone')}
+      </h3>
+      <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+        {t('venueManager.milestoneLabel')}
+        <input
+          type="text"
+          value={milestone.label ?? ''}
+          onChange={(event) => onChange({ label: event.target.value })}
+          className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
+        />
+      </label>
+      <TimeField
+        label={t('venueManager.time')}
+        value={milestone.time}
+        onChange={(time) => onChange({ time })}
+      />
+      <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+        {t('venueManager.milestoneKind')}
+        <select
+          value={milestone.kind ?? 'OTHER'}
+          onChange={(event) => onChange({ kind: event.target.value })}
+          className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
+        >
+          {MILESTONE_KINDS.map((kind) => (
+            <option key={kind} value={kind}>
+              {t(`venueManager.kind.${kind}`)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+        {t('venueManager.alertBefore')}
+        <input
+          type="number"
+          min="0"
+          max="180"
+          value={milestone.alertBeforeMin ?? 45}
+          onChange={(event) =>
+            onChange({ alertBeforeMin: Number.parseInt(event.target.value, 10) || 0 })
+          }
+          className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
+        />
+      </label>
+      <label className="flex min-h-8 items-center gap-2 text-[10px] uppercase tracking-wider text-muted">
+        <input
+          type="checkbox"
+          className="h-5 w-5"
+          checked={milestone.isHardAnchor === true}
+          onChange={(event) => onChange({ isHardAnchor: event.target.checked })}
+        />
+        {t('venueManager.isHardAnchor')}
+      </label>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={t('venueManager.removeMilestone')}
+        title={t('venueManager.removeMilestone')}
+        className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border border-line bg-card text-xs text-muted transition hover:text-ink"
+      >
+        ×
+      </button>
     </div>
   );
 }
@@ -157,6 +238,39 @@ export default function VenueManagerView({
     update({ ...settings, kitchenServices: next });
   };
 
+  const milestones = Array.isArray(settings.milestones) ? settings.milestones : [];
+
+  const updateMilestone = (index, patch) => {
+    const next = milestones.map((milestone, i) =>
+      i === index ? { ...milestone, ...patch } : milestone,
+    );
+    update({ ...settings, milestones: next });
+  };
+
+  const addMilestone = (kind = 'OTHER') => {
+    const base = kind.toLowerCase();
+    const ids = new Set(milestones.map((milestone) => milestone.id));
+    let suffix = 1;
+    while (ids.has(`${base}_${suffix}`)) suffix += 1;
+    const next = [
+      ...milestones,
+      {
+        id: `${base}_${suffix}`,
+        label: t(`venueManager.kind.${kind}`),
+        time: '',
+        kind,
+        alertBeforeMin: 45,
+        isHardAnchor: true,
+      },
+    ];
+    update({ ...settings, milestones: next });
+  };
+
+  const removeMilestone = (index) => {
+    const next = milestones.filter((_, i) => i !== index);
+    update({ ...settings, milestones: next });
+  };
+
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
       <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
@@ -173,8 +287,10 @@ export default function VenueManagerView({
                 label={courseLabel(course, t)}
                 value={course.time}
                 mode={course.serviceMode}
+                hardAnchor={course.isHardAnchor === true}
                 onTime={(time) => updateCourse(index, { time })}
                 onMode={(mode) => updateCourse(index, { serviceMode: mode })}
+                onHardAnchor={(isHardAnchor) => updateCourse(index, { isHardAnchor })}
               />
               <button
                 type="button"
@@ -258,6 +374,46 @@ export default function VenueManagerView({
           {t('venueManager.prestationHelper')}
           {saved ? <span className="ml-2 text-emerald-300">{saved}</span> : null}
         </p>
+      </section>
+
+      <section className="rounded-xl border border-line bg-card p-3 shadow-lg sm:p-4">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+          {t('venueManager.milestones')}
+        </h2>
+        <p className="mt-1 text-[10px] text-muted">{t('venueManager.milestonesHelper')}</p>
+
+        <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
+          {milestones.map((milestone, index) => (
+            <MilestoneCard
+              key={milestone.id ?? index}
+              milestone={milestone}
+              onChange={(patch) => updateMilestone(index, patch)}
+              onRemove={() => removeMilestone(index)}
+            />
+          ))}
+
+          <button
+            type="button"
+            onClick={() => addMilestone('PHOTO')}
+            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
+          >
+            + {t('venueManager.addPhotoMilestone')}
+          </button>
+          <button
+            type="button"
+            onClick={() => addMilestone('CAMERA')}
+            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
+          >
+            + {t('venueManager.addCameraMilestone')}
+          </button>
+          <button
+            type="button"
+            onClick={() => addMilestone('OTHER')}
+            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
+          >
+            + {t('venueManager.addMilestone')}
+          </button>
+        </div>
       </section>
     </div>
   );
