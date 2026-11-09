@@ -151,6 +151,7 @@ export default function DjBoothView({
           role={role}
           accessToken={songRequestAccessToken}
           roomCode={songRequestRoomCode}
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
       ) : null}
       {isVip && SongRequestSimulator ? (
@@ -230,6 +231,7 @@ export default function DjBoothView({
           role={role}
           accessToken={songRequestAccessToken}
           roomCode={songRequestRoomCode}
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
       ) : null}
       {isVip && SongRequestSimulator ? (

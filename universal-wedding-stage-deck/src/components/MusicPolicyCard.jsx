@@ -1,5 +1,6 @@
 import { useI18n } from '../i18n/useI18n';
 import { formatDuration } from '../lib/eventTime.js';
+import DiscoPoloBadge from './DiscoPoloBadge';
 
 const STATUS_META = {
   open: {
@@ -90,7 +91,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
   const { t } = useI18n();
   if (!policy?.hasData) return null;
 
-  const { mustPlay, doNotPlay, mainSongs = [], requestStatus, cleanVersions } = policy;
+  const { mustPlay, doNotPlay, mainSongs = [], requestStatus, cleanVersions, discoPoloPolicy } = policy;
 
   if (compact) {
     return (
@@ -106,6 +107,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
         </div>
 
         <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] text-ink">
+          <DiscoPoloBadge value={discoPoloPolicy} compact />
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
             ✅ {t('music.mustPlay.count', { count: mustPlay.length })}
           </span>
@@ -170,6 +172,10 @@ export default function MusicPolicyCard({ policy, compact = false }) {
             : ''}
         </p>
       ) : null}
+
+      <div className="mt-2">
+        <DiscoPoloBadge value={discoPoloPolicy} />
+      </div>
 
       {mainSongs.length > 0 ? (
         <div className="mt-3">
