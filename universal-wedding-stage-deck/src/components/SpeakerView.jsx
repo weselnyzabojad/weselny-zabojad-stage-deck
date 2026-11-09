@@ -117,35 +117,37 @@ export default function SpeakerView({
             </p>
           </section>
         ) : (
-          <div className="space-y-4">
-            <section className="rounded-2xl border border-brand-strong/50 bg-card p-4 shadow-lg">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-brand-soft">
-                {t('speaker.nowSpeaking')}
-              </div>
-              <h1 className="mt-0.5 font-heading text-2xl font-bold text-ink">
+          <div className="space-y-5">
+            <section
+              aria-label={t('speaker.nowSpeaking')}
+              className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 px-1"
+            >
+              <h1 className="break-words font-heading text-xl font-bold text-ink">
                 {activeSpeech.speaker.name}
               </h1>
               {activeSpeech.speaker.relationship ? (
-                <div className="text-xs text-muted">{activeSpeech.speaker.relationship}</div>
+                <span className="break-words text-base text-muted">
+                  {activeSpeech.speaker.relationship}
+                </span>
               ) : null}
             </section>
 
-            <section className="rounded-2xl border border-line bg-card p-4 shadow-lg sm:p-6">
-              {activeSpeech.script.text ? (
-                <div className="whitespace-pre-wrap font-body text-lg leading-relaxed text-ink sm:text-xl sm:leading-relaxed">
+            {activeSpeech.script.text ? (
+              <section className="max-w-prose">
+                <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
                   {activeSpeech.script.text}
                 </div>
-              ) : (
-                <div className="rounded-xl border border-amber-800 bg-amber-950/40 p-4 text-center">
-                  <p className="font-heading text-sm font-semibold text-amber-200">
-                    {t('speaker.scriptMissingTitle')}
-                  </p>
-                  <p className="mt-1 text-xs text-muted">
-                    {t('speaker.scriptMissingBody')}
-                  </p>
-                </div>
-              )}
-            </section>
+              </section>
+            ) : (
+              <section className="rounded-xl border border-amber-800 bg-amber-950/40 p-4 text-center">
+                <p className="font-heading text-sm font-semibold text-amber-200">
+                  {t('speaker.scriptMissingTitle')}
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  {t('speaker.scriptMissingBody')}
+                </p>
+              </section>
+            )}
           </div>
         )}
 
