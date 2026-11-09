@@ -3311,9 +3311,9 @@ validator. These are the Google Doc → JSON mapping contracts.
 | `coHosts` | **Yes** | Deprecated; dropped on load by `cartridgeStorage` → `dropDeprecatedCartridgeFields`; not rendered. |
 | `contentCreators` | **Yes** | Same as `coHosts`. |
 | `mediaTeam` | **No** | Actively used by `GroupPhotoChecklist`, `PhotographerView`, `resolveOczepiny` (winner-photo timing) and the Doc `MEDIA TEAM` mapping. |
-| `preWeddingTodos` | **Yes, with confirmation** | Imported and seeds `buildInitialLiveState.checked_subtasks`, but no UI renders it (the MC Pre-wedding Checklist card was removed in #202); removal also drops the Doc `## PRE-WEDDING TODOS` mapping. |
+| `preWeddingTodos` | **Yes — owner confirmed** | Imported and seeds `buildInitialLiveState.checked_subtasks`, but no UI renders it (the MC Pre-wedding Checklist card was removed in #202); removal also drops the Doc `## PRE-WEDDING TODOS` mapping. |
 
 The removal is tracked by
 [#583](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/583)
-(`coHosts` + `contentCreators` now; `preWeddingTodos` pending owner confirmation;
-`mediaTeam` explicitly kept).
+(`coHosts`, `contentCreators` and `preWeddingTodos` are removed end to end;
+`mediaTeam` is explicitly kept).
