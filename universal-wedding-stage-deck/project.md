@@ -1,8 +1,8 @@
 # Universal Wedding Stage Deck — Project Status & Roadmap
 
-**Last aligned:** 2026-11-08
+**Last aligned:** 2026-11-09
 
-**Aligned with:** `master` @ `f1aa283` (separate game steps and stable LATE)
+**Aligned with:** `master` @ `5f36901` (persisted game results and 2026-11-09 UI follow-ups)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -72,6 +72,10 @@ sections below and in git history.
 | [#77](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/77) | WeddingSchema v1.2 freeze and implementation | Implementation |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation; needs `mcCues` from #77 |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
+| [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
+| [#523](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/523) | Speaker: remove Children expected UI | Implementation |
+| [#524](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/524) | MC: correct the LATE pill value | Bug fix |
+| [#525](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/525) | MC: remove MC Cues on Test Wiedzy/Test Zgodności steps | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -99,7 +103,9 @@ The admin provider registry and DJ access model are catalogued in
 [service providers and DJ access](#service-providers-and-dj-access-decision-2026-11-08).
 The game concept rework is catalogued in
 [game concept rework](#game-concept-rework-decision-2026-11-08).
-Both registers keep #77, #80 and #245 open.
+The 2026-11-09 Speaker/LATE/MC Cues corrections are catalogued in
+[Speaker, LATE and game-step Cues](#speaker-late-and-game-step-cues-decision-2026-11-09).
+Both registers keep #77, #80, #245 and #459 open.
 
 ### Planning TODO register
 
@@ -2485,7 +2491,39 @@ impact outside MC.
 
 Alignment for this review: last aligned 2026-11-08 against `master` @
 `f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
-#77, #80 and #245 stay open, and #421-#471 remain open follow-ups.
+#77, #80, #245 and #459 stay open. The status column in the historical review
+table above is superseded: #421-#471 (except the optional #459) were delivered
+through PRs #473-#522. The new 2026-11-09 follow-ups are #523-#525.
+
+---
+
+### Speaker, LATE and game-step Cues (decision, 2026-11-09)
+
+**Speaker is exempt from the Children expected indicator.** Remove the
+red/green Children expected element from the Speaker desktop secondary bar and
+the pocket \`RoleShell\` header. The Speaker view shows only the assigned speech
+content; no children badge, icon, text, live region, tooltip or empty centre
+slot may remain. MC, DJ Standard/VIP, Photographer 1/2, Cameraman and Venue
+Manager keep #451 unchanged. This supersedes #451 for Speaker only.
+([#523](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/523))
+
+**The MC LATE pill must show the real current lateness.** The current
+canonical value is copied from the current step's start drift, so it can remain
+stale while the live step overruns. Audit the full drift path and derive the
+top-left LATE label, tone and tooltip from one corrected cumulative/live source.
+A late start, a live overrun, an early start and missing clock data must each
+behave correctly; the #416 undo freeze must keep the displayed value stable for
+its existing window and then recompute from the corrected state. No second
+competing number and no new data source.
+([#524](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/524))
+
+**Test Wiedzy and Test Zgodności steps do not show the MC Cues card.** Hide the
+whole generic MC Cues block (heading, empty row, children warning and chrome)
+when the current step's stable \`gameId\` is \`test_wiedzy\` or
+\`test_zgodnosci\`. Keep the Games cue card, clicker launcher, subtasks, speeches
+and MC controls; non-game steps keep MC Cues unchanged. Detection is by stable
+ids, never by localized titles.
+([#525](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/525))
 
 ---
 
@@ -2783,7 +2821,8 @@ CI runs the same checks on pushes and pull requests to `master`.
 - i18n covers UI chrome, roles, drift/status labels, errors, PWA, join and
   admin-adjacent components. Cartridge content remains in its authored
   language; some role-view domain strings are still English.
-- Optional games content exists but is not in the schema or UI (deferred).
+- Test Wiedzy and Test Zgodności are predefined game steps with parsed question
+  Docs and runtime results in \`liveSyncState.game_results\` (#469-#471).
 - Google Docs-first import (#82) has deterministic API-to-template parsing and
   AI-prompt cleanup; Drive transport/admin placement is tracked in #168–#170.
   Admin JSON publishing remains, but role devices no longer import cartridges.
