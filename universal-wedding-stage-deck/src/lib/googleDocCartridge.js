@@ -467,14 +467,18 @@ function mapPhotoPlan(source, warnings = []) {
         other: bool(kv(source, 'Other effects approved'), false),
       },
     },
-    guestCoverage: {
-      allGuests: bool(kv(source, 'Guest coverage all guests')),
-      description: text(kv(source, 'Guest coverage description')),
-      groups: list(kv(source, 'Guest coverage groups')).map((label) => ({
-        id: slug(label),
-        label,
-      })),
-    },
+    guestCoverage: (() => {
+      const allGuests = bool(kv(source, 'Guest coverage all guests'));
+      if (allGuests === null) warnings.push('GUEST COVERAGE: missing all guests');
+      return {
+        allGuests: allGuests ?? false,
+        description: text(kv(source, 'Guest coverage description')),
+        groups: list(kv(source, 'Guest coverage groups')).map((label) => ({
+          id: slug(label),
+          label,
+        })),
+      };
+    })(),
   };
 }
 
