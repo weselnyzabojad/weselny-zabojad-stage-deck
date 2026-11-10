@@ -30,24 +30,26 @@ describe('issue #643 speech metadata cleanup', () => {
       expect(item).not.toHaveProperty('mic');
       expect(item).not.toHaveProperty('cue');
       expect(item).not.toHaveProperty('readFrom');
-      expect(item.consent).not.toHaveProperty('confirmedBy');
+      expect(item.consent?.confirmedBy).toBeUndefined();
     }
   });
 
-  it('keeps speaker, order, time, language, delivery, script and consent storage', () => {
+  it('keeps speaker, order and script after the metadata review', () => {
     const [speech] = resolveSpeeches(json('schema/fixtures/real-jennifer-guillaume.json'));
     expect(speech.speaker.name).toBeTruthy();
     expect(speech.order).toBeTruthy();
-    expect(speech.time).toBeTruthy();
-    expect(speech.language).toBeTruthy();
-    expect(speech.delivery).toBeTruthy();
     expect(speech.script).toHaveProperty('text');
-    expect(speech.consent.storeScript).toBe(true);
-    expect(speech.consent.confirmedAt).toBeTruthy();
     for (const field of ['durationMin', 'mic', 'cue', 'readFrom']) {
       expect(speech).not.toHaveProperty(field);
     }
     expect(speech.consent).not.toHaveProperty('confirmedBy');
+
+    const schema = json('schema/domains/speeches.json').$defs.speech.properties;
+    for (const field of ['time', 'language', 'delivery', 'mcIntro']) {
+      expect(schema[field], field).toBeUndefined();
+    }
+    expect(schema.consent.properties.storeScript).toBeUndefined();
+    expect(schema.consent.properties.confirmedAt).toBeUndefined();
   });
 
   it('no longer maps or renders the removed fields', () => {

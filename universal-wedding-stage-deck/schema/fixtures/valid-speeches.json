@@ -54,17 +54,11 @@
         "relationship": "Best man"
       },
       "order": 1,
-      "time": "19:45",
-      "language": "PL",
       "script": {
         "text": "Dobry wieczor.",
         "format": "PLAIN",
         "ready": true,
         "source": "GOOGLE_DOC"
-      },
-      "delivery": "READ",
-      "consent": {
-        "storeScript": true
       },
       "visibleToRoles": [
         "mc",
@@ -78,7 +72,6 @@
         "name": "Pere de Guillaume"
       },
       "order": 2,
-      "language": "FR",
       "script": {
         "text": "",
         "format": "PLAIN",

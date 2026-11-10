@@ -30,11 +30,6 @@
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
     },
-    "clock": {
-      "type": "string",
-      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
-      "description": "24-hour local clock time as HH:MM."
-    },
     "redaction": {
       "type": "object",
       "required": [
@@ -120,12 +115,6 @@
         "order": {
           "type": "integer"
         },
-        "time": {
-          "$ref": "#/$defs/clock"
-        },
-        "language": {
-          "type": "string"
-        },
         "script": {
           "type": "object",
           "additionalProperties": true,
@@ -190,32 +179,15 @@
             }
           }
         },
-        "delivery": {
-          "type": "string",
-          "enum": [
-            "READ",
-            "MEMORIZE",
-            "NOTES"
-          ]
-        },
         "consent": {
           "type": "object",
           "additionalProperties": true,
-          "description": "Couple consent to store the script on the speaker device. `storeScript: false` locks it.",
+          "description": "App-managed consent notes for the speech.",
           "properties": {
-            "storeScript": {
-              "type": "boolean"
-            },
-            "confirmedAt": {
-              "type": "string"
-            },
             "notes": {
               "type": "string"
             }
           }
-        },
-        "mcIntro": {
-          "type": "boolean"
         },
         "visibleToRoles": {
           "type": "array",

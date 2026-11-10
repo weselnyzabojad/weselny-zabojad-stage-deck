@@ -257,9 +257,9 @@ Rules: One request per guest; the DJ decides the order.
 
 ## SPEECHES
 
-| Speech ID | Order | Speaker | Relationship | Time | Language | Delivery | Consent | Visible roles |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| speech_witness | 1 | Bartek | Best man | 19:45 | PL | READ | true | mc, speaker |
+| Speech ID | Order | Speaker | Relationship |
+| --- | --- | --- | --- |
+| speech_witness | 1 | Bartek | Best man |
 
 ### Speech Script speech_witness
 

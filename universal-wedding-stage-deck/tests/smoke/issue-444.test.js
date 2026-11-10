@@ -44,12 +44,8 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
       'speeches.stopLive',
       'speeches.scriptReady',
       'speeches.scriptMissing',
-      'speeches.consent',
-      'speeches.consentPending',
       'speeches.speakerHidden',
       'speeches.complexMissing',
-      'speeches.in',
-      'speeches.ago',
       'speeches.footer',
     ]) {
       expect(speeches, key).toContain(key);

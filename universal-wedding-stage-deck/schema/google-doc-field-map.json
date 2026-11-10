@@ -141,16 +141,10 @@
       "speeches[].speaker.relationship": "required",
       "speeches[].speaker.contact": "no",
       "speeches[].order": "required",
-      "speeches[].time": "delete",
-      "speeches[].language": "delete",
       "speeches[].script.text": "separate",
       "speeches[].script.format": "no",
       "speeches[].script.ready": "no",
       "speeches[].script.source": "no",
-      "speeches[].delivery": "delete",
-      "speeches[].consent.storeScript": "delete",
-      "speeches[].consent.confirmedAt": "delete",
-      "speeches[].mcIntro": "delete",
       "speeches[].visibleToRoles": "no"
     },
     "steps.example.json": {
