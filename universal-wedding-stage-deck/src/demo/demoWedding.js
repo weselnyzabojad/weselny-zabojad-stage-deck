@@ -109,11 +109,9 @@ export const DEMO_WEDDING = {
   ],
   photoPlan: {
     sunset: {
-      source: "ONLINE_API",
       provider: "sunrise-sunset.org",
       latitude: 51.05,
       longitude: 16.19,
-      timezone: "Europe/Warsaw",
       lastFetchedAt: "2026-08-20T17:05:00.000Z",
       sunsetTime: "20:12",
       goldenHourStart: "19:32",

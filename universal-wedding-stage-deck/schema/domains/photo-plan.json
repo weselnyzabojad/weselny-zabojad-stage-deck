@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/photo-plan.json",
   "title": "Photo plan domain",
-  "description": "Sunset and photo-plan support mapped from the Google Doc (sunset source is ONLINE_API only).",
+  "description": "Sunset and photo-plan support mapped from the Google Doc.",
   "type": "object",
   "properties": {
     "photoPlan": {
@@ -13,9 +13,6 @@
           "type": "object",
           "additionalProperties": true,
           "properties": {
-            "source": {
-              "type": "string"
-            },
             "provider": {
               "type": "string"
             },
@@ -24,9 +21,6 @@
             },
             "longitude": {
               "type": "number"
-            },
-            "timezone": {
-              "type": "string"
             },
             "lastFetchedAt": {
               "type": "string",
@@ -52,11 +46,9 @@
             }
           },
           "required": [
-            "source",
             "provider",
             "latitude",
             "longitude",
-            "timezone",
             "status"
           ]
         },

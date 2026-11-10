@@ -110,7 +110,6 @@ export function resolveSunset(wedding) {
     lastFetchedAt: text(raw.lastFetchedAt),
     latitude: finite(raw.latitude),
     longitude: finite(raw.longitude),
-    timezone: text(raw.timezone),
     provider: text(raw.provider),
     miniSession: resolveMiniSession(wedding),
   };

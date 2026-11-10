@@ -451,11 +451,9 @@ function mapPhotoPlan(source) {
   }));
   return {
     sunset: {
-      source: text(kv(source, 'Sunset source')),
       provider: text(kv(source, 'Sunset provider')),
       latitude: Number(kv(source, 'Sunset latitude')) || undefined,
       longitude: Number(kv(source, 'Sunset longitude')) || undefined,
-      timezone: text(kv(source, 'Sunset timezone')),
       lastFetchedAt: text(kv(source, 'Sunset last fetched at')),
       sunsetTime: clock(kv(source, 'Sunset time')),
       goldenHourStart: clock(kv(source, 'Golden hour start')),
