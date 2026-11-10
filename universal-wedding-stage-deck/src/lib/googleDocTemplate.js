@@ -191,6 +191,13 @@ export const SECTION_MANIFEST = Object.freeze([
     schemaPath: ['steps[].teleprompter'],
     purpose: 'Verbatim trilingual ceremony script attached to the Ceremony step.',
   },
+  {
+    order: 29,
+    marker: 'WITNESSES',
+    required: false,
+    schemaPath: ['witnesses'],
+    purpose: 'Key persons: identity, language, admin-only contacts, responsibilities and speech links.',
+  },
 ]);
 
 export const SECTION_ORDER = Object.freeze(SECTION_MANIFEST.map((section) => section.marker));

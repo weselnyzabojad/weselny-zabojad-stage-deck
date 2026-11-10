@@ -91,6 +91,31 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
+  // Witnesses are key persons linked to their speeches by stable id. Contact
+  // details are admin-only and are never a stage-role concern here.
+  uniqueList(cartridge?.witnesses, '/witnesses', 'witness');
+  const allSpeechIds = new Set(
+    (Array.isArray(cartridge?.speeches) ? cartridge.speeches : [])
+      .map((speech) => (typeof speech?.id === 'string' ? speech.id : null))
+      .filter(Boolean),
+  );
+  for (const [index, witness] of (Array.isArray(cartridge?.witnesses)
+    ? cartridge.witnesses
+    : []
+  ).entries()) {
+    for (const [speechIndex, speechId] of (Array.isArray(witness?.speechIds)
+      ? witness.speechIds
+      : []
+    ).entries()) {
+      if (!allSpeechIds.has(speechId)) {
+        pushError(
+          `/witnesses/${index}/speechIds/${speechIndex}`,
+          `unknown speech id "${speechId}"`,
+        );
+      }
+    }
+  }
+
   // Key songs (TODO 18 / Phase 1.5d). Missing titles, artists or sources are
   // warnings in the product spec, not import blockers; only broken references
   // and unusable source shapes fail here.

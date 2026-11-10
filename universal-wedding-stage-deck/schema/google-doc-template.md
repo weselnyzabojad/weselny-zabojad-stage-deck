@@ -409,3 +409,13 @@ Je vous déclare officiellement mari et femme !
 ```en
 I now pronounce you married!
 ```
+
+## WITNESSES
+
+Witnesses are key persons, not guests or media crew. Contact details are
+admin-only and must never be rendered on a stage role view.
+
+| Witness ID | Name | Role | Language | Phone | Email | Responsibilities | Speech IDs | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| witness_bartek | Bartek | Best man | PL | +48 600 222 333 | bartek@example.com | GAME_ORGANIZER, SPEECH | speech_witness | Also validates the Test Wiedzy questions. |
+| witness_valentin | Valentin | Témoin | FR |  |  | QUESTION_VALIDATOR |  |  |

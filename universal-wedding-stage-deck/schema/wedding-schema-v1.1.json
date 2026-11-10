@@ -219,6 +219,9 @@
     "speeches": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/speeches.json#/properties/speeches"
     },
+    "witnesses": {
+      "$ref": "https://weselnyzabojad.example/schemas/domains/witnesses.json#/properties/witnesses"
+    },
     "liveSyncState": {
       "$ref": "#/$defs/liveSyncState"
     },

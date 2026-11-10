@@ -35,6 +35,7 @@ import musicPolicyDomain from '../_shared/domains/music-policy.json' with { type
 import demographicsDomain from '../_shared/domains/demographics.json' with { type: 'json' };
 import stepsDomain from '../_shared/domains/steps.json' with { type: 'json' };
 import speechesDomain from '../_shared/domains/speeches.json' with { type: 'json' };
+import witnessesDomain from '../_shared/domains/witnesses.json' with { type: 'json' };
 import {
   authorizeAdminSession,
   decodeJwt,
@@ -56,7 +57,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, speedFotoDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, speedFotoDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',

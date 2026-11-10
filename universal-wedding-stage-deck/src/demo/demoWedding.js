@@ -503,6 +503,18 @@ export const DEMO_WEDDING = {
       visibleToRoles: ["mc", "speaker"]
     }
   ],
+  witnesses: [
+    {
+      id: "witness_bartek",
+      name: "Bartek",
+      role: "Best man",
+      language: "PL",
+      contact: { phone: "+48 600 222 333" },
+      responsibilities: ["GAME_ORGANIZER", "SPEECH"],
+      speechIds: ["speech_witness"],
+      notes: "Also validates the Test Wiedzy questions with the couple."
+    }
+  ],
   steps: [
     { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "FLEXIBLE", location: "Garden", dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
     { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "FLEXIBLE", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },

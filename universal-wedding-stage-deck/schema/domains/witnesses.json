@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/witnesses.json",
+  "title": "Witnesses domain",
+  "description": "Witnesses as key persons: identity, language, admin-only contacts, responsibilities and links to their speeches.",
+  "type": "object",
+  "properties": {
+    "witnesses": {
+      "type": "array",
+      "description": "Wedding witnesses. Distinct from the couple and the media team.",
+      "items": {
+        "$ref": "#/$defs/witness"
+      }
+    }
+  },
+  "required": [
+    "witnesses"
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "PL",
+        "FR",
+        "EN"
+      ]
+    },
+    "responsibility": {
+      "type": "string",
+      "enum": [
+        "GAME_ORGANIZER",
+        "QUESTION_VALIDATOR",
+        "SPEECH",
+        "CONTACT",
+        "OTHER"
+      ]
+    },
+    "witness": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Authored role label, for example Świadkowa, Świadek, Témoin or Best man."
+        },
+        "language": {
+          "$ref": "#/$defs/language"
+        },
+        "contact": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Admin-only contact details. Never render these on a stage role view.",
+          "properties": {
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        },
+        "responsibilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/responsibility"
+          }
+        },
+        "speechIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "References to speeches[].id in the cartridge.",
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

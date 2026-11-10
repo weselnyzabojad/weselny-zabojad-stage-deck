@@ -82,6 +82,17 @@ const EXPECTED_TABLES = {
   'LIVE SYNC STATE': null,
   'EXTENSIONS': null,
   'CEREMONY SCRIPT': null,
+  'WITNESSES': [
+    'Witness ID',
+    'Name',
+    'Role',
+    'Language',
+    'Phone',
+    'Email',
+    'Responsibilities',
+    'Speech IDs',
+    'Notes',
+  ],
 };
 
 const text = await readFile(templatePath, 'utf8');
