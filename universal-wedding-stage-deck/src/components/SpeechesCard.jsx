@@ -1,22 +1,10 @@
 import { useI18n } from '../i18n/useI18n';
-import { formatDuration, resolveEventDateISO, resolveVenueTimeZone } from '../lib/eventTime.js';
-import { speechTiming } from '../lib/speeches.js';
 
 const MODE_CHIPS = {
   OFF: 'border-line-strong bg-raised text-muted',
   LIGHT: 'border-cyan-800 bg-cyan-950/60 text-cyan-200',
   COMPLEX: 'border-brand-strong bg-brand/30 text-brand-tint',
 };
-
-const FALLBACK_NOW = new Date(0);
-
-function countdownLabel(seconds, t) {
-  if (seconds == null) return null;
-  const duration = formatDuration(seconds);
-  return seconds >= 0
-    ? t('speeches.in', { duration })
-    : t('speeches.ago', { duration });
-}
 
 // MC-only speech list. Selecting a row sets `active_speech_id`, which the
 // dedicated speaker device reads to show exactly one script.
@@ -25,10 +13,6 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
   // No speeches means no below-timeline card at all; the MC top-bar chip still
   // communicates the OFF/no-speech state.
   if (!speeches?.length) return null;
-
-  const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
-  const eventDateISO = resolveEventDateISO(wedding);
-  const timeZone = resolveVenueTimeZone(wedding);
 
   return (
     <section className="rounded-xl border border-line bg-card p-4 shadow-lg">
@@ -52,7 +36,6 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
       <ol className="mt-2 space-y-2">
         {speeches.map((speech) => {
             const active = speech.id === activeSpeechId;
-            const timing = speechTiming(speech, { now, eventDateISO, timeZone });
             const missingComplexScript = speech.mode === 'COMPLEX' && !speech.script.ready;
             return (
               <li
@@ -73,17 +56,6 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                           · {speech.speaker.relationship}
                         </span>
                       ) : null}
-                    </div>
-                    <div className="mt-0.5 flex flex-wrap gap-1.5 font-mono text-[10px] text-muted">
-                      {speech.time ? (
-                        <span>
-                          {speech.time}
-                          {timing.startsInSec != null
-                            ? ` (${countdownLabel(timing.startsInSec, t)})`
-                            : ''}
-                        </span>
-                      ) : null}
-                      {speech.language ? <span>{speech.language}</span> : null}
                     </div>
                   </div>
 
@@ -108,15 +80,6 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                         {t('speeches.scriptMissing')}
                       </span>
                     )}
-                    <span
-                      className={`rounded border px-1.5 py-0.5 font-mono text-[9px] ${
-                        speech.consent.storeScript
-                          ? 'border-line-strong bg-raised text-muted'
-                          : 'border-amber-800 bg-amber-950/60 text-amber-200'
-                      }`}
-                    >
-                      {speech.consent.storeScript ? t('speeches.consent') : t('speeches.consentPending')}
-                    </span>
                     {!speech.speakerVisible ? (
                       <span className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 font-mono text-[9px] text-alert-tint">
                         {t('speeches.speakerHidden')}

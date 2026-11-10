@@ -308,8 +308,6 @@ export const DEMO_WEDDING = {
       mode: "COMPLEX",
       speaker: { name: "Bartek", relationship: "Best man", contact: "+48 600 222 333" },
       order: 1,
-      time: "19:45",
-      language: "PL",
       script: {
         text:
           "Dobry wieczór Państwu,\n\n" +
@@ -320,12 +318,6 @@ export const DEMO_WEDDING = {
         ready: true,
         source: "GOOGLE_DOC"
       },
-      delivery: "READ",
-      consent: {
-        storeScript: true,
-        confirmedAt: "2026-08-19T18:00:00.000Z"
-      },
-      mcIntro: true,
       visibleToRoles: ["mc", "speaker"]
     },
     {
@@ -333,15 +325,7 @@ export const DEMO_WEDDING = {
       mode: "LIGHT",
       speaker: { name: "Père de Guillaume", relationship: "Father of the groom" },
       order: 2,
-      time: "20:05",
-      language: "FR",
       script: { text: "", format: "PLAIN", ready: false, source: "GOOGLE_DOC" },
-      delivery: "MEMORIZE",
-      consent: {
-        storeScript: true,
-        confirmedAt: "2026-08-19T18:00:00.000Z"
-      },
-      mcIntro: true,
       visibleToRoles: ["mc", "speaker"]
     }
   ],
