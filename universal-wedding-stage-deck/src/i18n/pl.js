@@ -355,6 +355,7 @@ const pl = {
   'oczepiny.bowTie': 'Mucha',
   'oczepiny.cravat': 'Krawat',
   'oczepiny.game': 'Gra: {game}',
+  'oczepiny.gameEnabled': 'Gra włączona',
   'oczepiny.music': 'Muzyka: {music}',
   'oczepiny.countdown': 'Odliczanie MC',
   'oczepiny.photoCue': 'Zdjęcia: tylko zwycięzcy + zwycięzcy z parą młodą.',

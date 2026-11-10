@@ -8,16 +8,12 @@
     "ties": "BOW_TIE",
     "winnerPhoto": {
       "enabled": true,
-      "replacesWinnersDance": false,
       "photographerCue": "Winner photo with the couple, then clear the floor.",
       "winnersOnly": true,
       "winnersWithCouple": true,
       "photographerAvailable": true
     },
     "photographerBriefed": {
-      "confirmed": true,
-      "confirmedAt": "2026-08-19T18:00:00.000Z",
-      "confirmedBy": "MC",
       "notes": "Cameraman confirmed the midnight window."
     },
     "props": [
@@ -27,35 +23,33 @@
     ],
     "music": {
       "track": "Oczepiny mix",
-      "playlist": "Midnight",
+      "playlist": [
+        "Midnight"
+      ],
       "enabled": true
     },
     "subEvents": [
       {
         "id": "toss",
         "title": "Veil toss",
-        "durationMin": 10,
         "deferable": false,
         "skippable": true
       },
       {
         "id": "ties",
         "title": "Bow-tie game",
-        "durationMin": 10,
         "deferable": true,
         "skippable": true
       },
       {
         "id": "test",
         "title": "Test Zgodności",
-        "durationMin": 15,
         "deferable": true,
         "skippable": true
       },
       {
         "id": "winner_photo",
         "title": "Winner photo",
-        "durationMin": 5,
         "deferable": false,
         "skippable": false
       }
@@ -68,9 +62,7 @@
       "cravat": false
     },
     "game": {
-      "enabled": true,
-      "type": "TEST_ZGODNOSCI",
-      "notes": "Test Zgodności with the guests."
+      "enabled": true
     },
     "countdown": {
       "mode": "MC"

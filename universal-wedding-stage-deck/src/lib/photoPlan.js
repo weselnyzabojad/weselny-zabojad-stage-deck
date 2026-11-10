@@ -228,10 +228,9 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
   const winnerPhoto = raw.winnerPhoto && typeof raw.winnerPhoto === 'object'
     ? {
         enabled: raw.winnerPhoto.enabled === true,
-        replacesWinnersDance: raw.winnerPhoto.replacesWinnersDance === true,
         photographerCue: text(raw.winnerPhoto.photographerCue),
       }
-    : { enabled: false, replacesWinnersDance: false, photographerCue: null };
+    : { enabled: false, photographerCue: null };
 
   // Proposal rule 10: warn when every media team member leaves before the
   // Oczepini anchor (they would miss the winner photo).
@@ -259,16 +258,17 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
     winnerPhotoWarning,
     photographerBriefed:
       raw.photographerBriefed && typeof raw.photographerBriefed === 'object'
-        ? {
-            confirmed: raw.photographerBriefed.confirmed === true,
-            confirmedAt: text(raw.photographerBriefed.confirmedAt),
-            confirmedBy: text(raw.photographerBriefed.confirmedBy),
-            notes: text(raw.photographerBriefed.notes),
-          }
+        ? { notes: text(raw.photographerBriefed.notes) }
         : null,
     props: Array.isArray(raw.props) ? raw.props.map(text).filter(Boolean) : [],
     music: raw.music && typeof raw.music === 'object'
-      ? { track: text(raw.music.track), playlist: text(raw.music.playlist) }
+      ? {
+          enabled: raw.music.enabled === true,
+          track: text(raw.music.track),
+          playlist: Array.isArray(raw.music.playlist)
+            ? raw.music.playlist.map(text).filter(Boolean)
+            : [],
+        }
       : null,
     subEvents: Array.isArray(raw.subEvents)
       ? raw.subEvents
@@ -276,7 +276,6 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
           .map((event, index) => ({
             id: text(event.id) ?? `sub_${index + 1}`,
             title: text(event.title) ?? `Event ${index + 1}`,
-            durationMin: Number.isFinite(event.durationMin) ? event.durationMin : null,
             deferable: event.deferable === true,
             skippable: event.skippable === true,
           }))

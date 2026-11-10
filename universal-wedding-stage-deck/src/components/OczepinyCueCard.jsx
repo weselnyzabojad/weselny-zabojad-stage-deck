@@ -15,6 +15,11 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
   if (!ocz?.enabled) return null;
   const throwings = throwingLabels(ocz.throwings, t);
   const showWinner = ocz.winnerPhoto?.enabled && ocz.winnerPhoto?.photographerAvailable;
+  const musicOn = ocz.music?.enabled === true;
+  const playlist = Array.isArray(ocz.music?.playlist)
+    ? ocz.music.playlist.filter(Boolean)
+    : [];
+  const musicLabel = playlist.length > 0 ? playlist.join(' · ') : ocz.music?.track ?? null;
 
   return (
     <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2.5 text-[11px] text-ink">
@@ -25,21 +30,14 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
         <div className="mt-1">{t('oczepiny.throwings', { labels: throwings.join(' · ') })}</div>
       ) : null}
       {ocz.game?.enabled ? (
+        <div className="mt-0.5">{t('oczepiny.gameEnabled')}</div>
+      ) : null}
+      {audience !== 'photo' && musicOn ? (
         <div className="mt-0.5">
-          {t('oczepiny.game', {
-            game: ocz.game.type === 'TEST_ZGODNOSCI' ? 'Test Zgodności' : ocz.game.type ?? '',
-          })}
-          {ocz.game.notes ? ` — ${ocz.game.notes}` : ''}
+          {t('oczepiny.music', { music: musicLabel ?? t('oczepiny.enabled') })}
         </div>
       ) : null}
-      {ocz.music?.enabled ? (
-        <div className="mt-0.5">
-          {t('oczepiny.music', {
-            music: ocz.music.track ?? ocz.music.playlist ?? t('oczepiny.enabled'),
-          })}
-        </div>
-      ) : null}
-      {ocz.countdown?.mode === 'MC' ? (
+      {audience === 'mc' && !musicOn && ocz.countdown?.mode === 'MC' ? (
         <div className="mt-0.5">{t('oczepiny.countdown')}</div>
       ) : null}
       {showWinner ? (

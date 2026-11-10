@@ -11,8 +11,8 @@ const wedding = {
     enabled: true,
     anchorId: 'oczepiny_midnight',
     subEvents: [
-      { id: 'toss', durationMin: 10 },
-      { id: 'ties', durationMin: 15 },
+      { id: 'toss' },
+      { id: 'ties' },
     ],
   },
   hardAnchors: [
@@ -49,13 +49,13 @@ describe('issue #73 Oczepiny indicator', () => {
 
     expect(status.state).toBe('ACTIVE');
     expect(status.active).toBe(true);
-    expect(status.blockMinutes).toBe(25);
+    expect(status.blockMinutes).toBe(60);
   });
 
   it('returns to ON after the block ends', () => {
     const status = resolveOczepinyIndicator({
       wedding,
-      now: new Date('2026-08-20T22:30:00Z'), // 00:30 in Warsaw
+      now: new Date('2026-08-20T23:10:00Z'), // 01:10 in Warsaw
     });
 
     expect(status.state).toBe('ON');
