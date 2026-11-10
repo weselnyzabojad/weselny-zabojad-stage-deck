@@ -293,6 +293,12 @@
         "mandatory": {
           "$ref": "#/$defs/mandatory"
         },
+        "ceremony": {
+          "$ref": "#/$defs/ceremony"
+        },
+        "game": {
+          "$ref": "#/$defs/game"
+        },
         "photographerCue": {
           "type": "string",
           "description": "Optional photographer/vendor cue for this step. Swap warns and defer skips protected steps."
@@ -305,27 +311,10 @@
         "optionalFlag": {
           "type": "string",
           "enum": [
-            "wishes",
-            "games",
             "oczepiny",
             "dj_set"
           ],
-          "description": "Predefined step is shown only when the matching cartridge feature is enabled; `dj_set` marks a basic DJ set step."
-        },
-        "gameId": {
-          "$ref": "#/$defs/id",
-          "description": "Game question-list id when optionalFlag is games."
-        },
-        "ceremonyType": {
-          "type": "string",
-          "enum": [
-            "CHURCH",
-            "VENUE",
-            "NONE"
-          ]
-        },
-        "ceremonyLocation": {
-          "type": "string"
+          "description": "Predefined step shown only when the matching cartridge feature is enabled; `dj_set` marks a basic DJ set step. Wishes and games are represented by their own steps."
         },
         "grandEntranceOrder": {
           "type": "string",
@@ -437,6 +426,115 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 180
+        }
+      }
+    },
+    "ceremony": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Ceremony variant and MC support requirements owned by the Ceremony step.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "RELIGIOUS",
+            "CIVIL",
+            "HUMANIST"
+          ]
+        },
+        "mcSupportRequested": {
+          "type": "boolean"
+        },
+        "mcTranslationHelpRequested": {
+          "type": "boolean"
+        },
+        "location": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "description": "One configured game and its question list, owned by the game timeline step.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gameType": {
+          "type": "string",
+          "enum": [
+            "TEST_WIEDZY",
+            "TEST_ZGODNOSCI",
+            "OTHER"
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "sourceDocId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "MISSING",
+            "UNAVAILABLE"
+          ]
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "prompt": {
+                "type": [
+                  "string",
+                  "object"
+                ],
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "level": {
+                "type": "string",
+                "enum": [
+                  "EASY",
+                  "MEDIUM",
+                  "HARD"
+                ]
+              },
+              "answer": {
+                "type": [
+                  "string",
+                  "object"
+                ],
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          }
         }
       }
     }

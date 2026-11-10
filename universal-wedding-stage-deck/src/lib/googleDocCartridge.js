@@ -842,21 +842,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const gamesSource = section(parsed, 'GAMES');
   const games = gamesSource ? mapGames(gamesSource) : undefined;
-
-  // Game steps are authored as one timeline row per game. Bind each step to its
-  // question list by title so the cue card and clicker stay game-specific.
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
-  if (gameLists.length > 0) {
-    for (const step of steps) {
-      if (step?.optionalFlag !== 'games' || step.gameId) continue;
-      const match = gameLists.find(
-        (list) =>
-          typeof list?.title === 'string' &&
-          list.title.trim().toLowerCase() === String(step.title ?? '').trim().toLowerCase(),
-      );
-      if (match?.id) step.gameId = match.id;
-    }
-  }
 
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
@@ -874,8 +860,31 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const stepsWithMandatory = applyMandatorySettings({ steps }, mandatorySettings);
   const hardAnchors = deriveHardAnchors(stepsWithMandatory);
   const ceremony = mapCeremony(event);
+  const ceremonyStep = stepsWithMandatory.find((step) => /ceremony/i.test(step.title ?? ''));
+  if (ceremony.type && ceremonyStep) {
+    ceremonyStep.ceremony = ceremony;
+    delete ceremonyStep.ceremonyType;
+    delete ceremonyStep.ceremonyLocation;
+  }
   const ceremonyScript = section(parsed, 'CEREMONY SCRIPT');
   if (ceremonyScript) mapCeremonyScript(ceremonyScript, stepsWithMandatory);
+
+  // Game steps own their question list. Match by id/title, then remove the old
+  // optionalFlag/gameId indirection.
+  for (const step of stepsWithMandatory) {
+    const match =
+      gameLists.find((list) => list?.id && list.id === step.gameId) ??
+      gameLists.find(
+        (list) =>
+          typeof list?.title === 'string' &&
+          list.title.trim().toLowerCase() === String(step.title ?? '').trim().toLowerCase(),
+      );
+    if (match) step.game = match;
+    delete step.gameId;
+    if (step.optionalFlag === 'games' || step.optionalFlag === 'wishes') {
+      delete step.optionalFlag;
+    }
+  }
   const languagesSource = section(parsed, 'LANGUAGES');
   const kitchenSource = section(parsed, 'KITCHEN');
   const extensionSource = section(parsed, 'EXTENSIONS');
@@ -964,9 +973,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     speeches,
     witnesses: mapWitnesses(section(parsed, 'WITNESSES')),
     cake,
-    games,
     privacy,
-    ceremony: ceremony.type ? ceremony : undefined,
     musicPolicy,
     attractions,
     extensions,

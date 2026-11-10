@@ -72,7 +72,7 @@ Canonical order and mapping:
 | 17 | `## GUEST REQUESTS` | no | `musicPolicy.requestWindow`, `requestsOpen` |
 | 18 | `## SPEECHES` | no | `speeches` |
 | 19 | `## CAKE` | no | `cake` |
-| 20 | `## GAMES` | no | `games` (schema still pending approval) |
+| 20 | `## GAMES` | no | `steps[].game` |
 | 21 | `## KITCHEN` | no | `kitchen` |
 | 22 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
 | 23 | `## PRIVACY` | no | `privacy` (encryption metadata only) |
@@ -278,7 +278,7 @@ scripts are allowed unless `speechMode` requires them.
 
 ### CAKE / GAMES / KITCHEN
 
-Direct table/key mapping to `cake`, `games` and `kitchen.*`. `GAMES` writes only
+Direct table/key mapping to `cake`, `steps[].game` and `kitchen.*`. `GAMES` writes only
 `YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
 `docs/optional-games.md`).
 
@@ -346,18 +346,18 @@ structured flags below.
 
 | Canonical step | Flag / type |
 | --- | --- |
-| Ceremony | `ceremonyType` (`RELIGIOUS` / `CIVIL` / `HUMANIST`) |
+| Ceremony | `ceremony` (`RELIGIOUS` / `CIVIL` / `HUMANIST`) |
 | Vin d'honneur / Cocktail | FLEXIBLE |
 | Bread & Salt | FLEXIBLE |
-| Wishes | `optionalFlag: wishes` |
+| Wishes | step presence (no flag) |
 | Grand Entrance | `grandEntranceOrder` (`GUESTS_FIRST` / `NEWLYWEDS_FIRST`) |
 | Dinner | FLEXIBLE (speeches attach) + a mandatory kitchen course |
 | First Dance | `firstDanceMode` (`NORMAL` / `FAKE`) |
 | Wedding Cake | HARD_ANCHOR + the `CAKE` section |
 | Dance with Bride and Groom | game step |
 | Supper I / II / III… | mandatory kitchen course (variable-length list) |
-| Test Wiedzy | `optionalFlag: games` |
-| Test Zgodności | `optionalFlag: games` |
+| Test Wiedzy | `game` question list on the step |
+| Test Zgodności | `game` question list on the step |
 | Oczepiny | `optionalFlag: oczepiny` |
 | Last Dance | FLEXIBLE |
 

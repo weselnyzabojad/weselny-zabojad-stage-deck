@@ -103,8 +103,7 @@
       "durationMin": 30,
       "title": "Wishes",
       "type": "FLEXIBLE",
-      "location": "Garden",
-      "optionalFlag": "wishes"
+      "location": "Garden"
     },
     {
       "id": "step_08",
@@ -131,8 +130,14 @@
       "title": "Test Wiedzy",
       "type": "FLEXIBLE",
       "location": "Main Hall",
-      "optionalFlag": "games",
-      "gameId": "test_wiedzy"
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "gameType": "TEST_WIEDZY",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
     },
     {
       "id": "step_11",
@@ -141,8 +146,14 @@
       "title": "Test Zgodności",
       "type": "FLEXIBLE",
       "location": "Main Hall",
-      "optionalFlag": "games",
-      "gameId": "test_zgodnosci"
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodności",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
     },
     {
       "id": "step_12",

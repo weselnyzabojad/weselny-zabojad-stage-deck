@@ -80,68 +80,6 @@
     "musicPolicy": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/music-policy.json#/properties/musicPolicy"
     },
-    "ceremony": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "Ceremony variant and MC support requirements from the Google Doc.",
-      "properties": {
-        "type": { "enum": ["RELIGIOUS", "CIVIL", "HUMANIST"] },
-        "mcSupportRequested": { "type": "boolean" },
-        "mcTranslationHelpRequested": { "type": "boolean" },
-        "location": { "type": "string" },
-        "notes": { "type": "string" }
-      }
-    },
-    "wishes": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": { "type": "boolean" }
-      }
-    },
-    "games": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": { "type": "boolean" },
-        "questionLists": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "title"],
-            "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "title": { "type": "string", "minLength": 1 },
-              "gameType": { "enum": ["TEST_WIEDZY", "TEST_ZGODNOSCI", "OTHER"] },
-              "enabled": { "type": "boolean" },
-              "sourceDocId": { "type": "string" },
-              "status": { "enum": ["AVAILABLE", "MISSING", "UNAVAILABLE"] },
-              "questions": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["id"],
-                  "properties": {
-                    "id": { "type": "string", "minLength": 1 },
-                    "prompt": {
-                      "type": ["string", "object"],
-                      "additionalProperties": { "type": "string" }
-                    },
-                    "level": { "enum": ["EASY", "MEDIUM", "HARD"] },
-                    "answer": {
-                      "type": ["string", "object"],
-                      "additionalProperties": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "cake": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/cake.json#/properties/cake"
     },

@@ -52,6 +52,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Mandatory data embedded in timeline steps | Complete (#622) |
 | `venueDetails` domain schema | Complete (#623) |
 | `venueDetails` removed from main cartridge | Complete (#628) |
+| Ceremony, games and wishes embedded in steps | Complete (#629) |
 | Full-width DJ layout | Complete (#396) |
 | Game Clicker scoped to games step | Complete (#398) |
 | Cake Protocol consolidation | Complete (#399) |
@@ -78,7 +79,7 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629) | Schema: embed `ceremony`, `games` and `wishes` into timeline `steps` | Implementation |
+
 
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
@@ -3646,5 +3647,5 @@ flag.
 Readers, the Google Doc mapper, game results and predefined-step filtering must
 read step-scoped data. Legacy cartridges with top-level `ceremony`, `games` or
 `wishes` migrate into matching steps before validation, and the old keys are
-dropped. Tracked by
+dropped. Shipped in
 [#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629).

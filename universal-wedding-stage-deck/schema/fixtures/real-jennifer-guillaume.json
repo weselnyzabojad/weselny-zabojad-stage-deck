@@ -238,6 +238,13 @@
         "playlist": "Ceremony Procession",
         "track": "Canon in D — Pachelbel",
         "cutoff": "18:20"
+      },
+      "ceremony": {
+        "type": "RELIGIOUS",
+        "mcSupportRequested": true,
+        "mcTranslationHelpRequested": false,
+        "location": "St. Mary Church",
+        "notes": "Full mass; MC introduces the couple at the church door."
       }
     },
     {
@@ -363,8 +370,7 @@
       "durationMin": 30,
       "title": "Wishes",
       "type": "FLEXIBLE",
-      "location": "Garden",
-      "optionalFlag": "wishes"
+      "location": "Garden"
     },
     {
       "id": "supper_1",
@@ -421,8 +427,27 @@
       "title": "Test Wiedzy",
       "type": "FLEXIBLE",
       "location": "Main Hall",
-      "optionalFlag": "games",
-      "gameId": "test_wiedzy"
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "sourceDocId": "gdoc_test_wiedzy",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "w01",
+            "prompt": {
+              "PL": "Gdzie poznali się Jennifer i Guillaume?",
+              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              "EN": "Where did Jennifer and Guillaume first meet?"
+            },
+            "answer": {
+              "PL": "W Krakowie",
+              "FR": "À Cracovie",
+              "EN": "In Kraków"
+            }
+          }
+        ]
+      }
     },
     {
       "id": "step_11",
@@ -431,8 +456,14 @@
       "title": "Test Zgodności",
       "type": "FLEXIBLE",
       "location": "Main Hall",
-      "optionalFlag": "games",
-      "gameId": "test_zgodnosci"
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodno?ci",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
     },
     {
       "id": "closure",
@@ -674,42 +705,6 @@
       "step_10"
     ],
     "mutation_log": []
-  },
-  "wishes": {
-    "enabled": true
-  },
-  "games": {
-    "enabled": true,
-    "questionLists": [
-      {
-        "id": "test_wiedzy",
-        "title": "Test Wiedzy",
-        "sourceDocId": "gdoc_test_wiedzy",
-        "status": "AVAILABLE",
-        "questions": [
-          {
-            "id": "w01",
-            "prompt": {
-              "PL": "Gdzie poznali się Jennifer i Guillaume?",
-              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
-              "EN": "Where did Jennifer and Guillaume first meet?"
-            },
-            "answer": {
-              "PL": "W Krakowie",
-              "FR": "À Cracovie",
-              "EN": "In Kraków"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  "ceremony": {
-    "type": "RELIGIOUS",
-    "mcSupportRequested": true,
-    "mcTranslationHelpRequested": false,
-    "location": "St. Mary Church",
-    "notes": "Full mass; MC introduces the couple at the church door."
   },
   "childrenExpected": true,
   "hardAnchors": [

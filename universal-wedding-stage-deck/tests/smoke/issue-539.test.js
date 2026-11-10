@@ -5,12 +5,12 @@ import { isPredefinedGameStep } from '../../src/lib/gameQuestions.js';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #539 hide the More/swap control on predefined game steps', () => {
-  it('detects both predefined games by stable id and leaves other steps alone', () => {
-    expect(isPredefinedGameStep({ gameId: 'test_wiedzy' })).toBe(true);
-    expect(isPredefinedGameStep({ gameId: 'test_zgodnosci' })).toBe(true);
+  it('detects both predefined games by step-scoped type and leaves other steps alone', () => {
+    expect(isPredefinedGameStep({ game: { gameType: 'TEST_WIEDZY' } })).toBe(true);
+    expect(isPredefinedGameStep({ game: { gameType: 'TEST_ZGODNOSCI' } })).toBe(true);
     // A normal step (or a custom game) must keep the control.
     expect(isPredefinedGameStep({ id: 'step_01', title: 'Cocktail' })).toBe(false);
-    expect(isPredefinedGameStep({ gameId: 'custom_game', optionalFlag: 'games' })).toBe(false);
+    expect(isPredefinedGameStep({ game: { gameType: 'OTHER' } })).toBe(false);
     // Title-only detection is never used.
     expect(isPredefinedGameStep({ title: 'Test Wiedzy' })).toBe(false);
     expect(isPredefinedGameStep(null)).toBe(false);

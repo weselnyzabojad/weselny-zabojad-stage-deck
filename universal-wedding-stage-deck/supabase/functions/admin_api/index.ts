@@ -588,18 +588,20 @@ Deno.serve(async (req) => {
       // Fetch each game's dedicated question Doc at publish time and embed the
       // parsed questions. Missing Docs stay MISSING/UNAVAILABLE rather than
       // blocking the cartridge publication.
-      if (Array.isArray(cartridge?.games?.questionLists)) {
-        for (const list of cartridge.games.questionLists) {
-          if (!list?.sourceDocId) continue;
-          try {
-            const questionDoc = await driveConnector.readSource(list.sourceDocId);
-            const questions = parseGameQuestionDoc(questionDoc.text, list.gameType);
-            list.questions = questions;
-            list.status = questions.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE';
-          } catch {
-            list.questions = [];
-            list.status = 'UNAVAILABLE';
-          }
+      const gameSteps = Array.isArray(cartridge?.steps)
+        ? cartridge.steps.filter((step) => step?.game)
+        : [];
+      for (const step of gameSteps) {
+        const list = step.game;
+        if (!list?.sourceDocId) continue;
+        try {
+          const questionDoc = await driveConnector.readSource(list.sourceDocId);
+          const questions = parseGameQuestionDoc(questionDoc.text, list.gameType);
+          list.questions = questions;
+          list.status = questions.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE';
+        } catch {
+          list.questions = [];
+          list.status = 'UNAVAILABLE';
         }
       }
 

@@ -27,6 +27,6 @@ describe('issue #398 Game Clicker only on the games step', () => {
 
   it('keeps the game clicker available on the games step', () => {
     const games = DEMO_WEDDING.steps.find((step) => step.id === 'step_10');
-    expect(games.optionalFlag).toBe('games');
+    expect(games.game).toMatchObject({ id: 'test_wiedzy' });
   });
 });

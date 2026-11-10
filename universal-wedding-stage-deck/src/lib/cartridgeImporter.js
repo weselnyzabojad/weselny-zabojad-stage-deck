@@ -78,6 +78,48 @@ const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', '
 // Issue #75: delete, do not migrate. Old v1.1 cartridges may still contain the
 // retired fields; strip them before validation so the importer accepts the
 // cartridge and saves a clean object without those keys.
+function migrateCeremonyGamesWishes(cartridge) {
+  const steps = Array.isArray(cartridge.steps) ? cartridge.steps : [];
+
+  if (cartridge.ceremony && typeof cartridge.ceremony === 'object') {
+    const step =
+      steps.find((entry) => /ceremony/i.test(entry.title ?? '')) ??
+      steps.find((entry) => entry.ceremonyType);
+    if (step) {
+      step.ceremony = cartridge.ceremony;
+      delete step.ceremonyType;
+      delete step.ceremonyLocation;
+    }
+    delete cartridge.ceremony;
+  }
+
+  const gameLists = Array.isArray(cartridge.games?.questionLists)
+    ? cartridge.games.questionLists
+    : [];
+  for (const list of gameLists) {
+    const step =
+      steps.find((entry) => entry.gameId && entry.gameId === list.id) ??
+      steps.find(
+        (entry) =>
+          String(entry.title ?? '').trim().toLowerCase() ===
+          String(list.title ?? '').trim().toLowerCase(),
+      );
+    if (step) {
+      step.game = list;
+      delete step.gameId;
+      if (step.optionalFlag === 'games') delete step.optionalFlag;
+    }
+  }
+  delete cartridge.games;
+
+  if (cartridge.wishes) {
+    for (const step of steps) {
+      if (step.optionalFlag === 'wishes') delete step.optionalFlag;
+    }
+    delete cartridge.wishes;
+  }
+}
+
 function migrateLegacyCouple(cartridge) {
   const legacyName = typeof cartridge.couple === 'string' ? cartridge.couple.trim() : '';
   if (!cartridge.coupleProfile && legacyName) {
@@ -101,6 +143,7 @@ export function sanitizeCartridge(cartridge) {
   delete clean.venue;
   delete clean.venueLogistics;
   delete clean.venueDetails;
+  migrateCeremonyGamesWishes(clean);
   if (clean.mandatorySteps && Array.isArray(clean.steps)) {
     clean.steps = applyMandatorySettings(
       { steps: clean.steps },

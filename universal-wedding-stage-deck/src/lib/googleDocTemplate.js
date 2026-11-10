@@ -13,7 +13,7 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 1,
     marker: 'EVENT',
     required: true,
-    schemaPath: ['weddingId', 'date', 'dateISO', 'syncPin', 'servicePackage', 'childrenExpected', 'ceremony'],
+    schemaPath: ['weddingId', 'date', 'dateISO', 'syncPin', 'servicePackage', 'childrenExpected'],
     purpose: 'Identity, date, room key and service package.',
   },
   {
@@ -139,7 +139,7 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 20,
     marker: 'GAMES',
     required: false,
-    schemaPath: ['games'],
+    schemaPath: ['steps[].game'],
     purpose: 'Optional games with an explicit YES / NO / UNDECIDED answer.',
   },
   {

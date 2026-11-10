@@ -5,10 +5,10 @@ import { isPredefinedGameStep } from '../../src/lib/gameQuestions.js';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #525 hide MC Cues on predefined game steps', () => {
-  it('detects both predefined games by stable id', () => {
-    expect(isPredefinedGameStep({ gameId: 'test_wiedzy' })).toBe(true);
-    expect(isPredefinedGameStep({ gameId: 'test_zgodnosci' })).toBe(true);
-    expect(isPredefinedGameStep({ gameId: 'custom_game', optionalFlag: 'games' })).toBe(false);
+  it('detects both predefined games by step-scoped game type', () => {
+    expect(isPredefinedGameStep({ game: { gameType: 'TEST_WIEDZY' } })).toBe(true);
+    expect(isPredefinedGameStep({ game: { gameType: 'TEST_ZGODNOSCI' } })).toBe(true);
+    expect(isPredefinedGameStep({ game: { gameType: 'OTHER' } })).toBe(false);
     expect(isPredefinedGameStep({ title: 'Test Wiedzy' })).toBe(false);
     expect(isPredefinedGameStep(null)).toBe(false);
   });

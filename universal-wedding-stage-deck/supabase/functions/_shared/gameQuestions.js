@@ -96,41 +96,52 @@ export function parseGameQuestionDoc(markdown, gameType) {
 
 // Admin publish helper: attach fetched Doc text to the matching question list.
 export function applyGameQuestionDocs(cartridge, docsById = {}) {
-  const lists = cartridge?.games?.questionLists;
-  if (!Array.isArray(lists)) return cartridge;
+  const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
+  if (!steps.some((step) => step?.game)) return cartridge;
   return {
     ...cartridge,
-    games: {
-      ...cartridge.games,
-      questionLists: lists.map((list) => {
-        const textDoc = docsById[list.sourceDocId];
-        if (typeof textDoc !== 'string' || !textDoc.trim()) {
-          return list.status === 'AVAILABLE' && list.questions?.length
-            ? list
-            : { ...list, status: 'MISSING', questions: [] };
-        }
-        const questions = parseGameQuestionDoc(textDoc, list.gameType);
+    steps: steps.map((step) => {
+      const list = step?.game;
+      if (!list) return step;
+      const textDoc = docsById[list.sourceDocId];
+      if (typeof textDoc !== 'string' || !textDoc.trim()) {
         return {
+          ...step,
+          game:
+            list.status === 'AVAILABLE' && list.questions?.length
+              ? list
+              : { ...list, status: 'MISSING', questions: [] },
+        };
+      }
+      const questions = parseGameQuestionDoc(textDoc, list.gameType);
+      return {
+        ...step,
+        game: {
           ...list,
           status: questions.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE',
           questions,
-        };
-      }),
-    },
+        },
+      };
+    }),
   };
 }
 
 export const PREDEFINED_GAME_STEPS = Object.freeze([
   {
-    gameId: 'test_wiedzy',
+    id: 'test_wiedzy',
     gameType: GAME_TYPES.TEST_WIEDZY,
     title: 'Test Wiedzy',
-    optionalFlag: 'games',
   },
   {
-    gameId: 'test_zgodnosci',
+    id: 'test_zgodnosci',
     gameType: GAME_TYPES.TEST_ZGODNOSCI,
     title: 'Test Zgodności',
-    optionalFlag: 'games',
   },
 ]);
+
+export function isPredefinedGameStep(step) {
+  return (
+    step?.game?.gameType === GAME_TYPES.TEST_WIEDZY ||
+    step?.game?.gameType === GAME_TYPES.TEST_ZGODNOSCI
+  );
+}
