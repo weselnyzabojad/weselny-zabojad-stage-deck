@@ -5,7 +5,11 @@ export const CEREMONY_TYPES = {
 };
 
 export function resolveCeremony(wedding) {
-  const ceremony = wedding?.ceremony;
+  const ceremony =
+    (Array.isArray(wedding?.steps)
+      ? wedding.steps.find((step) => step?.ceremony && typeof step.ceremony === 'object')
+          ?.ceremony
+      : null) ?? wedding?.ceremony;
   if (!ceremony || typeof ceremony !== 'object') {
     return { type: null, location: null, notes: null, mcSupportRequested: false, mcTranslationHelpRequested: false };
   }

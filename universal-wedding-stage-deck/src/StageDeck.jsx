@@ -341,8 +341,8 @@ export default function StageDeck({
   const estimatedEnd = currentEntry?.projectedEnd ?? null;
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.FLEXIBLE : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
-  const game = currentStep?.gameId
-    ? buildGameClicker(WEDDING, currentStep.gameId)
+  const game = currentStep?.game?.id
+    ? buildGameClicker(WEDDING, currentStep.game.id)
     : currentStep?.teleprompter?.type === "GAME_QUESTIONS"
       ? currentStep.teleprompter
       : null;

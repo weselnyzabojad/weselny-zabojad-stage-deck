@@ -43,10 +43,10 @@ describe('issue #543 review follow-ups', () => {
     expect(view).not.toMatch(/\/first dance\//);
   });
 
-  it('detects game steps only by the stable optional flag', () => {
+  it('detects game steps only by the step game object', () => {
     const view = read('src/views/McMasterView.jsx');
 
-    expect(view).toContain("currentStep.optionalFlag === 'games'");
+    expect(view).toContain('Boolean(currentStep?.game)');
     expect(view).not.toContain('/games/i');
   });
 

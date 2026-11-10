@@ -24,8 +24,8 @@ const weddingWith = (ceremony) => ({
 
 describe('issue #303 ceremony variants', () => {
   it('validates RELIGIOUS, CIVIL and HUMANIST in the schema', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    expect(schema.properties.ceremony.properties.type.enum).toEqual([
+    const schema = JSON.parse(read('schema/domains/steps.json'));
+    expect(schema.$defs.ceremony.properties.type.enum).toEqual([
       'RELIGIOUS',
       'CIVIL',
       'HUMANIST',

@@ -76,6 +76,21 @@
       "location": "Garden"
     },
     {
+      "id": "step_ceremony",
+      "time": "17:00",
+      "durationMin": 60,
+      "title": "Ceremony",
+      "type": "FLEXIBLE",
+      "location": "St. Mary Church",
+      "ceremony": {
+        "type": "RELIGIOUS",
+        "mcSupportRequested": true,
+        "mcTranslationHelpRequested": false,
+        "location": "St. Mary Church",
+        "notes": "Full mass; MC introduces the couple at the church door."
+      }
+    },
+    {
       "id": "dinner",
       "time": "18:30",
       "durationMin": 1,
@@ -117,6 +132,14 @@
       }
     },
     {
+      "id": "step_wishes",
+      "time": "21:00",
+      "durationMin": 15,
+      "title": "Wishes",
+      "type": "FLEXIBLE",
+      "location": "Garden"
+    },
+    {
       "id": "supper_1",
       "time": "21:30",
       "durationMin": 1,
@@ -140,6 +163,70 @@
         "kind": "KITCHEN_SERVICE",
         "label": "Supper II",
         "serviceMode": "BUFFET"
+      }
+    },
+    {
+      "id": "game_test_wiedzy",
+      "time": "01:00",
+      "durationMin": 30,
+      "title": "Test Wiedzy",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "gameType": "TEST_WIEDZY",
+        "enabled": true,
+        "sourceDocId": "gdoc_test_wiedzy",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "w01",
+            "level": "EASY",
+            "prompt": {
+              "PL": "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
+              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              "EN": "Where did Jennifer and Guillaume first meet?"
+            },
+            "answer": "GROOM"
+          },
+          {
+            "id": "w02",
+            "level": "HARD",
+            "prompt": {
+              "PL": "Kto powiedział „kocham cię” pierwszy?",
+              "FR": "Qui a dit « je t’aime » en premier ?",
+              "EN": "Who said “I love you” first?"
+            },
+            "answer": "BRIDE"
+          }
+        ]
+      }
+    },
+    {
+      "id": "game_test_zgodnosci",
+      "time": "01:30",
+      "durationMin": 30,
+      "title": "Test Zgodności",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodności",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "sourceDocId": "gdoc_test_zgodnosci",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "z01",
+            "prompt": {
+              "PL": "Kto chętniej planuje spontaniczny wyjazd?",
+              "FR": "Qui planifie plus volontiers un voyage spontané ?",
+              "EN": "Who is more likely to plan a spontaneous trip?"
+            }
+          }
+        ]
       }
     },
     {
@@ -181,69 +268,6 @@
       "step_01"
     ],
     "mutation_log": []
-  },
-  "wishes": {
-    "enabled": true
-  },
-  "games": {
-    "enabled": true,
-    "questionLists": [
-      {
-        "id": "test_wiedzy",
-        "title": "Test Wiedzy",
-        "gameType": "TEST_WIEDZY",
-        "enabled": true,
-        "sourceDocId": "gdoc_test_wiedzy",
-        "status": "AVAILABLE",
-        "questions": [
-          {
-            "id": "w01",
-            "level": "EASY",
-            "prompt": {
-              "PL": "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
-              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
-              "EN": "Where did Jennifer and Guillaume first meet?"
-            },
-            "answer": "GROOM"
-          },
-          {
-            "id": "w02",
-            "level": "HARD",
-            "prompt": {
-              "PL": "Kto powiedział „kocham cię” pierwszy?",
-              "FR": "Qui a dit « je t’aime » en premier ?",
-              "EN": "Who said “I love you” first?"
-            },
-            "answer": "BRIDE"
-          }
-        ]
-      },
-      {
-        "id": "test_zgodnosci",
-        "title": "Test Zgodności",
-        "gameType": "TEST_ZGODNOSCI",
-        "enabled": true,
-        "sourceDocId": "gdoc_test_zgodnosci",
-        "status": "AVAILABLE",
-        "questions": [
-          {
-            "id": "z01",
-            "prompt": {
-              "PL": "Kto chętniej planuje spontaniczny wyjazd?",
-              "FR": "Qui planifie plus volontiers un voyage spontané ?",
-              "EN": "Who is more likely to plan a spontaneous trip?"
-            }
-          }
-        ]
-      }
-    ]
-  },
-  "ceremony": {
-    "type": "RELIGIOUS",
-    "mcSupportRequested": true,
-    "mcTranslationHelpRequested": false,
-    "location": "St. Mary Church",
-    "notes": "Full mass; MC introduces the couple at the church door."
   },
   "childrenExpected": true,
   "hardAnchors": [

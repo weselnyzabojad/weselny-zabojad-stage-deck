@@ -11,8 +11,8 @@ describe('issue #414 one timeline step per game', () => {
   it('keeps Test Wiedzy and Test Zgodności as separate demo steps', () => {
     const wiedzy = DEMO_WEDDING.steps.find((step) => step.id === 'step_10');
     const zgodnosci = DEMO_WEDDING.steps.find((step) => step.id === 'step_11');
-    expect(wiedzy).toMatchObject({ title: 'Test Wiedzy', gameId: 'test_wiedzy' });
-    expect(zgodnosci).toMatchObject({ title: 'Test Zgodności', gameId: 'test_zgodnosci' });
+    expect(wiedzy).toMatchObject({ title: 'Test Wiedzy', game: { id: 'test_wiedzy' } });
+    expect(zgodnosci).toMatchObject({ title: 'Test Zgodności', game: { id: 'test_zgodnosci' } });
   });
 
   it('filters the games cue card to the current game', () => {
@@ -39,8 +39,8 @@ describe('issue #414 one timeline step per game', () => {
 
   it('binds game steps to question lists in the Google Doc mapper', () => {
     const source = read('src/lib/googleDocCartridge.js');
-    expect(source).toContain("step?.optionalFlag !== 'games'");
-    expect(source).toContain('step.gameId = match.id');
+    expect(source).toContain('step.game = match');
+    expect(source).toContain('delete step.gameId');
     const template = read('schema/google-doc-template.md');
     expect(template).toContain('| step_10 | 01:00 | 30 | Test Wiedzy |');
     expect(template).toContain('| step_11 | 01:30 | 30 | Test Zgodności |');
@@ -49,7 +49,7 @@ describe('issue #414 one timeline step per game', () => {
 
   it('passes the current game id to the cue card', () => {
     expect(read('src/views/McMasterView.jsx')).toContain(
-      'gameId={currentStep.gameId}',
+      'gameId={currentStep.game.id}',
     );
   });
 });

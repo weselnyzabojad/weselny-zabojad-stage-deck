@@ -16,6 +16,6 @@ describe('issue #283 first guests arrival as a mandatory constraint', () => {
   });
   it('schema still supports ceremony context', () => {
     const schema = JSON.parse(read('schema/domains/steps.json'));
-    expect(schema.$defs.step.properties.ceremonyType).toBeTruthy();
+    expect(schema.$defs.ceremony.properties.type.enum).toContain('RELIGIOUS');
   });
 });

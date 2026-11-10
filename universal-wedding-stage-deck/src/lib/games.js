@@ -9,10 +9,15 @@ function localized(value, locale = 'PL') {
 }
 
 export function resolveGameQuestionLists(wedding, locale = 'PL') {
-  if (wedding?.games?.enabled !== true) return [];
-  const lists = Array.isArray(wedding?.games?.questionLists)
-    ? wedding.games.questionLists
-    : [];
+  const stepLists = (Array.isArray(wedding?.steps) ? wedding.steps : [])
+    .map((step) => step?.game)
+    .filter((game) => game && typeof game === 'object' && game.enabled !== false);
+  const lists =
+    stepLists.length > 0
+      ? stepLists
+      : wedding?.games?.enabled === true && Array.isArray(wedding?.games?.questionLists)
+        ? wedding.games.questionLists
+        : [];
 
   return lists
     .filter((list) => list && typeof list === 'object' && list.id && list.title)

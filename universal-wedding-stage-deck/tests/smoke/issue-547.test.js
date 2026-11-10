@@ -84,7 +84,7 @@ describe('issue #547 canonical step vocabulary & Plan-of-the-day mapping', () =>
     ]) {
       expect(conventions).toContain(term);
     }
-    expect(conventions).toContain('optionalFlag: games');
+    expect(conventions).toContain('game` question list on the step');
     expect(conventions).toContain('grandEntranceOrder');
     expect(conventions).toContain('Song \u2014');
   });

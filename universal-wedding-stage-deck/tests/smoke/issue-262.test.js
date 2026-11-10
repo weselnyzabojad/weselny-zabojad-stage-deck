@@ -22,8 +22,9 @@ describe('issue #262 new predefined steps', () => {
 
     const disabled = filterEnabledSteps({
       ...DEMO_WEDDING,
-      wishes: { enabled: false },
-      games: { enabled: false },
+      steps: DEMO_WEDDING.steps.filter(
+        (step) => !['step_07', 'step_10', 'step_11'].includes(step.id),
+      ),
       oczepiny: { ...DEMO_WEDDING.oczepiny, enabled: false },
     }).map((step) => step.id);
     expect(disabled).not.toContain('step_07');

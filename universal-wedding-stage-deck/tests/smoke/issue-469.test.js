@@ -32,10 +32,11 @@ const wedding = {
     bride: { firstName: 'Jennifer' },
     groom: { firstName: 'Guillaume' },
   },
-  games: {
-    enabled: true,
-    questionLists: [
-      {
+  steps: [
+    {
+      id: 'step_wiedzy',
+      title: 'Test Wiedzy',
+      game: {
         id: 'test_wiedzy',
         title: 'Test Wiedzy',
         gameType: 'TEST_WIEDZY',
@@ -44,26 +45,29 @@ const wedding = {
         sourceDocId: 'gdoc_test_wiedzy',
         questions: parseTestWiedzyDoc(wiedzyDoc),
       },
-      {
+    },
+    {
+      id: 'step_zgodnosci',
+      title: 'Test Zgodno?ci',
+      game: {
         id: 'test_zgodnosci',
-        title: 'Test Zgodności',
+        title: 'Test Zgodno?ci',
         gameType: 'TEST_ZGODNOSCI',
         enabled: false,
         status: 'AVAILABLE',
         sourceDocId: 'gdoc_test_zgodnosci',
         questions: parseTestZgodnosciDoc(zgodnosciDoc),
       },
-    ],
-  },
+    },
+  ],
 };
 
 describe('issue #469 predefined game steps and question Docs', () => {
   it('defines exactly two stable predefined game steps', () => {
-    expect(PREDEFINED_GAME_STEPS.map((step) => step.gameId)).toEqual([
+    expect(PREDEFINED_GAME_STEPS.map((step) => step.id)).toEqual([
       'test_wiedzy',
       'test_zgodnosci',
     ]);
-    expect(PREDEFINED_GAME_STEPS.every((step) => step.optionalFlag === 'games')).toBe(true);
     expect(PREDEFINED_GAME_STEPS.map((step) => step.gameType)).toEqual([
       'TEST_WIEDZY',
       'TEST_ZGODNOSCI',
@@ -89,30 +93,20 @@ describe('issue #469 predefined game steps and question Docs', () => {
 
   it('attaches fetched Docs and keeps missing Docs safe', () => {
     const cartridge = {
-      games: {
-        enabled: true,
-        questionLists: [
-          { id: 'test_wiedzy', title: 'Test Wiedzy', gameType: 'TEST_WIEDZY', sourceDocId: 'a', status: 'AVAILABLE', questions: [] },
-          { id: 'test_zgodnosci', title: 'Test Zgodności', gameType: 'TEST_ZGODNOSCI', sourceDocId: 'b', status: 'AVAILABLE', questions: [] },
-        ],
-      },
+      steps: [
+        { id: 's1', title: 'Test Wiedzy', game: { id: 'test_wiedzy', title: 'Test Wiedzy', gameType: 'TEST_WIEDZY', sourceDocId: 'a', status: 'AVAILABLE', questions: [] } },
+        { id: 's2', title: 'Test Zgodno?ci', game: { id: 'test_zgodnosci', title: 'Test Zgodno?ci', gameType: 'TEST_ZGODNOSCI', sourceDocId: 'b', status: 'AVAILABLE', questions: [] } },
+      ],
     };
     const next = applyGameQuestionDocs(cartridge, { a: wiedzyDoc, b: zgodnosciDoc });
-    expect(next.games.questionLists[0].questions).toHaveLength(3);
-    expect(next.games.questionLists[1].questions).toHaveLength(2);
+    expect(next.steps[0].game.questions).toHaveLength(3);
+    expect(next.steps[1].game.questions).toHaveLength(2);
     const missing = applyGameQuestionDocs(cartridge, { a: wiedzyDoc });
-    expect(missing.games.questionLists[1]).toMatchObject({ status: 'MISSING', questions: [] });
+    expect(missing.steps[1].game).toMatchObject({ status: 'MISSING', questions: [] });
   });
 
-  it('includes only enabled game steps after the global games flag', () => {
-    const steps = [
-      { id: 's1', optionalFlag: 'games', gameId: 'test_wiedzy' },
-      { id: 's2', optionalFlag: 'games', gameId: 'test_zgodnosci' },
-    ];
-    expect(filterEnabledSteps({ ...wedding, steps }).map((step) => step.id)).toEqual(['s1']);
-    expect(
-      filterEnabledSteps({ ...wedding, games: { ...wedding.games, enabled: false }, steps }),
-    ).toEqual([]);
+  it('includes only enabled game steps', () => {
+    expect(filterEnabledSteps(wedding).map((step) => step.id)).toEqual(['step_wiedzy']);
   });
 
   it('builds the clicker with couple first names and safe fallbacks', () => {
@@ -132,12 +126,12 @@ describe('issue #469 predefined game steps and question Docs', () => {
   it('exposes safe unavailable state for missing question docs', () => {
     const lists = resolveGameQuestionLists(
       {
-        games: {
-          enabled: true,
-          questionLists: [
-            { id: 'test_wiedzy', title: 'Test Wiedzy', status: 'MISSING', questions: [] },
-          ],
-        },
+        steps: [
+          {
+            id: 's1',
+            game: { id: 'test_wiedzy', title: 'Test Wiedzy', status: 'MISSING', questions: [] },
+          },
+        ],
       },
       'EN',
     );
@@ -146,7 +140,8 @@ describe('issue #469 predefined game steps and question Docs', () => {
 
   it('validates the extended schema and example cartridge', async () => {
     const example = JSON.parse(read('schema/wedding-cartridge.example.json'));
-    expect(example.games.questionLists.map((list) => list.gameType)).toEqual([
+    const games = example.steps.map((step) => step.game).filter(Boolean);
+    expect(games.map((list) => list.gameType)).toEqual([
       'TEST_WIEDZY',
       'TEST_ZGODNOSCI',
     ]);
@@ -154,15 +149,17 @@ describe('issue #469 predefined game steps and question Docs', () => {
 
     const bad = {
       ...example,
-      games: {
-        ...example.games,
-        questionLists: [
-          {
-            ...example.games.questionLists[0],
-            questions: [{ ...example.games.questionLists[0].questions[0], level: 'EXPERT' }],
-          },
-        ],
-      },
+      steps: example.steps.map((step) =>
+        step.game?.id === 'test_wiedzy'
+          ? {
+              ...step,
+              game: {
+                ...step.game,
+                questions: [{ ...step.game.questions[0], level: 'EXPERT' }],
+              },
+            }
+          : step,
+      ),
     };
     expect(await validateCartridge(bad)).not.toEqual([]);
   });

@@ -229,86 +229,7 @@ export const DEMO_WEDDING = {
       location: "Garden",
       notes: "One photo per guest"
     }
-  ],
-  wishes: { enabled: true },
-  games: {
-    enabled: true,
-    questionLists: [
-      {
-        id: "test_wiedzy",
-        title: "Test Wiedzy",
-        gameType: "TEST_WIEDZY",
-        enabled: true,
-        sourceDocId: "gdoc_test_wiedzy",
-        status: "AVAILABLE",
-        questions: [
-          {
-            id: "w01",
-            level: "EASY",
-            prompt: {
-              PL: "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
-              FR: "Où Jennifer et Guillaume se sont-ils rencontrés ?",
-              EN: "Where did Jennifer and Guillaume first meet?",
-            },
-            answer: "GROOM",
-          },
-          {
-            id: "w02",
-            prompt: {
-              PL: "Kto jako pierwszy powiedział „kocham cię”?",
-              FR: "Qui a dit « je t'aime » en premier ?",
-              EN: "Who said I love you first?",
-            },
-            answer: "BRIDE",
-          },
-          {
-            id: "w03",
-            level: "HARD",
-            prompt: {
-              PL: "Jak nazywa się pies Jennifer i Guillaume?",
-              FR: "Comment s'appelle le chien du couple ?",
-              EN: "What is the couple's dog called?",
-            },
-            answer: { PL: "Silvio", FR: "Silvio", EN: "Silvio" },
-          },
-        ],
-      },
-      {
-        id: "test_zgodnosci",
-        title: "Test Zgodności",
-        gameType: "TEST_ZGODNOSCI",
-        enabled: true,
-        sourceDocId: "gdoc_test_zgodnosci",
-        status: "AVAILABLE",
-        questions: [
-          {
-            id: "z01",
-            prompt: {
-              PL: "Kto chętniej planuje spontaniczny wyjazd?",
-              FR: "Qui planifie plus volontiers un voyage spontané ?",
-              EN: "Who is more likely to plan a spontaneous trip?",
-            },
-          },
-          {
-            id: "z02",
-            prompt: {
-              PL: "Kto dłużej się szykuje do wyjścia?",
-              FR: "Qui prend plus de temps pour se préparer ?",
-              EN: "Who takes longer to get ready?",
-            },
-          },
-        ],
-      },
-    ],
-  },
-  ceremony: {
-    type: "RELIGIOUS",
-    mcSupportRequested: true,
-    mcTranslationHelpRequested: false,
-    location: "St. Mary's Church",
-    notes: "Full mass; MC introduces the couple at the church door.",
-  },
-  musicPolicy: {
+  ],  musicPolicy: {
     discoPoloPolicy: "ON_REQUEST",
     mustPlay: [
       { id: "first_dance", track: "Perfect - Ed Sheeran", note: "First dance — duet version." },
@@ -470,20 +391,100 @@ export const DEMO_WEDDING = {
   steps: [
     { id: "first_guests_arrival", time: "15:30", durationMin: 1, title: "First guests arrival", type: "HARD_ANCHOR", location: "Garden", mandatory: { kind: "FIRST_GUESTS_ARRIVAL", label: "First guests arrival" } },
     { id: "step_01", time: "16:30", durationMin: 30, title: "Cocktail / Vin d'honneur", type: "FLEXIBLE", location: "Garden", dj: { playlist: "Garden Aperitif", track: "La Vie en Rose — Édith Piaf" } },
-    { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "FLEXIBLE", location: "Garden Gazebo", dj: { playlist: "Ceremony Procession", track: "Canon in D — Pachelbel", cutoff: "18:20" } },
+    { id: "step_02", time: "17:00", durationMin: 60, title: "Ceremony", type: "FLEXIBLE", location: "Garden Gazebo", ceremony: { type: "RELIGIOUS", mcSupportRequested: true, mcTranslationHelpRequested: false, location: "St. Mary's Church", notes: "Full mass; MC introduces the couple at the church door." }, dj: { playlist: "Ceremony Procession", track: "Canon in D - Pachelbel", cutoff: "18:20" } },
     { id: "step_03", time: "18:00", realStart: "18:25", planned: "18:00", durationMin: 150, title: "Grand Entrance", type: "FLEXIBLE", location: "Main Hall", photographerCue: "Group photo before the toast", isMainSongRequired: true, grandEntranceOrder: "NEWLYWEDS_FIRST", mcCues: [ { language: "PL", timing: "AT_START", text: "Prosimy o powstanie i powitanie Pary Młodej!" }, { language: "FR", timing: "AT_START", text: "Veuillez vous lever et accueillir les jeunes mariés !" }, { language: "EN", timing: "AT_START", text: "Please stand and welcome the newlyweds!" } ], dj: { playlist: "Dinner Jazz", track: "Fly Me to the Moon — Frank Sinatra", cutoff: "20:15", cutoffSec: 3600 }, teleprompter: HALL_ENTRANCE_SCRIPT },
     { id: "dinner", time: "18:30", durationMin: 15, title: "Dinner", type: "HARD_ANCHOR", location: "Main Hall", mandatory: { kind: "KITCHEN_SERVICE", label: "Dinner", serviceMode: "TABLE_SERVICE" } },
     { id: "photo_leave", time: "20:30", durationMin: 1, title: "Photographer leaves", type: "HARD_ANCHOR", location: "Terrace", mandatory: { kind: "MILESTONE", label: "Photographer leaves", milestoneKind: "PHOTO", alertBeforeMin: 45 } },
     { id: "camera_leave", time: "20:30", durationMin: 1, title: "Cameraman leaves", type: "HARD_ANCHOR", location: "Terrace", mandatory: { kind: "MILESTONE", label: "Cameraman leaves", milestoneKind: "CAMERA", alertBeforeMin: 45 } },
     { id: "step_05", time: "20:30", durationMin: 30, title: "Wedding cake", type: "HARD_ANCHOR", location: "Terrace", isMainSongRequired: true, mandatory: { kind: "CAKE_SERVICE", label: "Wedding cake", cakeServiceMode: "KITCHEN_RETURN" }, dj: { playlist: "Party Set", track: "Dancing Queen - ABBA", cutoff: "21:30" } },
     { id: "step_06", time: "21:00", durationMin: 15, title: "Wedding Thank-You", type: "FLEXIBLE", location: "Main Hall" },
-    { id: "step_07", time: "21:15", durationMin: 30, title: "Wishes", type: "FLEXIBLE", location: "Garden", optionalFlag: "wishes" },
+    { id: "step_07", time: "21:15", durationMin: 30, title: "Wishes", type: "FLEXIBLE", location: "Garden" },
     { id: "supper_1", time: "21:30", durationMin: 15, title: "Supper I", type: "HARD_ANCHOR", location: "Main Hall", mandatory: { kind: "KITCHEN_SERVICE", label: "Supper I", serviceMode: "TABLE_SERVICE" } },
     { id: "step_08", time: "21:45", durationMin: 135, title: "First Dance", type: "FLEXIBLE", location: "Main Hall", isMainSongRequired: true, firstDanceMode: "NORMAL", firstDanceStartAt: "00:12", firstDanceStopAt: "04:30", firstDanceNotes: "Key song for the DJ; fade under the applause.", song: { artist: "Ed Sheeran", title: "Perfect", Note: "Duet version if available.", source: "STREAMING" } },
     { id: "supper_2", time: "23:30", durationMin: 15, title: "Supper II", type: "HARD_ANCHOR", location: "Main Hall", mandatory: { kind: "KITCHEN_SERVICE", label: "Supper II", serviceMode: "BUFFET" } },
     { id: "step_09", time: "00:00", durationMin: 60, title: "Oczepiny", type: "FLEXIBLE", location: "Main Hall", optionalFlag: "oczepiny" },
-    { id: "step_10", time: "01:00", durationMin: 30, title: "Test Wiedzy", type: "FLEXIBLE", location: "Main Hall", optionalFlag: "games", gameId: "test_wiedzy", teleprompter: TEST_WIEDZY_GAME },
-    { id: "step_11", time: "01:30", durationMin: 30, title: "Test Zgodności", type: "FLEXIBLE", location: "Main Hall", optionalFlag: "games", gameId: "test_zgodnosci" },
+    {
+      id: "step_10",
+      time: "01:00",
+      durationMin: 30,
+      title: "Test Wiedzy",
+      type: "FLEXIBLE",
+      location: "Main Hall",
+      game: {
+        id: "test_wiedzy",
+        title: "Test Wiedzy",
+        gameType: "TEST_WIEDZY",
+        enabled: true,
+        sourceDocId: "gdoc_test_wiedzy",
+        status: "AVAILABLE",
+        questions: [
+          {
+            id: "w01",
+            level: "EASY",
+            prompt: {
+              PL: "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
+              FR: "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              EN: "Where did Jennifer and Guillaume first meet?",
+            },
+            answer: "GROOM",
+          },
+          {
+            id: "w02",
+            prompt: {
+              PL: "Kto jako pierwszy powiedział „kocham cię”?",
+              FR: "Qui a dit « je t'aime » en premier ?",
+              EN: "Who said I love you first?",
+            },
+            answer: "BRIDE",
+          },
+          {
+            id: "w03",
+            level: "HARD",
+            prompt: {
+              PL: "Jak nazywa się pies Jennifer i Guillaume?",
+              FR: "Comment s'appelle le chien du couple ?",
+              EN: "What is the couple's dog called?",
+            },
+            answer: { PL: "Silvio", FR: "Silvio", EN: "Silvio" },
+          },
+        ],
+      },
+      teleprompter: TEST_WIEDZY_GAME,
+    },
+    {
+      id: "step_11",
+      time: "01:30",
+      durationMin: 30,
+      title: "Test Zgodności",
+      type: "FLEXIBLE",
+      location: "Main Hall",
+      game: {
+        id: "test_zgodnosci",
+        title: "Test Zgodności",
+        gameType: "TEST_ZGODNOSCI",
+        enabled: true,
+        sourceDocId: "gdoc_test_zgodnosci",
+        status: "AVAILABLE",
+        questions: [
+          {
+            id: "z01",
+            prompt: {
+              PL: "Kto chętniej planuje spontaniczny wyjazd?",
+              FR: "Qui planifie plus volontiers un voyage spontané ?",
+              EN: "Who is more likely to plan a spontaneous trip?",
+            },
+          },
+          {
+            id: "z02",
+            prompt: {
+              PL: "Kto dłużej się szykuje do wyjścia?",
+              FR: "Qui prend plus de temps pour se préparer ?",
+              EN: "Who takes longer to get ready?",
+            },
+          },
+        ],
+      },
+    },
     { id: "closure", time: "02:00", durationMin: 1, title: "Wedding closure", type: "HARD_ANCHOR", location: "Main Hall", mandatory: { kind: "CLOSURE", label: "Wedding closure", closureExtensionAllowed: true, closureExtensionUntil: "03:00", lastSong: "Perfect - Ed Sheeran" } }
   ]
 };

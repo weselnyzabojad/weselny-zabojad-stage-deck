@@ -172,6 +172,48 @@ function migrateMandatorySteps(cartridge) {
   delete cartridge.mandatorySteps;
 }
 
+function migrateCeremonyGamesWishes(cartridge) {
+  const steps = Array.isArray(cartridge.steps) ? cartridge.steps : [];
+
+  if (cartridge.ceremony && typeof cartridge.ceremony === 'object') {
+    const step =
+      steps.find((entry) => /ceremony/i.test(entry.title ?? '')) ??
+      steps.find((entry) => entry.ceremonyType);
+    if (step) {
+      step.ceremony = cartridge.ceremony;
+      delete step.ceremonyType;
+      delete step.ceremonyLocation;
+    }
+    delete cartridge.ceremony;
+  }
+
+  const gameLists = Array.isArray(cartridge.games?.questionLists)
+    ? cartridge.games.questionLists
+    : [];
+  for (const list of gameLists) {
+    const step =
+      steps.find((entry) => entry.gameId && entry.gameId === list.id) ??
+      steps.find(
+        (entry) =>
+          String(entry.title ?? '').trim().toLowerCase() ===
+          String(list.title ?? '').trim().toLowerCase(),
+      );
+    if (step) {
+      step.game = list;
+      delete step.gameId;
+      if (step.optionalFlag === 'games') delete step.optionalFlag;
+    }
+  }
+  delete cartridge.games;
+
+  if (cartridge.wishes) {
+    for (const step of steps) {
+      if (step.optionalFlag === 'wishes') delete step.optionalFlag;
+    }
+    delete cartridge.wishes;
+  }
+}
+
 export function sanitizeCartridge(cartridge) {
   if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
     return cartridge;
@@ -182,6 +224,7 @@ export function sanitizeCartridge(cartridge) {
   delete clean.venue;
   delete clean.venueLogistics;
   delete clean.venueDetails;
+  migrateCeremonyGamesWishes(clean);
   migrateMandatorySteps(clean);
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 

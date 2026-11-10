@@ -10,11 +10,11 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #306 games question-list Docs', () => {
   it('validates question-list references in the schema', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    const list = schema.properties.games.properties.questionLists.items;
-    expect(list.properties.sourceDocId.type).toBe('string');
-    expect(list.properties.status.enum).toEqual(['AVAILABLE', 'MISSING', 'UNAVAILABLE']);
-    expect(list.properties.questions.type).toBe('array');
+    const schema = JSON.parse(read('schema/domains/steps.json'));
+    const game = schema.$defs.game;
+    expect(game.properties.sourceDocId.type).toBe('string');
+    expect(game.properties.status.enum).toEqual(['AVAILABLE', 'MISSING', 'UNAVAILABLE']);
+    expect(game.properties.questions.type).toBe('array');
   });
 
   it('parses available question lists from the cartridge', () => {
@@ -34,8 +34,15 @@ describe('issue #306 games question-list Docs', () => {
     expect(compat.questions.length).toBeGreaterThan(0);
   });
 
-  it('honours the optional games flag', () => {
-    expect(resolveGameQuestionLists({ ...DEMO_WEDDING, games: { enabled: false } })).toEqual([]);
+  it('honours the step-scoped game flag', () => {
+    expect(
+      resolveGameQuestionLists({
+        ...DEMO_WEDDING,
+        steps: DEMO_WEDDING.steps.map((step) =>
+          step.game ? { ...step, game: { ...step.game, enabled: false } } : step,
+        ),
+      }),
+    ).toEqual([]);
   });
 
   it('renders game content on MC without exposing source links', () => {
@@ -67,6 +74,6 @@ describe('issue #306 games question-list Docs', () => {
   it('wires the MC games cue', () => {
     const mc = read('src/views/McMasterView.jsx');
     expect(mc).toContain('GamesCueCard');
-    expect(mc).toContain("currentStep.optionalFlag === 'games'");
+    expect(mc).toContain('const isGameStep = Boolean(currentStep?.game)');
   });
 });

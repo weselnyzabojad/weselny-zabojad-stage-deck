@@ -142,7 +142,7 @@ export default function McMasterView({ model }) {
   const groupPhotoStepId = resolveGroupPhotoStepId(photoPlan, WEDDING?.steps);
   const mandatoryByStep = mapMandatoryToSteps(WEDDING, steps, { role: 'mc' });
   const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
-  const isGameStep = Boolean(currentStep && currentStep.optionalFlag === 'games');
+  const isGameStep = Boolean(currentStep?.game);
   const hideMcCues = isPredefinedGameStep(currentStep);
   // #539: predefined game steps must not offer the More/swap control.
   const hideStepOverflow = isPredefinedGameStep(currentStep);
@@ -186,8 +186,8 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep && currentStep.gameId ? (
-        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.gameId} />
+      {isGameStep ? (
+        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.game.id} />
       ) : null}
       {isCakeStep ? (
         <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} compact />
@@ -349,8 +349,8 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep && currentStep.gameId ? (
-        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.gameId} />
+      {isGameStep ? (
+        <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.game.id} />
       ) : null}
 
       {isCakeStep ? (
@@ -610,7 +610,7 @@ export default function McMasterView({ model }) {
           open
           game={game}
           weddingId={WEDDING.weddingId}
-          results={currentStep?.gameId ? liveState?.game_results?.[currentStep.gameId] ?? null : null}
+          results={currentStep?.game?.id ? liveState?.game_results?.[currentStep.game.id] ?? null : null}
           onResultsChange={setGameResults}
           onClose={closeOverlay}
         />
