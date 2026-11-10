@@ -16,6 +16,7 @@ import demographicsDomain from '../../schema/domains/demographics.json';
 import stepsDomain from '../../schema/domains/steps.json';
 import speechesDomain from '../../schema/domains/speeches.json';
 import witnessesDomain from '../../schema/domains/witnesses.json';
+import venueDetailsDomain from '../../schema/domains/venue-details.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 import { coupleDisplayName } from './coupleIdentity.js';
@@ -47,6 +48,7 @@ async function getValidator() {
       ajv.addSchema(stepsDomain);
       ajv.addSchema(speechesDomain);
       ajv.addSchema(witnessesDomain);
+      ajv.addSchema(venueDetailsDomain);
       return ajv.compile(weddingSchema);
     });
   }
@@ -98,6 +100,16 @@ export function sanitizeCartridge(cartridge) {
 
   const clean = JSON.parse(JSON.stringify(cartridge));
   migrateLegacyCouple(clean);
+  if (clean.venue || clean.venueLogistics) {
+    const legacy = clean.venueLogistics ?? {};
+    clean.venueDetails = {
+      ...legacy,
+      ...(clean.venue ? { venue: clean.venue } : {}),
+      ...(clean.venueDetails ?? {}),
+    };
+    delete clean.venue;
+    delete clean.venueLogistics;
+  }
   if (clean.mandatorySteps && Array.isArray(clean.steps)) {
     clean.steps = applyMandatorySettings(
       { steps: clean.steps },

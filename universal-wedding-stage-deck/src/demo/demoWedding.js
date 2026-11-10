@@ -85,7 +85,8 @@ export const DEMO_WEDDING = {
     groom: { firstName: "Guillaume", nationalities: ["FR"] },
     commonLanguages: ["FR", "PL", "EN"]
   },
-  venueLogistics: {
+  venueDetails: {
+    venue: "Château de la Forêt",
     timezone: "Europe/Warsaw",
     address: "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
     coordinates: { latitude: 51.05, longitude: 16.19 },

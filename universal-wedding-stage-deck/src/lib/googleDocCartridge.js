@@ -917,6 +917,12 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     }
   }
 
+  const venueSource = section(parsed, 'VENUE LOGISTICS');
+  const venueDetails = {
+    ...mapVenue(venueSource),
+    venue: text(kv(venueSource, 'Venue')) ?? text(kv(event, 'Venue')),
+  };
+
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
     ? {
@@ -990,14 +996,13 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     date,
     syncPin,
     hostingMode: normalizeHostingMode(hostingMode),
-    venue: text(kv(event, 'Venue')),
+    venueDetails,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),
     ),
     steps: stepsWithMandatory,
     hardAnchors,
-    venueLogistics: mapVenue(section(parsed, 'VENUE LOGISTICS')),
     viewVisibility: mapViewVisibility(section(parsed, 'VIEW VISIBILITY')),
     mediaTeam: table(section(parsed, 'MEDIA TEAM'), [
       'Team ID',

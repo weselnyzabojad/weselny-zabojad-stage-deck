@@ -1,0 +1,23 @@
+{
+  "$schema": "./venue-details.json",
+  "venueDetails": {
+    "venue": "Ch?teau de la For?t",
+    "address": "1 All?e des Ch?nes, 59-400 Jawor",
+    "coordinates": {
+      "latitude": 51.05,
+      "longitude": 16.19
+    },
+    "timezone": "Europe/Warsaw",
+    "manager": {
+      "name": "Anna Kowalska",
+      "phone": "+48 600 111 111",
+      "email": "anna@venue.example"
+    },
+    "installation": {
+      "windowStart": "12:00",
+      "windowEnd": "16:00",
+      "accessNotes": "Service entrance at the back."
+    },
+    "notes": "Group photos in the garden before 20:15."
+  }
+}

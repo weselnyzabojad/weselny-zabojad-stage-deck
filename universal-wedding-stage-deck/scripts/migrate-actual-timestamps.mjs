@@ -59,7 +59,7 @@ if (!eventDateISO) {
 }
 
 const timeZone = resolveVenueTimeZone(cartridge);
-if (!cartridge.venueLogistics?.timezone && !cartridge.timezone) {
+if (!cartridge.venueDetails?.timezone && !cartridge.timezone) {
   console.warn(
     `warning: ${cartridgePath} has no venue timezone; using the device timezone (${timeZone}).`,
   );

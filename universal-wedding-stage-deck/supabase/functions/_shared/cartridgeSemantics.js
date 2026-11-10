@@ -179,6 +179,16 @@ export function sanitizeCartridge(cartridge) {
 
   const clean = JSON.parse(JSON.stringify(cartridge));
   migrateLegacyCouple(clean);
+  if (clean.venue || clean.venueLogistics) {
+    const legacy = clean.venueLogistics ?? {};
+    clean.venueDetails = {
+      ...legacy,
+      ...(clean.venue ? { venue: clean.venue } : {}),
+      ...(clean.venueDetails ?? {}),
+    };
+    delete clean.venue;
+    delete clean.venueLogistics;
+  }
   migrateMandatorySteps(clean);
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
