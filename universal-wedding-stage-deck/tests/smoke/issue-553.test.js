@@ -41,7 +41,6 @@ describe('issue #553 witnesses as key persons', () => {
       name: 'Bartek',
       role: 'Best man',
       language: 'PL',
-      responsibilities: ['GAME_ORGANIZER', 'SPEECH'],
       speechIds: ['speech_witness'],
     });
     expect(result.cartridge.witnesses[0].contact).toEqual({

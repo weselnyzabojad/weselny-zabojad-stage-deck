@@ -87,7 +87,6 @@ const EXPECTED_TABLES = {
     'Language',
     'Phone',
     'Email',
-    'Responsibilities',
     'Speech IDs',
     'Notes',
   ],

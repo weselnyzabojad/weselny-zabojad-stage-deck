@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/witnesses.json",
   "title": "Witnesses domain",
-  "description": "Witnesses as key persons: identity, language, admin-only contacts, responsibilities and links to their speeches.",
+  "description": "Witnesses as key persons: identity, language, admin-only contacts and links to their speeches.",
   "type": "object",
   "properties": {
     "witnesses": {
@@ -27,16 +27,6 @@
         "PL",
         "FR",
         "EN"
-      ]
-    },
-    "responsibility": {
-      "type": "string",
-      "enum": [
-        "GAME_ORGANIZER",
-        "QUESTION_VALIDATOR",
-        "SPEECH",
-        "CONTACT",
-        "OTHER"
       ]
     },
     "witness": {
@@ -74,13 +64,6 @@
             "email": {
               "type": "string"
             }
-          }
-        },
-        "responsibilities": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/$defs/responsibility"
           }
         },
         "speechIds": {

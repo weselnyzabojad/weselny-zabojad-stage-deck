@@ -371,7 +371,6 @@ export const DEMO_WEDDING = {
       role: "Best man",
       language: "PL",
       contact: { phone: "+48 600 222 333" },
-      responsibilities: ["GAME_ORGANIZER", "SPEECH"],
       speechIds: ["speech_witness"],
       notes: "Also validates the Test Wiedzy questions with the couple."
     }

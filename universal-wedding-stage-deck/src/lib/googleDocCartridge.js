@@ -355,14 +355,6 @@ function mapSpeeches(source) {
   });
 }
 
-const WITNESS_RESPONSIBILITIES = new Set([
-  'GAME_ORGANIZER',
-  'QUESTION_VALIDATOR',
-  'SPEECH',
-  'CONTACT',
-  'OTHER',
-]);
-
 function mapWitnesses(source) {
   const rows = table(source, [
     'Witness ID',
@@ -371,7 +363,6 @@ function mapWitnesses(source) {
     'Language',
     'Phone',
     'Email',
-    'Responsibilities',
     'Speech IDs',
     'Notes',
   ]);
@@ -384,9 +375,6 @@ function mapWitnesses(source) {
       email: text(row.Email),
     };
     const language = text(row.Language)?.toUpperCase();
-    const responsibilities = list(row.Responsibilities)
-      .map((item) => item.toUpperCase().replace(/[^A-Z0-9]+/g, '_'))
-      .filter((item) => WITNESS_RESPONSIBILITIES.has(item));
     const witness = {
       id,
       name: text(row.Name) ?? id,
@@ -395,7 +383,6 @@ function mapWitnesses(source) {
     };
     if (['PL', 'FR', 'EN'].includes(language)) witness.language = language;
     if (contact.phone || contact.email) witness.contact = contact;
-    if (responsibilities.length) witness.responsibilities = [...new Set(responsibilities)];
     if (text(row.Notes)) witness.notes = text(row.Notes);
     return witness;
   });

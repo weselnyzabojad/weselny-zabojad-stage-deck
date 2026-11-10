@@ -196,7 +196,7 @@ export const SECTION_MANIFEST = Object.freeze([
     marker: 'WITNESSES',
     required: false,
     schemaPath: ['witnesses'],
-    purpose: 'Key persons: identity, language, admin-only contacts, responsibilities and speech links.',
+    purpose: 'Key persons: identity, language, admin-only contacts and speech links.',
   },
 ]);
 
