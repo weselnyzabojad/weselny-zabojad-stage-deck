@@ -10,10 +10,6 @@
         "phone": "+48 600 222 333",
         "email": "zuzia@example.com"
       },
-      "responsibilities": [
-        "GAME_ORGANIZER",
-        "SPEECH"
-      ],
       "speechIds": [
         "speech_witness"
       ],
@@ -24,10 +20,6 @@
       "name": "Valentin",
       "role": "Témoin",
       "language": "FR",
-      "responsibilities": [
-        "QUESTION_VALIDATOR",
-        "SPEECH"
-      ],
       "speechIds": [
         "speech_valentin"
       ]
