@@ -363,7 +363,9 @@ add or remove rows as needed. Each course is an exact-hour mandatory milestone.
 ## ATTRACTIONS
 
 Optional parallel attractions. They never create timeline steps. Delete rows you
-do not need; every row present in the table is active.
+do not need; every row present in the table is active. Attraction ID, Type, Name,
+Start, End and Location are required in every row; Provider and Notes are
+optional.
 
 | Attraction ID | Type | Name | Start | End | Location | Provider | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |

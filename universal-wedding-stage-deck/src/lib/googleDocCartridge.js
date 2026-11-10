@@ -560,11 +560,25 @@ function mapAttractions(source, warnings = []) {
   ]);
 
   return rows.reduce((items, row) => {
+    const attractionId = text(row['Attraction ID']);
+    const typeValue = text(row.Type);
     const name = text(row.Name);
     const startTime = paddedClock(row.Start);
     const endTime = paddedClock(row.End);
+    const location = text(row.Location);
     if (!name) {
       warnings.push('ATTRACTIONS row skipped: missing name');
+      return items;
+    }
+    const missing = [
+      !attractionId && 'Attraction ID',
+      !typeValue && 'Type',
+      !location && 'Location',
+      !text(row.Start) && 'Start',
+      !text(row.End) && 'End',
+    ].filter(Boolean);
+    if (missing.length) {
+      warnings.push(`attraction ${name}: missing ${missing.join(', ')}; row skipped`);
       return items;
     }
     if (!startTime || !endTime) {
@@ -577,14 +591,16 @@ function mapAttractions(source, warnings = []) {
     }
 
     items.push({
-      id: slug(text(row['Attraction ID']) ?? name, 'attraction'),
-      type: normalizeAttractionType(row.Type),
+      id: slug(attractionId, 'attraction'),
+      type: normalizeAttractionType(typeValue),
       name,
       startTime,
       endTime,
-      location: text(row.Location) ?? undefined,
+      location,
       provider: text(row.Provider) ?? undefined,
-      notes: text(row.Notes) ?? undefined,
+      // Notes is optional in the Doc but required by the cartridge schema, so a
+      // missing cell degrades to an empty string instead of an invalid record.
+      notes: text(row.Notes) ?? '',
     });
     return items;
   }, []);
