@@ -799,7 +799,30 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     },
   );
 
-  const importantSongs = mapImportantSongs(section(parsed, 'IMPORTANT SONGS'));
+  const importantSongsSource = section(parsed, 'IMPORTANT SONGS');
+  const importantSongs = mapImportantSongs(importantSongsSource);
+  const firstDanceStep = steps.find((step) => /first dance/i.test(step.title));
+  if (firstDanceStep && importantSongsSource) {
+    const firstDanceSong = importantSongs.find((song) => song.moment === 'FIRST_DANCE');
+    if (!firstDanceSong) {
+      warnings.push('FIRST DANCE: missing FIRST_DANCE song');
+    } else {
+      const missing = [
+        !firstDanceSong.artist && 'artist',
+        !firstDanceSong.title && 'title',
+      ].filter(Boolean);
+      if (missing.length) {
+        warnings.push(`FIRST DANCE: missing song ${missing.join(', ')}`);
+      }
+      firstDanceStep.song = {
+        artist: firstDanceSong.artist ?? '',
+        title: firstDanceSong.title ?? '',
+        // Note is optional in the Doc but required by the step schema.
+        Note: firstDanceSong.note ?? '',
+        source: firstDanceSong.source?.type ?? 'OTHER',
+      };
+    }
+  }
   const musicSource = section(parsed, 'MUSIC POLICY');
   const musicPolicy = musicSource ? mapMusicPolicy(musicSource, importantSongs, warnings) : undefined;
   const attractionsSource = section(parsed, 'ATTRACTIONS');
