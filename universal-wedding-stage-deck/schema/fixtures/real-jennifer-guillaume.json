@@ -259,8 +259,7 @@
       "dj": {
         "playlist": "Dinner Jazz",
         "track": "Fly Me to the Moon — Frank Sinatra",
-        "cutoff": "20:15",
-        "cutoffSec": 3600
+        "cutoff": "20:15"
       },
       "teleprompter": {
         "has_script": true,

@@ -114,10 +114,10 @@ the localized title.
 
 ## DJ CUES
 
-| Step ID | Playlist | Track | Cutoff | CutoffSec | Note |
-| --- | --- | --- | --- | --- | --- |
-| step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |  |
-| step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 | 3600 | Absolute cutoff wins over cutoffSec. |
+| Step ID | Playlist | Track | Cutoff | Note |
+| --- | --- | --- | --- | --- |
+| step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |
+| step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 |  |
 
 ## MC CUES
 

@@ -8,10 +8,7 @@ import {
 import { coupleDisplayName } from './coupleIdentity.js';
 
 function cutoffLabel(dj) {
-  if (!dj) return '';
-  if (dj.cutoff) return String(dj.cutoff);
-  if (Number.isFinite(dj.cutoffSec)) return `start + ${dj.cutoffSec}s`;
-  return '';
+  return dj?.cutoff ? String(dj.cutoff) : '';
 }
 
 export function buildSetListRows(timeline = []) {

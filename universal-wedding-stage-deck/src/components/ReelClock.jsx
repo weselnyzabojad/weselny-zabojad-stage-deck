@@ -161,11 +161,7 @@ export default function ReelClock({ clock, compact = false }) {
           label="DJ cutoff"
           value={cutoffLabel}
           tone={cutoffTone}
-          title={
-            clock.djCutoff?.source === 'relative'
-              ? 'Derived from the actual start + cutoffSec'
-              : 'Absolute cutoff time'
-          }
+          title="Absolute cutoff time"
         />
       </div>
     </section>

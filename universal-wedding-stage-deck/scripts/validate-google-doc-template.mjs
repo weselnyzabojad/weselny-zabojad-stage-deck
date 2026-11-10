@@ -37,7 +37,7 @@ const EXPECTED_TABLES = {
     'Optional Flag',
     'Notes',
   ],
-  'DJ CUES': ['Step ID', 'Playlist', 'Track', 'Cutoff', 'CutoffSec', 'Note'],
+  'DJ CUES': ['Step ID', 'Playlist', 'Track', 'Cutoff', 'Note'],
   'MC CUES': ['Step ID', 'Language', 'Timing', 'Text'],
   'SUBTASKS': ['Step ID', 'Subtask ID', 'Label', 'Done'],
   'VENUE LOGISTICS': null,

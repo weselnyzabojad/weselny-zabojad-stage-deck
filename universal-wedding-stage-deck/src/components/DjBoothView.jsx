@@ -149,10 +149,9 @@ export default function DjBoothView({
           <div>{t('dj.stepsDone', { done: completedCount, total: timeline.length })}</div>
         </div>
       </div>
-      {activeEntry?.step.dj?.cutoff || Number.isFinite(activeEntry?.step.dj?.cutoffSec) ? (
+      {activeEntry?.step.dj?.cutoff ? (
         <div className="w-fit rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 text-[10px] font-bold text-alert-soft">
-          {t('dj.cutoff')}{' '}
-          {activeEntry.step.dj.cutoff ?? `start + ${activeEntry.step.dj.cutoffSec}s`}
+          {t('dj.cutoff')} {activeEntry.step.dj.cutoff}
         </div>
       ) : null}
       {caps.boothCues &&
