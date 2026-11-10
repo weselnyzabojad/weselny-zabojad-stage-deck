@@ -204,7 +204,6 @@ Sunset provider: sunrise-sunset.org
 Sunset latitude: 51.05
 Sunset longitude: 16.19
 Mini session enabled: true
-Mini session latest start before sunset (min): 30
 Mini session location: Garden
 Mini session backup location: Ballroom window
 Group photos step ID:

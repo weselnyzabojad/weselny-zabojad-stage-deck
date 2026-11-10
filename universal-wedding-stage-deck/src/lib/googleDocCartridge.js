@@ -442,14 +442,16 @@ function mapPhotoPlan(source, warnings = []) {
       civilTwilightEnd: clock(kv(source, 'Civil twilight end')),
       status: text(kv(source, 'Sunset status'))?.toUpperCase() ?? 'UNAVAILABLE',
     },
-    miniSession: {
-      enabled: bool(kv(source, 'Mini session enabled'), false),
-      latestStartMinutesBeforeSunset: int(
-        kv(source, 'Mini session latest start before sunset (min)'),
-      ),
-      location: text(kv(source, 'Mini session location')),
-      backupLocation: text(kv(source, 'Mini session backup location')),
-    },
+    miniSession: (() => {
+      const enabled = bool(kv(source, 'Mini session enabled'));
+      if (enabled === null) warnings.push('MINI SESSION: missing enabled');
+      return {
+        enabled: enabled ?? false,
+        // The lead time is runtime/admin data, not a Doc value.
+        location: text(kv(source, 'Mini session location')),
+        backupLocation: text(kv(source, 'Mini session backup location')),
+      };
+    })(),
     groupPhotos: {
       stepId: text(kv(source, 'Group photos step ID')),
       location,
