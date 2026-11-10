@@ -197,8 +197,14 @@ proposal.
 
 ## PHOTO PLAN
 
+Sunset provider: sunrise-sunset.org
 Sunset latitude: 51.05
 Sunset longitude: 16.19
+Sunset last fetched at: 2026-08-20T17:05:00.000Z
+Sunset time: 20:12
+Golden hour start: 19:32
+Civil twilight end: 20:48
+Sunset status: LIVE
 Mini session enabled: true
 Mini session location: Garden
 Mini session backup location: Ballroom window
