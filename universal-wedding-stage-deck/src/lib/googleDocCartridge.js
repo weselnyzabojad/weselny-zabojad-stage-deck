@@ -529,18 +529,26 @@ function mapPhotoPlan(source, warnings = []) {
       location,
       groups,
     },
-    specialEffects: {
-      sparklers: bool(kv(source, 'Sparklers')),
-      fire: bool(kv(source, 'Fire')),
-      heavySmoke: bool(kv(source, 'Heavy smoke')),
-      other: text(kv(source, 'Other effects')),
-      approvals: {
-        sparklers: bool(kv(source, 'Sparklers approved'), false),
-        fire: bool(kv(source, 'Fire approved'), false),
-        heavySmoke: bool(kv(source, 'Heavy smoke approved'), false),
-        other: bool(kv(source, 'Other effects approved'), false),
-      },
-    },
+    specialEffects: (() => {
+      const sparklers = bool(kv(source, 'Sparklers'));
+      const fire = bool(kv(source, 'Fire'));
+      const heavySmoke = bool(kv(source, 'Heavy smoke'));
+      const missing = [
+        sparklers === null && 'Sparklers',
+        fire === null && 'Fire',
+        heavySmoke === null && 'Heavy smoke',
+      ].filter(Boolean);
+      if (missing.length) {
+        warnings.push(`SPECIAL EFFECTS: missing ${missing.join(', ')}`);
+      }
+      // Approvals are venue-manager runtime data, never Doc values.
+      return {
+        sparklers: sparklers ?? false,
+        fire: fire ?? false,
+        heavySmoke: heavySmoke ?? false,
+        other: text(kv(source, 'Other effects')),
+      };
+    })(),
     guestCoverage: (() => {
       const allGuests = bool(kv(source, 'Guest coverage all guests'));
       if (allGuests === null) warnings.push('GUEST COVERAGE: missing all guests');

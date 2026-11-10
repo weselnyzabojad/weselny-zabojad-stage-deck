@@ -53,15 +53,10 @@ describe('issue #636 per-effect venue approvals', () => {
     ).toEqual([]);
   });
 
-  it('maps per-effect approvals from the Google Doc', () => {
+  it('does not map per-effect approvals from the Google Doc', () => {
     const result = googleDocTemplateToCartridge(
       parseGoogleDocTemplate(read('schema/google-doc-template.md')),
     );
-    expect(result.cartridge.photoPlan.specialEffects.approvals).toEqual({
-      sparklers: true,
-      fire: false,
-      heavySmoke: true,
-      other: true,
-    });
+    expect(result.cartridge.photoPlan.specialEffects.approvals).toBeUndefined();
   });
 });
