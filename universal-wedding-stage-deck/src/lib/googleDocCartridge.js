@@ -494,9 +494,11 @@ function mapPhotoPlan(source) {
     },
     guestCoverage: {
       allGuests: bool(kv(source, 'Guest coverage all guests')),
-      selectedGuests: int(kv(source, 'Guest coverage selected guests')),
       description: text(kv(source, 'Guest coverage description')),
-      consent: text(kv(source, 'Guest coverage consent')),
+      groups: list(kv(source, 'Guest coverage groups')).map((label) => ({
+        id: slug(label),
+        label,
+      })),
     },
   };
 }

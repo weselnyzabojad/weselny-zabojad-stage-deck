@@ -670,15 +670,29 @@
             "allGuests": {
               "type": "boolean"
             },
-            "selectedGuests": {
-              "type": "integer",
-              "minimum": 0
-            },
             "description": {
               "type": "string"
             },
-            "consent": {
-              "type": "string"
+            "groups": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
             }
           }
         }

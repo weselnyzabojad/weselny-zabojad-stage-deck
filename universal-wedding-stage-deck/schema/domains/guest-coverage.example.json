@@ -2,8 +2,16 @@
   "$schema": "./guest-coverage.json",
   "guestCoverage": {
     "allGuests": false,
-    "selectedGuests": 12,
     "description": "Formal photos with immediate family and witnesses only.",
-    "consent": "Couple approved; announce before candid coverage."
+    "groups": [
+      {
+        "id": "immediate_family",
+        "label": "Immediate family"
+      },
+      {
+        "id": "witnesses",
+        "label": "Witnesses"
+      }
+    ]
   }
 }

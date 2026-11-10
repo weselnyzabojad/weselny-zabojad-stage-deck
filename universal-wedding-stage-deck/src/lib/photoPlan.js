@@ -195,11 +195,12 @@ export function resolvePhotoPlan(wedding) {
     ? {
         stepId: text(plan.guestCoverage.stepId),
         allGuests: plan.guestCoverage.allGuests === true,
-        selectedGuests: Number.isFinite(plan.guestCoverage.selectedGuests)
-          ? plan.guestCoverage.selectedGuests
-          : null,
         description: text(plan.guestCoverage.description),
-        consent: text(plan.guestCoverage.consent),
+        groups: Array.isArray(plan.guestCoverage.groups)
+          ? plan.guestCoverage.groups
+              .filter((group) => group && typeof group.id === 'string' && typeof group.label === 'string')
+              .map((group) => ({ id: group.id, label: group.label }))
+          : [],
       }
     : null;
 
