@@ -3749,10 +3749,11 @@ current counts.
 Google Doc. `steps[].game.questions[]` comes from the per-game question-list
 Docs.
 
-**Open TODOs.** Confirm `steps[].planned`; rework `steps[].optionalFlag`; review
-the third `hostingMode` mode; use the couple's first names instead of
-`BRIDE`/`GROOM` in `steps[].game.questions[].answer`; confirm the allowed
-`oczepiny.subEvents[].title` value set before implementation.
+**Resolved TODOs.** `steps[].planned` is app/demo-only; `steps[].optionalFlag`
+is the Doc-sourced `oczepiny`/`dj_set` feature enum; the third hosting mode is
+`DJ_MC`; `BRIDE`/`GROOM` question answers resolve to the couple's first names at
+import; and `oczepiny.subEvents[].title` is limited to the four throwings and
+the two winner-photo moments.
 
 **Deletions.** The review approved removing `cake.serveTime`,
 `demographics.languages`, `musicPolicy.importantSongs[].plannedTime`,
@@ -3762,9 +3763,9 @@ the third `hostingMode` mode; use the couple's first names instead of
 `speeches[].consent.confirmedAt`, `speeches[].mcIntro`,
 `steps[].durationMin`, `steps[].dj.cutoff`,
 `venueDetails.installation.windowEnd`, `witnesses[].role` and
-`steps[].ceremony.mcTranslationHelpRequested`. The fields remain in the current
-schemas until their per-file issue is delivered; the map is the source of truth
-for the follow-up.
+`steps[].ceremony.mcTranslationHelpRequested`. These were delivered in the
+per-file PRs. `steps[].durationMin` and `steps[].dj.cutoff` remain runtime
+timing fields; their removal is a separate timing-engine change.
 
 **Per-file issues.**
 
@@ -3788,3 +3789,25 @@ for the follow-up.
 | `venue-details.example.json` | [#673](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/673) |
 | `witnesses.example.json` | [#674](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/674) |
 | `wedding-cartridge.example.json` | [#675](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/675) |
+
+### 17.18 Follow-up review decisions (2026-11-10)
+
+Four follow-ups were raised after the per-file delivery:
+
+- **Photo-plan Doc coverage.** Every field in `photo-plan.example.json` must
+  have a Google Doc source. The current split (only sunset coordinates are Doc
+  values) is not sufficient. Tracked by
+  [#695](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/695).
+- **Config extraction.** `privacy` and `liveSyncState` are runtime/config data
+  and should move out of the wedding content model into a dedicated config
+  folder/files, with a migration path for existing cartridges. Tracked by
+  [#698](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/698).
+- **Cultural-rule statuses are Doc values.** Sto Lat, Gorzko and Bread & Salt
+  statuses must be retrieved from the `## CULTURAL RULES` table. The current
+  “missing status” warning incorrectly reads as if those statuses are not
+  Doc-sourced. Tracked by
+  [#696](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/696).
+- **French-flag light-mode background.** Add a discreet light-mode background
+  using the French flag palette: blue `#0055A4`, white `#FFFFFF`, red
+  `#EF4135`, while keeping contrast and role-view readability. Tracked by
+  [#697](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/697).
