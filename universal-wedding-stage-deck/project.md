@@ -1,8 +1,8 @@
 # Universal Wedding Stage Deck — Project Status & Roadmap
 
-**Last aligned:** 2026-11-09
+**Last aligned:** 2026-11-10
 
-**Aligned with:** `master` @ `defbbe6` (issue #543 review follow-ups)
+**Aligned with:** `master` @ `c0de440` (cartridge schema consolidation decision)
 
 **Canonical sources:** this file, [`README.md`](README.md), [`schema/README.md`](schema/README.md), and [`docs/`](docs/).
 
@@ -73,15 +73,10 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#539](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/539) | MC: remove More/swap on Test Wiedzy/Test Zgodności steps | Implementation |
-| [#541](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/541) | App-wide: stop frequent full-page reloads/white flashes | Bug fix / stability |
-| [#547](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/547) | Google Doc template blueprint: canonical step vocabulary + Plan-of-the-day mapping | Planning / template |
-| [#548](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/548) | Kitchen courses: variable-length mandatory course list on the timeline | Implementation |
-| [#549](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/549) | Add Bread and Salt and Dance-with-the-couple timeline steps | Implementation |
-| [#550](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/550) | Surface per-step MC cues in the MC view | Implementation |
-| [#551](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/551) | Capture the ceremony script as the Ceremony step teleprompter | Implementation |
-| [#552](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/552) | Parser-mapper uniform edge-case rules | Implementation |
 | [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553) | Witnesses (świadkowie/témoins) as key persons | Planning TODO |
+| [#621](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/621) | Schema: remove `couple`; drive identity UI from `coupleProfile` | Implementation |
+| [#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622) | Schema: embed `mandatorySteps` fields into timeline `steps` | Implementation |
+| [#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623) | Schema: move `venue` into venue logistics and extract `venueDetails` | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -121,6 +116,8 @@ The app-wide reload/white-flash stability issue is catalogued in
 [app-wide reload stability](#app-wide-reload-stability-decision-2026-11-09).
 The Google Doc "Plan of the day" mapping for `example.pdf` is catalogued in
 [Google Doc plan-of-the-day mapping](#google-doc-plan-of-the-day-mapping-decision-2026-11-09).
+The 2026-11-10 cartridge schema consolidation is catalogued in
+[schema consolidation](#1710-cartridge-schema-consolidation-decision-2026-11-10).
 Both registers keep #80, #245 and #459 open.
 
 ### Planning TODO register
@@ -3519,3 +3516,67 @@ normal timeline entry for DJ Standard in
 [#616](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/616):
 it maps from the Google Doc (`step_12`, `optionalFlag: dj_set`) and renders in
 the Standard timeline without the countdown.
+
+### 17.10 Cartridge schema consolidation (decision, 2026-11-10)
+
+Owner request to remove three redundant cartridge shapes. These are breaking
+schema changes: each implementation must migrate legacy cartridges before
+validation and keep the browser, Node and Edge validators plus the byte-identical
+Edge schema mirror aligned. No implementation has landed yet.
+
+**Couple identity (`couple` removed).** Delete the top-level `couple` string.
+`schema/domains/couple-profile.json` is the single source of truth: bride and
+groom first names, nationalities and `commonLanguages`. Every couple UI element
+renders from it — MC/DJ VIP top-bar identity, flags, common-language chips,
+pairing/join, admin wedding and QR cards, publish metadata, DJ export title and
+game labels. No `wedding.couple` fallback remains. The free-text Google Doc
+`Couple` line is retired. Legacy cartridges that only contain `couple` are
+migrated best-effort (split on `&` into profile first names) and stored/published
+without it; the admin database `couple` column may stay only as a derived
+listing projection. Tracked by
+[#621](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/621).
+
+**Venue details (`venue` moved, `venueLogistics` renamed).** Put the venue name
+inside the venue block and rename the block:
+
+```json
+"venueDetails": {
+  "venue": "Château de la Forêt",
+  "address": "1 Allée des Chênes, 59-400 Jawor",
+  "timezone": "Europe/Warsaw",
+  "manager": { "name": "Anna Kowalska" },
+  "installation": { "windowStart": "12:00", "windowEnd": "16:00" },
+  "notes": "Group photos in the garden before 20:15."
+}
+```
+
+Extract the block into `schema/domains/venue-details.json` and `$ref` it from the
+main schema; remove the top-level `venue` string and the inline `venueLogistics`
+definition. Admin listings/QR cards, event-time timezone lookup, the photo-plan
+venue card and the migration script read `venueDetails`. The Google Doc
+`## VENUE LOGISTICS` section gains the canonical `Venue:` key (the `## EVENT`
+`Venue` line may remain only as a compatibility fallback). Legacy `venue` and
+`venueLogistics` keys migrate into `venueDetails` before validation. Tracked by
+[#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623).
+
+**Mandatory data on steps (`mandatorySteps` removed).** Delete the top-level
+`mandatorySteps` block. Each timeline step may carry an optional `mandatory`
+object, and the step `time` remains the single owner of every clock value:
+
+| Old `mandatorySteps` field | New location |
+| --- | --- |
+| `firstGuestsArrival` | Step with `mandatory.kind: "FIRST_GUESTS_ARRIVAL"`; prestation ready stays `time - 60 min` |
+| `kitchenServices[]` | One step per course with `mandatory.kind: "KITCHEN_SERVICE"`, `id`, `name` and `serviceMode` |
+| `cakeServiceMode` | Cake step with `mandatory.kind: "CAKE_SERVICE"` |
+| `closureTime` | Closure step `time` |
+| `closureExtensionAllowed`, `closureExtensionUntil`, `lastSong` | Closure step `mandatory` object |
+| `milestones[]` | One step per milestone with `mandatory.kind: "MILESTONE"`, `label`, `milestoneKind` and `alertBeforeMin` |
+
+The existing step `type` (`HARD_ANCHOR` / `FLEXIBLE`) becomes the hard-anchor
+flag; the separate `isHardAnchor` boolean is retired. `deriveHardAnchors` reads
+`HARD_ANCHOR` steps and still emits the derived `hardAnchors[]` shape for the
+radar, reel clock and photo plan. Venue Manager edits, audit entries and the
+mandatory-update popup become step-scoped. The Google Doc `## MANDATORY STEPS`
+section remains an input, but maps into `steps[].mandatory` and creates or
+patches the corresponding steps. Tracked by
+[#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622).
