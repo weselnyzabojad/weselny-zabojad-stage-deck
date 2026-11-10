@@ -277,7 +277,6 @@ Time: 20:30
 Cutting song: Cake — The Coup
 Sparklers: true
 Photographer cue: Front-left of the cake table
-Serve time: 20:45
 
 ## GAMES
 
