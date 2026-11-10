@@ -526,9 +526,6 @@
           "type": "object",
           "additionalProperties": true,
           "properties": {
-            "source": {
-              "type": "string"
-            },
             "provider": {
               "type": "string"
             },
@@ -537,9 +534,6 @@
             },
             "longitude": {
               "type": "number"
-            },
-            "timezone": {
-              "type": "string"
             },
             "lastFetchedAt": {
               "type": "string"

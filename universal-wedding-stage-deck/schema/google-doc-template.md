@@ -198,11 +198,9 @@ proposal.
 
 ## PHOTO PLAN
 
-Sunset source: ONLINE_API
 Sunset provider: sunrise-sunset.org
 Sunset latitude: 51.05
 Sunset longitude: 16.19
-Sunset timezone: Europe/Warsaw
 Mini session enabled: true
 Mini session latest start before sunset (min): 30
 Mini session duration (min): 20
