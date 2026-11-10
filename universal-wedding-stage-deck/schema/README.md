@@ -92,7 +92,7 @@ rejected; put app-specific data under `extensions`.
 | `role` | no | Legacy display hint only; device role is local. |
 | `venue` | no | Venue name / address. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
-| `hardAnchors` | no | Derived by import from `mandatorySteps`; never authored in the Doc. |
+| `hardAnchors` | no | Derived from `HARD_ANCHOR` steps; never authored in the Doc. |
 | `demographics` | no | Guest counts / languages. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
@@ -224,32 +224,37 @@ Each rule accepts an optional `note`.
   speaker device). A missing COMPLEX script warns; it does not block admin
   publishing.
 
-## Hard anchors
+## Mandatory data and hard anchors
 
-Hard anchors are derived from admin-managed mandatory steps, not read from the
-Google Doc. Set `isHardAnchor: true` on a `mandatorySteps.milestones[]` entry or
-on a `mandatorySteps.kitchenServices[]` course. Photo and camera are separate
-milestones (`kind: "PHOTO"` and `"CAMERA"`); Oczepiny is a game step, not an
-anchor.
+Mandatory data is embedded in the timeline step it belongs to. A step may carry
+an optional `mandatory` object; the step `time` is the only clock value. Steps
+with `type: "HARD_ANCHOR"` become the derived `hardAnchors` array.
 
 ```json
 {
-  "mandatorySteps": {
-    "milestones": [
-      {
-        "id": "photo_leave",
-        "time": "20:30",
-        "label": "Photographer leaves",
-        "kind": "PHOTO",
-        "alertBeforeMin": 45,
-        "isHardAnchor": true
-      }
-    ]
+  "id": "photo_leave",
+  "time": "20:30",
+  "durationMin": 1,
+  "title": "Photographer leaves",
+  "type": "HARD_ANCHOR",
+  "location": "Terrace",
+  "mandatory": {
+    "kind": "MILESTONE",
+    "label": "Photographer leaves",
+    "milestoneKind": "PHOTO",
+    "alertBeforeMin": 45
   }
 }
 ```
 
-`deriveHardAnchors(mandatorySteps)` produces the `hardAnchors` array. `kind` is
+`mandatory.kind` is one of `FIRST_GUESTS_ARRIVAL`, `KITCHEN_SERVICE`,
+`CAKE_SERVICE`, `CLOSURE` or `MILESTONE`. Kitchen courses carry
+`serviceMode`; the cake step carries `cakeServiceMode`; the closure step carries
+`closureExtensionAllowed`, `closureExtensionUntil` and `lastSong`. Photo and
+camera are separate milestones (`milestoneKind: "PHOTO"` and `"CAMERA"`);
+Oczepiny is a game step, not an anchor.
+
+`deriveHardAnchors(steps)` produces the `hardAnchors` array. `milestoneKind` is
 one of `PHOTO`, `CAMERA`, `VENDOR`, `SUNSET`, `TRANSPORT`, `FAMILY`, `OTHER`.
 `alertBeforeMin` defaults to 45. Anchors never move; the radar compares the
 projected end of the last block before each anchor and warns on collision or

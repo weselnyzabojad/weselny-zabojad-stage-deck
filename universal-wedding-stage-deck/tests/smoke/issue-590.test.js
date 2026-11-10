@@ -23,10 +23,15 @@ describe('issue #590 steps domain schema', () => {
     }
   });
 
-  it('keeps the cartridge example valid with a minimal steps sample', () => {
+  it('keeps the cartridge example valid with mandatory step metadata', () => {
     const cartridge = json('schema/wedding-cartridge.example.json');
-    expect(cartridge.steps).toHaveLength(1);
-    expect(cartridge.steps[0]).toMatchObject({ id: 'step_01', type: 'FLEXIBLE' });
+    expect(cartridge.steps.length).toBeGreaterThan(1);
+    expect(cartridge.steps.find((step) => step.id === 'step_01')).toMatchObject({
+      type: 'FLEXIBLE',
+    });
+    expect(
+      cartridge.steps.some((step) => step.mandatory?.kind === 'KITCHEN_SERVICE'),
+    ).toBe(true);
     expect(json('schema/domains/steps.example.json').steps.length).toBeGreaterThan(1);
   });
 });

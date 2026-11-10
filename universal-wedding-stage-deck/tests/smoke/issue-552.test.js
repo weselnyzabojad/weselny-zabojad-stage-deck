@@ -30,6 +30,6 @@ describe('issue #552 uniform edge-case rules', () => {
   it('keeps strict HH:MM inputs unchanged across the mapper', () => {
     const parsed = parseGoogleDocTemplate(read('schema/google-doc-template.md'));
     const result = googleDocTemplateToCartridge(parsed);
-    expect(result.cartridge.steps[0].time).toBe('16:30');
+    expect(result.cartridge.steps.find((step) => step.id === 'step_01').time).toBe('16:30');
   });
 });

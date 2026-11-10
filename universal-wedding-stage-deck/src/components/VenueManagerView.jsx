@@ -14,8 +14,12 @@ import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
+import {
+  applyMandatorySettings,
+  settingsFromSteps,
+} from '../lib/mandatorySteps.js';
 
-const STORAGE_PREFIX = 'wzsd:venue-manager:';
+const STORAGE_PREFIX = 'wzsd:venue-manager:steps:';
 
 const DEFAULT_KITCHEN_COURSES = [
   { id: 'dinner', name: '', time: '', serviceMode: 'TABLE_SERVICE' },
@@ -37,21 +41,24 @@ function courseLabel(course, t) {
   return key ? t(key) : course?.id ?? '';
 }
 
-function loadSettings(wedding) {
-  if (typeof window === 'undefined') return wedding.mandatorySteps ?? {};
-  try {
-    const raw = window.localStorage.getItem(`${STORAGE_PREFIX}${wedding.weddingId}`);
-    if (raw) return JSON.parse(raw);
-  } catch {
-    // ignore corrupt local settings
+function loadSteps(wedding, override = null) {
+  if (Array.isArray(override?.value)) return override.value;
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = window.localStorage.getItem(`${STORAGE_PREFIX}${wedding.weddingId}`);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // ignore corrupt local steps
+    }
   }
-  return wedding.mandatorySteps ?? {};
+  return Array.isArray(wedding.steps) ? wedding.steps : [];
 }
 
-function saveSettings(wedding, settings) {
+function saveSteps(wedding, steps) {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(`${STORAGE_PREFIX}${wedding.weddingId}`, JSON.stringify(settings));
+    window.localStorage.setItem(`${STORAGE_PREFIX}${wedding.weddingId}`, JSON.stringify(steps));
   } catch {
     // local-only persistence is best effort
   }
@@ -191,19 +198,23 @@ export default function VenueManagerView({
 }) {
   const { t } = useI18n();
   const [settings, setSettings] = useState(() =>
-    mandatoryOverride?.value ?? loadSettings(wedding),
+    settingsFromSteps(loadSteps(wedding, mandatoryOverride)),
   );
   const [saved, setSaved] = useState('');
 
   useEffect(() => {
-    setSettings(mandatoryOverride?.value ?? loadSettings(wedding));
+    setSettings(settingsFromSteps(loadSteps(wedding, mandatoryOverride)));
   }, [wedding, mandatoryOverride]);
 
   const update = (patch) => {
     setSettings((current) => {
       const next = { ...current, ...patch };
-      saveSettings(wedding, next);
-      onUpdateMandatory?.(next);
+      const nextSteps = applyMandatorySettings(
+        { steps: loadSteps(wedding, mandatoryOverride) },
+        next,
+      );
+      saveSteps(wedding, nextSteps);
+      onUpdateMandatory?.(nextSteps);
       return next;
     });
     setSaved(t('venueManager.saved'));

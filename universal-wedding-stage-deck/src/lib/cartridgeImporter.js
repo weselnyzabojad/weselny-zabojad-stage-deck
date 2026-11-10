@@ -19,6 +19,7 @@ import witnessesDomain from '../../schema/domains/witnesses.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 import { coupleDisplayName } from './coupleIdentity.js';
+import { applyMandatorySettings } from './mandatorySteps.js';
 
 let validatorPromise = null;
 
@@ -97,6 +98,13 @@ export function sanitizeCartridge(cartridge) {
 
   const clean = JSON.parse(JSON.stringify(cartridge));
   migrateLegacyCouple(clean);
+  if (clean.mandatorySteps && Array.isArray(clean.steps)) {
+    clean.steps = applyMandatorySettings(
+      { steps: clean.steps },
+      clean.mandatorySteps,
+    );
+    delete clean.mandatorySteps;
+  }
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
@@ -110,9 +118,9 @@ export function sanitizeCartridge(cartridge) {
   }
 
   if (Array.isArray(clean.steps)) {
-    const computed = applyCalculatedDurations(clean.steps, {
-      closureTime: clean.mandatorySteps?.closureTime ?? null,
-    });
+    const closureTime =
+      clean.steps.find((step) => step?.mandatory?.kind === 'CLOSURE')?.time ?? null;
+    const computed = applyCalculatedDurations(clean.steps, { closureTime });
     if (computed.errors.length === 0) clean.steps = computed.steps;
   }
 

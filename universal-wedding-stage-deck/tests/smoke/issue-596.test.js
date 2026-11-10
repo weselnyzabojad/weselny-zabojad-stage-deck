@@ -31,14 +31,29 @@ describe('issue #596 admin mandatory milestones', () => {
     }
   });
 
-  it('derives anchors from the admin milestone shape', () => {
-    const anchors = deriveHardAnchors({
-      milestones: [
-        { id: 'photo_1', time: '20:30', label: 'Photo', kind: 'PHOTO', isHardAnchor: true },
-        { id: 'camera_1', time: '20:30', label: 'Camera', kind: 'CAMERA', isHardAnchor: true },
-      ],
-      kitchenServices: [{ id: 'dinner', name: 'Dinner', time: '18:30', isHardAnchor: true }],
+  it('derives anchors from step-scoped milestone data', () => {
+    const anchor = (id, label, milestoneKind) => ({
+      id,
+      time: '20:30',
+      durationMin: 1,
+      title: label,
+      type: 'HARD_ANCHOR',
+      location: '',
+      mandatory: { kind: 'MILESTONE', label, milestoneKind, alertBeforeMin: 45 },
     });
-    expect(anchors.map((anchor) => anchor.id)).toEqual(['photo_1', 'camera_1', 'kitchen_dinner']);
+    const anchors = deriveHardAnchors([
+      anchor('photo_1', 'Photo', 'PHOTO'),
+      anchor('camera_1', 'Camera', 'CAMERA'),
+      {
+        id: 'dinner',
+        time: '18:30',
+        durationMin: 1,
+        title: 'Dinner',
+        type: 'HARD_ANCHOR',
+        location: '',
+        mandatory: { kind: 'KITCHEN_SERVICE', label: 'Dinner', serviceMode: 'TABLE_SERVICE' },
+      },
+    ]);
+    expect(anchors.map((anchor) => anchor.id)).toEqual(['photo_1', 'camera_1', 'dinner']);
   });
 });

@@ -6,29 +6,34 @@ import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.j
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
+const kitchenStep = (id, name, time, serviceMode) => ({
+  id,
+  title: name,
+  time,
+  durationMin: 1,
+  type: 'HARD_ANCHOR',
+  location: '',
+  mandatory: { kind: 'KITCHEN_SERVICE', label: name, serviceMode },
+});
+
 describe('issue #548 variable-length kitchen courses', () => {
-  it('declares kitchen services as an array of named courses', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    const courses = schema.properties.mandatorySteps.properties.kitchenServices;
-    expect(courses.type).toBe('array');
-    expect(courses.items.required).toContain('id');
-    expect(courses.items.required).toContain('time');
-    expect(courses.items.properties.serviceMode.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
-    expect(courses.items.properties.name.type).toBe('string');
+  it('declares kitchen services as mandatory step metadata', () => {
+    const schema = JSON.parse(read('schema/domains/steps.json'));
+    const mandatory = schema.$defs.mandatory;
+    expect(mandatory.properties.kind.enum).toContain('KITCHEN_SERVICE');
+    expect(mandatory.properties.serviceMode.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
+    expect(schema.$defs.step.properties.mandatory).toBeTruthy();
   });
 
   it('resolves an arbitrary number of courses in serving order', () => {
     const wedding = {
-      mandatorySteps: {
-        firstGuestsArrival: '15:30',
-        kitchenServices: [
-          { id: 'dinner', name: 'Dinner', time: '16:15', serviceMode: 'TABLE_SERVICE' },
-          { id: 'supper_1', name: 'Supper I', time: '19:15', serviceMode: 'TABLE_SERVICE' },
-          { id: 'supper_2', name: 'Supper II', time: '22:30', serviceMode: 'BUFFET' },
-          { id: 'supper_3', name: 'Supper III', time: '01:00', serviceMode: 'BUFFET' },
-          { id: 'supper_4', name: 'Supper IV', time: '02:30', serviceMode: 'TABLE_SERVICE' },
-        ],
-      },
+      steps: [
+        kitchenStep('dinner', 'Dinner', '16:15', 'TABLE_SERVICE'),
+        kitchenStep('supper_1', 'Supper I', '19:15', 'TABLE_SERVICE'),
+        kitchenStep('supper_2', 'Supper II', '22:30', 'BUFFET'),
+        kitchenStep('supper_3', 'Supper III', '01:00', 'BUFFET'),
+        kitchenStep('supper_4', 'Supper IV', '02:30', 'TABLE_SERVICE'),
+      ],
     };
     const constraints = resolveMandatoryConstraints(wedding);
     expect(constraints.kitchenServices.map((course) => course.key)).toEqual([
@@ -49,15 +54,14 @@ describe('issue #548 variable-length kitchen courses', () => {
   it('maps every course from the template sub-table without dropping any', () => {
     const parsed = parseGoogleDocTemplate(read('schema/google-doc-template.md'));
     const result = googleDocTemplateToCartridge(parsed);
-    expect(result.cartridge.mandatorySteps.kitchenServices.map((course) => course.id)).toEqual([
-      'dinner',
-      'supper_1',
-      'supper_2',
-    ]);
-    expect(result.cartridge.mandatorySteps.kitchenServices[2]).toMatchObject({
-      name: 'Supper II',
+    const courses = result.cartridge.steps.filter(
+      (step) => step.mandatory?.kind === 'KITCHEN_SERVICE',
+    );
+    expect(courses.map((course) => course.id)).toEqual(['dinner', 'supper_1', 'supper_2']);
+    expect(courses[2]).toMatchObject({
+      title: 'Supper II',
       time: '23:30',
-      serviceMode: 'BUFFET',
+      mandatory: { serviceMode: 'BUFFET' },
     });
   });
 });

@@ -4,9 +4,18 @@ import { collectSemanticErrors } from '../../src/lib/cartridgeValidation.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
+const closureStep = (mandatory = {}) => ({
+  id: 'closure',
+  time: '02:00',
+  durationMin: 1,
+  title: 'Wedding closure',
+  type: 'HARD_ANCHOR',
+  location: '',
+  mandatory: { kind: 'CLOSURE', ...mandatory },
+});
+
 const base = {
-  steps: [],
-  mandatorySteps: { closureTime: '02:00', closureExtensionUntil: '03:00' },
+  steps: [closureStep({ closureExtensionUntil: '03:00' })],
 };
 
 describe('issue #448 venue extension hour', () => {
@@ -21,8 +30,8 @@ describe('issue #448 venue extension hour', () => {
 
   it('adds the optional clock field to both schemas and fixtures', () => {
     for (const path of [
-      'schema/wedding-schema-v1.1.json',
-      'supabase/functions/_shared/wedding-schema-v1.1.json',
+      'schema/domains/steps.json',
+      'supabase/functions/_shared/domains/steps.json',
     ]) {
       expect(read(path), path).toContain('"closureExtensionUntil"');
     }
@@ -46,15 +55,13 @@ describe('issue #448 venue extension hour', () => {
     expect(collectSemanticErrors(base)).toEqual([]);
     const invalid = collectSemanticErrors({
       ...base,
-      mandatorySteps: { closureTime: '02:00', closureExtensionUntil: '01:00' },
+      steps: [closureStep({ closureExtensionUntil: '01:00' })],
     });
-    expect(invalid.some((error) => error.location.includes('closureExtensionUntil'))).toBe(true);
+    expect(invalid.some((error) => error.message.includes('closure extension'))).toBe(true);
   });
 
   it('keeps old cartridges without the field valid', () => {
-    expect(
-      collectSemanticErrors({ ...base, mandatorySteps: { closureTime: '02:00' } }),
-    ).toEqual([]);
+    expect(collectSemanticErrors({ steps: [closureStep()] })).toEqual([]);
   });
 
   it('defines labels in every locale', () => {

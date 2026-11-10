@@ -19,7 +19,6 @@ const weddingWith = (ceremony) => ({
     groom: { firstName: 'B', nationalities: [] },
     commonLanguages: [],
   },
-  mandatorySteps: { firstGuestsArrival: '15:30' },
   ceremony,
 });
 

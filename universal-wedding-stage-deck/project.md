@@ -49,6 +49,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Couple common languages label | Complete (#394) |
 | Witnesses as key persons | Complete (#553) |
 | Couple identity from `coupleProfile` only | Complete (#621) |
+| Mandatory data embedded in timeline steps | Complete (#622) |
 | Full-width DJ layout | Complete (#396) |
 | Game Clicker scoped to games step | Complete (#398) |
 | Cake Protocol consolidation | Complete (#399) |
@@ -75,7 +76,6 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622) | Schema: embed `mandatorySteps` fields into timeline `steps` | Implementation |
 | [#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623) | Schema: move `venue` into venue logistics and extract `venueDetails` | Implementation |
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
@@ -3522,8 +3522,8 @@ the Standard timeline without the countdown.
 Owner request to remove three redundant cartridge shapes. These are breaking
 schema changes: each implementation must migrate legacy cartridges before
 validation and keep the browser, Node and Edge validators plus the byte-identical
-Edge schema mirror aligned. The couple identity change shipped in #621; the
-venue and mandatory-step changes remain open.
+Edge schema mirror aligned. The couple identity change shipped in #621 and the
+mandatory-step change shipped in #622; the venue change remains open.
 
 **Couple identity (`couple` removed).** Delete the top-level `couple` string.
 `schema/domains/couple-profile.json` is the single source of truth: bride and
@@ -3579,7 +3579,8 @@ flag; the separate `isHardAnchor` boolean is retired. `deriveHardAnchors` reads
 radar, reel clock and photo plan. Venue Manager edits, audit entries and the
 mandatory-update popup become step-scoped. The Google Doc `## MANDATORY STEPS`
 section remains an input, but maps into `steps[].mandatory` and creates or
-patches the corresponding steps. Tracked by
+patches the corresponding steps. Zero-duration steps represent exact-time
+milestones and closure markers. Shipped in
 [#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622).
 
 ### 17.11 Witnesses as key persons (implemented, 2026-11-10)

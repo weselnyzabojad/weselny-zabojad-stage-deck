@@ -1,5 +1,6 @@
 import { applyCalculatedDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
+import { applyMandatorySettings } from './mandatorySteps.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
 // `22.15`, `15h00`, ranges (`15:40/16:00`, `22:00-22:30`, `18:00–20:00`) and
@@ -928,11 +929,12 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       }
     : undefined;
 
-  const mandatorySteps = mapMandatory(section(parsed, 'MANDATORY STEPS'));
-  const hardAnchors = deriveHardAnchors(mandatorySteps);
+  const mandatorySettings = mapMandatory(section(parsed, 'MANDATORY STEPS'));
+  const stepsWithMandatory = applyMandatorySettings({ steps }, mandatorySettings);
+  const hardAnchors = deriveHardAnchors(stepsWithMandatory);
   const ceremony = mapCeremony(event);
   const ceremonyScript = section(parsed, 'CEREMONY SCRIPT');
-  if (ceremonyScript) mapCeremonyScript(ceremonyScript, steps);
+  if (ceremonyScript) mapCeremonyScript(ceremonyScript, stepsWithMandatory);
   const languagesSource = section(parsed, 'LANGUAGES');
   const kitchenSource = section(parsed, 'KITCHEN');
   const extensionSource = section(parsed, 'EXTENSIONS');
@@ -958,15 +960,17 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   };
 
   const liveSyncSource = section(parsed, 'LIVE SYNC STATE');
-  const liveSyncState = liveSyncSource ? mapLiveSync(liveSyncSource, steps) : undefined;
+  const liveSyncState = liveSyncSource
+    ? mapLiveSync(liveSyncSource, stepsWithMandatory)
+    : undefined;
 
-  const calculated = applyCalculatedDurations(steps, {
-    closureTime: mandatorySteps.closureTime,
+  const calculated = applyCalculatedDurations(stepsWithMandatory, {
+    closureTime: mandatorySettings.closureTime,
   });
   if (calculated.errors.length) {
     errors.push(...calculated.errors.map((message) => `TIMELINE: ${message}`));
   } else {
-    steps.splice(0, steps.length, ...calculated.steps);
+    stepsWithMandatory.splice(0, stepsWithMandatory.length, ...calculated.steps);
   }
 
   const cartridge = {
@@ -991,7 +995,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),
     ),
-    steps,
+    steps: stepsWithMandatory,
     hardAnchors,
     venueLogistics: mapVenue(section(parsed, 'VENUE LOGISTICS')),
     viewVisibility: mapViewVisibility(section(parsed, 'VIEW VISIBILITY')),
@@ -1023,7 +1027,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     cake,
     games,
     privacy,
-    mandatorySteps,
     ceremony: ceremony.type ? ceremony : undefined,
     musicPolicy,
     attractions,

@@ -63,6 +63,115 @@ function migrateLegacyCouple(cartridge) {
   delete cartridge.couple;
 }
 
+function migrateMandatorySteps(cartridge) {
+  const legacy = cartridge.mandatorySteps;
+  if (!legacy || typeof legacy !== 'object' || !Array.isArray(cartridge.steps)) return;
+  const steps = cartridge.steps;
+  const findKind = (kind) => steps.find((step) => step?.mandatory?.kind === kind);
+  const pushStep = (step) => steps.push({ durationMin: 1, location: '', ...step });
+
+  if (legacy.firstGuestsArrival) {
+    const step = findKind('FIRST_GUESTS_ARRIVAL');
+    if (step) step.time = legacy.firstGuestsArrival;
+    else pushStep({
+      id: 'first_guests_arrival',
+      time: legacy.firstGuestsArrival,
+      title: 'First guests arrival',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'FIRST_GUESTS_ARRIVAL', label: 'First guests arrival' },
+    });
+  }
+
+  for (const course of Array.isArray(legacy.kitchenServices) ? legacy.kitchenServices : []) {
+    if (!course?.time) continue;
+    const step = steps.find((entry) => entry.id === course.id);
+    const mandatory = {
+      kind: 'KITCHEN_SERVICE',
+      label: course.name ?? course.id,
+      serviceMode: course.serviceMode ?? 'TABLE_SERVICE',
+    };
+    if (step) {
+      step.time = course.time;
+      step.mandatory = mandatory;
+      step.type = course.isHardAnchor === true ? 'HARD_ANCHOR' : step.type;
+    } else {
+      pushStep({
+        id: course.id,
+        time: course.time,
+        title: course.name ?? course.id,
+        type: course.isHardAnchor === true ? 'HARD_ANCHOR' : 'FLEXIBLE',
+        mandatory,
+      });
+    }
+  }
+
+  if (legacy.cakeServiceMode) {
+    const step = findKind('CAKE_SERVICE') ?? steps.find((entry) => /cake/i.test(entry.title ?? ''));
+    if (step) {
+      step.mandatory = {
+        kind: 'CAKE_SERVICE',
+        label: step.title,
+        cakeServiceMode: legacy.cakeServiceMode,
+      };
+    }
+  }
+
+  if (legacy.closureTime) {
+    const step = findKind('CLOSURE');
+    const mandatory = {
+      kind: 'CLOSURE',
+      label: 'Wedding closure',
+      ...(legacy.closureExtensionAllowed === true ? { closureExtensionAllowed: true } : {}),
+      ...(legacy.closureExtensionUntil ? { closureExtensionUntil: legacy.closureExtensionUntil } : {}),
+      ...(legacy.lastSong ? { lastSong: legacy.lastSong } : {}),
+    };
+    if (step) {
+      step.time = legacy.closureTime;
+      step.mandatory = mandatory;
+    } else {
+      pushStep({
+        id: 'closure',
+        time: legacy.closureTime,
+        title: 'Wedding closure',
+        type: 'HARD_ANCHOR',
+        mandatory,
+      });
+    }
+  }
+
+  for (const milestone of Array.isArray(legacy.milestones) ? legacy.milestones : []) {
+    if (!milestone?.id || !milestone?.time) continue;
+    const existing = steps.find((entry) => entry.id === milestone.id);
+    if (existing) continue;
+    pushStep({
+      id: milestone.id,
+      time: milestone.time,
+      title: milestone.label ?? milestone.id,
+      type: milestone.isHardAnchor === true ? 'HARD_ANCHOR' : 'FLEXIBLE',
+      mandatory: {
+        kind: 'MILESTONE',
+        label: milestone.label ?? milestone.id,
+        milestoneKind: milestone.kind ?? 'OTHER',
+        alertBeforeMin: milestone.alertBeforeMin ?? 45,
+      },
+    });
+  }
+
+  const firstMinutes = clockMinutes(steps[0]?.time);
+  const afterMidnight = firstMinutes != null && firstMinutes >= 12 * 60;
+  const sortTime = (step) => {
+    const minutes = clockMinutes(step?.time);
+    if (minutes == null) return Number.MAX_SAFE_INTEGER;
+    return afterMidnight && minutes < 6 * 60 ? minutes + 24 * 60 : minutes;
+  };
+  cartridge.steps = steps
+    .map((step, index) => ({ step, index }))
+    .sort((a, b) => sortTime(a.step) - sortTime(b.step) || a.index - b.index)
+    .map((entry) => entry.step);
+
+  delete cartridge.mandatorySteps;
+}
+
 export function sanitizeCartridge(cartridge) {
   if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
     return cartridge;
@@ -70,6 +179,7 @@ export function sanitizeCartridge(cartridge) {
 
   const clean = JSON.parse(JSON.stringify(cartridge));
   migrateLegacyCouple(clean);
+  migrateMandatorySteps(clean);
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
@@ -90,6 +200,11 @@ function clockMinutes(clock) {
   return match ? Number(match[1]) * 60 + Number(match[2]) : null;
 }
 
+function isZeroDurationStep(step) {
+  const kind = step?.mandatory?.kind;
+  return kind === 'MILESTONE' || kind === 'CLOSURE';
+}
+
 function stepDurationErrors(steps, closureTime) {
   const errors = [];
   steps.forEach((step, index) => {
@@ -100,7 +215,12 @@ function stepDurationErrors(steps, closureTime) {
       errors.push(`step ${label}: invalid or missing time`);
       return;
     }
-    if (index === steps.length - 1) {
+    if (isZeroDurationStep(step)) return;
+
+    let nextIndex = index + 1;
+    while (nextIndex < steps.length && isZeroDurationStep(steps[nextIndex])) nextIndex += 1;
+
+    if (nextIndex >= steps.length) {
       if (!closureTime) return;
       const to = clockMinutes(closureTime);
       if (to == null) {
@@ -108,12 +228,12 @@ function stepDurationErrors(steps, closureTime) {
         return;
       }
       const duration = to < from ? to + 1440 - from : to - from;
-      if (duration === 0 || duration > 720) {
+      if (duration > 720) {
         errors.push(`step ${label}: invalid final duration ${duration} minutes`);
       }
       return;
     }
-    const next = steps[index + 1]?.time ?? steps[index + 1]?.planned ?? null;
+    const next = steps[nextIndex]?.time ?? steps[nextIndex]?.planned ?? null;
     const to = clockMinutes(next);
     if (to == null) {
       errors.push(`step ${label}: next step has invalid or missing time`);
@@ -321,8 +441,36 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
+  const mandatoryKinds = new Map();
+  steps.forEach((step, index) => {
+    const kind = step?.mandatory?.kind;
+    if (!kind) return;
+    if (kind !== 'MILESTONE' && kind !== 'KITCHEN_SERVICE') {
+      if (mandatoryKinds.has(kind)) {
+        pushError(
+          `/steps/${index}/mandatory/kind`,
+          `duplicate mandatory ${kind} (also used by "${mandatoryKinds.get(kind)}")`,
+        );
+      } else {
+        mandatoryKinds.set(kind, step.id ?? `step ${index + 1}`);
+      }
+    }
+  });
+
+  const closureStep = steps.find((step) => step?.mandatory?.kind === 'CLOSURE');
+  if (closureStep?.time && closureStep.mandatory?.closureExtensionUntil) {
+    const from = clockMinutes(closureStep.time);
+    const to = clockMinutes(closureStep.mandatory.closureExtensionUntil);
+    let delta = from == null || to == null ? null : to - from;
+    if (delta != null && delta > 720) delta -= 1440;
+    if (delta != null && delta < -720) delta += 1440;
+    if (delta == null || delta <= 0) {
+      pushError('/steps', 'closure extension must end after the closure step time');
+    }
+  }
+
   if (steps.length > 0) {
-    for (const message of stepDurationErrors(steps, cartridge?.mandatorySteps?.closureTime ?? null)) {
+    for (const message of stepDurationErrors(steps, closureStep?.time ?? null)) {
       pushError('/steps', message);
     }
   }

@@ -78,7 +78,7 @@ Canonical order and mapping:
 | 23 | `## PRIVACY` | no | `privacy` (encryption metadata only) |
 | 24 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
 | 25 | `## EXTENSIONS` | no | `extensions` |
-| 26 | `## MANDATORY STEPS` | no | `mandatorySteps` |
+| 26 | `## MANDATORY STEPS` | no | `steps[].mandatory` |
 | 29 | `## WITNESSES` | no | `witnesses` |
 
 The machine-readable source of truth is `SECTION_MANIFEST` in

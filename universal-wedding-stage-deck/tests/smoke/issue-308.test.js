@@ -27,19 +27,13 @@ describe('issue #308 simplified step types', () => {
     }
   });
 
-  it('uses FLEXIBLE for non-mandatory steps', () => {
-    expect(DEMO_WEDDING.steps.map((step) => step.type)).toEqual([
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'HARD_ANCHOR',
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'FLEXIBLE',
-      'FLEXIBLE',
-    ]);
+  it('uses only FLEXIBLE and HARD_ANCHOR step types', () => {
+    expect(new Set(DEMO_WEDDING.steps.map((step) => step.type))).toEqual(
+      new Set(['FLEXIBLE', 'HARD_ANCHOR']),
+    );
+    for (const step of DEMO_WEDDING.steps.filter((entry) => !entry.mandatory)) {
+      expect(step.type).toBe('FLEXIBLE');
+    }
   });
 
   it('uses HARD_ANCHOR only for mandatory predefined steps', () => {

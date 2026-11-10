@@ -8,6 +8,11 @@ function stepClock(step) {
   return step?.time ?? step?.planned ?? null;
 }
 
+function isZeroDurationStep(step) {
+  const kind = step?.mandatory?.kind;
+  return kind === 'MILESTONE' || kind === 'CLOSURE';
+}
+
 function durationBetween(fromClock, toClock) {
   const from = clockToMinutes(fromClock);
   const to = clockToMinutes(toClock);
@@ -35,7 +40,15 @@ export function calculateStepDurations(
       return;
     }
 
-    const isFinal = index === list.length - 1;
+    if (isZeroDurationStep(step)) {
+      durations[index] = 0;
+      return;
+    }
+
+    let nextIndex = index + 1;
+    while (nextIndex < list.length && isZeroDurationStep(list[nextIndex])) nextIndex += 1;
+
+    const isFinal = nextIndex >= list.length;
     if (isFinal) {
       if (!closureTime) {
         durations[index] = finalDurationMin;
@@ -47,7 +60,7 @@ export function calculateStepDurations(
         durations[index] = null;
         return;
       }
-      if (finalDuration === 0 || finalDuration > maxDurationMin) {
+      if (finalDuration > maxDurationMin) {
         errors.push(`step ${label}: invalid final duration ${finalDuration} minutes`);
         durations[index] = null;
         return;
@@ -56,7 +69,7 @@ export function calculateStepDurations(
       return;
     }
 
-    const next = stepClock(list[index + 1]);
+    const next = stepClock(list[nextIndex]);
     if (clockToMinutes(next) == null) {
       errors.push(`step ${label}: next step has invalid or missing time`);
       durations[index] = null;

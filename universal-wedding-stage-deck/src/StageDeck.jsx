@@ -14,6 +14,7 @@ import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from './demo/demoWedding';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
 import { deriveHardAnchors } from './lib/hardAnchors';
+import { resolveMandatoryConstraints } from './lib/mandatorySteps';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds, isMediaRole } from './lib/roles';
@@ -265,10 +266,13 @@ export default function StageDeck({
     <DevViewSwitcher currentRole={currentRole} onChange={handleViewChange} />
   ) : null;
 
-  const steps = activeSteps(WEDDING.steps, liveState);
-  const mandatorySettings =
-    liveState.media_overrides?.mandatorySteps?.value ?? WEDDING.mandatorySteps ?? {};
-  const hardAnchors = deriveHardAnchors(mandatorySettings);
+  const overriddenSteps = liveState.media_overrides?.steps?.value;
+  const steps = activeSteps(
+    Array.isArray(overriddenSteps) ? overriddenSteps : WEDDING.steps,
+    liveState,
+  );
+  const mandatorySettings = resolveMandatoryConstraints({ ...WEDDING, steps });
+  const hardAnchors = deriveHardAnchors(steps);
   const driftReport = buildDriftReport(steps, liveState, {
     hardAnchors,
     now,
@@ -437,7 +441,7 @@ export default function StageDeck({
         weddingId={WEDDING.weddingId}
         role={currentRole}
         isVipDj={djDetailTier(WEDDING) === 'vip'}
-        update={liveState.media_overrides?.mandatorySteps ?? null}
+        update={liveState.media_overrides?.steps ?? null}
       />
       <CeremonyCueCard wedding={WEDDING} role={currentRole} />
       <WeddingClosureBanner
@@ -487,7 +491,6 @@ export default function StageDeck({
             speechMode={speechMode}
             activeSpeechId={liveState.active_speech_id}
             authControl={authControl}
-            mandatoryOverride={liveState.media_overrides?.mandatorySteps ?? null}
             {...roleProps}
           />
         </AppErrorBoundary>
@@ -557,8 +560,8 @@ export default function StageDeck({
             outbox={outbox}
             theme={theme}
             onToggleTheme={toggleTheme}
-            mandatoryOverride={liveState.media_overrides?.mandatorySteps ?? null}
-            onUpdateMandatory={(settings) => setMediaOverride('mandatorySteps', settings)}
+            mandatoryOverride={liveState.media_overrides?.steps ?? null}
+            onUpdateMandatory={(nextSteps) => setMediaOverride('steps', nextSteps)}
           />
         </AppErrorBoundary>
         {statusBanners}
@@ -637,7 +640,6 @@ export default function StageDeck({
     nextEntry,
     cakeProtocol,
     cakeServiceMode,
-    mandatoryOverride: liveState.media_overrides?.mandatorySteps ?? null,
     musicPolicy,
     speechMode,
     speeches,
