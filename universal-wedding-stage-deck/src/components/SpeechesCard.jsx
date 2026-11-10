@@ -83,20 +83,8 @@ export default function SpeechesCard({ wedding, mode, speeches, activeSpeechId, 
                             : ''}
                         </span>
                       ) : null}
-                      {speech.durationMin != null ? (
-                        <span>{t('speeches.minutes', { minutes: speech.durationMin })}</span>
-                      ) : null}
-                      {speech.mic ? <span>🎙 {speech.mic}</span> : null}
                       {speech.language ? <span>{speech.language}</span> : null}
-                      {speech.readFrom ? (
-                        <span>{t('speeches.reads', { source: speech.readFrom.toLowerCase() })}</span>
-                      ) : null}
                     </div>
-                    {speech.cue ? (
-                      <div className="mt-0.5 text-[10px] text-muted">
-                        {t('speeches.cue', { cue: speech.cue })}
-                      </div>
-                    ) : null}
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-1.5">
