@@ -9,7 +9,7 @@ describe('issue #572 photo mini-session domain schema', () => {
   it('defines the domain schema and validates its example', () => {
     const domain = json('schema/domains/mini-session.json');
     expect(domain.properties.miniSession.properties.enabled.type).toBe('boolean');
-    expect(domain.properties.miniSession.properties.durationMin.type).toBe('integer');
+    expect(domain.properties.miniSession.properties.durationMin).toBeUndefined();
     const ajv = new Ajv2020({ allErrors: true, strict: false });
     expect(ajv.compile(domain)(json('schema/domains/mini-session.example.json'))).toBe(true);
   });

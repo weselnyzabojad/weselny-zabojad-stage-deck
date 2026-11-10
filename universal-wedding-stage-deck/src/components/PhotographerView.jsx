@@ -132,7 +132,6 @@ function PhotoPlanBlock({ type, data }) {
       <div className="mt-1 space-y-1 text-[11px]">
         {type === 'miniSession' ? (
           <>
-            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
             <Row label="Location" value={data.location ?? '—'} />
             <Row label="Backup" value={data.backupLocation ?? '—'} />
             <Row
@@ -303,7 +302,11 @@ export default function PhotographerView({
   const countdowns = buildSunsetCountdowns(sunset, { now, eventDateISO, timeZone });
   const plan = resolvePhotoPlan(wedding);
   const miniSessionOverride = mediaOverrides?.miniSessionTime?.value ?? null;
-  const miniSessionDuration = plan?.miniSession?.durationMin ?? sunset?.miniSession?.durationMin ?? null;
+  const miniTwinStepId = resolveMiniSessionTwinStepId(timeline, miniSessionOverride);
+  const miniTwinDuration = timeline.find(
+    (entry) => entry?.step?.id === miniTwinStepId,
+  )?.step?.durationMin;
+  const miniSessionDuration = Number.isFinite(miniTwinDuration) ? miniTwinDuration : null;
   const miniSessionStart = miniSessionOverride
     ? clockToEventDate({ clock: miniSessionOverride, eventDateISO, timeZone, after: now })
     : countdowns.latestMiniStartAt;
@@ -312,7 +315,6 @@ export default function PhotographerView({
       ? new Date(miniSessionStart.getTime() + miniSessionDuration * 60000)
       : null;
   const miniSessionDone = miniSessionCompleted(now, miniSessionEnd, eventDateISO, timeZone);
-  const miniTwinStepId = resolveMiniSessionTwinStepId(timeline, miniSessionOverride);
   const planByStep = mapPhotoPlanToSteps(plan, timeline);
   const planBodies = Object.fromEntries(
     Object.entries(planByStep).map(([stepId, entries]) => {
@@ -566,7 +568,7 @@ export default function PhotographerView({
                     <div className="mt-2 grid gap-1.5 text-[11px] sm:grid-cols-2">
                       <Row
                         label={t('photo.miniSession')}
-                        value={`${t('photo.minutes', { minutes: sunset.miniSession.durationMin ?? '—' })} · ${sunset.miniSession.location ?? t('photo.locationTbc')}`}
+                        value={sunset.miniSession.location ?? t('photo.locationTbc')}
                       />
                       <Row
                         label={t('photo.backupLocation')}

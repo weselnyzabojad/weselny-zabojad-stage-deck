@@ -86,7 +86,6 @@ function resolveMiniSession(wedding) {
     latestStartMinutesBeforeSunset: Number.isFinite(raw.latestStartMinutesBeforeSunset)
       ? raw.latestStartMinutesBeforeSunset
       : null,
-    durationMin: Number.isFinite(raw.durationMin) ? raw.durationMin : null,
     location: text(raw.location),
     backupLocation: text(raw.backupLocation),
   };
