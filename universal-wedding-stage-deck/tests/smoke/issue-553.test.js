@@ -39,10 +39,10 @@ describe('issue #553 witnesses as key persons', () => {
     expect(result.cartridge.witnesses[0]).toMatchObject({
       id: 'witness_bartek',
       name: 'Bartek',
-      role: 'Best man',
       language: 'PL',
-      speechIds: ['speech_witness'],
     });
+    expect(result.cartridge.witnesses[0]).not.toHaveProperty('role');
+    expect(result.cartridge.witnesses[0]).not.toHaveProperty('speechIds');
     expect(result.cartridge.witnesses[0].contact).toEqual({
       phone: '+48 600 222 333',
       email: 'bartek@example.com',
@@ -56,7 +56,6 @@ describe('issue #553 witnesses as key persons', () => {
       {
         id: 'witness_test',
         name: 'Test Witness',
-        role: 'Witness',
         speechIds: ['missing_speech'],
       },
     ];

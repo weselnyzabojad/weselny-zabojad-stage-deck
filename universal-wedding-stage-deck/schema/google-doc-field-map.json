@@ -193,7 +193,6 @@
     "witnesses.example.json": {
       "witnesses[].id": "no",
       "witnesses[].name": "required",
-      "witnesses[].role": "delete",
       "witnesses[].language": "required",
       "witnesses[].contact.phone": "optional",
       "witnesses[].contact.email": "optional",

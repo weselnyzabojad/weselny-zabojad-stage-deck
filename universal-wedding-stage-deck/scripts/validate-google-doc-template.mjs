@@ -72,12 +72,9 @@ const EXPECTED_TABLES = {
   'WITNESSES': [
     'Witness ID',
     'Name',
-    'Role',
     'Language',
     'Phone',
     'Email',
-    'Speech IDs',
-    'Notes',
   ],
 };
 

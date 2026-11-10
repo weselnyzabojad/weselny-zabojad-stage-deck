@@ -333,7 +333,6 @@ export const DEMO_WEDDING = {
     {
       id: "witness_bartek",
       name: "Bartek",
-      role: "Best man",
       language: "PL",
       contact: { phone: "+48 600 222 333" },
       speechIds: ["speech_witness"],

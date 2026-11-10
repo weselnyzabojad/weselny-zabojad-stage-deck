@@ -30,7 +30,7 @@ describe('issue #641 witness responsibilities cleanup', () => {
     );
     expect(result.cartridge.witnesses).toHaveLength(2);
     expect(result.cartridge.witnesses[0]).not.toHaveProperty('responsibilities');
-    expect(result.cartridge.witnesses[0].speechIds).toEqual(['speech_witness']);
+    expect(result.cartridge.witnesses[0]).not.toHaveProperty('speechIds');
     expect(read('schema/google-doc-template.md')).not.toContain('Responsibilities');
     expect(read('src/demo/demoWedding.js')).not.toContain('responsibilities');
   });

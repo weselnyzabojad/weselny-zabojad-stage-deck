@@ -403,37 +403,31 @@ function mapSpeeches(source, warnings = []) {
   }, []);
 }
 
-function mapWitnesses(source) {
-  const rows = table(source, [
-    'Witness ID',
-    'Name',
-    'Role',
-    'Language',
-    'Phone',
-    'Email',
-    'Speech IDs',
-    'Notes',
-  ]);
+function mapWitnesses(source, warnings = []) {
+  const rows = table(source, ['Witness ID', 'Name', 'Language', 'Phone', 'Email']);
   if (!rows.length) return undefined;
 
-  return rows.map((row) => {
+  return rows.reduce((witnesses, row) => {
     const id = slug(row['Witness ID']);
-    const contact = {
-      phone: text(row.Phone),
-      email: text(row.Email),
-    };
-    const language = text(row.Language)?.toUpperCase();
-    const witness = {
+    const name = text(row.Name);
+    const rawLanguage = text(row.Language)?.toUpperCase();
+    const language = ['PL', 'FR', 'EN'].includes(rawLanguage) ? rawLanguage : null;
+    const missing = [!name && 'Name', !language && 'Language'].filter(Boolean);
+    if (missing.length) {
+      const label = name ? ` ${name}` : '';
+      warnings.push(`WITNESSES row${label} skipped: missing ${missing.join(', ')}`);
+      return witnesses;
+    }
+    const phone = text(row.Phone);
+    const email = text(row.Email);
+    witnesses.push({
       id,
-      name: text(row.Name) ?? id,
-      role: text(row.Role) ?? 'Witness',
-      speechIds: list(row['Speech IDs']).map((speechId) => slug(speechId)),
-    };
-    if (['PL', 'FR', 'EN'].includes(language)) witness.language = language;
-    if (contact.phone || contact.email) witness.contact = contact;
-    if (text(row.Notes)) witness.notes = text(row.Notes);
-    return witness;
-  });
+      name,
+      language,
+      ...(phone || email ? { contact: { ...(phone ? { phone } : {}), ...(email ? { email } : {}) } } : {}),
+    });
+    return witnesses;
+  }, []);
 }
 
 function mapGames(source) {
@@ -1098,7 +1092,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN'), warnings),
     oczepiny: mapOczepiny(section(parsed, 'OCZEPINY'), warnings),
     speeches,
-    witnesses: mapWitnesses(section(parsed, 'WITNESSES')),
+    witnesses: mapWitnesses(section(parsed, 'WITNESSES'), warnings),
     cake,
     privacy,
     musicPolicy,
