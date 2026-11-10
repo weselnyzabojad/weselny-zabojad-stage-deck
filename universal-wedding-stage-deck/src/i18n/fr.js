@@ -494,6 +494,8 @@ const fr = {
   'mc.step.noNext': 'Aucune étape suivante à échanger',
   'mc.rail.showMore': 'Afficher {count} de plus',
   'mc.rail.showLess': 'Afficher moins',
+  'mc.rail.requiresPhotographer': 'Nécessite un photographe',
+  'mc.rail.noPhotographer': 'Aucun photographe disponible',
   'mc.title.signOut': 'Se déconnecter de ce rôle',
   'mc.title.forgetPin': 'PIN de la salle associé — cliquez pour oublier cet appareil',
   'mc.title.savedLocally':

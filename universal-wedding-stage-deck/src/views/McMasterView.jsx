@@ -33,7 +33,11 @@ import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import { isPredefinedGameStep } from '../lib/gameQuestions.js';
 import { resolveEventDateISO, resolveVenueTimeZone } from '../lib/eventTime.js';
 import { resolveOczepinyIndicator } from '../lib/oczepinyIndicator';
-import { resolveGroupPhotoStepId, resolvePhotoPlan } from '../lib/photoPlan.js';
+import {
+  resolveGroupPhotoStepId,
+  resolvePhotographerAvailable,
+  resolvePhotoPlan,
+} from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
 
 // Detect the moment from stable cartridge signals, never from the localized
@@ -256,6 +260,7 @@ export default function McMasterView({ model }) {
           entries={railEntries}
           activeIndex={railActiveIndex}
           currentBody={compactCurrentBody}
+          photographerAvailable={resolvePhotographerAvailable(WEDDING)}
         />
       ) : null}
 
@@ -540,6 +545,7 @@ export default function McMasterView({ model }) {
             entries={railEntries}
             activeIndex={railActiveIndex}
             currentBody={heroBody}
+            photographerAvailable={resolvePhotographerAvailable(WEDDING)}
           />
 
           {speeches?.length > 0 ? (

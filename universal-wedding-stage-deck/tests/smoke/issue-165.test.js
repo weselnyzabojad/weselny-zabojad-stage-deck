@@ -169,9 +169,6 @@ describe('issue #165 shared schema and semantic parity', () => {
     const groupPhotosDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'group-photos.json'), 'utf8'),
     );
-    const speedFotoDomain = JSON.parse(
-      await readFile(path.join(ROOT, 'schema', 'domains', 'speed-foto.json'), 'utf8'),
-    );
     const guestCoverageDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'guest-coverage.json'), 'utf8'),
     );
@@ -208,7 +205,6 @@ describe('issue #165 shared schema and semantic parity', () => {
       photoPlanDomain,
       miniSessionDomain,
       groupPhotosDomain,
-      speedFotoDomain,
       guestCoverageDomain,
       specialEffectsDomain,
       cakeDomain,

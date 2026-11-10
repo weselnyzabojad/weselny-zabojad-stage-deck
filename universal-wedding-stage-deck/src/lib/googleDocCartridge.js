@@ -395,6 +395,7 @@ function mapGames(source) {
     'Requested by',
     'Languages',
     'Existing questions',
+    'Requires photographer',
     'Notes',
   ]);
   return {
@@ -414,6 +415,7 @@ function mapGames(source) {
         title,
         gameType,
         enabled: !/^no$/i.test(text(row.Requested) ?? ''),
+        requiresPhotographer: bool(row['Requires photographer']),
         sourceDocId: docId ?? undefined,
         status: 'AVAILABLE',
         questions: [],
@@ -450,13 +452,6 @@ function mapPhotoPlan(source) {
       stepId: text(kv(source, 'Group photos step ID')),
       location: text(kv(source, 'Group photos location')),
       groups,
-    },
-    speedFoto: {
-      stepId: text(kv(source, 'Speed foto step ID')),
-      enabled: bool(kv(source, 'Speed foto enabled'), false),
-      description: text(kv(source, 'Speed foto description')),
-      durationMin: int(kv(source, 'Speed foto duration (min)')),
-      music: text(kv(source, 'Speed foto music')),
     },
     specialEffects: {
       sparklers: bool(kv(source, 'Sparklers')),
@@ -848,7 +843,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       gameLists.find(
         (list) =>
           typeof list?.title === 'string' &&
-          list.title.trim().toLowerCase() === String(step.title ?? '').trim().toLowerCase(),
+          normalizeKey(list.title) === normalizeKey(step.title),
       );
     if (match) step.game = match;
     delete step.gameId;

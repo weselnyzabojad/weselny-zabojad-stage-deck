@@ -53,6 +53,11 @@ export function resolvePhotoVisibility(wedding) {
   };
 }
 
+// A game step can require a photographer even when no photographer is hired.
+export function resolvePhotographerAvailable(wedding) {
+  return resolveMediaTeam(wedding).some((member) => member.role === 'PHOTO');
+}
+
 export function resolveMediaTeam(wedding) {
   const team = Array.isArray(wedding?.mediaTeam) ? wedding.mediaTeam : [];
 
@@ -158,24 +163,6 @@ export function resolvePhotoPlan(wedding) {
       }
     : null;
 
-  const speedFotoStepId = text(plan.speedFoto?.stepId);
-  const speedFotoStep = Array.isArray(wedding?.steps)
-    ? wedding.steps.find((step) => step?.id === speedFotoStepId) ?? null
-    : null;
-  const speedFoto = plan.speedFoto && typeof plan.speedFoto === 'object'
-    ? {
-        stepId: speedFotoStepId,
-        // speedFoto is a game timeline step; derive state/timing from the step
-        // so the photo plan does not duplicate them.
-        enabled: plan.speedFoto.enabled === true || Boolean(speedFotoStep),
-        description: text(plan.speedFoto.description) ?? text(speedFotoStep?.title),
-        durationMin: Number.isFinite(plan.speedFoto.durationMin)
-          ? plan.speedFoto.durationMin
-          : (Number.isFinite(speedFotoStep?.durationMin) ? speedFotoStep.durationMin : null),
-        music: text(plan.speedFoto.music),
-      }
-    : null;
-
   const specialEffects = plan.specialEffects && typeof plan.specialEffects === 'object'
     ? {
         stepId: text(plan.specialEffects.stepId),
@@ -208,7 +195,6 @@ export function resolvePhotoPlan(wedding) {
   return {
     miniSession: resolveMiniSession(wedding),
     groupPhotos,
-    speedFoto,
     specialEffects,
     guestCoverage,
   };
@@ -348,7 +334,6 @@ export function sunsetFreshnessLabel(sunset) {
 const PHOTO_PLAN_MATCHERS = {
   miniSession: /mini|session|golden/i,
   groupPhotos: /group|family|portrait/i,
-  speedFoto: /speed/i,
   specialEffects: /cake|sparkler|fire|smoke|effect/i,
   guestCoverage: /guest|dinner|reception/i,
 };

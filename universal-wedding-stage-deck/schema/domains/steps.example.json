@@ -166,6 +166,23 @@
       "dj": {
         "playlist": "Party Set"
       }
+    },
+    {
+      "id": "step_speed_foto",
+      "time": "03:00",
+      "durationMin": 15,
+      "title": "Speed Foto",
+      "type": "FLEXIBLE",
+      "location": "Dancefloor",
+      "game": {
+        "id": "speed_foto",
+        "title": "Speed Foto",
+        "gameType": "OTHER",
+        "enabled": true,
+        "requiresPhotographer": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
     }
   ]
 }

@@ -134,12 +134,6 @@ export const DEMO_WEDDING = {
       minGroupSize: 5,
       durationMin: 25
     },
-    speedFoto: {
-      enabled: true,
-      description: "Couple in the middle of the dance floor; guests run in, pose, and clear.",
-      durationMin: 10,
-      music: "Fast party block"
-    },
     specialEffects: {
       sparklers: true,
       fire: false,

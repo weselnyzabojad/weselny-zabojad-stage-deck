@@ -30,6 +30,7 @@ import {
   buildSunsetCountdowns,
   mapPhotoPlanToSteps,
   resolveMiniSessionTwinStepId,
+  resolvePhotographerAvailable,
   resolvePhotoPlan,
   resolvePhotoVisibility,
   resolveSunset,
@@ -119,7 +120,6 @@ function PhotoPlanBlock({ type, data }) {
   const title = {
     miniSession: 'Mini session',
     groupPhotos: 'Group photos',
-    speedFoto: 'Speed foto',
     specialEffects: 'Special effects',
     guestCoverage: 'Guest coverage',
   }[type] ?? type;
@@ -155,13 +155,6 @@ function PhotoPlanBlock({ type, data }) {
                 ))}
               </div>
             ) : null}
-          </>
-        ) : null}
-        {type === 'speedFoto' ? (
-          <>
-            {data.description ? <p className="text-ink">{data.description}</p> : null}
-            <Row label="Duration" value={`${data.durationMin ?? '—'} min`} />
-            <Row label="Music" value={data.music ?? '—'} />
           </>
         ) : null}
         {type === 'specialEffects' ? (
@@ -386,6 +379,7 @@ export default function PhotographerView({
         entries={timeline}
         activeIndex={activeIndex}
         entryBodies={cueBodies}
+        photographerAvailable={resolvePhotographerAvailable(wedding)}
       />
 
       {visibility.sunset && !miniSessionDone ? (
@@ -488,6 +482,7 @@ export default function PhotographerView({
             entries={timeline}
             activeIndex={activeIndex}
             entryBodies={cueBodies}
+            photographerAvailable={resolvePhotographerAvailable(wedding)}
           />
 
           {visibility.sunset && !miniSessionDone ? (

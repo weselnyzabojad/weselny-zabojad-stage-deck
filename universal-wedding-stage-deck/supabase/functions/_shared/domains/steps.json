@@ -483,6 +483,10 @@
         "enabled": {
           "type": "boolean"
         },
+        "requiresPhotographer": {
+          "type": "boolean",
+          "description": "The game needs a photographer on the floor (for example Speed Foto)."
+        },
         "sourceDocId": {
           "type": "string"
         },

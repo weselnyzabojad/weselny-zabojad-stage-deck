@@ -43,7 +43,8 @@ describe('issue #414 one timeline step per game', () => {
     expect(source).toContain('delete step.gameId');
     const template = read('schema/google-doc-template.md');
     expect(template).toContain('| step_10 | 01:00 | 30 | Test Wiedzy |');
-    expect(template).toContain('| step_11 | 01:30 | 30 | Test Zgodności |');
+    expect(template).toContain('| step_speed_foto | 01:30 | 15 | Speed Foto |');
+    expect(template).toContain('| step_11 | 01:45 | 15 | Test Zgodności |');
     expect(template).not.toContain('| step_10 | 01:00 | 60 | Games |');
   });
 
