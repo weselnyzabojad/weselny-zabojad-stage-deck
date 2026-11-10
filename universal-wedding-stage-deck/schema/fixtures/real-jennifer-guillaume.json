@@ -27,12 +27,10 @@
   "hostingMode": "HOST_AND_DJ",
   "culturalRules": {
     "sto_lat": {
-      "status": "STRICT_NO",
-      "note": "Inform guests: NO Sto Lat tonight!"
+      "status": "STRICT_NO"
     },
     "gorzko": {
-      "status": "STRICT_NO",
-      "note": "No Gorzko Gorzko"
+      "status": "STRICT_NO"
     },
     "bread_salt": {
       "status": "YES",
