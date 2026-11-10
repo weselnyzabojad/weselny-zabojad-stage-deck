@@ -7,7 +7,6 @@
       "latitude": 51.05,
       "longitude": 16.19
     },
-    "timezone": "Europe/Warsaw",
     "manager": {
       "name": "Anna Kowalska",
       "phone": "+48 600 111 111",
@@ -15,8 +14,7 @@
     },
     "installation": {
       "windowStart": "12:00",
-      "windowEnd": "16:00",
-      "accessNotes": "Service entrance at the back."
+      "windowEnd": "16:00"
     },
     "notes": "Group photos in the garden before 20:15."
   }
