@@ -6,7 +6,6 @@ import CakeCard from '../../src/components/CakeCard.jsx';
 const cake = {
   hasData: true,
   time: '20:30',
-  serveTime: '20:45',
   song: 'Cake — The Coup',
   sparklers: true,
   photographerCue: 'Front-left of the cake table',
@@ -20,13 +19,11 @@ describe('issue #356 cake protocol time removal', () => {
     expect(html).not.toContain('Cutting time');
     expect(html).not.toContain('Serve time');
     expect(html).not.toContain('20:30');
-    expect(html).not.toContain('20:45');
   });
 
   it('removes the compact time readout', () => {
     const html = renderToStaticMarkup(createElement(CakeCard, { cake, compact: true }));
     expect(html).not.toContain('20:30');
-    expect(html).not.toContain('20:45');
     expect(html).not.toContain('Cutting time');
   });
 

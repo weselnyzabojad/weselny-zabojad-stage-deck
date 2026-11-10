@@ -60,13 +60,6 @@ describe('semantic validation rules', () => {
     }
   });
 
-  it('rejects cake serving before the cutting time', () => {
-    const errors = errorsFor((cartridge) => {
-      cartridge.cake = { time: '21:30', serveTime: '21:00' };
-    });
-    expect(messages(errors)).toContain('serveTime cannot be before the cake cutting time');
-  });
-
   it('rejects a reversed guest-request window', () => {
     const errors = errorsFor((cartridge) => {
       cartridge.musicPolicy = { requestWindow: { start: '23:00', end: '20:00' } };

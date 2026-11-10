@@ -1474,7 +1474,9 @@ heading drops the \`(FR / PL / EN)\` suffix, and cue lines drop the \`[FR]\`,
 The cake protocol UI no longer displays cutting time or serve time. Remove the
 desktop grid and the compact \`time → serveTime\` header readout. Keep the cake
 song, sparklers, photographer cue, sync note and step state. The cartridge
-fields and schedule logic remain intact.
+fields and schedule logic stayed intact until the 2026-11-10 field review
+removed \`cake.serveTime\` in
+[#659](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/659).
 ([#356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/356))
 
 ### Cake step consolidation and Game Clicker scope (decision, 2026-11-07)
@@ -3737,9 +3739,11 @@ and by `tests/google-doc-field-map.test.js`. The validator fails when an example
 field is unflagged, a flag points at a missing field, a status is unknown, or a
 TODO references an unknown field.
 
-**Coverage.** 18 files and 247 field entries: 102 `required`, 37 `optional`,
-3 `separate`, 85 `no`, 18 `delete` entries (17 unique fields), 1 `rework` and
-1 `pending`.
+**Coverage.** The review snapshot had 18 files and 247 field entries: 102
+`required`, 37 `optional`, 3 `separate`, 85 `no`, 18 `delete` entries (17
+unique fields), 1 `rework` and 1 `pending`. Delivered per-file issues remove
+their entries from the map; run `npm run validate:google-doc-map` for the
+current counts.
 
 **Separate sources.** `speeches[].script.text` comes from a separate speech
 Google Doc. `steps[].game.questions[]` comes from the per-game question-list

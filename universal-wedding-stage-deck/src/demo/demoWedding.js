@@ -301,8 +301,7 @@ export const DEMO_WEDDING = {
     time: "20:30",
     cuttingSong: "Cake - The Coup",
     sparklers: true,
-    photographerCue: "Front-left of the cake table",
-    serveTime: "20:45"
+    photographerCue: "Front-left of the cake table"
   },
   speechMode: "COMPLEX",
   speeches: [

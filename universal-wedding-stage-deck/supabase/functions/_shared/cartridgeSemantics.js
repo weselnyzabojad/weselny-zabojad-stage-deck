@@ -418,15 +418,6 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
-  // Cake protocol (TODO 6): the serve time cannot precede the cutting time.
-  const cake = cartridge?.cake;
-  if (cake && typeof cake === 'object' && cake.time && cake.serveTime) {
-    const serveDelta = clockDeltaMinutes(cake.time, cake.serveTime);
-    if (serveDelta != null && serveDelta < 0) {
-      pushError('/cake/serveTime', 'serveTime cannot be before the cake cutting time');
-    }
-  }
-
   // Music policy (TODO 2): ids are unique and the request window is ordered.
   const mustPlay = cartridge?.musicPolicy?.mustPlay;
   if (Array.isArray(mustPlay)) {

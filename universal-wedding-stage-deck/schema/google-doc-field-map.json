@@ -15,8 +15,7 @@
       "cake.time": "required",
       "cake.cuttingSong": "required",
       "cake.sparklers": "required",
-      "cake.photographerCue": "no",
-      "cake.serveTime": "delete"
+      "cake.photographerCue": "no"
     },
     "couple-profile.example.json": {
       "coupleProfile.bride.firstName": "required",

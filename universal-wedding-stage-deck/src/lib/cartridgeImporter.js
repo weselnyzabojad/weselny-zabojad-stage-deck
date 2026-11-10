@@ -219,7 +219,6 @@ export function summarizeCartridge(cartridge) {
     keySongCount: keySongs.length,
     hasCake: Boolean(cake),
     cakeTime: cake?.time ?? null,
-    cakeServeTime: cake?.serveTime ?? null,
     mustPlayCount: Array.isArray(musicPolicy?.mustPlay) ? musicPolicy.mustPlay.length : 0,
     doNotPlayCount: Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay.length : 0,
     requestsOpen:

@@ -799,13 +799,25 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const speeches = mapSpeeches(section(parsed, 'SPEECHES'));
   const cakeSource = section(parsed, 'CAKE');
   const cake = cakeSource
-    ? {
-        time: clock(kv(cakeSource, 'Time')),
-        cuttingSong: text(kv(cakeSource, 'Cutting song')),
-        sparklers: bool(kv(cakeSource, 'Sparklers')),
-        photographerCue: text(kv(cakeSource, 'Photographer cue')),
-        serveTime: clock(kv(cakeSource, 'Serve time')),
-      }
+    ? (() => {
+        const time = clock(kv(cakeSource, 'Time'));
+        const cuttingSong = text(kv(cakeSource, 'Cutting song'));
+        const sparklers = bool(kv(cakeSource, 'Sparklers'));
+        const missing = [
+          !time && 'Time',
+          !cuttingSong && 'Cutting song',
+          sparklers === null && 'Sparklers',
+        ].filter(Boolean);
+        if (missing.length) {
+          warnings.push(`CAKE: missing ${missing.join(', ')}`);
+        }
+        return {
+          time,
+          cuttingSong,
+          sparklers,
+          photographerCue: text(kv(cakeSource, 'Photographer cue')),
+        };
+      })()
     : undefined;
 
   const gamesSource = section(parsed, 'GAMES');

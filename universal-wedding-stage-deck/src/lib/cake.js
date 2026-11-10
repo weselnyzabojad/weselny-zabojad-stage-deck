@@ -38,7 +38,6 @@ export function resolveCakeProtocol(wedding, timeline = [], activeIndex = -1) {
   const song = syncSong ?? fallbackSong;
 
   const time = text(cake?.time) ?? text(importantSong?.plannedTime) ?? null;
-  const serveTime = text(cake?.serveTime);
   const sparklers = typeof cake?.sparklers === 'boolean' ? cake.sparklers : null;
   const photographerCue = text(cake?.photographerCue);
 
@@ -55,13 +54,12 @@ export function resolveCakeProtocol(wedding, timeline = [], activeIndex = -1) {
     : 'planned';
 
   const hasFields = Boolean(
-    time || fallbackSong || sparklers !== null || photographerCue || serveTime,
+    time || fallbackSong || sparklers !== null || photographerCue,
   );
 
   return {
     hasData: Boolean(hasFields || importantSong),
     time,
-    serveTime,
     song,
     songTitle: title,
     songArtist: artist,
