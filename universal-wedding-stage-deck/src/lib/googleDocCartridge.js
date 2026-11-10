@@ -125,8 +125,9 @@ function parseJsonBlock(source) {
   }
 }
 
-function mapCulturalRules(rows) {
+function mapCulturalRules(rows, warnings = []) {
   const keyMap = { stolat: 'sto_lat', gorzko: 'gorzko', breadsalt: 'bread_salt' };
+  const labels = { sto_lat: 'Sto Lat', gorzko: 'Gorzko', bread_salt: 'Bread & Salt' };
   const rules = {};
   for (const row of rows) {
     const key = keyMap[normalizeKey(row.Rule)];
@@ -134,6 +135,11 @@ function mapCulturalRules(rows) {
     rules[key] = {};
     if (text(row.Status)) rules[key].status = text(row.Status);
     if (key === 'bread_salt' && text(row.Note)) rules[key].note = text(row.Note);
+  }
+  for (const key of Object.keys(labels)) {
+    if (!rules[key]?.status) {
+      warnings.push(`CULTURAL RULES: missing ${labels[key]} status`);
+    }
   }
   return rules;
 }
@@ -934,6 +940,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),
+      warnings,
     ),
     steps: stepsWithMandatory,
     hardAnchors,

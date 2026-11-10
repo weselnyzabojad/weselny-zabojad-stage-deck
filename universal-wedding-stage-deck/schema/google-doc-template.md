@@ -48,6 +48,9 @@ Notes: Couple speaks FR/PL; most guests understand EN.
 
 ## CULTURAL RULES
 
+Sto Lat, Gorzko and Bread & Salt statuses are required. The Bread & Salt note is
+optional.
+
 | Rule | Status | Note |
 | --- | --- | --- |
 | stoLat | YES_EXPLAIN | Explain the symbolism in FR. |
