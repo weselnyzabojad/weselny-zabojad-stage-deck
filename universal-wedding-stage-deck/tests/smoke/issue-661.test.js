@@ -27,16 +27,13 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('warns when a required status is missing', () => {
-    for (const [row, warning] of [
-      ['| stoLat | YES_EXPLAIN |', 'missing Sto Lat status'],
-      ['| gorzko | IF_GUESTS_START |', 'missing Gorzko status'],
-      ['| breadSalt | YES |', 'missing Bread & Salt status'],
-    ]) {
-      const source = template.replace(row, row.replace(/\| [A-Z_]+ \|/, '|  |'));
-      const result = parse(source);
-      expect(result.warnings, warning).toContain(`CULTURAL RULES: ${warning}`);
-    }
+  it('reads the statuses from the Doc without a missing-status warning', () => {
+    const { cartridge, warnings } = parse();
+
+    expect(cartridge.culturalRules.sto_lat.status).toBe('YES_EXPLAIN');
+    expect(cartridge.culturalRules.gorzko.status).toBe('IF_GUESTS_START');
+    expect(cartridge.culturalRules.bread_salt.status).toBe('YES');
+    expect(warnings.some((warning) => warning.startsWith('CULTURAL RULES:'))).toBe(false);
   });
 
   it('degrades a missing Bread & Salt note safely', async () => {
