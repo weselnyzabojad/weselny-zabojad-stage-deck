@@ -78,20 +78,7 @@ sections below and in git history.
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
-| [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#632](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/632) | Schema: remove cultural-rule note fields | Implementation |
-| [#633](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/633) | Schema: guest coverage groups + field cleanup | Implementation |
-| [#634](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/634) | Schema: remove attractions `booked` | Implementation |
-| [#635](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/635) | Schema: remove photo-plan sunset source/timezone | Implementation |
-| [#636](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/636) | Schema: per-effect venue approvals | Implementation |
-| [#637](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/637) | Schema: clean up Oczepiny approvals/music | Implementation |
-| [#638](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/638) | Schema: remove mini-session duration | Implementation |
-| [#639](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/639) | Schema: trim music-policy fields | Implementation |
-| [#640](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/640) | Schema: remove venue timezone/access notes | Implementation |
-| [#641](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/641) | Schema: remove witness responsibilities | Implementation |
-| [#642](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/642) | Schema: Speed Foto as game step | Implementation |
-| [#643](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/643) | Schema: trim speech metadata | Implementation |
-| [#644](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/644) | Schema: remove steps `cutoffSec` | Implementation |
+| [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation; blocked on production access |
 
 
 
@@ -3716,6 +3703,9 @@ value. Changes were approved per schema; unchanged examples stay as-is.
 
 No changes were approved for `cake`, `couple-profile`, `demographics`,
 `first-dance` or `group-photos`; their examples stay unchanged.
+
+All approved field-review issues #632–#644 were delivered on 2026-11-10 through
+PRs #645–#657 (one merged PR per schema).
 
 **Oczepiny music/countdown contract.** `music.enabled` is the mode switch. When
 true, `music.playlist[]` is shown in DJ VIP and MC as information only. When
