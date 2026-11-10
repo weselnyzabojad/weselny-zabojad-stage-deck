@@ -54,9 +54,9 @@ export function resolveAttractionReminder(attraction, now, { eventDateISO = null
   return { state: 'ENDED', startAt: start, endAt: end, minutes: 0 };
 }
 
-export function resolveBookedAttractions(attractions, options = {}) {
+export function resolveActiveAttractions(attractions, options = {}) {
   return (Array.isArray(attractions) ? attractions : [])
-    .filter((attraction) => attraction?.booked === true)
+    .filter((attraction) => attraction && typeof attraction === 'object')
     .map((attraction) => ({
       ...attraction,
       reminder: resolveAttractionReminder(attraction, options.now, options),

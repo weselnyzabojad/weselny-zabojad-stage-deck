@@ -182,7 +182,7 @@ export const SECTION_MANIFEST = Object.freeze([
     marker: 'ATTRACTIONS',
     required: false,
     schemaPath: ['attractions'],
-    purpose: 'Parallel attractions (photobooth, guest book, Polaroids) with booked state and windows.',
+    purpose: 'Parallel attractions (photobooth, guest book, Polaroids) with availability windows.',
   },
   {
     order: 28,

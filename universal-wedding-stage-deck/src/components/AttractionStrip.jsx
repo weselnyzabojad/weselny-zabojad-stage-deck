@@ -1,5 +1,5 @@
 import { useI18n } from '../i18n/useI18n';
-import { resolveBookedAttractions } from '../lib/attractionReminders.js';
+import { resolveActiveAttractions } from '../lib/attractionReminders.js';
 
 const TYPE_KEYS = {
   PHOTO_BOOTH: 'attraction.type.PHOTO_BOOTH',
@@ -45,7 +45,7 @@ export default function AttractionStrip({
   compact = false,
 }) {
   const { t } = useI18n();
-  const items = resolveBookedAttractions(attractions, { now, eventDateISO, timeZone });
+  const items = resolveActiveAttractions(attractions, { now, eventDateISO, timeZone });
   if (items.length === 0) return null;
 
   return (
