@@ -3794,9 +3794,21 @@ timing fields; their removal is a separate timing-engine change.
 
 Four follow-ups were raised after the per-file delivery:
 
-- **Photo-plan Doc coverage.** Every field in `photo-plan.example.json` must
-  have a Google Doc source. The current split (only sunset coordinates are Doc
-  values) is not sufficient. Tracked by
+- **Photo-plan is application-owned, not Doc-owned.** Every field in
+  `photo-plan.example.json` is produced at runtime, not read from the Google
+  Doc. One sunrise-sunset.org lookup at publish/import time writes the sunset
+  snapshot:
+  `https://api.sunrise-sunset.org/json?lat=<latitude>&lng=<longitude>&date=<event-date>&formatted=0`.
+  `provider` is the constant `sunrise-sunset.org`; `latitude`/`longitude` come
+  from the venue coordinates passed to the API and are copied into the snapshot;
+  `lastFetchedAt` is the application clock; `sunsetTime` is `results.sunset`
+  converted to event-local `HH:mm`; `goldenHourStart` is sunset minus 40 minutes
+  (the app's golden-hour window), converted to event-local `HH:mm`;
+  `civilTwilightEnd` is `results.civil_twilight_end` converted to event-local
+  `HH:mm`; `status` is the app lifecycle (`LIVE`, `STALE`, `UNAVAILABLE`), never
+  the API's `OK`. Missing coordinates or a failed call keep the block
+  `UNAVAILABLE` and are never guessed. This reverses the sunset Doc mapping from
+  #669/#699. Tracked by
   [#695](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/695).
 - **Config extraction.** `privacy` and `liveSyncState` are runtime/config data
   and should move out of the wedding content model into a dedicated config

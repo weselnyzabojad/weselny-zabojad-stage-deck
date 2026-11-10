@@ -466,7 +466,7 @@ export function collectSemanticErrors(cartridge) {
 
   const miniSession = cartridge?.photoPlan?.miniSession;
   const sunset = cartridge?.photoPlan?.sunset;
-  if (miniSession?.enabled === true) {
+  if (miniSession?.enabled === true && sunset?.status !== 'UNAVAILABLE') {
     if (!Number.isFinite(sunset?.latitude) || !Number.isFinite(sunset?.longitude)) {
       pushError('/photoPlan/miniSession', 'mini session requires sunset latitude and longitude');
     }
