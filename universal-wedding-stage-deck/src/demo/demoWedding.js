@@ -192,8 +192,8 @@ export const DEMO_WEDDING = {
     ]
   },
   culturalRules: {
-    sto_lat: { status: "STRICT_NO", note: "Inform guests: NO Sto Lat tonight!" },
-    gorzko: { status: "STRICT_NO", note: "No Gorzko Gorzko" },
+    sto_lat: { status: "STRICT_NO" },
+    gorzko: { status: "STRICT_NO" },
     bread_salt: { status: "YES", note: "Vodka vs water shot, break glasses" }
   },
   childrenExpected: true,

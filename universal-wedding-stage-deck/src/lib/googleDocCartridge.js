@@ -133,7 +133,7 @@ function mapCulturalRules(rows) {
     if (!key) continue;
     rules[key] = {};
     if (text(row.Status)) rules[key].status = text(row.Status);
-    if (text(row.Note)) rules[key].note = text(row.Note);
+    if (key === 'bread_salt' && text(row.Note)) rules[key].note = text(row.Note);
   }
   return rules;
 }

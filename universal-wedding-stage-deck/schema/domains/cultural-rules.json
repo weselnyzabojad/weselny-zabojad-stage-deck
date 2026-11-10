@@ -11,12 +11,9 @@
       "properties": {
         "sto_lat": {
           "type": "object",
-          "additionalProperties": true,
+          "additionalProperties": false,
           "properties": {
             "status": {
-              "type": "string"
-            },
-            "note": {
               "type": "string"
             }
           },
@@ -26,12 +23,9 @@
         },
         "gorzko": {
           "type": "object",
-          "additionalProperties": true,
+          "additionalProperties": false,
           "properties": {
             "status": {
-              "type": "string"
-            },
-            "note": {
               "type": "string"
             }
           },
