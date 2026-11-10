@@ -498,12 +498,14 @@ function mapPhotoPlan(source, warnings = []) {
   }
   return {
     sunset: {
-      // Coordinates are the only Doc-sourced sunset values; the provider and
-      // the computed times/status are app runtime data.
-      provider: 'sunrise-sunset.org',
+      provider: text(kv(source, 'Sunset provider')),
       latitude,
       longitude,
-      status: 'UNAVAILABLE',
+      lastFetchedAt: text(kv(source, 'Sunset last fetched at')),
+      sunsetTime: clock(kv(source, 'Sunset time')),
+      goldenHourStart: clock(kv(source, 'Golden hour start')),
+      civilTwilightEnd: clock(kv(source, 'Civil twilight end')),
+      status: text(kv(source, 'Sunset status'))?.toUpperCase() ?? 'UNAVAILABLE',
     },
     miniSession: (() => {
       const enabled = bool(kv(source, 'Mini session enabled'));
