@@ -568,10 +568,6 @@
               "type": "integer",
               "minimum": 0
             },
-            "durationMin": {
-              "type": "integer",
-              "minimum": 0
-            },
             "location": {
               "type": "string"
             },

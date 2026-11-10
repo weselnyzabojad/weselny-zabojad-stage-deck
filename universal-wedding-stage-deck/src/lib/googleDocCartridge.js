@@ -456,7 +456,6 @@ function mapPhotoPlan(source) {
       latestStartMinutesBeforeSunset: int(
         kv(source, 'Mini session latest start before sunset (min)'),
       ),
-      durationMin: int(kv(source, 'Mini session duration (min)')),
       location: text(kv(source, 'Mini session location')),
       backupLocation: text(kv(source, 'Mini session backup location')),
     },

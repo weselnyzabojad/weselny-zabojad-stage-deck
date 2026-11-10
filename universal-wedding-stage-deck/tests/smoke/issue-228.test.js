@@ -14,7 +14,7 @@ describe('issue #228 photo plan details in step cards', () => {
   it('maps plan elements by explicit stepId first', () => {
     const map = mapPhotoPlanToSteps({
       groupPhotos: { stepId: 's3', location: 'Garden' },
-      miniSession: { stepId: 's1', durationMin: 20 },
+      miniSession: { stepId: 's1', location: 'Garden' },
     }, timeline);
     expect(map.s3[0].type).toBe('groupPhotos');
     expect(map.s1[0].type).toBe('miniSession');
@@ -23,7 +23,7 @@ describe('issue #228 photo plan details in step cards', () => {
   it('falls back to deterministic title keywords', () => {
     const map = mapPhotoPlanToSteps({
       groupPhotos: { location: 'Garden' },
-      miniSession: { durationMin: 20 },
+      miniSession: { location: 'Garden' },
       specialEffects: { sparklers: true },
     }, timeline);
     expect(map.s1[0].type).toBe('groupPhotos');

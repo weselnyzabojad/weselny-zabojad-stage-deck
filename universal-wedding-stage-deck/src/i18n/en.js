@@ -425,7 +425,6 @@ const en = {
   'photo.source': 'source {provider}',
   'photo.in': 'in {duration}',
   'photo.ago': '{duration} ago',
-  'photo.minutes': '{minutes} min',
   'photo.chosenMiniHour': 'Chosen mini-session hour',
   'photo.saveForAllMedia': 'Save for all media',
   'photo.sharedOverride': 'Shared override: {time}',

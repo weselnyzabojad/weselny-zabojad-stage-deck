@@ -121,7 +121,6 @@ export const DEMO_WEDDING = {
     miniSession: {
       enabled: true,
       latestStartMinutesBeforeSunset: 30,
-      durationMin: 20,
       location: "Garden",
       backupLocation: "Ballroom window"
     },

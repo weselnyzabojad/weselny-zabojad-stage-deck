@@ -78,8 +78,7 @@
     },
     "miniSession": {
       "enabled": true,
-      "latestStartMinutesBeforeSunset": 30,
-      "durationMin": 20
+      "latestStartMinutesBeforeSunset": 30
     },
     "groupPhotos": {
       "location": "OUTDOOR",

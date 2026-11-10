@@ -425,7 +425,6 @@ const pl = {
   'photo.source': 'źródło {provider}',
   'photo.in': 'za {duration}',
   'photo.ago': '{duration} temu',
-  'photo.minutes': '{minutes} min',
   'photo.chosenMiniHour': 'Wybrana godzina mini-sesji',
   'photo.saveForAllMedia': 'Zapisz dla wszystkich mediów',
   'photo.sharedOverride': 'Wspólne zastąpienie: {time}',
