@@ -37,7 +37,7 @@ export function resolveCakeProtocol(wedding, timeline = [], activeIndex = -1) {
   const fallbackSong = text(cake?.cuttingSong);
   const song = syncSong ?? fallbackSong;
 
-  const time = text(cake?.time) ?? text(importantSong?.plannedTime) ?? null;
+  const time = text(cake?.time) ?? null;
   const sparklers = typeof cake?.sparklers === 'boolean' ? cake.sparklers : null;
   const photographerCue = text(cake?.photographerCue);
 

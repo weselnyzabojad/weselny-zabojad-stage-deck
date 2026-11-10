@@ -822,9 +822,6 @@
         "stepId": {
           "$ref": "#/$defs/id"
         },
-        "plannedTime": {
-          "$ref": "#/$defs/clock"
-        },
         "source": {
           "$ref": "#/$defs/songSource"
         },

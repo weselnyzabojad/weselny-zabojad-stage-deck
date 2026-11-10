@@ -50,8 +50,6 @@ const EXPECTED_TABLES = {
     'Title',
     'Artist',
     'Version',
-    'Step ID',
-    'Planned time',
     'Source type',
     'File / Link',
     'Notes',

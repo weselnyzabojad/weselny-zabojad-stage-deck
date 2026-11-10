@@ -18,7 +18,6 @@
         "title": "Marry You",
         "artist": "Bruno Mars",
         "stepId": "step_03",
-        "plannedTime": "18:00",
         "source": { "type": "SPOTIFY", "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE" }
       }
     ]

@@ -232,19 +232,15 @@ Group ID and Label are required in every row.
 
 ## IMPORTANT SONGS
 
-| Moment ID | Moment | Title | Artist | Version | Step ID | Planned time | Source type | File / Link | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | step_03 | 18:00 | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 |  |
-| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version |  | 19:30 | STREAMING |  | Duet version if available. |
-| cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | step_05 | 20:30 | STREAMING |  |  |
+| Moment ID | Moment | Title | Artist | Version | Source type | File / Link | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 |  |
+| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version | STREAMING |  | Duet version if available. |
+| cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | STREAMING |  |  |
 
 ## MUSIC POLICY
 
-Requests open: true
-Request window start: 20:00
-Request window end: 23:00
 Disco Polo policy: No
-Clean versions: true
 
 ### Must Play
 
@@ -261,9 +257,6 @@ Clean versions: true
 
 ## GUEST REQUESTS
 
-Requests open: true
-Window start: 20:00
-Window end: 23:00
 Rules: One request per guest; the DJ decides the order.
 
 ## SPEECHES

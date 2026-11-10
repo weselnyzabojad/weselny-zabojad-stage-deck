@@ -239,7 +239,6 @@ export const DEMO_WEDDING = {
         artist: "Bruno Mars",
         version: "Album version",
         stepId: "step_03",
-        plannedTime: "18:00",
         source: {
           type: "CUSTOMER_FILE",
           fileRef: "assets/audio/marry-you-bruno-mars.mp3",
@@ -262,7 +261,6 @@ export const DEMO_WEDDING = {
         title: "Cake",
         artist: "The Coup",
         stepId: "step_05",
-        plannedTime: "20:30",
         source: {
           type: "YOUTUBE",
           url: "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING",
@@ -283,7 +281,6 @@ export const DEMO_WEDDING = {
         artist: "Ed Sheeran",
         version: "Duet version",
         stepId: "step_08",
-        plannedTime: "21:45",
         source: {
           type: "SPOTIFY",
           url: "https://open.spotify.com/track/DEMO_FIRST_DANCE",

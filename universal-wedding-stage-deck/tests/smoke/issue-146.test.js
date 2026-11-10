@@ -24,7 +24,6 @@ const keySongs = [
     stepId: 'step_03',
     title: 'Marry You',
     artist: 'Bruno Mars',
-    plannedTime: '18:00',
   },
 ];
 
