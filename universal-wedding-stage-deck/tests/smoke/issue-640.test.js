@@ -41,7 +41,6 @@ describe('issue #640 venue-details timezone and access notes cleanup', () => {
     const access = resolveVenueAccess(json('schema/domains/venue-details.example.json'));
     expect(access.installation).not.toHaveProperty('accessNotes');
     expect(access.installation.windowStart).toBe('12:00');
-    expect(access.installation.windowEnd).toBe('16:00');
     expect(access.manager.name).toBeTruthy();
     expect(access.address).toBeTruthy();
   });

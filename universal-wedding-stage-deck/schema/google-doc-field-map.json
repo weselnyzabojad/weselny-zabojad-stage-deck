@@ -188,7 +188,6 @@
       "venueDetails.manager.phone": "optional",
       "venueDetails.manager.email": "optional",
       "venueDetails.installation.windowStart": "no",
-      "venueDetails.installation.windowEnd": "delete",
       "venueDetails.notes": "optional"
     },
     "witnesses.example.json": {
