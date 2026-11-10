@@ -21,14 +21,24 @@
         "other": {
           "type": "string"
         },
-        "permitRequired": {
-          "type": "boolean"
-        },
-        "venueApproved": {
-          "type": "boolean"
-        },
-        "safetyBriefing": {
-          "type": "string"
+        "approvals": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Per-effect approvals supplied by the Venue Manager.",
+          "properties": {
+            "sparklers": {
+              "type": "boolean"
+            },
+            "fire": {
+              "type": "boolean"
+            },
+            "heavySmoke": {
+              "type": "boolean"
+            },
+            "other": {
+              "type": "boolean"
+            }
+          }
         }
       }
     }

@@ -184,9 +184,12 @@ export function resolvePhotoPlan(wedding) {
         fire: plan.specialEffects.fire === true,
         heavySmoke: plan.specialEffects.heavySmoke === true,
         other: text(plan.specialEffects.other),
-        permitRequired: plan.specialEffects.permitRequired === true,
-        venueApproved: plan.specialEffects.venueApproved === true,
-        safetyBriefing: text(plan.specialEffects.safetyBriefing),
+        approvals: {
+          sparklers: plan.specialEffects.approvals?.sparklers === true,
+          fire: plan.specialEffects.approvals?.fire === true,
+          heavySmoke: plan.specialEffects.approvals?.heavySmoke === true,
+          other: plan.specialEffects.approvals?.other === true,
+        },
       }
     : null;
 

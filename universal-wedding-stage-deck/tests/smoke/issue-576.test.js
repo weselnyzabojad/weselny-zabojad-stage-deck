@@ -9,6 +9,8 @@ describe('issue #576 special-effects domain schema', () => {
   it('defines the domain schema and validates its example', () => {
     const domain = json('schema/domains/special-effects.json');
     expect(domain.properties.specialEffects.properties.fire.type).toBe('boolean');
+    expect(domain.properties.specialEffects.properties.approvals.type).toBe('object');
+    expect(domain.properties.specialEffects.properties.permitRequired).toBeUndefined();
     const ajv = new Ajv2020({ allErrors: true, strict: false });
     expect(ajv.compile(domain)(json('schema/domains/special-effects.example.json'))).toBe(true);
   });

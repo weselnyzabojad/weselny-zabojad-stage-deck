@@ -468,14 +468,8 @@ export function collectSemanticErrors(cartridge) {
 
   const effects = cartridge?.photoPlan?.specialEffects;
   if (effects && typeof effects === 'object' && effects.fire === true) {
-    if (effects.permitRequired !== true) {
-      pushError('/photoPlan/specialEffects/permitRequired', 'fire effects require a permit requirement');
-    }
-    if (effects.venueApproved !== true) {
-      pushError('/photoPlan/specialEffects/venueApproved', 'fire effects require venue approval');
-    }
-    if (typeof effects.safetyBriefing !== 'string' || effects.safetyBriefing.trim() === '') {
-      pushError('/photoPlan/specialEffects/safetyBriefing', 'fire effects require a safety briefing');
+    if (effects.approvals?.fire !== true) {
+      pushError('/photoPlan/specialEffects/approvals/fire', 'fire effects require venue approval');
     }
   }
 

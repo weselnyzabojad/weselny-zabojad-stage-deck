@@ -173,13 +173,26 @@ function PhotoPlanBlock({ type, data }) {
               {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
               {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
             </div>
-            <Row label="Permit" value={data.permitRequired ? 'Required' : 'Not required'} />
             <Row
-              label="Venue approved"
-              value={data.venueApproved ? 'Yes' : 'No'}
-              tone={data.venueApproved ? 'text-emerald-300' : 'text-amber-200'}
+              label="Sparklers approved"
+              value={data.approvals?.sparklers ? 'Yes' : 'No'}
+              tone={data.approvals?.sparklers ? 'text-emerald-300' : 'text-amber-200'}
             />
-            <Row label="Safety briefing" value={data.safetyBriefing ?? '—'} />
+            <Row
+              label="Fire approved"
+              value={data.approvals?.fire ? 'Yes' : 'No'}
+              tone={data.approvals?.fire ? 'text-emerald-300' : 'text-amber-200'}
+            />
+            <Row
+              label="Heavy smoke approved"
+              value={data.approvals?.heavySmoke ? 'Yes' : 'No'}
+              tone={data.approvals?.heavySmoke ? 'text-emerald-300' : 'text-amber-200'}
+            />
+            <Row
+              label="Other effects approved"
+              value={data.approvals?.other ? 'Yes' : 'No'}
+              tone={data.approvals?.other ? 'text-emerald-300' : 'text-amber-200'}
+            />
           </>
         ) : null}
         {type === 'guestCoverage' ? (

@@ -216,9 +216,10 @@ Sparklers: true
 Fire: false
 Heavy smoke: true
 Other effects: Cold sparks
-Permit required: false
-Venue approved: true
-Safety briefing: Briefed the venue manager and the photographer.
+Sparklers approved: true
+Fire approved: false
+Heavy smoke approved: true
+Other effects approved: true
 Guest coverage all guests: false
 Guest coverage description: Formal photos with immediate family and witnesses only.
 Guest coverage groups: Immediate family, Witnesses

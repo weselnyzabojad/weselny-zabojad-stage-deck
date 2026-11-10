@@ -486,9 +486,12 @@ function mapPhotoPlan(source) {
       fire: bool(kv(source, 'Fire')),
       heavySmoke: bool(kv(source, 'Heavy smoke')),
       other: text(kv(source, 'Other effects')),
-      permitRequired: bool(kv(source, 'Permit required')),
-      venueApproved: bool(kv(source, 'Venue approved')),
-      safetyBriefing: text(kv(source, 'Safety briefing')),
+      approvals: {
+        sparklers: bool(kv(source, 'Sparklers approved'), false),
+        fire: bool(kv(source, 'Fire approved'), false),
+        heavySmoke: bool(kv(source, 'Heavy smoke approved'), false),
+        other: bool(kv(source, 'Other effects approved'), false),
+      },
     },
     guestCoverage: {
       allGuests: bool(kv(source, 'Guest coverage all guests')),
