@@ -8,7 +8,7 @@ import { DEMO_WEDDING } from '../../src/demo/demoWedding.js';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const template = read('schema/google-doc-template.md');
 const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
-const photoRow = '| photobooth | PHOTO_BOOTH | Fotobudka | yes | 20:00 | 23:30 | Garden | Foto Fun | Unlimited prints |';
+const photoRow = '| photobooth | PHOTO_BOOTH | Fotobudka | 20:00 | 23:30 | Garden | Foto Fun | Unlimited prints |';
 
 describe('issue #463 parallel attractions contract', () => {
   it('parses the template attraction table', () => {
@@ -22,7 +22,6 @@ describe('issue #463 parallel attractions contract', () => {
     expect(cartridge.attractions[0]).toMatchObject({
       id: 'photobooth',
       name: 'Fotobudka',
-      booked: true,
       startTime: '20:00',
       endTime: '23:30',
       location: 'Garden',
@@ -50,10 +49,9 @@ describe('issue #463 parallel attractions contract', () => {
     }
   });
 
-  it('retains booked:no rows without showing them as booked', () => {
-    const source = template.replace(photoRow, photoRow.replace('| yes |', '| no |'));
-    const attraction = parse(source).cartridge.attractions[0];
-    expect(attraction.booked).toBe(false);
+  it('treats every row present in the table as active', () => {
+    const attraction = parse().cartridge.attractions[0];
+    expect(attraction).not.toHaveProperty('booked');
     expect(attraction.name).toBe('Fotobudka');
   });
 

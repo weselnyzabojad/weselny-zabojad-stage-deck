@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import AttractionStrip from '../../src/components/AttractionStrip.jsx';
 import {
   resolveAttractionReminder,
-  resolveBookedAttractions,
+  resolveActiveAttractions,
 } from '../../src/lib/attractionReminders.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
@@ -15,7 +15,6 @@ const attraction = (overrides = {}) => ({
   id: 'photobooth',
   type: 'PHOTO_BOOTH',
   name: 'Fotobudka',
-  booked: true,
   startTime: '20:00',
   endTime: '23:30',
   location: 'Garden',
@@ -45,20 +44,20 @@ describe('issue #464 MC parallel attraction reminders', () => {
     ).toBe('SCHEDULED');
   });
 
-  it('keeps booked rows, drops unbooked rows and hides ended reminders', () => {
-    const items = resolveBookedAttractions(
+  it('keeps active rows and hides ended reminders', () => {
+    const items = resolveActiveAttractions(
       [
         attraction(),
-        attraction({ id: 'guestbook', type: 'GUEST_BOOK', booked: false, name: 'Guest book' }),
+        attraction({ id: 'guestbook', type: 'GUEST_BOOK', name: 'Guest book' }),
         attraction({ id: 'past', startTime: '18:00', endTime: '19:00', name: 'Past' }),
       ],
       { now: at('20:00'), ...context },
     );
-    expect(items.map((item) => item.id)).toEqual(['photobooth']);
+    expect(items.map((item) => item.id)).toEqual(['photobooth', 'guestbook']);
   });
 
   it('supports multiple attractions with independent states', () => {
-    const items = resolveBookedAttractions(
+    const items = resolveActiveAttractions(
       [
         attraction(),
         attraction({ id: 'guestbook', type: 'GUEST_BOOK', name: 'Guest book', startTime: '22:00', endTime: '23:45' }),
@@ -99,7 +98,7 @@ describe('issue #464 MC parallel attraction reminders', () => {
     expect(available).toContain('Ends in 200 min');
   });
 
-  it('renders nothing when every reminder has ended or nothing is booked', () => {
+  it('renders nothing when every reminder has ended or no attractions exist', () => {
     expect(
       renderToStaticMarkup(
         createElement(AttractionStrip, {

@@ -775,7 +775,6 @@
         "id",
         "type",
         "name",
-        "booked",
         "startTime",
         "endTime"
       ],
@@ -797,9 +796,6 @@
         "name": {
           "type": "string",
           "minLength": 1
-        },
-        "booked": {
-          "type": "boolean"
         },
         "startTime": {
           "$ref": "#/$defs/clock"
