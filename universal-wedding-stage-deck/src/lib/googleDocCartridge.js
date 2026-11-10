@@ -1,6 +1,7 @@
 import { applyCalculatedDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
+import { normalizeLiveSyncState, normalizePrivacy } from '../config/index.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
 // `22.15`, `15h00`, ranges (`15:40/16:00`, `22:00-22:30`, `18:00–20:00`) and
@@ -965,14 +966,14 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
-    ? {
-        cloudSync: text(kv(privacySource, 'Cloud sync')) ?? 'ENCRYPTED_HOST_KEY',
+    ? normalizePrivacy({
+        cloudSync: text(kv(privacySource, 'Cloud sync')),
         encryption: {
           alg: text(kv(privacySource, 'Encryption algorithm')),
-          keyHolder: text(kv(privacySource, 'Encryption key holder')) ?? 'HOST',
-          version: int(kv(privacySource, 'Encryption version'), 1),
+          keyHolder: text(kv(privacySource, 'Encryption key holder')),
+          version: int(kv(privacySource, 'Encryption version')),
         },
-      }
+      })
     : undefined;
 
   const mandatorySettings = mapMandatory(section(parsed, 'MANDATORY STEPS'));
@@ -1030,7 +1031,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
 
   const liveSyncSource = section(parsed, 'LIVE SYNC STATE');
   const liveSyncState = liveSyncSource
-    ? mapLiveSync(liveSyncSource, stepsWithMandatory)
+    ? normalizeLiveSyncState(mapLiveSync(liveSyncSource, stepsWithMandatory))
     : undefined;
 
   const calculated = applyCalculatedDurations(stepsWithMandatory, {
