@@ -53,8 +53,8 @@ Canonical order and mapping:
 
 | # | Marker | Required | Maps to |
 | --- | --- | --- | --- |
-| 1 | `## EVENT` | yes | `weddingId`, `couple`, `date`, `dateISO`, `syncPin`, `servicePackage`, `venue` |
-| 2 | `## COUPLE IDENTITY` | yes | `couple`, `coupleProfile` |
+| 1 | `## EVENT` | yes | `weddingId`, `date`, `dateISO`, `syncPin`, `servicePackage`, `venue` |
+| 2 | `## COUPLE IDENTITY` | yes | `coupleProfile` |
 | 3 | `## LANGUAGES` | yes | `languages` |
 | 4 | `## CULTURAL RULES` | yes | `culturalRules` |
 | 5 | `## OCZEPINY` | no | `oczepiny` |
@@ -218,7 +218,6 @@ non-obvious mappings.
 | Doc field | Cartridge field |
 | --- | --- |
 | `Wedding ID` | `weddingId` |
-| `Couple` | `couple` (display fallback) |
 | `Bride first name`, `Bride nationality` | `coupleProfile.bride.firstName`, `.nationalities[]` |
 | `Groom first name`, `Groom nationality` | `coupleProfile.groom.firstName`, `.nationalities[]` |
 | `Shared languages` | `coupleProfile.commonLanguages[]` |

@@ -117,7 +117,7 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
     expect(saved).toBe(true);
     const cached = cartridgeStorage.loadCachedCartridge(WEDDING_ID, storage);
     expect(cached.cartridge.weddingId).toBe(WEDDING_ID);
-    expect(cached.cartridge.couple).toBe(fixture.couple);
+    expect(cached.cartridge.coupleProfile).toEqual(fixture.coupleProfile);
     expect(cached.revision).toBe(3);
     expect(cached.fetchedAt).toBe('2026-11-06T10:00:01.000Z');
   });

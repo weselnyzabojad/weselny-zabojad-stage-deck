@@ -30,7 +30,6 @@ describe('issue #453 larger top-bar glyphs', () => {
     const html = renderToStaticMarkup(
       createElement(TopBarCenterIdentity, {
         wedding: {
-          couple: 'A & B',
           coupleProfile: {
             bride: { firstName: 'A', nationalities: ['FR'] },
             groom: { firstName: 'B', nationalities: ['FR'] },

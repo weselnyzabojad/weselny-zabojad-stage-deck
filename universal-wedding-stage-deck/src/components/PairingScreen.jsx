@@ -3,6 +3,7 @@ import logo from '../assets/img/logo.png';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n';
+import { coupleDisplayName } from '../lib/coupleIdentity';
 
 const PIN_LENGTH = 4;
 
@@ -172,7 +173,7 @@ export default function PairingScreen({
             <span className="text-[10px] uppercase tracking-[0.25em] text-brand-soft font-heading font-semibold">
               {t('pairing.stageDeck')}
             </span>
-            <h1 className="text-2xl font-heading font-bold text-ink mt-2">{wedding.couple}</h1>
+            <h1 className="text-2xl font-heading font-bold text-ink mt-2">{coupleDisplayName(wedding)}</h1>
             <p className="text-xs text-muted font-mono mt-1">{wedding.date} · {t('pairing.roomPairing')}</p>
           </div>
 

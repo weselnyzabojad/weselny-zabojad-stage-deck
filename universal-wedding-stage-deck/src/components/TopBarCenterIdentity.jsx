@@ -67,9 +67,8 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
   if (!identity.hasProfile) {
     return (
       <span className="inline-flex items-baseline gap-1 text-ink">
-        <span>{t('couple.wedding')}</span>
         <strong className="font-heading font-semibold text-ink">
-          {identity.fallbackLabel}
+          {identity.displayName}
         </strong>
       </span>
     );

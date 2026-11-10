@@ -31,7 +31,6 @@ Ceremony notes: Full mass; MC introduces the couple at the church door.
 
 ## COUPLE IDENTITY
 
-Couple: Jennifer & Guillaume
 Bride first name: Jennifer
 Bride nationality: FR
 Groom first name: Guillaume
