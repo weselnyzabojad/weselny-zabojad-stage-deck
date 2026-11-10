@@ -6,7 +6,7 @@ import { resolveOczepinyIndicator } from '../../src/lib/oczepinyIndicator.js';
 
 const wedding = {
   dateISO: '2026-08-20',
-  venueLogistics: { timezone: 'Europe/Warsaw' },
+  venueDetails: { timezone: 'Europe/Warsaw' },
   oczepiny: {
     enabled: true,
     anchorId: 'oczepiny_midnight',

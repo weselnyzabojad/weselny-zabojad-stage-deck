@@ -51,9 +51,6 @@
       ],
       "description": "HOST_AND_DJ enables DJ cues, stage pings and the DJ Booth role; HOST_ONLY hides them."
     },
-    "venue": {
-      "type": "string"
-    },
     "driftMinutes": {
       "type": "integer",
       "description": "Optional demo/seed drift. Live drift is always computed from actual timestamps."
@@ -148,8 +145,8 @@
     "cake": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/cake.json#/properties/cake"
     },
-    "venueLogistics": {
-      "$ref": "#/$defs/venueLogistics"
+    "venueDetails": {
+      "$ref": "https://weselnyzabojad.example/schemas/domains/venue-details.json#/properties/venueDetails"
     },
     "viewVisibility": {
       "$ref": "#/$defs/viewVisibility"
@@ -476,97 +473,6 @@
         "label": {
           "type": "string",
           "description": "Display label for OTHER sources (Tidal, Apple Music, SoundCloud, ...)."
-        },
-        "notes": {
-          "type": "string"
-        }
-      }
-    },
-    "venueLogistics": {
-      "type": "object",
-      "additionalProperties": true,
-      "description": "Structured venue data (v1.2 proposal). The photographer view reads address, manager, installation access/parking and notes.",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "coordinates": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "latitude": {
-              "type": "number"
-            },
-            "longitude": {
-              "type": "number"
-            }
-          }
-        },
-        "timezone": {
-          "type": "string"
-        },
-        "manager": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "phone": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "notes": {
-              "type": "string"
-            }
-          }
-        },
-        "installation": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "windowStart": {
-              "$ref": "#/$defs/clock"
-            },
-            "windowEnd": {
-              "$ref": "#/$defs/clock"
-            },
-            "latestStart": {
-              "$ref": "#/$defs/clock"
-            },
-            "loadInMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "setupMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "loadOutMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "accessNotes": {
-              "type": "string"
-            },
-            "parking": {
-              "type": "string"
-            },
-            "power": {
-              "type": "string"
-            },
-            "loadingDock": {
-              "type": "boolean"
-            },
-            "elevator": {
-              "type": "boolean"
-            },
-            "noiseCurfew": {
-              "$ref": "#/$defs/clock"
-            }
-          }
         },
         "notes": {
           "type": "string"

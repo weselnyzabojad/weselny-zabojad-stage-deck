@@ -138,6 +138,7 @@ the localized title.
 
 ## VENUE LOGISTICS
 
+Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
 Latitude: 51.05
 Longitude: 16.19

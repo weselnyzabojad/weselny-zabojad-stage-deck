@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/venue-details.json",
+  "title": "Venue details domain",
+  "description": "Venue name, address, contacts, installation and timezone mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "venueDetails": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Venue name, address, contacts, installation access and notes.",
+      "properties": {
+        "venue": {
+          "type": "string",
+          "description": "Venue display name."
+        },
+        "address": {
+          "type": "string"
+        },
+        "coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            }
+          }
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "manager": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            }
+          }
+        },
+        "installation": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "windowStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "windowEnd": {
+              "$ref": "#/$defs/clock"
+            },
+            "latestStart": {
+              "$ref": "#/$defs/clock"
+            },
+            "loadInMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "setupMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "loadOutMinutes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "accessNotes": {
+              "type": "string"
+            },
+            "parking": {
+              "type": "string"
+            },
+            "power": {
+              "type": "string"
+            },
+            "loadingDock": {
+              "type": "boolean"
+            },
+            "elevator": {
+              "type": "boolean"
+            },
+            "noiseCurfew": {
+              "$ref": "#/$defs/clock"
+            }
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "venueDetails"
+  ],
+  "$defs": {
+    "clock": {
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+      "description": "24-hour local clock time as HH:MM."
+    }
+  }
+}

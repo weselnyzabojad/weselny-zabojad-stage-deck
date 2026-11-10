@@ -50,6 +50,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Witnesses as key persons | Complete (#553) |
 | Couple identity from `coupleProfile` only | Complete (#621) |
 | Mandatory data embedded in timeline steps | Complete (#622) |
+| `venueDetails` domain schema | Complete (#623) |
 | Full-width DJ layout | Complete (#396) |
 | Game Clicker scoped to games step | Complete (#398) |
 | Cake Protocol consolidation | Complete (#399) |
@@ -76,7 +77,7 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623) | Schema: move `venue` into venue logistics and extract `venueDetails` | Implementation |
+
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
 are catalogued in [UI review fixes 2026-11-08](#ui-review-fixes-2026-11-08).
@@ -2713,7 +2714,7 @@ Core top-level groups:
 
 - identity: `weddingId`, `coupleProfile`, `date`, `dateISO`, `syncPin`, `role`,
   `hostingMode`;
-- venue and cultural rules: `venue`, `venueLogistics`, `culturalRules`;
+- venue and cultural rules: `venueDetails`, `culturalRules`;
 - schedule: `hardAnchors`, `steps` (`FLEXIBLE`, `HARD_ANCHOR`);
 - content: `cake`, `speeches`, `witnesses`, `musicPolicy`, `mediaTeam`,
   `photoPlan`, `oczepiny`;
@@ -3522,8 +3523,8 @@ the Standard timeline without the countdown.
 Owner request to remove three redundant cartridge shapes. These are breaking
 schema changes: each implementation must migrate legacy cartridges before
 validation and keep the browser, Node and Edge validators plus the byte-identical
-Edge schema mirror aligned. The couple identity change shipped in #621 and the
-mandatory-step change shipped in #622; the venue change remains open.
+Edge schema mirror aligned. All three changes shipped: couple identity in #621,
+mandatory-step data in #622 and venue details in #623.
 
 **Couple identity (`couple` removed).** Delete the top-level `couple` string.
 `schema/domains/couple-profile.json` is the single source of truth: bride and
@@ -3557,7 +3558,7 @@ definition. Admin listings/QR cards, event-time timezone lookup, the photo-plan
 venue card and the migration script read `venueDetails`. The Google Doc
 `## VENUE LOGISTICS` section gains the canonical `Venue:` key (the `## EVENT`
 `Venue` line may remain only as a compatibility fallback). Legacy `venue` and
-`venueLogistics` keys migrate into `venueDetails` before validation. Tracked by
+`venueLogistics` keys migrate into `venueDetails` before validation. Shipped in
 [#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623).
 
 **Mandatory data on steps (`mandatorySteps` removed).** Delete the top-level

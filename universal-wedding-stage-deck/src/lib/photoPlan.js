@@ -295,7 +295,7 @@ function mapsUrlFor(venue) {
 }
 
 export function resolveVenueAccess(wedding) {
-  const venue = wedding?.venueLogistics;
+  const venue = wedding?.venueDetails;
   if (!venue || typeof venue !== 'object') return null;
 
   const manager = venue.manager && typeof venue.manager === 'object' ? venue.manager : null;
