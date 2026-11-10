@@ -94,10 +94,22 @@ export function parseGameQuestionDoc(markdown, gameType) {
   return parseTestWiedzyDoc(markdown);
 }
 
+// Question Docs keep the stable BRIDE/GROOM placeholders; the published
+// cartridge stores the couple's first names so the answer never reads as a role.
+function resolveAnswer(answer, brideName, groomName) {
+  if (typeof answer !== 'string') return answer;
+  const token = answer.trim().toUpperCase();
+  if (token === 'BRIDE' && brideName) return brideName;
+  if (token === 'GROOM' && groomName) return groomName;
+  return answer;
+}
+
 // Admin publish helper: attach fetched Doc text to the matching question list.
 export function applyGameQuestionDocs(cartridge, docsById = {}) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
   if (!steps.some((step) => step?.game)) return cartridge;
+  const brideName = cartridge?.coupleProfile?.bride?.firstName ?? null;
+  const groomName = cartridge?.coupleProfile?.groom?.firstName ?? null;
   return {
     ...cartridge,
     steps: steps.map((step) => {
@@ -113,7 +125,12 @@ export function applyGameQuestionDocs(cartridge, docsById = {}) {
               : { ...list, status: 'MISSING', questions: [] },
         };
       }
-      const questions = parseGameQuestionDoc(textDoc, list.gameType);
+      const questions = parseGameQuestionDoc(textDoc, list.gameType).map((question) => ({
+        ...question,
+        ...(typeof question.answer === 'string'
+          ? { answer: resolveAnswer(question.answer, brideName, groomName) }
+          : {}),
+      }));
       return {
         ...step,
         game: {

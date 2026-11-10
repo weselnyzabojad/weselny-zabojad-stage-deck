@@ -11,7 +11,7 @@ export function resolveCeremony(wedding) {
           ?.ceremony
       : null) ?? wedding?.ceremony;
   if (!ceremony || typeof ceremony !== 'object') {
-    return { type: null, location: null, notes: null, mcSupportRequested: false, mcTranslationHelpRequested: false };
+    return { type: null, location: null, notes: null, mcSupportRequested: false };
   }
   const type = CEREMONY_TYPES[ceremony.type] ? ceremony.type : null;
   return {
@@ -20,7 +20,6 @@ export function resolveCeremony(wedding) {
     location: typeof ceremony.location === 'string' && ceremony.location.trim() ? ceremony.location.trim() : null,
     notes: typeof ceremony.notes === 'string' && ceremony.notes.trim() ? ceremony.notes.trim() : null,
     mcSupportRequested: ceremony.mcSupportRequested === true,
-    mcTranslationHelpRequested: ceremony.mcTranslationHelpRequested === true,
   };
 }
 

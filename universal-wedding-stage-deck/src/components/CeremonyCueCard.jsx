@@ -32,11 +32,7 @@ export default function CeremonyCueCard({ wedding, role }) {
             {t('ceremony.mcSupport')}
           </span>
         ) : null}
-        {ceremony.type === 'CIVIL' && ceremony.mcTranslationHelpRequested ? (
-          <span className="rounded border border-amber-700 bg-amber-950/60 px-1.5 py-0.5 font-semibold text-amber-200">
-            {t('ceremony.mcTranslation')}
-          </span>
-        ) : null}
+
         {ceremony.type === 'HUMANIST' ? (
           <span className="rounded border border-brand-strong/50 bg-brand/20 px-1.5 py-0.5 text-brand-tint">
             {t('ceremony.humanist')}

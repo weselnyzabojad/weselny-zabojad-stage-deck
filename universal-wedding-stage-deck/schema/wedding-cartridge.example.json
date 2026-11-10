@@ -85,7 +85,6 @@
       "ceremony": {
         "type": "RELIGIOUS",
         "mcSupportRequested": true,
-        "mcTranslationHelpRequested": false,
         "location": "St. Mary Church",
         "notes": "Full mass; MC introduces the couple at the church door."
       }
@@ -188,7 +187,7 @@
               "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
               "EN": "Where did Jennifer and Guillaume first meet?"
             },
-            "answer": "GROOM"
+            "answer": "Guillaume"
           },
           {
             "id": "w02",
@@ -198,7 +197,7 @@
               "FR": "Qui a dit « je t’aime » en premier ?",
               "EN": "Who said “I love you” first?"
             },
-            "answer": "BRIDE"
+            "answer": "Jennifer"
           }
         ]
       }
