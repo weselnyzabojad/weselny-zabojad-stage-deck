@@ -92,6 +92,7 @@ rejected; put app-specific data under `extensions`.
 | `demographics` | no | Guest counts / languages. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
+| `witnesses` | no | Key persons with language, admin-only contacts, responsibilities and speech ids. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
 | `extensions` | no | Forward-compatible namespace. |
 

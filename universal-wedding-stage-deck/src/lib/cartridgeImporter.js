@@ -15,6 +15,7 @@ import musicPolicyDomain from '../../schema/domains/music-policy.json';
 import demographicsDomain from '../../schema/domains/demographics.json';
 import stepsDomain from '../../schema/domains/steps.json';
 import speechesDomain from '../../schema/domains/speeches.json';
+import witnessesDomain from '../../schema/domains/witnesses.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
 
@@ -43,6 +44,7 @@ async function getValidator() {
       ajv.addSchema(demographicsDomain);
       ajv.addSchema(stepsDomain);
       ajv.addSchema(speechesDomain);
+      ajv.addSchema(witnessesDomain);
       return ajv.compile(weddingSchema);
     });
   }

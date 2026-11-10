@@ -363,6 +363,52 @@ function mapSpeeches(source) {
   });
 }
 
+const WITNESS_RESPONSIBILITIES = new Set([
+  'GAME_ORGANIZER',
+  'QUESTION_VALIDATOR',
+  'SPEECH',
+  'CONTACT',
+  'OTHER',
+]);
+
+function mapWitnesses(source) {
+  const rows = table(source, [
+    'Witness ID',
+    'Name',
+    'Role',
+    'Language',
+    'Phone',
+    'Email',
+    'Responsibilities',
+    'Speech IDs',
+    'Notes',
+  ]);
+  if (!rows.length) return undefined;
+
+  return rows.map((row) => {
+    const id = slug(row['Witness ID']);
+    const contact = {
+      phone: text(row.Phone),
+      email: text(row.Email),
+    };
+    const language = text(row.Language)?.toUpperCase();
+    const responsibilities = list(row.Responsibilities)
+      .map((item) => item.toUpperCase().replace(/[^A-Z0-9]+/g, '_'))
+      .filter((item) => WITNESS_RESPONSIBILITIES.has(item));
+    const witness = {
+      id,
+      name: text(row.Name) ?? id,
+      role: text(row.Role) ?? 'Witness',
+      speechIds: list(row['Speech IDs']).map((speechId) => slug(speechId)),
+    };
+    if (['PL', 'FR', 'EN'].includes(language)) witness.language = language;
+    if (contact.phone || contact.email) witness.contact = contact;
+    if (responsibilities.length) witness.responsibilities = [...new Set(responsibilities)];
+    if (text(row.Notes)) witness.notes = text(row.Notes);
+    return witness;
+  });
+}
+
 function mapGames(source) {
   const rows = table(source, [
     'Game',
@@ -972,6 +1018,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN')),
     oczepiny: mapOczepiny(section(parsed, 'OCZEPINY')),
     speeches,
+    witnesses: mapWitnesses(section(parsed, 'WITNESSES')),
     cake,
     games,
     privacy,

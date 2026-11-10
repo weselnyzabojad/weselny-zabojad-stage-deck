@@ -1,0 +1,36 @@
+{
+  "$schema": "./witnesses.json",
+  "witnesses": [
+    {
+      "id": "witness_zuzia",
+      "name": "Zuzia",
+      "role": "Świadkowa",
+      "language": "PL",
+      "contact": {
+        "phone": "+48 600 222 333",
+        "email": "zuzia@example.com"
+      },
+      "responsibilities": [
+        "GAME_ORGANIZER",
+        "SPEECH"
+      ],
+      "speechIds": [
+        "speech_witness"
+      ],
+      "notes": "Organizes the secret game."
+    },
+    {
+      "id": "witness_valentin",
+      "name": "Valentin",
+      "role": "Témoin",
+      "language": "FR",
+      "responsibilities": [
+        "QUESTION_VALIDATOR",
+        "SPEECH"
+      ],
+      "speechIds": [
+        "speech_valentin"
+      ]
+    }
+  ]
+}

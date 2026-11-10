@@ -47,6 +47,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Full-width secondary bar | Complete (#391) |
 | Hard-anchor banner children notice removed | Complete (#392) |
 | Couple common languages label | Complete (#394) |
+| Witnesses as key persons | Complete (#553) |
 | Full-width DJ layout | Complete (#396) |
 | Game Clicker scoped to games step | Complete (#398) |
 | Cake Protocol consolidation | Complete (#399) |
@@ -73,7 +74,6 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553) | Witnesses (świadkowie/témoins) as key persons | Planning TODO |
 | [#621](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/621) | Schema: remove `couple`; drive identity UI from `coupleProfile` | Implementation |
 | [#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622) | Schema: embed `mandatorySteps` fields into timeline `steps` | Implementation |
 | [#623](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/623) | Schema: move `venue` into venue logistics and extract `venueDetails` | Implementation |
@@ -2715,8 +2715,8 @@ Core top-level groups:
   `syncPin`, `role`, `hostingMode`;
 - venue and cultural rules: `venue`, `venueLogistics`, `culturalRules`;
 - schedule: `hardAnchors`, `steps` (`FLEXIBLE`, `HARD_ANCHOR`);
-- content: `cake`, `speeches`, `musicPolicy`, `mediaTeam`, `photoPlan`,
-  `oczepiny`;
+- content: `cake`, `speeches`, `witnesses`, `musicPolicy`, `mediaTeam`,
+  `photoPlan`, `oczepiny`;
 - optional/forward-compatible: `demographics`, `viewVisibility`, `privacy`,
   `speeches`, `extensions`;
 - live state: `liveSyncState` with `active_step_id`, `completed_step_ids`,
@@ -3580,3 +3580,19 @@ mandatory-update popup become step-scoped. The Google Doc `## MANDATORY STEPS`
 section remains an input, but maps into `steps[].mandatory` and creates or
 patches the corresponding steps. Tracked by
 [#622](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/622).
+
+### 17.11 Witnesses as key persons (implemented, 2026-11-10)
+
+Witnesses are a first-class optional cartridge block, distinct from the couple
+and the media team. `schema/domains/witnesses.json` owns
+`witnesses[]` with `id`, `name`, authored `role` (for example Świadkowa,
+Témoin, Best man), optional `language`, admin-only `contact`, deterministic
+`responsibilities` (`GAME_ORGANIZER`, `QUESTION_VALIDATOR`, `SPEECH`, `CONTACT`,
+`OTHER`) and `speechIds[]` linking to `speeches[].id`.
+
+The Google Doc template gains `## WITNESSES` with a fixed table header; the
+mapper normalizes ids, languages and responsibilities. Semantic validation
+rejects duplicate witness ids and speech links that do not resolve. Contact
+details are admin-only and are never rendered on a stage role view.
+
+Shipped in [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553).
