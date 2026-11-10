@@ -231,13 +231,12 @@ export const DEMO_WEDDING = {
       { id: "grand_entrance", track: "Marry You - Bruno Mars", note: "Grand entrance cue." }
     ],
     doNotPlay: [
-      { id: "no_macarena", track: "Macarena - Los del Río", reason: "Couple's request." },
-      { id: "no_sto_lat", track: "Sto lat", reason: "No Sto Lat tonight." }
+      { track: "Macarena - Los del R?o" },
+      { track: "Sto lat" }
     ],
     requestsOpen: true,
     requestWindow: { start: "20:00", end: "23:00" },
     cleanVersions: true,
-    licensing: "Venue ZAIKS license confirmed.",
     importantSongs: [
       {
         id: "grand_entrance",
@@ -247,8 +246,6 @@ export const DEMO_WEDDING = {
         version: "Album version",
         stepId: "step_03",
         plannedTime: "18:00",
-        startAtSec: 0,
-        fadeOutSec: 215,
         source: {
           type: "CUSTOMER_FILE",
           fileRef: "assets/audio/marry-you-bruno-mars.mp3",
@@ -272,8 +269,6 @@ export const DEMO_WEDDING = {
         artist: "The Coup",
         stepId: "step_05",
         plannedTime: "20:30",
-        startAtSec: 18,
-        fadeOutSec: 240,
         source: {
           type: "YOUTUBE",
           url: "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING",
@@ -295,8 +290,6 @@ export const DEMO_WEDDING = {
         version: "Duet version",
         stepId: "step_08",
         plannedTime: "21:45",
-        startAtSec: 0,
-        fadeOutSec: 270,
         source: {
           type: "SPOTIFY",
           url: "https://open.spotify.com/track/DEMO_FIRST_DANCE",

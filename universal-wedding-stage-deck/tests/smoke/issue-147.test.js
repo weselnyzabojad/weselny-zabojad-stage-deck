@@ -29,8 +29,6 @@ const wedding = {
         title: 'Marry You',
         artist: 'Bruno Mars',
         stepId: 'step_01',
-        startAtSec: 5,
-        fadeOutSec: 215,
         source: {
           type: 'CUSTOMER_FILE',
           fileRef: 'missing.mp3',
@@ -76,8 +74,8 @@ describe('issue #147 VIP export & print pack', () => {
     expect(html).toContain('Jennifer &amp; Guillaume');
     expect(html).toContain('Grand entrance');
     expect(html).toContain('Marry You');
-    expect(html).toContain('Start 0:05');
-    expect(html).toContain('Fade 3:35');
+    expect(html).not.toContain('Start 0:05');
+    expect(html).not.toContain('Fade 3:35');
     expect(html).toContain('Source &amp; backup checklist');
     expect(html).toContain('unavailable');
     expect(html).toContain('Planned set only');

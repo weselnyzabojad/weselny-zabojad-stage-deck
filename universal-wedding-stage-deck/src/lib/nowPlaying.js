@@ -1,5 +1,3 @@
-import { songCues } from './importantSongs.js';
-
 function entryTrack(entry) {
   if (!entry?.step) return null;
   return entry.step.dj?.track ?? entry.step.title ?? null;
@@ -15,7 +13,6 @@ export function resolveNowPlaying({ activeEntry = null, nextEntry = null, keySon
     title: activeSong?.title || entryTrack(activeEntry),
     artist: activeSong?.artist ?? null,
     track: activeEntry?.step?.dj?.track ?? null,
-    cues: activeSong ? songCues(activeSong) : [],
     plannedTime: activeSong?.plannedTime ?? activeEntry?.projectedStart ?? null,
     cutoff:
       activeEntry?.step?.dj?.cutoff ??

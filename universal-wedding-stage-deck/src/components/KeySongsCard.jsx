@@ -8,7 +8,6 @@ import {
   isVipTier,
   momentMeta,
   qrTarget,
-  songCues,
   songLink,
   songState,
   songStatus,
@@ -99,7 +98,6 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
   const link = songLink(source);
   const status = songStatus(song);
   const qr = vip ? qrTarget(song) : { unavailable: '' };
-  const cues = vip ? songCues(song) : [];
   const streaming = isStreamingSource(source);
   const showBackup = vip && backup && typeof backup === 'object';
 
@@ -142,14 +140,6 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
                     ⏱ {song.plannedTime}
                   </span>
                 ) : null}
-                {cues.map((cue) => (
-                  <span
-                    key={cue.key}
-                    className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-ink"
-                  >
-                    {cue.label}
-                  </span>
-                ))}
                 <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
                   {source ? sourceLabel(source) : t('keySongs.noSource')}
                 </span>

@@ -230,11 +230,11 @@ Guest coverage groups: Immediate family, Witnesses
 
 ## IMPORTANT SONGS
 
-| Moment ID | Moment | Title | Artist | Version | Step ID | Planned time | Source type | File / Link | Start (s) | Fade out (s) | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | step_03 | 18:00 | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 | 0 | 215 |  |
-| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version |  | 19:30 | STREAMING |  | 0 | 260 | Duet version if available. |
-| cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | step_05 | 20:30 | STREAMING |  | 0 | 180 |  |
+| Moment ID | Moment | Title | Artist | Version | Step ID | Planned time | Source type | File / Link | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | step_03 | 18:00 | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 |  |
+| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version |  | 19:30 | STREAMING |  | Duet version if available. |
+| cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | step_05 | 20:30 | STREAMING |  |  |
 
 ## MUSIC POLICY
 
@@ -243,7 +243,6 @@ Request window start: 20:00
 Request window end: 23:00
 Disco Polo policy: No
 Clean versions: true
-Licensing: Venue ZAIKS license confirmed.
 
 ### Must Play
 
@@ -254,9 +253,9 @@ Licensing: Venue ZAIKS license confirmed.
 
 ### Do Not Play
 
-| Song ID | Track | Reason |
-| --- | --- | --- |
-| no_macarena | Macarena — Los del RĂ­o | Couple's request. |
+| Track |
+| --- |
+| Macarena - Los del R?o |
 
 ## GUEST REQUESTS
 

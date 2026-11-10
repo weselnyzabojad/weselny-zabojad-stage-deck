@@ -252,15 +252,12 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <ul className="mt-1.5 space-y-1.5">
             {doNotPlay.map((item) => (
               <li
-                key={item.id}
+                key={item.key}
                 className="rounded border border-alert/40 bg-alert/10 p-2"
               >
                 <div className="font-heading text-xs font-semibold text-alert-tint">
                   {item.track}
                 </div>
-                {item.reason ? (
-                  <p className="mt-0.5 text-[10px] text-muted">{item.reason}</p>
-                ) : null}
               </li>
             ))}
           </ul>
