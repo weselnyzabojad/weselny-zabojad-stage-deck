@@ -79,6 +79,19 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
+| [#632](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/632) | Schema: remove cultural-rule note fields | Implementation |
+| [#633](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/633) | Schema: guest coverage groups + field cleanup | Implementation |
+| [#634](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/634) | Schema: remove attractions `booked` | Implementation |
+| [#635](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/635) | Schema: remove photo-plan sunset source/timezone | Implementation |
+| [#636](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/636) | Schema: per-effect venue approvals | Implementation |
+| [#637](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/637) | Schema: clean up Oczepiny approvals/music | Implementation |
+| [#638](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/638) | Schema: remove mini-session duration | Implementation |
+| [#639](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/639) | Schema: trim music-policy fields | Implementation |
+| [#640](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/640) | Schema: remove venue timezone/access notes | Implementation |
+| [#641](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/641) | Schema: remove witness responsibilities | Implementation |
+| [#642](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/642) | Schema: Speed Foto as game step | Implementation |
+| [#643](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/643) | Schema: trim speech metadata | Implementation |
+| [#644](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/644) | Schema: remove steps `cutoffSec` | Implementation |
 
 
 
@@ -3679,3 +3692,32 @@ authentication credential:
   cached-cartridge guard read it. The example therefore keeps `"syncPin": "2008"`.
 
 No correction issue was created because the field is still in use.
+
+### 17.16 Domain example field review (decision, 2026-11-10)
+
+Every field in `schema/domains/*.example.json` was reviewed with its example
+value. Changes were approved per schema; unchanged examples stay as-is.
+
+| Domain example | Approved change | Issue |
+| --- | --- | --- |
+| `attractions.example.json` | Remove `attractions[].booked`; presence means active. | [#634](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/634) |
+| `cultural-rules.example.json` | Remove `sto_lat.note` and `gorzko.note`; keep statuses. | [#632](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/632) |
+| `guest-coverage.example.json` | Remove `selectedGuests` and `consent`; add `groups[]` as `{ id, label }`. | [#633](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/633) |
+| `mini-session.example.json` | Remove `durationMin`. | [#638](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/638) |
+| `music-policy.example.json` | Remove `doNotPlay[].id`, `doNotPlay[].reason`, `licensing`, `importantSongs[].startAtSec` and `fadeOutSec`. | [#639](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/639) |
+| `oczepiny.example.json` | Remove `winnerPhoto.replacesWinnersDance`, photographer-briefing confirmation fields, `subEvents[].durationMin`, `game.type` and `game.notes`. Keep `music.enabled`, turn `music.playlist` into an array and keep `countdown.mode`. | [#637](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/637) |
+| `photo-plan.example.json` | Remove `sunset.source` and `sunset.timezone`. | [#635](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/635) |
+| `special-effects.example.json` | Remove `permitRequired`, `safetyBriefing` and `venueApproved`; add per-effect Venue Manager approval booleans. | [#636](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/636) |
+| `speeches.example.json` | Remove `durationMin`, `mic`, `cue`, `readFrom` and `consent.confirmedBy`. | [#643](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/643) |
+| `speed-foto.example.json` | Delete the domain; model Speed Foto as a timeline game step requiring a photographer. | [#642](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/642) |
+| `steps.example.json` | Remove `steps[].dj.cutoffSec`; keep absolute `dj.cutoff`. | [#644](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/644) |
+| `venue-details.example.json` | Remove `timezone` and `installation.accessNotes`. | [#640](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/640) |
+| `witnesses.example.json` | Remove `responsibilities[]`. | [#641](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/641) |
+
+No changes were approved for `cake`, `couple-profile`, `demographics`,
+`first-dance` or `group-photos`; their examples stay unchanged.
+
+**Oczepiny music/countdown contract.** `music.enabled` is the mode switch. When
+true, `music.playlist[]` is shown in DJ VIP and MC as information only. When
+false, `countdown.mode` applies, DJ does not display it and only MC shows the
+countdown mode. `music.track` and `countdown.mode` stay.
