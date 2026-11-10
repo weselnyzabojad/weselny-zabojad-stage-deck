@@ -181,56 +181,115 @@ function mapCeremonyScript(source, steps) {
   };
 }
 
-function mapOczepiny(source) {
+// Only the four throwing moments and the two winner-photo moments may appear
+// as Oczepiny sub-events. IDs are canonical and derived from the title.
+const OCZEPINY_SUB_EVENTS = {
+  'veil toss': 'veil_toss',
+  'bouquet toss': 'bouquet_toss',
+  'bow-tie game': 'bow_tie_game',
+  'cravat toss': 'cravat_toss',
+  'winner photo': 'winner_photo',
+  'winners with couple photo': 'winners_with_couple_photo',
+};
+
+function canonicalSubEventTitle(value) {
+  const clean = text(value)?.toLowerCase().replace(/\s+/g, ' ');
+  if (!clean) return null;
+  const id = OCZEPINY_SUB_EVENTS[clean];
+  return id ? { id, title: text(value) } : null;
+}
+
+function mapOczepiny(source, warnings = []) {
   const throwings = {};
+  const missing = [];
   const rawThrowings = text(kv(source, 'Throwings')) ?? '';
   const throwingKeys = { veil: 'veil', bouquet: 'bouquet', bowtie: 'bowTie', cravat: 'cravat' };
+  const throwingLabels = { veil: 'veil', bouquet: 'bouquet', bowTie: 'bow-tie', cravat: 'cravat' };
   for (const part of rawThrowings.split(',')) {
     const [rawKey, value] = part.split('=').map((item) => item.trim());
     const key = throwingKeys[normalizeKey(rawKey)];
     if (!key) continue;
     throwings[key] = bool(value, false);
   }
-  const subEvents = table(source, [
-    'Sub-event ID',
-    'Title',
-    'Deferable',
-    'Skippable',
-  ]).map((row) => ({
-    id: slug(row['Sub-event ID']),
-    title: text(row.Title) ?? row['Sub-event ID'],
-    deferable: bool(row.Deferable, false),
-    skippable: bool(row.Skippable, false),
-  }));
+  for (const [key, label] of Object.entries(throwingLabels)) {
+    if (!(key in throwings)) missing.push(`${label} throwing`);
+  }
+
+  const subEvents = table(source, ['Title']).reduce((events, row) => {
+    const title = text(row.Title);
+    const canonical = canonicalSubEventTitle(title);
+    if (!title) {
+      warnings.push('OCZEPINY sub-event skipped: missing Title');
+      return events;
+    }
+    if (!canonical) {
+      warnings.push(`OCZEPINY sub-event skipped: unknown title "${title}"`);
+      return events;
+    }
+    if (!events.some((event) => event.id === canonical.id)) events.push(canonical);
+    return events;
+  }, []);
+  if (!subEvents.length) missing.push('Sub-events');
+
+  const enabled = bool(kv(source, 'Enabled'));
+  const order = text(kv(source, 'Order')) ?? text(kv(source, 'Oczepiny variant'));
+  const variant = text(kv(source, 'Oczepiny variant')) ?? text(kv(source, 'Order'));
+  const toss = text(kv(source, 'Toss'));
+  const ties = text(kv(source, 'Ties'));
+  const gameEnabled = bool(kv(source, 'Game enabled'));
+  const countdownMode = text(kv(source, 'Countdown mode'));
+  const winnerEnabled = bool(kv(source, 'Winner photo enabled'));
+  const winnersOnly = bool(kv(source, 'Winners only photo'));
+  const winnersWithCouple = bool(kv(source, 'Winners + couple photo'));
+  const photographerAvailable = bool(kv(source, 'Photographer available'));
+  const musicEnabled = bool(kv(source, 'Music enabled'));
+
+  for (const [value, label] of [
+    [enabled, 'Enabled'],
+    [order, 'Order'],
+    [variant, 'Oczepiny variant'],
+    [toss, 'Toss'],
+    [ties, 'Ties'],
+    [gameEnabled, 'Game enabled'],
+    [countdownMode, 'Countdown mode'],
+    [winnerEnabled, 'Winner photo enabled'],
+    [winnersOnly, 'Winners only photo'],
+    [winnersWithCouple, 'Winners + couple photo'],
+    [photographerAvailable, 'Photographer available'],
+    [musicEnabled, 'Music enabled'],
+  ]) {
+    if (value === null || value === undefined) missing.push(label);
+  }
+  if (missing.length) warnings.push(`OCZEPINY: missing ${missing.join(', ')}`);
 
   return {
-    enabled: bool(kv(source, 'Enabled'), true),
-    order: text(kv(source, 'Order')) ?? text(kv(source, 'Oczepiny variant')),
-    variant: text(kv(source, 'Oczepiny variant')) ?? text(kv(source, 'Order')),
-    anchorId: text(kv(source, 'Anchor ID')),
-    toss: text(kv(source, 'Toss')),
-    ties: text(kv(source, 'Ties')),
+    enabled: enabled ?? true,
+    order,
+    variant,
+    toss,
+    ties,
     throwings: Object.keys(throwings).length ? throwings : undefined,
     game: {
-      enabled: bool(kv(source, 'Game enabled'), false),
+      enabled: gameEnabled ?? false,
     },
-    countdown: { mode: text(kv(source, 'Countdown mode')) ?? 'MC' },
+    countdown: { mode: countdownMode ?? 'MC' },
     winnerPhoto: {
-      enabled: bool(kv(source, 'Winner photo enabled'), false),
-      photographerCue: text(kv(source, 'Winner photo cue')),
-      winnersOnly: bool(kv(source, 'Winners only photo'), false),
-      winnersWithCouple: bool(kv(source, 'Winners + couple photo'), false),
-      photographerAvailable: bool(kv(source, 'Photographer available'), false),
+      enabled: winnerEnabled ?? false,
+      // The photographer cue is app/admin data, never a Doc value.
+      photographerCue: '',
+      winnersOnly: winnersOnly ?? false,
+      winnersWithCouple: winnersWithCouple ?? false,
+      photographerAvailable: photographerAvailable ?? false,
     },
     photographerBriefed: {
       notes: text(kv(source, 'Photographer briefed notes')) ?? '',
     },
     music: {
-      enabled: bool(kv(source, 'Music enabled'), false),
-      track: text(kv(source, 'Music track')),
+      enabled: musicEnabled ?? false,
+      // Track/playlist are optional in the Doc but required by the schema.
+      track: text(kv(source, 'Music track')) ?? '',
       playlist: list(kv(source, 'Music playlist')),
     },
-    props: list(kv(source, 'Props')),
     subEvents,
   };
 }
@@ -1021,7 +1080,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       notes: text(row.Notes),
     })),
     photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN'), warnings),
-    oczepiny: mapOczepiny(section(parsed, 'OCZEPINY')),
+    oczepiny: mapOczepiny(section(parsed, 'OCZEPINY'), warnings),
     speeches,
     witnesses: mapWitnesses(section(parsed, 'WITNESSES')),
     cake,

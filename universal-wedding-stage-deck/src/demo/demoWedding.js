@@ -174,13 +174,14 @@ export const DEMO_WEDDING = {
     photographerBriefed: {
       notes: "Cameraman confirmed the midnight window."
     },
-    props: ["Veil", "Bow ties", "Test cards"],
     music: { enabled: true, track: "Oczepiny mix", playlist: ["Midnight"] },
     subEvents: [
-      { id: "toss", title: "Veil toss", deferable: false, skippable: true },
-      { id: "ties", title: "Bow-tie game", deferable: true, skippable: true },
-      { id: "test", title: "Test Zgodności", deferable: true, skippable: true },
-      { id: "winner_photo", title: "Winner photo", deferable: false, skippable: false }
+      { id: "veil_toss", title: "Veil toss" },
+      { id: "bouquet_toss", title: "Bouquet toss" },
+      { id: "bow_tie_game", title: "Bow-tie game" },
+      { id: "cravat_toss", title: "Cravat toss" },
+      { id: "winner_photo", title: "Winner photo" },
+      { id: "winners_with_couple_photo", title: "Winners with couple photo" }
     ]
   },
   culturalRules: {
