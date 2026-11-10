@@ -102,7 +102,8 @@ Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
 Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
 Test Wiedzy, Test Zgodności, Oczepiny, Last Dance) — see
 `docs/google-doc-template-conventions.md` §6. Detection reads the flags, never
-the localized title.
+the localized title. `Optional Flag` accepts only `oczepiny` or `dj_set`; leave
+it blank for ordinary steps.
 
 | Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -111,12 +112,12 @@ the localized title.
 | step_03 | 18:00 | 150 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
 | step_05 | 20:30 | 30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
 | step_06 | 21:00 | 15 | Wedding Thank-You | FLEXIBLE | Main Hall |  | false |  |  |
-| step_07 | 21:15 | 30 | Wishes | FLEXIBLE | Garden |  | false | wishes |  |
+| step_07 | 21:15 | 30 | Wishes | FLEXIBLE | Garden |  | false |  |  |
 | step_08 | 21:45 | 135 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
-| step_10 | 01:00 | 30 | Test Wiedzy | FLEXIBLE | Main Hall |  | false | games |  |
-| step_speed_foto | 01:30 | 15 | Speed Foto | FLEXIBLE | Dancefloor |  | false | games | Guests run in, pose, clear. |
-| step_11 | 01:45 | 15 | Test Zgodności | FLEXIBLE | Main Hall |  | false | games |  |
+| step_10 | 01:00 | 30 | Test Wiedzy | FLEXIBLE | Main Hall |  | false |  |  |
+| step_speed_foto | 01:30 | 15 | Speed Foto | FLEXIBLE | Dancefloor |  | false |  | Guests run in, pose, clear. |
+| step_11 | 01:45 | 15 | Test Zgodności | FLEXIBLE | Main Hall |  | false |  |  |
 | step_12 | 02:00 | 60 | DJ Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
 
 ## DJ CUES

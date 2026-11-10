@@ -157,7 +157,7 @@
       "steps[].dj.playlist": "optional",
       "steps[].dj.track": "optional",
       "steps[].dj.cutoff": "delete",
-      "steps[].planned": "pending",
+      "steps[].planned": "no",
       "steps[].realStart": "no",
       "steps[].photographerCue": "no",
       "steps[].isMainSongRequired": "required",
@@ -170,7 +170,7 @@
       "steps[].teleprompter.items[].heading": "no",
       "steps[].teleprompter.items[].lines[].lang": "no",
       "steps[].teleprompter.items[].lines[].text": "no",
-      "steps[].optionalFlag": "rework",
+      "steps[].optionalFlag": "optional",
       "steps[].game.id": "no",
       "steps[].game.title": "required",
       "steps[].game.gameType": "required",
@@ -274,16 +274,6 @@
     }
   },
   "todos": [
-    {
-      "file": "steps.example.json",
-      "field": "steps[].planned",
-      "note": "Confirm whether planned is a Doc field or a drift/demo-only override before implementation."
-    },
-    {
-      "file": "steps.example.json",
-      "field": "steps[].optionalFlag",
-      "note": "Rework the optionalFlag contract before assigning a Doc source."
-    },
     {
       "file": "wedding-cartridge.example.json",
       "field": "hostingMode",
