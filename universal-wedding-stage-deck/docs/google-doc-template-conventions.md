@@ -242,9 +242,12 @@ anchor that exists in the anchor table, and the anchor must exist for the step
 
 ### OCZEPINY
 
-Key/value fields map to `oczepiny.*`; the `### Sub-events` table maps to
-`oczepiny.subEvents[]`. `Anchor ID` must reference `hardAnchors[].id` when
-`Order` is `MIDNIGHT` (D5: Oczepini and Bread & Salt coexist).
+Key/value fields map to `oczepiny.*`; the `### Sub-events` table maps its
+`Title` column to `oczepiny.subEvents[]`. Only the four throwing moments (veil,
+bouquet, bow-tie, cravat) and the two winner-photo moments are allowed, and the
+parser derives their canonical IDs. `anchorId` and the winner-photo cue are
+app/admin data, never Doc values. The MIDNIGHT anchor still comes from the
+timeline step and hard-anchor table (D5: Oczepini and Bread & Salt coexist).
 
 ### VIEW VISIBILITY
 

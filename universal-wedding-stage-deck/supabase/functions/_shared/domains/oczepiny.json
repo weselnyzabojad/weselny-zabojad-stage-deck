@@ -62,12 +62,6 @@
             "notes"
           ]
         },
-        "props": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "music": {
           "type": "object",
           "properties": {
@@ -99,20 +93,21 @@
                 "type": "string"
               },
               "title": {
-                "type": "string"
-              },
-              "deferable": {
-                "type": "boolean"
-              },
-              "skippable": {
-                "type": "boolean"
+                "type": "string",
+                "enum": [
+                  "Veil toss",
+                  "Bouquet toss",
+                  "Bow-tie game",
+                  "Cravat toss",
+                  "Winner photo",
+                  "Winners with couple photo"
+                ],
+                "description": "Only the four throwings and the two winner-photo moments are allowed."
               }
             },
             "required": [
               "id",
-              "title",
-              "deferable",
-              "skippable"
+              "title"
             ]
           }
         },
@@ -175,7 +170,6 @@
         "ties",
         "winnerPhoto",
         "photographerBriefed",
-        "props",
         "music",
         "subEvents"
       ]

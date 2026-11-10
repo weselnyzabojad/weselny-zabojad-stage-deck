@@ -119,7 +119,6 @@
     "photographerBriefed": {
       "notes": ""
     },
-    "props": [],
     "music": {
       "track": "",
       "playlist": [
@@ -128,12 +127,7 @@
       "enabled": false
     },
     "subEvents": [
-      {
-        "id": "toss",
-        "title": "Veil toss",
-        "deferable": false,
-        "skippable": true
-      }
+      { "id": "veil_toss", "title": "Veil toss" }
     ]
   }
 }

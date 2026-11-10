@@ -69,25 +69,26 @@ Photographer available: yes
 
 Enabled: true
 Order: MIDNIGHT
-Anchor ID: oczepiny_midnight
 Toss: VEIL
 Ties: BOW_TIE
 Winner photo enabled: true
-Winner photo cue: Winner photo with the couple, then clear the floor.
 Photographer briefed notes: Briefed the photographer and cameraman.
 Music enabled: true
 Music track: Oczepiny mix
 Music playlist: Midnight, Party
-Props: Veil, Bow ties, Test cards
 
 ### Sub-events
 
-| Sub-event ID | Title | Deferable | Skippable |
-| --- | --- | --- | --- |
-| toss | Veil toss | false | true |
-| ties | Bow-tie game | true | true |
-| test | Test ZgodnoĹ›ci | 15 | true | true |
-| winner_photo | Winner photo | 5 | false | false |
+Only the four throwings and the two winner-photo moments are allowed.
+
+| Title |
+| --- |
+| Veil toss |
+| Bouquet toss |
+| Bow-tie game |
+| Cravat toss |
+| Winner photo |
+| Winners with couple photo |
 
 ## TIMELINE
 

@@ -245,7 +245,6 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
       raw.photographerBriefed && typeof raw.photographerBriefed === 'object'
         ? { notes: text(raw.photographerBriefed.notes) }
         : null,
-    props: Array.isArray(raw.props) ? raw.props.map(text).filter(Boolean) : [],
     music: raw.music && typeof raw.music === 'object'
       ? {
           enabled: raw.music.enabled === true,
@@ -261,8 +260,6 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
           .map((event, index) => ({
             id: text(event.id) ?? `sub_${index + 1}`,
             title: text(event.title) ?? `Event ${index + 1}`,
-            deferable: event.deferable === true,
-            skippable: event.skippable === true,
           }))
       : [],
   };
