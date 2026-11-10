@@ -145,9 +145,6 @@
     "cake": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/cake.json#/properties/cake"
     },
-    "venueDetails": {
-      "$ref": "https://weselnyzabojad.example/schemas/domains/venue-details.json#/properties/venueDetails"
-    },
     "viewVisibility": {
       "$ref": "#/$defs/viewVisibility"
     },

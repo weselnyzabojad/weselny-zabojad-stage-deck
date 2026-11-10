@@ -51,6 +51,7 @@ Primary deployment path is `/deck/`; the owner surface is `/admin`.
 | Couple identity from `coupleProfile` only | Complete (#621) |
 | Mandatory data embedded in timeline steps | Complete (#622) |
 | `venueDetails` domain schema | Complete (#623) |
+| `venueDetails` removed from main cartridge | Complete (#628) |
 | Full-width DJ layout | Complete (#396) |
 | Game Clicker scoped to games step | Complete (#398) |
 | Cake Protocol consolidation | Complete (#399) |
@@ -77,7 +78,6 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
-| [#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628) | Schema: remove `venueDetails` from the main cartridge schema and example | Implementation |
 | [#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629) | Schema: embed `ceremony`, `games` and `wishes` into timeline `steps` | Implementation |
 
 
@@ -3620,8 +3620,11 @@ mirror. The main cartridge therefore stops carrying and declaring the block.
   is `extensions.venueDetails`; do not reintroduce a top-level field without a
   new decision.
 
-Tracked by
+The block was removed from the main schema, example, demo, fixtures, Google Doc
+mapper and importer in
 [#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628).
+The domain files remain the mapping contract; no runtime top-level replacement
+was added.
 
 ### 17.13 Embed ceremony, games and wishes in steps (decision, 2026-11-10)
 

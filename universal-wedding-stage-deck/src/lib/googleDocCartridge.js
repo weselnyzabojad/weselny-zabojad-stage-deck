@@ -444,65 +444,6 @@ function mapGames(source) {
   };
 }
 
-function mapVenue(source) {
-  const latitude = Number(kv(source, 'Latitude'));
-  const longitude = Number(kv(source, 'Longitude'));
-  const accommodationLat = Number(kv(source, 'Accommodation latitude'));
-  const accommodationLng = Number(kv(source, 'Accommodation longitude'));
-  return {
-    address: text(kv(source, 'Address')),
-    coordinates:
-      Number.isFinite(latitude) && Number.isFinite(longitude)
-        ? { latitude, longitude }
-        : undefined,
-    timezone: text(kv(source, 'Timezone')),
-    manager: {
-      name: text(kv(source, 'Manager name')),
-      phone: text(kv(source, 'Manager phone')),
-      email: text(kv(source, 'Manager email')),
-    },
-    installation: {
-      windowStart: clock(kv(source, 'Installation window start')),
-      windowEnd: clock(kv(source, 'Installation window end')),
-      latestStart: clock(kv(source, 'Installation latest start')),
-      loadInMinutes: int(kv(source, 'Load-in minutes')),
-      setupMinutes: int(kv(source, 'Setup minutes')),
-      loadOutMinutes: int(kv(source, 'Load-out minutes')),
-      accessNotes: text(kv(source, 'Access notes')),
-      parking: text(kv(source, 'Parking')),
-      power: text(kv(source, 'Power')),
-      loadingDock: bool(kv(source, 'Loading dock')),
-      elevator: bool(kv(source, 'Elevator')),
-      noiseCurfew: clock(kv(source, 'Noise curfew')),
-    },
-    notes: text(kv(source, 'Notes')),
-    accommodation: {
-      name: text(kv(source, 'Accommodation name')),
-      address: text(kv(source, 'Accommodation address')),
-      coordinates:
-        Number.isFinite(accommodationLat) && Number.isFinite(accommodationLng)
-          ? { latitude: accommodationLat, longitude: accommodationLng }
-          : undefined,
-      distanceKm: Number(kv(source, 'Accommodation distance km')) || undefined,
-      checkIn: clock(kv(source, 'Accommodation check-in')),
-      checkOut: clock(kv(source, 'Accommodation check-out')),
-      bookingRef: text(kv(source, 'Accommodation booking ref')),
-      rooms: int(kv(source, 'Accommodation rooms')),
-      contact: {
-        name: text(kv(source, 'Accommodation contact name')),
-        phone: text(kv(source, 'Accommodation contact phone')),
-      },
-      paidBy: text(kv(source, 'Accommodation paid by')),
-      notes: text(kv(source, 'Accommodation notes')),
-    },
-    travel: {
-      baselineMinutes: int(kv(source, 'Travel baseline minutes')),
-      distanceKm: Number(kv(source, 'Travel distance km')) || undefined,
-      originLabel: text(kv(source, 'Travel origin label')),
-    },
-  };
-}
-
 function mapPhotoPlan(source) {
   const groups = subTable(source, 'Group Photos', ['Group ID', 'Label']).map((row) => ({
     id: slug(row['Group ID']),
@@ -917,12 +858,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     }
   }
 
-  const venueSource = section(parsed, 'VENUE LOGISTICS');
-  const venueDetails = {
-    ...mapVenue(venueSource),
-    venue: text(kv(venueSource, 'Venue')) ?? text(kv(event, 'Venue')),
-  };
-
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
     ? {
@@ -996,7 +931,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     date,
     syncPin,
     hostingMode: normalizeHostingMode(hostingMode),
-    venueDetails,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),

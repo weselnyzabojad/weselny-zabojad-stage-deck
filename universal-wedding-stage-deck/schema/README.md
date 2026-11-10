@@ -90,7 +90,6 @@ rejected; put app-specific data under `extensions`.
 | `culturalRules` | yes | All three rules required; see below. |
 | `steps` | yes | At least one step. |
 | `role` | no | Legacy display hint only; device role is local. |
-| `venueDetails` | no | Venue name, address, contacts, installation and timezone. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
 | `hardAnchors` | no | Derived from `HARD_ANCHOR` steps; never authored in the Doc. |
 | `demographics` | no | Guest counts / languages. |
