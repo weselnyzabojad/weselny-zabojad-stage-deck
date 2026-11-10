@@ -724,6 +724,9 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const coupleSource = section(parsed, 'COUPLE IDENTITY');
   const brideFirstName = text(kv(coupleSource, 'Bride first name'));
   const groomFirstName = text(kv(coupleSource, 'Groom first name'));
+  const brideNationalities = list(kv(coupleSource, 'Bride nationality'));
+  const groomNationalities = list(kv(coupleSource, 'Groom nationality'));
+  const commonLanguages = list(kv(coupleSource, 'Shared languages'));
   const weddingId = text(kv(event, 'Wedding ID'));
   const date = text(kv(event, 'Date'));
   const dateISO = text(kv(event, 'Date ISO'));
@@ -732,6 +735,14 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   if (!weddingId) errors.push('EVENT: Wedding ID is required');
   if (!brideFirstName) errors.push('COUPLE IDENTITY: Bride first name is required');
   if (!groomFirstName) errors.push('COUPLE IDENTITY: Groom first name is required');
+  const missingCoupleFields = [
+    !brideNationalities.length && 'Bride nationality',
+    !groomNationalities.length && 'Groom nationality',
+    !commonLanguages.length && 'Shared languages',
+  ].filter(Boolean);
+  if (missingCoupleFields.length) {
+    warnings.push(`COUPLE IDENTITY: missing ${missingCoupleFields.join(', ')}`);
+  }
   if (!date) errors.push('EVENT: Date is required');
   if (!dateISO) errors.push('EVENT: Date ISO is required');
   if (!syncPin) errors.push('EVENT: Sync PIN is required');
@@ -909,13 +920,13 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     coupleProfile: {
       bride: {
         firstName: brideFirstName,
-        nationalities: list(kv(coupleSource, 'Bride nationality')),
+        nationalities: brideNationalities,
       },
       groom: {
         firstName: groomFirstName,
-        nationalities: list(kv(coupleSource, 'Groom nationality')),
+        nationalities: groomNationalities,
       },
-      commonLanguages: list(kv(coupleSource, 'Shared languages')),
+      commonLanguages,
     },
     date,
     syncPin,
