@@ -235,7 +235,6 @@
       "steps[].mandatory.lastSong": "optional",
       "steps[].ceremony.type": "required",
       "steps[].ceremony.mcSupportRequested": "required",
-      "steps[].ceremony.mcTranslationHelpRequested": "delete",
       "steps[].ceremony.location": "required",
       "steps[].ceremony.notes": "optional",
       "steps[].game.id": "no",
@@ -271,21 +270,5 @@
       "steps[].game.questions": "separate"
     }
   },
-  "todos": [
-    {
-      "file": "wedding-cartridge.example.json",
-      "field": "hostingMode",
-      "note": "Review the hosting-mode contract; a third mode is required."
-    },
-    {
-      "file": "wedding-cartridge.example.json",
-      "field": "steps[].game.questions[].answer",
-      "note": "Use the couple first names instead of BRIDE/GROOM."
-    },
-    {
-      "file": "oczepiny.example.json",
-      "field": "oczepiny.subEvents[].title",
-      "note": "Confirm the allowed title value set before implementation."
-    }
-  ]
+  "todos": []
 }

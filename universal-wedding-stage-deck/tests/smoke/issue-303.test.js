@@ -37,7 +37,6 @@ describe('issue #303 ceremony variants', () => {
     for (const line of [
       'Ceremony type: RELIGIOUS',
       'Ceremony MC support: yes',
-      'Ceremony MC translation help: no',
       'Ceremony location:',
       'Ceremony notes:',
     ]) {
@@ -88,17 +87,16 @@ describe('issue #303 ceremony variants', () => {
     expect(html).toContain('Religious wedding ceremony at St. Mary');
   });
 
-  it('shows civil ceremony and translation help in MC view', () => {
+  it('shows civil ceremony in MC view without translation metadata', () => {
     const html = renderToStaticMarkup(createElement(CeremonyCueCard, {
       wedding: weddingWith({
         type: 'CIVIL',
-        mcTranslationHelpRequested: true,
         location: 'Town Hall',
       }),
       role: 'mc',
     }));
     expect(html).toContain('Civil ceremony');
-    expect(html).toContain('MC translation help requested');
+    expect(html).not.toContain('MC translation help requested');
   });
 
   it('shows humanist ceremony in MC view', () => {
@@ -110,7 +108,7 @@ describe('issue #303 ceremony variants', () => {
   });
 
   it('never exposes ceremony details outside MC', () => {
-    const wedding = weddingWith({ type: 'CIVIL', mcTranslationHelpRequested: true });
+    const wedding = weddingWith({ type: 'CIVIL' });
     for (const role of ['dj', 'photographer_1', 'speaker', 'venue_manager']) {
       expect(renderToStaticMarkup(createElement(CeremonyCueCard, { wedding, role }))).toBe('');
     }

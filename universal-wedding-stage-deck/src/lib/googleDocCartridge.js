@@ -62,7 +62,10 @@ function slug(value, fallback = 'item') {
 }
 
 function normalizeHostingMode(value) {
-  return text(value)?.toUpperCase() === 'HOST_ONLY' ? 'HOST_ONLY' : 'HOST_AND_DJ';
+  const clean = text(value)?.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  if (clean === 'HOST_ONLY') return 'HOST_ONLY';
+  if (clean === 'DJ_MC' || clean === 'DJMC') return 'DJ_MC';
+  return 'HOST_AND_DJ';
 }
 
 function stripUndefined(value) {
@@ -149,7 +152,6 @@ function mapCeremony(event) {
   return {
     type: ['RELIGIOUS', 'CIVIL', 'HUMANIST'].includes(type) ? type : null,
     mcSupportRequested: bool(kv(event, 'Ceremony MC support'), false),
-    mcTranslationHelpRequested: bool(kv(event, 'Ceremony MC translation help'), false),
     location: text(kv(event, 'Ceremony location')),
     notes: text(kv(event, 'Ceremony notes')),
   };

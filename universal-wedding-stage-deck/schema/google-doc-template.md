@@ -20,12 +20,11 @@ Wedding ID: 2026-08-20_jennifer_guillaume
 Date: 20.08.2026
 Date ISO: 2026-08-20
 Sync PIN: 2008
-Service package: HOST_AND_DJ_VIP
+Service package: HOST_AND_DJ
 Children expected: yes
 Venue: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
 Ceremony type: RELIGIOUS
 Ceremony MC support: yes
-Ceremony MC translation help: no
 Ceremony location: St. Mary Church
 Ceremony notes: Full mass; MC introduces the couple at the church door.
 

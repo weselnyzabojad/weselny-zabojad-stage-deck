@@ -47,9 +47,10 @@
       "type": "string",
       "enum": [
         "HOST_AND_DJ",
-        "HOST_ONLY"
+        "HOST_ONLY",
+        "DJ_MC"
       ],
-      "description": "HOST_AND_DJ enables DJ cues, stage pings and the DJ Booth role; HOST_ONLY hides them."
+      "description": "HOST_AND_DJ is the DJ VIP package with DJ cues, stage pings and the DJ Booth role; HOST_ONLY is DJ Standard and hides them; DJ_MC combines the DJ and MC roles in one person."
     },
     "driftMinutes": {
       "type": "integer",
