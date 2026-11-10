@@ -67,16 +67,8 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-1.5">
               <span className="rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] text-ink">
-                {active.source === 'relative' ? 'From start' : 'Absolute'}
+                Absolute
               </span>
-              {active.hasAbsolute && active.hasRelative ? (
-                <span
-                  title={`Absolute cutoff ${active.label} wins over start + ${active.cutoffSec}s`}
-                  className="rounded border border-amber-800 bg-amber-950/60 px-1.5 py-0.5 font-mono text-[9px] text-amber-200"
-                >
-                  Absolute wins
-                </span>
-              ) : null}
             </div>
           </div>
 
@@ -85,9 +77,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
               {active.inSec != null ? formatCountdown(active.inSec) : 'starts with step'}
             </div>
             <div className="font-mono text-[10px] text-muted">
-              {active.source === 'relative'
-                ? `start + ${formatDuration(active.cutoffSec ?? 0)}`
-                : `cutoff ${active.label}`}
+              cutoff {active.label}
             </div>
           </div>
         </div>
@@ -108,10 +98,7 @@ export default function CutoffStopwatchCard({ timeline = [], clock, wedding }) {
                   {item.title}
                 </div>
                 <div className="font-mono text-[9px] text-muted">
-                  {item.source === 'relative'
-                    ? `start + ${formatDuration(item.cutoffSec ?? 0)}`
-                    : `cutoff ${item.label ?? '—'}`}
-                  {item.hasAbsolute && item.hasRelative ? ' · absolute wins' : ''}
+                  cutoff {item.label ?? '—'}
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-1.5 font-mono">

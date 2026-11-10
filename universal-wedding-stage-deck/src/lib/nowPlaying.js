@@ -14,11 +14,7 @@ export function resolveNowPlaying({ activeEntry = null, nextEntry = null, keySon
     artist: activeSong?.artist ?? null,
     track: activeEntry?.step?.dj?.track ?? null,
     plannedTime: activeSong?.plannedTime ?? activeEntry?.projectedStart ?? null,
-    cutoff:
-      activeEntry?.step?.dj?.cutoff ??
-      (Number.isFinite(activeEntry?.step?.dj?.cutoffSec)
-        ? `start + ${activeEntry.step.dj.cutoffSec}s`
-        : null),
+    cutoff: activeEntry?.step?.dj?.cutoff ?? null,
     nextTitle: entryTrack(nextEntry),
     nextStepTitle: nextEntry?.step?.title ?? null,
     nextStart: nextEntry?.projectedStart ?? null,

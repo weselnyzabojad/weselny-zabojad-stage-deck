@@ -181,7 +181,7 @@ Rules:
   venue timezone. Never write "after dinner" or "4 hours before".
 - Actual starts are ISO 8601 datetimes in the live state; the Doc only holds
   plans. After-midnight clocks (before 06:00) belong to the next service day.
-- `cutoff` (absolute) wins over `cutoffSec` (relative to actual start).
+- `cutoff` is an absolute clock; relative cutoff offsets are not part of the cartridge.
 
 ### Languages and nationalities
 

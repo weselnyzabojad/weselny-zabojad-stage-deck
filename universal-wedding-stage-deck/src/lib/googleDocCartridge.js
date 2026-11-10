@@ -728,7 +728,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     'Playlist',
     'Track',
     'Cutoff',
-    'CutoffSec',
     'Note',
   ]);
   mergeStepRows(steps, djRows, (step, row) => {
@@ -736,7 +735,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       playlist: text(row.Playlist),
       track: text(row.Track),
       cutoff: clock(row.Cutoff),
-      cutoffSec: int(row.CutoffSec),
       note: text(row.Note),
     };
   });

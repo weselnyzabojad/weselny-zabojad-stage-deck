@@ -1,9 +1,6 @@
 // Track cutoff stopwatches (project.md TODO 4 / Phase 2).
 //
-// One cutoff per step: an absolute `dj.cutoff` always wins. When no absolute
-// cutoff is set, `dj.cutoffSec` counts down from that step's ACTUAL start
-// (ISO timestamp), never from the planned start. Relative cutoffs stay
-// "pending" until the step has actually started.
+// One cutoff per step: an absolute `dj.cutoff` clock.
 
 import { clockToEventDate, isIsoTimestamp } from './eventTime.js';
 
@@ -39,31 +36,15 @@ export function computeCutoffStopwatches(
   return (Array.isArray(entries) ? entries : [])
     .map((entry) => {
       const dj = entry?.step?.dj;
-      if (!dj || (!dj.cutoff && !Number.isFinite(dj.cutoffSec))) return null;
+      if (!dj?.cutoff) return null;
 
       const start = startInstant(entry, context);
-      let at = null;
-      let source = null;
-      let label = null;
-
-      if (dj.cutoff) {
-        // Absolute cutoff wins when both are present.
-        at = clockToEventDate({
-          clock: dj.cutoff,
-          ...context,
-          after: start ?? nowDate,
-        });
-        source = 'absolute';
-        label = dj.cutoff;
-      } else if (Number.isFinite(dj.cutoffSec) && start) {
-        at = new Date(start.getTime() + dj.cutoffSec * 1000);
-        source = 'relative';
-        label = `start + ${dj.cutoffSec}s`;
-      } else if (Number.isFinite(dj.cutoffSec)) {
-        source = 'relative';
-        label = `start + ${dj.cutoffSec}s`;
-      }
-
+      const at = clockToEventDate({
+        clock: dj.cutoff,
+        ...context,
+        after: start ?? nowDate,
+      });
+      const label = dj.cutoff;
       const validAt = at instanceof Date && Number.isFinite(at.getTime());
       const inSec = validAt ? (at.getTime() - nowDate.getTime()) / 1000 : null;
 
@@ -72,11 +53,7 @@ export function computeCutoffStopwatches(
         title: entry.step.title,
         active: Boolean(entry.isActive),
         done: Boolean(entry.isDone),
-        source,
         label,
-        hasAbsolute: Boolean(dj.cutoff),
-        hasRelative: Number.isFinite(dj.cutoffSec),
-        cutoffSec: Number.isFinite(dj.cutoffSec) ? dj.cutoffSec : null,
         at: validAt ? at : null,
         inSec,
         overrunSec: inSec != null && inSec < 0 ? Math.abs(inSec) : 0,

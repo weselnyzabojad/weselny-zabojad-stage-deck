@@ -41,9 +41,9 @@ Supported: FR, PL, EN
 | step_03 | 00:00 | 60 | Oczepiny | FLEXIBLE | Main Hall |  | false | oczepiny |  |
 
 ## DJ CUES
-| Step ID | Playlist | Track | Cutoff | CutoffSec | Note |
-| --- | --- | --- | --- | --- | --- |
-| step_01 | Party Set | Gimme! Gimme! Gimme! — ABBA |  |  |  |
+| Step ID | Playlist | Track | Cutoff | Note |
+| --- | --- | --- | --- | --- |
+| step_01 | Party Set | Gimme! Gimme! Gimme! — ABBA |  |  |
 
 ## MC CUES
 | Step ID | Language | Timing | Text |

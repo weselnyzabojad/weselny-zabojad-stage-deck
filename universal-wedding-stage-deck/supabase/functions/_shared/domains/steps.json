@@ -63,11 +63,6 @@
         "cutoff": {
           "$ref": "#/$defs/clock"
         },
-        "cutoffSec": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 3600
-        },
         "note": {
           "type": "string"
         }
