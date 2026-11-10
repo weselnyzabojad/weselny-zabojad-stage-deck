@@ -492,6 +492,8 @@ const en = {
   'mc.step.noNext': 'No next step to swap',
   'mc.rail.showMore': 'Show {count} more',
   'mc.rail.showLess': 'Show less',
+  'mc.rail.requiresPhotographer': 'Requires photographer',
+  'mc.rail.noPhotographer': 'No photographer available',
   'mc.title.signOut': 'Sign out of this role',
   'mc.title.forgetPin': 'Paired room PIN — click to forget this device',
   'mc.title.savedLocally': 'Timeline progress survives tablet lock or browser refresh',

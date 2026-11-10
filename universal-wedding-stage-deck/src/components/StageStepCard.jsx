@@ -52,6 +52,7 @@ export default function StageStepCard({
   expanded = true,
   onToggle,
   collapsible = false,
+  photographerAvailable = null,
   children,
 }) {
   const { t } = useI18n();
@@ -77,6 +78,16 @@ export default function StageStepCard({
             <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}>
               {statusLabel}
             </span>
+            {step.game?.requiresPhotographer ? (
+              <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-600">
+                {t('mc.rail.requiresPhotographer')}
+              </span>
+            ) : null}
+            {step.game?.requiresPhotographer && photographerAvailable === false ? (
+              <span className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-alert-soft">
+                {t('mc.rail.noPhotographer')}
+              </span>
+            ) : null}
           </div>
           <div className="mt-1 line-clamp-2 break-words font-heading text-sm font-semibold text-ink">
             {title}

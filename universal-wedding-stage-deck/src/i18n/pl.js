@@ -492,6 +492,8 @@ const pl = {
   'mc.step.noNext': 'Brak następnego kroku do zamiany',
   'mc.rail.showMore': 'Pokaż jeszcze {count}',
   'mc.rail.showLess': 'Pokaż mniej',
+  'mc.rail.requiresPhotographer': 'Wymaga fotografa',
+  'mc.rail.noPhotographer': 'Brak fotografa',
   'mc.title.signOut': 'Wyloguj z tej roli',
   'mc.title.forgetPin': 'PIN sali jest sparowany — kliknij, aby zapomnieć to urządzenie',
   'mc.title.savedLocally':

@@ -607,25 +607,6 @@
             }
           }
         },
-        "speedFoto": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "enabled": {
-              "type": "boolean"
-            },
-            "description": {
-              "type": "string"
-            },
-            "durationMin": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "music": {
-              "type": "string"
-            }
-          }
-        },
         "specialEffects": {
           "type": "object",
           "additionalProperties": true,

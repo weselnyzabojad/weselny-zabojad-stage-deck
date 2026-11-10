@@ -7,7 +7,6 @@ import coupleProfileDomain from '../../schema/domains/couple-profile.json';
 import photoPlanDomain from '../../schema/domains/photo-plan.json';
 import miniSessionDomain from '../../schema/domains/mini-session.json';
 import groupPhotosDomain from '../../schema/domains/group-photos.json';
-import speedFotoDomain from '../../schema/domains/speed-foto.json';
 import guestCoverageDomain from '../../schema/domains/guest-coverage.json';
 import specialEffectsDomain from '../../schema/domains/special-effects.json';
 import cakeDomain from '../../schema/domains/cake.json';
@@ -38,7 +37,6 @@ async function getValidator() {
       ajv.addSchema(photoPlanDomain);
       ajv.addSchema(miniSessionDomain);
       ajv.addSchema(groupPhotosDomain);
-      ajv.addSchema(speedFotoDomain);
       ajv.addSchema(guestCoverageDomain);
       ajv.addSchema(specialEffectsDomain);
       ajv.addSchema(cakeDomain);

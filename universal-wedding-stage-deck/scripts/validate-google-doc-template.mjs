@@ -74,7 +74,7 @@ const EXPECTED_TABLES = {
     'Visible roles',
   ],
   'CAKE': null,
-  'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Notes'],
+  'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Requires photographer', 'Notes'],
   'KITCHEN': ['Course ID', 'Name', 'Time', 'Dietary notes'],
   'PRIVACY': null,
   'LIVE SYNC STATE': null,

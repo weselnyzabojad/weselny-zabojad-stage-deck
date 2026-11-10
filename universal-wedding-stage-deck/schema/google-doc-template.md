@@ -108,7 +108,8 @@ the localized title.
 | step_08 | 21:45 | 135 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
 | step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
 | step_10 | 01:00 | 30 | Test Wiedzy | FLEXIBLE | Main Hall |  | false | games |  |
-| step_11 | 01:30 | 30 | Test Zgodności | FLEXIBLE | Main Hall |  | false | games |  |
+| step_speed_foto | 01:30 | 15 | Speed Foto | FLEXIBLE | Dancefloor |  | false | games | Guests run in, pose, clear. |
+| step_11 | 01:45 | 15 | Test Zgodności | FLEXIBLE | Main Hall |  | false | games |  |
 | step_12 | 02:00 | 60 | DJ Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
 
 ## DJ CUES
@@ -202,10 +203,6 @@ Mini session location: Garden
 Mini session backup location: Ballroom window
 Group photos step ID:
 Group photos location: OUTDOOR
-Speed foto enabled: true
-Speed foto description: Couple in the middle of the dance floor; guests run in, pose, and clear.
-Speed foto duration (min): 10
-Speed foto music: Fast party block
 Sparklers: true
 Fire: false
 Heavy smoke: true
@@ -284,10 +281,11 @@ Serve time: 20:45
 
 ## GAMES
 
-| Game | Requested | Requested by | Languages | Existing questions | Notes |
-| --- | --- | --- | --- | --- | --- |
-| Test Wiedzy | UNDECIDED |  | PL, FR, EN | Yes | Question list Doc: gdoc_test_wiedzy |
-| Test ZgodnoĹ›ci | UNDECIDED |  | PL, FR, EN | No | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
+| Game | Requested | Requested by | Languages | Existing questions | Requires photographer | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Test Wiedzy | UNDECIDED |  | PL, FR, EN | Yes | no | Question list Doc: gdoc_test_wiedzy |
+| Test Zgodności | UNDECIDED |  | PL, FR, EN | No | no | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
+| Speed Foto | YES |  |  | No | yes | Guests run in, pose, clear. |
 
 ## KITCHEN
 

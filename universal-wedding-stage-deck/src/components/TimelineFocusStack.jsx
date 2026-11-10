@@ -43,6 +43,7 @@ function FocusZone({
   compact,
   zoneScroll,
   entryBodies,
+  photographerAvailable = null,
   hiddenCount = 0,
   expanded = false,
   onToggleExpanded,
@@ -87,6 +88,7 @@ function FocusZone({
                     collapsible
                     expanded={openKey === key}
                     onToggle={() => onToggle(zone, key)}
+                    photographerAvailable={photographerAvailable}
                   >
                     {entryBodies?.[key] ?? null}
                   </StageStepCard>
@@ -131,6 +133,7 @@ export default function TimelineFocusStack({
   className = '',
   zoneScroll = true,
   entryBodies = null,
+  photographerAvailable = null,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
@@ -189,6 +192,7 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
+          photographerAvailable={photographerAvailable}
           hiddenCount={stack.hidden.history}
           expanded={expandedByZone.history}
           onToggleExpanded={() => toggleExpanded('history')}
@@ -216,7 +220,11 @@ export default function TimelineFocusStack({
                 data-focus-scale="1"
                 style={{ zIndex: 30 }}
               >
-                <StageStepCard entry={stack.current} variant="current">
+                <StageStepCard
+                  entry={stack.current}
+                  variant="current"
+                  photographerAvailable={photographerAvailable}
+                >
                   {entryBodies?.[stack.current.step?.id] ?? null}
                   {currentBody}
                 </StageStepCard>
@@ -243,6 +251,7 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
+          photographerAvailable={photographerAvailable}
           hiddenCount={stack.hidden.future}
           expanded={expandedByZone.future}
           onToggleExpanded={() => toggleExpanded('future')}
