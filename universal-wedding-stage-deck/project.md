@@ -78,6 +78,7 @@ sections below and in git history.
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
 | [#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628) | Schema: remove `venueDetails` from the main cartridge schema and example | Implementation |
+| [#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629) | Schema: embed `ceremony`, `games` and `wishes` into timeline `steps` | Implementation |
 
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
@@ -3621,3 +3622,26 @@ mirror. The main cartridge therefore stops carrying and declaring the block.
 
 Tracked by
 [#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628).
+
+### 17.13 Embed ceremony, games and wishes in steps (decision, 2026-11-10)
+
+The remaining top-level feature blocks move into the timeline steps they belong
+to. The cartridge keeps one schedule collection; step presence is the feature
+flag.
+
+- **Ceremony** becomes `steps[].ceremony` with `type`, `mcSupportRequested`,
+  `mcTranslationHelpRequested`, `location` and `notes` on the Ceremony step.
+  The existing `ceremonyType` / `ceremonyLocation` step fields must not survive
+  as a second ceremony shape.
+- **Games** become `steps[].game` with the question list and metadata on each
+  game step. One step per game remains mandatory: Test Wiedzy and Test Zgodności
+  are separate steps. `optionalFlag: "games"` and `gameId` indirection are
+  retired.
+- **Wishes** is represented by the Wishes step itself; a separate
+  `wishes.enabled` flag is removed. An absent step means disabled.
+
+Readers, the Google Doc mapper, game results and predefined-step filtering must
+read step-scoped data. Legacy cartridges with top-level `ceremony`, `games` or
+`wishes` migrate into matching steps before validation, and the old keys are
+dropped. Tracked by
+[#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629).
