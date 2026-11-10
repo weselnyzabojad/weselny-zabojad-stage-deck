@@ -4,7 +4,6 @@
     {
       "id": "witness_zuzia",
       "name": "Zuzia",
-      "role": "Świadkowa",
       "language": "PL",
       "contact": {
         "phone": "+48 600 222 333",
@@ -18,7 +17,6 @@
     {
       "id": "witness_valentin",
       "name": "Valentin",
-      "role": "Témoin",
       "language": "FR",
       "speechIds": [
         "speech_valentin"

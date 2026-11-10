@@ -403,7 +403,7 @@ I now pronounce you married!
 Witnesses are key persons, not guests or media crew. Contact details are
 admin-only and must never be rendered on a stage role view.
 
-| Witness ID | Name | Role | Language | Phone | Email | Speech IDs | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| witness_bartek | Bartek | Best man | PL | +48 600 222 333 | bartek@example.com | speech_witness | Also validates the Test Wiedzy questions. |
-| witness_valentin | Valentin | Témoin | FR |  |  |  |  |
+| Witness ID | Name | Language | Phone | Email |
+| --- | --- | --- | --- | --- |
+| witness_bartek | Bartek | PL | +48 600 222 333 | bartek@example.com |
+| witness_valentin | Valentin | FR |  |  |
