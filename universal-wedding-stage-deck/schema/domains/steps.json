@@ -252,8 +252,9 @@
         },
         "durationMin": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 720
+          "minimum": 0,
+          "maximum": 720,
+          "description": "Zero-duration steps are exact-time milestones; normal steps take at least one minute."
         },
         "title": {
           "type": "string",
@@ -288,6 +289,9 @@
           "items": {
             "$ref": "#/$defs/mcCue"
           }
+        },
+        "mandatory": {
+          "$ref": "#/$defs/mandatory"
         },
         "photographerCue": {
           "type": "string",
@@ -369,6 +373,70 @@
         "text": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "mandatory": {
+      "type": "object",
+      "description": "Mandatory metadata owned by this timeline step. The step time is the only clock value.",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "FIRST_GUESTS_ARRIVAL",
+            "KITCHEN_SERVICE",
+            "CAKE_SERVICE",
+            "CLOSURE",
+            "MILESTONE"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "serviceMode": {
+          "type": "string",
+          "enum": [
+            "TABLE_SERVICE",
+            "BUFFET"
+          ]
+        },
+        "cakeServiceMode": {
+          "type": "string",
+          "enum": [
+            "KITCHEN_RETURN",
+            "CUT_IN_PLACE"
+          ]
+        },
+        "closureExtensionAllowed": {
+          "type": "boolean"
+        },
+        "closureExtensionUntil": {
+          "$ref": "#/$defs/clock"
+        },
+        "lastSong": {
+          "type": "string"
+        },
+        "milestoneKind": {
+          "type": "string",
+          "enum": [
+            "PHOTO",
+            "CAMERA",
+            "VENDOR",
+            "SUNSET",
+            "TRANSPORT",
+            "FAMILY",
+            "OTHER"
+          ]
+        },
+        "alertBeforeMin": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 180
         }
       }
     }

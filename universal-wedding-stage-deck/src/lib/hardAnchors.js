@@ -1,8 +1,7 @@
-// Hard anchors are derived from admin-managed mandatory steps (issue #595).
+// Hard anchors are timeline steps whose type is HARD_ANCHOR (issue #622).
 //
-// `mandatorySteps.milestones[]` and `mandatorySteps.kitchenServices[]` carry an
-// explicit `isHardAnchor` flag. The derived list keeps the existing hard-anchor
-// shape so the radar, reel clock and photo plan do not change.
+// The derived list keeps the existing hard-anchor shape so the radar, reel
+// clock and photo plan do not change.
 
 function cleanAnchor(anchor) {
   const value = {
@@ -15,26 +14,29 @@ function cleanAnchor(anchor) {
   return value;
 }
 
-export function deriveHardAnchors(mandatorySteps) {
-  const data = mandatorySteps && typeof mandatorySteps === 'object' ? mandatorySteps : {};
-  const milestones = Array.isArray(data.milestones) ? data.milestones : [];
-  const kitchen = Array.isArray(data.kitchenServices) ? data.kitchenServices : [];
+function anchorKind(step) {
+  const mandatoryKind = step?.mandatory?.kind;
+  if (mandatoryKind === 'MILESTONE') return step.mandatory.milestoneKind ?? 'OTHER';
+  if (mandatoryKind === 'FIRST_GUESTS_ARRIVAL') return 'FAMILY';
+  if (mandatoryKind === 'KITCHEN_SERVICE') return 'VENDOR';
+  if (mandatoryKind === 'CAKE_SERVICE') return 'VENDOR';
+  if (mandatoryKind === 'CLOSURE') return 'VENDOR';
+  return 'OTHER';
+}
 
-  const anchors = [
-    ...milestones
-      .filter((milestone) => milestone?.isHardAnchor === true)
-      .map((milestone) => cleanAnchor(milestone)),
-    ...kitchen
-      .filter((course) => course?.isHardAnchor === true && course?.time)
-      .map((course) =>
-        cleanAnchor({
-          id: `kitchen_${course.id}`,
-          time: course.time,
-          label: course.name ?? course.id,
-          kind: 'VENDOR',
-        }),
-      ),
-  ];
+export function deriveHardAnchors(source) {
+  const input = Array.isArray(source?.steps) ? source.steps : source;
+  const steps = Array.isArray(input) ? input : [];
 
-  return anchors.filter((anchor) => anchor.id && anchor.time);
+  return steps
+    .filter((step) => step?.id && step?.time && step?.type === 'HARD_ANCHOR')
+    .map((step) =>
+      cleanAnchor({
+        id: step.id,
+        time: step.time,
+        label: step.mandatory?.label ?? step.title ?? step.id,
+        kind: anchorKind(step),
+        alertBeforeMin: step.mandatory?.alertBeforeMin,
+      }),
+    );
 }

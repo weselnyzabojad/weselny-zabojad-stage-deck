@@ -97,7 +97,6 @@ export default function DjBoothView({
   speechMode = 'OFF',
   activeSpeechId = null,
   authControl = null,
-  mandatoryOverride = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -122,7 +121,7 @@ export default function DjBoothView({
   const mandatoryByStep = mapMandatoryToSteps(
     wedding,
     timeline.map((entry) => entry?.step).filter(Boolean),
-    { role: 'dj', isVipDj: caps.vip, override: mandatoryOverride },
+    { role: 'dj', isVipDj: caps.vip },
   );
   const mandatoryItems = activeEntry?.step?.id ? mandatoryByStep[activeEntry.step.id] ?? [] : [];
 

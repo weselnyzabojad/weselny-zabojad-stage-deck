@@ -12,17 +12,6 @@ import { mapMandatoryToSteps } from '../../src/lib/mandatorySteps.js';
 
 const wedding = {
   weddingId: 'w1',
-  mandatorySteps: {
-    firstGuestsArrival: '15:30',
-    kitchenServices: [
-      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
-      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
-    ],
-    cakeServiceMode: 'KITCHEN_RETURN',
-    closureTime: '02:00',
-    closureExtensionAllowed: true,
-    lastSong: 'Perfect',
-  },
   ceremony: {
     type: 'RELIGIOUS',
     mcSupportRequested: true,
@@ -41,15 +30,47 @@ const wedding = {
   },
 };
 
-const update = { updatedAt: '2026-11-07T18:00:00.000Z', value: wedding.mandatorySteps };
 const steps = [
-  { id: 'step_01', title: 'Cocktail', time: '15:30' },
-  { id: 'step_05', title: 'Wedding cake', time: '18:30' },
+  {
+    id: 'step_01',
+    title: 'Cocktail',
+    time: '15:30',
+    mandatory: { kind: 'FIRST_GUESTS_ARRIVAL', label: 'First guests arrival' },
+  },
+  {
+    id: 'dinner',
+    title: 'Dinner',
+    time: '18:30',
+    mandatory: { kind: 'KITCHEN_SERVICE', label: 'Dinner', serviceMode: 'TABLE_SERVICE' },
+  },
+  {
+    id: 'step_05',
+    title: 'Wedding cake',
+    time: '20:30',
+    mandatory: { kind: 'CAKE_SERVICE', label: 'Wedding cake', cakeServiceMode: 'KITCHEN_RETURN' },
+  },
+  {
+    id: 'supper_2',
+    title: 'Supper II',
+    time: '23:30',
+    mandatory: { kind: 'KITCHEN_SERVICE', label: 'Supper II', serviceMode: 'BUFFET' },
+  },
+  {
+    id: 'closure',
+    title: 'Wedding closure',
+    time: '02:00',
+    mandatory: {
+      kind: 'CLOSURE',
+      label: 'Wedding closure',
+      closureExtensionAllowed: true,
+      lastSong: 'Perfect',
+    },
+  },
 ];
+const scopedWedding = { ...wedding, steps };
+const update = { updatedAt: '2026-11-07T18:00:00.000Z', value: steps };
 const mandatoryItems = (role = 'mc', extra = {}) =>
-  Object.values(
-    mapMandatoryToSteps(wedding, steps, { role, override: update, ...extra }),
-  ).flat();
+  Object.values(mapMandatoryToSteps(scopedWedding, steps, { role, ...extra })).flat();
 
 afterEach(() => setLocale('en', { persist: false }));
 

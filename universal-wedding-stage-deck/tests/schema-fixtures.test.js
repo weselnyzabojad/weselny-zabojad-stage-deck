@@ -68,9 +68,12 @@ describe('schema fixture suite', () => {
     expect(errors).toEqual([]);
     expect(cartridge.coupleProfile.bride.firstName).toBe('Jennifer');
     expect(cartridge.coupleProfile.groom.firstName).toBe('Guillaume');
-    expect(cartridge.steps).toHaveLength(10);
-    expect(cartridge.mandatorySteps.milestones).toHaveLength(2);
-    expect(cartridge.hardAnchors).toBeUndefined();
+    expect(cartridge.steps).toHaveLength(17);
+    expect(cartridge).not.toHaveProperty('mandatorySteps');
+    expect(
+      cartridge.steps.filter((step) => step.mandatory?.kind === 'MILESTONE'),
+    ).toHaveLength(2);
+    expect(cartridge.hardAnchors.length).toBeGreaterThan(0);
     expect(cartridge.liveSyncState.actual_timestamps.step_03).toBe(
       '2026-08-20T18:25:00+02:00',
     );

@@ -221,23 +221,39 @@ export function collectSemanticErrors(cartridge) {
     }
   }
 
-  const mandatory = cartridge?.mandatorySteps;
-  if (mandatory?.closureTime && mandatory?.closureExtensionUntil) {
+  const mandatoryKinds = new Map();
+  for (const [index, step] of steps.entries()) {
+    const kind = step?.mandatory?.kind;
+    if (!kind) continue;
+    if (kind !== 'MILESTONE' && kind !== 'KITCHEN_SERVICE') {
+      if (mandatoryKinds.has(kind)) {
+        pushError(
+          `/steps/${index}/mandatory/kind`,
+          `duplicate mandatory ${kind} (also used by "${mandatoryKinds.get(kind)}")`,
+        );
+      } else {
+        mandatoryKinds.set(kind, step.id ?? `step ${index + 1}`);
+      }
+    }
+  }
+
+  const closureStep = steps.find((step) => step?.mandatory?.kind === 'CLOSURE');
+  if (closureStep?.time && closureStep.mandatory?.closureExtensionUntil) {
     const extensionDelta = clockDeltaMinutes(
-      mandatory.closureTime,
-      mandatory.closureExtensionUntil,
+      closureStep.time,
+      closureStep.mandatory.closureExtensionUntil,
     );
     if (extensionDelta == null || extensionDelta <= 0) {
       pushError(
-        '/mandatorySteps/closureExtensionUntil',
-        'closure extension must end after closureTime',
+        '/steps',
+        'closure extension must end after the closure step time',
       );
     }
   }
 
   if (steps.length > 0) {
     const durations = calculateStepDurations(steps, {
-      closureTime: cartridge?.mandatorySteps?.closureTime ?? null,
+      closureTime: closureStep?.time ?? null,
     });
     for (const message of durations.errors) {
       pushError('/steps', message);

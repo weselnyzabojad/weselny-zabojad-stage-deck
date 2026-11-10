@@ -228,6 +228,18 @@
   },
   "steps": [
     {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "durationMin": 1,
+      "title": "First guests arrival",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "FIRST_GUESTS_ARRIVAL",
+        "label": "First guests arrival"
+      }
+    },
+    {
       "id": "step_01",
       "time": "16:30",
       "durationMin": 30,
@@ -302,6 +314,19 @@
       }
     },
     {
+      "id": "dinner",
+      "time": "18:30",
+      "durationMin": 1,
+      "title": "Dinner",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Dinner",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
       "id": "step_05",
       "time": "20:30",
       "durationMin": 30,
@@ -313,6 +338,39 @@
         "playlist": "Party Set",
         "track": "Dancing Queen — ABBA",
         "cutoff": "21:30"
+      },
+      "mandatory": {
+        "kind": "CAKE_SERVICE",
+        "label": "Wedding cake",
+        "cakeServiceMode": "KITCHEN_RETURN"
+      }
+    },
+    {
+      "id": "photo_leave",
+      "time": "20:30",
+      "durationMin": 1,
+      "title": "Photographer leaves",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "MILESTONE",
+        "label": "Photographer leaves",
+        "milestoneKind": "PHOTO",
+        "alertBeforeMin": 45
+      }
+    },
+    {
+      "id": "camera_leave",
+      "time": "20:30",
+      "durationMin": 1,
+      "title": "Cameraman leaves",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "MILESTONE",
+        "label": "Cameraman leaves",
+        "milestoneKind": "CAMERA",
+        "alertBeforeMin": 45
       }
     },
     {
@@ -333,6 +391,19 @@
       "optionalFlag": "wishes"
     },
     {
+      "id": "supper_1",
+      "time": "21:30",
+      "durationMin": 1,
+      "title": "Supper I",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper I",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
       "id": "step_08",
       "time": "21:45",
       "durationMin": 135,
@@ -344,6 +415,19 @@
       "firstDanceStartAt": "00:12",
       "firstDanceStopAt": "04:30",
       "firstDanceNotes": "Key song for the DJ; fade under the applause."
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "durationMin": 1,
+      "title": "Supper II",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper II",
+        "serviceMode": "BUFFET"
+      }
     },
     {
       "id": "step_09",
@@ -373,6 +457,20 @@
       "location": "Main Hall",
       "optionalFlag": "games",
       "gameId": "test_zgodnosci"
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "durationMin": 1,
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure",
+        "closureExtensionAllowed": true,
+        "lastSong": "Perfect - Ed Sheeran"
+      }
     }
   ],
   "demographics": {
@@ -630,35 +728,6 @@
       }
     ]
   },
-  "mandatorySteps": {
-    "firstGuestsArrival": "15:30",
-    "kitchenServices": [
-      { "id": "dinner", "name": "Dinner", "time": "18:30", "serviceMode": "TABLE_SERVICE" },
-      { "id": "supper_1", "name": "Supper I", "time": "21:30", "serviceMode": "TABLE_SERVICE" },
-      { "id": "supper_2", "name": "Supper II", "time": "23:30", "serviceMode": "BUFFET" }
-    ],
-    "closureTime": "02:00",
-    "closureExtensionAllowed": true,
-    "lastSong": "Perfect - Ed Sheeran",
-    "milestones": [
-      {
-        "id": "photo_leave",
-        "time": "20:30",
-        "label": "Photographer leaves",
-        "kind": "PHOTO",
-        "alertBeforeMin": 45,
-        "isHardAnchor": true
-      },
-      {
-        "id": "camera_leave",
-        "time": "20:30",
-        "label": "Cameraman leaves",
-        "kind": "CAMERA",
-        "alertBeforeMin": 45,
-        "isHardAnchor": true
-      }
-    ]
-  },
   "ceremony": {
     "type": "RELIGIOUS",
     "mcSupportRequested": true,
@@ -666,5 +735,57 @@
     "location": "St. Mary Church",
     "notes": "Full mass; MC introduces the couple at the church door."
   },
-  "childrenExpected": true
+  "childrenExpected": true,
+  "hardAnchors": [
+    {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "label": "First guests arrival",
+      "kind": "FAMILY"
+    },
+    {
+      "id": "dinner",
+      "time": "18:30",
+      "label": "Dinner",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "label": "Wedding cake",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "photo_leave",
+      "time": "20:30",
+      "label": "Photographer leaves",
+      "alertBeforeMin": 45,
+      "kind": "PHOTO"
+    },
+    {
+      "id": "camera_leave",
+      "time": "20:30",
+      "label": "Cameraman leaves",
+      "alertBeforeMin": 45,
+      "kind": "CAMERA"
+    },
+    {
+      "id": "supper_1",
+      "time": "21:30",
+      "label": "Supper I",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "label": "Supper II",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "label": "Wedding closure",
+      "kind": "VENDOR"
+    }
+  ]
 }

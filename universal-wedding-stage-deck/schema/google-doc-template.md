@@ -88,10 +88,11 @@ Props: Veil, Bow ties, Test cards
 
 ## TIMELINE
 
-First guests arrival and Wedding closure are mandatory constraints, not timeline
-steps: keep them in the MANDATORY STEPS table below. Every remaining predefined
-step below is sourced from this Google Doc. Duration (min) is generated from the
-next step's time (and the closure time for the final step), not authored here.
+First guests arrival, kitchen courses and Wedding closure are mandatory
+constraints. The importer embeds them into timeline steps with a `mandatory`
+metadata object; the step time is the only clock value. Duration (min) is
+generated from the next step's time (and the closure time for the final step),
+not authored here.
 
 Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
 Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
@@ -352,6 +353,11 @@ Optional JSON for app-specific additions. Leave as an empty object when unused.
 | Field | Time |
 | --- | --- |
 | First guests arrival | 15:30 |
+| Wedding closure | 02:00 |
+| Closure extension allowed | true |
+| Closure extension until | 03:00 |
+| Cake service mode | KITCHEN_RETURN |
+| Last song | Perfect - Ed Sheeran |
 
 ### Kitchen Services
 

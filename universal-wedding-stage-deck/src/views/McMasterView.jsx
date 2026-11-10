@@ -111,7 +111,6 @@ export default function McMasterView({ model }) {
   nextEntry,
   cakeProtocol,
   cakeServiceMode = 'KITCHEN_RETURN',
-  mandatoryOverride = null,
   speechMode,
   speeches,
   selectSpeech,
@@ -141,10 +140,7 @@ export default function McMasterView({ model }) {
   });
   const photoPlan = resolvePhotoPlan(WEDDING);
   const groupPhotoStepId = resolveGroupPhotoStepId(photoPlan, WEDDING?.steps);
-  const mandatoryByStep = mapMandatoryToSteps(WEDDING, WEDDING?.steps, {
-    role: 'mc',
-    override: mandatoryOverride,
-  });
+  const mandatoryByStep = mapMandatoryToSteps(WEDDING, steps, { role: 'mc' });
   const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
   const isGameStep = Boolean(currentStep && currentStep.optionalFlag === 'games');
   const hideMcCues = isPredefinedGameStep(currentStep);

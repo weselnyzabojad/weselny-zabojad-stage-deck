@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
 import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { resolveMandatoryConstraints } from '../../src/lib/mandatorySteps.js';
 import { validateCartridge } from '../../schema/validate-lib.mjs';
 
 const template = readFileSync(new URL('../../schema/google-doc-template.md', import.meta.url), 'utf8');
@@ -19,20 +20,22 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
   });
 
   it('maps the timeline and derived durations', () => {
-    expect(result.cartridge.steps.map((step) => step.id)).toEqual([
-      'step_01',
-      'step_02',
-      'step_03',
-      'step_05',
-      'step_06',
-      'step_07',
-      'step_08',
-      'step_09',
-      'step_10',
-      'step_11',
-      'step_12',
-    ]);
-    expect(result.cartridge.steps[0].durationMin).toBe(30);
+    expect(result.cartridge.steps.map((step) => step.id)).toEqual(
+      expect.arrayContaining([
+        'step_01',
+        'step_02',
+        'step_03',
+        'step_05',
+        'step_06',
+        'step_07',
+        'step_08',
+        'step_09',
+        'step_10',
+        'step_11',
+        'step_12',
+      ]),
+    );
+    expect(result.cartridge.steps.find((step) => step.id === 'step_01').durationMin).toBe(30);
     const entrance = result.cartridge.steps.find((step) => step.id === 'step_03');
     expect(entrance.grandEntranceOrder).toBe('NEWLYWEDS_FIRST');
     const firstDance = result.cartridge.steps.find((step) => step.id === 'step_08');
@@ -42,11 +45,13 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
   });
 
   it('maps mandatory constraints, kitchen and music content', () => {
-    expect(result.cartridge.mandatorySteps.firstGuestsArrival).toBe('15:30');
-    expect(result.cartridge.mandatorySteps.kitchenServices).toEqual([
-      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
-      { id: 'supper_1', name: 'Supper I', time: '21:30', serviceMode: 'TABLE_SERVICE' },
-      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
+    expect(result.cartridge).not.toHaveProperty('mandatorySteps');
+    const constraints = resolveMandatoryConstraints(result.cartridge);
+    expect(constraints.firstGuestsArrival).toBe('15:30');
+    expect(constraints.kitchenServices.map(({ key, time }) => ({ key, time }))).toEqual([
+      { key: 'dinner', time: '18:30' },
+      { key: 'supper_1', time: '21:30' },
+      { key: 'supper_2', time: '23:30' },
     ]);
     expect(result.cartridge.extensions.kitchen.courses).toHaveLength(2);
     expect(result.cartridge.musicPolicy.importantSongs.length).toBe(3);

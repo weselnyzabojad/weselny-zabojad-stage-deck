@@ -22,9 +22,9 @@ describe('issue #273 mandatory steps', () => {
     expect(labels).not.toContain('Supper III');
   });
 
-  it('validates the schema block', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    expect(schema.properties.mandatorySteps).toBeTruthy();
-    expect(schema.properties.mandatorySteps.properties.kitchenServices).toBeTruthy();
+  it('validates the embedded mandatory step schema', () => {
+    const schema = JSON.parse(read('schema/domains/steps.json'));
+    expect(schema.$defs.mandatory).toBeTruthy();
+    expect(schema.$defs.mandatory.properties.kind.enum).toContain('KITCHEN_SERVICE');
   });
 });

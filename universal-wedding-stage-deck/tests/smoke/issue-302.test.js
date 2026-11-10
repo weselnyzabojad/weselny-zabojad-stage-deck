@@ -29,13 +29,15 @@ describe('issue #302 mandatory constraints', () => {
     ]);
   });
 
-  it('applies venue-manager overrides, including buffet mode', () => {
-    const constraints = resolveMandatoryConstraints(DEMO_WEDDING, {
-      value: {
-        firstGuestsArrival: '16:00',
-        kitchenServices: [{ id: 'dinner', time: '19:00', serviceMode: 'BUFFET' }],
-      },
+  it('applies step-scoped venue-manager overrides, including buffet mode', () => {
+    const steps = DEMO_WEDDING.steps.map((step) => {
+      if (step.mandatory?.kind === 'FIRST_GUESTS_ARRIVAL') return { ...step, time: '16:00' };
+      if (step.id === 'dinner') {
+        return { ...step, time: '19:00', mandatory: { ...step.mandatory, serviceMode: 'BUFFET' } };
+      }
+      return step;
     });
+    const constraints = resolveMandatoryConstraints(DEMO_WEDDING, { value: steps });
     expect(constraints.prestationReady).toBe('15:00');
     expect(constraints.kitchenServices[0]).toMatchObject({
       key: 'dinner',
@@ -81,9 +83,11 @@ describe('issue #302 mandatory constraints', () => {
   });
 
   it('supports table service and buffet in schema and venue manager UI', () => {
-    const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
-    const courses = schema.properties.mandatorySteps.properties.kitchenServices;
-    expect(courses.items.properties.serviceMode.enum).toEqual(['TABLE_SERVICE', 'BUFFET']);
+    const schema = JSON.parse(read('schema/domains/steps.json'));
+    expect(schema.$defs.mandatory.properties.serviceMode.enum).toEqual([
+      'TABLE_SERVICE',
+      'BUFFET',
+    ]);
     const venue = read('src/components/VenueManagerView.jsx');
     expect(venue).toContain('mandatory.serviceMode.TABLE_SERVICE');
     expect(venue).toContain('mandatory.serviceMode.BUFFET');

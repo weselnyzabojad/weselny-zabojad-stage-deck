@@ -5,19 +5,56 @@ import MandatoryUpdatePopup from '../../src/components/MandatoryUpdatePopup.jsx'
 
 const update = {
   updatedAt: '2026-11-07T18:00:00.000Z',
-  value: {
-    firstGuestsArrival: '15:30',
-    kitchenServices: [
-      { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE' },
-      { id: 'supper_1', name: 'Supper I', time: '21:30', serviceMode: 'TABLE_SERVICE' },
-      { id: 'supper_2', name: 'Supper II', time: '23:30', serviceMode: 'BUFFET' },
-    ],
-    cakeServiceMode: 'KITCHEN_RETURN',
-    closureTime: '02:00',
-    closureExtensionAllowed: true,
-    closureExtensionUntil: '03:00',
-    lastSong: 'Perfect - Ed Sheeran',
-  },
+  value: [
+    {
+      id: 'step_arrival',
+      time: '15:30',
+      title: 'First guests arrival',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'FIRST_GUESTS_ARRIVAL', label: 'First guests arrival' },
+    },
+    {
+      id: 'dinner',
+      time: '18:30',
+      title: 'Dinner',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'KITCHEN_SERVICE', label: 'Dinner', serviceMode: 'TABLE_SERVICE' },
+    },
+    {
+      id: 'supper_1',
+      time: '21:30',
+      title: 'Supper I',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'KITCHEN_SERVICE', label: 'Supper I', serviceMode: 'TABLE_SERVICE' },
+    },
+    {
+      id: 'supper_2',
+      time: '23:30',
+      title: 'Supper II',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'KITCHEN_SERVICE', label: 'Supper II', serviceMode: 'BUFFET' },
+    },
+    {
+      id: 'cake',
+      time: '20:30',
+      title: 'Wedding cake',
+      type: 'HARD_ANCHOR',
+      mandatory: { kind: 'CAKE_SERVICE', label: 'Wedding cake', cakeServiceMode: 'KITCHEN_RETURN' },
+    },
+    {
+      id: 'closure',
+      time: '02:00',
+      title: 'Wedding closure',
+      type: 'HARD_ANCHOR',
+      mandatory: {
+        kind: 'CLOSURE',
+        label: 'Wedding closure',
+        closureExtensionAllowed: true,
+        closureExtensionUntil: '03:00',
+        lastSong: 'Perfect - Ed Sheeran',
+      },
+    },
+  ],
 };
 
 const render = (role, isVipDj = false) =>
@@ -60,7 +97,15 @@ describe('issue #327 mandatory update popup role visibility', () => {
   it('does not render when no permitted fields remain', () => {
     const empty = {
       updatedAt: '2026-11-07T18:00:00.000Z',
-      value: { kitchenServices: [{ id: 'dinner', time: '18:30' }] },
+      value: [
+        {
+          id: 'dinner',
+          time: '18:30',
+          title: 'Dinner',
+          type: 'HARD_ANCHOR',
+          mandatory: { kind: 'KITCHEN_SERVICE', label: 'Dinner', serviceMode: 'TABLE_SERVICE' },
+        },
+      ],
     };
     const html = renderToStaticMarkup(
       createElement(MandatoryUpdatePopup, {
