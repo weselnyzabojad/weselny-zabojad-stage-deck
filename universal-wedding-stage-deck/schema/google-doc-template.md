@@ -212,10 +212,6 @@ Sparklers: true
 Fire: false
 Heavy smoke: true
 Other effects: Cold sparks
-Sparklers approved: true
-Fire approved: false
-Heavy smoke approved: true
-Other effects approved: true
 Guest coverage all guests: false
 Guest coverage description: Formal photos with immediate family and witnesses only.
 Guest coverage groups: Immediate family, Witnesses
