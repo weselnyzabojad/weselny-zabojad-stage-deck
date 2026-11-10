@@ -54,9 +54,6 @@
             "windowStart": {
               "$ref": "#/$defs/clock"
             },
-            "windowEnd": {
-              "$ref": "#/$defs/clock"
-            },
             "latestStart": {
               "$ref": "#/$defs/clock"
             },

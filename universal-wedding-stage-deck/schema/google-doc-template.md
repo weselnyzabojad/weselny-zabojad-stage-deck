@@ -146,13 +146,9 @@ it blank for ordinary steps.
 
 Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
-Latitude: 51.05
-Longitude: 16.19
 Manager name: Anna Kowalska
 Manager phone: +48 600 000 000
 Manager email: anna@venue.example
-Installation window start: 12:00
-Installation window end: 16:00
 Installation latest start: 12:00
 Load-in minutes: 45
 Setup minutes: 90

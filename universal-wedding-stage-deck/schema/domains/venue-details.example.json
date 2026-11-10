@@ -13,8 +13,7 @@
       "email": "anna@venue.example"
     },
     "installation": {
-      "windowStart": "12:00",
-      "windowEnd": "16:00"
+      "windowStart": "12:00"
     },
     "notes": "Group photos in the garden before 20:15."
   }
