@@ -490,16 +490,29 @@ function mapPhotoPlan(source, warnings = []) {
   }, []);
   const location = text(kv(source, 'Group photos location'));
   if (!location) warnings.push('GROUP PHOTOS: missing location');
+  const coordinate = (label) => {
+    const raw = text(kv(source, label));
+    if (raw === null) return undefined;
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : undefined;
+  };
+  const latitude = coordinate('Sunset latitude');
+  const longitude = coordinate('Sunset longitude');
+  const missingCoordinates = [
+    latitude === undefined && 'Sunset latitude',
+    longitude === undefined && 'Sunset longitude',
+  ].filter(Boolean);
+  if (missingCoordinates.length) {
+    warnings.push(`PHOTO PLAN: missing ${missingCoordinates.join(', ')}`);
+  }
   return {
     sunset: {
-      provider: text(kv(source, 'Sunset provider')),
-      latitude: Number(kv(source, 'Sunset latitude')) || undefined,
-      longitude: Number(kv(source, 'Sunset longitude')) || undefined,
-      lastFetchedAt: text(kv(source, 'Sunset last fetched at')),
-      sunsetTime: clock(kv(source, 'Sunset time')),
-      goldenHourStart: clock(kv(source, 'Golden hour start')),
-      civilTwilightEnd: clock(kv(source, 'Civil twilight end')),
-      status: text(kv(source, 'Sunset status'))?.toUpperCase() ?? 'UNAVAILABLE',
+      // Coordinates are the only Doc-sourced sunset values; the provider and
+      // the computed times/status are app runtime data.
+      provider: 'sunrise-sunset.org',
+      latitude,
+      longitude,
+      status: 'UNAVAILABLE',
     },
     miniSession: (() => {
       const enabled = bool(kv(source, 'Mini session enabled'));
