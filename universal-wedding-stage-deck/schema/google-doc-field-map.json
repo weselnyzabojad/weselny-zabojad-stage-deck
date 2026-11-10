@@ -35,7 +35,6 @@
       "demographics.pl": "optional",
       "demographics.fr": "optional",
       "demographics.other": "optional",
-      "demographics.languages": "delete",
       "demographics.notes": "optional"
     },
     "first-dance.example.json": {
