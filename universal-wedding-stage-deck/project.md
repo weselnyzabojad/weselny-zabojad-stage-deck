@@ -3661,3 +3661,21 @@ unchanged:
 - `liveSyncState`, `childrenExpected`, `hardAnchors`.
 
 No correction issue was created because the review produced no change.
+
+### 17.15 `syncPin` usage (clarification, 2026-11-10)
+
+`syncPin` is the **4-digit local/demo pairing PIN**, not a production
+authentication credential:
+
+- Local/demo mode uses it in `PairingScreen` / `usePairing` to unlock the stage
+  deck on a device. It defaults to the event date as `DDMM` (example
+  `20.08.2026` → `2008`).
+- Production `/deck/` uses separate **6-digit per-role PINs** validated by the
+  `join_room` Edge Function, which returns a role-scoped JWT. `syncPin` is not
+  used for production role joins.
+- The cloud room is keyed by `weddingId` (`wzsd:<weddingId>`), never by
+  `syncPin`.
+- The schema still requires exactly four digits because local pairing and the
+  cached-cartridge guard read it. The example therefore keeps `"syncPin": "2008"`.
+
+No correction issue was created because the field is still in use.
