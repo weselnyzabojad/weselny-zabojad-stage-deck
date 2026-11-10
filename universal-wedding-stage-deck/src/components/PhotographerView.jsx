@@ -186,15 +186,14 @@ function PhotoPlanBlock({ type, data }) {
           <>
             <Row
               label="Coverage"
-              value={
-                data.allGuests
-                  ? 'All guests'
-                  : data.selectedGuests != null
-                    ? `${data.selectedGuests} selected guests`
-                    : '—'
-              }
+              value={data.allGuests ? 'All guests' : 'Selected small groups'}
             />
-            <Row label="Consent" value={data.consent ?? '—'} />
+            {data.groups?.length ? (
+              <Row
+                label="Groups"
+                value={data.groups.map((group) => group.label).join(', ')}
+              />
+            ) : null}
             {data.description ? (
               <p className="text-muted">{data.description}</p>
             ) : null}

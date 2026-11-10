@@ -8,7 +8,9 @@ const json = (p) => JSON.parse(read(p));
 describe('issue #575 guest-coverage domain schema', () => {
   it('defines the domain schema and validates its example', () => {
     const domain = json('schema/domains/guest-coverage.json');
-    expect(domain.properties.guestCoverage.properties.selectedGuests.type).toBe('integer');
+    expect(domain.properties.guestCoverage.properties.groups.type).toBe('array');
+    expect(domain.properties.guestCoverage.properties.selectedGuests).toBeUndefined();
+    expect(domain.properties.guestCoverage.properties.consent).toBeUndefined();
     const ajv = new Ajv2020({ allErrors: true, strict: false });
     expect(ajv.compile(domain)(json('schema/domains/guest-coverage.example.json'))).toBe(true);
   });

@@ -222,9 +222,8 @@ Permit required: false
 Venue approved: true
 Safety briefing: Briefed the venue manager and the photographer.
 Guest coverage all guests: false
-Guest coverage selected guests: 12
 Guest coverage description: Formal photos with immediate family and witnesses only.
-Guest coverage consent: Couple approved; announce before candid coverage.
+Guest coverage groups: Immediate family, Witnesses
 
 ### Group Photos
 
