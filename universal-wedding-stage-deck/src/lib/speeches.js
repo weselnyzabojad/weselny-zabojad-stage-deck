@@ -9,7 +9,6 @@ import { clockToEventDate } from './eventTime.js';
 
 export const SPEECH_MODES = ['OFF', 'LIGHT', 'COMPLEX'];
 export const SPEECH_DELIVERY = ['READ', 'MEMORIZE', 'NOTES'];
-export const SPEECH_READ_FROM = ['PHONE', 'TABLET', 'PAPER', 'MEMORY', 'OTHER'];
 
 const CLOCK_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -65,11 +64,10 @@ function normalizeScript(raw) {
 // an explicit `storeScript: false` locks the script on the speaker device.
 function normalizeConsent(raw) {
   if (!raw || typeof raw !== 'object') {
-    return { storeScript: true, confirmedBy: null, confirmedAt: null, notes: null };
+    return { storeScript: true, confirmedAt: null, notes: null };
   }
   return {
     storeScript: raw.storeScript === false ? false : true,
-    confirmedBy: text(raw.confirmedBy),
     confirmedAt: text(raw.confirmedAt),
     notes: text(raw.notes),
   };
@@ -101,14 +99,10 @@ export function resolveSpeeches(wedding) {
         speaker: normalizeSpeaker(speech.speaker),
         order: Number.isFinite(speech.order) ? speech.order : index + 1,
         time: clock(speech.time),
-        durationMin: Number.isFinite(speech.durationMin) ? speech.durationMin : null,
         language: text(speech.language),
-        mic: text(speech.mic),
-        cue: text(speech.cue),
         teleprompterRef: text(speech.teleprompterRef),
         script: normalizeScript(speech.script),
         delivery: SPEECH_DELIVERY.includes(speech.delivery) ? speech.delivery : null,
-        readFrom: SPEECH_READ_FROM.includes(speech.readFrom) ? speech.readFrom : null,
         mcIntro: speech.mcIntro === true,
         visibleToRoles,
         consent,
@@ -133,27 +127,14 @@ export function resolveActiveSpeech(speeches, activeSpeechId) {
 }
 
 export function speechTiming(speech, { now = new Date(), eventDateISO = null, timeZone = 'UTC' } = {}) {
-  const empty = {
-    startsAt: null,
-    startsInSec: null,
-    endsAt: null,
-    remainingSec: null,
-    elapsedSec: null,
-  };
+  const empty = { startsAt: null, startsInSec: null };
   if (!speech?.time) return empty;
 
   const startsAt = clockToEventDate({ clock: speech.time, eventDateISO, timeZone, after: now });
   if (!startsAt) return empty;
 
-  const durationSec = Number.isFinite(speech.durationMin) ? speech.durationMin * 60 : null;
-  const endsAt = durationSec != null ? new Date(startsAt.getTime() + durationSec * 1000) : null;
-  const startsInSec = (startsAt.getTime() - now.getTime()) / 1000;
-
   return {
     startsAt,
-    startsInSec,
-    endsAt,
-    remainingSec: endsAt ? (endsAt.getTime() - now.getTime()) / 1000 : null,
-    elapsedSec: startsInSec < 0 ? Math.abs(startsInSec) : null,
+    startsInSec: (startsAt.getTime() - now.getTime()) / 1000,
   };
 }

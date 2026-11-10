@@ -123,17 +123,7 @@
         "time": {
           "$ref": "#/$defs/clock"
         },
-        "durationMin": {
-          "type": "integer",
-          "minimum": 0
-        },
         "language": {
-          "type": "string"
-        },
-        "mic": {
-          "type": "string"
-        },
-        "cue": {
           "type": "string"
         },
         "script": {
@@ -208,17 +198,6 @@
             "NOTES"
           ]
         },
-        "readFrom": {
-          "type": "string",
-          "enum": [
-            "PHONE",
-            "TABLET",
-            "PAPER",
-            "MEMORY",
-            "OTHER"
-          ],
-          "description": "Where the speaker reads from: phone/tablet, printed paper or memory."
-        },
         "consent": {
           "type": "object",
           "additionalProperties": true,
@@ -226,9 +205,6 @@
           "properties": {
             "storeScript": {
               "type": "boolean"
-            },
-            "confirmedBy": {
-              "type": "string"
             },
             "confirmedAt": {
               "type": "string"

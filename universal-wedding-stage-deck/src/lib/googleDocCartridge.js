@@ -304,12 +304,8 @@ function mapSpeeches(source) {
     'Speaker',
     'Relationship',
     'Time',
-    'Duration (min)',
     'Language',
-    'Mic',
-    'Cue',
     'Delivery',
-    'Read from',
     'Consent',
     'Visible roles',
   ]);
@@ -331,18 +327,10 @@ function mapSpeeches(source) {
       },
       order: int(row.Order, 1),
       time: clock(row.Time),
-      durationMin: int(row['Duration (min)'], 5),
       language: text(row.Language),
-      mic: text(row.Mic),
-      cue: text(row.Cue),
       delivery: ['READ', 'MEMORIZE', 'NOTES'].includes(text(row.Delivery)?.toUpperCase())
         ? text(row.Delivery).toUpperCase()
         : 'READ',
-      readFrom: ['PHONE', 'TABLET', 'PAPER', 'MEMORY', 'OTHER'].includes(
-        text(row['Read from'])?.toUpperCase(),
-      )
-        ? text(row['Read from']).toUpperCase()
-        : 'TABLET',
       script: {
         text: scripts.get(id) ?? '',
         format: 'PLAIN',

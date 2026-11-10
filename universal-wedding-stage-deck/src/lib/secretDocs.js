@@ -65,7 +65,6 @@ export function parseSecretDoc({ name = '', text = '', weddingName = 'wedding' }
             source: 'GOOGLE_DOC',
           },
           delivery: 'READ',
-          readFrom: 'TABLET',
           consent: { storeScript: true },
           visibleToRoles: ['mc', 'speaker'],
         },

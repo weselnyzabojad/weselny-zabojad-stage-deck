@@ -35,13 +35,9 @@ export function saveSpeakerScript(weddingId, speech, storage) {
       relationship: speech.speaker?.relationship ?? null,
       contact: speech.speaker?.contact ?? null,
     },
-    cue: speech.cue ?? null,
     time: speech.time ?? null,
-    durationMin: Number.isFinite(speech.durationMin) ? speech.durationMin : null,
     language: speech.language ?? null,
-    mic: speech.mic ?? null,
     delivery: speech.delivery ?? null,
-    readFrom: speech.readFrom ?? null,
     mcIntro: speech.mcIntro === true,
     script: {
       text: speech.script?.text ?? null,

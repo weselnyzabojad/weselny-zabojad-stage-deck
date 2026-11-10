@@ -2,8 +2,14 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_test_wedding",
   "coupleProfile": {
-    "bride": { "firstName": "Test", "nationalities": [] },
-    "groom": { "firstName": "Couple", "nationalities": [] },
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
     "commonLanguages": []
   },
   "date": "20.08.2026",
@@ -49,10 +55,7 @@
       },
       "order": 1,
       "time": "19:45",
-      "durationMin": 5,
       "language": "PL",
-      "mic": "MIC_2",
-      "cue": "After the main course",
       "script": {
         "text": "Dobry wieczor.",
         "format": "PLAIN",
@@ -60,7 +63,6 @@
         "source": "GOOGLE_DOC"
       },
       "delivery": "READ",
-      "readFrom": "TABLET",
       "consent": {
         "storeScript": true
       },
@@ -76,7 +78,6 @@
         "name": "Pere de Guillaume"
       },
       "order": 2,
-      "durationMin": 3,
       "language": "FR",
       "script": {
         "text": "",

@@ -47,12 +47,9 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
       'speeches.consent',
       'speeches.consentPending',
       'speeches.speakerHidden',
-      'speeches.cue',
-      'speeches.reads',
       'speeches.complexMissing',
       'speeches.in',
       'speeches.ago',
-      'speeches.minutes',
       'speeches.footer',
     ]) {
       expect(speeches, key).toContain(key);
@@ -109,12 +106,9 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
       'speeches.consent',
       'speeches.consentPending',
       'speeches.speakerHidden',
-      'speeches.cue',
-      'speeches.reads',
       'speeches.complexMissing',
       'speeches.in',
       'speeches.ago',
-      'speeches.minutes',
       'speeches.footer',
     ];
     for (const locale of ['en', 'fr', 'pl']) {
