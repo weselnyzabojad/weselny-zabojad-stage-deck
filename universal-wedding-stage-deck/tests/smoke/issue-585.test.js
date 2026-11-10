@@ -25,13 +25,9 @@ describe('issue #585 demographics domain schema', () => {
     expect(json('schema/wedding-cartridge.example.json')).not.toHaveProperty('demographics');
   });
 
-  it('rejects unknown keys and invalid languages', () => {
+  it('rejects unknown keys', () => {
     const unknownKey = structuredClone(example);
     unknownKey.demographics.guests = 5;
     expect(validate(unknownKey)).toBe(false);
-
-    const invalidLanguage = structuredClone(example);
-    invalidLanguage.demographics.languages = ['PL', 'DE'];
-    expect(validate(invalidLanguage)).toBe(false);
   });
 });

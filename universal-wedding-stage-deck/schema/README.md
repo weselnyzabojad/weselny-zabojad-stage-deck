@@ -110,7 +110,7 @@ rejected; put app-specific data under `extensions`.
 | `role` | no | Legacy display hint only; device role is local. |
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
 | `hardAnchors` | no | Derived from `HARD_ANCHOR` steps; never authored in the Doc. |
-| `demographics` | no | Guest counts / languages. |
+| `demographics` | no | Guest counts and notes. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
 | `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
 | `witnesses` | no | Key persons with language, admin-only contacts and speech ids. |
