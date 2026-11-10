@@ -85,24 +85,6 @@ export const DEMO_WEDDING = {
     groom: { firstName: "Guillaume", nationalities: ["FR"] },
     commonLanguages: ["FR", "PL", "EN"]
   },
-  venueDetails: {
-    venue: "Château de la Forêt",
-    timezone: "Europe/Warsaw",
-    address: "Château de la Forêt, 1 Allée des Chênes, 59-400 Jawor",
-    coordinates: { latitude: 51.05, longitude: 16.19 },
-    manager: { name: "Anna Kowalska", phone: "+48 600 111 111", email: "anna@venue.example" },
-    installation: {
-      windowStart: "12:00",
-      windowEnd: "16:00",
-      loadInMinutes: 45,
-      accessNotes: "Service entrance at the back; ask for the key.",
-      parking: "Staff car park behind the building.",
-      power: "2x 230V sockets at the DJ table.",
-      loadingDock: true,
-      noiseCurfew: "01:00"
-    },
-    notes: "Group photos in the garden before 20:15."
-  },
   mediaTeam: [
     {
       id: "photo_main",

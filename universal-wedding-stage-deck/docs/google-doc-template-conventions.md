@@ -63,7 +63,7 @@ Canonical order and mapping:
 | 8 | `## MC CUES` | no | `steps[].mcCues` |
 | 9 | `## SUBTASKS` | no | `steps[].subTasks` |
 | 10 | `## HARD ANCHORS` | no | `hardAnchors` |
-| 11 | `## VENUE LOGISTICS` | no | `venueDetails` |
+| 11 | `## VENUE LOGISTICS` | no | `venueDetails` domain contract only (not a cartridge field) |
 | 12 | `## VIEW VISIBILITY` | yes | `viewVisibility` |
 | 13 | `## MEDIA TEAM` | no | `mediaTeam` |
 | 14 | `## PHOTO PLAN` | no | `photoPlan` |
@@ -218,7 +218,7 @@ non-obvious mappings.
 | Doc field | Cartridge field |
 | --- | --- |
 | `Wedding ID` | `weddingId` |
-| `Venue` (VENUE LOGISTICS) | `venueDetails.venue` |
+| `Venue` (VENUE LOGISTICS) | `venueDetails.venue` (domain mapping only) |
 | `Bride first name`, `Bride nationality` | `coupleProfile.bride.firstName`, `.nationalities[]` |
 | `Groom first name`, `Groom nationality` | `coupleProfile.groom.firstName`, `.nationalities[]` |
 | `Shared languages` | `coupleProfile.commonLanguages[]` |
