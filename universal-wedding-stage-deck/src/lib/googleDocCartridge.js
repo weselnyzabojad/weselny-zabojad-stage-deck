@@ -346,8 +346,11 @@ function mapTimeline(source, warnings) {
       location: text(row.Location) ?? 'Venue',
       isMainSongRequired: bool(row['Main Song Required'], false),
     };
-    const optional = text(row['Optional Flag']);
-    if (optional) step.optionalFlag = optional;
+    const optional = text(row['Optional Flag'])?.toLowerCase();
+    if (optional) {
+      if (['oczepiny', 'dj_set'].includes(optional)) step.optionalFlag = optional;
+      else warnings.push(`step ${id}: unknown Optional Flag "${optional}" ignored`);
+    }
     if (text(row['Anchor ID'])) anchorIds[id] = text(row['Anchor ID']);
     parseTimelineNotes(step, row.Notes, warnings);
     steps.push(step);
