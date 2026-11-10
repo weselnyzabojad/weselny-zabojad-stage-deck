@@ -264,11 +264,13 @@ time; `minGroupSize` and duration are not used as gates. Sunset source is
 
 ### MUSIC POLICY / IMPORTANT SONGS / GUEST REQUESTS
 
-`IMPORTANT SONGS` maps to `musicPolicy.importantSongs[]`.
-`MUSIC POLICY` key/values plus the `### Must Play` and `### Do Not Play` tables
-map to the rest of `musicPolicy`. `GUEST REQUESTS` maps to `requestsOpen` and
-`requestWindow`. Reuse the same `id` when a song is both an important song and
-a must-play entry.
+`IMPORTANT SONGS` maps to `musicPolicy.importantSongs[]`; the song `id`,
+`moment`, `title`, `artist` and `source.type` are required, while `stepId` and
+the request open/window settings are app/admin data and are never read from the
+Doc. `MUSIC POLICY` key/values plus the `### Must Play` and `### Do Not Play`
+tables map the remaining Doc-sourced fields. `GUEST REQUESTS` supplies the
+request rules only. Reuse the same `id` when a song is both an important song
+and a must-play entry.
 
 ### SPEECHES
 

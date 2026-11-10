@@ -135,11 +135,6 @@ function SongRow({ song, tier, timeline, activeIndex, onOpenQr, onCopy }) {
           {vip ? (
             <div className="mt-2 space-y-1.5 text-[10px] text-muted">
               <div className="flex flex-wrap items-center gap-1.5">
-                {song.plannedTime ? (
-                  <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-ink">
-                    ⏱ {song.plannedTime}
-                  </span>
-                ) : null}
                 <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5">
                   {source ? sourceLabel(source) : t('keySongs.noSource')}
                 </span>

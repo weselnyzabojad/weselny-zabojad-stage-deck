@@ -498,38 +498,50 @@ function sourceFor(type, location) {
   return { type: 'OTHER' };
 }
 
-function mapImportantSongs(source) {
+function mapImportantSongs(source, warnings = []) {
   return table(source, [
     'Moment ID',
     'Moment',
     'Title',
     'Artist',
     'Version',
-    'Step ID',
-    'Planned time',
     'Source type',
     'File / Link',
     'Notes',
-  ]).map((row) => {
+  ]).reduce((songs, row) => {
+    const momentId = text(row['Moment ID']);
     const moment = text(row.Moment)?.toUpperCase();
+    const title = text(row.Title);
+    const artist = text(row.Artist);
+    const sourceType = text(row['Source type']);
+    const missing = [
+      !momentId && 'Moment ID',
+      !moment && 'Moment',
+      !title && 'Title',
+      !artist && 'Artist',
+      !sourceType && 'Source type',
+    ].filter(Boolean);
+    if (missing.length) {
+      warnings.push(`IMPORTANT SONGS row skipped: missing ${missing.join(', ')}`);
+      return songs;
+    }
     const normalizedMoment =
       moment === 'CAKE_CUTTING' ? 'CAKE' : moment === 'FIRST_DANCE' ? 'FIRST_DANCE' : moment;
-    return {
-      id: slug(row['Moment ID']),
+    songs.push({
+      id: slug(momentId),
       moment: ['GRAND_ENTRANCE', 'CAKE', 'FIRST_DANCE', 'PARENTS_DANCE', 'LAST_DANCE', 'CUSTOM'].includes(
         normalizedMoment,
       )
         ? normalizedMoment
         : 'CUSTOM',
-      title: text(row.Title),
-      artist: text(row.Artist),
+      title,
+      artist,
       version: text(row.Version),
-      stepId: text(row['Step ID']) || undefined,
-      plannedTime: clock(row['Planned time']) ?? undefined,
-      source: sourceFor(row['Source type'], row['File / Link']),
+      source: sourceFor(sourceType, row['File / Link']),
       note: text(row.Notes) || undefined,
-    };
-  });
+    });
+    return songs;
+  }, []);
 }
 
 function normalizeDiscoPoloPolicy(value) {
@@ -627,25 +639,37 @@ function mapAttractions(source, warnings = []) {
 }
 
 function mapMusicPolicy(source, importantSongs, warnings = []) {
-  const windowStart = clock(kv(source, 'Request window start'));
-  const windowEnd = clock(kv(source, 'Request window end'));
   const parsedDiscoPolo = normalizeDiscoPoloPolicy(kv(source, 'Disco Polo policy'));
   if (!parsedDiscoPolo) {
     warnings.push('MUSIC POLICY: Disco Polo policy missing or unrecognised; defaulting to NO');
   }
+  const mustPlay = subTable(source, 'Must Play', ['Song ID', 'Track', 'Note']).reduce(
+    (items, row) => {
+      const id = text(row['Song ID']);
+      const track = text(row.Track);
+      const missing = [!id && 'Song ID', !track && 'Track'].filter(Boolean);
+      if (missing.length) {
+        warnings.push(`MUSIC POLICY Must Play row skipped: missing ${missing.join(', ')}`);
+        return items;
+      }
+      items.push({ id: slug(id), track, note: text(row.Note) });
+      return items;
+    },
+    [],
+  );
+  const doNotPlay = subTable(source, 'Do Not Play', ['Track']).reduce((items, row) => {
+    const track = text(row.Track);
+    if (!track) {
+      warnings.push('MUSIC POLICY Do Not Play row skipped: missing Track');
+      return items;
+    }
+    items.push({ track });
+    return items;
+  }, []);
   return {
     discoPoloPolicy: parsedDiscoPolo ?? 'NO',
-    mustPlay: subTable(source, 'Must Play', ['Song ID', 'Track', 'Note']).map((row) => ({
-      id: slug(row['Song ID']),
-      track: text(row.Track),
-      note: text(row.Note),
-    })),
-    doNotPlay: subTable(source, 'Do Not Play', ['Track']).map((row) => ({
-      track: text(row.Track),
-    })),
-    requestsOpen: bool(kv(source, 'Requests open')),
-    requestWindow: windowStart && windowEnd ? { start: windowStart, end: windowEnd } : undefined,
-    cleanVersions: bool(kv(source, 'Clean versions')),
+    mustPlay,
+    doNotPlay,
     importantSongs,
   };
 }
@@ -814,7 +838,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   );
 
   const importantSongsSource = section(parsed, 'IMPORTANT SONGS');
-  const importantSongs = mapImportantSongs(importantSongsSource);
+  const importantSongs = mapImportantSongs(importantSongsSource, warnings);
   const firstDanceStep = steps.find((step) => /first dance/i.test(step.title));
   if (firstDanceStep && importantSongsSource) {
     const firstDanceSong = importantSongs.find((song) => song.moment === 'FIRST_DANCE');
@@ -842,13 +866,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const attractionsSource = section(parsed, 'ATTRACTIONS');
   const attractions = attractionsSource ? mapAttractions(attractionsSource, warnings) : undefined;
   const guestRequests = section(parsed, 'GUEST REQUESTS');
-  if (guestRequests && musicPolicy) {
-    const open = bool(kv(guestRequests, 'Requests open'));
-    const start = clock(kv(guestRequests, 'Window start'));
-    const end = clock(kv(guestRequests, 'Window end'));
-    if (open !== null) musicPolicy.requestsOpen = open;
-    if (start && end) musicPolicy.requestWindow = { start, end };
-  }
 
   const speeches = mapSpeeches(section(parsed, 'SPEECHES'));
   const cakeSource = section(parsed, 'CAKE');

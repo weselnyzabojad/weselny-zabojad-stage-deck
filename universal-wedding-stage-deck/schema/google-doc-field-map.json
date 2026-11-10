@@ -85,7 +85,6 @@
       "musicPolicy.importantSongs[].title": "required",
       "musicPolicy.importantSongs[].artist": "required",
       "musicPolicy.importantSongs[].stepId": "no",
-      "musicPolicy.importantSongs[].plannedTime": "delete",
       "musicPolicy.importantSongs[].source.type": "required",
       "musicPolicy.importantSongs[].source.url": "optional"
     },
