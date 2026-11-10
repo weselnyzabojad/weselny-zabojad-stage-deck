@@ -139,7 +139,6 @@ Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
 Latitude: 51.05
 Longitude: 16.19
-Timezone: Europe/Warsaw
 Manager name: Anna Kowalska
 Manager phone: +48 600 000 000
 Manager email: anna@venue.example
@@ -149,7 +148,6 @@ Installation latest start: 12:00
 Load-in minutes: 45
 Setup minutes: 90
 Load-out minutes: 45
-Access notes: Service entrance at the back; ask for the key.
 Parking: Staff car park behind the building.
 Power: 2x 230V sockets at the DJ table.
 Loading dock: true

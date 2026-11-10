@@ -322,7 +322,6 @@ export function resolveVenueAccess(wedding) {
             ? installation.loadInMinutes
             : null,
           setupMinutes: Number.isFinite(installation.setupMinutes) ? installation.setupMinutes : null,
-          accessNotes: text(installation.accessNotes),
           parking: text(installation.parking),
           power: text(installation.power),
           loadingDock: installation.loadingDock === true,

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/venue-details.json",
   "title": "Venue details domain",
-  "description": "Venue name, address, contacts, installation and timezone mapped from the Google Doc.",
+  "description": "Venue name, address, contacts and installation mapped from the Google Doc.",
   "type": "object",
   "properties": {
     "venueDetails": {
@@ -28,9 +28,6 @@
               "type": "number"
             }
           }
-        },
-        "timezone": {
-          "type": "string"
         },
         "manager": {
           "type": "object",
@@ -74,9 +71,6 @@
             "loadOutMinutes": {
               "type": "integer",
               "minimum": 0
-            },
-            "accessNotes": {
-              "type": "string"
             },
             "parking": {
               "type": "string"

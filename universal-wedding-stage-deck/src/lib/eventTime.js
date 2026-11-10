@@ -42,10 +42,10 @@ export function deviceTimeZone() {
   }
 }
 
-// The venue timezone lives in `venueDetails.timezone`; legacy cartridges
-// have none, so fall back to the device timezone.
+// Legacy cartridges may carry a top-level timezone; everything else falls back
+// to the device timezone.
 export function resolveVenueTimeZone(wedding) {
-  const candidate = wedding?.venueDetails?.timezone ?? wedding?.timezone;
+  const candidate = wedding?.timezone;
   return isValidTimeZone(candidate) ? candidate : deviceTimeZone();
 }
 
