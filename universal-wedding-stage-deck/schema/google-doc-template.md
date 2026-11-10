@@ -31,6 +31,9 @@ Ceremony notes: Full mass; MC introduces the couple at the church door.
 
 ## COUPLE IDENTITY
 
+Bride first name, Bride nationality, Groom first name, Groom nationality and
+Shared languages are required.
+
 Bride first name: Jennifer
 Bride nationality: FR
 Groom first name: Guillaume
