@@ -13,14 +13,14 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 1,
     marker: 'EVENT',
     required: true,
-    schemaPath: ['weddingId', 'couple', 'date', 'dateISO', 'syncPin', 'servicePackage', 'venue', 'childrenExpected', 'ceremony'],
+    schemaPath: ['weddingId', 'date', 'dateISO', 'syncPin', 'servicePackage', 'venue', 'childrenExpected', 'ceremony'],
     purpose: 'Identity, date, room key and service package.',
   },
   {
     order: 2,
     marker: 'COUPLE IDENTITY',
     required: true,
-    schemaPath: ['couple', 'coupleProfile'],
+    schemaPath: ['coupleProfile'],
     purpose: 'Bride and groom names, nationalities and shared languages.',
   },
   {

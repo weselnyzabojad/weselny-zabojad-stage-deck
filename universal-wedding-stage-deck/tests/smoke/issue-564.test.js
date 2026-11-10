@@ -24,7 +24,9 @@ describe('issue #564 couple-profile domain schema', () => {
     );
   });
 
-  it('removes the coupleProfile block from the cartridge example', () => {
-    expect(json('schema/wedding-cartridge.example.json')).not.toHaveProperty('coupleProfile');
+  it('uses coupleProfile in the cartridge example and drops the legacy couple string', () => {
+    const cartridge = json('schema/wedding-cartridge.example.json');
+    expect(cartridge).toHaveProperty('coupleProfile');
+    expect(cartridge).not.toHaveProperty('couple');
   });
 });

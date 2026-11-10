@@ -7,7 +7,11 @@ import { OpenOnPhoneDialog } from '../../src/components/OpenOnPhoneButton.jsx';
 import PairingScreen from '../../src/components/PairingScreen.jsx';
 
 const wedding = {
-  couple: 'Jennifer & Guillaume',
+  coupleProfile: {
+    bride: { firstName: 'Jennifer', nationalities: ['FR'] },
+    groom: { firstName: 'Guillaume', nationalities: ['FR'] },
+    commonLanguages: [],
+  },
   date: '20.08.2026',
 };
 

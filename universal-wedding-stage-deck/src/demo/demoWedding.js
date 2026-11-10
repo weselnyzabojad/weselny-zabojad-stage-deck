@@ -74,7 +74,6 @@ export const TEST_WIEDZY_GAME = {
 
 export const DEMO_WEDDING = {
   weddingId: "2026-08-20_jennifer_guillaume",
-  couple: "Jennifer & Guillaume",
   date: "20.08.2026",
   syncPin: "2008",
   role: "MC",

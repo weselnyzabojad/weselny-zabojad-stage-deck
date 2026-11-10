@@ -1,8 +1,7 @@
-// Couple identity for the top bar (project.md TODO 15 / Phase 1.5c).
+// Couple identity for the top bar and every other couple label.
 //
-// The header is driven by the cartridge's `coupleProfile`; `couple` stays the
-// display fallback for v1.1 cartridges. Nothing here infers nationality from a
-// name or language, and no network call is needed.
+// `coupleProfile` is the only identity source. Nothing here infers nationality
+// from a name or language, and no network call is needed.
 
 export function normalizeCountryCode(code) {
   if (typeof code !== 'string') return null;
@@ -51,16 +50,13 @@ function normalizePerson(raw) {
   return { firstName, nationalities: normalizeNationalities(raw.nationalities) };
 }
 
-// `hasProfile` is only true when both first names are present, matching the
-// v1.2 validation rule. Otherwise the legacy `couple` string is the label.
+// `hasProfile` is only true when both first names are present. The schema
+// requires the profile; the generic "Wedding" label is only a defensive
+// fallback for malformed or legacy data, never a `couple` string.
 export function resolveCoupleIdentity(wedding) {
   const profile = wedding?.coupleProfile;
   const bride = normalizePerson(profile?.bride);
   const groom = normalizePerson(profile?.groom);
-  const fallbackLabel =
-    typeof wedding?.couple === 'string' && wedding.couple.trim()
-      ? wedding.couple.trim()
-      : 'Wedding';
 
   const hasProfile = Boolean(bride && groom);
   const people = hasProfile
@@ -74,8 +70,12 @@ export function resolveCoupleIdentity(wedding) {
     hasProfile,
     people,
     commonLanguages: hasProfile ? normalizeLanguageList(profile?.commonLanguages) : [],
-    fallbackLabel,
+    displayName: hasProfile ? `${bride.firstName} & ${groom.firstName}` : 'Wedding',
   };
+}
+
+export function coupleDisplayName(wedding) {
+  return resolveCoupleIdentity(wedding).displayName;
 }
 
 export function deviceLocale() {

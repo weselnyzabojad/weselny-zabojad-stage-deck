@@ -32,7 +32,10 @@ export function isCartridgeLike(value) {
       value.schemaVersion === '1.1' &&
       typeof value.weddingId === 'string' &&
       value.weddingId.length > 0 &&
-      typeof value.couple === 'string' &&
+      value.coupleProfile &&
+      typeof value.coupleProfile === 'object' &&
+      typeof value.coupleProfile.bride?.firstName === 'string' &&
+      typeof value.coupleProfile.groom?.firstName === 'string' &&
       typeof value.syncPin === 'string' &&
       /^\d{4}$/.test(value.syncPin) &&
       Array.isArray(value.steps) &&

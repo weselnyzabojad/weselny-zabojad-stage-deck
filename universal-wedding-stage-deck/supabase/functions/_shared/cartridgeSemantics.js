@@ -50,12 +50,26 @@ function isHttpUrl(value) {
 // Issue #75: delete, do not migrate, retired fields. The server repeats the
 // browser normalization so a bypassed client cannot smuggle them into a
 // published snapshot.
+function migrateLegacyCouple(cartridge) {
+  const legacyName = typeof cartridge.couple === 'string' ? cartridge.couple.trim() : '';
+  if (!cartridge.coupleProfile && legacyName) {
+    const [brideName, groomName] = legacyName.split(/\s*&\s*/);
+    cartridge.coupleProfile = {
+      bride: { firstName: brideName || 'Bride', nationalities: [] },
+      groom: { firstName: groomName || 'Groom', nationalities: [] },
+      commonLanguages: [],
+    };
+  }
+  delete cartridge.couple;
+}
+
 export function sanitizeCartridge(cartridge) {
   if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
     return cartridge;
   }
 
   const clean = JSON.parse(JSON.stringify(cartridge));
+  migrateLegacyCouple(clean);
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {

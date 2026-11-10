@@ -14,7 +14,11 @@ import { mapMandatoryToSteps } from '../../src/lib/mandatorySteps.js';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const weddingWith = (ceremony) => ({
   weddingId: 'w1',
-  couple: 'A & B',
+  coupleProfile: {
+    bride: { firstName: 'A', nationalities: [] },
+    groom: { firstName: 'B', nationalities: [] },
+    commonLanguages: [],
+  },
   mandatorySteps: { firstGuestsArrival: '15:30' },
   ceremony,
 });

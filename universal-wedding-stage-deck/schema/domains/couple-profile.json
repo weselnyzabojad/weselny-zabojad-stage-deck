@@ -2,52 +2,25 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/couple-profile.json",
   "title": "Couple profile domain",
-  "description": "Bride and groom names, nationalities and shared languages mapped from the Google Doc.",
+  "description": "The only couple identity source: bride and groom first names, nationalities and shared languages.",
   "type": "object",
   "properties": {
     "coupleProfile": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "bride": {
-          "type": "object",
-          "properties": {
-            "firstName": {
-              "type": "string"
-            },
-            "nationalities": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "firstName",
-            "nationalities"
-          ]
+          "$ref": "#/$defs/person"
         },
         "groom": {
-          "type": "object",
-          "properties": {
-            "firstName": {
-              "type": "string"
-            },
-            "nationalities": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "firstName",
-            "nationalities"
-          ]
+          "$ref": "#/$defs/person"
         },
         "commonLanguages": {
           "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 639-1 languages the couple and the MC/host share.",
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/language"
           }
         }
       },
@@ -60,5 +33,34 @@
   },
   "required": [
     "coupleProfile"
-  ]
+  ],
+  "$defs": {
+    "language": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2}$"
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "firstName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nationalities": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 3166-1 alpha-2 country codes. May be empty; never infer a nationality from a name or language.",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z]{2}$"
+          }
+        }
+      },
+      "required": [
+        "firstName",
+        "nationalities"
+      ]
+    }
+  }
 }

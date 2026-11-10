@@ -15,7 +15,11 @@ const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), '
 
 const wedding = {
   weddingId: '2026-08-20_jennifer_guillaume',
-  couple: 'Jennifer & Guillaume',
+  coupleProfile: {
+    bride: { firstName: 'Jennifer', nationalities: ['FR'] },
+    groom: { firstName: 'Guillaume', nationalities: ['FR'] },
+    commonLanguages: ['FR', 'PL', 'EN'],
+  },
   date: '2026-08-20',
   musicPolicy: {
     importantSongs: [

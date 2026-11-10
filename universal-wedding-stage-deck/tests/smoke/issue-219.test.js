@@ -6,7 +6,11 @@ import DjBoothView from '../../src/components/DjBoothView.jsx';
 const wedding = {
   weddingId: 'w1',
   date: '2026-11-07',
-  couple: 'Jennifer & Guillaume',
+  coupleProfile: {
+    bride: { firstName: 'Jennifer', nationalities: ['FR'] },
+    groom: { firstName: 'Guillaume', nationalities: ['FR'] },
+    commonLanguages: [],
+  },
   hostingMode: 'CLOUD',
   servicePackage: 'HOST_AND_DJ_STANDARD',
   culturalRules: {

@@ -60,7 +60,11 @@ rejected; put app-specific data under `extensions`.
 {
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_jennifer_guillaume",
-  "couple": "Jennifer & Guillaume",
+  "coupleProfile": {
+    "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
+    "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
+    "commonLanguages": ["FR", "PL", "EN"]
+  },
   "date": "20.08.2026",
   "syncPin": "2008",
   "hostingMode": "HOST_AND_DJ",
@@ -79,7 +83,7 @@ rejected; put app-specific data under `extensions`.
 | --- | --- | --- |
 | `schemaVersion` | yes | Must be `"1.1"`. |
 | `weddingId` | yes | `YYYY-MM-DD_slug`, also the room ID. |
-| `couple` | yes | Display name. |
+| `coupleProfile` | yes | The only couple identity source: bride/groom first names, nationalities and common languages. |
 | `date` | yes | `DD.MM.YYYY`. |
 | `syncPin` | yes | Exactly four digits. Shared by paired devices. |
 | `hostingMode` | yes | `HOST_AND_DJ` or `HOST_ONLY`. |

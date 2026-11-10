@@ -5,7 +5,15 @@ import { setLocale } from '../../src/i18n/index.js';
 import SpeakerView from '../../src/components/SpeakerView.jsx';
 
 const speechText = 'Drodzy Państwo — Zdrówko! 🥂\nLine two stays verbatim.';
-const wedding = { weddingId: 'w1', couple: 'A & B', date: '20.08.2026' };
+const wedding = {
+  weddingId: 'w1',
+  coupleProfile: {
+    bride: { firstName: 'A', nationalities: [] },
+    groom: { firstName: 'B', nationalities: [] },
+    commonLanguages: [],
+  },
+  date: '20.08.2026',
+};
 const activeSpeech = {
   speakerVisible: true,
   scriptAllowed: true,

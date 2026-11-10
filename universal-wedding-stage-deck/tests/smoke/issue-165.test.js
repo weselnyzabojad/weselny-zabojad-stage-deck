@@ -34,7 +34,11 @@ const WEDDING_ID = '2026-08-20_jennifer_guillaume';
 const BASE_CARTRIDGE = {
   schemaVersion: '1.1',
   weddingId: WEDDING_ID,
-  couple: 'Jennifer & Guillaume',
+  coupleProfile: {
+    bride: { firstName: 'Jennifer', nationalities: ['FR'] },
+    groom: { firstName: 'Guillaume', nationalities: ['FR'] },
+    commonLanguages: ['FR', 'PL', 'EN'],
+  },
   date: '20.08.2026',
   syncPin: '2008',
   hostingMode: 'HOST_ONLY',
@@ -234,6 +238,15 @@ describe('issue #165 publish request contract', () => {
     expect(normalizePublishRequest({ ...request(), expectedRevision: -1 }).status).toBe(400);
     expect(normalizePublishRequest({ ...request(), expectedRevision: 'abc' }).status).toBe(400);
     expect(normalizePublishRequest({ ...request(), cartridge: null }).status).toBe(400);
+  });
+
+  it('derives the listing couple name from coupleProfile', () => {
+    const normalized = normalizePublishRequest({
+      ...request(),
+      couple: 'Legacy name',
+      cartridge: cartridge(),
+    });
+    expect(normalized.request.couple).toBe('Jennifer & Guillaume');
   });
 
   it('defaults a new publication to revision 0 and normalizes room codes', () => {

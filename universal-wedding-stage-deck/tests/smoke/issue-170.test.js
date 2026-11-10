@@ -43,7 +43,11 @@ describe('issue #170 cartridge diff', () => {
     const current = {
       schemaVersion: '1.1',
       weddingId: WEDDING_ID,
-      couple: 'Old Couple',
+      coupleProfile: {
+        bride: { firstName: 'Old', nationalities: [] },
+        groom: { firstName: 'Couple', nationalities: [] },
+        commonLanguages: [],
+      },
       date: '20.08.2026',
       syncPin: '2008',
       viewVisibility: { dj: { music: true }, photo: { photoPlan: true } },
@@ -55,7 +59,10 @@ describe('issue #170 cartridge diff', () => {
     };
     const next = {
       ...current,
-      couple: 'New Couple',
+      coupleProfile: {
+        ...current.coupleProfile,
+        bride: { firstName: 'New', nationalities: [] },
+      },
       viewVisibility: { dj: { music: false }, photo: { photoPlan: true } },
       steps: [
         { id: 'b', title: 'Dinner changed' },
@@ -70,7 +77,7 @@ describe('issue #170 cartridge diff', () => {
     });
 
     expect(diff.hasChanges).toBe(true);
-    expect(diff.identity).toContain('couple');
+    expect(diff.identity).toContain('coupleProfile');
     expect(diff.steps).toEqual({ added: ['c'], removed: ['a'], changed: ['b'] });
     expect(diff.speeches).toEqual({ added: ['s2'], removed: ['s1'], changed: [] });
     expect(diff.roleVisibility).toEqual(['dj']);
@@ -150,7 +157,11 @@ describe('issue #170 publication metadata and audit', () => {
   const cartridge = {
     schemaVersion: '1.1',
     weddingId: WEDDING_ID,
-    couple: 'Test & Couple',
+    coupleProfile: {
+      bride: { firstName: 'Test', nationalities: [] },
+      groom: { firstName: 'Couple', nationalities: [] },
+      commonLanguages: [],
+    },
     date: '20.08.2026',
     syncPin: '2008',
     hostingMode: 'HOST_ONLY',

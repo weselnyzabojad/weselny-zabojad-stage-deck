@@ -66,7 +66,8 @@ describe('schema fixture suite', () => {
       path.join(FIXTURES_DIR, 'real-jennifer-guillaume.json'),
     );
     expect(errors).toEqual([]);
-    expect(cartridge.couple).toBe('Jennifer & Guillaume');
+    expect(cartridge.coupleProfile.bride.firstName).toBe('Jennifer');
+    expect(cartridge.coupleProfile.groom.firstName).toBe('Guillaume');
     expect(cartridge.steps).toHaveLength(10);
     expect(cartridge.mandatorySteps.milestones).toHaveLength(2);
     expect(cartridge.hardAnchors).toBeUndefined();

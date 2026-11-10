@@ -59,20 +59,19 @@ function Person({ person }) {
   );
 }
 
-// Cartridge-driven couple identity for the top bar (TODO 15 / Phase 1.5c).
-// `coupleProfile` -> legacy `couple` -> "Wedding". No demo names live here.
-// The language chips describe the couple's shared content languages, not the
-// per-device UI language (see LanguageToggle).
+// Cartridge-driven couple identity for the top bar.
+// `coupleProfile` is the only source; no demo names live here. The language
+// chips describe the couple's shared content languages, not the per-device UI
+// language (see LanguageToggle).
 export default function CoupleIdentity({ wedding, className = '' }) {
-  const { t, locale } = useI18n();
+  const { locale } = useI18n();
   const identity = resolveCoupleIdentity(wedding);
 
   if (!identity.hasProfile) {
     return (
       <span className={`inline-flex items-baseline gap-1 text-ink ${className}`}>
-        <span>{t('couple.wedding')}</span>
         <strong className="font-heading font-semibold text-ink">
-          {identity.fallbackLabel}
+          {identity.displayName}
         </strong>
       </span>
     );

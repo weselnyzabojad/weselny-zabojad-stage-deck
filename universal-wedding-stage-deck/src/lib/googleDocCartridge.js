@@ -810,14 +810,16 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   if (!timeline) errors.push('Missing TIMELINE section');
 
   const coupleSource = section(parsed, 'COUPLE IDENTITY');
-  const couple = text(kv(coupleSource, 'Couple')) ?? text(kv(event, 'Couple'));
+  const brideFirstName = text(kv(coupleSource, 'Bride first name'));
+  const groomFirstName = text(kv(coupleSource, 'Groom first name'));
   const weddingId = text(kv(event, 'Wedding ID'));
   const date = text(kv(event, 'Date'));
   const dateISO = text(kv(event, 'Date ISO'));
   const syncPin = text(kv(event, 'Sync PIN'));
   const hostingMode = text(kv(event, 'Service package')) ?? 'HOST_ONLY';
   if (!weddingId) errors.push('EVENT: Wedding ID is required');
-  if (!couple) errors.push('COUPLE IDENTITY: Couple is required');
+  if (!brideFirstName) errors.push('COUPLE IDENTITY: Bride first name is required');
+  if (!groomFirstName) errors.push('COUPLE IDENTITY: Groom first name is required');
   if (!date) errors.push('EVENT: Date is required');
   if (!dateISO) errors.push('EVENT: Date ISO is required');
   if (!syncPin) errors.push('EVENT: Sync PIN is required');
@@ -970,14 +972,13 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const cartridge = {
     schemaVersion: '1.1',
     weddingId,
-    couple,
     coupleProfile: {
       bride: {
-        firstName: text(kv(coupleSource, 'Bride first name')) ?? 'Bride',
+        firstName: brideFirstName,
         nationalities: list(kv(coupleSource, 'Bride nationality')),
       },
       groom: {
-        firstName: text(kv(coupleSource, 'Groom first name')) ?? 'Groom',
+        firstName: groomFirstName,
         nationalities: list(kv(coupleSource, 'Groom nationality')),
       },
       commonLanguages: list(kv(coupleSource, 'Shared languages')),

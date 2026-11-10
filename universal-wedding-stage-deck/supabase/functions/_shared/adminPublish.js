@@ -52,11 +52,23 @@ function parseExpectedRevision(value) {
   return { value: parsed };
 }
 
+function coupleDisplayName(cartridge) {
+  const bride = typeof cartridge?.coupleProfile?.bride?.firstName === 'string'
+    ? cartridge.coupleProfile.bride.firstName.trim()
+    : '';
+  const groom = typeof cartridge?.coupleProfile?.groom?.firstName === 'string'
+    ? cartridge.coupleProfile.groom.firstName.trim()
+    : '';
+  return bride && groom ? `${bride} & ${groom}` : null;
+}
+
 export function normalizePublishRequest(body, { source = 'admin_json' } = {}) {
   const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-  const couple = typeof body?.couple === 'string' ? body.couple.trim() : null;
   const date = typeof body?.date === 'string' ? body.date.trim() : null;
   const cartridge = body?.cartridge && typeof body.cartridge === 'object' ? body.cartridge : null;
+  const couple =
+    coupleDisplayName(cartridge) ??
+    (typeof body?.couple === 'string' ? body.couple.trim() : null);
   const roles = normalizeRoles(body?.roles);
   const requestedRoomCode =
     typeof body?.roomCode === 'string' ? body.roomCode.trim().toLowerCase() : '';

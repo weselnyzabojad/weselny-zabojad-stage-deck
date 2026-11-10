@@ -6,6 +6,7 @@ import {
   sourceStatus,
   sortImportantSongs,
 } from './importantSongs.js';
+import { coupleDisplayName } from './coupleIdentity.js';
 
 function cutoffLabel(dj) {
   if (!dj) return '';
@@ -88,7 +89,7 @@ export function buildCueSheetHtml({ wedding, timeline = [], generatedAt = new Da
   const rows = buildSetListRows(timeline);
   const cues = cueMap(wedding);
   const checklist = buildSourceChecklist(wedding);
-  const couple = wedding?.couple || wedding?.weddingId || 'Wedding';
+  const couple = coupleDisplayName(wedding) || wedding?.weddingId || 'Wedding';
   const date = wedding?.date || '';
   const generated = generatedAt instanceof Date ? generatedAt.toISOString() : String(generatedAt);
 

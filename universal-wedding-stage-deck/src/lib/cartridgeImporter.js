@@ -18,6 +18,7 @@ import speechesDomain from '../../schema/domains/speeches.json';
 import witnessesDomain from '../../schema/domains/witnesses.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { applyCalculatedDurations } from './stepDurations.js';
+import { coupleDisplayName } from './coupleIdentity.js';
 
 let validatorPromise = null;
 
@@ -76,12 +77,26 @@ const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', '
 // Issue #75: delete, do not migrate. Old v1.1 cartridges may still contain the
 // retired fields; strip them before validation so the importer accepts the
 // cartridge and saves a clean object without those keys.
+function migrateLegacyCouple(cartridge) {
+  const legacyName = typeof cartridge.couple === 'string' ? cartridge.couple.trim() : '';
+  if (!cartridge.coupleProfile && legacyName) {
+    const [brideName, groomName] = legacyName.split(/\s*&\s*/);
+    cartridge.coupleProfile = {
+      bride: { firstName: brideName || 'Bride', nationalities: [] },
+      groom: { firstName: groomName || 'Groom', nationalities: [] },
+      commonLanguages: [],
+    };
+  }
+  delete cartridge.couple;
+}
+
 export function sanitizeCartridge(cartridge) {
   if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
     return cartridge;
   }
 
   const clean = JSON.parse(JSON.stringify(cartridge));
+  migrateLegacyCouple(clean);
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
@@ -143,7 +158,7 @@ export function summarizeCartridge(cartridge) {
       : null;
 
   return {
-    couple: cartridge?.couple ?? '—',
+    couple: coupleDisplayName(cartridge),
     date: cartridge?.date ?? '—',
     syncPin: cartridge?.syncPin ?? '—',
     stepCount: steps.length,

@@ -45,7 +45,7 @@ export function diffCartridges(current, next, liveState = null) {
   const identity = changedKeys(currentCartridge, nextCartridge, [
     'schemaVersion',
     'weddingId',
-    'couple',
+    'coupleProfile',
     'date',
     'syncPin',
     'hostingMode',
