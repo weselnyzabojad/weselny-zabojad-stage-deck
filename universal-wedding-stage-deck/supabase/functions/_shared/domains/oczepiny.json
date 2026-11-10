@@ -30,9 +30,6 @@
             "enabled": {
               "type": "boolean"
             },
-            "replacesWinnersDance": {
-              "type": "boolean"
-            },
             "photographerCue": {
               "type": "string"
             },
@@ -48,7 +45,6 @@
           },
           "required": [
             "enabled",
-            "replacesWinnersDance",
             "photographerCue",
             "winnersOnly",
             "winnersWithCouple",
@@ -58,24 +54,11 @@
         "photographerBriefed": {
           "type": "object",
           "properties": {
-            "confirmed": {
-              "type": "boolean"
-            },
-            "confirmedAt": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "confirmedBy": {
-              "type": "string"
-            },
             "notes": {
               "type": "string"
             }
           },
           "required": [
-            "confirmed",
-            "confirmedAt",
-            "confirmedBy",
             "notes"
           ]
         },
@@ -92,7 +75,10 @@
               "type": "string"
             },
             "playlist": {
-              "type": "string"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             "enabled": {
               "type": "boolean"
@@ -115,9 +101,6 @@
               "title": {
                 "type": "string"
               },
-              "durationMin": {
-                "type": "integer"
-              },
               "deferable": {
                 "type": "boolean"
               },
@@ -128,7 +111,6 @@
             "required": [
               "id",
               "title",
-              "durationMin",
               "deferable",
               "skippable"
             ]
@@ -165,16 +147,6 @@
           "properties": {
             "enabled": {
               "type": "boolean"
-            },
-            "type": {
-              "type": "string",
-              "enum": [
-                "TEST_ZGODNOSCI",
-                "OTHER"
-              ]
-            },
-            "notes": {
-              "type": "string"
             }
           }
         },

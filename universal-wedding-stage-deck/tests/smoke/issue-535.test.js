@@ -33,7 +33,7 @@ describe('issue #535 role-view i18n and cartridge data boundary', () => {
     expect(html).not.toContain('Key songs');
   });
 
-  it('localizes Oczepiny labels while keeping authored notes verbatim', () => {
+  it('localizes Oczepiny labels without retired authored notes', () => {
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(
       createElement(OczepinyCueCard, {
@@ -42,7 +42,7 @@ describe('issue #535 role-view i18n and cartridge data boundary', () => {
             enabled: true,
             variant: 'MIDNIGHT',
             throwings: { veil: true, bouquet: false, bowTie: true, cravat: false },
-            game: { enabled: true, type: 'TEST_ZGODNOSCI', notes: 'Notes du couple' },
+            game: { enabled: true },
             countdown: { mode: 'MC' },
           },
         },
@@ -50,7 +50,7 @@ describe('issue #535 role-view i18n and cartridge data boundary', () => {
     );
     expect(html).toContain('Lancers');
     expect(html).toContain('Voile');
-    expect(html).toContain('Notes du couple');
+    expect(html).toContain('Jeu activé');
     expect(html).toContain('Compte à rebours MC');
     expect(html).not.toContain('MC countdown');
   });

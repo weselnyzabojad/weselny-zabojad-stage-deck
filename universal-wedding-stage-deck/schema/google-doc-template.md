@@ -56,7 +56,6 @@ Notes: Couple speaks FR/PL; most guests understand EN.
 Oczepiny variant: MIDNIGHT
 Throwings: veil=yes, bouquet=yes, bow tie=yes, cravat=no
 Game enabled: yes
-Game type: TEST_ZGODNOSCI
 Countdown mode: MC
 Winners only photo: yes
 Winners + couple photo: yes
@@ -68,21 +67,19 @@ Anchor ID: oczepiny_midnight
 Toss: VEIL
 Ties: BOW_TIE
 Winner photo enabled: true
-Winner photo replaces winners dance: true
 Winner photo cue: Winner photo with the couple, then clear the floor.
-Photographer briefed: true
-Photographer briefed at: 2026-08-19T18:00:00.000Z
-Photographer briefed by: MC
+Photographer briefed notes: Briefed the photographer and cameraman.
+Music enabled: true
 Music track: Oczepiny mix
-Music playlist: Midnight
+Music playlist: Midnight, Party
 Props: Veil, Bow ties, Test cards
 
 ### Sub-events
 
-| Sub-event ID | Title | Duration (min) | Deferable | Skippable |
-| --- | --- | --- | --- | --- |
-| toss | Veil toss | 10 | false | true |
-| ties | Bow-tie game | 10 | true | true |
+| Sub-event ID | Title | Deferable | Skippable |
+| --- | --- | --- | --- |
+| toss | Veil toss | false | true |
+| ties | Bow-tie game | true | true |
 | test | Test ZgodnoĹ›ci | 15 | true | true |
 | winner_photo | Winner photo | 5 | false | false |
 

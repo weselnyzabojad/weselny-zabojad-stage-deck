@@ -16,7 +16,7 @@ describe('issue #287 Oczepiny variant schema', () => {
     const ocz = DEMO_WEDDING.oczepiny;
     expect(ocz.variant).toBe('MIDNIGHT');
     expect(ocz.throwings.veil).toBe(true);
-    expect(ocz.game.type).toBe('TEST_ZGODNOSCI');
+    expect(ocz.game.enabled).toBe(true);
     expect(ocz.countdown.mode).toBe('MC');
     expect(ocz.winnerPhoto.winnersOnly).toBe(true);
     expect(ocz.winnerPhoto.winnersWithCouple).toBe(true);

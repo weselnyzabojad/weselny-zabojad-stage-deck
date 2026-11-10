@@ -355,6 +355,7 @@ const en = {
   'oczepiny.bowTie': 'Bow tie',
   'oczepiny.cravat': 'Cravat',
   'oczepiny.game': 'Game: {game}',
+  'oczepiny.gameEnabled': 'Game enabled',
   'oczepiny.music': 'Music: {music}',
   'oczepiny.countdown': 'MC countdown',
   'oczepiny.photoCue': 'Photos: winners only + winners with the couple.',

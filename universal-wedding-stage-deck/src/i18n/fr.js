@@ -357,6 +357,7 @@ const fr = {
   'oczepiny.bowTie': 'Nœud papillon',
   'oczepiny.cravat': 'Cravate',
   'oczepiny.game': 'Jeu : {game}',
+  'oczepiny.gameEnabled': 'Jeu activé',
   'oczepiny.music': 'Musique : {music}',
   'oczepiny.countdown': 'Compte à rebours MC',
   'oczepiny.photoCue': 'Photos : gagnants seuls + gagnants avec le couple.',

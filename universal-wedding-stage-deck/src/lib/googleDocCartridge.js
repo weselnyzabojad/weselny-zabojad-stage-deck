@@ -188,13 +188,11 @@ function mapOczepiny(source) {
   const subEvents = table(source, [
     'Sub-event ID',
     'Title',
-    'Duration (min)',
     'Deferable',
     'Skippable',
   ]).map((row) => ({
     id: slug(row['Sub-event ID']),
     title: text(row.Title) ?? row['Sub-event ID'],
-    durationMin: int(row['Duration (min)'], 0),
     deferable: bool(row.Deferable, false),
     skippable: bool(row.Skippable, false),
   }));
@@ -209,29 +207,22 @@ function mapOczepiny(source) {
     throwings: Object.keys(throwings).length ? throwings : undefined,
     game: {
       enabled: bool(kv(source, 'Game enabled'), false),
-      type: text(kv(source, 'Game type')),
     },
     countdown: { mode: text(kv(source, 'Countdown mode')) ?? 'MC' },
     winnerPhoto: {
       enabled: bool(kv(source, 'Winner photo enabled'), false),
-      replacesWinnersDance: bool(kv(source, 'Winner photo replaces winners dance'), false),
       photographerCue: text(kv(source, 'Winner photo cue')),
       winnersOnly: bool(kv(source, 'Winners only photo'), false),
       winnersWithCouple: bool(kv(source, 'Winners + couple photo'), false),
       photographerAvailable: bool(kv(source, 'Photographer available'), false),
     },
     photographerBriefed: {
-      confirmed: bool(kv(source, 'Photographer briefed'), false),
-      confirmedAt: ISO.test(text(kv(source, 'Photographer briefed at')) ?? '')
-        ? text(kv(source, 'Photographer briefed at'))
-        : undefined,
-      confirmedBy: text(kv(source, 'Photographer briefed by')),
       notes: text(kv(source, 'Photographer briefed notes')) ?? '',
     },
     music: {
+      enabled: bool(kv(source, 'Music enabled'), false),
       track: text(kv(source, 'Music track')),
-      playlist: text(kv(source, 'Music playlist')),
-      enabled: Boolean(text(kv(source, 'Music track')) || text(kv(source, 'Music playlist'))),
+      playlist: list(kv(source, 'Music playlist')),
     },
     props: list(kv(source, 'Props')),
     subEvents,

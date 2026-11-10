@@ -23,7 +23,7 @@ const EXPECTED_TABLES = {
   'COUPLE IDENTITY': null,
   'LANGUAGES': null,
   'CULTURAL RULES': ['Rule', 'Status', 'Note'],
-  'OCZEPINY': ['Sub-event ID', 'Title', 'Duration (min)', 'Deferable', 'Skippable'],
+  'OCZEPINY': ['Sub-event ID', 'Title', 'Deferable', 'Skippable'],
   'MANDATORY STEPS': ['Field', 'Time'],
   'TIMELINE': [
     'Step ID',
