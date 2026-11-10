@@ -25,8 +25,6 @@ const keySongs = [
     title: 'Marry You',
     artist: 'Bruno Mars',
     plannedTime: '18:00',
-    startAtSec: 5,
-    fadeOutSec: 215,
   },
 ];
 
@@ -35,7 +33,7 @@ describe('issue #146 VIP fullscreen now playing', () => {
     const view = resolveNowPlaying({ activeEntry, nextEntry, keySongs });
     expect(view.title).toBe('Marry You');
     expect(view.artist).toBe('Bruno Mars');
-    expect(view.cues.map((cue) => cue.label)).toEqual(['Start 0:05', 'Fade 3:35']);
+    expect(view).not.toHaveProperty('cues');
     expect(view.cutoff).toBe('18:05');
     expect(view.nextTitle).toBe('Fly Me to the Moon');
     expect(view.nextStart).toBe('18:25');
@@ -44,7 +42,7 @@ describe('issue #146 VIP fullscreen now playing', () => {
   it('falls back to the planned track when no key song is linked', () => {
     const view = resolveNowPlaying({ activeEntry, nextEntry });
     expect(view.title).toBe('Marry You');
-    expect(view.cues).toEqual([]);
+    expect(view).not.toHaveProperty('cues');
   });
 
   it('does not render when VIP is not enabled', () => {
@@ -73,8 +71,8 @@ describe('issue #146 VIP fullscreen now playing', () => {
     expect(html).toContain('VIP fullscreen now playing');
     expect(html).toContain('Marry You');
     expect(html).toContain('Bruno Mars');
-    expect(html).toContain('Start 0:05');
-    expect(html).toContain('Fade 3:35');
+    expect(html).not.toContain('Start 0:05');
+    expect(html).not.toContain('Fade 3:35');
     expect(html).toContain('18:05');
     expect(html).toContain('Fly Me to the Moon');
     expect(html).toContain('Close');

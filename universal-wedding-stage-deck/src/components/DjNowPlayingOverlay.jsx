@@ -116,19 +116,6 @@ export default function DjNowPlayingOverlay({
             <div className="mt-1 font-mono text-sm text-on-accent/70">▶ {view.track}</div>
           ) : null}
 
-          {view.cues.length > 0 ? (
-            <div className="mt-5 flex flex-wrap gap-2">
-              {view.cues.map((cue) => (
-                <span
-                  key={cue.key}
-                  className="rounded-lg border border-brand-strong bg-brand/30 px-3 py-1.5 font-mono text-lg font-bold text-brand-tint"
-                >
-                  {cue.label}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
           {view.cutoff ? (
             <div className="mt-5 inline-flex max-w-xl flex-col rounded-xl border border-alert/70 bg-alert/20 px-4 py-3">
               <span className="font-heading text-[10px] font-bold uppercase tracking-[0.25em] text-alert-soft">

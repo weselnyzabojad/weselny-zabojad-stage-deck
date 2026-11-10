@@ -56,7 +56,6 @@ const baseProps = {
     doNotPlay: [],
     requestStatus: null,
     cleanVersions: null,
-    licensing: null,
   },
   syncStatus: 'connected',
   syncError: null,

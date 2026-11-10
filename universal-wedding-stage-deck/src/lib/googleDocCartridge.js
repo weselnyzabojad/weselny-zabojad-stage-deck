@@ -519,8 +519,6 @@ function mapImportantSongs(source) {
     'Planned time',
     'Source type',
     'File / Link',
-    'Start (s)',
-    'Fade out (s)',
     'Notes',
   ]).map((row) => {
     const moment = text(row.Moment)?.toUpperCase();
@@ -538,8 +536,6 @@ function mapImportantSongs(source) {
       version: text(row.Version),
       stepId: text(row['Step ID']) || undefined,
       plannedTime: clock(row['Planned time']) ?? undefined,
-      startAtSec: int(row['Start (s)']),
-      fadeOutSec: int(row['Fade out (s)']),
       source: sourceFor(row['Source type'], row['File / Link']),
       note: text(row.Notes) || undefined,
     };
@@ -638,15 +634,12 @@ function mapMusicPolicy(source, importantSongs, warnings = []) {
       track: text(row.Track),
       note: text(row.Note),
     })),
-    doNotPlay: subTable(source, 'Do Not Play', ['Song ID', 'Track', 'Reason']).map((row) => ({
-      id: slug(row['Song ID']),
+    doNotPlay: subTable(source, 'Do Not Play', ['Track']).map((row) => ({
       track: text(row.Track),
-      reason: text(row.Reason),
     })),
     requestsOpen: bool(kv(source, 'Requests open')),
     requestWindow: windowStart && windowEnd ? { start: windowStart, end: windowEnd } : undefined,
     cleanVersions: bool(kv(source, 'Clean versions')),
-    licensing: text(kv(source, 'Licensing')),
     importantSongs,
   };
 }

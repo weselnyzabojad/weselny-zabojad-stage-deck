@@ -1,7 +1,7 @@
 // Music policy for the DJ Booth and host views (project.md TODO 2).
 //
 // `musicPolicy` carries the guest-facing rules: must-play, do-not-play, the
-// request window, clean-version policy and licensing. `importantSongs[]` stays
+// request window and clean-version policy. `importantSongs[]` stays
 // the single source of truth when a must-play entry links to a key moment by
 // `id` (Phase 1.5d), so a first-dance song is never shown with two different
 // titles.
@@ -57,9 +57,8 @@ function resolveDoNotPlay(policy) {
   return items
     .filter((item) => item && typeof item === 'object' && text(item.track))
     .map((item, index) => ({
-      id: text(item.id) ?? `blocked_${index + 1}`,
+      key: `blocked_${index + 1}`,
       track: text(item.track),
-      reason: text(item.reason),
     }));
 }
 
@@ -161,7 +160,6 @@ export function resolveMusicPolicy(
   const discoPoloPolicy = ['NO', 'YES', 'ON_REQUEST'].includes(policy?.discoPoloPolicy)
     ? policy.discoPoloPolicy
     : 'NO';
-  const licensing = text(policy?.licensing);
   const start = text(policy?.requestWindow?.start);
   const end = text(policy?.requestWindow?.end);
   const requestWindow = start && end ? { start, end } : null;
@@ -177,8 +175,7 @@ export function resolveMusicPolicy(
         doNotPlay.length ||
         requestWindow ||
         requestsOpen !== null ||
-        cleanVersions !== null ||
-        licensing),
+        cleanVersions !== null),
   ) || mainSongs.length > 0;
 
   return {
@@ -191,6 +188,5 @@ export function resolveMusicPolicy(
     requestStatus,
     cleanVersions,
     discoPoloPolicy,
-    licensing,
   };
 }

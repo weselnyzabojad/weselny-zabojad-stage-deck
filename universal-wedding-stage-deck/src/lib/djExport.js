@@ -1,7 +1,6 @@
 import {
   getImportantSongs,
   momentMeta,
-  songCues,
   sourceLabel,
   sourceStatus,
   sortImportantSongs,
@@ -77,32 +76,21 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
-function cueMap(wedding) {
-  return new Map(
-    getImportantSongs(wedding)
-      .filter((song) => song?.stepId)
-      .map((song) => [song.stepId, songCues(song).map((cue) => cue.label).join(' · ')]),
-  );
-}
-
 export function buildCueSheetHtml({ wedding, timeline = [], generatedAt = new Date() } = {}) {
   const rows = buildSetListRows(timeline);
-  const cues = cueMap(wedding);
   const checklist = buildSourceChecklist(wedding);
   const couple = coupleDisplayName(wedding) || wedding?.weddingId || 'Wedding';
   const date = wedding?.date || '';
   const generated = generatedAt instanceof Date ? generatedAt.toISOString() : String(generatedAt);
 
   const timelineRows = timeline
-    .map((entry, index) => {
+    .map((_entry, index) => {
       const row = rows[index];
-      const cue = cues.get(entry.step?.id) ?? '';
       return `<tr>
         <td>${escapeHtml(row.start)}–${escapeHtml(row.end)}</td>
         <td><strong>${escapeHtml(row.step)}</strong><br><small>${escapeHtml(row.location)}</small></td>
         <td>${escapeHtml(row.track)}</td>
         <td>${escapeHtml(row.playlist)}</td>
-        <td>${escapeHtml(cue)}</td>
         <td>${escapeHtml(row.cutoff)}</td>
       </tr>`;
     })
@@ -146,9 +134,9 @@ export function buildCueSheetHtml({ wedding, timeline = [], generatedAt = new Da
   <h2>Planned timeline</h2>
   <table>
     <thead>
-      <tr><th>Time</th><th>Step</th><th>Track</th><th>Playlist</th><th>Song cues</th><th>Cutoff</th></tr>
+      <tr><th>Time</th><th>Step</th><th>Track</th><th>Playlist</th><th>Cutoff</th></tr>
     </thead>
-    <tbody>${timelineRows || '<tr><td colspan="6">No planned steps.</td></tr>'}</tbody>
+    <tbody>${timelineRows || '<tr><td colspan="5">No planned steps.</td></tr>'}</tbody>
   </table>
 
   <h2>Source &amp; backup checklist</h2>

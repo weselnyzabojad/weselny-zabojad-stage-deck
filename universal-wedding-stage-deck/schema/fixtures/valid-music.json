@@ -2,8 +2,14 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_test_wedding",
   "coupleProfile": {
-    "bride": { "firstName": "Test", "nationalities": [] },
-    "groom": { "firstName": "Couple", "nationalities": [] },
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
     "commonLanguages": []
   },
   "date": "20.08.2026",
@@ -65,9 +71,7 @@
     ],
     "doNotPlay": [
       {
-        "id": "no_macarena",
-        "track": "Macarena",
-        "reason": "Couple's request"
+        "track": "Macarena"
       }
     ],
     "requestsOpen": true,
@@ -75,7 +79,6 @@
       "start": "20:00",
       "end": "23:00"
     },
-    "cleanVersions": true,
-    "licensing": "Venue ZAIKS license confirmed."
+    "cleanVersions": true
   }
 }

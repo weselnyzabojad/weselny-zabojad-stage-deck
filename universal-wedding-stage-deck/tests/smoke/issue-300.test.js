@@ -11,7 +11,7 @@ const importantSongs = [
 const wedding = {
   musicPolicy: {
     mustPlay: [{ id: 'first_dance', track: 'Perfect - Ed Sheeran' }],
-    doNotPlay: [{ id: 'no_sto_lat', track: 'Sto lat' }],
+    doNotPlay: [{ track: 'Sto lat' }],
     importantSongs,
   },
 };

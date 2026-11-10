@@ -62,10 +62,6 @@
         "cleanVersions": {
           "type": "boolean",
           "description": "Play clean/radio edits only."
-        },
-        "licensing": {
-          "type": "string",
-          "description": "Licensing note, e.g. Venue ZAIKS license confirmed."
         }
       }
     }
@@ -162,20 +158,13 @@
     "doNotPlayTrack": {
       "type": "object",
       "required": [
-        "id",
         "track"
       ],
       "additionalProperties": false,
       "properties": {
-        "id": {
-          "$ref": "#/$defs/id"
-        },
         "track": {
           "type": "string",
           "minLength": 1
-        },
-        "reason": {
-          "type": "string"
         }
       }
     },
@@ -216,14 +205,6 @@
         },
         "plannedTime": {
           "$ref": "#/$defs/clock"
-        },
-        "startAtSec": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "fadeOutSec": {
-          "type": "integer",
-          "minimum": 0
         },
         "source": {
           "$ref": "#/$defs/songSource"

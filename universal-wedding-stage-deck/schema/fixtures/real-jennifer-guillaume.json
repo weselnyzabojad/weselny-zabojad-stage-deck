@@ -513,14 +513,10 @@
     ],
     "doNotPlay": [
       {
-        "id": "no_macarena",
-        "track": "Macarena - Los del Río",
-        "reason": "Couple's request."
+        "track": "Macarena - Los del Río"
       },
       {
-        "id": "no_sto_lat",
-        "track": "Sto lat",
-        "reason": "No Sto Lat tonight."
+        "track": "Sto lat"
       }
     ],
     "requestsOpen": true,
@@ -529,7 +525,6 @@
       "end": "23:00"
     },
     "cleanVersions": true,
-    "licensing": "Venue ZAIKS license confirmed.",
     "importantSongs": [
       {
         "id": "grand_entrance",
@@ -539,8 +534,6 @@
         "version": "Album version",
         "stepId": "step_03",
         "plannedTime": "18:00",
-        "startAtSec": 0,
-        "fadeOutSec": 215,
         "source": {
           "type": "CUSTOMER_FILE",
           "fileRef": "assets/audio/marry-you-bruno-mars.mp3",
@@ -563,8 +556,6 @@
         "artist": "The Coup",
         "stepId": "step_05",
         "plannedTime": "20:30",
-        "startAtSec": 18,
-        "fadeOutSec": 240,
         "source": {
           "type": "YOUTUBE",
           "url": "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING"
@@ -583,8 +574,6 @@
         "artist": "Ed Sheeran",
         "version": "Duet version",
         "plannedTime": "21:45",
-        "startAtSec": 0,
-        "fadeOutSec": 270,
         "source": {
           "type": "SPOTIFY",
           "url": "https://open.spotify.com/track/DEMO_FIRST_DANCE"

@@ -179,15 +179,6 @@ export function formatCueSeconds(value) {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-export function songCues(song) {
-  const cues = [];
-  const start = formatCueSeconds(song?.startAtSec);
-  const fade = formatCueSeconds(song?.fadeOutSec);
-  if (start) cues.push({ key: 'start', label: `Start ${start}` });
-  if (fade) cues.push({ key: 'fade', label: `Fade ${fade}` });
-  return cues;
-}
-
 // Ready/next state, linked to the projected timeline through `stepId`.
 export function songState(song, timeline = [], activeIndex = -1) {
   if (!song?.stepId) return 'planned';

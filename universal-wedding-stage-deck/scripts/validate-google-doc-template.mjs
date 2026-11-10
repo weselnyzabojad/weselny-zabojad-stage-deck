@@ -54,8 +54,6 @@ const EXPECTED_TABLES = {
     'Planned time',
     'Source type',
     'File / Link',
-    'Start (s)',
-    'Fade out (s)',
     'Notes',
   ],
   'MUSIC POLICY': ['Song ID', 'Track', 'Note'],
