@@ -15,6 +15,8 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
 | `validate-lib.mjs` | Shared Ajv + semantic validator used by the CLI, fixtures and Vitest. |
 | `validate-fixtures.mjs` | Fixture-suite validator (`valid-`/`real-` pass, `invalid-` fail). |
+| `google-doc-field-map.json` | Field-level Google Doc source flags for every example field. |
+| `google-doc-field-map-lib.mjs` | Enumerator and validator for the field map. |
 | `fixtures/` | One fixture per edge case, one per real wedding, one per invalid rule. |
 
 The Google Doc template is generated from the v1.2 proposal and is not wired
@@ -48,6 +50,22 @@ before it is published or cached.
    offline/legacy fallback.
 
 The template uses this schema's canonical camelCase shape.
+
+
+## Google Doc field-source flags
+
+[`google-doc-field-map.json`](google-doc-field-map.json) records, for every
+field in the domain and cartridge examples, whether it is `required`,
+`optional`, `separate`, `no`, `delete`, `rework` or `pending` for the Google Doc
+import. Check it with:
+
+```bash
+npm run validate:google-doc-map
+```
+
+The validator fails when an example field is unflagged, a flag points at a
+missing field, a status is unknown, or a TODO references an unknown field. See
+project.md §17.17 for the review decisions and per-file issues.
 
 
 ## Canonical shape

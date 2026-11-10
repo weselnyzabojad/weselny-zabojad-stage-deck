@@ -3711,3 +3711,76 @@ PRs #645–#657 (one merged PR per schema).
 true, `music.playlist[]` is shown in DJ VIP and MC as information only. When
 false, `countdown.mode` applies, DJ does not display it and only MC shows the
 countdown mode. `music.track` and `countdown.mode` stay.
+
+### 17.17 Google Doc field-source flags (decision, 2026-11-10)
+
+Every data field in the 17 `schema/domains/*.example.json` files and in
+`schema/wedding-cartridge.example.json` was reviewed for whether its value must
+come from the main Google Doc. The decisions live in
+[`schema/google-doc-field-map.json`](schema/google-doc-field-map.json), keyed by
+example file and field path:
+
+| Status | Meaning |
+| --- | --- |
+| `required` | Must be present in the main Google Doc template and parser. |
+| `optional` | May come from the main Doc; a missing value must degrade safely. |
+| `separate` | Comes from a separate Google Doc (speech script or game question list). |
+| `no` | App, admin, venue-manager or runtime data; never read from the Doc. |
+| `delete` | Field is scheduled for removal. |
+| `rework` | Field contract must be redesigned before a source is assigned. |
+| `pending` | Source decision deferred until requirements are confirmed. |
+
+The map is enforced by `npm run validate:google-doc-map`
+([`scripts/validate-google-doc-field-map.mjs`](scripts/validate-google-doc-field-map.mjs)
+and [`schema/google-doc-field-map-lib.mjs`](schema/google-doc-field-map-lib.mjs))
+and by `tests/google-doc-field-map.test.js`. The validator fails when an example
+field is unflagged, a flag points at a missing field, a status is unknown, or a
+TODO references an unknown field.
+
+**Coverage.** 18 files and 247 field entries: 102 `required`, 37 `optional`,
+3 `separate`, 85 `no`, 18 `delete` entries (17 unique fields), 1 `rework` and
+1 `pending`.
+
+**Separate sources.** `speeches[].script.text` comes from a separate speech
+Google Doc. `steps[].game.questions[]` comes from the per-game question-list
+Docs.
+
+**Open TODOs.** Confirm `steps[].planned`; rework `steps[].optionalFlag`; review
+the third `hostingMode` mode; use the couple's first names instead of
+`BRIDE`/`GROOM` in `steps[].game.questions[].answer`; confirm the allowed
+`oczepiny.subEvents[].title` value set before implementation.
+
+**Deletions.** The review approved removing `cake.serveTime`,
+`demographics.languages`, `musicPolicy.importantSongs[].plannedTime`,
+`oczepiny.props`, `oczepiny.subEvents[].deferable`,
+`oczepiny.subEvents[].skippable`, `speeches[].time`, `speeches[].language`,
+`speeches[].delivery`, `speeches[].consent.storeScript`,
+`speeches[].consent.confirmedAt`, `speeches[].mcIntro`,
+`steps[].durationMin`, `steps[].dj.cutoff`,
+`venueDetails.installation.windowEnd`, `witnesses[].role` and
+`steps[].ceremony.mcTranslationHelpRequested`. The fields remain in the current
+schemas until their per-file issue is delivered; the map is the source of truth
+for the follow-up.
+
+**Per-file issues.**
+
+| Example | Issue |
+| --- | --- |
+| `attractions.example.json` | [#658](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/658) |
+| `cake.example.json` | [#659](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/659) |
+| `couple-profile.example.json` | [#660](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/660) |
+| `cultural-rules.example.json` | [#661](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/661) |
+| `demographics.example.json` | [#662](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/662) |
+| `first-dance.example.json` | [#663](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/663) |
+| `group-photos.example.json` | [#664](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/664) |
+| `guest-coverage.example.json` | [#665](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/665) |
+| `mini-session.example.json` | [#666](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/666) |
+| `music-policy.example.json` | [#667](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/667) |
+| `oczepiny.example.json` | [#668](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/668) |
+| `photo-plan.example.json` | [#669](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/669) |
+| `special-effects.example.json` | [#670](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/670) |
+| `speeches.example.json` | [#671](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/671) |
+| `steps.example.json` | [#672](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/672) |
+| `venue-details.example.json` | [#673](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/673) |
+| `witnesses.example.json` | [#674](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/674) |
+| `wedding-cartridge.example.json` | [#675](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/675) |

@@ -55,5 +55,8 @@ jobs:
       - name: Validate Google Doc template
         run: npm run validate:template
 
+      - name: Validate Google Doc field map
+        run: npm run validate:google-doc-map
+
       - name: Build production bundle
         run: npm run build
