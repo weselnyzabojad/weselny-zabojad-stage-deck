@@ -201,7 +201,6 @@ proposal.
 
 ## PHOTO PLAN
 
-Sunset provider: sunrise-sunset.org
 Sunset latitude: 51.05
 Sunset longitude: 16.19
 Mini session enabled: true
