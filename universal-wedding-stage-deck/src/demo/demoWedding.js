@@ -146,9 +146,12 @@ export const DEMO_WEDDING = {
       fire: false,
       heavySmoke: true,
       other: "Cold sparks",
-      permitRequired: false,
-      venueApproved: true,
-      safetyBriefing: "Briefed the venue manager and the photographer."
+      approvals: {
+        sparklers: true,
+        fire: false,
+        heavySmoke: true,
+        other: true
+      }
     },
     guestCoverage: {
       allGuests: false,

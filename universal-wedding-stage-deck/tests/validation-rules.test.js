@@ -81,13 +81,11 @@ describe('semantic validation rules', () => {
     expect(messages(errors)).toContain('MIDNIGHT Oczepiny requires an anchorId or an oczepiny step');
   });
 
-  it('rejects fire effects without permit, approval or briefing', () => {
+  it('rejects fire effects without per-effect venue approval', () => {
     const errors = errorsFor((cartridge) => {
-      cartridge.photoPlan = { specialEffects: { fire: true } };
+      cartridge.photoPlan = { specialEffects: { fire: true, approvals: { fire: false } } };
     });
-    expect(messages(errors)).toContain('fire effects require a permit requirement');
     expect(messages(errors)).toContain('fire effects require venue approval');
-    expect(messages(errors)).toContain('fire effects require a safety briefing');
   });
 
   it('requires sunset coordinates for a mini session', () => {
