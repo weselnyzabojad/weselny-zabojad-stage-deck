@@ -3649,3 +3649,15 @@ read step-scoped data. Legacy cartridges with top-level `ceremony`, `games` or
 `wishes` migrate into matching steps before validation, and the old keys are
 dropped. Shipped in
 [#629](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/629).
+
+### 17.14 Cartridge example field review (decision, 2026-11-10)
+
+Each top-level field in `schema/wedding-cartridge.example.json` was reviewed with
+its example value. No field was approved for deletion, so the example stays
+unchanged:
+
+- `$schema`, `schemaVersion`, `weddingId`, `coupleProfile`, `date`, `syncPin`;
+- `role`, `hostingMode`, `mediaTeam`, `steps`, `privacy`;
+- `liveSyncState`, `childrenExpected`, `hardAnchors`.
+
+No correction issue was created because the review produced no change.
