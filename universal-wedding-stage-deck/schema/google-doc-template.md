@@ -223,6 +223,8 @@ Guest coverage groups: Immediate family, Witnesses
 
 ### Group Photos
 
+Group ID and Label are required in every row.
+
 | Group ID | Label |
 | --- | --- |
 | bride_family | Bride's family |

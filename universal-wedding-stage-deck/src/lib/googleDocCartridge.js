@@ -418,11 +418,19 @@ function mapGames(source) {
   };
 }
 
-function mapPhotoPlan(source) {
-  const groups = subTable(source, 'Group Photos', ['Group ID', 'Label']).map((row) => ({
-    id: slug(row['Group ID']),
-    label: text(row.Label) ?? row['Group ID'],
-  }));
+function mapPhotoPlan(source, warnings = []) {
+  const groups = subTable(source, 'Group Photos', ['Group ID', 'Label']).reduce((items, row) => {
+    const id = text(row['Group ID']);
+    const label = text(row.Label);
+    if (!id || !label) {
+      warnings.push(`GROUP PHOTOS: row skipped: missing ${!id ? 'Group ID' : 'Label'}`);
+      return items;
+    }
+    items.push({ id: slug(id), label });
+    return items;
+  }, []);
+  const location = text(kv(source, 'Group photos location'));
+  if (!location) warnings.push('GROUP PHOTOS: missing location');
   return {
     sunset: {
       provider: text(kv(source, 'Sunset provider')),
@@ -444,7 +452,7 @@ function mapPhotoPlan(source) {
     },
     groupPhotos: {
       stepId: text(kv(source, 'Group photos step ID')),
-      location: text(kv(source, 'Group photos location')),
+      location,
       groups,
     },
     specialEffects: {
@@ -989,7 +997,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       deliverables: list(row.Deliverables),
       notes: text(row.Notes),
     })),
-    photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN')),
+    photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN'), warnings),
     oczepiny: mapOczepiny(section(parsed, 'OCZEPINY')),
     speeches,
     witnesses: mapWitnesses(section(parsed, 'WITNESSES')),
