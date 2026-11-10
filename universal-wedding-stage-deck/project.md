@@ -77,6 +77,7 @@ sections below and in git history.
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
 | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation |
+| [#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628) | Schema: remove `venueDetails` from the main cartridge schema and example | Implementation |
 
 
 The follow-ups from the 2026-11-08 UI review, re-review and mobile 375px audit
@@ -3599,3 +3600,24 @@ rejects duplicate witness ids and speech links that do not resolve. Contact
 details are admin-only and are never rendered on a stage role view.
 
 Shipped in [#553](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/553).
+
+### 17.12 Remove `venueDetails` from the main cartridge (decision, 2026-11-10)
+
+The `venueDetails` domain contract already exists at
+`schema/domains/venue-details.json`, with its example and byte-identical Edge
+mirror. The main cartridge therefore stops carrying and declaring the block.
+
+- Remove the `venueDetails` block from `schema/wedding-cartridge.example.json`.
+- Remove `properties.venueDetails` from `schema/wedding-schema-v1.1.json` and
+  regenerate the Edge schema copy.
+- Remove it from the demo, fixtures, Google Doc mapper output and importer
+  migration so no cartridge-shaped source emits a rejected top-level field.
+- Keep the domain files as the mapping contract.
+- Readers must tolerate absence: event time falls back to the existing
+  device/legacy path and the photo-plan venue card is omitted.
+- If runtime venue logistics are still required, the only acceptable replacement
+  is `extensions.venueDetails`; do not reintroduce a top-level field without a
+  new decision.
+
+Tracked by
+[#628](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/628).
