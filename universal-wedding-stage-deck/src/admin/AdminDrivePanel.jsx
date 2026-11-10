@@ -12,6 +12,8 @@ import {
   validateGoogleDocTemplate,
 } from '../lib/googleDocTemplate';
 import { googleDocTemplateToCartridge } from '../lib/googleDocCartridge';
+import { applySunsetSnapshot } from '../lib/sunsetLookup';
+import { resolveVenueTimeZone } from '../lib/eventTime.js';
 import { diffCartridges } from '../lib/cartridgeDiff';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import { AdminConfirmDialog } from './AdminDialogs';
@@ -100,7 +102,11 @@ export default function AdminDrivePanel({
         const document = parseGoogleDocTemplate(source.text);
         const structureValidation = validateGoogleDocTemplate(document);
         const mapped = googleDocTemplateToCartridge(document);
-        const cartridgeValidation = await validateCartridge(mapped.cartridge);
+        const withSunset = await applySunsetSnapshot(mapped.cartridge, {
+          dateISO: mapped.cartridge.dateISO,
+          timeZone: resolveVenueTimeZone(mapped.cartridge),
+        });
+        const cartridgeValidation = await validateCartridge(withSunset);
         const errors = [
           ...structureValidation.errors.map((message) => ({ location: '/', message })),
           ...mapped.errors.map((message) => ({ location: '/', message })),

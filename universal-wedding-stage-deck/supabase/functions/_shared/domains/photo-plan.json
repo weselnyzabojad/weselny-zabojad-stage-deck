@@ -47,8 +47,6 @@
           },
           "required": [
             "provider",
-            "latitude",
-            "longitude",
             "status"
           ]
         },

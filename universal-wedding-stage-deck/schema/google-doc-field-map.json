@@ -114,14 +114,14 @@
       "oczepiny.countdown.mode": "required"
     },
     "photo-plan.example.json": {
-      "photoPlan.sunset.provider": "required",
-      "photoPlan.sunset.latitude": "required",
-      "photoPlan.sunset.longitude": "required",
-      "photoPlan.sunset.lastFetchedAt": "required",
-      "photoPlan.sunset.sunsetTime": "required",
-      "photoPlan.sunset.goldenHourStart": "required",
-      "photoPlan.sunset.civilTwilightEnd": "required",
-      "photoPlan.sunset.status": "required"
+      "photoPlan.sunset.provider": "no",
+      "photoPlan.sunset.latitude": "no",
+      "photoPlan.sunset.longitude": "no",
+      "photoPlan.sunset.lastFetchedAt": "no",
+      "photoPlan.sunset.sunsetTime": "no",
+      "photoPlan.sunset.goldenHourStart": "no",
+      "photoPlan.sunset.civilTwilightEnd": "no",
+      "photoPlan.sunset.status": "no"
     },
     "special-effects.example.json": {
       "specialEffects.sparklers": "required",
