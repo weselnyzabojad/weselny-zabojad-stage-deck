@@ -56,14 +56,20 @@ describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
     expect(topBar).not.toContain('{syncControl}');
   });
 
-  it('no longer renders PIN/Sync actions inside the warning banner', () => {
+  it('hosts PIN/Sync/language/theme actions inside the warning banner', () => {
     const mc = read('src/views/McMasterView.jsx');
     const banner = mc.slice(
-      mc.indexOf('<HardAnchorAlertBanner'),
-      mc.indexOf('/>', mc.indexOf('<HardAnchorAlertBanner')),
+      mc.lastIndexOf('<HardAnchorAlertBanner'),
+      mc.indexOf('/>', mc.lastIndexOf('<HardAnchorAlertBanner')),
     );
-    expect(banner).not.toContain('actions={(');
-    expect(banner).not.toContain('{pinControl}');
-    expect(banner).not.toContain('{syncControl}');
+    const actions = mc.slice(
+      mc.indexOf('const bannerActions = ('),
+      mc.indexOf('const wideContent'),
+    );
+
+    expect(banner).toContain('actions={bannerActions}');
+    expect(actions).toContain('{pinControl}');
+    expect(actions).toContain('{syncControl}');
+    expect(actions).toContain('{utilityGroup}');
   });
 });

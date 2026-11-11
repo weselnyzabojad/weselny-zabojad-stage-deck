@@ -7,16 +7,18 @@ describe('issue #189 right-hand two-row top-bar stack', () => {
   const mc = read('src/views/McMasterView.jsx');
   const header = mc;
 
-  it('puts cultural chips and utilities in the shared right zone', () => {
+  it('puts cultural chips in the top bar and utilities in the shared right zone', () => {
     const cultural = header.indexOf('<CulturalRulesBar');
     const open = header.indexOf('<OpenOnPhoneButton');
-    const language = header.indexOf('<LanguageToggle');
-    const theme = header.indexOf('<ThemeToggle');
+    const utility = header.slice(
+      header.indexOf('const utilityGroup'),
+      header.indexOf('const bannerActions'),
+    );
 
     expect(cultural).toBeGreaterThan(-1);
     expect(cultural).toBeLessThan(open);
-    expect(cultural).toBeLessThan(language);
-    expect(cultural).toBeLessThan(theme);
+    expect(utility).toContain('<LanguageToggle');
+    expect(utility).toContain('<ThemeToggle');
     expect(header).toContain('<TopBarShell');
   });
 

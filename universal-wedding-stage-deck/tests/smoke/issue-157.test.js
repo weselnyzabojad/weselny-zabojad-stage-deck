@@ -25,8 +25,7 @@ describe('issue #157 MC top bar simplification', () => {
       '{pinControl}',
       '{syncControl}',
       '<OpenOnPhoneButton',
-      '<LanguageToggle',
-      '<ThemeToggle',
+      'utilityGroup',
     ]) {
       expect(header, control).toContain(control);
     }

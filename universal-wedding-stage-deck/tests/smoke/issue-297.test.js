@@ -11,7 +11,7 @@ describe('issue #297 centered children reminder', () => {
 
   it('keeps the centered reminder in the secondary bar', () => {
     const mc = read('src/views/McMasterView.jsx');
-    const bar = mc.slice(mc.indexOf('<SecondaryControlBar'), mc.indexOf('{hasAnchorWarning ?'));
+    const bar = mc.slice(mc.indexOf('<SecondaryControlBar'), mc.lastIndexOf('<HardAnchorAlertBanner'));
     expect(bar).toContain('<ChildrenExpectedBadge');
     expect(bar).toContain('inline');
   });

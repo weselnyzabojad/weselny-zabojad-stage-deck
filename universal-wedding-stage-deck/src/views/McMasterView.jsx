@@ -180,11 +180,11 @@ export default function McMasterView({ model }) {
   const compactCurrentBody = currentStep ? (
     <div className="flex flex-col gap-2">
       <span
-        className={`w-fit rounded border px-2.5 py-1 font-heading text-xs font-semibold uppercase tracking-wider ${stepTypeClass}`}
+        className={`w-fit rounded-full border px-2.5 py-1 font-heading text-xs font-semibold uppercase tracking-wider shadow-sm ${stepTypeClass}`}
       >
         {t('mc.step.type', { type: currentStep.type.replace('_', ' ') })}
       </span>
-      <div className="flex items-center justify-between rounded-lg border border-line bg-page/80 p-2 text-xs font-mono">
+      <div className="flex items-center justify-between rounded-xl border border-panel-border bg-panel/50 p-2.5 text-xs font-mono shadow-sm backdrop-blur-sm">
         <span>{t('mc.step.realStart')}: <strong className="text-ink">{realStart}</strong></span>
         <span>{t('mc.step.estimatedEnd')}: <strong className="text-ink">{estimatedEnd ?? '—'}</strong></span>
       </div>
@@ -205,7 +205,7 @@ export default function McMasterView({ model }) {
           type="button"
           onClick={handleUndo}
           disabled={!canUndo}
-          className={`min-h-12 px-3 py-2 rounded-lg text-sm font-semibold border ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-raised hover:bg-line text-ink border-line-strong'}`}
+          className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-semibold shadow-sm transition ${!canUndo ? 'bg-card text-muted border-line cursor-not-allowed' : 'bg-panel/60 text-ink border-panel-border hover:border-line-strong hover:bg-panel'}`}
         >
           ↩ {t('mc.step.undo')}
         </button>
@@ -214,7 +214,7 @@ export default function McMasterView({ model }) {
           disabled={isComplete}
           label={isComplete ? t('mc.step.eventComplete') : t('mc.step.holdAdvance')}
           holdLabel={t('mc.step.holdHint')}
-          className={`min-h-12 flex-1 px-4 py-2 rounded-lg text-sm font-bold border ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
+          className={`min-h-12 flex-1 rounded-xl border px-4 py-2 text-sm font-bold shadow-sm ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
       {hideStepOverflow ? null : (
@@ -229,7 +229,7 @@ export default function McMasterView({ model }) {
         <button
           type="button"
           onClick={() => setOverlay('teleprompter')}
-          className="w-full bg-raised hover:bg-line text-ink px-3 py-2 rounded-lg text-xs font-semibold border border-line-strong"
+          className="w-full rounded-xl border border-panel-border bg-panel/60 px-3 py-2 text-xs font-semibold text-ink shadow-sm backdrop-blur-sm transition hover:border-line-strong hover:bg-panel hover:shadow-md"
         >
           📖 {t('mc.step.openTeleprompter')}
         </button>
@@ -263,6 +263,7 @@ export default function McMasterView({ model }) {
           activeIndex={railActiveIndex}
           currentBody={compactCurrentBody}
           photographerAvailable={resolvePhotographerAvailable(WEDDING)}
+          polished
         />
       ) : null}
 
@@ -317,14 +318,14 @@ export default function McMasterView({ model }) {
       {hideMcCues ? null : (
         <div className="grid grid-cols-1 gap-3">
           {/* MC Cues */}
-          <div className="bg-page/60 p-3 rounded-lg border border-line">
-            <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2 flex items-center space-x-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-alert"></span>
+          <div className="rounded-2xl border border-panel-border bg-panel/40 p-3.5 shadow-sm backdrop-blur-sm">
+            <h3 className="mb-2 flex items-center gap-2 font-heading text-xs font-bold uppercase tracking-wider text-ink">
+              <span className="h-1.5 w-1.5 rounded-full bg-alert"></span>
               <span>🗣️ {t('mc.step.cuesTitle')}</span>
             </h3>
-            <ul className="space-y-2 text-sm text-ink">
+            <ul className="space-y-2.5 text-sm text-ink">
               {childrenWarning ? (
-                <li className="flex items-start space-x-2 rounded border border-amber-700/60 bg-amber-950/40 p-2 text-amber-100">
+                <li className="flex items-start gap-2 rounded-xl border border-tone-warning-border bg-tone-warning-bg p-2.5 text-tone-warning-text">
                   <span aria-hidden="true" className="mt-0.5 text-sm">⚠️</span>
                   <span>{t(childrenWarning)}</span>
                 </li>
@@ -332,10 +333,10 @@ export default function McMasterView({ model }) {
               {mcCues.map((cue, index) => (
                 <li
                   key={`${cue.language ?? 'cue'}_${index}`}
-                  className="flex items-start space-x-2"
+                  className="flex items-start gap-2"
                 >
                   {cue.language ? (
-                    <span className="mt-0.5 shrink-0 rounded border border-line-strong bg-raised px-1 py-0.5 font-mono text-[9px] font-bold text-brand-tint">
+                    <span className="mt-0.5 shrink-0 rounded-full border border-brand-strong/30 bg-brand/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-soft">
                       {cue.language}
                     </span>
                   ) : null}
@@ -343,7 +344,7 @@ export default function McMasterView({ model }) {
                 </li>
               ))}
               {mcCues.length === 0 && !childrenWarning ? (
-                <li className="flex items-start space-x-2 text-muted">
+                <li className="flex items-start gap-2 text-muted">
                   <span>{t('mc.cues.empty')}</span>
                 </li>
               ) : null}
@@ -372,8 +373,8 @@ export default function McMasterView({ model }) {
       {groupPhotoBody}
 
       {stepSubtasks.length > 0 ? (
-        <div className="bg-page/70 p-3 rounded-lg border border-line">
-          <h3 className="text-xs font-heading font-bold text-ink uppercase tracking-wider mb-2">
+        <div className="rounded-2xl border border-panel-border bg-panel/40 p-3.5 shadow-sm backdrop-blur-sm">
+          <h3 className="mb-2 font-heading text-xs font-bold uppercase tracking-wider text-ink">
             📋 {t('mc.step.subtasksTitle')}
           </h3>
           <div className="space-y-2">
@@ -382,7 +383,7 @@ export default function McMasterView({ model }) {
               return (
                 <label
                   key={task}
-                  className={`flex min-h-11 items-center space-x-3 p-2 rounded cursor-pointer transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'bg-brand/20 border border-brand/40 text-muted' : 'bg-card border border-line text-ink hover:border-line-strong'}`}
+                  className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 transition focus-within:ring-2 focus-within:ring-brand-soft focus-within:ring-offset-2 focus-within:ring-offset-page ${checked ? 'border-brand/30 bg-brand/10 text-muted' : 'border-line bg-card text-ink hover:border-line-strong hover:bg-card/80 hover:shadow-sm'}`}
                 >
                   <input
                     type="checkbox"
@@ -394,7 +395,7 @@ export default function McMasterView({ model }) {
                   {checked ? (
                     <span
                       aria-hidden="true"
-                      className="ml-auto rounded border border-brand/40 bg-brand/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-tint"
+                      className="ml-auto rounded-full border border-brand/30 bg-brand/15 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-soft"
                     >
                       ✓
                     </span>
@@ -421,7 +422,7 @@ export default function McMasterView({ model }) {
             <button
               type="button"
               onClick={() => setOverlay('teleprompter')}
-              className="bg-raised hover:bg-line text-ink px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-line-strong"
+              className="rounded-xl border border-panel-border bg-panel/60 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm backdrop-blur-sm transition hover:border-line-strong hover:bg-panel hover:shadow-md"
             >
               📖 {t('mc.step.openTeleprompter')}
             </button>
@@ -430,7 +431,7 @@ export default function McMasterView({ model }) {
             <button
               type="button"
               onClick={() => setOverlay('game')}
-              className="bg-brand/40 hover:bg-brand/70 text-ink px-3 py-1.5 rounded-lg text-xs font-heading font-semibold transition border border-brand-strong"
+              className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm transition hover:bg-brand/30 hover:shadow-md"
             >
               🎮 {t('mc.step.gameClicker', { count: game.items.length })}
             </button>
@@ -459,6 +460,19 @@ export default function McMasterView({ model }) {
       remoteUpdatedAt={remoteUpdatedAt}
       outbox={outbox}
     />
+  );
+  const utilityGroup = (
+    <UtilityControlGroup>
+      <LanguageToggle variant="desktop" />
+      <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
+    </UtilityControlGroup>
+  );
+  const bannerActions = (
+    <>
+      {pinControl}
+      {syncControl}
+      {utilityGroup}
+    </>
   );
 
   const wideContent = (
@@ -497,8 +511,12 @@ export default function McMasterView({ model }) {
         left={(
           <>
             <DriftPill drift={driftReport.drift} />
-            {pinControl}
-            {syncControl}
+            {hasAnchorWarning ? null : (
+              <>
+                {pinControl}
+                {syncControl}
+              </>
+            )}
           </>
         )}
         center={(
@@ -510,16 +528,16 @@ export default function McMasterView({ model }) {
         right={(
           <>
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
-            </UtilityControlGroup>
+            {hasAnchorWarning ? null : utilityGroup}
           </>
         )}
       />
 
       {hasAnchorWarning ? (
-        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
+        <HardAnchorAlertBanner
+          radar={driftReport.hardAnchorRadar}
+          actions={bannerActions}
+        />
       ) : null}
 
       {/* ================= STAGE RAIL + DETAILS ================= */}
@@ -530,6 +548,7 @@ export default function McMasterView({ model }) {
             activeIndex={railActiveIndex}
             currentBody={heroBody}
             photographerAvailable={resolvePhotographerAvailable(WEDDING)}
+            polished
           />
 
           {speeches?.length > 0 ? (
