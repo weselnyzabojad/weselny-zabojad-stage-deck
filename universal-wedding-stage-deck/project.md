@@ -4167,3 +4167,43 @@ parser or field-map change.
 **Open questions.** None.
 
 **Tracking.** [#717](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/717), [#718](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/718), [#719](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/719), [#720](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/720), [#721](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/721), [#722](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/722).
+
+### 17.27 DJ modal stacking and MC speech live removal (decision, 2026-11-11)
+
+Two independent corrections: make the Open on phone dialog a true full-screen
+overlay so the DJ guest-request QR button no longer shows through, and remove
+the MC speech “live” presentation/controls while preserving the Speaker
+selection source. No Google Doc, schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: shared `ModalShell` / Open on phone dialog; DJ VIP top and request
+  bar stacking; MC Speeches chip and Speeches card; MC speech selection wiring;
+  Speaker selection source.
+- Out of scope: non-DJ modals’ visual design, real song-request data, Speaker
+  script rendering, cartridge schema and parser.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#723](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/723) | Open on phone modal portals to the viewport and hides the DJ QR request button | — |
+| [#724](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/724) | Remove MC speech live status and Go/Stop live controls; keep Speaker selection | — |
+
+**Task details.**
+
+1. **Modal stacking.** Render the shared `ModalShell` through a portal to
+   `document.body` so `fixed inset-0` overlays escape sticky/backdrop-filter
+   containing blocks. The Open on phone dialog must cover the whole viewport,
+   including the DJ song-request bar and its QR button. Focus trap, Escape,
+   backdrop close, focus restore and all other modals keep their behaviour.
+2. **Speech live removal.** Remove the `NA ŻYWO`/LIVE status from the MC Speeches
+   chip and the Go live/Stop live buttons from the MC Speeches card. Remove the
+   MC `selectSpeech` UI wiring and now-unused live labels. Keep
+   `active_speech_id` as the Speaker selection source: single-speech weddings
+   auto-select that speech; the Speaker view and script rendering are unchanged.
+   Remove dead code/keys, but keep the live-sync field and validation.
+
+**Open questions.** None.
+
+**Tracking.** [#723](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/723), [#724](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/724).
