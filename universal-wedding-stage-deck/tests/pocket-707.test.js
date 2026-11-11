@@ -67,7 +67,7 @@ describe('issue #710 pocket #707 visual polish', () => {
       syncStatus: 'connected',
       outbox: { attempts: 1, nextAttemptAt: null, lastError: null },
     });
-    expect(pending).toContain('bg-tone-warning-bg');
+    expect(pending).toContain('bg-tone-negative-bg');
 
     const offline = renderPocket({ syncStatus: 'offline' });
     expect(offline).toContain('bg-tone-negative-bg');

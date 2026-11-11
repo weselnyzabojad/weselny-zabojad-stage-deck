@@ -62,13 +62,13 @@ describe('issue #705 pocket top-bar rework', () => {
     expect(connected).toContain('>MC</span>');
 
     const connecting = renderShell({ syncStatus: 'connecting' });
-    expect(connecting).toContain('bg-tone-warning-bg');
+    expect(connecting).toContain('bg-tone-negative-bg');
 
     const pending = renderShell({
       syncStatus: 'connected',
       outbox: { attempts: 1, nextAttemptAt: null, lastError: null },
     });
-    expect(pending).toContain('bg-tone-warning-bg');
+    expect(pending).toContain('bg-tone-negative-bg');
 
     const offline = renderShell({ syncStatus: 'offline' });
     expect(offline).toContain('bg-tone-negative-bg');
