@@ -86,6 +86,22 @@ function RuleChip({
     );
   }
 
+  // Dense desktop chip: label only. The state stays visible through the tone
+  // surface and remains available in the accessible name and tooltip.
+  if (dense) {
+    return (
+      <div
+        key={ruleKey}
+        role="note"
+        aria-label={description}
+        title={description}
+        className={`flex min-w-0 items-center justify-center rounded-xl px-2 py-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] ${tone}`}
+      >
+        <span>{label}</span>
+      </div>
+    );
+  }
+
   return (
     <div
       key={ruleKey}
