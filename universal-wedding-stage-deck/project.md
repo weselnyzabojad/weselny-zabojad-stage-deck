@@ -3990,3 +3990,36 @@ Doc, schema, parser or field-map change, and no toggle behaviour change.
 **Open questions.** None.
 
 **Tracking.** [#710](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/710).
+
+### 17.23 Pocket role badge uses red/green only (decision, 2026-11-11)
+
+The pocket role badge currently inherits the Sync `warning` tone (orange) while
+connecting or while a sync is pending. That is incorrect for the role badge:
+it must read as green when sync is confirmed and red for every unconfirmed
+state. This is a UI-only correction; sync behaviour, data and accessible text
+do not change.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: every pocket role badge rendered through `RoleShell` — MC Master,
+  DJ VIP, Photographer 1/2, Cameraman, Speaker and Venue Manager.
+- Out of scope: desktop/laptop views, `/admin`, join/pairing screens, the guest
+  song-request page, and non-badge warning states.
+
+**Badge colour rule.**
+
+- `connected` → green.
+- `connecting`, pending outbox, `disabled`, `local-only`, `offline`,
+  `disconnected` and `error` → red.
+- No orange/warning tone on the pocket role badge.
+
+The `warning` token stays in the shared palette for other controls (for example
+the desktop Sync icon); only the pocket role badge remaps warning to negative.
+The badge keeps its role text, detailed tooltip/accessible name, surface, glow
+and sync-driven `role="status"` semantics.
+
+**Open questions.** None.
+
+**Tracking.** [#712](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/712).
