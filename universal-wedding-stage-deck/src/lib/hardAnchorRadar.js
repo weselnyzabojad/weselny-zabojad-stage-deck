@@ -31,10 +31,10 @@ function messageFor(report) {
   const workEnd = workEntry?.projectedEnd;
 
   if (status === 'collision') {
-    return `${label} at ${time} — ${workTitle ?? 'projected work'} ends ${workEnd ?? 'late'}, ${overrunMinutes}m over. Swap or defer a block.`;
+    return `${label} at ${time} - ${workTitle ?? 'projected work'} ends ${workEnd ?? 'late'}, ${overrunMinutes}m over.`;
   }
   if (status === 'compression') {
-    return `${label} at ${time} — only ${slackMinutes}m slack after ${workTitle ?? 'the current block'}. Swap or defer a block.`;
+    return `${label} at ${time} - only ${slackMinutes}m slack after ${workTitle ?? 'the current block'}.`;
   }
   if (status === 'approaching') {
     return `${label} at ${time} — in ~${minutesToAnchor}m. Protect this anchor.`;

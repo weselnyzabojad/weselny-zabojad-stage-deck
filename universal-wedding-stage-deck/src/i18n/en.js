@@ -98,7 +98,6 @@ const en = {
   'anchor.overBy': '{minutes}m over',
   'anchor.slack': '{minutes}m slack',
   'anchor.ends': '{title} ends {time}.',
-  'anchor.swapOrDefer': 'Swap or defer a block.',
 
   'join.production': 'Production stage deck',
   'join.title': 'Join this room',
