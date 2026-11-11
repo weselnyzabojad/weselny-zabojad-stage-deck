@@ -3844,3 +3844,47 @@ palette, defined once in `src/lib/topBarStyles.js` and consumed by every role:
 
 The Sync chip keeps its documented status meaning through a coloured dot on the
 white/black surface. Card-level and below-timeline colours are unchanged.
+
+### 17.20 Pocket top-bar rework (decision, 2026-11-11)
+
+Rework the phone/pocket header only. Desktop and laptop layouts keep the current
+top bar, secondary bar, chips and date. This is a UI-only change: no Google Doc,
+schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: every pocket view rendered through `RoleShell` — MC Master, DJ VIP,
+  Photographer 1/2, Cameraman, Speaker and Venue Manager.
+- Out of scope: every wide/laptop/desktop layout, DJ Standard (laptop-only),
+  `/admin` and the guest song-request page.
+
+**Pocket header rules.**
+
+1. **Children expected is removed** from the pocket header. The desktop
+   secondary-bar badge is unchanged.
+2. **Sync is removed** from the pocket header. The sync state moves onto the
+   pocket role badge — on MC Master the `span` holding `MC` at
+   `//*[@id="root"]/div/header/div[1]/div/span[1]`. The badge keeps its role
+   text and black frame and takes the Sync surface tone: green when connected,
+   orange when pending or connecting, red when disabled, local-only, offline,
+   disconnected or in error. The badge tooltip/accessible name carries the
+   detailed sync state. This applies to every in-scope pocket view.
+3. **Language switcher becomes one cell.** The pocket control shows the current
+   language code plus a chevron/globe affordance that makes it visibly
+   clickable. Each tap cycles `EN → FR → PL`. The desktop three-cell segmented
+   control is unchanged.
+4. **The Détails disclosure is removed.** Its content is always visible in the
+   pocket header: couple identity and common languages, cultural and speeches
+   chips, view switch and auth control. The full date row is not shown.
+5. **Cultural and speeches chips are text-only pills.** Sto Lat, Gorzko,
+   Oczepiny and Speeches keep their pill shape, semantic green/red/neutral
+   surface and tooltip/accessible state, but drop the icon, visible status text
+   and status dot. Visible labels are exactly `Sto Lat`, `Gorzko`, `Oczepiny`
+   and `Speeches`. Desktop chips keep their current treatment.
+6. **The date row is removed** from the pocket couple identity (for example
+   `Thursday, August 20, 2026`). Couple names, flags and common languages stay.
+   The desktop date layout is unchanged.
+
+**Open questions.** None.
+
+**Tracking.** [#705](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/705).
