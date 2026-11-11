@@ -214,6 +214,12 @@ describe('issue #707 desktop control-bar refinement', () => {
     expect(read('src/views/McMasterView.jsx')).toContain('<RoleSignOutControl');
   });
 
+  it('keeps the MC PIN control safe in local/demo mode without a role session', () => {
+    const mc = read('src/views/McMasterView.jsx');
+    expect(mc).toContain('role={roleSession?.role ?? currentRole ?? ');
+    expect(mc).toContain('pin={pairing?.pin ?? null}');
+  });
+
   it('keeps every new visible label localized', () => {
     expect(en['language.label']).toBeTruthy();
     expect(en['language.switch']).toBeTruthy();
