@@ -229,9 +229,9 @@ export default function DjBoothView({
               />
             ) : null}
             {viewSwitch}
-            <VipDjLogo wedding={wedding} vip={caps.vip} className="ml-1" />
           </>
         )}
+        brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}
       />
 
       <SecondaryControlBar

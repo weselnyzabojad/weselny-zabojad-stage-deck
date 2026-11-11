@@ -484,7 +484,7 @@ export default function McMasterView({ model }) {
         left={(
           <>
             <TopBarLogo imgClassName="max-w-[220px]" />
-            <span className="text-muted hidden sm:inline">|</span>
+            <span aria-hidden="true" className="hidden h-8 w-px shrink-0 bg-panel-border sm:block" />
             <TopBarClock clock={driftReport.clock} />
             <TopBarRoleLabel role="mc" />
           </>
