@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useI18n } from '../i18n/useI18n';
 
 const SIZES = {
@@ -84,7 +85,7 @@ export default function ModalShell({ open, onClose, labelledBy, describedBy, siz
 
   if (!open) return null;
 
-  return (
+  const content = (
     <div
       className="fixed inset-0 z-modal flex items-center justify-center bg-black/80 p-0 pb-[env(safe-area-inset-bottom)] backdrop-blur-sm sm:p-4"
       onMouseDown={(event) => {
@@ -113,4 +114,9 @@ export default function ModalShell({ open, onClose, labelledBy, describedBy, siz
       </div>
     </div>
   );
+
+  // Server-side rendering has no document; keep the markup renderable for
+  // tests and static output.
+  if (typeof document === 'undefined') return content;
+  return createPortal(content, document.body);
 }
