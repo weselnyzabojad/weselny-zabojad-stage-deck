@@ -447,8 +447,8 @@ export default function McMasterView({ model }) {
   const pinControl = (
     <RoleSignOutControl
       isProduction={IS_PRODUCTION}
-      role={roleSession.role}
-      pin={pairing.pin}
+      role={roleSession?.role ?? currentRole ?? 'mc'}
+      pin={pairing?.pin ?? null}
       onSignOut={handleUnpair}
     />
   );
