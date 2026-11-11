@@ -4303,3 +4303,48 @@ visible and the production sign-out unchanged.
 **Open questions.** None.
 
 **Tracking.** [#736](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/736), [#737](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/737), [#738](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/738), [#739](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/739).
+
+### 17.30 Photographer effect approvals removal and DJ VIP music layout (decision, 2026-11-11)
+
+Two independent UI-only refinements: remove the per-effect "approved" rows
+from the Photographer special-effects block, and make DJ VIP song entries
+compact pills while moving Set notes between the current step and Music Policy
+on laptop.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+\`specialEffects.approvals\` stays in the data model because fire-safety
+validation still requires \`approvals.fire\`.
+
+**View scope.**
+
+- In scope: Photographer laptop and pocket (\`PhotoPlanBlock\` /
+  \`PhotoPlanDetails\`); DJ VIP laptop and pocket \`MusicPolicyCard\`; the
+  \`DjBoothView\` wide layout for Set notes.
+- Out of scope: DJ Standard and Solo, MC, Speaker, Venue Manager, Admin, song
+  data/schema/parser, the guest request queue, and adding Set notes to pocket.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#741](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/741) | Remove Photographer special-effects approval rows; keep approvals data | - |
+| [#742](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/742) | DJ VIP compact song pills; move Set notes above Music Policy on laptop | - |
+
+**Task details.**
+
+1. **Photographer approvals.** Delete the four "… approved" rows and their
+   Yes/No tone UI from \`PhotoPlanBlock\`. Keep the sparklers, fire, smoke and
+   other badges, and keep the block in its normal photo-plan grid cell so it no
+   longer stretches the current-step card. Do not remove
+   \`specialEffects.approvals\` from the schema, parser, demo, fixtures or
+   validation.
+2. **DJ VIP music layout.** Render \`mainSongs\`, \`mustPlay\` and \`doNotPlay\`
+   as compact wrapping pills on both DJ VIP formats instead of full-width rows.
+   Preserve key-song, conflict, missing-song, note and do-not-play meaning, with
+   accessible full text and no horizontal overflow. On laptop, move Set notes
+   out of the right aside and place it full width between the current-step focus
+   stack and Music Policy. DJ Standard stays unchanged.
+
+**Open questions.** None.
+
+**Tracking.** [#741](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/741), [#742](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/742).
