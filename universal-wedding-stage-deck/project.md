@@ -3941,3 +3941,52 @@ through the existing theme tokens:
 **Open questions.** None.
 
 **Tracking.** [#707](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/707).
+
+### 17.22 Pocket #707 visual polish (decision, 2026-11-11)
+
+Apply the #707 surface language to the phone/pocket header while keeping the
+#705 pocket structure exactly as shipped. This is a UI-only change: no Google
+Doc, schema, parser or field-map change, and no toggle behaviour change.
+
+**View scope.**
+
+- In scope: every pocket view rendered through `RoleShell` — MC Master, DJ VIP,
+  Photographer 1/2, Cameraman, Speaker and Venue Manager.
+- Out of scope: desktop/laptop views (already covered by #707), DJ Standard
+  (laptop-only), `/admin`, join/pairing screens and the guest song-request page.
+
+**Preserved #705 structure.**
+
+- The role badge keeps the Sync state and detailed tooltip/accessible name.
+- Children expected, a separate Sync control, logo, clock and date stay out of
+  the pocket header.
+- The language control stays one cell and cycles `EN → FR → PL`; the theme
+  toggle stays beside it.
+- The Détails disclosure stays removed; identity, languages, chips, view switch
+  and auth control remain visible by default.
+- The date row stays hidden.
+
+**Pocket visual treatment.**
+
+1. **Shared #707 surfaces.** The pocket header, role badge, utility controls,
+   auth/view-switch controls and pills use the #707 theme tokens: soft panel
+   fills, low-contrast borders, `rounded-xl`/`rounded-2xl` corners, subtle
+   elevation and backdrop blur, in both night and day themes.
+2. **Text-only chips.** Sto Lat, Gorzko, Oczepiny and Speeches keep only their
+   labels. They use the #707 tinted semantic surfaces, soft borders and glow,
+   with no icon, no visible status text and no status dot. Green remains
+   ON/wanted, red OFF/refused, neutral TBC.
+3. **Identity and utilities.** Couple names, flags and common-language pills
+   receive the #707 typographic hierarchy and soft pill treatment. The
+   single-cell language control and theme toggle become one integrated pocket
+   segmented group; no date is rendered.
+4. **Role badge.** The badge keeps its role text and takes the soft semantic
+   sync tone (green connected, orange pending/connecting, red disabled/offline/
+   error) with the #707 surface, border and glow treatment.
+5. **Preserved invariants.** No functional behaviour, data, accessible name,
+   role visibility or semantic state changes. Focus-visible rings and 44px
+   touch targets stay valid in both themes.
+
+**Open questions.** None.
+
+**Tracking.** [#710](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/710).
