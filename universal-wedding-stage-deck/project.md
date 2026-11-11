@@ -4248,3 +4248,58 @@ schema, parser or field-map change.
 **Open questions.** None.
 
 **Tracking.** [#725](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/725), [#726](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/726).
+
+### 17.29 Admin Drive recovery, dev previews and local forget removal (decision, 2026-11-11)
+
+Recover the owner admin Drive surface by deploying the missing `admin_drive`
+Edge Function, extend the development-only view switcher with a read-only guest
+song-request preview plus DJ Mark and DJ Szymoniak VIP identity previews, and
+delete the unused local "forget this device" action while keeping the PIN
+visible and the production sign-out unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: the linked Supabase project (`admin_drive` only), `/admin` Drive
+  panel, `DEV VIEW SWITCHER`, DJ VIP laptop layout as rendered by `DjBoothView`,
+  shared `RoleSignOutControl`, and the MC StageDeck sign-out wiring.
+- Out of scope: stage role authentication/tokens, the real guest
+  `/request/:room` route, production sign-out, Google Doc mapping, cartridge
+  schema and any new DJ identity.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#736](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/736) | Deploy and verify `admin_drive`; configure secrets and confirm CORS/status | - |
+| [#737](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/737) | Read-only guest song-request preview in the dev switcher | - |
+| [#738](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/738) | DJ Mark and DJ Szymoniak identity previews | [#726](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/726) for the logo check |
+| [#739](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/739) | Remove local forget-device action; keep static PIN and production sign-out | - |
+
+**Task details.**
+
+1. **Admin Drive.** Only `admin_api` is deployed on the linked project, so the
+   browser's request to `admin_drive` fails before CORS. Deploy
+   `supabase/functions/admin_drive`, set the required Supabase and Google
+   service-account secrets, then verify preflight and an authenticated AAL2
+   `status` call. Document the deployed function and verification commands.
+2. **Song request preview.** Add a `song_request` entry to the dev switcher and
+   render the real guest UI inside the dev-gated preview. The preview is
+   read-only: no `submit_song_request` POST or other cloud write. Use the deck
+   `room` intent when present and a clearly dev-only fallback otherwise. The
+   real `/request/:room` route keeps its submission behavior.
+3. **DJ identity previews.** Add `dj_mark` and `dj_szymoniak` entries that clone
+   the demo wedding with `djIdentityId` forced to that registry id and render the
+   existing DJ VIP view. Do not mutate the cartridge, persist the identity,
+   change the authenticated role or perform cloud writes. Missing VIP logo
+   assets fall back silently.
+4. **Local forget removal.** In local/demo mode render the paired PIN as static
+   text, not a button. Remove the local `pairing.unpair()` confirmation, the now
+   unused `unpair`/`clearPairing` code and the `mc.title.forgetPin` /
+   `mc.confirm.forgetPin` keys. The local PIN gate still unlocks the deck and the
+   production sign-out control still works.
+
+**Open questions.** None.
+
+**Tracking.** [#736](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/736), [#737](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/737), [#738](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/738), [#739](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/739).
