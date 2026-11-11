@@ -20,6 +20,7 @@ describe('issue #574/#642 Speed Foto as a game step', () => {
       'speedFoto',
     );
     expect(read('schema/wedding-schema-v1.1.json')).not.toContain('"speedFoto"');
+    expect(read('supabase/functions/admin_api/index.ts')).not.toContain('speed-foto');
   });
 
   it('models Speed Foto as a timeline game step with a photographer requirement', () => {
