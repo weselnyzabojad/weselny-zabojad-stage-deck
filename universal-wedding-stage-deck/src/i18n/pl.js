@@ -589,7 +589,7 @@ const pl = {
   'venueManager.saved': 'Zapisano',
   'venueManager.milestones': 'Kamienie milowe',
   'venueManager.milestonesHelper':
-    'Zdjęcia i kamera to osobne kamienie milowe. Zaznaczone stają się stałymi punktami na radarze.',
+    'Dodawaj tutaj inne rodzaje kamieni milowych. Godziny wyjazdu fotografa i kamery są zarządzane przez administratora.',
   'venueManager.milestone': 'Kamień milowy',
   'venueManager.milestoneLabel': 'Nazwa',
   'venueManager.milestoneKind': 'Rodzaj',
