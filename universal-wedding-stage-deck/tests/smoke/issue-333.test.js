@@ -22,7 +22,7 @@ const html = renderToStaticMarkup(
 describe('issue #333 mobile status pills', () => {
   it('uses a single wrapping row of compact pills', () => {
     expect(read('src/components/CulturalRulesBar.jsx')).not.toContain('grid grid-cols-2');
-    expect(html).toContain('flex flex-wrap items-center gap-1.5');
+    expect(html).toContain('flex flex-wrap items-center justify-center gap-1.5');
     expect(html).toContain('Sto Lat');
     expect(html).toContain('Gorzko');
     expect(html).toContain('Oczepiny');
