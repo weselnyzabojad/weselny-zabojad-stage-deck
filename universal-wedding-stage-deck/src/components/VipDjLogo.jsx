@@ -1,5 +1,6 @@
 import { resolveDjIdentityId } from '../lib/importantSongs';
 import { vipDjById } from '../lib/vipDjs';
+import BrandFrame from './BrandFrame';
 
 // Eager glob keeps the build safe if the owner has not added one of the PNGs
 // yet: a missing asset simply resolves to no logo.
@@ -21,11 +22,13 @@ export default function VipDjLogo({ wedding, vip = false, className = '' }) {
   if (!src || !dj) return null;
 
   return (
-    <img
-      src={src}
-      alt={dj.displayName}
-      title={dj.displayName}
-      className={`h-10 w-auto max-w-[140px] shrink-0 object-contain ${className}`}
-    />
+    <BrandFrame className={`shrink-0 ${className}`}>
+      <img
+        src={src}
+        alt={dj.displayName}
+        title={dj.displayName}
+        className="h-11 w-auto max-w-[150px] object-contain"
+      />
+    </BrandFrame>
   );
 }
