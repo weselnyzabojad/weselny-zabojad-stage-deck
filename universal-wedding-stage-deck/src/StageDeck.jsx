@@ -214,14 +214,10 @@ export default function StageDeck({
   );
 
   const handleUnpair = () => {
-    if (isProduction) {
-      const confirmed = window.confirm(t('mc.confirm.signOut'));
-      if (!confirmed) return;
-      onSignOut?.();
-      return;
-    }
-    const confirmed = window.confirm(t('mc.confirm.forgetPin'));
-    if (confirmed) pairing.unpair();
+    if (!isProduction) return;
+    const confirmed = window.confirm(t('mc.confirm.signOut'));
+    if (!confirmed) return;
+    onSignOut?.();
   };
 
   const availableRoles = availableRoleIds(WEDDING.hostingMode);

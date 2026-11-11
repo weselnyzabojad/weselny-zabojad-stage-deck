@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import {
-  clearPairing,
   loadPairing,
   normalizePin,
   pairingMatches,
@@ -33,15 +32,9 @@ export function usePairing({ expectedPin, weddingId }) {
     [expectedPin, weddingId],
   );
 
-  const unpair = useCallback(() => {
-    clearPairing();
-    setPairing(null);
-  }, []);
-
   return {
     pin,
     isPaired: Boolean(pin),
     pair,
-    unpair,
   };
 }
