@@ -4441,3 +4441,46 @@ or state-contract change.
 **Open questions.** None.
 
 **Tracking.** [#751](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/751).
+
+### 17.33 Top bar action grid and co-brand sizing (decision, 2026-11-11)
+
+Refine the desktop right-zone composition: arrange the four cultural/speech
+indicators as a compact fixed 2×2 grid and enlarge the assigned co-branding mark
+so it holds visual weight beside them. The change is presentational only;
+indicator states, labels and behaviour stay exactly as they are.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, cartridge
+or state-contract change.
+
+**View scope.**
+
+- In scope: desktop MC Master, DJ VIP and Photographer top bars; the 2×2 action
+  grid; compact indicator sizing; assigned VIP DJ co-branding frame and mark.
+- Out of scope: pocket/phone header, DJ Standard, Speaker, Venue Manager, toggle
+  semantics/labels/handlers, primary Weselny Żabojad logo size, simultaneous
+  Mark/Szymoniak display, admin, Song Request, schema/parser and cartridge data.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#753](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/753) | Fixed 2×2 action grid, compact chips and enlarged co-branding logo | [#751](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/751) |
+
+**Task details.**
+
+1. **Action grid.** Render `STO LAT` + `GORZKO` on the top row and `OCZEPINY` +
+   `SPEECHES` on the bottom row in a fixed two-column grid immediately left of
+   the co-branding slot. Reduce padding, font size and gap while keeping every
+   label readable and accessible.
+2. **Co-branding.** Enlarge the shared co-branding frame to roughly 80 px high
+   and the Mark/Szymoniak mark to roughly 64 px, keeping it vertically centred
+   and free of overlap or overflow. The primary logo and its frame stay
+   unchanged.
+3. **State integrity.** Preserve the existing Green ON/active and Red
+   OFF/strict/complex tone classes, labels, icons, accessible descriptions and
+   behaviour. Keep the grid two columns down to the pocket breakpoint; the
+   pocket header remains untouched.
+
+**Open questions.** None.
+
+**Tracking.** [#753](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/753).
