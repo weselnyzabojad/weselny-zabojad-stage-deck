@@ -5,7 +5,6 @@
 // layer for the MC role. The `model` object carries the already-derived values
 // and callbacks so there is exactly one place to wire a future routed shell.
 
-import logo from '../assets/img/logo.png';
 import CakeCard from '../components/CakeCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -25,6 +24,7 @@ import SecondaryControlBar from '../components/SecondaryControlBar';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
+import TopBarLogo from '../components/TopBarLogo';
 import TopBarRoleLabel from '../components/TopBarRoleLabel';
 import TopBarShell from '../components/TopBarShell';
 import { useI18n } from '../i18n/useI18n';
@@ -39,6 +39,7 @@ import {
   resolvePhotoPlan,
 } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
+import { TOP_BAR_NEUTRAL_HOVER, topBarControl } from '../lib/topBarStyles.js';
 
 // Detect the moment from stable cartridge signals, never from the localized
 // step title (issue #543). Titles are authored content and may be FR/PL.
@@ -449,16 +450,16 @@ export default function McMasterView({ model }) {
       title={
         IS_PRODUCTION ? t('mc.title.signOut') : t('mc.title.forgetPin')
       }
-      className="inline-flex min-h-11 items-center text-muted hover:text-ink transition"
+      className={`inline-flex min-h-11 items-center rounded px-2.5 py-1 text-xs font-semibold transition ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)}`}
     >
       {IS_PRODUCTION ? (
         <>
-          ROLE: <strong className="text-ink">{roleSession.role.toUpperCase()}</strong>
+          ROLE: <strong className="ml-1">{roleSession.role.toUpperCase()}</strong>
           <span className="ml-1 text-sm">🔐</span>
         </>
       ) : (
         <>
-          PIN: <strong className="text-ink">{pairing.pin}</strong>
+          PIN: <strong className="ml-1">{pairing.pin}</strong>
           <span className="ml-1 text-sm">🔓</span>
         </>
       )}
@@ -482,13 +483,7 @@ export default function McMasterView({ model }) {
       <TopBarShell
         left={(
           <>
-            <div className="bg-white px-3 py-1.5 rounded-lg shadow-md flex items-center justify-center">
-              <img
-                src={logo}
-                alt="Weselny Żabojad"
-                className="h-12 w-auto object-contain max-w-[220px]"
-              />
-            </div>
+            <TopBarLogo className="px-3 py-1.5" imgClassName="max-w-[220px]" />
             <span className="text-muted hidden sm:inline">|</span>
             <TopBarClock clock={driftReport.clock} />
             <TopBarRoleLabel role="mc" />

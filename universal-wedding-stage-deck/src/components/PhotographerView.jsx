@@ -1,4 +1,3 @@
-import logo from '../assets/img/logo.png';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
@@ -14,6 +13,7 @@ import TimelineFocusStack from './TimelineFocusStack';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -435,9 +435,7 @@ export default function PhotographerView({
       <TopBarShell
         left={(
           <>
-            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
-            </div>
+            <TopBarLogo />
             <TopBarClock clock={clock} />
             <TopBarRoleIdentity role={role} />
           </>

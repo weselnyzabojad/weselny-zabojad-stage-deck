@@ -1,4 +1,5 @@
 import { useI18n } from '../i18n/useI18n';
+import { TOP_BAR_NEUTRAL_HOVER, topBarControl } from '../lib/topBarStyles.js';
 
 function SunIcon() {
   return (
@@ -49,7 +50,7 @@ export default function ThemeToggle({ theme = 'night', onToggle, className = '' 
       aria-pressed={isDay}
       aria-label={label}
       title={label}
-      className={`inline-flex h-11 w-11 items-center justify-center rounded border border-line bg-raised text-ink transition hover:border-line-strong sm:h-8 sm:w-8 ${className}`}
+      className={`inline-flex h-11 w-11 items-center justify-center rounded transition sm:h-8 sm:w-8 ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)} ${className}`}
     >
       {isDay ? <SunIcon /> : <MoonIcon />}
     </button>

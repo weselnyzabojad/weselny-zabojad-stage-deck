@@ -1,3 +1,5 @@
+import { topBarControl } from '../lib/topBarStyles.js';
+
 const RULES = [
   {
     key: 'sto_lat',
@@ -34,40 +36,15 @@ const OCZEPINY = {
   },
 };
 
-const TONES = {
-  yes: {
-    chip: 'border-emerald-700/70 bg-emerald-950/60',
-    text: 'text-emerald-300',
-    dot: 'bg-emerald-400',
-  },
-  active: {
-    chip: 'border-brand-strong bg-brand/30 ring-1 ring-brand-strong/50',
-    text: 'text-brand-tint',
-    dot: 'bg-brand-tint',
-  },
-  conditional: {
-    chip: 'border-amber-700/70 bg-amber-950/70',
-    text: 'text-amber-300',
-    dot: 'bg-amber-400',
-  },
-  no: {
-    chip: 'border-alert/60 bg-alert/15',
-    text: 'text-alert-soft',
-    dot: 'bg-alert',
-  },
-  pending: {
-    chip: 'border-line-strong bg-raised',
-    text: 'text-ink',
-    dot: 'bg-slate-400',
-  },
-};
+// A requested tradition is green, an explicitly refused one is red. Values that
+// do not decide either way (conditional / TBC) keep the default white surface.
+const REQUESTED = new Set(['YES', 'YES_EXPLAIN', 'ON', 'ACTIVE', 'IF_GUESTS_START']);
+const REFUSED = new Set(['STRICT_NO', 'NO', 'OFF']);
 
 function toneFor(status) {
-  if (status === 'YES' || status === 'YES_EXPLAIN' || status === 'ON') return 'yes';
-  if (status === 'ACTIVE') return 'active';
-  if (status === 'IF_GUESTS_START' || status === 'TBC') return 'conditional';
-  if (status === 'STRICT_NO' || status === 'NO') return 'no';
-  return 'pending';
+  if (REQUESTED.has(status)) return 'positive';
+  if (REFUSED.has(status)) return 'negative';
+  return 'neutral';
 }
 
 function labelFor(status) {
@@ -84,7 +61,7 @@ function RuleChip({
   compact = false,
 }) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
-  const colors = TONES[toneFor(normalizedStatus)];
+  const tone = topBarControl(toneFor(normalizedStatus));
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
   // The full state stays available to assistive tech even when pocket hides
@@ -97,26 +74,26 @@ function RuleChip({
       role="note"
       aria-label={description}
       title={description}
-      className={`flex items-center gap-2 rounded-lg border ${compact ? 'px-2 py-1' : 'items-start px-2.5 py-1.5'} ${colors.chip}`}
+      className={`flex items-center gap-2 rounded-lg ${compact ? 'px-2 py-1' : 'items-start px-2.5 py-1.5'} ${tone}`}
     >
       <span aria-hidden="true" className={`shrink-0 leading-none ${compact ? 'text-base' : 'text-lg'} ${compact ? '' : 'mt-0.5'}`}>
         {icon}
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-ink">
+          <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
             {label}
           </span>
           {compact ? (
             <span
               aria-hidden="true"
-              className={`inline-block h-1.5 w-1.5 rounded-full ${colors.dot}`}
+              className="inline-block h-1.5 w-1.5 rounded-full bg-current"
             />
           ) : (
-            <span className={`flex items-center gap-1 font-mono text-[10px] font-bold ${colors.text}`}>
+            <span className="flex items-center gap-1 font-mono text-[10px] font-bold">
               <span
                 aria-hidden="true"
-                className={`inline-block h-1.5 w-1.5 rounded-full ${colors.dot}`}
+                className="inline-block h-1.5 w-1.5 rounded-full bg-current"
               />
               {statusLabel}
             </span>

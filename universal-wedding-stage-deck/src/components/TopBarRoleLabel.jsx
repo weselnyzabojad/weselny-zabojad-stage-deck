@@ -14,7 +14,7 @@ export default function TopBarRoleLabel({ role = 'mc', tier = null, className = 
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded border border-line-strong bg-raised px-2.5 py-1 font-heading text-xs font-semibold text-ink ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded border-2 border-black bg-white px-2.5 py-1 font-heading text-xs font-semibold text-black ${className}`}
     >
       <span aria-hidden="true" className="shrink-0 text-base leading-none">{icon}</span>
       <span>{label}</span>

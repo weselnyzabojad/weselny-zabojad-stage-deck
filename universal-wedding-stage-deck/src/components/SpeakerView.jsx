@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import logo from '../assets/img/logo.png';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -304,9 +304,7 @@ export default function SpeakerView({
       <TopBarShell
         left={(
           <>
-            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
-            </div>
+            <TopBarLogo />
             <TopBarClock clock={clock} />
             <TopBarRoleIdentity role="speaker" />
           </>

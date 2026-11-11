@@ -43,23 +43,23 @@ describe('issue #155 shared top-bar controls', () => {
     ).not.toContain('DJ Standard');
   });
 
-  it('shows only Sync text with the approved color mapping', () => {
+  it('shows only Sync text with the approved status dot mapping', () => {
     const connected = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connected' }),
     );
     expect(connected).toContain('>Sync<');
-    expect(connected).toContain('emerald');
+    expect(connected).toContain('bg-emerald-500');
     expect(connected).not.toContain('>Cloud synced<');
 
     const connecting = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connecting' }),
     );
-    expect(connecting).toContain('amber');
+    expect(connecting).toContain('bg-amber-500');
 
     const offline = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'offline' }),
     );
-    expect(offline).toContain('alert');
+    expect(offline).toContain('bg-red-600');
 
     const pending = renderToStaticMarkup(
       createElement(SyncStatusBadge, {
@@ -67,7 +67,7 @@ describe('issue #155 shared top-bar controls', () => {
         outbox: { attempts: 2, nextAttemptAt: null, lastError: null },
       }),
     );
-    expect(pending).toContain('amber');
+    expect(pending).toContain('bg-amber-500');
     expect(pending).toContain('Sync: Pending sync');
   });
 

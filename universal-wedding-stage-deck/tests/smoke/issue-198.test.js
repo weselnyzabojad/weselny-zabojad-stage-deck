@@ -16,20 +16,20 @@ describe('issue #198 Speeches status chip', () => {
     const html = render({ mode: 'OFF', speeches: [] });
     expect(html).toContain('Speeches');
     expect(html).toContain('OFF');
-    expect(html).toContain('bg-alert');
+    expect(html).toContain('bg-red-500');
   });
 
-  it('uses orange for LIGHT, green for COMPLEX and brand for a live speech', () => {
-    expect(render({ mode: 'LIGHT', speeches })).toContain('bg-amber');
-    expect(render({ mode: 'COMPLEX', speeches })).toContain('bg-emerald');
-    expect(render({ mode: 'COMPLEX', speeches, activeSpeechId: 'speech_a' })).toContain('bg-brand');
+  it('uses green for LIGHT, COMPLEX and a live speech', () => {
+    expect(render({ mode: 'LIGHT', speeches })).toContain('bg-emerald-400');
+    expect(render({ mode: 'COMPLEX', speeches })).toContain('bg-emerald-400');
+    expect(render({ mode: 'COMPLEX', speeches, activeSpeechId: 'speech_a' })).toContain('bg-emerald-400');
   });
 
   it('keeps the chip visible but hides visible status text in compact mode', () => {
     const html = render({ mode: 'LIGHT', speeches, compact: true });
     expect(html).toContain('Speeches');
     expect(html).not.toContain('>LIGHT<');
-    expect(html).toContain('bg-amber');
+    expect(html).toContain('bg-emerald-400');
   });
 
   it('renders in the MC pocket header only when speech data is supplied', () => {
