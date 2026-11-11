@@ -188,7 +188,7 @@ export default function TimelineFocusStack({
       data-viewport={compact ? 'compact' : 'wide'}
       className={`${rootClassName} ${className}`.trim()}
     >
-      <div className={`min-w-0 ${compact ? 'order-2' : 'order-2 lg:order-1'}`}>
+      <div className={`min-w-0 ${compact ? 'order-1' : 'order-2 lg:order-1'}`}>
         <FocusZone
           zone="history"
           label={copy.done}
@@ -213,7 +213,7 @@ export default function TimelineFocusStack({
 
       <div
         className={`min-w-0 ${
-          compact ? 'order-1' : 'order-1 md:col-span-2 lg:col-span-1 lg:order-2'
+          compact ? 'order-2' : 'order-1 md:col-span-2 lg:col-span-1 lg:order-2'
         }`}
       >
         <section aria-label={copy.current} data-focus-zone="current" className="flex flex-col gap-2">
