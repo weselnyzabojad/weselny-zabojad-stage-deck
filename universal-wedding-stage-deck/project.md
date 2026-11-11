@@ -4484,3 +4484,43 @@ or state-contract change.
 **Open questions.** None.
 
 **Tracking.** [#753](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/753).
+
+### 17.34 Label-only desktop top bar toggles (decision, 2026-11-11)
+
+Simplify the four desktop action toggles to their primary uppercase labels,
+removing the leading icon, status dot and secondary state text. Preserve the
+green/red tone surfaces, the fixed 2×2 grid and the full state in the accessible
+name/tooltip.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, cartridge
+or state-contract change.
+
+**View scope.**
+
+- In scope: desktop MC Master, DJ VIP and Photographer; dense `CulturalRulesBar`
+  chips and dense `SpeechesChip`.
+- Out of scope: pocket/phone header (already label-only), toggle logic/labels,
+  grid structure, co-branding and primary logos, admin, Song Request,
+  schema/parser and cartridge data.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#755](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/755) | Remove visible icons/status from the four desktop toggles; keep tone and accessible state | [#753](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/753) |
+
+**Task details.**
+
+1. **Label-only chips.** In dense desktop mode render only the primary label for
+   `STO LAT`, `GORZKO`, `OCZEPINY` and the localized speeches label. Remove the
+   icon, status dot and secondary status text from the visible markup.
+2. **State and accessibility.** Keep the existing tone classes so the container
+   stays green for ON/active and red for OFF/strict/complex. Keep the full state
+   in `aria-label`/`title`.
+3. **Layout and localization.** Preserve the fixed 2×2 order and grid. Keep the
+   speeches label localized (`PRZEMOWY`, `SPEECHES`, `DISCOURS`); do not force
+   the Polish string in every locale. Leave the pocket header untouched.
+
+**Open questions.** None.
+
+**Tracking.** [#755](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/755).
