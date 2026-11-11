@@ -3888,3 +3888,56 @@ schema, parser or field-map change.
 **Open questions.** None.
 
 **Tracking.** [#705](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/705).
+
+### 17.21 Desktop control-bar visual refinement (decision, 2026-11-11)
+
+Modernise the desktop top bar and the `SecondaryControlBar` so the stage deck
+reads as a polished, professional product instead of a set of utilitarian
+boxes. This is a visual-only change: toggle behaviour, data, role gating and
+the semantic green/red/orange states stay exactly as they are.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: every desktop/laptop role view — MC Master, DJ Standard, DJ VIP,
+  Photographer 1/2, Cameraman, Speaker and Venue Manager.
+- Out of scope: every pocket layout (the #705 header is unchanged), `/admin`,
+  join/pairing screens and the guest song-request page.
+
+**Visual contract.**
+
+The white-surface + black-frame palette introduced in #704 is superseded for
+the targeted bars. The new treatment applies in both the night and day themes
+through the existing theme tokens:
+
+- **Surfaces:** soft neutral/translucent fills, low-contrast borders,
+  `shadow-sm`/`shadow-md` elevation and consistent `rounded-xl`/`rounded-2xl`
+  corners. No heavy solid black bounding boxes.
+- **Typography:** clear hierarchy between control labels, secondary context
+  (date, languages) and live telemetry (clock, PIN, countdown). Keep the
+  existing Montserrat/Lora fonts; no new font dependency.
+- **Top bar left:** the logo sits in a clean surface without a heavy frame. The
+  clock gets a digital-instrument treatment with tabular numerals, monospace
+  weight and refined tracking.
+- **Top bar centre:** couple names keep subtle prominence, the ring stays a
+  refined decorative element, common-language tags become softly filled pills,
+  and the date becomes muted secondary text.
+- **Top bar right:** Sto Lat, Gorzko, Oczepiny and Speeches keep their semantic
+  surfaces and status dots but become modern pill indicators with crisp
+  typography and a subtle glow.
+- **Secondary bar:** the late/telemetry pill keeps its red/warning state with a
+  tinted surface, subtle border and accent indicator. PIN and Sync become
+  unified interactive controls with hover states and integrated icons.
+  Children expected remains a friendly red notification pill when active.
+  Open on phone becomes a modern button with an explicit mobile icon. The
+  language selector and theme toggle become one integrated segmented group
+  with a polished active state.
+- **Preserved invariants:** green = ON/active, red = OFF/strict-no/alert,
+  orange = pending/conditional; no toggle behaviour, data, tooltip/accessible
+  name or role visibility changes. Focus-visible rings and 44px touch/click
+  targets stay valid in both themes.
+
+**Open questions.** None.
+
+**Tracking.** [#707](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/707).
