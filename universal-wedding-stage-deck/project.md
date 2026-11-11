@@ -4114,3 +4114,56 @@ labels, buttons and behaviour stay exactly as they are.
 **Open questions.** None.
 
 **Tracking.** [#716](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/716).
+
+### 17.26 Pocket polish, PL copy, DJ dev cleanup and Venue/Admin boundaries (decision, 2026-11-11)
+
+A batch of independent UI, copy and ownership corrections: centre the pocket
+cultural chips, fix the Polish word for speeches, remove the temporary DJ dev
+simulator, move media leave editing from Venue Manager to the owner admin, and
+remove the Venue Manager hard-anchor tick from the UI. No Google Doc, schema,
+parser or field-map change.
+
+**View scope.**
+
+- In scope: pocket `RoleShell`/`CulturalRulesBar`, Polish i18n, DJ view and its
+  dev tooling, Venue Manager media milestones and hard-anchor ticks, owner admin
+  media-leave override.
+- Out of scope: desktop visual redesign, other role views, Google Doc mapping,
+  timeline/hard-anchor engine logic and unrelated admin features.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#717](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/717) | Pocket cultural chips centred | — |
+| [#718](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/718) | Polish “Przemowy” copy | — |
+| [#719](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/719) | DJ dev song-request simulator removed | — |
+| [#720](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/720) | Venue Manager media-leave editors removed | — |
+| [#721](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/721) | Admin live media-leave override publishing a cartridge revision | #720 |
+| [#722](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/722) | Venue Manager “Stały punkt” ticks removed (UI only) | — |
+
+**Task details.**
+
+1. **Pocket chips.** In compact `CulturalRulesBar`, centre the Sto Lat, Gorzko,
+   Oczepiny and Speeches row, including wrapped rows. Desktop stays
+   left-aligned. No style, label, colour or accessible-state change.
+2. **Polish copy.** Replace visible Polish “Mowy”/“mowy” speech references with
+   “Przemowy”/“przemowy” (chip, Speaker title, Speaker off state and Speaker
+   role blurb). EN/FR stay unchanged.
+3. **DJ dev simulator.** Remove the DEV Song request simulator rendering from
+   both DJ layouts and delete the dev component/capability. The real guest
+   request bar and queue stay.
+4. **Venue media leaves.** Remove Photographer/Cameraman leave editing from the
+   Venue Manager milestone UI, including the Add photo/Add camera actions.
+   Underlying milestone data is preserved; other milestone kinds stay editable.
+5. **Admin media leaves.** Add an owner-admin editor for the two media leave
+   times. Saving creates a new immutable cartridge revision through the existing
+   admin fresh-MFA/revision/audit path, and role views read the updated
+   cartridge. No separate live-override table, no Venue Manager edit path.
+6. **Hard-anchor tick.** Remove the “Stały punkt” checkbox from both Venue
+   Manager course and milestone cards. Values and hard-anchor engine behaviour
+   stay unchanged; this is a UI-only removal.
+
+**Open questions.** None.
+
+**Tracking.** [#717](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/717), [#718](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/718), [#719](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/719), [#720](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/720), [#721](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/721), [#722](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/722).
