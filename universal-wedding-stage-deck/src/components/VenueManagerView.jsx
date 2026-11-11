@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import logo from '../assets/img/logo.png';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -9,6 +8,7 @@ import LanguageToggle from './LanguageToggle';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
+import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
@@ -457,9 +457,7 @@ export default function VenueManagerView({
       <TopBarShell
         left={(
           <>
-            <div className="flex items-center justify-center rounded-lg bg-white px-2 py-1 shadow-md">
-              <img src={logo} alt="Weselny Żabojad" className="h-12 w-auto object-contain" />
-            </div>
+            <TopBarLogo />
             <TopBarClock clock={clock} />
             <TopBarRoleIdentity role="venue_manager" />
           </>

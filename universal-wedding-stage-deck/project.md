@@ -271,10 +271,10 @@ future shown around it.
     the same role's pocket view. It is available for MC, DJ VIP, Photographer and
     Speaker, but not for DJ Standard or pocket. The popup closes with an X button,
     backdrop click and Escape.
-11. **Sync button.** The sync badge displays only the text "Sync". Green means
-    connected, orange means pending or connecting, and red means disabled,
-    local-only, offline, disconnected or sync error. Detailed status remains in
-    the tooltip.
+11. **Sync button.** The sync badge displays only the text "Sync" on the shared
+    white/black top-bar surface. Its status dot is green when connected, orange
+    when pending or connecting, and red when disabled, local-only, offline,
+    disconnected or in error. Detailed status remains in the tooltip.
 
 ### Top bar rework (decision, 2026-11-06)
 
@@ -464,9 +464,7 @@ compact row. It is always visible, including when the wedding has no speeches or
 `speechMode: OFF`, with these colours:
 
 - `OFF` or no speeches — red;
-- `LIGHT` — orange;
-- `COMPLEX` — green;
-- active live speech — highlighted brand.
+- `LIGHT`, `COMPLEX` or an active live speech — green.
 
 The chip keeps count/active-speaker detail in its tooltip/accessible name. It is
 not added to DJ, Photographer or Speaker.
@@ -3823,3 +3821,26 @@ Four follow-ups were raised after the per-file delivery:
   using the French flag palette: blue `#0055A4`, white `#FFFFFF`, red
   `#EF4135`, while keeping contrast and role-view readability. Tracked by
   [#697](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/697).
+
+### 17.19 Top-bar colour contract (decision, 2026-11-11)
+
+The header band from the logo through the light/dark toggle uses one shared
+palette, defined once in `src/lib/topBarStyles.js` and consumed by every role:
+
+- **Default** — white surface, black frame, black text. This covers the logo
+  frame, role labels, PIN/sign-out, Sync, Open on phone, language and theme
+  controls, and undecided (TBC) cultural chips.
+- **Green (`positive`)** — a tradition or feature the clients want: Sto Lat,
+  Gorzko, Oczepiny and Speeches. Speeches are wanted when the cartridge carries
+  at least one speech or a `LIGHT`/`COMPLEX` mode.
+- **Red (`negative`)** — an explicitly refused tradition/feature (`STRICT_NO`,
+  `NO`, `OFF`) or no speeches.
+- **Children expected** — red when children are expected, green when they are
+  not.
+- **Timeline tracker** — red when late, green when on time (including ahead).
+  The green state also shows the countdown to the next step start, derived from
+  the drift report's `nextStepInSec` (the live step's remaining time, or the
+  first planned start before the event).
+
+The Sync chip keeps its documented status meaning through a coloured dot on the
+white/black surface. Card-level and below-timeline colours are unchanged.

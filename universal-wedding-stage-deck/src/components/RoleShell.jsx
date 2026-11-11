@@ -58,7 +58,7 @@ export default function RoleShell({
       <header className="bg-card border-b border-line px-3 py-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
-            <span className="rounded border border-line-strong bg-raised px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink">
+            <span className="rounded border-2 border-black bg-white px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-black">
               {t(`role.${role}.short`)}
             </span>
             {showChildrenExpected ? <ChildrenExpectedBadge wedding={wedding} compact /> : null}
@@ -75,7 +75,7 @@ export default function RoleShell({
             aria-expanded={detailsOpen}
             aria-controls={detailsId}
             onClick={() => setDetailsOpen((open) => !open)}
-            className="inline-flex min-h-11 items-center gap-1 rounded border border-line-strong bg-raised px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-ink"
+            className="inline-flex min-h-11 items-center gap-1 rounded border-2 border-black bg-white px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider text-black hover:bg-slate-100"
           >
             {t('pocket.details')}
             <span aria-hidden="true">{detailsOpen ? '▴' : '▾'}</span>

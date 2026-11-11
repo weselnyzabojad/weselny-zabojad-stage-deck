@@ -14,7 +14,7 @@ export default function LanguageToggle({ className = '' }) {
       role="radiogroup"
       aria-label={t('language.label')}
       title={t('language.switch')}
-      className={`inline-flex items-center overflow-hidden rounded border border-line bg-raised ${className}`}
+      className={`inline-flex items-center overflow-hidden rounded border-2 border-black bg-white text-black ${className}`}
     >
       {SUPPORTED_LOCALES.map((code, index) => {
         const active = code === locale;
@@ -28,11 +28,11 @@ export default function LanguageToggle({ className = '' }) {
             title={t(`language.${code}`)}
             onClick={() => setLocale(code)}
             className={`min-h-11 min-w-11 px-2 py-2 font-mono text-[10px] font-bold tracking-wide transition ${
-              index > 0 ? 'border-l border-line' : ''
+              index > 0 ? 'border-l border-black/40' : ''
             } ${
               active
-                ? 'bg-brand/40 text-ink'
-                : 'text-muted hover:bg-line hover:text-ink'
+                ? 'bg-black text-on-accent'
+                : 'text-black hover:bg-slate-100'
             }`}
           >
             {SHORT[code]}

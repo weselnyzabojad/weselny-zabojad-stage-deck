@@ -1,35 +1,14 @@
 import { useI18n } from '../i18n/useI18n';
+import { topBarControl } from '../lib/topBarStyles.js';
 
-const TONES = {
-  off: {
-    chip: 'border-alert/60 bg-alert/15',
-    text: 'text-alert-soft',
-    dot: 'bg-alert',
-  },
-  light: {
-    chip: 'border-amber-700/70 bg-amber-950/70',
-    text: 'text-amber-300',
-    dot: 'bg-amber-400',
-  },
-  complex: {
-    chip: 'border-emerald-700/70 bg-emerald-950/60',
-    text: 'text-emerald-300',
-    dot: 'bg-emerald-400',
-  },
-  live: {
-    chip: 'border-brand-strong bg-brand/30 ring-1 ring-brand-strong/50',
-    text: 'text-brand-tint',
-    dot: 'bg-brand-tint',
-  },
-};
-
+// Speeches are wanted as soon as the cartridge carries at least one speech or
+// enables a non-OFF mode. Otherwise the chip is refused (red).
 function resolveSpeechTone({ mode, speeches = [], activeSpeechId = null }) {
   const list = speeches ?? [];
-  if (list.length === 0) return 'off';
-  if (activeSpeechId && list.some((speech) => speech?.id === activeSpeechId)) return 'live';
-  if (mode === 'LIGHT') return 'light';
-  if (mode === 'COMPLEX') return 'complex';
-  return 'off';
+  if (list.length === 0) return 'negative';
+  if (activeSpeechId && list.some((speech) => speech?.id === activeSpeechId)) return 'positive';
+  if (mode === 'LIGHT' || mode === 'COMPLEX') return 'positive';
+  return 'negative';
 }
 
 // MC header indicator for speech readiness. The chip stays visible even when
@@ -43,12 +22,13 @@ export default function SpeechesChip({
 }) {
   const { t } = useI18n();
   const toneKey = resolveSpeechTone({ mode, speeches, activeSpeechId });
-  const tone = TONES[toneKey];
+  const tone = topBarControl(toneKey);
   const list = speeches ?? [];
   const activeSpeech = activeSpeechId
     ? list.find((speech) => speech?.id === activeSpeechId) ?? null
     : null;
-  const statusLabel = toneKey === 'live' ? t('speeches.live') : t(`speeches.mode.${mode}`);
+  const statusLabel =
+    activeSpeech && toneKey === 'positive' ? t('speeches.live') : t(`speeches.mode.${mode}`);
   const description = [
     `${t('speeches.chip')}: ${statusLabel}`,
     list.length > 0 ? `${list.length}` : t('speeches.none'),
@@ -62,26 +42,26 @@ export default function SpeechesChip({
       role="note"
       aria-label={description}
       title={description}
-      className={`flex items-center gap-2 rounded-lg border ${compact ? 'px-2 py-1' : 'px-2.5 py-1.5 items-start'} ${tone.chip} ${className}`}
+      className={`flex items-center gap-2 rounded-lg ${compact ? 'px-2 py-1' : 'px-2.5 py-1.5 items-start'} ${tone} ${className}`}
     >
       <span aria-hidden="true" className={`shrink-0 leading-none ${compact ? 'text-base' : 'text-lg'} ${compact ? '' : 'mt-0.5'}`}>
         🗣️
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[10px] font-bold uppercase tracking-widest text-ink">
+          <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
             {t('speeches.chip')}
           </span>
           {compact ? (
             <span
               aria-hidden="true"
-              className={`inline-block h-1.5 w-1.5 rounded-full ${tone.dot}`}
+              className="inline-block h-1.5 w-1.5 rounded-full bg-current"
             />
           ) : (
-            <span className={`flex items-center gap-1 font-mono text-[10px] font-bold ${tone.text}`}>
+            <span className="flex items-center gap-1 font-mono text-[10px] font-bold">
               <span
                 aria-hidden="true"
-                className={`inline-block h-1.5 w-1.5 rounded-full ${tone.dot}`}
+                className="inline-block h-1.5 w-1.5 rounded-full bg-current"
               />
               {statusLabel}
             </span>

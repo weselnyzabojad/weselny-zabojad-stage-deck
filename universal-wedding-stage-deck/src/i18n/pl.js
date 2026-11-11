@@ -68,6 +68,7 @@ const pl = {
   'drift.start': 'start {label}',
   'drift.projected': 'prognoza {label}',
   'drift.liveOver': 'na żywo +{minutes} min przekroczenia',
+  'drift.nextStepIn': 'następny krok za {time}',
 
   'status.localOnly': 'Tylko lokalnie',
   'status.connecting': 'Łączenie…',

@@ -68,6 +68,7 @@ const en = {
   'drift.start': 'start {label}',
   'drift.projected': 'projected {label}',
   'drift.liveOver': 'live +{minutes}m over',
+  'drift.nextStepIn': 'next step in {time}',
 
   'status.localOnly': 'Local only',
   'status.connecting': 'Connecting…',

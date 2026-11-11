@@ -1,35 +1,49 @@
+import { formatCountdown } from '../lib/eventTime.js';
+import { topBarControl } from '../lib/topBarStyles.js';
+
 const TONES = {
   late: {
-    chip: 'border-alert/60 bg-alert/20 text-alert-soft',
+    chip: topBarControl('negative'),
     icon: '▲',
   },
   early: {
-    chip: 'border-emerald-700 bg-emerald-950/60 text-emerald-300',
+    chip: topBarControl('positive'),
     icon: '▼',
   },
   ontime: {
-    chip: 'border-line-strong bg-raised text-ink',
+    chip: topBarControl('positive'),
     icon: '●',
   },
   unknown: {
-    chip: 'border-line-strong bg-raised text-muted',
+    chip: topBarControl('neutral'),
     icon: '·',
   },
 };
 
 // One canonical schedule-drift pill, shared by the MC header, DJ view and
-// Pocket Remote (P0.5). The tooltip explains the component values
+// Pocket Remote (P0.5). Red means late; green means on time and also carries
+// the countdown to the next step. The tooltip explains the component values
 // (start drift, projected drift, manual offset, live overrun) without showing a
 // second competing number.
 export default function DriftPill({ drift, size = 'md', compact = false, className = '' }) {
   const toneKey = drift?.canonicalDriftTone ?? drift?.tone ?? 'unknown';
   const rawLabel = drift?.canonicalDriftLabel ?? drift?.label ?? null;
   const lateMinutes = drift?.canonicalDriftMinutes;
+  const nextStepInSec = drift?.nextStepInSec;
+
   // Pocket keeps the tone and tooltip but drops the "LATE / DE RETARD" wording.
-  const label =
+  let label =
     compact && toneKey === 'late' && Number.isFinite(lateMinutes)
       ? `+${Math.abs(lateMinutes)} min`
       : rawLabel;
+
+  // The remaining time belongs to the on-time states only. A late step keeps
+  // the delay as its single headline value.
+  if (toneKey !== 'late' && Number.isFinite(nextStepInSec)) {
+    const countdown = formatCountdown(Math.max(0, nextStepInSec));
+    label = label ? `${label} · ${countdown}` : countdown;
+  }
+
   if (!label) return null;
 
   const tone = TONES[toneKey] ?? TONES.unknown;
@@ -41,7 +55,7 @@ export default function DriftPill({ drift, size = 'md', compact = false, classNa
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className={`inline-flex items-center gap-1.5 rounded border font-semibold ${sizing} ${tone.chip} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded border-2 font-semibold ${sizing} ${tone.chip} ${className}`}
     >
       <span aria-hidden="true" className="text-[9px] leading-none">
         {tone.icon}

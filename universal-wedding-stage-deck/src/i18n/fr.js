@@ -68,6 +68,7 @@ const fr = {
   'drift.start': 'départ {label}',
   'drift.projected': 'projection {label}',
   'drift.liveOver': 'en direct +{minutes} min de dépassement',
+  'drift.nextStepIn': 'prochaine étape dans {time}',
 
   'status.localOnly': 'Local uniquement',
   'status.connecting': 'Connexion…',

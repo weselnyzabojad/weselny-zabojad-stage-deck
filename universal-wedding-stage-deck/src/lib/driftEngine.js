@@ -11,7 +11,12 @@
 import { addMinutesToClock } from './liveStageState.js';
 import { t } from '../i18n/index.js';
 import { clockDeltaMinutes, clockToMinutes } from './clockMath.js';
-import { clockToEventDate, formatClockInZone, isIsoTimestamp } from './eventTime.js';
+import {
+  clockToEventDate,
+  formatClockInZone,
+  formatCountdown,
+  isIsoTimestamp,
+} from './eventTime.js';
 import { buildHardAnchorRadar } from './hardAnchorRadar.js';
 import { buildReelClock } from './reelClock.js';
 
@@ -176,6 +181,27 @@ export function buildTimeline(
   return entries;
 }
 
+// Seconds until the next step starts. While a step is live its projected end is
+// the next start; before the event it is the first planned start. This drives
+// the green "on time" header pill, so it must use the same clock and timezone as
+// the rest of the report.
+function computeNextStepInSec(entries, clock, { now, eventDateISO, timeZone }) {
+  if (clock?.active?.remainingSec != null) return clock.active.remainingSec;
+
+  const upcoming = entries.find((entry) => !entry.isDone && !entry.isActive);
+  if (!upcoming?.projectedStart) return null;
+
+  const at = clockToEventDate({
+    clock: upcoming.projectedStart,
+    eventDateISO,
+    timeZone,
+    after: now,
+  });
+  return at instanceof Date && Number.isFinite(at.getTime())
+    ? (at.getTime() - now.getTime()) / 1000
+    : null;
+}
+
 export function buildDriftReport(
   steps = [],
   liveState = {},
@@ -219,6 +245,11 @@ export function buildDriftReport(
     isComplete: eventComplete,
   });
   const liveOverrunMinutes = clock.active ? clock.active.overrunSec / 60 : 0;
+  const nextStepInSec = computeNextStepInSec(entries, clock, {
+    now,
+    eventDateISO,
+    timeZone,
+  });
 
   // P0.5: one canonical drift value for the header, radar, Pocket and DJ.
   // The displayed lateness is the newest actual-vs-planned sample plus any live
@@ -253,6 +284,7 @@ export function buildDriftReport(
     canonicalDriftLabel,
     canonicalDriftTone,
     canonicalDriftSource,
+    nextStepInSec,
     detail: [
       startDriftMinutes != null
         ? t('drift.start', { label: driftLabel(startDriftMinutes) })
@@ -264,6 +296,9 @@ export function buildDriftReport(
         ? liveOverrunMinutes > 0
           ? t('drift.liveOver', { minutes: Math.round(liveOverrunMinutes) })
           : `live ${Math.abs(Math.round(liveRemainingMinutes ?? 0))}m left`
+        : null,
+      nextStepInSec > 0
+        ? t('drift.nextStepIn', { time: formatCountdown(nextStepInSec) })
         : null,
     ]
       .filter(Boolean)
