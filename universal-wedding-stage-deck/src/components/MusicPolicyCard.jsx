@@ -86,6 +86,99 @@ function CleanChip({ cleanVersions, t }) {
   );
 }
 
+const PILL_TONES = {
+  main: 'border-brand-strong/40 bg-brand/10 text-brand-tint',
+  must: 'border-line bg-page/70 text-ink',
+  dont: 'border-alert/40 bg-alert/10 text-alert-tint',
+};
+
+function SongPill({ tone, title, children }) {
+  return (
+    <li
+      title={title}
+      className={`inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 rounded-full border px-2 py-0.5 text-[10px] ${PILL_TONES[tone]}`}
+    >
+      {children}
+    </li>
+  );
+}
+
+function MainSongPills({ items, t }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-1.5">
+      {items.map((item) => {
+        const label = item.title ?? item.artist ?? t('music.missing');
+        return (
+          <SongPill
+            key={item.id}
+            tone="main"
+            title={`${item.stepTitle}: ${item.missing ? t('music.missing') : label}`}
+          >
+            <span className="font-heading font-semibold uppercase tracking-wide text-brand-soft">
+              {item.stepTitle}
+            </span>
+            {item.missing ? (
+              <span className="font-semibold text-amber-200">
+                {t('music.mainSongMissing')}
+              </span>
+            ) : (
+              <span className="break-words">
+                <strong>{label}</strong>
+                {item.title && item.artist ? (
+                  <span className="text-muted"> — {item.artist}</span>
+                ) : null}
+              </span>
+            )}
+          </SongPill>
+        );
+      })}
+    </ul>
+  );
+}
+
+function MustPlayPills({ items, t }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-1.5">
+      {items.map((item) => (
+        <SongPill key={item.id} tone="must" title={item.track}>
+          <span className="break-words font-heading font-semibold text-ink">
+            {item.track}
+          </span>
+          {item.linked ? (
+            <span
+              title={t('music.keySong.tooltip')}
+              className="rounded-full border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] text-brand-tint"
+            >
+              {t('music.keySong.label')}
+            </span>
+          ) : null}
+          {item.conflict ? (
+            <span className="text-[9px] text-amber-200">{t('music.keySong.conflict')}</span>
+          ) : null}
+          {item.note ? <span className="break-words text-muted">{item.note}</span> : null}
+        </SongPill>
+      ))}
+    </ul>
+  );
+}
+
+function DoNotPlayPills({ items }) {
+  if (items.length === 0) return null;
+  return (
+    <ul className="flex flex-wrap gap-1.5">
+      {items.map((item) => (
+        <SongPill key={item.key} tone="dont" title={item.track}>
+          <span className="break-words font-heading font-semibold text-alert-tint">
+            {item.track}
+          </span>
+        </SongPill>
+      ))}
+    </ul>
+  );
+}
+
 // Music policy card for the DJ Booth (full) and MC / Pocket (compact).
 export default function MusicPolicyCard({ policy, compact = false }) {
   const { t } = useI18n();
@@ -121,26 +214,21 @@ export default function MusicPolicyCard({ policy, compact = false }) {
         </div>
 
         {mainSongs.length > 0 ? (
-          <p
-            className="mt-1.5 truncate text-[10px] text-muted"
-            title={mainSongs
-              .map((item) => `${item.stepTitle}: ${item.track ?? t('music.missing')}`)
-              .join(' · ')}
-          >
-            ⭐{' '}
-            {mainSongs
-              .map((item) => item.track ?? `${item.stepTitle} — ${t('music.missing')}`)
-              .join(' · ')}
-          </p>
+          <div className="mt-1.5">
+            <MainSongPills items={mainSongs} t={t} />
+          </div>
+        ) : null}
+
+        {mustPlay.length > 0 ? (
+          <div className="mt-1.5">
+            <MustPlayPills items={mustPlay} t={t} />
+          </div>
         ) : null}
 
         {doNotPlay.length > 0 ? (
-          <p
-            className="mt-1.5 truncate text-[10px] text-muted"
-            title={doNotPlay.map((item) => item.track).join(' · ')}
-          >
-            🚫 {doNotPlay.map((item) => item.track).join(' · ')}
-          </p>
+          <div className="mt-1.5">
+            <DoNotPlayPills items={doNotPlay} />
+          </div>
         ) : null}
       </section>
     );
@@ -182,30 +270,9 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
             ⭐ {t('music.mainSongs.title', { count: mainSongs.length })}
           </h3>
-          <ul className="mt-1.5 space-y-1.5">
-            {mainSongs.map((item) => (
-              <li
-                key={item.id}
-                className="rounded border border-brand-strong/40 bg-brand/10 p-2"
-              >
-                <div className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
-                  {item.stepTitle}
-                </div>
-                {item.missing ? (
-                  <p className="mt-0.5 text-[11px] font-semibold text-amber-200">
-                    {t('music.mainSongMissing')}
-                  </p>
-                ) : (
-                  <div className="mt-0.5 text-[11px] text-ink">
-                    <strong className="text-ink">{item.title ?? item.artist}</strong>
-                    {item.title && item.artist ? (
-                      <span className="text-muted"> — {item.artist}</span>
-                    ) : null}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-1.5">
+            <MainSongPills items={mainSongs} t={t} />
+          </div>
         </div>
       ) : null}
 
@@ -214,33 +281,9 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
             ✅ {t('music.mustPlay.title', { count: mustPlay.length })}
           </h3>
-          <ul className="mt-1.5 space-y-1.5">
-            {mustPlay.map((item) => (
-              <li key={item.id} className="rounded border border-line bg-page/70 p-2">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-heading text-xs font-semibold text-ink">
-                    {item.track}
-                  </span>
-                  {item.linked ? (
-                    <span
-                      title={t('music.keySong.tooltip')}
-                      className="rounded border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] text-brand-tint"
-                    >
-                      🎵 {t('music.keySong.label')}
-                    </span>
-                  ) : null}
-                </div>
-                {item.note ? (
-                  <p className="mt-0.5 text-[10px] text-muted">{item.note}</p>
-                ) : null}
-                {item.conflict ? (
-                  <p className="mt-0.5 text-[9px] text-amber-200">
-                    {t('music.keySong.conflict')}
-                  </p>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-1.5">
+            <MustPlayPills items={mustPlay} t={t} />
+          </div>
         </div>
       ) : null}
 
@@ -249,18 +292,9 @@ export default function MusicPolicyCard({ policy, compact = false }) {
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
             🚫 {t('music.doNotPlay.title', { count: doNotPlay.length })}
           </h3>
-          <ul className="mt-1.5 space-y-1.5">
-            {doNotPlay.map((item) => (
-              <li
-                key={item.key}
-                className="rounded border border-alert/40 bg-alert/10 p-2"
-              >
-                <div className="font-heading text-xs font-semibold text-alert-tint">
-                  {item.track}
-                </div>
-              </li>
-            ))}
-          </ul>
+          <div className="mt-1.5">
+            <DoNotPlayPills items={doNotPlay} />
+          </div>
         </div>
       ) : null}
 

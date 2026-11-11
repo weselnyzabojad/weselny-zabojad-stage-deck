@@ -285,25 +285,18 @@ export default function DjBoothView({
             currentBody={djCurrentBody}
           />
 
-          <div className="grid gap-4 lg:grid-cols-3">
-            {caps.musicPolicy ? (
-              <div className="space-y-4 lg:col-span-2">
-                <MusicPolicyCard policy={musicPolicy} />
-              </div>
-            ) : null}
-            <aside className={`space-y-4${caps.musicPolicy ? '' : ' lg:col-span-3'}`}>
-              <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
-                <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-                  {t('dj.setNotes')}
-                </h2>
-                <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
-                  <li>{t('dj.setNotes.project')}</li>
-                  <li>{t('dj.setNotes.cutoffs')}</li>
-                  <li>{t('dj.setNotes.private')}</li>
-                </ul>
-              </section>
-            </aside>
-          </div>
+          <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
+            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+              {t('dj.setNotes')}
+            </h2>
+            <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
+              <li>{t('dj.setNotes.project')}</li>
+              <li>{t('dj.setNotes.cutoffs')}</li>
+              <li>{t('dj.setNotes.private')}</li>
+            </ul>
+          </section>
+
+          {caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}
         </div>
       </main>
 
