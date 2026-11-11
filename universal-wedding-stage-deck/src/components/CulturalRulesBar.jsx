@@ -129,7 +129,7 @@ export default function CulturalRulesBar({
       aria-label="Cultural hard rules"
       className={
         compact
-          ? 'flex flex-wrap items-center gap-1.5'
+          ? 'flex flex-wrap items-center justify-center gap-1.5'
           : 'flex flex-wrap items-center gap-2'
       }
     >
