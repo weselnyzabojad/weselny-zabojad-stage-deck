@@ -29,29 +29,19 @@ describe('issue #523 Speaker children indicator removal', () => {
     }
   });
 
-  it('keeps the compact RoleShell badge for other roles', () => {
-    const shown = renderToStaticMarkup(
-      createElement(RoleShell, {
-        compact: true,
-        role: 'mc',
-        wedding: { childrenExpected: true },
-        theme: 'night',
-        onToggleTheme: () => {},
-      }),
-    );
-    expect(shown).toContain('aria-label="Children expected"');
-
-    const hidden = renderToStaticMarkup(
-      createElement(RoleShell, {
-        compact: true,
-        role: 'speaker',
-        wedding: { childrenExpected: true },
-        theme: 'night',
-        onToggleTheme: () => {},
-        showChildrenExpected: false,
-      }),
-    );
-    expect(hidden).not.toContain('Children expected');
-    expect(hidden).not.toContain('Children not expected');
+  it('keeps the children indicator out of the pocket shell for every role', () => {
+    for (const role of ['mc', 'speaker']) {
+      const html = renderToStaticMarkup(
+        createElement(RoleShell, {
+          compact: true,
+          role,
+          wedding: { childrenExpected: true },
+          theme: 'night',
+          onToggleTheme: () => {},
+        }),
+      );
+      expect(html, role).not.toContain('Children expected');
+      expect(html, role).not.toContain('Children not expected');
+    }
   });
 });

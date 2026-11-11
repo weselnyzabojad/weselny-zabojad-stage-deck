@@ -7,6 +7,7 @@
 const PALETTE = {
   neutral: 'border-black bg-white text-black',
   positive: 'border-black bg-emerald-400 text-black',
+  warning: 'border-black bg-amber-400 text-black',
   negative: 'border-black bg-red-500 text-black',
 };
 

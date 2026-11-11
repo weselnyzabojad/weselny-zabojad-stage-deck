@@ -288,7 +288,6 @@ export default function SpeakerView({
         outbox={outbox}
         onToggleTheme={onToggleTheme}
         theme={theme}
-        showChildrenExpected={false}
       >
         <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl">
           <SkipLink />

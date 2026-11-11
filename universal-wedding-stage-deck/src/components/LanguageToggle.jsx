@@ -6,8 +6,30 @@ const SHORT = { en: 'EN', fr: 'FR', pl: 'PL' };
 // Device-only UI language switch (issue #78). It is intentionally separate from
 // the couple's shared-language chips in CoupleIdentity: those describe the
 // cartridge content, while this changes only this device's interface.
-export default function LanguageToggle({ className = '' }) {
+export default function LanguageToggle({ className = '', variant = 'segmented' }) {
   const { locale, setLocale, t } = useI18n();
+
+  // Pocket header: one cell that visibly cycles through the supported locales.
+  // The desktop segmented control below stays unchanged.
+  if (variant === 'cycle') {
+    const currentIndex = SUPPORTED_LOCALES.indexOf(locale);
+    const next = SUPPORTED_LOCALES[(currentIndex + 1) % SUPPORTED_LOCALES.length];
+    const action = `${t('language.switch')} → ${t(`language.${next}`)}`;
+
+    return (
+      <button
+        type="button"
+        onClick={() => setLocale(next)}
+        aria-label={action}
+        title={action}
+        className={`inline-flex min-h-11 min-w-11 items-center gap-1 rounded border-2 border-black bg-white px-2.5 py-1 font-mono text-[10px] font-bold tracking-wide text-black transition hover:bg-slate-100 ${className}`}
+      >
+        <span aria-hidden="true" className="text-sm leading-none">🌐</span>
+        <span>{SHORT[locale]}</span>
+        <span aria-hidden="true" className="text-[9px] leading-none">▾</span>
+      </button>
+    );
+  }
 
   return (
     <div

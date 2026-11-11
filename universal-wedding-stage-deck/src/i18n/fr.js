@@ -48,7 +48,6 @@ const fr = {
   'common.wedding': 'Mariage',
   'common.retry': 'Réessayer',
   'common.unknown': 'Inconnu',
-  'pocket.details': 'Détails',
   'modal.close': 'Fermer la fenêtre',
   'toast.actionApplied': 'Action appliquée',
   'toast.undo': 'Annuler',

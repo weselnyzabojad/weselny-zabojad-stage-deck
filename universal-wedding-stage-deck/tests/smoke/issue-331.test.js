@@ -28,15 +28,18 @@ const html = renderToStaticMarkup(
 );
 
 describe('issue #331 shared compact mobile top bar', () => {
-  it('keeps the phone header to role, utilities and a details disclosure', () => {
+  it('keeps the phone header to role, utilities and always-visible content', () => {
     expect(html).toContain('DJ');
-    expect(html).toContain('aria-label="Language"');
-    expect(html).toContain('aria-expanded="false"');
-    expect(html).toContain('Details');
-    // Logo, clock and PIN moved out of the always-visible compact header.
+    expect(html).toContain('aria-label="Change interface language');
+    expect(html).not.toContain('aria-expanded');
+    expect(html).not.toContain('Details');
+    // Logo, clock and PIN stay out of the compact header.
     expect(html).not.toContain('Weselny');
     expect(html).not.toContain('21:45');
     expect(html).not.toContain('PIN 2048');
+    // The former disclosure content is visible without an extra tap.
+    expect(html).toContain('Sto Lat');
+    expect(html).toContain('Speeches');
   });
 
   it('does not duplicate utility controls in the bottom nav', () => {

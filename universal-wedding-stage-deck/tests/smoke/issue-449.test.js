@@ -35,12 +35,13 @@ describe('issue #449 simplified pocket header', () => {
     expect(html).not.toContain('>Children expected<');
   });
 
-  it('keeps the compact shell free of logo, clock and PIN', () => {
+  it('keeps the compact shell free of logo, clock, PIN and the Sync control', () => {
     const shell = read('src/components/RoleShell.jsx');
     expect(shell).not.toContain('assets/img/logo');
     expect(shell).not.toContain('<TopBarClock');
     expect(shell).not.toContain('PIN {pin}');
-    expect(shell).toContain('<SyncStatusBadge');
+    expect(shell).not.toContain('<SyncStatusBadge');
+    expect(shell).toContain('resolveSyncState');
     expect(shell).toContain('compact');
   });
 });
