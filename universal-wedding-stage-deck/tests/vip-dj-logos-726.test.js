@@ -28,6 +28,7 @@ describe('issue #726 VIP DJ logos', () => {
     );
     expect(mark).toContain('alt="DJ Mark"');
     expect(mark).toContain('title="DJ Mark"');
+    expect(mark).toContain('logo_mark');
 
     const szymoniak = renderToStaticMarkup(
       createElement(VipDjLogo, {
@@ -36,6 +37,7 @@ describe('issue #726 VIP DJ logos', () => {
       }),
     );
     expect(szymoniak).toContain('alt="DJ Szymoniak"');
+    expect(szymoniak).toContain('logo_szymoniak');
   });
 
   it('renders no logo for Standard, pocket or unknown identities', () => {
@@ -57,12 +59,15 @@ describe('issue #726 VIP DJ logos', () => {
     ).toBe('');
   });
 
-  it('ships the PNG assets and a safe glob fallback', () => {
+  it('ships the PNG assets and imports them explicitly with a silent failure fallback', () => {
     expect(exists('src/assets/img/dj-vip/logo_mark.png')).toBe(true);
     expect(exists('src/assets/img/dj-vip/logo_szymoniak.png')).toBe(true);
     const logo = read('src/components/VipDjLogo.jsx');
-    expect(logo).toContain('import.meta.glob');
-    expect(logo).toContain('logo_mark.png');
-    expect(logo).toContain('logo_szymoniak.png');
+    expect(logo).not.toContain('import.meta.glob');
+    expect(logo).toContain("import logoMark from '../assets/img/dj-vip/logo_mark.png'");
+    expect(logo).toContain(
+      "import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png'",
+    );
+    expect(logo).toContain('onError={() => setFailedSrc(src)}');
   });
 });
