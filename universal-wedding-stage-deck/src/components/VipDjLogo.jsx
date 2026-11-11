@@ -22,12 +22,12 @@ export default function VipDjLogo({ wedding, vip = false, className = '' }) {
   if (!src || !dj) return null;
 
   return (
-    <BrandFrame className={`shrink-0 ${className}`}>
+    <BrandFrame large className={`shrink-0 ${className}`}>
       <img
         src={src}
         alt={dj.displayName}
         title={dj.displayName}
-        className="h-11 w-auto max-w-[150px] object-contain"
+        className="h-16 w-auto max-w-[220px] object-contain"
       />
     </BrandFrame>
   );

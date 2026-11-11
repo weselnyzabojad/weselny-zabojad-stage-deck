@@ -44,7 +44,7 @@ describe('issue #749 unified header branding containers', () => {
       expect(html).toContain('border-white/50');
       expect(html).toContain('bg-white/90');
       expect(html).toContain('shadow-sm');
-      expect(html).toContain('h-16');
+      expect(html).toContain('h-20');
     }
     expect(primary).toContain('h-16');
     expect(primary).toContain('rounded-2xl');

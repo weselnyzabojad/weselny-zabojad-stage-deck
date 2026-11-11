@@ -16,8 +16,10 @@ describe('issue #215 DJ top bar rework', () => {
   });
 
   it('adds cultural, Speeches and auth controls only for VIP', () => {
-    expect(dj).toContain('{caps.culturalChips && culturalRules ? (');
-    expect(dj).toContain('<CulturalRulesBar rules={culturalRules}');
+    expect(dj).toContain('{(caps.culturalChips && culturalRules) || caps.speeches ? (');
+    expect(dj).toContain('showRules={Boolean(caps.culturalChips && culturalRules)}');
+    expect(dj).toContain('grid');
+    expect(dj).toContain('dense');
     expect(dj).toContain('{caps.guestRequests ? (');
     expect(dj).toContain('<SpeechesChip');
     expect(dj).toContain('{caps.vipAuth && authControl ? authControl : null}');

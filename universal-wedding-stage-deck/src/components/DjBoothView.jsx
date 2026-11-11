@@ -219,16 +219,20 @@ export default function DjBoothView({
         center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={caps.coupleLanguages} />}
         right={(
           <>
-            {caps.culturalChips && culturalRules ? (
-              <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
-            ) : null}
-            {caps.speeches ? (
-              <SpeechesChip
-                mode={speechMode}
-                speeches={speeches}
-              />
-            ) : null}
             {viewSwitch}
+            {(caps.culturalChips && culturalRules) || caps.speeches ? (
+              <CulturalRulesBar
+                rules={culturalRules ?? {}}
+                oczepinyStatus={oczepinyStatus}
+                showRules={Boolean(caps.culturalChips && culturalRules)}
+                grid
+                dense
+              >
+                {caps.speeches ? (
+                  <SpeechesChip mode={speechMode} speeches={speeches} dense />
+                ) : null}
+              </CulturalRulesBar>
+            ) : null}
           </>
         )}
         brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}

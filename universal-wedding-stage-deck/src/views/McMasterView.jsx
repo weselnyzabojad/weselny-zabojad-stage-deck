@@ -495,8 +495,11 @@ export default function McMasterView({ model }) {
             <CulturalRulesBar
               rules={WEDDING.culturalRules}
               oczepinyStatus={oczepinyStatus}
-            />
-            <SpeechesChip mode={speechMode} speeches={speeches} />
+              grid
+              dense
+            >
+              <SpeechesChip mode={speechMode} speeches={speeches} dense />
+            </CulturalRulesBar>
             {viewSwitch}
           </>
         )}

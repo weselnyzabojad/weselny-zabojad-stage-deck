@@ -59,6 +59,7 @@ function RuleChip({
   statusLabels = {},
   note = null,
   compact = false,
+  dense = false,
 }) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
   const toneKey = toneFor(normalizedStatus);
@@ -91,20 +92,37 @@ function RuleChip({
       role="note"
       aria-label={description}
       title={description}
-      className={`flex items-center gap-2 rounded-2xl px-3 py-1.5 ${tone}`}
+      className={`flex min-w-0 flex-wrap items-center ${
+        dense
+          ? 'gap-x-1.5 gap-y-0.5 rounded-xl px-2 py-1'
+          : 'gap-2 rounded-2xl px-3 py-1.5'
+      } ${tone}`}
     >
-      <span aria-hidden="true" className="mt-0.5 shrink-0 text-lg leading-none">
+      <span
+        aria-hidden="true"
+        className={`shrink-0 leading-none ${dense ? 'text-sm' : 'mt-0.5 text-lg'}`}
+      >
         {icon}
       </span>
       <div className="min-w-0">
-        <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span
+            className={`font-heading font-semibold uppercase ${
+              dense ? 'text-[10px] tracking-[0.12em]' : 'text-[11px] tracking-[0.18em]'
+            }`}
+          >
             {label}
           </span>
-          <span className="flex items-center gap-1 font-mono text-[10px] font-semibold">
+          <span
+            className={`flex items-center gap-1 font-mono font-semibold ${
+              dense ? 'text-[9px]' : 'text-[10px]'
+            }`}
+          >
             <span
               aria-hidden="true"
-              className="inline-block h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]"
+              className={`inline-block rounded-full bg-current shadow-[0_0_8px_currentColor] ${
+                dense ? 'h-1 w-1' : 'h-1.5 w-1.5'
+              }`}
             />
             {statusLabel}
           </span>
@@ -119,6 +137,8 @@ export default function CulturalRulesBar({
   rules = {},
   oczepinyStatus = null,
   compact = false,
+  dense = false,
+  grid = false,
   children = null,
   showRules = true,
 }) {
@@ -130,7 +150,9 @@ export default function CulturalRulesBar({
       className={
         compact
           ? 'flex flex-wrap items-center justify-center gap-1.5'
-          : 'flex flex-wrap items-center gap-2'
+          : grid
+            ? 'grid max-w-full grid-cols-2 gap-1.5'
+            : 'flex flex-wrap items-center gap-2'
       }
     >
       {showRules
@@ -146,6 +168,7 @@ export default function CulturalRulesBar({
                 statusLabels={statusLabels}
                 note={rule.note}
                 compact={compact}
+                dense={dense}
               />
             );
           })
@@ -158,6 +181,7 @@ export default function CulturalRulesBar({
           status={oczepinyState}
           statusLabels={OCZEPINY.statusLabels}
           compact={compact}
+          dense={dense}
           note={
             oczepinyState === 'ACTIVE'
               ? 'Midnight tradition is live.'

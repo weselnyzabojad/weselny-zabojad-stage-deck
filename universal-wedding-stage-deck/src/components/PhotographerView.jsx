@@ -421,13 +421,15 @@ export default function PhotographerView({
         center={<TopBarCenterIdentity wedding={wedding} />}
         right={(
           <>
-            {culturalRules ? (
-              <CulturalRulesBar rules={culturalRules} oczepinyStatus={oczepinyStatus} />
-            ) : null}
-            <SpeechesChip
-              mode={speechMode}
-              speeches={speeches}
-            />
+            <CulturalRulesBar
+              rules={culturalRules ?? {}}
+              oczepinyStatus={oczepinyStatus}
+              showRules={Boolean(culturalRules)}
+              grid
+              dense
+            >
+              <SpeechesChip mode={speechMode} speeches={speeches} dense />
+            </CulturalRulesBar>
           </>
         )}
       />
