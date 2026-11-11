@@ -13,6 +13,7 @@ const LABELS = {
   video: 'Camera',
   venue_manager: 'Venue',
   speaker: 'Speaker',
+  song_request: 'Song request',
 };
 
 export default function DevViewSwitcher({

@@ -40,7 +40,7 @@ function StatusCard({ tone, title, body, song, artist, children }) {
   );
 }
 
-export default function SongRequestApp({ roomCode }) {
+export default function SongRequestApp({ roomCode, preview = false }) {
   const config = useMemo(() => getSyncConfig(), []);
   const { t } = useI18n();
   const code = normalizeRoomCode(roomCode);
@@ -132,7 +132,7 @@ export default function SongRequestApp({ roomCode }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (sending || connection !== 'online') return;
+    if (preview || sending || connection !== 'online') return;
 
     const input = normalizeSongRequestInput({ song, artist });
     if (!input.ok) {
@@ -298,6 +298,11 @@ export default function SongRequestApp({ roomCode }) {
 
         {showForm ? (
           <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
+            {preview ? (
+              <p className="rounded-lg border border-amber-700/60 bg-amber-950/40 px-3 py-2 text-xs text-amber-200">
+                {t('songRequest.previewOnly')}
+              </p>
+            ) : null}
             <label className="block">
               <span className="font-heading text-xs font-semibold uppercase tracking-widest text-muted">
                 {t('songRequest.artist')}
@@ -338,7 +343,7 @@ export default function SongRequestApp({ roomCode }) {
 
             <button
               type="submit"
-              disabled={sending || offline}
+              disabled={preview || sending || offline}
               className="w-full rounded-lg border border-brand-strong bg-brand px-4 py-2.5 text-sm font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
               {sending ? t('songRequest.sending') : t('songRequest.send')}

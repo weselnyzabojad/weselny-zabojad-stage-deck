@@ -655,6 +655,7 @@ const en = {
   'songRequest.offlineBody': 'Song requests need an internet connection. Sending is disabled until the connection returns.',
   'songRequest.retry': 'Retry',
   'songRequest.privacy': 'Only the song and artist are sent. The queue and event details stay private.',
+  'songRequest.previewOnly': 'Preview only — submissions are disabled.',
   'speaker.nowSpeaking': 'Now speaking',
   'speaker.scriptMissingTitle': 'Script not provided yet',
   'speaker.scriptMissingBody': 'Check with the MC; the text can still be added to the cartridge.',

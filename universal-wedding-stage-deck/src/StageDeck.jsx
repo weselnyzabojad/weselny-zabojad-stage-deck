@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import DevViewSwitcher from './components/DevViewSwitcher';
 import ViewSwitchControl from './components/ViewSwitchControl';
@@ -24,6 +24,12 @@ import {
   resolveBaseRole,
   resolveViewRole,
 } from './lib/viewRoles';
+
+// Development-only guest preview; the production build replaces the gate with
+// false and drops the chunk.
+const DevSongRequestPreview = import.meta.env.DEV
+  ? lazy(() => import('./components/SongRequestApp'))
+  : null;
 import { buildDriftReport } from './lib/driftEngine';
 import { resolveCakeProtocol } from './lib/cake';
 import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
@@ -453,6 +459,27 @@ export default function StageDeck({
       />
     </>
   );
+
+  if (import.meta.env.DEV && currentRole === 'song_request') {
+    return (
+      <>
+        <AppErrorBoundary
+          scope="song_request"
+          weddingId={WEDDING.weddingId}
+          role={currentRole}
+          resetKey={currentRole}
+        >
+          <Suspense fallback={null}>
+            <DevSongRequestPreview
+              roomCode={deckIntent.roomCode ?? 'DEV000'}
+              preview
+            />
+          </Suspense>
+        </AppErrorBoundary>
+        {devViewSwitcher}
+      </>
+    );
+  }
 
   if (currentRole === "dj" || currentRole === "dj_standard") {
     return (

@@ -657,6 +657,7 @@ const pl = {
   'songRequest.offlineBody': 'Prośby o piosenki wymagają połączenia z internetem. Wysyłanie jest wyłączone do czasu powrotu połączenia.',
   'songRequest.retry': 'Ponów',
   'songRequest.privacy': 'Wysyłane są tylko piosenka i wykonawca. Kolejka i szczegóły wydarzenia pozostają prywatne.',
+  'songRequest.previewOnly': 'Tylko podgląd — wysyłanie jest wyłączone.',
   'speaker.nowSpeaking': 'Teraz mówi',
   'speaker.scriptMissingTitle': 'Skrypt nie został jeszcze dostarczony',
   'speaker.scriptMissingBody': 'Sprawdź z MC; tekst można jeszcze dodać do cartridge’u.',
