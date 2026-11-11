@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import ChildrenExpectedBadge from '../src/components/ChildrenExpectedBadge.jsx';
 import CulturalRulesBar from '../src/components/CulturalRulesBar.jsx';
-import DesktopUtilityGroup from '../src/components/DesktopUtilityGroup.jsx';
+import UtilityControlGroup from '../src/components/UtilityControlGroup.jsx';
 import DriftPill from '../src/components/DriftPill.jsx';
 import LanguageToggle from '../src/components/LanguageToggle.jsx';
 import OpenOnPhoneButton from '../src/components/OpenOnPhoneButton.jsx';
@@ -73,7 +73,7 @@ describe('issue #707 desktop control-bar refinement', () => {
     expect(html).toContain('tracking-wide text-muted');
   });
 
-  it('keeps the pocket identity unchanged', () => {
+  it('applies the refined identity to the pocket without a date', () => {
     const html = render(
       createElement(TopBarCenterIdentity, {
         wedding,
@@ -81,9 +81,11 @@ describe('issue #707 desktop control-bar refinement', () => {
         showDate: false,
       }),
     );
-    expect(html).toContain('text-2xl');
-    expect(html).toContain('border-brand-strong/40 bg-brand/10');
-    expect(html).not.toContain('bg-raised/55');
+    expect(html).toContain('text-xl');
+    expect(html).toContain('rounded-full bg-raised/50 p-1');
+    expect(html).toContain('bg-raised/55');
+    expect(html).toContain('text-base font-semibold tracking-wide text-ink');
+    expect(html).not.toContain('2026');
   });
 
   it('modernises the semantic chips with theme-aware tones', () => {
@@ -107,8 +109,8 @@ describe('issue #707 desktop control-bar refinement', () => {
       }),
     );
     expect(pocket).toContain('rounded-full');
-    expect(pocket).toContain('bg-emerald-400');
-    expect(pocket).toContain('bg-red-500');
+    expect(pocket).toContain('bg-tone-positive-bg');
+    expect(pocket).toContain('bg-tone-negative-bg');
   });
 
   it('keeps speeches, children and drift semantic states intact', () => {
@@ -166,7 +168,7 @@ describe('issue #707 desktop control-bar refinement', () => {
   it('integrates language and theme into one segmented desktop group', () => {
     const group = render(
       createElement(
-        DesktopUtilityGroup,
+        UtilityControlGroup,
         null,
         createElement(LanguageToggle, { variant: 'desktop' }),
         createElement(ThemeToggle, { theme: 'night', variant: 'desktop' }),
@@ -182,10 +184,12 @@ describe('issue #707 desktop control-bar refinement', () => {
     expect(group).not.toContain('border-2 border-black');
   });
 
-  it('keeps the pocket and join controls on their existing palette', () => {
+  it('keeps join controls on their existing palette while the pocket uses the soft group', () => {
     const pocketLanguage = render(createElement(LanguageToggle, { variant: 'cycle' }));
-    expect(pocketLanguage).toContain('border-2 border-black bg-white');
+    expect(pocketLanguage).toContain('rounded-xl');
+    expect(pocketLanguage).toContain('text-ink');
     expect(pocketLanguage).toContain('▾');
+    expect(pocketLanguage).not.toContain('border-2 border-black');
 
     const defaultLanguage = render(createElement(LanguageToggle));
     expect(defaultLanguage).toContain('border-2 border-black bg-white');
@@ -195,7 +199,7 @@ describe('issue #707 desktop control-bar refinement', () => {
 
     const roleShell = read('src/components/RoleShell.jsx');
     expect(roleShell).toContain('variant="cycle"');
-    expect(roleShell).not.toContain('DesktopUtilityGroup');
+    expect(roleShell).toContain('<UtilityControlGroup');
   });
 
   it('wires the integrated group into every desktop role view', () => {
@@ -207,7 +211,7 @@ describe('issue #707 desktop control-bar refinement', () => {
       'src/components/VenueManagerView.jsx',
     ]) {
       const source = read(file);
-      expect(source, file).toContain('<DesktopUtilityGroup');
+      expect(source, file).toContain('<UtilityControlGroup');
       expect(source, file).toContain('<LanguageToggle variant="desktop"');
       expect(source, file).toContain('variant="desktop"');
     }

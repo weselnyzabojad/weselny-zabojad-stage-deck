@@ -58,20 +58,20 @@ describe('issue #705 pocket top-bar rework', () => {
   it('moves the sync tone onto the role badge', () => {
     const connected = renderShell({ syncStatus: 'connected' });
     expect(connected).toContain('aria-label="MC. Sync: Cloud synced"');
-    expect(connected).toContain('bg-emerald-400');
+    expect(connected).toContain('bg-tone-positive-bg');
     expect(connected).toContain('>MC</span>');
 
     const connecting = renderShell({ syncStatus: 'connecting' });
-    expect(connecting).toContain('bg-amber-400');
+    expect(connecting).toContain('bg-tone-warning-bg');
 
     const pending = renderShell({
       syncStatus: 'connected',
       outbox: { attempts: 1, nextAttemptAt: null, lastError: null },
     });
-    expect(pending).toContain('bg-amber-400');
+    expect(pending).toContain('bg-tone-warning-bg');
 
     const offline = renderShell({ syncStatus: 'offline' });
-    expect(offline).toContain('bg-red-500');
+    expect(offline).toContain('bg-tone-negative-bg');
     expect(offline).toContain('aria-label="MC. Sync: Offline"');
   });
 
@@ -139,8 +139,8 @@ describe('issue #705 pocket top-bar rework', () => {
     expect(cultural).not.toContain('>YES<');
     expect(cultural).not.toContain('>STRICT NO<');
     expect(cultural).not.toContain('bg-current');
-    expect(cultural).toContain('bg-emerald-400');
-    expect(cultural).toContain('bg-red-500');
+    expect(cultural).toContain('bg-tone-positive-bg');
+    expect(cultural).toContain('bg-tone-negative-bg');
 
     const speeches = render(
       createElement(SpeechesChip, {

@@ -1,5 +1,5 @@
 import { useI18n } from '../i18n/useI18n';
-import { desktopTone, topBarControl } from '../lib/topBarStyles.js';
+import { desktopTone } from '../lib/topBarStyles.js';
 
 // Speeches are wanted as soon as the cartridge carries at least one speech or
 // enables a non-OFF mode. Otherwise the chip is refused (red).
@@ -22,7 +22,7 @@ export default function SpeechesChip({
 }) {
   const { t } = useI18n();
   const toneKey = resolveSpeechTone({ mode, speeches, activeSpeechId });
-  const tone = compact ? topBarControl(toneKey) : desktopTone(toneKey);
+  const tone = desktopTone(toneKey);
   const list = speeches ?? [];
   const activeSpeech = activeSpeechId
     ? list.find((speech) => speech?.id === activeSpeechId) ?? null
@@ -45,11 +45,9 @@ export default function SpeechesChip({
         role="note"
         aria-label={description}
         title={description}
-        className={`inline-flex items-center rounded-full px-2.5 py-1 ${tone} ${className}`}
+        className={`inline-flex items-center rounded-full px-2.5 py-1.5 font-heading text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm backdrop-blur-sm ${tone} ${className}`}
       >
-        <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
-          {t('speeches.chip')}
-        </span>
+        <span>{t('speeches.chip')}</span>
       </div>
     );
   }

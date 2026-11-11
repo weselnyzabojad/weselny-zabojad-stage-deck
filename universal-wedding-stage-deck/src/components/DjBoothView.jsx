@@ -20,7 +20,7 @@ import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
-import DesktopUtilityGroup from './DesktopUtilityGroup';
+import UtilityControlGroup from './UtilityControlGroup';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
@@ -259,10 +259,10 @@ export default function DjBoothView({
         right={(
           <>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-            <DesktopUtilityGroup>
+            <UtilityControlGroup>
               <LanguageToggle variant="desktop" />
               <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </DesktopUtilityGroup>
+            </UtilityControlGroup>
           </>
         )}
       />

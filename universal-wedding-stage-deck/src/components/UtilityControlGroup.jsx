@@ -1,6 +1,6 @@
-// Desktop utility cluster: the language selector and theme toggle share one
-// soft segmented surface. Pocket and join screens keep their own controls.
-export default function DesktopUtilityGroup({ children, className = '' }) {
+// Shared utility cluster for integrated language + theme controls. It provides
+// the soft #707 segmented surface on desktop and in the pocket header.
+export default function UtilityControlGroup({ children, className = '' }) {
   return (
     <div
       className={`inline-flex items-center gap-1 rounded-2xl border border-panel-border bg-panel/70 p-1 shadow-sm backdrop-blur-md [&>*+*]:ml-1 [&>*+*]:border-l [&>*+*]:border-line/60 [&>*+*]:pl-1 ${className}`}

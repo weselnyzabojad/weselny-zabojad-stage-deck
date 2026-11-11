@@ -3,7 +3,7 @@ import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
-import DesktopUtilityGroup from './DesktopUtilityGroup';
+import UtilityControlGroup from './UtilityControlGroup';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
@@ -474,10 +474,10 @@ export default function VenueManagerView({
         )}
         right={(
           <>
-            <DesktopUtilityGroup>
+            <UtilityControlGroup>
               <LanguageToggle variant="desktop" />
               <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </DesktopUtilityGroup>
+            </UtilityControlGroup>
           </>
         )}
       />

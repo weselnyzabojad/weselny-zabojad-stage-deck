@@ -76,7 +76,7 @@ import SpeechesChip from '../components/SpeechesChip';
 import StepMandatoryNotes from '../components/StepMandatoryNotes';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
-import DesktopUtilityGroup from '../components/DesktopUtilityGroup';
+import UtilityControlGroup from '../components/UtilityControlGroup';
 import LanguageToggle from '../components/LanguageToggle';
 import ThemeToggle from '../components/ThemeToggle';
 import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
@@ -510,10 +510,10 @@ export default function McMasterView({ model }) {
         right={(
           <>
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
-            <DesktopUtilityGroup>
+            <UtilityControlGroup>
               <LanguageToggle variant="desktop" />
               <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
-            </DesktopUtilityGroup>
+            </UtilityControlGroup>
           </>
         )}
       />

@@ -1,4 +1,4 @@
-import { desktopTone, topBarControl } from '../lib/topBarStyles.js';
+import { desktopTone } from '../lib/topBarStyles.js';
 
 const RULES = [
   {
@@ -62,7 +62,7 @@ function RuleChip({
 }) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
   const toneKey = toneFor(normalizedStatus);
-  const tone = compact ? topBarControl(toneKey) : desktopTone(toneKey);
+  const tone = desktopTone(toneKey);
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
   // The full state stays available to assistive tech even when pocket hides
@@ -78,11 +78,9 @@ function RuleChip({
         role="note"
         aria-label={description}
         title={description}
-        className={`flex items-center rounded-full px-2.5 py-1 ${tone}`}
+        className={`flex items-center rounded-full px-2.5 py-1.5 font-heading text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm backdrop-blur-sm ${tone}`}
       >
-        <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
-          {label}
-        </span>
+        <span>{label}</span>
       </div>
     );
   }

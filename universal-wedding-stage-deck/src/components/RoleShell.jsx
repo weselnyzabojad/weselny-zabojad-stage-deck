@@ -1,9 +1,10 @@
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
 import { resolveSyncState } from '../lib/syncStatus';
-import { topBarControl } from '../lib/topBarStyles';
+import { desktopTone } from '../lib/topBarStyles';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
+import UtilityControlGroup from './UtilityControlGroup';
 import BottomNav from './BottomNav';
 import CulturalRulesBar from './CulturalRulesBar';
 import SpeechesChip from './SpeechesChip';
@@ -56,7 +57,7 @@ export default function RoleShell({
 
   return (
     <div className="font-body min-h-dvh flex flex-col bg-page text-ink">
-      <header className="bg-card border-b border-line px-3 py-2">
+      <header className="border-b border-panel-border bg-panel/85 px-3 py-2.5 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-panel/70">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <span
@@ -65,18 +66,18 @@ export default function RoleShell({
               aria-atomic="true"
               aria-label={`${roleShort}. Sync: ${syncState.label}`}
               title={syncState.title}
-              className={`rounded px-1.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wider ${topBarControl(syncState.tone)}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider shadow-sm backdrop-blur-sm ${desktopTone(syncState.tone)}`}
             >
               {roleShort}
             </span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <UtilityControlGroup>
             <LanguageToggle variant="cycle" />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
-          </div>
+            <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="pocket" />
+          </UtilityControlGroup>
         </div>
 
-        <div className="mt-1.5 flex flex-col gap-1.5 border-t border-line pt-1.5">
+        <div className="mt-2 flex flex-col gap-2 border-t border-panel-border/70 pt-2">
           <TopBarCenterIdentity wedding={wedding} compact showDate={false} />
           <div className="flex flex-wrap items-center gap-1.5">
             {viewSwitch}
