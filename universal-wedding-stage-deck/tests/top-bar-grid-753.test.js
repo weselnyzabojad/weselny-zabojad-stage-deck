@@ -42,16 +42,17 @@ describe('issue #753 top bar action grid and co-brand sizing', () => {
     expect(html).toContain('grid max-w-full grid-cols-2 gap-1.5');
   });
 
-  it('uses the compact indicator footprint while keeping states', () => {
+  it('uses the compact label-only footprint while keeping states accessible', () => {
     const html = grid();
     expect(html).toContain('rounded-xl px-2 py-1');
     expect(html).toContain('text-[10px]');
-    expect(html).toContain('text-[9px]');
-    expect(html).toContain('gap-x-1.5 gap-y-0.5');
+    expect(html).not.toContain('text-[9px]');
+    expect(html).not.toContain('h-1 w-1');
     expect(html).toContain('border-tone-positive-border');
     expect(html).toContain('border-tone-negative-border');
     expect(html).toContain('Sto Lat');
-    expect(html).toContain('STRICT NO');
+    expect(html).toContain('aria-label="Gorzko: STRICT NO"');
+    expect(html).toContain('aria-label="Speeches: LIGHT · 1"');
   });
 
   it('wires the dense grid into MC, DJ VIP and Photographer', () => {

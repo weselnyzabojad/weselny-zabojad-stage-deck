@@ -46,6 +46,21 @@ export default function SpeechesChip({
     );
   }
 
+  // Dense desktop chip: label only, with the full state kept in the
+  // accessible name and tooltip.
+  if (dense) {
+    return (
+      <div
+        role="note"
+        aria-label={description}
+        title={description}
+        className={`flex min-w-0 items-center justify-center rounded-xl px-2 py-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] ${tone} ${className}`}
+      >
+        <span>{t('speeches.chip')}</span>
+      </div>
+    );
+  }
+
   return (
     <div
       role="note"
