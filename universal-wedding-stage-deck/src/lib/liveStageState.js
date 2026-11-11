@@ -320,18 +320,6 @@ export function toggleSubtask(state, task, actor = {}) {
   return appendMutation(next, actor, 'toggle_subtask', { task, checked });
 }
 
-// MC-only selection of the live speech; synced so the speaker device receives
-// only the assigned script (see `resolveActiveSpeech`).
-export function setActiveSpeech(state, speechId, actor = {}) {
-  const nextValue = typeof speechId === 'string' && speechId.trim() ? speechId.trim() : null;
-  if ((state.active_speech_id ?? null) === nextValue) return state;
-  const next = { ...state, active_speech_id: nextValue };
-  return appendMutation(next, actor, 'select_speech', {
-    from: state.active_speech_id ?? null,
-    to: nextValue,
-  });
-}
-
 // Execute the next block first, then return to the current block. The old
 // current block loses its start timestamp because it has been postponed; the
 // swapped-in block is logged as starting now.

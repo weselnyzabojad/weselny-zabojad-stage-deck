@@ -6,7 +6,6 @@ import {
   mergeMutationLogs,
   normalizeLiveState,
   saveLiveState,
-  setActiveSpeech as setActiveSpeechState,
   storageKey,
   swapStepWithNext,
   toggleSubtask as toggleSubtaskState,
@@ -512,16 +511,6 @@ export function useLiveStageState({
     });
   }, [apply, steps, actor]);
 
-  const selectSpeech = useCallback(
-    (speechId) => {
-      apply((state) => setActiveSpeechState(state, speechId, actor), {
-        op: 'select_speech',
-        label: 'Speech selection',
-      });
-    },
-    [apply, actor],
-  );
-
   // Game results are durable state but never an undoable timeline command.
   const setGameResults = useCallback(
     (gameId, result) => {
@@ -572,7 +561,6 @@ export function useLiveStageState({
     toggleSubtask,
     sendStagePing,
     swapWithNext,
-    selectSpeech,
     setGameResults,
     setMediaOverride,
     savedLocally,

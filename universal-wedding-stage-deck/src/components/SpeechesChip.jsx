@@ -3,10 +3,9 @@ import { desktopTone } from '../lib/topBarStyles.js';
 
 // Speeches are wanted as soon as the cartridge carries at least one speech or
 // enables a non-OFF mode. Otherwise the chip is refused (red).
-function resolveSpeechTone({ mode, speeches = [], activeSpeechId = null }) {
+function resolveSpeechTone({ mode, speeches = [] }) {
   const list = speeches ?? [];
   if (list.length === 0) return 'negative';
-  if (activeSpeechId && list.some((speech) => speech?.id === activeSpeechId)) return 'positive';
   if (mode === 'LIGHT' || mode === 'COMPLEX') return 'positive';
   return 'negative';
 }
@@ -16,23 +15,17 @@ function resolveSpeechTone({ mode, speeches = [], activeSpeechId = null }) {
 export default function SpeechesChip({
   mode = 'OFF',
   speeches = [],
-  activeSpeechId = null,
   compact = false,
   className = '',
 }) {
   const { t } = useI18n();
-  const toneKey = resolveSpeechTone({ mode, speeches, activeSpeechId });
+  const toneKey = resolveSpeechTone({ mode, speeches });
   const tone = desktopTone(toneKey);
   const list = speeches ?? [];
-  const activeSpeech = activeSpeechId
-    ? list.find((speech) => speech?.id === activeSpeechId) ?? null
-    : null;
-  const statusLabel =
-    activeSpeech && toneKey === 'positive' ? t('speeches.live') : t(`speeches.mode.${mode}`);
+  const statusLabel = t(`speeches.mode.${mode}`);
   const description = [
     `${t('speeches.chip')}: ${statusLabel}`,
     list.length > 0 ? `${list.length}` : t('speeches.none'),
-    activeSpeech?.speaker?.name ?? null,
   ]
     .filter(Boolean)
     .join(' · ');

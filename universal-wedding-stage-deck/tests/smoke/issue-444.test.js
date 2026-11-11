@@ -40,8 +40,6 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
     for (const key of [
       'speeches.title',
       'speeches.offBody',
-      'speeches.goLive',
-      'speeches.stopLive',
       'speeches.scriptReady',
       'speeches.scriptMissing',
       'speeches.speakerHidden',
@@ -95,8 +93,6 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
       'speeches.mode.LIGHT',
       'speeches.mode.COMPLEX',
       'speeches.offBody',
-      'speeches.goLive',
-      'speeches.stopLive',
       'speeches.scriptReady',
       'speeches.scriptMissing',
       'speeches.consent',

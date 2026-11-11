@@ -119,7 +119,6 @@ export default function McMasterView({ model }) {
   cakeServiceMode = 'KITCHEN_RETURN',
   speechMode,
   speeches,
-  selectSpeech,
   setGameResults,
   isComplete,
   handleSwap,
@@ -497,11 +496,7 @@ export default function McMasterView({ model }) {
               rules={WEDDING.culturalRules}
               oczepinyStatus={oczepinyStatus}
             />
-            <SpeechesChip
-              mode={speechMode}
-              speeches={speeches}
-              activeSpeechId={liveState.active_speech_id}
-            />
+            <SpeechesChip mode={speechMode} speeches={speeches} />
             {viewSwitch}
           </>
         )}
@@ -552,14 +547,7 @@ export default function McMasterView({ model }) {
           />
 
           {speeches?.length > 0 ? (
-            <SpeechesCard
-              wedding={WEDDING}
-              mode={speechMode}
-              speeches={speeches}
-              activeSpeechId={liveState.active_speech_id}
-              onSelect={selectSpeech}
-              clock={driftReport.clock}
-            />
+            <SpeechesCard mode={speechMode} speeches={speeches} />
           ) : null}
         </div>
       </main>
@@ -655,7 +643,6 @@ export default function McMasterView({ model }) {
       oczepinyStatus={oczepinyStatus}
       speeches={speeches}
       speechMode={speechMode}
-      activeSpeechId={liveState.active_speech_id}
       viewSwitch={viewSwitch}
     >
       {compactContent}
