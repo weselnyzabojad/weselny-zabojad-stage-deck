@@ -4348,3 +4348,49 @@ validation still requires \`approvals.fire\`.
 **Open questions.** None.
 
 **Tracking.** [#741](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/741), [#742](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/742).
+
+### 17.31 Unified desktop header branding containers (decision, 2026-11-11)
+
+Bring the Weselny Żabojad logo and the assigned VIP DJ partner logo onto one
+shared visual container so the left and right brand surfaces have identical
+background, spacing, height, border radius and depth treatment. Preserve the
+one-assigned-DJ rule and the current non-interactive behavior, then verify the
+desktop header still wraps cleanly on tablet and narrow mobile widths.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, logo
+asset or cartridge change. The existing `djIdentityId` selection logic remains
+the source of the displayed partner identity.
+
+**View scope.**
+
+- In scope: shared desktop header branding in MC, DJ Standard/VIP, Photographer,
+  Speaker and Venue Manager; `TopBarLogo`, `VipDjLogo`, and the desktop
+  `TopBarShell` wrapping/alignment.
+- Out of scope: pocket/phone header (`RoleShell`), simultaneous Mark and
+  Szymoniak badges, click actions/links, admin provider editing, VIP tier rules,
+  schema/parser/field-map and unrelated header controls.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#749](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/749) | Shared branding container, partner logo scaling and desktop header wrapping | - |
+
+**Task details.**
+
+1. **Shared container.** Extract or reuse one brand-container primitive based on
+   the existing token-based `TopBarLogo` surface. Apply it to the primary logo
+   and to the assigned DJ Mark or DJ Szymoniak logo, with identical padding,
+   border radius, border, shadow and height rules.
+2. **Logo balance.** Keep the Weselny Żabojad mark on the far left and the
+   assigned partner mark on the right. Scale both partner PNGs proportionally
+   inside the shared container without distortion, cropping or horizontal
+   overflow.
+3. **Responsive header.** Confirm the desktop `TopBarShell` grid/flex arrangement
+   keeps the brand containers, status badges and language/theme controls aligned
+   and wrap-safe at tablet and narrow widths. Do not add brand logos to the
+   pocket header.
+
+**Open questions.** None.
+
+**Tracking.** [#749](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/749).
