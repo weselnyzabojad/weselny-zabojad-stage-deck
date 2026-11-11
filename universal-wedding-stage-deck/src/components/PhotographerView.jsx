@@ -280,7 +280,6 @@ export default function PhotographerView({
   oczepinyStatus = null,
   speeches = [],
   speechMode = 'OFF',
-  activeSpeechId = null,
   authControl = null,
   mediaOverrides = {},
   onMiniSessionOverride,
@@ -450,7 +449,6 @@ export default function PhotographerView({
             <SpeechesChip
               mode={speechMode}
               speeches={speeches}
-              activeSpeechId={activeSpeechId}
             />
           </>
         )}
@@ -620,7 +618,6 @@ export default function PhotographerView({
       oczepinyStatus={oczepinyStatus}
       speeches={speeches}
       speechMode={speechMode}
-      activeSpeechId={activeSpeechId}
       authControl={authControl}
     >
       {compactContent}

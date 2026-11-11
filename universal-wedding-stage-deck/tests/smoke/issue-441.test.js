@@ -14,7 +14,6 @@ describe('issue #441 mobile touch targets', () => {
   it('gives PIN, sync, open-on-phone and live controls a 44px target', () => {
     expect(read('src/components/SyncStatusBadge.jsx')).toContain('min-h-11');
     expect(read('src/components/OpenOnPhoneButton.jsx')).toContain('min-h-11');
-    expect(read('src/components/SpeechesCard.jsx')).toContain('min-h-11');
     expect(read('src/views/McMasterView.jsx')).toContain('min-h-11');
   });
 

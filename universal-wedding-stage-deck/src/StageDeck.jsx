@@ -90,7 +90,6 @@ export default function StageDeck({
     toggleSubtask,
     sendStagePing,
     swapWithNext,
-    selectSpeech,
     setGameResults,
     setMediaOverride,
     savedLocally,
@@ -489,7 +488,6 @@ export default function StageDeck({
             oczepinyStatus={djOczepinyStatus}
             speeches={speeches}
             speechMode={speechMode}
-            activeSpeechId={liveState.active_speech_id}
             authControl={authControl}
             {...roleProps}
           />
@@ -525,7 +523,6 @@ export default function StageDeck({
             oczepinyStatus={djOczepinyStatus}
             speeches={speeches}
             speechMode={speechMode}
-            activeSpeechId={liveState.active_speech_id}
             authControl={authControl}
             mediaOverrides={liveState.media_overrides}
             onMiniSessionOverride={(time) => setMediaOverride('miniSessionTime', time)}
@@ -643,7 +640,6 @@ export default function StageDeck({
     musicPolicy,
     speechMode,
     speeches,
-    selectSpeech,
     setGameResults,
     sendStagePing,
     isComplete,

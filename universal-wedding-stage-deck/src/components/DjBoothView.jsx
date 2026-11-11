@@ -89,7 +89,6 @@ export default function DjBoothView({
   oczepinyStatus = null,
   speeches = [],
   speechMode = 'OFF',
-  activeSpeechId = null,
   authControl = null,
 }) {
   const { t } = useI18n();
@@ -226,7 +225,6 @@ export default function DjBoothView({
               <SpeechesChip
                 mode={speechMode}
                 speeches={speeches}
-                activeSpeechId={activeSpeechId}
               />
             ) : null}
             {viewSwitch}
@@ -356,7 +354,6 @@ export default function DjBoothView({
       oczepinyStatus={oczepinyStatus}
       speeches={caps.speeches ? speeches : null}
       speechMode={caps.speeches ? speechMode : null}
-      activeSpeechId={activeSpeechId}
       authControl={caps.vipAuth ? authControl : null}
     >
       {compactContent}

@@ -31,7 +31,7 @@ describe('issue #215 DJ top bar rework', () => {
     expect(deck).toContain('culturalRules={WEDDING.culturalRules}');
     expect(deck).toContain('speeches={speeches}');
     expect(deck).toContain('speechMode={speechMode}');
-    expect(deck).toContain('activeSpeechId={liveState.active_speech_id}');
+    expect(deck.match(/activeSpeechId=\{liveState\.active_speech_id\}/g)).toHaveLength(1);
     expect(deck).toContain('<RoleSignOutControl');
     expect(deck).toContain('role={baseRole}');
   });

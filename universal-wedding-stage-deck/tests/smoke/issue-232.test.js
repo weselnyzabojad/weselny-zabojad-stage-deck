@@ -12,7 +12,7 @@ describe('issue #232 Photographer VIP parity', () => {
     expect(photo).toContain('<SpeechesChip');
     expect(photo).toContain('{authControl}');
     expect(deck).toContain('culturalRules={WEDDING.culturalRules}');
-    expect(deck).toContain('activeSpeechId={liveState.active_speech_id}');
+    expect(deck.match(/activeSpeechId=\{liveState\.active_speech_id\}/g)).toHaveLength(1);
   });
 
   it('adds the same VIP top-bar data to the pocket shell', () => {

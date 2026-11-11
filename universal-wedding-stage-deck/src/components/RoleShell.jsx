@@ -36,7 +36,6 @@ export default function RoleShell({
   oczepinyStatus = null,
   speeches = null,
   speechMode = null,
-  activeSpeechId = null,
   viewSwitch = null,
   authControl = null,
 }) {
@@ -98,7 +97,6 @@ export default function RoleShell({
                 <SpeechesChip
                   mode={speechMode}
                   speeches={speeches ?? []}
-                  activeSpeechId={activeSpeechId}
                   compact
                 />
               ) : null}
