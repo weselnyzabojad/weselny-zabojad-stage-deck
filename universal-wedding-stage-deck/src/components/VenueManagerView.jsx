@@ -79,7 +79,8 @@ function TimeField({ label, value, onChange }) {
   );
 }
 
-const MILESTONE_KINDS = ['PHOTO', 'CAMERA', 'VENDOR', 'TRANSPORT', 'FAMILY', 'SUNSET', 'OTHER'];
+// Photo and camera leave milestones belong to the owner admin, not Venue.
+const MILESTONE_KINDS = ['VENDOR', 'TRANSPORT', 'FAMILY', 'SUNSET', 'OTHER'];
 
 function CourseCard({ label, value, mode, hardAnchor, onTime, onMode, onHardAnchor }) {
   const { t } = useI18n();
@@ -251,6 +252,13 @@ export default function VenueManagerView({
   };
 
   const milestones = Array.isArray(settings.milestones) ? settings.milestones : [];
+  // Keep the underlying photo/camera leave data, but never expose it as an
+  // editable Venue Manager milestone.
+  const editableMilestones = milestones
+    .map((milestone, index) => ({ milestone, index }))
+    .filter(
+      ({ milestone }) => milestone.kind !== 'PHOTO' && milestone.kind !== 'CAMERA',
+    );
 
   const updateMilestone = (index, patch) => {
     const next = milestones.map((milestone, i) =>
@@ -395,7 +403,7 @@ export default function VenueManagerView({
         <p className="mt-1 text-[10px] text-muted">{t('venueManager.milestonesHelper')}</p>
 
         <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
-          {milestones.map((milestone, index) => (
+          {editableMilestones.map(({ milestone, index }) => (
             <MilestoneCard
               key={milestone.id ?? index}
               milestone={milestone}
@@ -404,20 +412,6 @@ export default function VenueManagerView({
             />
           ))}
 
-          <button
-            type="button"
-            onClick={() => addMilestone('PHOTO')}
-            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
-          >
-            + {t('venueManager.addPhotoMilestone')}
-          </button>
-          <button
-            type="button"
-            onClick={() => addMilestone('CAMERA')}
-            className="flex min-h-16 items-center justify-center rounded-lg border border-dashed border-line text-xs text-muted transition hover:border-line-strong hover:text-ink"
-          >
-            + {t('venueManager.addCameraMilestone')}
-          </button>
           <button
             type="button"
             onClick={() => addMilestone('OTHER')}

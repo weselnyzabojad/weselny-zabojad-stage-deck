@@ -587,7 +587,7 @@ const en = {
   'venueManager.saved': 'Saved',
   'venueManager.milestones': 'Milestones',
   'venueManager.milestonesHelper':
-    'Photo and camera are separate milestones. Flagged milestones become hard anchors on the timeline radar.',
+    'Add other milestone types here. Photo and camera leave times are managed by the owner admin.',
   'venueManager.milestone': 'Milestone',
   'venueManager.milestoneLabel': 'Label',
   'venueManager.milestoneKind': 'Kind',

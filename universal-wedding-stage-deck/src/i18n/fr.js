@@ -591,7 +591,7 @@ const fr = {
   'venueManager.saved': 'Enregistré',
   'venueManager.milestones': 'Jalons',
   'venueManager.milestonesHelper':
-    'La photo et la caméra sont des jalons séparés. Les jalons cochés deviennent des ancres fixes sur le radar.',
+    'Ajoutez ici les autres types de jalons. Les heures de départ photo et caméra sont gérées par l’admin.',
   'venueManager.milestone': 'Jalon',
   'venueManager.milestoneLabel': 'Libellé',
   'venueManager.milestoneKind': 'Type',
