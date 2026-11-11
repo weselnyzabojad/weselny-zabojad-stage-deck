@@ -54,6 +54,10 @@ export default function RoleShell({
     { t, tp, formatTime },
   );
   const roleShort = t(`role.${role}.short`);
+  // The pocket badge is binary: green only when sync is confirmed, red for
+  // every other state (including connecting and pending). The shared warning
+  // tone stays available for other controls such as the desktop Sync icon.
+  const badgeTone = syncState.tone === 'positive' ? 'positive' : 'negative';
 
   return (
     <div className="font-body min-h-dvh flex flex-col bg-page text-ink">
@@ -66,7 +70,7 @@ export default function RoleShell({
               aria-atomic="true"
               aria-label={`${roleShort}. Sync: ${syncState.label}`}
               title={syncState.title}
-              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider shadow-sm backdrop-blur-sm ${desktopTone(syncState.tone)}`}
+              className={`rounded-xl px-2.5 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-wider shadow-sm backdrop-blur-sm ${desktopTone(badgeTone)}`}
             >
               {roleShort}
             </span>
