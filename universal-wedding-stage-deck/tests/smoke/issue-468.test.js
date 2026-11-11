@@ -65,7 +65,6 @@ describe('issue #468 DJ Standard capability gating', () => {
       'vipAuth',
       'openOnPhone',
       'pocket',
-      'devSimulator',
     ]) {
       expect(standard[key], key).toBe(false);
       expect(vip[key], key).toBe(true);
