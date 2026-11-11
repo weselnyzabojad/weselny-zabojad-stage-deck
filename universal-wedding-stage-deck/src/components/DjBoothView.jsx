@@ -20,6 +20,7 @@ import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import UtilityControlGroup from './UtilityControlGroup';
+import VipDjLogo from './VipDjLogo';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
@@ -228,6 +229,7 @@ export default function DjBoothView({
               />
             ) : null}
             {viewSwitch}
+            <VipDjLogo wedding={wedding} vip={caps.vip} className="ml-1" />
           </>
         )}
       />
