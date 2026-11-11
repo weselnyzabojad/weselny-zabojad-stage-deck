@@ -27,10 +27,12 @@ export const DESKTOP_SURFACE_HOVER =
 export const DESKTOP_PILL = 'rounded-2xl border shadow-sm backdrop-blur-sm';
 
 // Shared desktop brand-mark frame (issue #749). Primary and partner logos use
-// the same height, padding, border radius, surface and depth so the left and
-// right branding read as one family.
+// the same surface; the partner variant is larger for co-branding prominence
+// (issue #753).
 export const BRAND_FRAME =
   'flex h-16 min-w-0 max-w-full items-center justify-center rounded-2xl border border-white/50 bg-white/90 px-3 py-1.5 shadow-sm';
+export const BRAND_FRAME_LARGE =
+  'flex h-20 min-w-0 max-w-full items-center justify-center rounded-2xl border border-white/50 bg-white/90 px-4 py-1.5 shadow-sm';
 
 const DESKTOP_TONES = {
   neutral: 'border-line bg-raised/45 text-ink',
