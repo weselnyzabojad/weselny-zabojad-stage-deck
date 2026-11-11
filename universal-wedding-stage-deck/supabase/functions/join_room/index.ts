@@ -7,7 +7,7 @@
 // Deploy:
 //   supabase functions deploy join_room
 // Secrets:
-//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_JWT_SECRET
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DECK_SUPABASE_JWT_SECRET
 //   ALLOWED_ORIGIN (optional, default *)
 //
 // The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
@@ -196,7 +196,7 @@ Deno.serve(async (req) => {
       .setIssuedAt()
       .setJti(sessionId)
       .setExpirationTime(expiry)
-      .sign(new TextEncoder().encode(serverEnv('SUPABASE_JWT_SECRET')));
+      .sign(new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')));
 
     return json({
       token,

@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
     let payload;
     try {
-      ({ payload } = await jwtVerify(token, new TextEncoder().encode(serverEnv('SUPABASE_JWT_SECRET')), {
+      ({ payload } = await jwtVerify(token, new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')), {
         algorithms: ['HS256'],
       }));
     } catch {

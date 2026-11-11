@@ -68,7 +68,7 @@ Set these with the Supabase CLI:
 supabase secrets set \
   SUPABASE_URL=https://your-project-ref.supabase.co \
   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
-  SUPABASE_JWT_SECRET=your-jwt-secret \
+  DECK_SUPABASE_JWT_SECRET=your-jwt-secret \
   PUBLIC_DECK_URL=https://www.your-domain.example/deck \
   ALLOWED_ORIGIN=http://localhost:5173 \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com \

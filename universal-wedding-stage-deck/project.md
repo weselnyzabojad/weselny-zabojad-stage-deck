@@ -1560,7 +1560,7 @@ Configuration is split into two layers and must stay that way:
   `VITE_DECK_MODE`, `VITE_SUPABASE_SYNC_TABLE`, `VITE_SUPABASE_ROOM_PREFIX`,
   `VITE_ADMIN_DEMO` and `VITE_VIEW`.
 - **Server secrets** are set only with `supabase secrets set`: `SUPABASE_URL`,
-  `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`,
+  `SUPABASE_SERVICE_ROLE_KEY`, `DECK_SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`,
   `ALLOWED_ORIGIN`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`,
   `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` and optional
   `GOOGLE_DRIVE_TEST_FILE_ID`.
@@ -2886,7 +2886,7 @@ If an older deployment still has the legacy secret-based function, remove it:
 `supabase secrets unset DECK_PUBLISH_SECRET`.
 
 5. Set secrets: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
-   `SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`, `ALLOWED_ORIGIN`,
+   `DECK_SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`, `ALLOWED_ORIGIN`,
    `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` and
    optional `GOOGLE_DRIVE_TEST_FILE_ID`.
 6. Add the owner account to `app_admins`, enable TOTP MFA and disable Auth
