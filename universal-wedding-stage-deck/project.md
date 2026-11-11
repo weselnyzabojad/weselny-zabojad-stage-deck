@@ -4394,3 +4394,50 @@ the source of the displayed partner identity.
 **Open questions.** None.
 
 **Tracking.** [#749](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/749).
+
+### 17.32 Desktop top bar layout and overflow fixes (decision, 2026-11-11)
+
+Correct the desktop top navigation bar so the left branding row, centre
+metadata and right action zone share one balanced vertical rhythm. The cultural
+toggles must wrap inside the right zone instead of clipping into the partner
+logo, while all existing toggle states, colours, typography and handlers stay
+untouched.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, cartridge
+or state-contract change.
+
+**View scope.**
+
+- In scope: shared desktop `TopBarShell` for MC, DJ Standard/VIP, Photographer,
+  Speaker and Venue Manager; left logo/clock/role alignment; centre couple,
+  languages and date; right cultural toggles and assigned VIP DJ logo; lighter
+  neutral chrome for clock and role badge.
+- Out of scope: pocket/phone header, toggle semantics or handlers, simultaneous
+  Mark/Szymoniak logos, admin, Song Request, MC content cards, DJ music policy,
+  schema/parser and cartridge data.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#751](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/751) | Right-zone wrapping, partner-logo placement and left/centre alignment in the shared desktop top bar | - |
+
+**Task details.**
+
+1. **Right zone.** Let the `STO LAT`, `GORZKO`, `OCZEPINY` and `SPEECHES`
+   controls wrap within the right-hand area without crossing the viewport or
+   overlapping the partner logo. Keep the assigned Mark/Szymoniak logo on the
+   same row when space allows and let it wrap beneath the toggles when it does
+   not.
+2. **Left and centre.** Vertically centre the primary logo, digital clock and
+   role badge in one row, remove heavy black chrome/heavy shadows from the clock
+   and role badge, and keep the couple names, common languages and date centred
+   in the available middle gap.
+3. **State integrity.** Preserve all existing toggle states, Green ON / Red
+   OFF/strict/complex colours, font families and click handlers. The pocket
+   header stays unchanged; at ~375px the existing pocket shell renders instead
+   of this desktop bar.
+
+**Open questions.** None.
+
+**Tracking.** [#751](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/751).
