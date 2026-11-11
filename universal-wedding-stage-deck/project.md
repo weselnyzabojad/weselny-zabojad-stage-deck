@@ -4567,3 +4567,47 @@ cartridge change. \`resolveDjIdentityId\` remains the identity source.
 **Open questions.** None.
 
 **Tracking.** [#757](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/757).
+
+### 17.36 Production deck origin and Supabase secrets readiness (decision, 2026-11-11)
+
+Prepare the final production origin for the stage deck and then apply the full
+Supabase Edge Function secrets set. The deck moves to the root of
+`https://deck.weselnyzabojad.pl`; the admin stays on www pending the webmaster's
+path confirmation.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, cartridge
+or application-code change.
+
+**View scope.**
+
+- In scope: OVH DNS/TLS for `deck.weselnyzabojad.pl`; the final deck root URL;
+  confirmation of the admin origin/path; Supabase Edge Function secrets.
+- Out of scope: application code, schema/parser, UI, cartridge data, deployment
+  path changes not confirmed by the webmaster, and unrelated secrets.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#759](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/759) | Settle `deck.weselnyzabojad.pl` at OVH and confirm the admin origin/path | - |
+| [#760](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/760) | Set the full Supabase Edge Function secrets and verify live behavior | [#759](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/759) |
+
+**Task details.**
+
+1. **OVH DNS.** Prefer a CNAME for `deck` to the current deck hosting target
+   because it is the simplest and avoids a hard-coded IP. If the host requires
+   an A record, use the confirmed IP. Serve the deck at the subdomain root
+   (`https://deck.weselnyzabojad.pl/`), verify HTTPS, and confirm with the
+   webmaster whether the admin remains on `https://www.weselnyzabojad.pl` and
+   which exact origin/path `ALLOWED_ORIGIN` must use.
+2. **Supabase secrets.** After the DNS task, set
+   `DECK_SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL=https://deck.weselnyzabojad.pl`,
+   the confirmed `ALLOWED_ORIGIN`, the Google service-account values and
+   `SPEECH_SECRET_MASTER_KEY`. Add `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`
+   only if missing. Verify a live role join, an AAL2 `admin_drive` status and
+   speech-secret access without printing any secret.
+
+**Open questions.** None; the DNS target and admin path are checklist items for
+the owner and webmaster in #759.
+
+**Tracking.** [#759](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/759), [#760](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/760).
