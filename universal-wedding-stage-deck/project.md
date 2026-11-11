@@ -4207,3 +4207,44 @@ selection source. No Google Doc, schema, parser or field-map change.
 **Open questions.** None.
 
 **Tracking.** [#723](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/723), [#724](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/724).
+
+### 17.28 Hard-anchor advice removal and VIP DJ logos (decision, 2026-11-11)
+
+Two independent changes: remove the generic “Swap or defer a block.” advice from
+the hard-anchor banner and radar detail strings, and add the assigned VIP DJ’s
+logo to the laptop top bar for the two registered DJs only. No Google Doc,
+schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: `HardAnchorAlertBanner`, its i18n key and hard-anchor radar detail;
+  DJ VIP laptop top bar; VIP DJ asset folder and logo mapping.
+- Out of scope: hard-anchor collision logic, DJ VIP feature gates, DJ pocket,
+  DJ Standard, other role views, new DJ identities and Google Doc mapping.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#725](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/725) | Remove “Swap or defer a block.” from banner, i18n and radar details | — |
+| [#726](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/726) | VIP DJ logo on the laptop top bar + dedicated PNG asset folder | — |
+
+**Task details.**
+
+1. **Hard-anchor advice.** Remove `anchor.swapOrDefer` from the banner and all
+   three locales, and remove the “Swap or defer a block.” sentence from the
+   hard-anchor radar detail/ARIA strings. Keep the rest of the banner and the
+   collision/compression wording intact.
+2. **VIP DJ logos.**
+   - Create `src/assets/img/dj-vip/` for the owner-supplied
+     `logo_mark.png` and `logo_szymoniak.png` (or a `.gitkeep` until the files
+     arrive; missing files must fall back silently to no logo).
+   - On DJ VIP laptop only, render the logo at the far right of the top bar,
+     selected from the assigned DJ identity (`dj_mark` or `dj_szymoniak`).
+   - No logo on DJ Standard, pocket, or any other role. No new DJ identities.
+   - Keep the existing `VIP_DJS` registry as the gate; add a regression test
+     that only Mark and Szymoniak resolve to VIP/logo, and unknown ids do not.
+
+**Open questions.** None.
+
+**Tracking.** [#725](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/725), [#726](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/726).
