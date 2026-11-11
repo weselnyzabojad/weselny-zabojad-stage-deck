@@ -82,7 +82,7 @@ function TimeField({ label, value, onChange }) {
 // Photo and camera leave milestones belong to the owner admin, not Venue.
 const MILESTONE_KINDS = ['VENDOR', 'TRANSPORT', 'FAMILY', 'SUNSET', 'OTHER'];
 
-function CourseCard({ label, value, mode, hardAnchor, onTime, onMode, onHardAnchor }) {
+function CourseCard({ label, value, mode, onTime, onMode }) {
   const { t } = useI18n();
   return (
     <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5">
@@ -100,15 +100,6 @@ function CourseCard({ label, value, mode, hardAnchor, onTime, onMode, onHardAnch
           <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
           <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
         </select>
-      </label>
-      <label className="flex min-h-8 items-center gap-2 text-[10px] uppercase tracking-wider text-muted">
-        <input
-          type="checkbox"
-          className="h-5 w-5"
-          checked={hardAnchor === true}
-          onChange={(event) => onHardAnchor(event.target.checked)}
-        />
-        {t('venueManager.isHardAnchor')}
       </label>
     </div>
   );
@@ -161,15 +152,6 @@ function MilestoneCard({ milestone, onChange, onRemove }) {
           }
           className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
         />
-      </label>
-      <label className="flex min-h-8 items-center gap-2 text-[10px] uppercase tracking-wider text-muted">
-        <input
-          type="checkbox"
-          className="h-5 w-5"
-          checked={milestone.isHardAnchor === true}
-          onChange={(event) => onChange({ isHardAnchor: event.target.checked })}
-        />
-        {t('venueManager.isHardAnchor')}
       </label>
       <button
         type="button"
@@ -307,10 +289,8 @@ export default function VenueManagerView({
                 label={courseLabel(course, t)}
                 value={course.time}
                 mode={course.serviceMode}
-                hardAnchor={course.isHardAnchor === true}
                 onTime={(time) => updateCourse(index, { time })}
                 onMode={(mode) => updateCourse(index, { serviceMode: mode })}
-                onHardAnchor={(isHardAnchor) => updateCourse(index, { isHardAnchor })}
               />
               <button
                 type="button"
