@@ -20,6 +20,7 @@ import HardAnchorAlertBanner from '../components/HardAnchorAlertBanner';
 import HoldToConfirmButton from '../components/HoldToConfirmButton';
 import OczepinyCueCard from '../components/OczepinyCueCard';
 import RoleShell from '../components/RoleShell';
+import RoleSignOutControl from '../components/RoleSignOutControl';
 import SecondaryControlBar from '../components/SecondaryControlBar';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
@@ -39,7 +40,6 @@ import {
   resolvePhotoPlan,
 } from '../lib/photoPlan.js';
 import { orderSubtasks } from '../lib/subtasks.js';
-import { TOP_BAR_NEUTRAL_HOVER, topBarControl } from '../lib/topBarStyles.js';
 
 // Detect the moment from stable cartridge signals, never from the localized
 // step title (issue #543). Titles are authored content and may be FR/PL.
@@ -76,8 +76,9 @@ import SpeechesChip from '../components/SpeechesChip';
 import StepMandatoryNotes from '../components/StepMandatoryNotes';
 import SyncStatusBadge from '../components/SyncStatusBadge';
 import TeleprompterOverlay from '../components/TeleprompterOverlay';
-import ThemeToggle from '../components/ThemeToggle';
+import DesktopUtilityGroup from '../components/DesktopUtilityGroup';
 import LanguageToggle from '../components/LanguageToggle';
+import ThemeToggle from '../components/ThemeToggle';
 import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
@@ -444,26 +445,12 @@ export default function McMasterView({ model }) {
 
   const hasAnchorWarning = driftReport.hardAnchorRadar.hasWarning;
   const pinControl = (
-    <button
-      type="button"
-      onClick={handleUnpair}
-      title={
-        IS_PRODUCTION ? t('mc.title.signOut') : t('mc.title.forgetPin')
-      }
-      className={`inline-flex min-h-11 items-center rounded px-2.5 py-1 text-xs font-semibold transition ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)}`}
-    >
-      {IS_PRODUCTION ? (
-        <>
-          ROLE: <strong className="ml-1">{roleSession.role.toUpperCase()}</strong>
-          <span className="ml-1 text-sm">🔐</span>
-        </>
-      ) : (
-        <>
-          PIN: <strong className="ml-1">{pairing.pin}</strong>
-          <span className="ml-1 text-sm">🔓</span>
-        </>
-      )}
-    </button>
+    <RoleSignOutControl
+      isProduction={IS_PRODUCTION}
+      role={roleSession.role}
+      pin={pairing.pin}
+      onSignOut={handleUnpair}
+    />
   );
   const syncControl = (
     <SyncStatusBadge
@@ -483,7 +470,7 @@ export default function McMasterView({ model }) {
       <TopBarShell
         left={(
           <>
-            <TopBarLogo className="px-3 py-1.5" imgClassName="max-w-[220px]" />
+            <TopBarLogo imgClassName="max-w-[220px]" />
             <span className="text-muted hidden sm:inline">|</span>
             <TopBarClock clock={driftReport.clock} />
             <TopBarRoleLabel role="mc" />
@@ -523,8 +510,10 @@ export default function McMasterView({ model }) {
         right={(
           <>
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+            <DesktopUtilityGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
+            </DesktopUtilityGroup>
           </>
         )}
       />

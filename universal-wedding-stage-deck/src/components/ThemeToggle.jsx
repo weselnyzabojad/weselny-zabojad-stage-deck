@@ -38,7 +38,12 @@ function MoonIcon() {
 }
 
 // Icon-only theme switch. The accessible label/tooltip explains the action.
-export default function ThemeToggle({ theme = 'night', onToggle, className = '' }) {
+export default function ThemeToggle({
+  theme = 'night',
+  onToggle,
+  variant = 'default',
+  className = '',
+}) {
   const { t } = useI18n();
   const isDay = theme === 'day';
   const label = isDay ? t('theme.toNight') : t('theme.toDay');
@@ -50,7 +55,11 @@ export default function ThemeToggle({ theme = 'night', onToggle, className = '' 
       aria-pressed={isDay}
       aria-label={label}
       title={label}
-      className={`inline-flex h-11 w-11 items-center justify-center rounded transition sm:h-8 sm:w-8 ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)} ${className}`}
+      className={`inline-flex h-11 w-11 items-center justify-center rounded transition ${
+        variant === 'desktop'
+          ? 'rounded-xl text-muted hover:bg-card hover:text-ink'
+          : `sm:h-8 sm:w-8 ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)}`
+      } ${className}`}
     >
       {isDay ? <SunIcon /> : <MoonIcon />}
     </button>

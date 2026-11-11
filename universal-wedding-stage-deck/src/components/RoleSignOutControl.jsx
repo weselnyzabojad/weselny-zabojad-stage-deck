@@ -1,5 +1,5 @@
 import { useI18n } from '../i18n/useI18n';
-import { TOP_BAR_NEUTRAL_HOVER, topBarControl } from '../lib/topBarStyles.js';
+import { DESKTOP_SURFACE, DESKTOP_SURFACE_HOVER } from '../lib/topBarStyles.js';
 
 // Shared PIN / role sign-out control for role views that show the authenticated
 // identity. In production it displays the authenticated role; in local/demo
@@ -17,7 +17,7 @@ export default function RoleSignOutControl({
       type="button"
       onClick={onSignOut}
       title={isProduction ? t('mc.title.signOut') : t('mc.title.forgetPin')}
-      className={`inline-flex min-h-11 items-center rounded px-2.5 py-1 text-xs font-semibold transition ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)} ${className}`}
+      className={`inline-flex min-h-11 items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-muted ${DESKTOP_SURFACE} ${DESKTOP_SURFACE_HOVER} hover:text-ink ${className}`}
     >
       {isProduction ? (
         <>

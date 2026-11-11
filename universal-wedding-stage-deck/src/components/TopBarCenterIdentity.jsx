@@ -32,7 +32,7 @@ function Flag({ code }) {
   );
 }
 
-function Person({ person }) {
+function Person({ person, compact = false }) {
   const { locale } = useI18n();
   const countryNames = person.nationalities
     .map((code) => localizedCountryName(code, locale))
@@ -41,7 +41,15 @@ function Person({ person }) {
 
   return (
     <span className="inline-flex items-center gap-1">
-      <span className="font-heading font-semibold text-ink">{person.firstName}</span>
+      <span
+        className={
+          compact
+            ? 'font-heading font-semibold text-ink'
+            : 'font-heading text-base font-semibold tracking-wide text-ink'
+        }
+      >
+        {person.firstName}
+      </span>
       {visible.length > 0 ? (
         <span className="inline-flex items-center gap-0.5" aria-hidden="true">
           {visible.map((code) => (
@@ -88,19 +96,23 @@ export default function TopBarCenterIdentity({
               <span
                 aria-hidden="true"
                 title="Wedding rings"
-                className="inline-flex items-center justify-center text-2xl"
+                className={
+                  compact
+                    ? 'inline-flex items-center justify-center text-2xl'
+                    : 'inline-flex items-center justify-center rounded-full bg-raised/50 p-1 text-xl ring-1 ring-line/70'
+                }
               >
                 💍
               </span>
             ) : null}
-            <Person person={person} />
+            <Person person={person} compact={compact} />
           </span>
         ))}
       </div>
 
       {showCoupleLanguages && identity.commonLanguages.length > 0 ? (
         <div
-          className="flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-muted"
+          className={`flex flex-wrap items-center justify-center gap-1.5 text-[9px] text-muted ${compact ? '' : 'mt-0.5'}`}
           aria-label={t('couple.languages')}
         >
           <span className="inline-flex items-center gap-1 font-heading font-semibold uppercase tracking-[0.18em] text-muted">
@@ -112,7 +124,11 @@ export default function TopBarCenterIdentity({
             <span
               key={code}
               title={localizedLanguageName(code, locale)}
-              className="rounded-full border border-brand-strong/40 bg-brand/10 px-1.5 py-0.5 font-body font-medium text-brand-tint"
+              className={
+                compact
+                  ? 'rounded-full border border-brand-strong/40 bg-brand/10 px-1.5 py-0.5 font-body font-medium text-brand-tint'
+                  : 'rounded-full bg-raised/55 px-2 py-0.5 font-body text-[10px] font-medium text-muted ring-1 ring-line/70'
+              }
             >
               {localizedLanguageName(code, locale)}
             </span>
@@ -121,7 +137,15 @@ export default function TopBarCenterIdentity({
       ) : null}
 
       {showDate && dateLabel ? (
-        <div className="font-mono text-[10px] text-ink">{dateLabel}</div>
+        <div
+          className={
+            compact
+              ? 'font-mono text-[10px] text-ink'
+              : 'font-mono text-[11px] tracking-wide text-muted'
+          }
+        >
+          {dateLabel}
+        </div>
       ) : null}
     </div>
   );

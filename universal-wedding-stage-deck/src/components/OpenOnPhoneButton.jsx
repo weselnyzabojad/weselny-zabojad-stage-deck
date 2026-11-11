@@ -4,7 +4,7 @@ import QrCodeImage from './QrCodeImage';
 import { roleLabel } from '../lib/roles.js';
 import { buildOpenOnPhoneUrl, canOpenOnPhone } from '../lib/openOnPhone.js';
 import { useI18n } from '../i18n/useI18n.js';
-import { TOP_BAR_NEUTRAL_HOVER, topBarControl } from '../lib/topBarStyles.js';
+import { DESKTOP_SURFACE, DESKTOP_SURFACE_HOVER } from '../lib/topBarStyles.js';
 
 function PhoneIcon() {
   return (
@@ -97,10 +97,12 @@ export default function OpenOnPhoneButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex min-h-11 items-center gap-1.5 rounded px-3 py-2 text-xs font-semibold transition ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)} ${className}`}
+        className={`inline-flex min-h-11 items-center gap-2 px-3 py-2 text-xs font-semibold text-ink ${DESKTOP_SURFACE} ${DESKTOP_SURFACE_HOVER} ${className}`}
         title={t('openOnPhone.buttonTitle')}
       >
-        <PhoneIcon />
+        <span className="text-brand-soft" aria-hidden="true">
+          <PhoneIcon />
+        </span>
         <span>{t('openOnPhone.button')}</span>
       </button>
       <OpenOnPhoneDialog

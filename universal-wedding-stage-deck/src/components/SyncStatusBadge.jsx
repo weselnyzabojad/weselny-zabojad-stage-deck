@@ -1,14 +1,14 @@
 import syncIcon from '../assets/icons/sync.svg?raw';
 import { useI18n } from '../i18n/useI18n.js';
 import { resolveSyncState } from '../lib/syncStatus.js';
-import { topBarControl } from '../lib/topBarStyles.js';
+import { DESKTOP_SURFACE_HOVER, desktopTone, topBarControl } from '../lib/topBarStyles.js';
 
-// The chip surface is the shared white/black top-bar control; the status stays
-// readable through a coloured dot (wide) or icon (compact).
+// Desktop Sync chip: soft neutral surface, status-coloured icon and hover.
+// The compact variant stays on the pocket palette.
 const TONE_STYLES = {
-  positive: { dot: 'bg-emerald-500', icon: 'text-emerald-700' },
-  warning: { dot: 'bg-amber-500', icon: 'text-amber-600' },
-  negative: { dot: 'bg-red-600', icon: 'text-red-700' },
+  positive: { icon: 'text-emerald-700', token: 'text-tone-positive-text' },
+  warning: { icon: 'text-amber-600', token: 'text-tone-warning-text' },
+  negative: { icon: 'text-red-700', token: 'text-tone-negative-text' },
 };
 
 export default function SyncStatusBadge({
@@ -24,6 +24,9 @@ export default function SyncStatusBadge({
     { t, tp, formatTime },
   );
   const toneStyle = TONE_STYLES[tone] ?? TONE_STYLES.negative;
+  const surface = compact
+    ? topBarControl('neutral')
+    : `${desktopTone('neutral')} ${DESKTOP_SURFACE_HOVER}`;
 
   return (
     <span
@@ -32,8 +35,8 @@ export default function SyncStatusBadge({
       aria-atomic="true"
       aria-label={`Sync: ${label}`}
       title={title}
-      className={`inline-flex min-h-11 items-center gap-1.5 rounded font-semibold ${topBarControl('neutral')} ${
-        compact ? 'min-w-11 justify-center p-1.5' : 'px-2.5 py-1 text-xs'
+      className={`inline-flex min-h-11 items-center gap-2 font-semibold ${surface} ${
+        compact ? 'min-w-11 justify-center rounded p-1.5' : 'px-3 py-1.5 text-xs backdrop-blur-sm'
       }`}
     >
       {compact ? (
@@ -44,7 +47,11 @@ export default function SyncStatusBadge({
         />
       ) : (
         <>
-          <span aria-hidden="true" className={`inline-block h-1.5 w-1.5 rounded-full ${toneStyle.dot}`} />
+          <span
+            aria-hidden="true"
+            className={`inline-flex [&>svg]:h-[15px] [&>svg]:w-[15px] ${toneStyle.token}`}
+            dangerouslySetInnerHTML={{ __html: syncIcon }}
+          />
           Sync
         </>
       )}

@@ -17,3 +17,25 @@ export function topBarControl(tone = 'neutral', extra = '') {
 }
 
 export const TOP_BAR_NEUTRAL_HOVER = 'hover:bg-slate-100';
+
+// Desktop control bars (issue #707). These tokens are separate from the pocket
+// `topBarControl` palette so the #705 compact header stays untouched.
+export const DESKTOP_SURFACE =
+  'rounded-xl border border-panel-border bg-panel/80 shadow-sm backdrop-blur-md';
+export const DESKTOP_SURFACE_HOVER =
+  'transition hover:border-line-strong hover:bg-panel hover:shadow-md';
+export const DESKTOP_PILL = 'rounded-2xl border shadow-sm backdrop-blur-sm';
+
+const DESKTOP_TONES = {
+  neutral: 'border-line bg-raised/45 text-ink',
+  positive:
+    'border-tone-positive-border bg-tone-positive-bg text-tone-positive-text shadow-[0_0_18px_-8px_var(--tone-positive-glow)]',
+  warning:
+    'border-tone-warning-border bg-tone-warning-bg text-tone-warning-text shadow-[0_0_18px_-8px_var(--tone-warning-glow)]',
+  negative:
+    'border-tone-negative-border bg-tone-negative-bg text-tone-negative-text shadow-[0_0_18px_-8px_var(--tone-negative-glow)]',
+};
+
+export function desktopTone(tone = 'neutral') {
+  return DESKTOP_TONES[tone] ?? DESKTOP_TONES.neutral;
+}

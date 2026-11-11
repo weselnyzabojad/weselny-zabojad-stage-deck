@@ -12,16 +12,16 @@ describe('issue #451 permanent children state indicator', () => {
       createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: true }, inline: true }),
     );
     expect(expected).toContain('Children expected');
-    expect(expected).toContain('border-black');
-    expect(expected).toContain('bg-red-500');
+    expect(expected).toContain('border-tone-negative-border');
+    expect(expected).toContain('bg-tone-negative-bg');
     expect(expected).not.toContain('amber');
 
     const notExpected = renderToStaticMarkup(
       createElement(ChildrenExpectedBadge, { wedding: { childrenExpected: false }, inline: true }),
     );
     expect(notExpected).toContain('Children not expected');
-    expect(notExpected).toContain('border-black');
-    expect(notExpected).toContain('bg-emerald-400');
+    expect(notExpected).toContain('border-tone-positive-border');
+    expect(notExpected).toContain('bg-tone-positive-bg');
   });
 
   it('treats an absent boolean as not expected', () => {

@@ -1,6 +1,6 @@
 import babyIcon from '../assets/icons/baby.svg?raw';
 import { useI18n } from '../i18n/useI18n';
-import { topBarControl } from '../lib/topBarStyles.js';
+import { desktopTone, topBarControl } from '../lib/topBarStyles.js';
 
 // Permanent read-only state indicator for children at the wedding. Red means
 // children are expected; green means they are not. Shown in every stage role.
@@ -12,7 +12,8 @@ export default function ChildrenExpectedBadge({
   const { t } = useI18n();
   const expected = wedding?.childrenExpected === true;
   const label = t(expected ? 'children.expectedBadge' : 'children.notExpectedBadge');
-  const tone = topBarControl(expected ? 'negative' : 'positive');
+  const toneKey = expected ? 'negative' : 'positive';
+  const tone = compact ? topBarControl(toneKey) : desktopTone(toneKey);
 
   if (compact) {
     return (
@@ -38,8 +39,8 @@ export default function ChildrenExpectedBadge({
       title={label}
       className={
         inline
-          ? `inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-semibold ${tone}`
-          : `fixed bottom-3 right-3 z-banner flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold shadow-2xl ${tone}`
+          ? `inline-flex items-center gap-2 rounded-2xl px-3.5 py-1.5 text-[11px] font-semibold shadow-sm backdrop-blur-sm ${tone}`
+          : `fixed bottom-3 right-3 z-banner flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-semibold shadow-2xl backdrop-blur-sm ${tone}`
       }
     >
       <span aria-hidden="true" className="text-base">🧒</span>

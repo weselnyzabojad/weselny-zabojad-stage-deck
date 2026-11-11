@@ -32,6 +32,17 @@
   --color-alert-soft: var(--alert-soft);
   --color-alert-tint: var(--alert-tint);
   --color-alert-deep: var(--alert-deep);
+  --color-panel: var(--panel-surface);
+  --color-panel-border: var(--panel-border);
+  --color-tone-positive-bg: var(--tone-positive-bg);
+  --color-tone-positive-border: var(--tone-positive-border);
+  --color-tone-positive-text: var(--tone-positive-text);
+  --color-tone-warning-bg: var(--tone-warning-bg);
+  --color-tone-warning-border: var(--tone-warning-border);
+  --color-tone-warning-text: var(--tone-warning-text);
+  --color-tone-negative-bg: var(--tone-negative-bg);
+  --color-tone-negative-border: var(--tone-negative-border);
+  --color-tone-negative-text: var(--tone-negative-text);
 }
 
 :root,
@@ -67,6 +78,23 @@
   --alert-tint: #ffb3ba;
   --alert-deep: #1a0b12;
 
+  /* Desktop control-bar surfaces (issue #707). Glass panel + semantic tones
+     that keep the green/red/orange logic readable in the night theme. */
+  --panel-surface: rgb(11 19 43 / 0.82);
+  --panel-border: rgb(148 163 184 / 0.16);
+  --tone-positive-bg: rgb(16 185 129 / 0.16);
+  --tone-positive-border: rgb(52 211 153 / 0.42);
+  --tone-positive-text: #6ee7b7;
+  --tone-positive-glow: rgb(16 185 129 / 0.38);
+  --tone-warning-bg: rgb(245 158 11 / 0.16);
+  --tone-warning-border: rgb(251 191 36 / 0.42);
+  --tone-warning-text: #fcd34d;
+  --tone-warning-glow: rgb(245 158 11 / 0.38);
+  --tone-negative-bg: rgb(239 68 68 / 0.16);
+  --tone-negative-border: rgb(248 113 113 / 0.42);
+  --tone-negative-text: #fca5a5;
+  --tone-negative-glow: rgb(239 68 68 / 0.38);
+
   --on-accent: #ffffff;
   --focus-ring: #b8c6ff;
   --focus-shadow:
@@ -96,6 +124,22 @@
   --alert-soft: #b91c1c;
   --alert-tint: #991b1b;
   --alert-deep: #fef2f2;
+
+  /* Desktop control-bar surfaces (issue #707). Softer day-theme equivalents. */
+  --panel-surface: rgb(255 255 255 / 0.78);
+  --panel-border: rgb(100 116 139 / 0.20);
+  --tone-positive-bg: rgb(16 185 129 / 0.12);
+  --tone-positive-border: rgb(5 150 105 / 0.32);
+  --tone-positive-text: #047857;
+  --tone-positive-glow: rgb(16 185 129 / 0.22);
+  --tone-warning-bg: rgb(245 158 11 / 0.14);
+  --tone-warning-border: rgb(217 119 6 / 0.32);
+  --tone-warning-text: #b45309;
+  --tone-warning-glow: rgb(245 158 11 / 0.22);
+  --tone-negative-bg: rgb(239 68 68 / 0.12);
+  --tone-negative-border: rgb(220 38 38 / 0.30);
+  --tone-negative-text: #b91c1c;
+  --tone-negative-glow: rgb(239 68 68 / 0.22);
 
   --on-accent: #ffffff;
   --focus-ring: #002395;

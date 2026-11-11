@@ -23,7 +23,7 @@ describe('issue #253 unified top bar shell', () => {
     }
   });
   it('uses the larger clock and spacing', () => {
-    expect(read('src/components/TopBarClock.jsx')).toContain('text-2xl');
+    expect(read('src/components/TopBarClock.jsx')).toContain('text-3xl');
     expect(read('src/components/TopBarShell.jsx')).toContain('gap-4');
   });
 });

@@ -15,8 +15,9 @@ import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
-import ThemeToggle from './ThemeToggle';
+import DesktopUtilityGroup from './DesktopUtilityGroup';
 import LanguageToggle from './LanguageToggle';
+import ThemeToggle from './ThemeToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
 import {
@@ -468,8 +469,10 @@ export default function PhotographerView({
         right={(
           <>
             <OpenOnPhoneButton role={role} roomCode={roomCode} />
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+            <DesktopUtilityGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </DesktopUtilityGroup>
           </>
         )}
       />

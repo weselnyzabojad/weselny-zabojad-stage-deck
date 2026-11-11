@@ -1,4 +1,4 @@
-import { topBarControl } from '../lib/topBarStyles.js';
+import { desktopTone, topBarControl } from '../lib/topBarStyles.js';
 
 const RULES = [
   {
@@ -61,7 +61,8 @@ function RuleChip({
   compact = false,
 }) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
-  const tone = topBarControl(toneFor(normalizedStatus));
+  const toneKey = toneFor(normalizedStatus);
+  const tone = compact ? topBarControl(toneKey) : desktopTone(toneKey);
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
   // The full state stays available to assistive tech even when pocket hides
@@ -92,30 +93,23 @@ function RuleChip({
       role="note"
       aria-label={description}
       title={description}
-      className={`flex items-center gap-2 rounded-lg ${compact ? 'px-2 py-1' : 'items-start px-2.5 py-1.5'} ${tone}`}
+      className={`flex items-center gap-2 rounded-2xl px-3 py-1.5 ${tone}`}
     >
-      <span aria-hidden="true" className={`shrink-0 leading-none ${compact ? 'text-base' : 'text-lg'} ${compact ? '' : 'mt-0.5'}`}>
+      <span aria-hidden="true" className="mt-0.5 shrink-0 text-lg leading-none">
         {icon}
       </span>
       <div className="min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
+          <span className="font-heading text-[11px] font-semibold uppercase tracking-[0.18em]">
             {label}
           </span>
-          {compact ? (
+          <span className="flex items-center gap-1 font-mono text-[10px] font-semibold">
             <span
               aria-hidden="true"
-              className="inline-block h-1.5 w-1.5 rounded-full bg-current"
+              className="inline-block h-1.5 w-1.5 rounded-full bg-current shadow-[0_0_8px_currentColor]"
             />
-          ) : (
-            <span className="flex items-center gap-1 font-mono text-[10px] font-bold">
-              <span
-                aria-hidden="true"
-                className="inline-block h-1.5 w-1.5 rounded-full bg-current"
-              />
-              {statusLabel}
-            </span>
-          )}
+            {statusLabel}
+          </span>
         </div>
         {/* Note text removed per MC top-bar refinement (project.md, 2026-11-06) */}
       </div>

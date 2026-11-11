@@ -49,13 +49,11 @@ describe('issue #453 larger top-bar glyphs', () => {
     expect(renderToStaticMarkup(createElement(TopBarRoleIdentity, { role: 'speaker' }))).toContain('text-sm');
   });
 
-  it('enlarges PIN and sign-out glyphs', () => {
+  it('enlarges PIN and sign-out glyphs through the shared control', () => {
     expect(read('src/components/RoleSignOutControl.jsx')).not.toContain('text-[10px]');
     expect(read('src/components/RoleSignOutControl.jsx')).toContain('text-sm');
     const mc = read('src/views/McMasterView.jsx');
-    const pinControl = mc.slice(mc.indexOf('const pinControl'), mc.indexOf('const syncControl'));
-    expect(pinControl).not.toContain('text-[10px]');
-    expect(pinControl).toContain('text-sm');
+    expect(mc).toContain('<RoleSignOutControl');
   });
 
   it('keeps glyphs decorative and does not grow header height', () => {
