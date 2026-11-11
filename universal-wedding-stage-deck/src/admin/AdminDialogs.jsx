@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import ModalShell from '../components/ModalShell';
-import { challengeExistingFactor } from './adminApi';
+import { challengeExistingFactor, getRevisionContext } from './adminApi';
+import { readMediaLeaveTimes } from './adminMediaLeaves';
 import { roleShort } from '../lib/roles';
 
 function DialogBody({ title, description, titleId = undefined, descriptionId = undefined, children }) {
@@ -279,6 +280,112 @@ export function AdminPublishRevisionDialog({
           className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {busy ? 'Publishing…' : 'Publish revision'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
+export function AdminMediaLeaveDialog({
+  open,
+  wedding,
+  onSubmit,
+  onCancel,
+  busy = false,
+  error = '',
+}) {
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [context, setContext] = useState(null);
+  const [times, setTimes] = useState({ photo: '', camera: '' });
+
+  useEffect(() => {
+    if (!open) return undefined;
+    let active = true;
+    setLoading(true);
+    setLoadError('');
+    setContext(null);
+    setTimes({ photo: '', camera: '' });
+
+    getRevisionContext(wedding.wedding_id)
+      .then((next) => {
+        if (!active) return;
+        setContext(next);
+        setTimes(readMediaLeaveTimes(next?.wedding?.cartridge));
+      })
+      .catch((err) => {
+        if (active) setLoadError(err.message ?? 'Could not load the cartridge.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [open, wedding?.wedding_id]);
+
+  const submit = () => {
+    if (!context?.wedding?.cartridge) return;
+    onSubmit({
+      times,
+      cartridge: context.wedding.cartridge,
+      expectedRevision: Number(context.wedding.cartridge_revision ?? 0),
+    });
+  };
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title="Media leave times"
+        description={`Updates the Photographer/Cameraman leave milestones for ${wedding?.wedding_id ?? 'this wedding'} and publishes a new cartridge revision.`}
+      >
+        <p className="mb-3 rounded border border-line bg-card px-3 py-2 font-mono text-[10px] text-muted">
+          current revision {Number(wedding?.cartridge_revision ?? 0)}
+        </p>
+
+        {loading ? (
+          <p className="text-xs text-muted">Loading the published cartridge...</p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              Photographer leaves
+              <input
+                type="time"
+                value={times.photo}
+                onChange={(event) => setTimes((current) => ({ ...current, photo: event.target.value }))}
+                className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-ink"
+              />
+            </label>
+            <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              Cameraman leaves
+              <input
+                type="time"
+                value={times.camera}
+                onChange={(event) => setTimes((current) => ({ ...current, camera: event.target.value }))}
+                className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 font-mono text-xs text-ink"
+              />
+            </label>
+          </div>
+        )}
+
+        {loadError || error ? (
+          <p role="alert" className="mt-3 whitespace-pre-wrap rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {loadError || error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || loading || !context?.wedding?.cartridge}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
+        >
+          {busy ? 'Publishing...' : 'Publish revision'}
         </button>
       </div>
     </ModalShell>

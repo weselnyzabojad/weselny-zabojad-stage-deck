@@ -38,7 +38,8 @@ import AdminToast from './AdminToast';
 import AdminDrivePanel from './AdminDrivePanel';
 import AdminServiceProviders from './AdminServiceProviders';
 import AdminSpeechesPanel from './AdminSpeechesPanel';
-import { AdminPublishRevisionDialog } from './AdminDialogs';
+import { AdminMediaLeaveDialog, AdminPublishRevisionDialog } from './AdminDialogs';
+import { applyMediaLeaveTimes } from './adminMediaLeaves';
 
 // Inlined so production builds drop the demo banner and never reference it.
 const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
@@ -408,6 +409,9 @@ function AdminAppContent() {
   const [pinWedding, setPinWedding] = useState(null);
   const [pinDialog, setPinDialog] = useState(null);
   const [publishDialog, setPublishDialog] = useState(null);
+  const [mediaLeaveDialog, setMediaLeaveDialog] = useState(null);
+  const [mediaLeaveBusy, setMediaLeaveBusy] = useState(false);
+  const [mediaLeaveError, setMediaLeaveError] = useState('');
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [mfaAction, setMfaAction] = useState(null);
   const [dialogBusy, setDialogBusy] = useState(false);
@@ -637,6 +641,50 @@ function AdminAppContent() {
   const handlePublishRevision = (wedding) => {
     setDialogError('');
     setPublishDialog(wedding);
+  };
+
+  const handleMediaLeaves = (wedding) => {
+    setMediaLeaveError('');
+    setMediaLeaveDialog(wedding);
+  };
+
+  const handleMediaLeavesSubmit = async ({ times, cartridge, expectedRevision }) => {
+    if (guardReadOnly()) return;
+    const wedding = mediaLeaveDialog;
+    if (!wedding) return;
+
+    setMediaLeaveError('');
+    const patched = applyMediaLeaveTimes(cartridge, times);
+    if (patched.errors.length > 0) {
+      setMediaLeaveError(patched.errors.join('\n'));
+      return;
+    }
+
+    setMediaLeaveBusy(true);
+    try {
+      const validation = await validateCartridge(patched.cartridge);
+      if (!validation.valid) {
+        setMediaLeaveError(
+          validation.errors.map((item) => `${item.location}: ${item.message}`).join('\n'),
+        );
+        return;
+      }
+
+      askMfa(async () => {
+        const result = await publishWedding({
+          weddingId: wedding.wedding_id,
+          couple: wedding.couple,
+          date: wedding.date,
+          expectedRevision,
+          cartridge: validation.cartridge,
+        });
+        setMediaLeaveDialog(null);
+        await load();
+        pushToast(`Published revision ${result.cartridgeRevision}.`, 'success');
+      });
+    } finally {
+      setMediaLeaveBusy(false);
+    }
   };
 
   const handlePublishRevisionSubmit = async (cartridge) => {
@@ -1067,6 +1115,14 @@ function AdminAppContent() {
                       </button>
                       <button
                         type="button"
+                        onClick={() => handleMediaLeaves(wedding)}
+                        disabled={readOnly || Boolean(wedding.archived_at)}
+                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
+                      >
+                        Edit media leaves
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => handlePublishRevision(wedding)}
                         disabled={readOnly}
                         className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-ink disabled:opacity-40"
@@ -1292,6 +1348,18 @@ function AdminAppContent() {
         }}
         busy={dialogBusy}
         error={dialogError}
+      />
+
+      <AdminMediaLeaveDialog
+        open={Boolean(mediaLeaveDialog)}
+        wedding={mediaLeaveDialog}
+        onSubmit={handleMediaLeavesSubmit}
+        onCancel={() => {
+          setMediaLeaveDialog(null);
+          closeDialogs();
+        }}
+        busy={mediaLeaveBusy}
+        error={mediaLeaveError}
       />
 
       <PinResult
