@@ -4023,3 +4023,61 @@ and sync-driven `role="status"` semantics.
 **Open questions.** None.
 
 **Tracking.** [#712](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/712).
+
+### 17.24 MC Master content polish, laptop and pocket (decision, 2026-11-11)
+
+Polish the MC Master content experience on both laptop and pocket. The top bars
+are already delivered by #707/#710/#712 and stay as they are except for the
+hard-anchor banner hosting the right-side controls. This is a UI-only change:
+no timeline logic, schedule state or toggle behaviour changes.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: MC Master laptop/desktop and MC Master pocket.
+- Out of scope: all other role views, `/admin`, join/pairing screens, guest
+  song-request page, and any top-bar redesign beyond the banner hosting.
+
+**Laptop content rules.**
+
+1. **Three-column focus stack stays.** Keep the existing history/current/future
+   order, card visibility rules and interactions. Modernise only the visual
+   hierarchy.
+2. **DONE and upcoming cards** become lightweight panels with soft background
+   shading, clean status badges and consistent rounded corners.
+3. **Current step focal card** gets `shadow-md`/`shadow-lg` elevation and a
+   clean accent border. The `ON AIR` badge, delay metrics and photo/video
+   margin notes are modernised while preserving red/warning semantics and the
+   white text for the margin detail.
+4. **MC cues, warnings and checklists:** language-coded `[PL]`/`[FR]`/`[EN]`
+   pills, Children expected warnings, grand-entrance orders and sub-task
+   checklists get refined spacing, typography and smooth hover/focus feedback.
+5. **Secondary actions** such as `Show N more` become modern secondary buttons
+   without changing expand/collapse behaviour.
+6. **Hard-anchor banner controls.** While the collision/compression banner is
+   displayed, PIN, Sync, language switcher and theme toggle move into a unified
+   right-side group in that banner. When the banner disappears they return to
+   the SecondaryControlBar. The banner detail text keeps readable contrast.
+
+**Pocket content rules.**
+
+1. **No white overflow band.** The pocket shell, safe-area insets and header
+   padding are corrected so no white strip or awkward gap appears at the top of
+   the viewport.
+2. **Condensed badges.** Sto Lat/Gorzko/Oczepiny remain text-only mini pills,
+   touch-friendly, with verbose status text omitted and green/red states kept.
+3. **Short telemetry.** Delay indicators stay concise (for example `+25 min`)
+   and never overflow.
+4. **Single-column cards.** Primary cards stack vertically with `rounded-2xl`
+   corners, touch-friendly spacing and tap feedback.
+5. **Touch targets.** Buttons, checklists and quick-access triggers keep at
+   least 44×44px targets and immediate visible feedback.
+
+**Preserved invariants.** Green = ON/active, red = OFF/strict-no/alert/delay;
+no behaviour, data, accessible name, role visibility or localization changes.
+No new font dependency.
+
+**Open questions.** None.
+
+**Tracking.** [#713](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/713).
