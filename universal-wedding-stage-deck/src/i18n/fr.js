@@ -659,6 +659,7 @@ const fr = {
   'songRequest.offlineBody': "Les demandes de chansons nécessitent une connexion internet. L'envoi est désactivé jusqu'au retour de la connexion.",
   'songRequest.retry': 'Réessayer',
   'songRequest.privacy': "Seuls la chanson et l'artiste sont envoyés. La file d'attente et les détails de l'événement restent privés.",
+  'songRequest.previewOnly': 'Aperçu uniquement — les envois sont désactivés.',
   'speaker.nowSpeaking': 'Au micro',
   'speaker.scriptMissingTitle': 'Script pas encore fourni',
   'speaker.scriptMissingBody': 'Vérifiez avec le MC ; le texte peut encore être ajouté au cartridge.',

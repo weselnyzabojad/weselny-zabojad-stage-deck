@@ -33,7 +33,8 @@ describe('issue #454 DJ Standard role label', () => {
 
   it('renders the DJ view under the dj role while keeping auth identity', () => {
     const deck = read('src/StageDeck.jsx');
-    const djView = deck.slice(deck.indexOf('<DjBoothView'), deck.indexOf('</AppErrorBoundary>'));
+    const djStart = deck.indexOf('<DjBoothView');
+    const djView = deck.slice(djStart, deck.indexOf('</AppErrorBoundary>', djStart));
     expect(djView).toContain('role="dj"');
     expect(djView).not.toContain("role={currentRole === 'dj_standard' ? 'dj' : role}");
     expect(deck).toContain('role={baseRole}');
