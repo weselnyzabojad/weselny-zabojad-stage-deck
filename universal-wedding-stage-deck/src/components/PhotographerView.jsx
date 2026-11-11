@@ -159,34 +159,12 @@ function PhotoPlanBlock({ type, data }) {
           </>
         ) : null}
         {type === 'specialEffects' ? (
-          <>
-            <div className="flex flex-wrap gap-1">
-              {data.sparklers ? <DeferredBadge>✨ Sparklers</DeferredBadge> : null}
-              {data.fire ? <DeferredBadge>🔥 Fire</DeferredBadge> : null}
-              {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
-              {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
-            </div>
-            <Row
-              label="Sparklers approved"
-              value={data.approvals?.sparklers ? 'Yes' : 'No'}
-              tone={data.approvals?.sparklers ? 'text-emerald-300' : 'text-amber-200'}
-            />
-            <Row
-              label="Fire approved"
-              value={data.approvals?.fire ? 'Yes' : 'No'}
-              tone={data.approvals?.fire ? 'text-emerald-300' : 'text-amber-200'}
-            />
-            <Row
-              label="Heavy smoke approved"
-              value={data.approvals?.heavySmoke ? 'Yes' : 'No'}
-              tone={data.approvals?.heavySmoke ? 'text-emerald-300' : 'text-amber-200'}
-            />
-            <Row
-              label="Other effects approved"
-              value={data.approvals?.other ? 'Yes' : 'No'}
-              tone={data.approvals?.other ? 'text-emerald-300' : 'text-amber-200'}
-            />
-          </>
+          <div className="flex flex-wrap gap-1">
+            {data.sparklers ? <DeferredBadge>✨ Sparklers</DeferredBadge> : null}
+            {data.fire ? <DeferredBadge>🔥 Fire</DeferredBadge> : null}
+            {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
+            {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
+          </div>
         ) : null}
         {type === 'guestCoverage' ? (
           <>
