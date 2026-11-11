@@ -56,7 +56,7 @@ export default function ThemeToggle({
       aria-label={label}
       title={label}
       className={`inline-flex h-11 w-11 items-center justify-center rounded transition ${
-        variant === 'desktop'
+        variant === 'desktop' || variant === 'pocket'
           ? 'rounded-xl text-muted hover:bg-card hover:text-ink'
           : `sm:h-8 sm:w-8 ${topBarControl('neutral', TOP_BAR_NEUTRAL_HOVER)}`
       } ${className}`}

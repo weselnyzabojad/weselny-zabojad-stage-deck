@@ -26,8 +26,8 @@ describe('issue #191 pocket mini cultural chips and trimmed drift', () => {
     expect(html).toContain('Sto Lat');
     expect(html).toContain('Gorzko');
     expect(html).toContain('Oczepiny');
-    expect(html).toContain('bg-red-500');
-    expect(html).toContain('bg-emerald-400');
+    expect(html).toContain('bg-tone-negative-bg');
+    expect(html).toContain('bg-tone-positive-bg');
     expect(html).not.toContain('>STRICT NO<');
     expect(html).not.toContain('>ACTIVE<');
     expect(html).toContain('Sto Lat: STRICT NO');

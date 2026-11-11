@@ -30,7 +30,7 @@ describe('issue #198 Speeches status chip', () => {
     const html = render({ mode: 'LIGHT', speeches, compact: true });
     expect(html).toContain('Speeches');
     expect(html).not.toContain('>LIGHT<');
-    expect(html).toContain('bg-emerald-400');
+    expect(html).toContain('bg-tone-positive-bg');
   });
 
   it('renders in the MC pocket header only when speech data is supplied', () => {

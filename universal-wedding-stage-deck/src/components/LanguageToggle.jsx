@@ -22,7 +22,7 @@ export default function LanguageToggle({ className = '', variant = 'segmented' }
         onClick={() => setLocale(next)}
         aria-label={action}
         title={action}
-        className={`inline-flex min-h-11 min-w-11 items-center gap-1 rounded border-2 border-black bg-white px-2.5 py-1 font-mono text-[10px] font-bold tracking-wide text-black transition hover:bg-slate-100 ${className}`}
+        className={`inline-flex min-h-11 min-w-11 items-center gap-1 rounded-xl px-2.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] text-ink transition hover:bg-card/60 hover:text-ink ${className}`}
       >
         <span aria-hidden="true" className="text-sm leading-none">🌐</span>
         <span>{SHORT[locale]}</span>
