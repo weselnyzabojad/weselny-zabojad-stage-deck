@@ -15,7 +15,6 @@ describe('issue #441 mobile touch targets', () => {
     expect(read('src/components/SyncStatusBadge.jsx')).toContain('min-h-11');
     expect(read('src/components/OpenOnPhoneButton.jsx')).toContain('min-h-11');
     expect(read('src/components/SpeechesCard.jsx')).toContain('min-h-11');
-    expect(read('src/components/RoleShell.jsx')).toContain('min-h-11');
     expect(read('src/views/McMasterView.jsx')).toContain('min-h-11');
   });
 

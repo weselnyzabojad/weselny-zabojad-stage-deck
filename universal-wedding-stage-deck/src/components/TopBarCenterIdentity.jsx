@@ -58,7 +58,12 @@ function Person({ person }) {
 
 // Centered couple identity used by every role: names + flags with a ring logo,
 // a language row and the localized event date/weekday row.
-export default function TopBarCenterIdentity({ wedding, compact = false, showCoupleLanguages = true }) {
+export default function TopBarCenterIdentity({
+  wedding,
+  compact = false,
+  showCoupleLanguages = true,
+  showDate = true,
+}) {
   const { t, locale } = useI18n();
   const identity = resolveCoupleIdentity(wedding);
   const dateISO = resolveEventDateISO(wedding);
@@ -115,7 +120,7 @@ export default function TopBarCenterIdentity({ wedding, compact = false, showCou
         </div>
       ) : null}
 
-      {dateLabel ? (
+      {showDate && dateLabel ? (
         <div className="font-mono text-[10px] text-ink">{dateLabel}</div>
       ) : null}
     </div>

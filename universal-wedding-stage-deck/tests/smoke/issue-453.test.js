@@ -12,18 +12,21 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 const rules = { sto_lat: { status: 'YES' }, gorzko: { status: 'STRICT_NO' } };
 
 describe('issue #453 larger top-bar glyphs', () => {
-  it('uses text-lg desktop and text-base compact cultural chips', () => {
+  it('keeps the desktop cultural glyph and the compact text-only pill', () => {
     const desktop = renderToStaticMarkup(createElement(CulturalRulesBar, { rules }));
     expect(desktop).toContain('text-lg');
     const compact = renderToStaticMarkup(createElement(CulturalRulesBar, { rules, compact: true }));
-    expect(compact).toContain('text-base');
+    expect(compact).toContain('Sto Lat');
+    expect(compact).not.toContain('text-base');
   });
 
-  it('uses text-lg desktop and text-base compact speeches chip', () => {
+  it('keeps the desktop speeches glyph and the compact text-only pill', () => {
     expect(renderToStaticMarkup(createElement(SpeechesChip, { mode: 'OFF' }))).toContain('text-lg');
-    expect(
-      renderToStaticMarkup(createElement(SpeechesChip, { mode: 'OFF', compact: true })),
-    ).toContain('text-base');
+    const compact = renderToStaticMarkup(
+      createElement(SpeechesChip, { mode: 'OFF', compact: true }),
+    );
+    expect(compact).toContain('Speeches');
+    expect(compact).not.toContain('text-base');
   });
 
   it('enlarges the common-languages glyph without changing the row type', () => {

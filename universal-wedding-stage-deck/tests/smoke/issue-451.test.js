@@ -41,7 +41,7 @@ describe('issue #451 permanent children state indicator', () => {
     expect(html).toContain('min-h-11 min-w-11');
   });
 
-  it('renders in every stage role secondary bar and pocket shell', () => {
+  it('renders in every stage role secondary bar but not in the pocket shell', () => {
     for (const file of [
       'src/views/McMasterView.jsx',
       'src/components/DjBoothView.jsx',
@@ -52,10 +52,9 @@ describe('issue #451 permanent children state indicator', () => {
     }
     const speaker = read('src/components/SpeakerView.jsx');
     expect(speaker).not.toContain('<ChildrenExpectedBadge');
-    expect(speaker).toContain('showChildrenExpected={false}');
     const shell = read('src/components/RoleShell.jsx');
-    expect(shell).toContain('{showChildrenExpected ? <ChildrenExpectedBadge wedding={wedding} compact /> : null}');
-    expect(shell).toContain('showChildrenExpected = true');
+    expect(shell).not.toContain('<ChildrenExpectedBadge');
+    expect(shell).not.toContain('showChildrenExpected');
   });
 
   it('localizes the not-expected state', () => {

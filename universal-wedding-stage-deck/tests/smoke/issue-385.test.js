@@ -60,14 +60,14 @@ describe('issue #385 shared secondary control bar', () => {
     }
   });
 
-  it('places the photographer children badge in the bar and compact header', () => {
+  it('places the photographer children badge in the bar and not in the pocket header', () => {
     const photo = read('src/components/PhotographerView.jsx');
     expect(photo).toContain('<ChildrenExpectedBadge');
     expect(photo).toContain('inline');
     expect(photo).not.toContain('fixed bottom-3 right-3');
     const bar = photo.slice(photo.indexOf('<SecondaryControlBar'), photo.indexOf('<main'));
     expect(bar).toContain('<ChildrenExpectedBadge');
-    expect(read('src/components/RoleShell.jsx')).toContain('<ChildrenExpectedBadge');
+    expect(read('src/components/RoleShell.jsx')).not.toContain('<ChildrenExpectedBadge');
   });
 
   it('keeps role-specific controls in their bars', () => {

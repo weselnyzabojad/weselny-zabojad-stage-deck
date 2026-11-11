@@ -68,6 +68,24 @@ function RuleChip({
   // the visible status text.
   const description = `${label}: ${statusLabel}${cleanNote ? ` — ${cleanNote}` : ''}`;
 
+  // Pocket keeps the semantic surface and accessible state but reduces the
+  // chip to its label. Desktop keeps the icon and visible status.
+  if (compact) {
+    return (
+      <div
+        key={ruleKey}
+        role="note"
+        aria-label={description}
+        title={description}
+        className={`flex items-center rounded-full px-2.5 py-1 ${tone}`}
+      >
+        <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
+          {label}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div
       key={ruleKey}
@@ -119,7 +137,7 @@ export default function CulturalRulesBar({
       aria-label="Cultural hard rules"
       className={
         compact
-          ? 'grid grid-cols-2 items-stretch gap-1.5'
+          ? 'flex flex-wrap items-center gap-1.5'
           : 'flex flex-wrap items-center gap-2'
       }
     >

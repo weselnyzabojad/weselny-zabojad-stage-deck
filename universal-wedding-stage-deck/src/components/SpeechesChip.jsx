@@ -37,6 +37,23 @@ export default function SpeechesChip({
     .filter(Boolean)
     .join(' · ');
 
+  // Pocket chip is text-only; the full mode/count/speaker stays in the
+  // accessible name and tooltip.
+  if (compact) {
+    return (
+      <div
+        role="note"
+        aria-label={description}
+        title={description}
+        className={`inline-flex items-center rounded-full px-2.5 py-1 ${tone} ${className}`}
+      >
+        <span className="font-heading text-[10px] font-bold uppercase tracking-widest">
+          {t('speeches.chip')}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div
       role="note"

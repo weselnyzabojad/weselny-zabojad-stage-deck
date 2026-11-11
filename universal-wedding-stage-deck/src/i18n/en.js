@@ -48,7 +48,6 @@ const en = {
   'common.wedding': 'Wedding',
   'common.retry': 'Retry',
   'common.unknown': 'Unknown',
-  'pocket.details': 'Details',
   'modal.close': 'Close overlay',
   'toast.actionApplied': 'Action applied',
   'toast.undo': 'Undo',
