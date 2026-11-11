@@ -98,7 +98,6 @@ const fr = {
   'anchor.overBy': '{minutes} min de dépassement',
   'anchor.slack': '{minutes} min de marge',
   'anchor.ends': '{title} se termine à {time}.',
-  'anchor.swapOrDefer': 'Échangez ou reportez un bloc.',
 
   'join.production': 'Deck de scène de production',
   'join.title': 'Rejoindre cette salle',

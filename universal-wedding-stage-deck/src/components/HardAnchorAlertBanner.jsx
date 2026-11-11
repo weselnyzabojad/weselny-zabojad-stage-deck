@@ -50,7 +50,6 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
               })}{' '}
             </>
           ) : null}
-          {t('anchor.swapOrDefer')}
         </div>
         {actions ? (
           <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl bg-black/10 p-1">

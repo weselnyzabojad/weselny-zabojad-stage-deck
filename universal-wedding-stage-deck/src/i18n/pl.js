@@ -98,7 +98,6 @@ const pl = {
   'anchor.overBy': 'przekroczenie o {minutes} min',
   'anchor.slack': 'zapas {minutes} min',
   'anchor.ends': '{title} kończy się o {time}.',
-  'anchor.swapOrDefer': 'Zamień lub przełóż blok.',
 
   'join.production': 'Produkcyjny deck sceniczny',
   'join.title': 'Dołącz do tego pokoju',
