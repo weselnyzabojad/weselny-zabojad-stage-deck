@@ -1,4 +1,3 @@
-import { Suspense, lazy } from 'react';
 import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/eventTime.js';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
@@ -27,12 +26,6 @@ import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import { djDetailTier, getImportantSongs, resolveServicePackage } from '../lib/importantSongs';
 import { djCapabilities } from '../lib/djCapabilities.js';
-
-// Build-time dev gate: production replaces this with `null` and drops the
-// dynamic import, its chunk and all simulator strings.
-const SongRequestSimulator = import.meta.env.DEV
-  ? lazy(() => import('../dev/SongRequestSimulator.jsx'))
-  : null;
 
 export function DjSetCountdown({ wedding, clock, nextEntry }) {
   const { t } = useI18n();
@@ -197,11 +190,6 @@ export default function DjBoothView({
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
       ) : null}
-      {caps.devSimulator && SongRequestSimulator ? (
-        <Suspense fallback={null}>
-          <SongRequestSimulator />
-        </Suspense>
-      ) : null}
 
 
       <TimelineFocusStack
@@ -276,11 +264,6 @@ export default function DjBoothView({
           roomCode={songRequestRoomCode}
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
         />
-      ) : null}
-      {caps.devSimulator && SongRequestSimulator ? (
-        <Suspense fallback={null}>
-          <SongRequestSimulator />
-        </Suspense>
       ) : null}
       </div>
 

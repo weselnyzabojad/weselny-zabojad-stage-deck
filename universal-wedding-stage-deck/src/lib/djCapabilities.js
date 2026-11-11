@@ -19,6 +19,5 @@ export function djCapabilities(tier) {
     vipAuth: vip,
     openOnPhone: vip,
     coupleLanguages: vip,
-    devSimulator: vip,
   };
 }
