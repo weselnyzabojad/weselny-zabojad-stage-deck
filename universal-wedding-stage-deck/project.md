@@ -4081,3 +4081,36 @@ No new font dependency.
 **Open questions.** None.
 
 **Tracking.** [#713](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/713).
+
+### 17.25 Pocket focus-stack chronological order (decision, 2026-11-11)
+
+On pocket, the timeline currently renders Current → Completed → Upcoming. It
+must read chronologically from top to bottom: **Completed → Current →
+Upcoming**. This is an ordering-only UX change; all styling, components,
+labels, buttons and behaviour stay exactly as they are.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**View scope.**
+
+- In scope: every pocket view that renders `TimelineFocusStack` — MC Master,
+  DJ VIP, Photographer 1/2 and Cameraman.
+- Out of scope: desktop/laptop layouts (their three-column Past/Current/Future
+  arrangement is unchanged), Speaker and Venue Manager (they do not render the
+  focus stack), `/admin`, join/pairing screens and the guest song-request page.
+
+**Ordering rule.**
+
+- Compact `TimelineFocusStack` DOM and visual order becomes:
+  1. history/completed;
+  2. current/on-air;
+  3. future/upcoming.
+- Desktop keeps history-left, current-centre, future-right.
+- No sticky current card, no auto-scroll, no style, shadow, radius, colour,
+  label, button, expansion, checklist or hold-to-proceed changes.
+- Keyboard behaviour inside each zone and the accessible zone labels stay
+  unchanged. Reading order follows the new DOM order.
+
+**Open questions.** None.
+
+**Tracking.** [#716](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/716).
