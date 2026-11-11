@@ -86,15 +86,3 @@ export function savePairing(pairing, storage) {
     return false;
   }
 }
-
-export function clearPairing(storage) {
-  const store = getStorage(storage);
-  if (!store) return false;
-
-  try {
-    store.removeItem(PAIRING_STORAGE_KEY);
-    return true;
-  } catch {
-    return false;
-  }
-}

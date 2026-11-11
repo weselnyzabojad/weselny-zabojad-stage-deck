@@ -488,7 +488,6 @@ const pl = {
   'mc.rail.requiresPhotographer': 'Wymaga fotografa',
   'mc.rail.noPhotographer': 'Brak fotografa',
   'mc.title.signOut': 'Wyloguj z tej roli',
-  'mc.title.forgetPin': 'PIN sali jest sparowany — kliknij, aby zapomnieć to urządzenie',
   'mc.title.savedLocally':
     'Postęp osi czasu przetrwa blokadę tabletu lub odświeżenie przeglądarki',
   'mc.savedLocally': '💾 Zapisano lokalnie',
@@ -504,8 +503,6 @@ const pl = {
   'mc.undo.gameResults': 'Wyniki gry',
   'mc.confirm.signOut':
     'Wylogować z tej roli? Aby dołączyć ponownie, potrzebny będzie PIN roli.',
-  'mc.confirm.forgetPin':
-    'Zapomnieć PIN sali na tym urządzeniu? Postęp pozostanie zapisany lokalnie.',
   'mc.confirm.swapCue':
     'Jedna z tych czynności ma wskazówkę dla fotografa. Zamienić mimo to? Wykonawca może czekać na ten moment.',
   'mc.notice.swapped': 'Zamieniono {current} z {next}.',

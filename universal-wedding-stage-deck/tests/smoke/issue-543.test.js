@@ -8,7 +8,6 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 const NEW_KEYS = [
   'mc.title.signOut',
-  'mc.title.forgetPin',
   'mc.title.savedLocally',
   'mc.savedLocally',
   'mc.localSaveUnavailable',
@@ -22,7 +21,6 @@ const NEW_KEYS = [
   'mc.undo.mediaOverride',
   'mc.undo.gameResults',
   'mc.confirm.signOut',
-  'mc.confirm.forgetPin',
   'mc.confirm.swapCue',
   'mc.notice.swapped',
   'mc.notice.stepDone',
@@ -55,7 +53,6 @@ describe('issue #543 review follow-ups', () => {
 
     for (const key of [
       'mc.confirm.signOut',
-      'mc.confirm.forgetPin',
       'mc.confirm.swapCue',
       'mc.notice.swapped',
       'mc.notice.stepDone',
@@ -78,7 +75,7 @@ describe('issue #543 review follow-ups', () => {
     const view = read('src/views/McMasterView.jsx');
     const pin = read('src/components/RoleSignOutControl.jsx');
 
-    for (const key of ['mc.title.signOut', 'mc.title.forgetPin']) {
+    for (const key of ['mc.title.signOut']) {
       expect(pin).toContain(`t('${key}'`);
     }
     for (const key of [
@@ -99,7 +96,7 @@ describe('issue #543 review follow-ups', () => {
     const control = read('src/components/RoleSignOutControl.jsx');
     expect(control).toContain("from '../i18n/useI18n'");
     expect(control).toContain("t('mc.title.signOut')");
-    expect(control).toContain("t('mc.title.forgetPin')");
+    expect(control).not.toContain("t('mc.title.forgetPin')");
   });
 
   it('defines every new key in all three locales', () => {

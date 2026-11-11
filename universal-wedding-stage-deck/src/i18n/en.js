@@ -488,7 +488,6 @@ const en = {
   'mc.rail.requiresPhotographer': 'Requires photographer',
   'mc.rail.noPhotographer': 'No photographer available',
   'mc.title.signOut': 'Sign out of this role',
-  'mc.title.forgetPin': 'Paired room PIN — click to forget this device',
   'mc.title.savedLocally': 'Timeline progress survives tablet lock or browser refresh',
   'mc.savedLocally': '💾 Saved locally',
   'mc.localSaveUnavailable': '⚠️ Local save unavailable',
@@ -502,8 +501,6 @@ const en = {
   'mc.undo.mediaOverride': 'Media override changed',
   'mc.undo.gameResults': 'Game results',
   'mc.confirm.signOut': 'Sign out of this role? You will need the role PIN to rejoin.',
-  'mc.confirm.forgetPin':
-    'Forget the room PIN on this device? Timeline progress stays saved locally.',
   'mc.confirm.swapCue':
     'One of these steps carries a photographer cue. Swap anyway? The vendor may be waiting for that moment.',
   'mc.notice.swapped': 'Swapped {current} with {next}.',

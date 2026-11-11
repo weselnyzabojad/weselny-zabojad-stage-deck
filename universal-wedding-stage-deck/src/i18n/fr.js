@@ -490,7 +490,6 @@ const fr = {
   'mc.rail.requiresPhotographer': 'Nécessite un photographe',
   'mc.rail.noPhotographer': 'Aucun photographe disponible',
   'mc.title.signOut': 'Se déconnecter de ce rôle',
-  'mc.title.forgetPin': 'PIN de la salle associé — cliquez pour oublier cet appareil',
   'mc.title.savedLocally':
     'La progression de la chronologie survit au verrouillage de la tablette ou au rafraîchissement du navigateur',
   'mc.savedLocally': '💾 Enregistré localement',
@@ -506,8 +505,6 @@ const fr = {
   'mc.undo.gameResults': 'Résultats du jeu',
   'mc.confirm.signOut':
     'Se déconnecter de ce rôle ? Vous aurez besoin du PIN du rôle pour rejoindre.',
-  'mc.confirm.forgetPin':
-    'Oublier le PIN de la salle sur cet appareil ? La progression reste enregistrée localement.',
   'mc.confirm.swapCue':
     'L’une de ces étapes comporte une consigne photographe. Échanger quand même ? Le prestataire attend peut-être ce moment.',
   'mc.notice.swapped': '{current} échangée avec {next}.',

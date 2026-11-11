@@ -29,7 +29,7 @@ describe('issue #157 MC top bar simplification', () => {
     ]) {
       expect(header, control).toContain(control);
     }
-    expect(mc).toContain('onSignOut={handleUnpair}');
+    expect(mc).toContain('onSignOut={IS_PRODUCTION ? handleUnpair : undefined}');
     expect(mc).toContain('<RoleSignOutControl');
     expect(mc).toContain('<SyncStatusBadge');
   });

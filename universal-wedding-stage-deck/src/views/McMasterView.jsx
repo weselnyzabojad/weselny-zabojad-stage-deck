@@ -449,7 +449,7 @@ export default function McMasterView({ model }) {
       isProduction={IS_PRODUCTION}
       role={roleSession?.role ?? currentRole ?? 'mc'}
       pin={pairing?.pin ?? null}
-      onSignOut={handleUnpair}
+      onSignOut={IS_PRODUCTION ? handleUnpair : undefined}
     />
   );
   const syncControl = (
