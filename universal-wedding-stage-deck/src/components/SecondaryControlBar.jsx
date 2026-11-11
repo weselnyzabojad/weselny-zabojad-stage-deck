@@ -11,7 +11,9 @@ export default function SecondaryControlBar({
   if (!left && !center && !right) return null;
 
   return (
-    <div className={`border-b border-line bg-card/95 px-4 py-1.5 ${className}`}>
+    <div
+      className={`border-b border-panel-border bg-panel/70 px-4 py-2 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-panel/55 ${className}`}
+    >
       {/* Compact: stacked rows so controls stay readable at 360px. Wide:
           the original 1fr / auto / 1fr composition. */}
       <div className="grid w-full grid-cols-1 items-center gap-1.5 sm:grid-cols-[1fr_auto_1fr] sm:gap-2">

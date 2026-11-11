@@ -20,8 +20,9 @@ import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
-import ThemeToggle from './ThemeToggle';
+import DesktopUtilityGroup from './DesktopUtilityGroup';
 import LanguageToggle from './LanguageToggle';
+import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import { djDetailTier, getImportantSongs, resolveServicePackage } from '../lib/importantSongs';
@@ -258,8 +259,10 @@ export default function DjBoothView({
         right={(
           <>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+            <DesktopUtilityGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </DesktopUtilityGroup>
           </>
         )}
       />

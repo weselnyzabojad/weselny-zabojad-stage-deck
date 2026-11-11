@@ -18,7 +18,7 @@ export default function TopBarRoleIdentity({ role = 'mc', tier = null, className
   return (
     <span
       title={t('roles.fixed')}
-      className={`inline-flex items-center gap-1 rounded border-2 border-black bg-white px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-black ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-line bg-raised/50 px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ink shadow-sm backdrop-blur-sm ${className}`}
     >
       {t('roles.role', { short })}
       <span aria-hidden="true" className="shrink-0 text-sm leading-none">

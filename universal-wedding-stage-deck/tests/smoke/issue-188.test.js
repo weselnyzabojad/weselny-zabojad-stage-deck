@@ -20,9 +20,10 @@ describe('issue #188 static role element', () => {
   });
 
   it('keeps the MC sign-out role/PIN element', () => {
-    expect(mc).toContain('onClick={handleUnpair}');
-    expect(mc).toContain('roleSession.role.toUpperCase()');
-    expect(mc).toContain('pairing.pin');
+    expect(mc).toContain('<RoleSignOutControl');
+    expect(mc).toContain('onSignOut={handleUnpair}');
+    expect(mc).toContain('role={roleSession.role}');
+    expect(mc).toContain('pin={pairing.pin}');
   });
 
   it('adds the non-clickable role element to every companion role', () => {

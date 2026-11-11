@@ -43,23 +43,23 @@ describe('issue #155 shared top-bar controls', () => {
     ).not.toContain('DJ Standard');
   });
 
-  it('shows only Sync text with the approved status dot mapping', () => {
+  it('shows only Sync text with the approved status icon mapping', () => {
     const connected = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connected' }),
     );
     expect(connected).toContain('>Sync<');
-    expect(connected).toContain('bg-emerald-500');
+    expect(connected).toContain('text-tone-positive-text');
     expect(connected).not.toContain('>Cloud synced<');
 
     const connecting = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'connecting' }),
     );
-    expect(connecting).toContain('bg-amber-500');
+    expect(connecting).toContain('text-tone-warning-text');
 
     const offline = renderToStaticMarkup(
       createElement(SyncStatusBadge, { status: 'offline' }),
     );
-    expect(offline).toContain('bg-red-600');
+    expect(offline).toContain('text-tone-negative-text');
 
     const pending = renderToStaticMarkup(
       createElement(SyncStatusBadge, {
@@ -67,7 +67,7 @@ describe('issue #155 shared top-bar controls', () => {
         outbox: { attempts: 2, nextAttemptAt: null, lastError: null },
       }),
     );
-    expect(pending).toContain('bg-amber-500');
+    expect(pending).toContain('text-tone-warning-text');
     expect(pending).toContain('Sync: Pending sync');
   });
 

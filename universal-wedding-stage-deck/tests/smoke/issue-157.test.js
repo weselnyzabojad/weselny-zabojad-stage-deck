@@ -30,7 +30,8 @@ describe('issue #157 MC top bar simplification', () => {
     ]) {
       expect(header, control).toContain(control);
     }
-    expect(mc).toContain('onClick={handleUnpair}');
+    expect(mc).toContain('onSignOut={handleUnpair}');
+    expect(mc).toContain('<RoleSignOutControl');
     expect(mc).toContain('<SyncStatusBadge');
   });
 

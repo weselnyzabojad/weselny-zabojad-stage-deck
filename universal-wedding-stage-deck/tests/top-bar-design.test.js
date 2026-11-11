@@ -11,18 +11,19 @@ import { buildDriftReport } from '../src/lib/driftEngine.js';
 const render = (element) => renderToStaticMarkup(element);
 
 const WHITE = 'border-black bg-white text-black';
-const GREEN = 'border-black bg-emerald-400 text-black';
-const RED = 'border-black bg-red-500 text-black';
+const NEUTRAL = 'border-line bg-raised/45 text-ink';
+const GREEN = 'border-tone-positive-border bg-tone-positive-bg text-tone-positive-text';
+const RED = 'border-tone-negative-border bg-tone-negative-bg text-tone-negative-text';
 
 describe('top-bar control colours', () => {
-  it('keeps undecided cultural rules on the white/black default', () => {
+  it('keeps undecided cultural rules on the neutral surface', () => {
     const html = render(
       createElement(CulturalRulesBar, {
         rules: { sto_lat: { status: 'TBC' }, gorzko: { status: 'TBC' } },
         oczepinyStatus: { state: 'ON' },
       }),
     );
-    expect(html).toContain(WHITE);
+    expect(html).toContain(NEUTRAL);
   });
 
   it('turns requested cultural rules green and refused ones red', () => {

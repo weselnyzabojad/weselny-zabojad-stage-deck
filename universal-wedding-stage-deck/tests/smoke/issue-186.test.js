@@ -14,8 +14,9 @@ describe('issue #186 enlarged top-bar clock', () => {
   it('renders the current time larger and in tabular numerals', () => {
     const html = renderToStaticMarkup(createElement(TopBarClock, { clock }));
     expect(html).toContain('18:42:07');
-    expect(html).toContain('text-2xl');
+    expect(html).toContain('text-3xl');
     expect(html).toContain('tabular-nums');
+    expect(html).toContain('tracking-[0.08em]');
   });
 
   it('keeps the clock to HH:MM:SS only', () => {

@@ -16,13 +16,14 @@ describe('issue #198 Speeches status chip', () => {
     const html = render({ mode: 'OFF', speeches: [] });
     expect(html).toContain('Speeches');
     expect(html).toContain('OFF');
-    expect(html).toContain('bg-red-500');
+    expect(html).toContain('bg-tone-negative-bg');
+    expect(html).toContain('text-tone-negative-text');
   });
 
   it('uses green for LIGHT, COMPLEX and a live speech', () => {
-    expect(render({ mode: 'LIGHT', speeches })).toContain('bg-emerald-400');
-    expect(render({ mode: 'COMPLEX', speeches })).toContain('bg-emerald-400');
-    expect(render({ mode: 'COMPLEX', speeches, activeSpeechId: 'speech_a' })).toContain('bg-emerald-400');
+    expect(render({ mode: 'LIGHT', speeches })).toContain('bg-tone-positive-bg');
+    expect(render({ mode: 'COMPLEX', speeches })).toContain('bg-tone-positive-bg');
+    expect(render({ mode: 'COMPLEX', speeches, activeSpeechId: 'speech_a' })).toContain('bg-tone-positive-bg');
   });
 
   it('keeps the chip visible but hides visible status text in compact mode', () => {

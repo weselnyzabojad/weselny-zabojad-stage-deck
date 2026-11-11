@@ -3,8 +3,9 @@ import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
-import ThemeToggle from './ThemeToggle';
+import DesktopUtilityGroup from './DesktopUtilityGroup';
 import LanguageToggle from './LanguageToggle';
+import ThemeToggle from './ThemeToggle';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
@@ -473,8 +474,10 @@ export default function VenueManagerView({
         )}
         right={(
           <>
-            <LanguageToggle />
-            <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+            <DesktopUtilityGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </DesktopUtilityGroup>
           </>
         )}
       />

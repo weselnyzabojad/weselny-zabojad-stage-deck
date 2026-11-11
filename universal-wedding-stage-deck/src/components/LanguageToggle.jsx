@@ -31,6 +31,41 @@ export default function LanguageToggle({ className = '', variant = 'segmented' }
     );
   }
 
+  // Desktop role bars: the segmented control lives inside a shared utility
+  // surface (`DesktopUtilityGroup`), so it draws only the active cell.
+  if (variant === 'desktop') {
+    return (
+      <div
+        role="radiogroup"
+        aria-label={t('language.label')}
+        title={t('language.switch')}
+        className={`inline-flex items-center gap-0.5 ${className}`}
+      >
+        {SUPPORTED_LOCALES.map((code) => {
+          const active = code === locale;
+          return (
+            <button
+              key={code}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              aria-label={t(`language.${code}`)}
+              title={t(`language.${code}`)}
+              onClick={() => setLocale(code)}
+              className={`min-h-11 min-w-11 rounded-xl px-2.5 py-1 font-mono text-[10px] font-bold tracking-[0.08em] transition ${
+                active
+                  ? 'bg-card text-ink shadow-sm ring-1 ring-line-strong'
+                  : 'text-muted hover:bg-card/60 hover:text-ink'
+              }`}
+            >
+              {SHORT[code]}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div
       role="radiogroup"

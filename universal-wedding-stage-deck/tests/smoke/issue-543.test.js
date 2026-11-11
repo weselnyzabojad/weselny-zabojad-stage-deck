@@ -76,10 +76,12 @@ describe('issue #543 review follow-ups', () => {
 
   it('translates the MC pin, local-save and undo titles', () => {
     const view = read('src/views/McMasterView.jsx');
+    const pin = read('src/components/RoleSignOutControl.jsx');
 
+    for (const key of ['mc.title.signOut', 'mc.title.forgetPin']) {
+      expect(pin).toContain(`t('${key}'`);
+    }
     for (const key of [
-      'mc.title.signOut',
-      'mc.title.forgetPin',
       'mc.title.savedLocally',
       'mc.savedLocally',
       'mc.localSaveUnavailable',
