@@ -245,6 +245,17 @@ export default function StageDeck({
     allowedRoles: allowedViewRoles,
     baseRole,
   });
+  const devDjPreviewId =
+    import.meta.env.DEV && ['dj_mark', 'dj_szymoniak'].includes(currentRole)
+      ? currentRole
+      : null;
+  const djViewWedding = devDjPreviewId
+    ? {
+        ...WEDDING,
+        djIdentityId: devDjPreviewId,
+        servicePackage: 'HOST_AND_DJ_VIP',
+      }
+    : WEDDING;
   const productionDjViewAllowed =
     isProduction && allowedViewRoles.includes('mc') && allowedViewRoles.includes('dj');
   const showDjCues = availableRoles.includes("dj");
@@ -481,7 +492,7 @@ export default function StageDeck({
     );
   }
 
-  if (currentRole === "dj" || currentRole === "dj_standard") {
+  if (currentRole === "dj" || currentRole === "dj_standard" || devDjPreviewId) {
     return (
       <>
         <AppErrorBoundary
@@ -492,7 +503,7 @@ export default function StageDeck({
           lastKnownStep={lastKnownStep}
         >
           <DjBoothView
-            wedding={WEDDING}
+            wedding={djViewWedding}
             timeline={timeline}
             projectedFinish={driftReport.projectedFinish}
             clock={driftReport.clock}
@@ -502,7 +513,7 @@ export default function StageDeck({
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             servicePackage={
-              currentRole === 'dj_standard' ? 'HOST_AND_DJ_STANDARD' : WEDDING.servicePackage
+              currentRole === 'dj_standard' ? 'HOST_AND_DJ_STANDARD' : djViewWedding.servicePackage
             }
             role="dj"
             theme={theme}
