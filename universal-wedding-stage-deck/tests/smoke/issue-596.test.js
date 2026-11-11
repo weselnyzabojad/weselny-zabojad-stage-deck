@@ -11,8 +11,9 @@ describe('issue #596 venue mandatory milestones', () => {
     expect(view).toContain("addMilestone('OTHER')");
     expect(view).not.toContain("addMilestone('PHOTO')");
     expect(view).not.toContain("addMilestone('CAMERA')");
-    expect(view).toContain('isHardAnchor');
-    expect(view).toContain('onHardAnchor');
+    expect(view).not.toContain('onHardAnchor');
+    expect(view).not.toContain('checked={course.isHardAnchor');
+    expect(view).not.toContain('checked={milestone.isHardAnchor');
   });
 
   it('localizes the remaining milestone editor', () => {
@@ -22,7 +23,6 @@ describe('issue #596 venue mandatory milestones', () => {
         'venueManager.milestones',
         'venueManager.addMilestone',
         'venueManager.kind.OTHER',
-        'venueManager.isHardAnchor',
       ]) {
         expect(source, `${locale}:${key}`).toContain(key);
       }
