@@ -60,8 +60,8 @@ export default function RoleShell({
   const badgeTone = syncState.tone === 'positive' ? 'positive' : 'negative';
 
   return (
-    <div className="font-body min-h-dvh flex flex-col overflow-x-clip bg-page text-ink">
-      <header className="border-b border-panel-border bg-panel/85 px-3 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top))] shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-panel/70">
+    <div className="font-body min-h-dvh flex flex-col bg-page text-ink">
+      <header className="border-b border-panel-border bg-panel/85 px-3 py-2.5 shadow-sm backdrop-blur-xl supports-[backdrop-filter]:bg-panel/70">
         <div className="flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-1.5">
             <span
@@ -107,7 +107,7 @@ export default function RoleShell({
         </div>
       </header>
 
-      <main id="phone-main" className="min-h-0 flex-1 overflow-x-clip overflow-y-auto px-4 py-4">
+      <main id="phone-main" className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
         {children}
       </main>
 

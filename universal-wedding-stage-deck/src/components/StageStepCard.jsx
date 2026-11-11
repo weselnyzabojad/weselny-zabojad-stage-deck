@@ -27,41 +27,10 @@ const VARIANTS = {
   },
 };
 
-// MC Master-only visual refinement (#713). Other role views keep VARIANTS so
-// their existing layouts are untouched.
-const POLISHED_VARIANTS = {
-  done: {
-    card: 'border-line border-l-4 border-l-emerald-500/70 bg-emerald-500/5 shadow-sm',
-    chip: 'border-tone-positive-border bg-tone-positive-bg text-tone-positive-text',
-    status: 'done',
-  },
-  current: {
-    card: 'timeline-focus-current rounded-2xl border-2 border-brand-strong bg-card shadow-lg ring-1 ring-brand-strong/40',
-    chip: 'border-brand-strong/60 bg-brand/15 text-brand-soft shadow-sm',
-    status: 'active',
-  },
-  next: {
-    card: 'border-line border-l-4 border-l-amber-500/70 bg-amber-500/5 shadow-sm',
-    chip: 'border-tone-warning-border bg-tone-warning-bg text-tone-warning-text',
-    status: 'next',
-  },
-  later: {
-    card: 'border-line bg-card/60 shadow-sm',
-    chip: 'border-line bg-raised/60 text-muted',
-    status: 'planned',
-  },
-};
-
 function driftTone(minutes) {
   return minutes > 0
     ? 'border-alert/60 bg-alert/20 text-alert-soft'
     : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600';
-}
-
-function polishedDriftTone(minutes) {
-  return minutes > 0
-    ? 'border-tone-negative-border bg-tone-negative-bg text-tone-negative-text'
-    : 'border-tone-positive-border bg-tone-positive-bg text-tone-positive-text';
 }
 
 function driftLabel(minutes) {
@@ -84,7 +53,6 @@ export default function StageStepCard({
   onToggle,
   collapsible = false,
   photographerAvailable = null,
-  polished = false,
   children,
 }) {
   const { t } = useI18n();
@@ -92,8 +60,7 @@ export default function StageStepCard({
   const step = entry?.step;
   if (!step) return null;
 
-  const variants = polished ? POLISHED_VARIANTS : VARIANTS;
-  const meta = variants[variant] ?? variants.later;
+  const meta = VARIANTS[variant] ?? VARIANTS.later;
   const statusLabel = t(`mc.rail.status.${meta.status}`);
   const summary = stageRailSummary(entry);
   const drift = entry?.projectedDriftMinutes;
@@ -108,22 +75,16 @@ export default function StageStepCard({
       <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span
-              className={`${polished ? 'rounded-full px-2 py-0.5 shadow-sm' : 'rounded px-1.5 py-0.5'} border font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}
-            >
+            <span className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}>
               {statusLabel}
             </span>
             {step.game?.requiresPhotographer ? (
-              <span
-                className={`${polished ? 'rounded-full px-2' : 'rounded px-1.5'} border border-amber-500/40 bg-amber-500/10 py-0.5 font-mono text-[9px] font-bold text-amber-600`}
-              >
+              <span className="rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-600">
                 {t('mc.rail.requiresPhotographer')}
               </span>
             ) : null}
             {step.game?.requiresPhotographer && photographerAvailable === false ? (
-              <span
-                className={`${polished ? 'rounded-full px-2' : 'rounded px-1.5'} border border-alert/60 bg-alert/20 py-0.5 font-mono text-[9px] font-bold text-alert-soft`}
-              >
+              <span className="rounded border border-alert/60 bg-alert/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-alert-soft">
                 {t('mc.rail.noPhotographer')}
               </span>
             ) : null}
@@ -146,9 +107,7 @@ export default function StageStepCard({
   );
 
   return (
-    <article
-      className={`${polished ? 'rounded-2xl border p-3.5 transition-shadow' : 'rounded-xl border p-3'} ${meta.card}`}
-    >
+    <article className={`rounded-xl border p-3 ${meta.card}`}>
       {collapsible ? (
         <button
           type="button"
@@ -170,9 +129,7 @@ export default function StageStepCard({
         hidden={!isOpen}
         className={`mt-2 ${variant === 'current' ? 'current-step-body' : ''}`}
       >
-        <div
-          className={`flex flex-wrap items-center justify-between gap-1.5 border-t pt-2 text-[11px] text-muted ${polished ? 'border-line/70' : 'border-line/60'}`}
-        >
+        <div className="flex flex-wrap items-center justify-between gap-1.5 border-t border-line/60 pt-2 text-[11px] text-muted">
           <span className="truncate">📍 {step.location ?? '—'}</span>
           <div className="flex items-center gap-1.5 font-mono">
             {typeof step.durationMin === 'number' ? (
@@ -181,7 +138,7 @@ export default function StageStepCard({
             {drift ? (
               <span
                 title={entry.driftLabel ?? 'Projected drift vs plan'}
-                className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${polished ? polishedDriftTone(drift) : driftTone(drift)}`}
+                className={`rounded border px-1.5 py-0.5 text-[10px] font-bold ${driftTone(drift)}`}
               >
                 {driftLabel(drift)}
               </span>

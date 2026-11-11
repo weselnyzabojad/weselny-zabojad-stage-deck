@@ -9,17 +9,16 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
   if (!warning) return null;
 
   const collision = warning.status === 'collision';
-  // Solid alert surfaces keep the white detail text readable in both themes.
   const tone = collision
-    ? 'border-alert/80 bg-alert/90 text-on-accent'
-    : 'border-amber-600/80 bg-amber-800/90 text-amber-50';
+    ? 'border-alert/80 bg-alert/25 text-alert-tint'
+    : 'border-amber-600/80 bg-amber-950/80 text-amber-100';
 
   return (
     <section
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-      className={`flex flex-wrap items-center justify-between gap-3 border-y-2 px-4 py-2.5 shadow-lg backdrop-blur-md ${tone}`}
+      className={`flex flex-wrap items-center justify-between gap-3 border-y-2 px-4 py-2 shadow-lg ${tone}`}
     >
       <div className="flex min-w-0 items-center gap-3">
         <span aria-hidden="true" className="text-2xl leading-none">
@@ -53,7 +52,7 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
           {t('anchor.swapOrDefer')}
         </div>
         {actions ? (
-          <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl bg-black/10 p-1">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             {actions}
           </div>
         ) : null}

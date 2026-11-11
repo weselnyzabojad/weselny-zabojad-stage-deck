@@ -49,7 +49,6 @@ function FocusZone({
   onToggleExpanded,
   showMoreLabel,
   showLessLabel,
-  polished = false,
 }) {
   return (
     <section
@@ -61,9 +60,7 @@ function FocusZone({
         {label} ({entries.length})
       </h2>
       {entries.length === 0 ? (
-        <p
-          className={`${polished ? 'rounded-xl bg-card/40 px-3.5 py-2.5 shadow-sm' : 'rounded-lg bg-card/40 px-3 py-2'} border border-dashed border-line text-[11px] text-muted`}
-        >
+        <p className="rounded-lg border border-dashed border-line bg-card/40 px-3 py-2 text-[11px] text-muted">
           {empty}
         </p>
       ) : (
@@ -92,7 +89,6 @@ function FocusZone({
                     expanded={openKey === key}
                     onToggle={() => onToggle(zone, key)}
                     photographerAvailable={photographerAvailable}
-                    polished={polished}
                   >
                     {entryBodies?.[key] ?? null}
                   </StageStepCard>
@@ -106,11 +102,7 @@ function FocusZone({
               data-focus-expander={zone}
               aria-expanded={expanded}
               onClick={onToggleExpanded}
-              className={`self-start border px-3 py-1.5 text-[11px] font-semibold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft ${
-                polished
-                  ? 'rounded-xl border-panel-border bg-panel/60 shadow-sm backdrop-blur-sm transition hover:border-line-strong hover:bg-panel hover:shadow-md'
-                  : 'rounded-lg border-line-strong bg-raised hover:bg-line'
-              }`}
+              className="self-start rounded-lg border border-line-strong bg-raised px-3 py-1.5 text-[11px] font-semibold text-ink hover:bg-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
             >
               {expanded ? showLessLabel : showMoreLabel}
             </button>
@@ -142,7 +134,6 @@ export default function TimelineFocusStack({
   zoneScroll = true,
   entryBodies = null,
   photographerAvailable = null,
-  polished = false,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
@@ -207,7 +198,6 @@ export default function TimelineFocusStack({
           onToggleExpanded={() => toggleExpanded('history')}
           showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.history })}
           showLessLabel={t('mc.rail.showLess')}
-          polished={polished}
         />
       </div>
 
@@ -234,7 +224,6 @@ export default function TimelineFocusStack({
                   entry={stack.current}
                   variant="current"
                   photographerAvailable={photographerAvailable}
-                  polished={polished}
                 >
                   {entryBodies?.[stack.current.step?.id] ?? null}
                   {currentBody}
@@ -268,7 +257,6 @@ export default function TimelineFocusStack({
           onToggleExpanded={() => toggleExpanded('future')}
           showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.future })}
           showLessLabel={t('mc.rail.showLess')}
-          polished={polished}
         />
       </div>
     </section>

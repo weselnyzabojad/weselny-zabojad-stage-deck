@@ -28,13 +28,14 @@ describe('issue #385 shared secondary control bar', () => {
     const mc = read('src/views/McMasterView.jsx');
     const topBarEnd = mc.indexOf('<SecondaryControlBar');
     expect(topBarEnd).toBeGreaterThan(mc.indexOf('<TopBarShell'));
-    const bar = mc.slice(topBarEnd, mc.lastIndexOf('<HardAnchorAlertBanner'));
+    const bar = mc.slice(topBarEnd, mc.indexOf('{hasAnchorWarning ?'));
     expect(bar).toContain('<DriftPill');
     expect(bar).toContain('{pinControl}');
     expect(bar).toContain('{syncControl}');
     expect(bar).toContain('<ChildrenExpectedBadge');
     expect(bar).toContain('<OpenOnPhoneButton');
-    expect(bar).toContain('utilityGroup');
+    expect(bar).toContain('<LanguageToggle');
+    expect(bar).toContain('<ThemeToggle');
   });
 
   it('removes the moved controls from the MC top bar', () => {
