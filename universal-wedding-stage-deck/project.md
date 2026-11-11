@@ -4524,3 +4524,46 @@ or state-contract change.
 **Open questions.** None.
 
 **Tracking.** [#755](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/755).
+
+### 17.35 VIP DJ co-branding logo asset loading fix (decision, 2026-11-11)
+
+Fix the DJ Mark and DJ Szymoniak co-branding logos in the DJ VIP laptop top
+bar so they load from valid bundled asset URLs instead of a broken image icon
+and raw alt text. Preserve the enlarged #753 sizing and hide the logo silently
+when an asset is genuinely unavailable.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map or
+cartridge change. \`resolveDjIdentityId\` remains the identity source.
+
+**View scope.**
+
+- In scope: \`VipDjLogo\`, the DJ VIP laptop \`brand\` slot in \`DjBoothView\`, the
+  dev DJ Mark/Szymoniak previews, the two PNGs under
+  \`src/assets/img/dj-vip/\`, and regression tests for the rendered asset URL.
+- Out of scope: MC, Photographer, Speaker and Venue Manager top bars; DJ VIP
+  pocket; the primary logo; VIP identity rules; admin; schema/parser/cartridge
+  data; the approved #753 dimensions.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#757](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/757) | Explicit build-safe logo imports, valid rendered \`src\`, silent missing-asset fallback | Existing #726/#738/#753 work |
+
+**Task details.**
+
+1. **Asset resolution.** Replace the \`import.meta.glob\` indirection in
+   \`VipDjLogo\` with explicit static imports for \`logo_mark.png\` and
+   \`logo_szymoniak.png\` so Vite always fingerprints and emits the referenced
+   files. Keep the identity mapping limited to \`dj_mark\` and \`dj_szymoniak\`.
+2. **Rendering and fallback.** Render the existing \`BrandFrame large\` with the
+   image at \`h-16\`, \`max-w-[220px]\` and \`object-contain\`, preserving the
+   #753 size and aspect ratio. Keep \`alt\`/\`title\` with the DJ display name;
+   if the asset is missing or fails to load, render nothing at all.
+3. **Verification.** Add a regression test that renders both identities and
+   asserts a non-empty image \`src\`, plus the silent fallback. Confirm both PNGs
+   are valid and that \`npm run build\` emits both hashed assets.
+
+**Open questions.** None.
+
+**Tracking.** [#757](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/757).
