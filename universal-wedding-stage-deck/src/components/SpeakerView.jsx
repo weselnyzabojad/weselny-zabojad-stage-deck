@@ -315,6 +315,26 @@ export default function SpeakerView({
 
       <SecondaryControlBar
         left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
+        center={
+          activeSpeech?.speaker?.name ? (
+            <span
+              aria-label={`${t('speaker.nowSpeaking')}: ${activeSpeech.speaker.name}${
+                activeSpeech.speaker.relationship
+                  ? ` · ${activeSpeech.speaker.relationship}`
+                  : ''
+              }`}
+              className="inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-full border border-panel-border bg-panel/70 px-3 py-1 font-heading text-xs font-semibold tracking-wide text-ink shadow-sm backdrop-blur-sm"
+            >
+              <span className="truncate">{activeSpeech.speaker.name}</span>
+              {activeSpeech.speaker.relationship ? (
+                <>
+                  <span aria-hidden="true" className="text-muted">·</span>
+                  <span className="truncate text-muted">{activeSpeech.speaker.relationship}</span>
+                </>
+              ) : null}
+            </span>
+          ) : null
+        }
         right={(
           <>
             <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
