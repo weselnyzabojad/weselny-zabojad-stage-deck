@@ -21,6 +21,18 @@ describe('issue #794 Sentry initialisation', () => {
     expect(isSentryEnabled(undefined)).toBe(false);
   });
 
+  it('defaults to the public project DSN when none is configured', () => {
+    const NO_DSN_ENV = { PROD: true, VITE_SENTRY_ENVIRONMENT: 'production' };
+    expect(isSentryEnabled(NO_DSN_ENV)).toBe(true);
+    expect(isSentryEnabled({ ...NO_DSN_ENV, PROD: false })).toBe(false);
+    expect(getSentryConfig(NO_DSN_ENV).dsn).toBe(
+      'https://df558379050185fc0423090d4aff6591@o4512420559716352.ingest.de.sentry.io/4512420575051856',
+    );
+    expect(getSentryConfig({ ...NO_DSN_ENV, VITE_SENTRY_DSN: 'https://custom@example.com/2' }).dsn).toBe(
+      'https://custom@example.com/2',
+    );
+  });
+
   it('builds a privacy-safe free-tier configuration', () => {
     const config = getSentryConfig(PROD_ENV);
     expect(config.dsn).toBe(PROD_ENV.VITE_SENTRY_DSN);

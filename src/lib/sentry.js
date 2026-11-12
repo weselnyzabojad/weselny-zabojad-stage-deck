@@ -1,21 +1,35 @@
 // Single Sentry entry point (issue #794).
 //
-// Production-only and opt-in: nothing is initialised unless the build is a
-// Vite production build with a public `VITE_SENTRY_DSN`. Local dev, demo
-// builds and local-only deployments never create a Sentry client or network
-// request. Free-tier budget: 10% browser traces and error-only Replay.
+// Production-only: nothing is initialised outside a Vite production build.
+// The public project DSN below is the default so production reporting works
+// without extra deploy configuration; `VITE_SENTRY_DSN` overrides it, and an
+// explicitly empty value opts out. Local dev, demo builds and local-only
+// deployments never create a Sentry client or network request. Free-tier
+// budget: 10% browser traces and error-only Replay.
 
 import * as Sentry from '@sentry/react';
 
+// Public browser key, safe to ship. Override per environment via the env var.
+const DEFAULT_SENTRY_DSN =
+  'https://df558379050185fc0423090d4aff6591@o4512420559716352.ingest.de.sentry.io/4512420575051856';
+
 let initialized = false;
 
+function resolveDsn(env) {
+  const configured = env?.VITE_SENTRY_DSN;
+  // `undefined` means "not configured" (use the project default); an explicit
+  // empty string is an opt-out.
+  if (configured === undefined) return DEFAULT_SENTRY_DSN;
+  return String(configured).trim();
+}
+
 export function isSentryEnabled(env = import.meta.env) {
-  return Boolean(env?.PROD && String(env?.VITE_SENTRY_DSN ?? '').trim());
+  return Boolean(env?.PROD && resolveDsn(env));
 }
 
 export function getSentryConfig(env = import.meta.env) {
   return {
-    dsn: String(env.VITE_SENTRY_DSN).trim(),
+    dsn: resolveDsn(env),
     environment: env.VITE_SENTRY_ENVIRONMENT || 'production',
     sendDefaultPii: false,
     integrations: [
