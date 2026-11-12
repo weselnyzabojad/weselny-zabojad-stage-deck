@@ -90,10 +90,10 @@ describe('issue #767 remove media leave milestones from the timeline', () => {
     expect(deck).toContain('liveState.active_step_id');
   });
 
-  it('keeps the generic milestone editor for Venue Manager', () => {
+  it('keeps the generic MILESTONE type without a Venue editor', () => {
     const venue = read('src/components/VenueManagerView.jsx');
-    expect(venue).toContain('MilestoneCard');
-    expect(venue).toContain("addMilestone('OTHER')");
+    expect(venue).not.toContain('MilestoneCard');
+    expect(venue).not.toContain("addMilestone('OTHER')");
     expect(read('schema/domains/steps.json')).toContain('"MILESTONE"');
   });
 
