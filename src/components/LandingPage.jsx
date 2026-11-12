@@ -24,6 +24,19 @@ function ContactCta({ label, className = '' }) {
   );
 }
 
+function HighlightedText({ text, phrase, className = 'font-semibold text-brand-strong' }) {
+  const index = phrase ? text.indexOf(phrase) : -1;
+  if (index < 0) return text;
+
+  return (
+    <>
+      {text.slice(0, index)}
+      <strong className={className}>{phrase}</strong>
+      {text.slice(index + phrase.length)}
+    </>
+  );
+}
+
 function SectionTitle({ children, id, className = '' }) {
   return (
     <h2
@@ -145,13 +158,42 @@ export default function LandingPage() {
 
       <main>
         <div className="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
-          <div className="rounded-2xl border border-line bg-card/60 p-5 text-left sm:p-6">
-            <p className="text-sm leading-relaxed text-ink sm:text-base">
-              {t('landing.intro.p1')}
-            </p>
-            <p className="mt-3 text-sm leading-relaxed text-ink sm:text-base">
-              {t('landing.intro.p2')}
-            </p>
+          <div className="relative overflow-hidden rounded-3xl border border-line bg-card p-5 text-left shadow-sm sm:p-7">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-brand/15 blur-2xl"
+            />
+            <span
+              aria-hidden="true"
+              className="absolute left-0 top-7 h-10 w-1 rounded-r-full bg-brand-strong/70"
+            />
+            <div className="relative">
+              <p className="text-base leading-relaxed text-ink sm:text-lg sm:leading-8">
+                <HighlightedText
+                  text={t('landing.intro.p1')}
+                  phrase={t('landing.intro.p1.highlight')}
+                />
+              </p>
+              <div className="mt-5 rounded-2xl border border-brand-strong/25 bg-brand/10 p-4 sm:p-5">
+                <div className="flex items-center gap-3">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    className="h-5 w-5 shrink-0 text-brand-strong"
+                    fill="currentColor"
+                  >
+                    <path d="M12 2.5l2.1 6.1 6.4 2.1-6.4 2.1L12 19l-2.1-6.2-6.4-2.1 6.4-2.1L12 2.5z" />
+                  </svg>
+                  <span aria-hidden="true" className="h-px flex-1 bg-brand-strong/20" />
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-ink sm:text-base">
+                  <HighlightedText
+                    text={t('landing.intro.p2')}
+                    phrase={t('landing.intro.p2.highlight')}
+                  />
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -59,9 +59,10 @@ describe('issue #816 landing header and provider-facing copy', () => {
 
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));
-    expect(html).toContain(fr['landing.intro.p1']);
-    expect(html).toContain(fr['landing.intro.p2']);
-    expect(html.indexOf(fr['landing.intro.p1'])).toBeLessThan(html.indexOf(fr['landing.hero.title']));
+    const text = html.replace(/<[^>]+>/g, '');
+    expect(text).toContain(fr['landing.intro.p1']);
+    expect(text).toContain(fr['landing.intro.p2']);
+    expect(text.indexOf(fr['landing.intro.p1'])).toBeLessThan(text.indexOf(fr['landing.hero.title']));
   });
 
   it('renders the included note as a prominent callout', () => {

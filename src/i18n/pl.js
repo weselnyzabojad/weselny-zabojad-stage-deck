@@ -636,9 +636,11 @@ const pl = {
   'speaker.hideSecret': 'Ukryj sekrety',
   'speaker.unlockError': 'Nie udało się odszyfrować przemówienia.',
   'speaker.footer': 'Skrypt tylko do odczytu · wyświetlana jest tylko przypisana mowa · brak sterowania timeline',
-  // Landing produktu Stage Deck (#811, #816, #818): prezentuje produkt przyszłym nowożeńcom.
+  // Landing produktu Stage Deck (#811, #816, #818, #826): prezentuje produkt przyszłym nowożeńcom.
   'landing.intro.p1': 'Bo wesele zasługuje na coś więcej niż niezrozumiałe ankiety, Weselny Żabojad traktuje każde wydarzenie jak prawdziwy wspólnie tworzony projekt, oparty na słuchaniu i dialogu.',
+  'landing.intro.p1.highlight': 'wspólnie tworzony projekt',
   'landing.intro.p2': 'Z tego podejścia powstał Stage Deck: narzędzie współpracy stworzone po to, by połączyć wszystkich usługodawców i pozwolić im działać w idealnej synergii w dniu ślubu, zostawiając Wam całkowicie wolną głowę, byście cieszyli się swoim szczęściem.',
+  'landing.intro.p2.highlight': 'Stage Deck',
   'landing.hero.eyebrow': 'Do dyspozycji usługodawców, dla przyszłych nowożeńców',
   'landing.hero.title': 'Całe wesele w jednym rytmie',
   'landing.hero.lead': 'Stage Deck to jeden wspólny plan dla Was i całej ekipy weselnej. Mistrz ceremonii, DJ, fotograf, operator wideo, manager sali i każdy inny usługodawca widzą tę samą timeline na żywo — także wtedy, gdy w sali zanika zasięg.',
