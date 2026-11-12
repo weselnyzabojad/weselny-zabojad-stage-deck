@@ -25,21 +25,23 @@ describe('issue #816 landing header and provider-facing copy', () => {
   it('ships the corrected provider-facing copy in every locale', () => {
     expect(fr['landing.hero.eyebrow']).toBe('À disposition des prestataires, pour les futurs mariés');
     expect(fr['landing.hero.lead']).toBe(
-      'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle voient la même timeline en direct — même quand le réseau de la salle tombe.',
+      'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle et tout autre prestataire voient la même timeline en direct — même quand le réseau de la salle tombe.',
     );
     expect(fr['landing.mock.songs.caption']).toBe(
       'Les invités envoient leurs demandes depuis leur téléphone — soumis à certaines conditions.',
     );
 
     expect(pl['landing.hero.eyebrow']).toBe('Do dyspozycji usługodawców, dla przyszłych nowożeńców');
-    expect(pl['landing.hero.lead']).toContain('Mistrz ceremonii, DJ, fotograf, operator wideo i manager sali');
+    expect(pl['landing.hero.lead']).toContain(
+      'operator wideo, manager sali i każdy inny usługodawca',
+    );
     expect(pl['landing.mock.songs.caption']).toBe(
       'Goście wysyłają prośby z telefonu — z zastrzeżeniem określonych warunków.',
     );
 
     expect(en['landing.hero.eyebrow']).toBe('Available to wedding vendors, for future newlyweds');
     expect(en['landing.hero.lead']).toContain(
-      'The master of ceremonies, DJ, photographer, videographer and venue manager',
+      'videographer, venue manager and any other vendor',
     );
     expect(en['landing.mock.songs.caption']).toBe(
       'Guests send requests from their phone — subject to certain conditions.',
@@ -65,7 +67,9 @@ describe('issue #816 landing header and provider-facing copy', () => {
   it('renders the included note as a prominent callout', () => {
     const landing = read('src/components/LandingPage.jsx');
     expect(landing).toContain('rounded-xl border border-brand-strong/40 bg-brand/10');
-    expect(landing).toContain('text-sm font-semibold leading-relaxed text-ink sm:text-base');
+    expect(landing).toContain(
+      'text-center text-sm font-semibold leading-relaxed text-ink sm:whitespace-nowrap sm:text-base',
+    );
 
     setLocale('pl', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));
