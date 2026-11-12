@@ -5167,6 +5167,49 @@ or cartridge change.
 
 **Tracking.** [#818](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/818).
 
+### 17.50 Landing feature copy and centered features (decision, 2026-11-12)
+
+The public landing's hero and feature section get a copy and alignment pass. The
+included-with-Weselny-Żabojad note stays on one line from the `sm` breakpoint,
+the role list covers every vendor, four feature bodies are rewritten, and the
+features heading plus all seven cards are centered. Other sections stay
+unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Hero lead, included note layout and feature copy/alignment |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Included note | Same text; one line from `sm`, normal wrap on mobile, centered |
+| Hero lead | Adds `et tout autre prestataire` to the role list |
+| Feature 1 | `Chaque prestataire opère autour du même plan…` |
+| Feature 3 | Kitchen-delay example, ending on every vendor's device |
+| Feature 4 | Each vendor sees only the information they need |
+| Feature 7 | Song requests depend on `l’offre choisie dans le cadre des services Weselny Żabojad` |
+| Alignment | Features heading and all seven card texts centered |
+| Out of scope | `Comment ça se passe`, FAQ, footer, CTA, metadata |
+| Languages | FR authoritative; PL/EN kept in parity |
+| Grammar | Space before `?`, missing verb `voit`, typographic apostrophes corrected |
+
+**Task split.** One atomic task: one view, one component and five locale keys.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#820](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/820) | Landing hero/feature copy, included-note layout, centered features and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#820](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/820).
+
 
 
 
