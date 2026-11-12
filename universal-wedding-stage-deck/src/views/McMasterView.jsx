@@ -86,7 +86,6 @@ export default function McMasterView({ model }) {
   const {
   WEDDING,
   childrenExpected = false,
-  realStart,
   driftReport,
   handleUnpair,
   IS_PRODUCTION,
@@ -103,14 +102,12 @@ export default function McMasterView({ model }) {
   outbox,
   currentStep,
   stepTypeClass,
-  estimatedEnd,
   stepSubtasks,
   liveState,
   toggleSubtask,
   script,
   game,
   setOverlay,
-  currentEntry,
   steps,
   completedCount,
   cakeProtocol,
@@ -178,10 +175,6 @@ export default function McMasterView({ model }) {
       >
         {t('mc.step.type', { type: currentStep.type.replace('_', ' ') })}
       </span>
-      <div className="flex items-center justify-between rounded-xl border border-panel-border bg-panel/50 p-2.5 text-xs font-mono shadow-sm backdrop-blur-sm">
-        <span>{t('mc.step.realStart')}: <strong className="text-ink">{realStart}</strong></span>
-        <span>{t('mc.step.estimatedEnd')}: <strong className="text-ink">{estimatedEnd ?? '—'}</strong></span>
-      </div>
       {currentStep.grandEntranceOrder ? <GrandEntranceCueCard step={currentStep} /> : null}
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
@@ -273,22 +266,6 @@ export default function McMasterView({ model }) {
   const heroBody = currentStep ? (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/70 pb-2 text-[11px] text-muted">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span>
-            {t('mc.step.planned')}:{' '}
-            <span className="line-through text-muted">
-              {currentStep.planned || currentStep.time}
-            </span>
-          </span>
-          <span className="text-muted">·</span>
-          <span>
-            {t('mc.step.realStart')}: <span className="font-mono text-ink">{realStart}</span>
-          </span>
-          <span className="text-muted">·</span>
-          <span>
-            {t('mc.step.estimatedEnd')}: <span className="font-mono text-ink">{estimatedEnd ?? '—'}</span>
-          </span>
-        </div>
         <span className="font-mono text-[10px] text-muted">
           {t('mc.step.completed', { done: completedCount, total: steps.length })}
         </span>
@@ -393,31 +370,30 @@ export default function McMasterView({ model }) {
         </div>
       ) : null}
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
-        <div className="flex flex-wrap items-center gap-2">
-          {script && (
-            <button
-              type="button"
-              onClick={() => setOverlay('teleprompter')}
-              className="rounded-xl border border-panel-border bg-panel/60 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm backdrop-blur-sm transition hover:border-line-strong hover:bg-panel hover:shadow-md"
-            >
-              📖 {t('mc.step.openTeleprompter')}
-            </button>
-          )}
-          {isGameStep && game && (
-            <button
-              type="button"
-              onClick={() => setOverlay('game')}
-              className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm transition hover:bg-brand/30 hover:shadow-md"
-            >
-              🎮 {t('mc.step.gameClicker', { count: game.items.length })}
-            </button>
-          )}
-          {!script && !game && (
-            <span className="text-xs text-muted font-mono">{t('mc.step.noScript')}</span>
-          )}
+      {script || game ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {script && (
+              <button
+                type="button"
+                onClick={() => setOverlay('teleprompter')}
+                className="rounded-xl border border-panel-border bg-panel/60 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm backdrop-blur-sm transition hover:border-line-strong hover:bg-panel hover:shadow-md"
+              >
+                📖 {t('mc.step.openTeleprompter')}
+              </button>
+            )}
+            {isGameStep && game && (
+              <button
+                type="button"
+                onClick={() => setOverlay('game')}
+                className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3.5 py-2 font-heading text-xs font-semibold text-ink shadow-sm transition hover:bg-brand/30 hover:shadow-md"
+              >
+                🎮 {t('mc.step.gameClicker', { count: game.items.length })}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   ) : null;
 
