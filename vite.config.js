@@ -2,12 +2,22 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
+
+// Sourcemap upload is build-only and opt-in. The token is a Netlify build
+// secret, never a VITE_* value, so it cannot reach the browser bundle.
+const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN
+const SENTRY_UPLOAD_ENABLED = Boolean(SENTRY_AUTH_TOKEN)
 
 export default defineConfig({
   // The PWA precaches the whole deck for offline use, so one ~0.5 MB bundle is
   // expected. Raise the advisory limit instead of splitting a cached payload.
   build: {
     chunkSizeWarningLimit: 600,
+    // Hidden maps are produced only when they will be uploaded. The Sentry
+    // plugin deletes them from dist after upload, so Netlify never serves
+    // source. Without the token no map is emitted and no upload is attempted.
+    sourcemap: SENTRY_UPLOAD_ENABLED ? 'hidden' : false,
     // Keep the self-hosted flag SVGs as separate cacheable files instead of
     // inlining hundreds of data URIs into the main bundle.
     assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined)
@@ -83,6 +93,16 @@ export default defineConfig({
           }
         ]
       }
-    })
-  ]
+    }),
+    SENTRY_UPLOAD_ENABLED &&
+      sentryVitePlugin({
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        authToken: SENTRY_AUTH_TOKEN,
+        telemetry: false,
+        sourcemaps: {
+          filesToDeleteAfterUpload: ['./dist/**/*.map']
+        }
+      })
+  ].filter(Boolean)
 })
