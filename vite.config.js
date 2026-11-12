@@ -61,9 +61,10 @@ export default defineConfig({
         background_color: '#070b19',
         display: 'standalone',
         orientation: 'any',
-        // Relative URLs make the manifest install from whatever directory serves
-        // it: `/` in local/demo mode and `/deck/` in the production deployment.
-        // This keeps a single build valid for both without hard-coding a scope.
+        // Relative URLs make the manifest install from the directory that serves
+        // it. Both local dev and deck.weselnyzabojad.pl serve the app from `/`,
+        // and a relative scope keeps the build independent of the host and base
+        // path (base must stay `/` so /assets/* and /sw.js resolve at the root).
         id: './',
         scope: './',
         start_url: './',
