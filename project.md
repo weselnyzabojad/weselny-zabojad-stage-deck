@@ -5252,6 +5252,49 @@ or cartridge change.
 
 **Tracking.** [#821](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/821), [#822](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/822).
 
+### 17.52 Landing intro vision card and Mark logo size (decision, 2026-11-12)
+
+The public landing intro becomes a layered `Mariage Chic` card: the vision
+paragraph highlights `projet coconstruit`, and the Stage Deck solution sits in a
+tinted inner panel with a decorative ornament and bold `Stage Deck`. The footer
+DJ Mark logo grows so it reads at the same visual weight as the wider Szymoniak
+mark.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Intro vision card and DJ Mark logo in the footer partner strip |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Intro card | Rounded layered card, subtle border/gradient/shadow, responsive padding |
+| Highlight 1 | `projet coconstruit` / `wspólnie tworzony projekt` / `co-created project` in `<strong>` |
+| Stage Deck panel | Tinted inner panel, inline decorative SVG and separator, bold `Stage Deck` |
+| i18n structure | Six `landing.intro.p1/p2` segment keys replace the two full paragraphs |
+| Logo | DJ Mark only: `h-14` mobile, `sm:h-16` desktop |
+| Szymoniak | Kept at `h-10 sm:h-12` |
+| Out of scope | Other sections, CTA, hero, features, metadata, new links/assets |
+| Languages | FR authoritative; PL/EN kept in parity |
+| Tests | Update #816/#818 segment composition; add intro-card and logo-size coverage |
+
+**Task split.** Two independent landing tasks: visual intro card and logo size.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#826](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/826) | Intro vision card, rich-text segments and tests | - |
+| 2 | [#827](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/827) | Enlarge DJ Mark footer logo and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#826](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/826), [#827](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/827).
+
 
 
 
