@@ -24,10 +24,13 @@ describe('issue #525 hide MC Cues on predefined game steps', () => {
     expect(cues).toContain("t('mc.cues.empty')");
   });
 
-  it('keeps the games cue and clicker launcher', () => {
+  it('keeps the clicker launcher and hides the briefing card for predefined games', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('<GamesCueCard wedding={WEDDING} role="mc"');
-    expect(mc).toContain('setOverlay(\'game\')');
+    expect(mc).toContain(
+      'const showGameBriefing = isGameStep && !isPredefinedGameStep(currentStep)',
+    );
+    expect(mc).toMatch(/\{showGameBriefing \? \(\s*<GamesCueCard wedding=\{WEDDING\} role="mc"/);
+    expect(mc).toContain("setOverlay('game')");
     expect(mc).toContain('<GameClickerOverlay');
   });
 

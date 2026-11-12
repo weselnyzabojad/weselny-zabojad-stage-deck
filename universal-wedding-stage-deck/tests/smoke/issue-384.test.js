@@ -116,7 +116,7 @@ describe('issue #384 mandatory data embedded in steps', () => {
     expect(deck).toContain('mandatoryOverride={liveState.media_overrides?.steps ?? null}');
 
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('<StepMandatoryNotes items={mandatoryItems} />');
+    expect(mc).toContain('<StepMandatoryNotes items={mandatoryItems} showHeading={false} />');
     expect(mc).toContain('mapMandatoryToSteps(WEDDING, steps');
 
     const dj = read('src/components/DjBoothView.jsx');

@@ -21,35 +21,54 @@ export default function OczepinyCueCard({ wedding, audience = 'mc' }) {
     : [];
   const musicLabel = playlist.length > 0 ? playlist.join(' · ') : ocz.music?.track ?? null;
 
+  const chip =
+    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-heading text-[11px] font-semibold';
+
   return (
     <div className="rounded-lg border border-brand-strong/50 bg-brand/10 p-2.5 text-[11px] text-ink">
       <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
         Oczepiny · {ocz.variant ?? ocz.order ?? 'MIDNIGHT'}
       </div>
-      {throwings.length > 0 ? (
-        <div className="mt-1">{t('oczepiny.throwings', { labels: throwings.join(' · ') })}</div>
-      ) : null}
-      {ocz.game?.enabled ? (
-        <div className="mt-0.5">{t('oczepiny.gameEnabled')}</div>
-      ) : null}
-      {audience !== 'photo' && musicOn ? (
-        <div className="mt-0.5">
-          {t('oczepiny.music', { music: musicLabel ?? t('oczepiny.enabled') })}
-        </div>
-      ) : null}
-      {audience === 'mc' && !musicOn && ocz.countdown?.mode === 'MC' ? (
-        <div className="mt-0.5">{t('oczepiny.countdown')}</div>
-      ) : null}
-      {showWinner ? (
-        <div className="mt-0.5">
-          {audience === 'photo' ? t('oczepiny.photoCue') : t('oczepiny.winnerPhotoCue')}
-        </div>
-      ) : null}
-      {audience === 'dj-vip' ? (
-        <div className="mt-0.5 text-muted">
-          {t('oczepiny.djVipCue')}
-        </div>
-      ) : null}
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        {throwings.length > 0 ? (
+          <span className={`${chip} border-line-strong bg-raised text-ink`}>
+            <span aria-hidden="true">💐</span>
+            <span>{t('oczepiny.throwings', { labels: throwings.join(' · ') })}</span>
+          </span>
+        ) : null}
+        {ocz.game?.enabled ? (
+          <span className={`${chip} border-line-strong bg-raised text-ink`}>
+            <span aria-hidden="true">🎮</span>
+            <span>{t('oczepiny.gameEnabled')}</span>
+          </span>
+        ) : null}
+        {audience !== 'photo' && musicOn ? (
+          <span className={`${chip} border-line-strong bg-raised text-ink`}>
+            <span aria-hidden="true">🎵</span>
+            <span>{t('oczepiny.music', { music: musicLabel ?? t('oczepiny.enabled') })}</span>
+          </span>
+        ) : null}
+        {audience === 'mc' && !musicOn && ocz.countdown?.mode === 'MC' ? (
+          <span className={`${chip} border-line-strong bg-raised text-ink`}>
+            <span aria-hidden="true">⏱</span>
+            <span>{t('oczepiny.countdown')}</span>
+          </span>
+        ) : null}
+        {showWinner ? (
+          <span className={`${chip} border-line-strong bg-raised text-ink`}>
+            <span aria-hidden="true">📸</span>
+            <span>
+              {audience === 'photo' ? t('oczepiny.photoCue') : t('oczepiny.winnerPhotoCue')}
+            </span>
+          </span>
+        ) : null}
+        {audience === 'dj-vip' ? (
+          <span className={`${chip} border-line-strong bg-raised text-muted`}>
+            <span aria-hidden="true">🎧</span>
+            <span>{t('oczepiny.djVipCue')}</span>
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }

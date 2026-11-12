@@ -132,7 +132,15 @@ export default function StageStepCard({
             {title}
           </div>
         </div>
-        <span className="shrink-0 font-mono text-[11px] text-ink">{summary}</span>
+        <span
+          className={`shrink-0 ${
+            polished
+              ? 'font-heading text-sm font-semibold text-ink'
+              : 'font-mono text-[11px] text-ink'
+          }`}
+        >
+          {summary}
+        </span>
       </div>
       {collapsible ? (
         <span

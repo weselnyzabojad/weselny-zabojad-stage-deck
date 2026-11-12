@@ -2,7 +2,7 @@ import { useI18n } from '../i18n/useI18n.js';
 
 // Mandatory data embedded in the step card where it applies. This replaces the
 // former page-level Mandatory constraints strip.
-export default function StepMandatoryNotes({ items = [] }) {
+export default function StepMandatoryNotes({ items = [], showHeading = true }) {
   const { t } = useI18n();
   if (!Array.isArray(items) || items.length === 0) return null;
 
@@ -11,11 +11,13 @@ export default function StepMandatoryNotes({ items = [] }) {
       aria-label={t('mandatory.title')}
       className="rounded-lg border border-amber-700/50 bg-amber-950/25 p-2.5"
     >
-      <h3 className="flex items-center gap-1.5 font-heading text-[10px] font-bold uppercase tracking-widest text-amber-200">
-        <span aria-hidden="true">📌</span>
-        <span>{t('mandatory.title')}</span>
-      </h3>
-      <div className="mt-1.5 flex flex-wrap gap-1.5">
+      {showHeading ? (
+        <h3 className="flex items-center gap-1.5 font-heading text-[10px] font-bold uppercase tracking-widest text-amber-200">
+          <span aria-hidden="true">📌</span>
+          <span>{t('mandatory.title')}</span>
+        </h3>
+      ) : null}
+      <div className={`flex flex-wrap gap-1.5 ${showHeading ? 'mt-1.5' : ''}`}>
         {items.map((item, index) => {
           const key = item.key ?? `${item.kind}_${index}`;
           if (item.kind === 'firstArrival' || item.kind === 'prestationReady') {

@@ -57,15 +57,17 @@ describe('issue #549 Bread & Salt and Dance-with-the-couple steps', () => {
 
     const dance = wedding.steps.find((step) => step.id === 'step_dance');
     expect(dance.game).toBeUndefined();
-    // Not a predefined question game, so MC cues/overflow stay visible.
+    // Not a predefined question game, so the MC cue block stays visible.
     expect(isPredefinedGameStep(dance)).toBe(false);
     // No question list -> no clicker.
     expect(buildGameClicker(wedding, dance.game?.id)).toBeNull();
   });
 
-  it('does not render the question-list card for a game without a gameId', () => {
+  it('keeps the question-list card scoped to the current step game id', () => {
     const view = read('src/views/McMasterView.jsx');
-    expect(view).toContain('isGameStep ? (');
+    expect(view).toContain(
+      'const showGameBriefing = isGameStep && !isPredefinedGameStep(currentStep)',
+    );
     expect(view).toContain('gameId={currentStep.game.id}');
   });
 

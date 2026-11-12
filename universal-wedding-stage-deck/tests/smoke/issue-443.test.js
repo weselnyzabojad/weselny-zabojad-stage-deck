@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
@@ -10,20 +10,17 @@ describe('issue #443 MC footer ergonomics', () => {
     expect(mc).toContain('min-h-12 px-3 py-2');
   });
 
-  it('moves Swap into the current-step overflow menu', () => {
+  it('removes the current-step overflow menu and swap control', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('<CurrentStepOverflow');
-    const footer = mc.slice(mc.indexOf('<footer'), mc.indexOf('</footer>'));
-    expect(footer).not.toContain('Swap w/ Next');
-    expect(footer).not.toContain('onClick={handleSwap}');
+    expect(mc).not.toContain('CurrentStepOverflow');
+    expect(mc).not.toContain('onSwap={handleSwap}');
+    expect(mc).not.toContain("t('mc.step.more')");
   });
 
-  it('uses a keyboard-accessible native disclosure', () => {
-    const overflow = read('src/components/CurrentStepOverflow.jsx');
-    expect(overflow).toContain('<details');
-    expect(overflow).toContain('<summary');
-    expect(overflow).toContain('min-h-11');
-    expect(overflow).toContain("t('mc.step.swapNext')");
+  it('deletes the obsolete overflow component', () => {
+    expect(
+      existsSync(new URL('../../src/components/CurrentStepOverflow.jsx', import.meta.url)),
+    ).toBe(false);
   });
 
   it('keeps the 1.2s hold interaction', () => {
@@ -31,6 +28,8 @@ describe('issue #443 MC footer ergonomics', () => {
   });
 
   it('defines overflow labels in every locale', () => {
+    // The labels are no longer rendered, but the dictionaries keep the keys for
+    // older clients and tests.
     for (const locale of ['en', 'fr', 'pl']) {
       const dict = read(`src/i18n/${locale}.js`);
       for (const key of ['mc.step.more', 'mc.step.swapNext', 'mc.step.swapWith', 'mc.step.noNext']) {
