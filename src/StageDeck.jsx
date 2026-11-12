@@ -11,7 +11,7 @@ import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
 import SpeakerView from './components/SpeakerView';
 import McMasterView from './views/McMasterView';
-import { buildInitialLiveState } from './demo/demoWedding';
+import { buildInitialLiveState } from '@demo';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
 import { deriveHardAnchors } from './lib/hardAnchors';
 import { resolveMandatoryConstraints } from './lib/mandatorySteps';

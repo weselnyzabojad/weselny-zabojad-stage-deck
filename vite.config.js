@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
@@ -9,22 +10,37 @@ import { sentryVitePlugin } from '@sentry/vite-plugin'
 const SENTRY_AUTH_TOKEN = process.env.SENTRY_AUTH_TOKEN
 const SENTRY_UPLOAD_ENABLED = Boolean(SENTRY_AUTH_TOKEN)
 
-export default defineConfig({
-  // The PWA precaches the whole deck for offline use, so one ~0.5 MB bundle is
-  // expected. Raise the advisory limit instead of splitting a cached payload.
-  build: {
-    chunkSizeWarningLimit: 600,
-    // Hidden maps are produced only when they will be uploaded. The Sentry
-    // plugin deletes them from dist after upload, so Netlify never serves
-    // source. Without the token no map is emitted and no upload is attempted.
-    sourcemap: SENTRY_UPLOAD_ENABLED ? 'hidden' : false,
-    // Keep the self-hosted flag SVGs as separate cacheable files instead of
-    // inlining hundreds of data URIs into the main bundle.
-    assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined)
-  },
-  plugins: [
-    react(),
-    tailwindcss(),
+const demoModule = (file) => fileURLToPath(new URL(file, import.meta.url))
+
+export default defineConfig(({ command }) => {
+  // Demo cartridge data is only linked into dev servers and explicit local
+  // builds. A normal production build resolves `@demo` to an empty stub, so no
+  // wedding data can be read from the public bundle (issue #798).
+  const demoEnabled = command === 'serve' || process.env.VITE_DECK_MODE === 'local'
+
+  return {
+    resolve: {
+      alias: {
+        '@demo': demoModule(
+          demoEnabled ? './src/demo/demoWedding.js' : './src/demo/demoWedding.empty.js'
+        )
+      }
+    },
+    // The PWA precaches the whole deck for offline use, so one ~0.5 MB bundle is
+    // expected. Raise the advisory limit instead of splitting a cached payload.
+    build: {
+      chunkSizeWarningLimit: 600,
+      // Hidden maps are produced only when they will be uploaded. The Sentry
+      // plugin deletes them from dist after upload, so Netlify never serves
+      // source. Without the token no map is emitted and no upload is attempted.
+      sourcemap: SENTRY_UPLOAD_ENABLED ? 'hidden' : false,
+      // Keep the self-hosted flag SVGs as separate cacheable files instead of
+      // inlining hundreds of data URIs into the main bundle.
+      assetsInlineLimit: (filePath) => (filePath.endsWith('.svg') ? false : undefined)
+    },
+    plugins: [
+      react(),
+      tailwindcss(),
     VitePWA({
       // Issue #81: never reload the live stage silently. A new service worker
       // waits until the user accepts the deferred "Update available" prompt.
@@ -104,5 +120,6 @@ export default defineConfig({
           filesToDeleteAfterUpload: ['./dist/**/*.map']
         }
       })
-  ].filter(Boolean)
+    ].filter(Boolean)
+  }
 })
