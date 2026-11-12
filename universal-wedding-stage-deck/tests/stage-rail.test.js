@@ -128,7 +128,7 @@ describe('stage rail rendering', () => {
     expect(html).toContain('Step 0');
     expect(html).toContain('Step 1');
     expect(html).toContain('Step 2');
-    expect(html).toContain('ON AIR');
+    expect(html).not.toContain('ON AIR');
     expect(html).toContain('NEXT');
   });
 
@@ -230,7 +230,7 @@ describe('rail accessibility and i18n (#120)', () => {
     );
     expect(html).toContain('Étapes terminées');
     expect(html).toContain('Étape en cours');
-    expect(html).toContain('EN DIRECT');
+    expect(html).not.toContain('EN DIRECT');
   });
 
   it('localises the rail in Polish', () => {
@@ -245,7 +245,7 @@ describe('rail accessibility and i18n (#120)', () => {
     );
     expect(html).toContain('Ukończone kroki');
     expect(html).toContain('Bieżący krok');
-    expect(html).toContain('NA ANTENIE');
+    expect(html).not.toContain('NA ANTENIE');
   });
 });
 
