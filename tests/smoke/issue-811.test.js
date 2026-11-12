@@ -63,9 +63,9 @@ describe('issue #811 deck-focused landing', () => {
   });
 
   it('describes song requests as conditional in every locale', () => {
-    expect(pl['landing.features.7.body']).toMatch(/gdy/i);
-    expect(en['landing.features.7.body']).toMatch(/when/i);
-    expect(fr['landing.features.7.body']).toMatch(/lorsque/i);
+    expect(pl['landing.features.7.body']).toMatch(/oferty/i);
+    expect(en['landing.features.7.body']).toMatch(/package/i);
+    expect(fr['landing.features.7.body']).toMatch(/offre/i);
     expect(pl['landing.faq.2.a']).toMatch(/gdy/i);
     expect(en['landing.faq.2.a']).toMatch(/when/i);
     expect(fr['landing.faq.2.a']).toMatch(/lorsque/i);

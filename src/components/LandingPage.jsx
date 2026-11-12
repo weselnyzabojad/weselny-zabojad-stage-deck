@@ -22,9 +22,12 @@ function ContactCta({ label, className = '' }) {
   );
 }
 
-function SectionTitle({ children, id }) {
+function SectionTitle({ children, id, className = '' }) {
   return (
-    <h2 id={id} className="font-heading text-2xl font-bold text-ink sm:text-3xl">
+    <h2
+      id={id}
+      className={`font-heading text-2xl font-bold text-ink sm:text-3xl ${className}`}
+    >
       {children}
     </h2>
   );
@@ -159,7 +162,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-7 flex flex-col items-center gap-3">
             <ContactCta label={t('landing.hero.cta')} />
-            <p className="mt-1 max-w-2xl rounded-xl border border-brand-strong/40 bg-brand/10 px-4 py-3 text-sm font-semibold leading-relaxed text-ink sm:text-base">
+            <p className="mt-1 max-w-5xl rounded-xl border border-brand-strong/40 bg-brand/10 px-4 py-3 text-center text-sm font-semibold leading-relaxed text-ink sm:whitespace-nowrap sm:text-base">
               {t('landing.hero.included')}
             </p>
           </div>
@@ -172,10 +175,15 @@ export default function LandingPage() {
 
         <section aria-labelledby="landing-features" className="border-t border-line bg-card/40">
           <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
-            <SectionTitle id="landing-features">{t('landing.features.title')}</SectionTitle>
+            <SectionTitle id="landing-features" className="text-center">
+              {t('landing.features.title')}
+            </SectionTitle>
             <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((item) => (
-                <article key={item.title} className="rounded-xl border border-line bg-card p-5">
+                <article
+                  key={item.title}
+                  className="rounded-xl border border-line bg-card p-5 text-center"
+                >
                   <h3 className="font-heading text-base font-semibold text-ink">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted">{item.body}</p>
                 </article>
