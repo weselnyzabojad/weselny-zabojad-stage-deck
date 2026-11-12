@@ -5057,6 +5057,32 @@ or cartridge change.
 
 **Tracking.** [#811](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/811), [#812](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/812).
 
+### 17.47 Deck landing metadata and release contract (implemented, 2026-11-12)
+
+The public metadata now describes the Stage Deck product for future newlyweds
+instead of the MC/DJ service. Search and social previews, the README route
+contract and the release tests match the §17.46 positioning: `/` presents the
+deck, `/join` remains the private crew entry, and the only contact action is the
+main site form.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Metadata | Stage Deck shared/offline wedding plan, included with Weselny Żabojad weddings |
+| Social image | Same-origin `/pwa-512x512.png` |
+| CTA | Single link to `https://www.weselnyzabojad.pl/#kontakt` |
+| Document language | Static `pl`; runtime locale applies after mount |
+| Tracking | None; CSP unchanged |
+| Routes | `/` product landing, `/join` crew, `/<room>/<role>`, `/admin`, `/request/:code` |
+
+**Open questions.** None.
+
+**Tracking.** [#812](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/812).
+
 
 
 
