@@ -587,6 +587,8 @@ export default function StageDeck({
             onMiniSessionOverride={(time) => setMediaOverride('miniSessionTime', time)}
             checkedSubtasks={liveState.checked_subtasks}
             onToggleSubtask={toggleSubtask}
+            cakeProtocol={cakeProtocol}
+            cakeServiceMode={cakeServiceMode}
             {...roleProps}
           />
         </AppErrorBoundary>

@@ -1,4 +1,5 @@
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
+import CakeCard from './CakeCard';
 import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
 import MiniSessionTwinTask from './MiniSessionTwinTask';
@@ -263,6 +264,8 @@ export default function PhotographerView({
   onMiniSessionOverride,
   checkedSubtasks = {},
   onToggleSubtask,
+  cakeProtocol = null,
+  cakeServiceMode = 'KITCHEN_RETURN',
 }) {
   const { t } = useI18n();
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
@@ -336,6 +339,18 @@ export default function PhotographerView({
       <div className="space-y-2">
         {planBodies[oczepinyStep.step.id] ?? null}
         <OczepinyCueCard wedding={wedding} audience="photo" />
+      </div>
+    );
+  }
+  if (cakeProtocol?.stepId) {
+    cueBodies[cakeProtocol.stepId] = (
+      <div className="space-y-2">
+        {cueBodies[cakeProtocol.stepId] ?? null}
+        <CakeCard
+          cake={cakeProtocol}
+          cakeServiceMode={cakeServiceMode}
+          compact
+        />
       </div>
     );
   }
