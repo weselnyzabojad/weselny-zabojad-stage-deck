@@ -4937,4 +4937,50 @@ or cartridge change.
 
 **Tracking.** [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805), [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806), [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
 
+### 17.44 Landing positioning correction: sell the service, not the tool (decision, 2026-11-12)
+
+The public landing must sell Erick Caron's trilingual (FR/PL/EN) wedding MC
+and DJ service to engaged couples. Couples are the customers: the page has to
+convince them to contact Erick through the main site form. The people who use
+the Stage Deck are the surrounding service providers (DJ, photo, video,
+speaker), so the deck is presented only as a coordination benefit for the
+couple, never as a product being sold to vendors.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Customer-facing service landing for couples |
+| `/join` | Crew entry / private deck, unchanged |
+| `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Audience | Engaged couples buying Erick's MC/DJ service |
+| Service providers | Stage Deck users; mentioned only as "your team stays in sync" |
+| Offers | No packages, prices or comparisons in this release |
+| Proof | Existing logo plus CSS deck mockups; no real photos or testimonials |
+| CTA | Single link to `https://www.weselnyzabojad.pl/#kontakt` |
+| Languages | Polish primary, EN/FR via the existing locale storage |
+| Release scope | No forms, analytics, tracking pixels or new third-party origins |
+
+**Task split.** Routing was delivered by #805; the two existing landing tasks
+were updated in place instead of creating duplicates.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805) | Public `/` route and `/join` split | - (done) |
+| 2 | [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806) | Customer-facing content, PL/EN/FR i18n and mockups | #805 |
+| 3 | [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807) | Service metadata, single contact CTA and docs | #805, #806 |
+
+**Open questions.** None.
+
+**Tracking.** [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805), [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806), [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
+
+
 
