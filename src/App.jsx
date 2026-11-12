@@ -3,7 +3,7 @@ import AppErrorBoundary from './components/AppErrorBoundary';
 import PairingScreen from './components/PairingScreen';
 import RoleJoinScreen from './components/RoleJoinScreen';
 import StageDeck from './StageDeck';
-import { DEFAULT_WEDDING } from './demo/demoWedding';
+import { DEFAULT_WEDDING } from '@demo';
 import { getSyncConfig } from './lib/sync/syncConfig';
 import {
   clearRoleSession,
