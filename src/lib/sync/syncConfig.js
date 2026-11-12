@@ -24,7 +24,14 @@ export function getSyncConfig(env = import.meta.env) {
   const anonKey = readEnv(env, 'VITE_SUPABASE_ANON_KEY');
   const table = readEnv(env, 'VITE_SUPABASE_SYNC_TABLE') || DEFAULT_TABLE;
   const roomPrefix = readEnv(env, 'VITE_SUPABASE_ROOM_PREFIX') || DEFAULT_ROOM_PREFIX;
-  const deckMode = readEnv(env, 'VITE_DECK_MODE') === 'production' ? 'production' : 'local';
+  // Fail closed: a production build is production mode unless demo mode is
+  // requested explicitly. Missing VITE_DECK_MODE must never expose demo data.
+  const requestedMode = readEnv(env, 'VITE_DECK_MODE');
+  const defaultMode = env?.PROD ? 'production' : 'local';
+  const deckMode =
+    requestedMode === 'production' || requestedMode === 'local'
+      ? requestedMode
+      : defaultMode;
 
   const missing = [];
   if (!url) missing.push('VITE_SUPABASE_URL');

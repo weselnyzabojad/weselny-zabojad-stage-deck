@@ -3,7 +3,7 @@
 # its `dist` output there.
 
 [build]
-  command = "npm run build"
+  command = "node scripts/deploy-build.mjs"
   publish = "dist"
 
 [build.environment]

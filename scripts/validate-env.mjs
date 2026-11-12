@@ -123,10 +123,17 @@ export function findDangerousClientVars(env) {
 }
 
 /** Validate a parsed client env object. Returns messages that contain names only. */
-export function validateEnv(env, { allowMissing = false } = {}) {
+export function validateEnv(env, { allowMissing = false, requireProduction = false } = {}) {
   const errors = [];
   const warnings = [];
   const notes = [];
+
+  if (requireProduction && env.VITE_DECK_MODE !== 'production') {
+    errors.push(
+      'Production deployments require VITE_DECK_MODE=production. ' +
+        'Set it in the Netlify build environment; only explicit local/demo builds may omit it.',
+    );
+  }
 
   for (const finding of findDangerousClientVars(env)) {
     errors.push(
@@ -226,10 +233,11 @@ export function formatReport({ errors, warnings, notes }, { files = [] } = {}) {
 }
 
 function parseArgs(argv) {
-  const options = { allowMissing: false, mode: '', envFile: '', help: false };
+  const options = { allowMissing: false, requireProduction: false, mode: '', envFile: '', help: false };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--allow-missing') options.allowMissing = true;
+    else if (arg === '--require-production') options.requireProduction = true;
     else if (arg === '--help' || arg === '-h') options.help = true;
     else if (arg === '--mode') options.mode = argv[++index] ?? '';
     else if (arg.startsWith('--mode=')) options.mode = arg.slice('--mode='.length);
@@ -242,15 +250,29 @@ function parseArgs(argv) {
   return options;
 }
 
+/** Load dotenv files plus the allowed public variables from process.env. */
+export function collectClientEnv({ mode = '', envFile = '', processEnv = process.env } = {}) {
+  const loaded = loadEnvFiles({
+    mode,
+    files: envFile ? [envFile] : null,
+  });
+  const env = { ...loaded.env };
+  for (const [name, value] of Object.entries(processEnv)) {
+    if (name.startsWith('VITE_') || SERVER_SECRET_VARS.includes(name)) env[name] = value;
+  }
+  return { env, loaded };
+}
+
 export function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv);
   if (options.help) {
     console.log(
       [
-        'Usage: npm run validate:env [-- --env-file PATH] [--mode development|production] [--allow-missing]',
+        'Usage: npm run validate:env [-- --env-file PATH] [--mode development|production] [--allow-missing] [--require-production]',
         '',
         'Validates browser-safe VITE_* configuration. Never prints secret values.',
         'Missing required values are errors unless --allow-missing is used.',
+        '--require-production additionally fails unless VITE_DECK_MODE=production.',
         'Server-only secrets are configured with `supabase secrets set`.',
       ].join('\n'),
     );
@@ -261,16 +283,14 @@ export function main(argv = process.argv.slice(2)) {
     return 2;
   }
 
-  const loaded = loadEnvFiles({
+  const { env, loaded } = collectClientEnv({
     mode: options.mode,
-    files: options.envFile ? [options.envFile] : null,
+    envFile: options.envFile,
   });
-  const env = { ...loaded.env };
-  for (const [name, value] of Object.entries(process.env)) {
-    if (name.startsWith('VITE_') || SERVER_SECRET_VARS.includes(name)) env[name] = value;
-  }
-
-  const result = validateEnv(env, { allowMissing: options.allowMissing });
+  const result = validateEnv(env, {
+    allowMissing: options.allowMissing,
+    requireProduction: options.requireProduction,
+  });
   console.log(formatReport(result, { files: loaded.loaded }));
   return result.errors.length > 0 ? 1 : 0;
 }
