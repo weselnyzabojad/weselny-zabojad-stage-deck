@@ -12,15 +12,21 @@
 
 # Security headers are applied to every response served by Netlify.
 #
-# The CSP intentionally keeps `script-src` limited to same-origin files:
-# Vite emits external module scripts and vite-plugin-pwa emits an external
-# `registerSW.js`, so no inline script allowance is needed. Google Fonts is
-# the only third-party origin allowed, and only for the stylesheet and the
-# font binaries it serves.
+# The CSP keeps `script-src` limited to same-origin files: Vite emits external
+# module scripts, vite-plugin-pwa emits an external `registerSW.js`, and the
+# pre-paint theme bootstrap is a plain `public/theme-bootstrap.js`, so no inline
+# script allowance is needed.
+#
+# `connect-src` names the exact production origins:
+# - the Supabase project (`https://` for Auth/REST/Edge Functions and `wss://`
+#   for Realtime), derived from `VITE_SUPABASE_URL`;
+# - the sunset lookup used by the admin Drive import.
+# Update the Supabase host here if the project ref changes; never widen this to
+# a wildcard or bare `https:`.
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
     X-Frame-Options = "DENY"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     X-Content-Type-Options = "nosniff"

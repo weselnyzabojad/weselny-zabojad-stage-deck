@@ -7,31 +7,10 @@
     <meta name="theme-color" content="#070b19" />
 
     <!-- Per-device theme (TODO 27). Runs before paint so the canvas never
-         flashes the wrong theme. Explicit toggle wins over prefers-color-scheme. -->
-    <script>
-      (function () {
-        try {
-          var raw = localStorage.getItem('wzsd:v1:theme');
-          var stored = raw ? JSON.parse(raw) : null;
-          var theme =
-            stored && (stored.theme === 'day' || stored.theme === 'night')
-              ? stored.theme
-              : null;
-          if (!theme) {
-            theme =
-              window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
-                ? 'day'
-                : 'night';
-          }
-          document.documentElement.dataset.theme = theme;
-          document.documentElement.style.colorScheme = theme === 'day' ? 'light' : 'dark';
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute('content', theme === 'day' ? '#eef2f7' : '#070b19');
-        } catch (error) {
-          document.documentElement.dataset.theme = 'night';
-        }
-      })();
-    </script>
+         flashes the wrong theme. Explicit toggle wins over prefers-color-scheme.
+         A plain same-origin script keeps the production CSP at
+         `script-src 'self'` without inline code or a hash. -->
+    <script src="/theme-bootstrap.js"></script>
 
     <!-- Allow pinch zoom so the app meets WCAG 1.4.4 Resize Text. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
