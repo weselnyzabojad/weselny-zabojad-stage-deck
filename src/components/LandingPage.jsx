@@ -6,6 +6,8 @@
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import logo from '../assets/img/logo.png';
+import logoMark from '../assets/img/dj-vip/logo_mark.png';
+import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
 
 const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';
 
@@ -237,6 +239,24 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t border-line bg-card/60">
+        <div className="mx-auto w-full max-w-6xl border-b border-line/60 px-4 py-6 text-center sm:px-6">
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+            {t('landing.footer.partners')}
+          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
+            <img
+              src={logoMark}
+              alt="DJ Mark"
+              className="h-10 w-auto object-contain sm:h-12"
+            />
+            <img
+              src={logoSzymoniak}
+              alt="DJ Szymoniak"
+              className="h-10 w-auto object-contain sm:h-12"
+            />
+          </div>
+        </div>
+
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>{t('landing.footer.note')}</span>
           <a

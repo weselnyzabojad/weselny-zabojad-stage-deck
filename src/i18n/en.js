@@ -681,6 +681,7 @@ const en = {
   'landing.faq.4.a': 'No. The wedding is not publicly visible; access to each view follows the role and the session.',
   'landing.faq.5.q': 'How do we get Stage Deck?',
   'landing.faq.5.a': 'Stage Deck is included at no extra cost with weddings hosted by Weselny Żabojad and/or with its privileged partners.',
+  'landing.footer.partners': 'In partnership with:',
   'landing.footer.ctaTitle': 'Let’s team up on the big day',
   'landing.footer.ctaBody': 'Contact us: discover how Weselny Żabojad’s support combined with Stage Deck guarantees seamless coordination and a resounding success.',
   'landing.footer.crew': 'Wedding crew sign in',
