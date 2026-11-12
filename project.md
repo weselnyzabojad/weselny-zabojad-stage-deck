@@ -5128,6 +5128,45 @@ and three corrected locale strings.
 
 **Tracking.** [#816](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/816).
 
+### 17.49 Landing contact CTA copy (decision, 2026-11-12)
+
+The public landing's contact block now invites couples to team up on the wedding
+day and states that the contact form covers both Weselny Żabojad's support and
+Stage Deck. The shared CTA label becomes `Formulaire de contact`; the
+destination, layout and every other landing section stay unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Contact footer title/body and the shared hero/footer CTA label |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Footer title | `Faisons équipe le jour J` (FR source) |
+| Footer body | Weselny Żabojad support + Stage Deck = perfect coordination and a brilliant success |
+| CTA label | `Formulaire de contact`, shared by the hero and footer buttons |
+| Destination | `https://www.weselnyzabojad.pl/#kontakt`, unchanged |
+| Languages | FR authoritative; PL/EN kept in parity with equivalent wording |
+| Metadata | `index.html` title/description/OG/Twitter unchanged |
+| Scope | Public landing only; no new form, route or styling |
+
+**Task split.** One atomic task: one view and three locale keys.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#818](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/818) | Landing contact CTA copy in FR/PL/EN and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#818](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/818).
+
 
 
 
