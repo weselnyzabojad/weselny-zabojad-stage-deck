@@ -183,9 +183,6 @@ export default function StageStepCard({
         >
           <span className="truncate">📍 {step.location ?? '—'}</span>
           <div className="flex items-center gap-1.5 font-mono">
-            {typeof step.durationMin === 'number' ? (
-              <span className="text-muted">{step.durationMin} min</span>
-            ) : null}
             {drift ? (
               <span
                 title={entry.driftLabel ?? 'Projected drift vs plan'}
