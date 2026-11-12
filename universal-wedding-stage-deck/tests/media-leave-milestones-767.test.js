@@ -80,6 +80,16 @@ describe('issue #767 remove media leave milestones from the timeline', () => {
     expect(dialogs).not.toContain('readMediaLeaveTimes');
   });
 
+  it('feeds the filtered step list into every role view and live state', () => {
+    const deck = read('src/StageDeck.jsx');
+    expect(deck).toContain(
+      'steps: filterEnabledSteps(wedding)',
+    );
+    expect(deck).toContain('const steps = activeSteps(');
+    expect(deck).toContain('steps,');
+    expect(deck).toContain('liveState.active_step_id');
+  });
+
   it('keeps the generic milestone editor for Venue Manager', () => {
     const venue = read('src/components/VenueManagerView.jsx');
     expect(venue).toContain('MilestoneCard');
