@@ -47,6 +47,7 @@ import { clearReloadState, loadReloadState } from './lib/reloadState';
 import { resolvePwaReloadBlock } from './lib/pwaUpdate';
 import { setPwaReloadContext } from './lib/pwaUpdateState';
 import { activeSteps } from './lib/liveStageState';
+import { isDevPreviewRequested } from './lib/devPreview';
 import { applyTimeAwareStart } from './lib/timeTimeline';
 import { deriveLastKnownStep, saveLastKnownStep } from './lib/lastKnownStep';
 import { resolveEffectiveSyncStatus } from './lib/cartridgeSync';
@@ -87,6 +88,13 @@ export default function StageDeck({
 
   // The actor role is logged in mutation entries; production uses the token role.
   const actorRole = isProduction ? roleSession?.role ?? 'mc' : role;
+  // Temporary dev inspector: `?dev=1` keeps the whole session in memory and
+  // disables cloud sync plus live-state persistence. Production builds strip it.
+  const DEV_PREVIEW =
+    import.meta.env.DEV &&
+    isDevPreviewRequested(
+      typeof window === 'undefined' ? '' : window.location.search,
+    );
   const {
     liveState,
     markCurrentDone,
@@ -120,6 +128,7 @@ export default function StageDeck({
     role: actorRole,
     cartridgeRevision,
     speeches,
+    preview: DEV_PREVIEW,
   });
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
