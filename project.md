@@ -4840,3 +4840,53 @@ every service as a hard anchor.
 **Open questions.** None.
 
 **Tracking.** [#777](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/777), [#778](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/778), [#779](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/779).
+
+### 17.42 Sentry free-tier error monitoring (decision, 2026-11-12)
+
+Add opt-in production error monitoring with Sentry's free tier, without
+changing deck behaviour, data contracts or the existing recovery UI. Sentry
+initialises only in production builds that define `VITE_SENTRY_DSN`, reports
+unhandled errors and React render crashes, and receives hidden sourcemaps
+deleted from `dist/` after upload. Session Replay is limited to error sessions
+and fully masked because cartridges contain wedding PII.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+- Global: `src/main.jsx` initialises Sentry once before render, so every route
+  (`/`, `/admin`, `/request/:code`, role views) is covered.
+- Error recovery: `AppErrorBoundary` keeps its localized fallback, last-known
+  step and bounded local log; `componentDidCatch` additionally reports a
+  sanitized event to Sentry.
+- Out of scope: replacing the fallback with `Sentry.ErrorBoundary`, replay of
+  normal sessions, dashboards beyond browser tracing, and events from local
+  development or local-only builds.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| DSN | Public `VITE_SENTRY_DSN`; Sentry stays off when it is unset |
+| Environments | Production builds only; `VITE_SENTRY_ENVIRONMENT` overrides `production` |
+| Tracing | `browserTracingIntegration()`, `tracesSampleRate: 0.1` |
+| Replay | Error sessions only (`1.0`), no session sampling, `maskAllText`, `blockAllMedia` |
+| PII | `sendDefaultPii: false`; only ids, role and scope are attached |
+| Boundary | Enrich the existing `AppErrorBoundary`; do not replace it |
+| Sourcemaps | `@sentry/vite-plugin`, hidden maps uploaded then deleted from `dist/` |
+| Build secrets | `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` are Netlify build-only, never `VITE_*` |
+| Project | Create a Sentry React project; the owner supplies DSN and token |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#794](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/794) | SDK initialization, production gating and env documentation | - |
+| 2 | [#795](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/795) | Report `AppErrorBoundary` crashes with sanitized context | #794 |
+| 3 | [#796](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/796) | Hidden sourcemap upload and Netlify build secrets | #794 |
+
+**Open questions.** None.
+
+**Tracking.** [#794](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/794), [#795](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/795), [#796](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/796).
+
