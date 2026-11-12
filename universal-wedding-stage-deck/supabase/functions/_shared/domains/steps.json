@@ -265,6 +265,10 @@
         "location": {
           "type": "string"
         },
+        "notes": {
+          "type": "string",
+          "description": "Optional free-text note for this step from the Google Doc NOTES section."
+        },
         "dj": {
           "$ref": "#/$defs/djCue"
         },

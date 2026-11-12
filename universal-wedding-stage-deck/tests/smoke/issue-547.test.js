@@ -45,12 +45,11 @@ Supported: FR, PL, EN
 | --- | --- | --- | --- | --- |
 | step_01 | Party Set | Gimme! Gimme! Gimme! — ABBA |  |  |
 
-## MC CUES
-| Step ID | Language | Timing | Text |
-| --- | --- | --- | --- |
-| step_01 | FR | AT_START | Toast et lancer les verres derrière soi. |
-| step_01 | PL | AT_START | Sto lat! |
-| step_01 | PL | AT_START | Rzut kieliszkami. |
+## NOTES
+| Step ID | Notes |
+| --- | --- |
+| step_01 | Toast et lancer les verres derrière soi. |
+| step_01 | Confirm the speech mic is on. |
 
 ## SUBTASKS
 | Step ID | Subtask ID | Label | Done |
@@ -120,11 +119,7 @@ describe('issue #547 canonical step vocabulary & Plan-of-the-day mapping', () =>
     expect(steps[1].type).toBe('HARD_ANCHOR');
     expect(steps[2].optionalFlag).toBe('oczepiny');
 
-    const cues = result.cartridge.steps.find((step) => step.id === 'step_01').mcCues;
-    expect(cues.map((cue) => cue.text)).toEqual([
-      'Toast et lancer les verres derri\u00e8re soi.',
-      'Sto lat!',
-      'Rzut kieliszkami.',
-    ]);
+    const notes = result.cartridge.steps.find((step) => step.id === 'step_01').notes;
+    expect(notes).toBe('Confirm the speech mic is on.');
   });
 });

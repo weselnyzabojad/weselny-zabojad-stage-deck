@@ -15,17 +15,17 @@ describe('issue #550 per-step MC cues', () => {
     expect(schema.$defs.mcCue.properties.language.$ref).toBe('#/$defs/language');
   });
 
-  it('attaches MC cues to steps by stable Step ID, preserving language', () => {
+  it('maps NOTES rows by stable Step ID and stops populating mcCues', () => {
     const parsed = parseGoogleDocTemplate(read('schema/google-doc-template.md'));
     const result = googleDocTemplateToCartridge(parsed);
     const entrance = result.cartridge.steps.find((step) => step.id === 'step_03');
-    expect(entrance.mcCues.map((cue) => cue.language)).toEqual(['PL', 'FR', 'EN']);
-    expect(entrance.mcCues.every((cue) => cue.timing === 'AT_START')).toBe(true);
-    expect(entrance.mcCues.every((cue) => cue.text.trim().length > 0)).toBe(true);
-
-    // Cues attach by Step ID, never by localized title: other steps have none.
-    const cocktail = result.cartridge.steps.find((step) => step.id === 'step_01');
-    expect(cocktail.mcCues).toBeUndefined();
+    expect(entrance.notes).toBe(
+      'Keep the newlyweds by the door until the MC announces them.',
+    );
+    expect(entrance.mcCues).toBeUndefined();
+    expect(
+      result.cartridge.steps.find((step) => step.id === 'step_01').notes,
+    ).toBe('Guests gather in the garden for the aperitif.');
   });
 
   it('renders per-step cues in the MC Cues box, not only the empty placeholder', () => {

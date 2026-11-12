@@ -60,7 +60,7 @@ Canonical order and mapping:
 | 5 | `## OCZEPINY` | no | `oczepiny` |
 | 6 | `## TIMELINE` | yes | `steps` |
 | 7 | `## DJ CUES` | no | `steps[].dj` |
-| 8 | `## MC CUES` | no | `steps[].mcCues` |
+| 8 | `## NOTES` | no | `steps[].notes` |
 | 9 | `## SUBTASKS` | no | `steps[].subTasks` |
 | 10 | `## HARD ANCHORS` | no | `hardAnchors` |
 | 11 | `## VENUE LOGISTICS` | no | `venueDetails` domain contract only (not a cartridge field) |
@@ -396,8 +396,8 @@ r. Sto lat singing
 ```
 
 becomes one `TIMELINE` row titled `Grand Entrance` (16:00), two `SUBTASKS` rows
-(napkin welcome; Sto lat explanation), one `DJ CUES` row (ABBA), and three
-`MC CUES` rows (toast, Sto lat, glass toss).
+(napkin welcome; Sto lat explanation), one `DJ CUES` row (ABBA), and `NOTES`
+rows for the toast, Sto lat and glass-toss reminders.
 
 ### 6.3 Uniform fallback rules
 

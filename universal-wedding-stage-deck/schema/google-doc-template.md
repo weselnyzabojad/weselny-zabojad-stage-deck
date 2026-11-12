@@ -126,13 +126,12 @@ it blank for ordinary steps.
 | step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |
 | step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 |  |
 
-## MC CUES
+## NOTES
 
-| Step ID | Language | Timing | Text |
-| --- | --- | --- | --- |
-| step_03 | PL | AT_START | Prosimy o powstanie i powitanie Pary MĹ‚odej! |
-| step_03 | FR | AT_START | Veuillez vous lever et accueillir les jeunes mariĂ©s ! |
-| step_03 | EN | AT_START | Please stand and welcome the newlyweds! |
+| Step ID | Notes |
+| --- | --- |
+| step_01 | Guests gather in the garden for the aperitif. |
+| step_03 | Keep the newlyweds by the door until the MC announces them. |
 
 ## SUBTASKS
 
