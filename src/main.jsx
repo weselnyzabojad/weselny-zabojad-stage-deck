@@ -6,6 +6,7 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
+import { isLandingPath } from './lib/publicRoutes.js'
 import { initSentry } from './lib/sentry.js'
 
 initSentry()
@@ -13,6 +14,10 @@ initSentry()
 // `/admin` is the owner-only surface. The legacy `/deck/admin` path redirects.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 const SongRequestApp = lazy(() => import('./components/SongRequestApp.jsx'))
+// Public marketing landing; kept in its own chunk so the deck entry stays lean.
+const LandingPage = lazy(() => import('./components/LandingPage.jsx'))
+const IS_LANDING =
+  typeof window !== 'undefined' && isLandingPath(window.location.pathname)
 const LEGACY_ADMIN =
   typeof window !== 'undefined' && isLegacyAdminPath(window.location.pathname)
 if (LEGACY_ADMIN) {
@@ -39,6 +44,19 @@ createRoot(document.getElementById('root')).render(
             </p>
           </div>
         </div>
+      ) : IS_LANDING ? (
+        <Suspense
+          fallback={
+            <div
+              className="flex min-h-screen items-center justify-center bg-page text-sm text-muted"
+              aria-busy="true"
+            >
+              Loading…
+            </div>
+          }
+        >
+          <LandingPage />
+        </Suspense>
       ) : SONG_REQUEST_ROUTE ? (
         <Suspense
           fallback={
