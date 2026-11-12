@@ -69,6 +69,11 @@ Sourcemap upload is a separate build step: set `SENTRY_AUTH_TOKEN`,
 them from `dist/`; without it, no maps are produced and nothing is uploaded.
 The free tier is used conservatively: 10% browser traces and error-only Replay.
 
+Production builds fail closed: a Vite production build defaults to production
+deck mode even when `VITE_DECK_MODE` is missing, so demo data is never served by
+accident. Only `VITE_DECK_MODE=local` enables the demo deck, and Netlify's
+production deploy runs `validate:env -- --require-production` before building.
+
 Server-side Edge Function secrets are documented in `.env.example` and must never
 use the `VITE_` prefix. Follow
 [`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md) for the
