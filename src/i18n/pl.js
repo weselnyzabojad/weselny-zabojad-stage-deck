@@ -636,13 +636,13 @@ const pl = {
   'speaker.hideSecret': 'Ukryj sekrety',
   'speaker.unlockError': 'Nie udało się odszyfrować przemówienia.',
   'speaker.footer': 'Skrypt tylko do odczytu · wyświetlana jest tylko przypisana mowa · brak sterowania timeline',
-  // Landing produktu Stage Deck (#811, #816): prezentuje produkt przyszłym nowożeńcom.
-  'landing.intro.p1': 'Koniec z bezosobowymi i niejasnymi ankietami klientów, które zbyt często spotyka się w branży. W Weselny Żabojad każde wesele traktujemy jak wyjątkowy projekt, w którym każdy szczegół jest wysłuchany, przeanalizowany i wspólnie zatwierdzony, aby dopasować rozwiązania szyte na miarę.',
-  'landing.intro.p2': 'Właśnie z tej wizji powstał Stage Deck: dać usługodawcom jedno, zsynchronizowane środowisko pracy w dniu ślubu i zapewnić idealną koordynację, podczas gdy Wy w pełni i spokojnie przeżywacie swój dzień.',
+  // Landing produktu Stage Deck (#811, #816, #818): prezentuje produkt przyszłym nowożeńcom.
+  'landing.intro.p1': 'Bo wesele zasługuje na coś więcej niż niezrozumiałe ankiety, Weselny Żabojad traktuje każde wydarzenie jak prawdziwy wspólnie tworzony projekt, oparty na słuchaniu i dialogu.',
+  'landing.intro.p2': 'Z tego podejścia powstał Stage Deck: narzędzie współpracy stworzone po to, by połączyć wszystkich usługodawców i pozwolić im działać w idealnej synergii w dniu ślubu, zostawiając Wam całkowicie wolną głowę, byście cieszyli się swoim szczęściem.',
   'landing.hero.eyebrow': 'Do dyspozycji usługodawców, dla przyszłych nowożeńców',
   'landing.hero.title': 'Całe wesele w jednym rytmie',
   'landing.hero.lead': 'Stage Deck to jeden wspólny plan dla Was i całej ekipy weselnej. Mistrz ceremonii, DJ, fotograf, operator wideo i manager sali widzą tę samą timeline na żywo — także wtedy, gdy w sali zanika zasięg.',
-  'landing.hero.cta': 'Zapytaj o wesele ze Stage Deck',
+  'landing.hero.cta': 'Formularz kontaktowy',
   'landing.hero.included': 'Stage Deck jest dołączony bez dodatkowych kosztów do wesel prowadzonych przez Weselny Żabojad.',
   'landing.mock.timeline.title': 'Jeden wspólny plan',
   'landing.mock.timeline.caption': 'Każdy krok, godzina i zmiana są widoczne dla całej ekipy.',
@@ -683,8 +683,8 @@ const pl = {
   'landing.faq.4.a': 'Nie. Wesele nie jest widoczne publicznie; dostęp do widoków wynika z roli i sesji.',
   'landing.faq.5.q': 'Jak otrzymamy Stage Deck?',
   'landing.faq.5.a': 'Stage Deck jest dołączony bez dodatkowych kosztów do wesel prowadzonych przez Weselny Żabojad. Napiszcie przez formularz kontaktowy, aby porozmawiać o Waszym weselu.',
-  'landing.footer.ctaTitle': 'Zapytajcie o Stage Deck',
-  'landing.footer.ctaBody': 'Napiszcie o swojej dacie i miejscu — opowiemy, jak Stage Deck poprowadzi Wasz dzień.',
+  'landing.footer.ctaTitle': 'Połączmy siły w dniu ślubu',
+  'landing.footer.ctaBody': 'Napiszcie do nas: odkryjcie, jak wsparcie Weselny Żabojad połączone ze Stage Deck gwarantuje perfekcyjną koordynację i spektakularny sukces.',
   'landing.footer.crew': 'Logowanie ekipy',
   'landing.footer.note': 'Stage Deck · projekt Weselny Żabojad / Erick Caron',
 };

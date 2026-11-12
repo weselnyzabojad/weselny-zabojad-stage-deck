@@ -638,13 +638,13 @@ const fr = {
   'speaker.hideSecret': 'Masquer les secrets',
   'speaker.unlockError': 'Impossible de déchiffrer ce discours.',
   'speaker.footer': 'Script en lecture seule · seul le discours assigné est affiché · aucun contrôle de timeline',
-  // Landing produit Stage Deck (#811, #816) : présente le produit aux futurs mariés.
-  'landing.intro.p1': 'Finies les enquêtes clients impersonnelles et nébuleuses que l’on retrouve trop souvent dans le milieu. Avec Weselny Żabojad, chaque mariage est abordé comme un projet unique où chaque détail est écouté, analysé et validé ensemble pour y apporter des solutions sur-mesure.',
-  'landing.intro.p2': 'C’est précisément de cette vision qu’est né Stage Deck : offrir aux prestataires un espace de travail unifié et synchronisé le jour J, afin d’assurer une coordination parfaite pendant que vous savourez pleinement votre journée en toute sérénité.',
+  // Landing produit Stage Deck (#811, #816, #818) : présente le produit aux futurs mariés.
+  'landing.intro.p1': 'Parce qu’un mariage mérite mieux que de simples questionnaires incompréhensibles, Weselny Żabojad traite chaque événement comme un véritable projet coconstruit, fondé sur l’écoute et le dialogue.',
+  'landing.intro.p2': 'De cette approche est né le Stage Deck : un outil collaboratif pensé pour relier tous les prestataires et leur permettre de travailler en parfaite synergie le jour J, vous laissant ainsi l’esprit entièrement libre pour profiter de votre bonheur.',
   'landing.hero.eyebrow': 'À disposition des prestataires, pour les futurs mariés',
   'landing.hero.title': 'Tout votre mariage, sur un même rythme',
   'landing.hero.lead': 'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle voient la même timeline en direct — même quand le réseau de la salle tombe.',
-  'landing.hero.cta': 'Parler d’un mariage avec Stage Deck',
+  'landing.hero.cta': 'Formulaire de contact',
   'landing.hero.included': 'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad.',
   'landing.mock.timeline.title': 'Un plan partagé',
   'landing.mock.timeline.caption': 'Chaque étape, horaire et changement est visible par toute l’équipe.',
@@ -685,8 +685,8 @@ const fr = {
   'landing.faq.4.a': 'Non. Le mariage n’est pas visible publiquement ; l’accès à chaque vue dépend du rôle et de la session.',
   'landing.faq.5.q': 'Comment obtenir Stage Deck ?',
   'landing.faq.5.a': 'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad. Écrivez via le formulaire de contact pour parler de votre mariage.',
-  'landing.footer.ctaTitle': 'Parler de Stage Deck',
-  'landing.footer.ctaBody': 'Indiquez votre date et votre lieu — nous vous expliquerons comment Stage Deck fait vivre votre journée.',
+  'landing.footer.ctaTitle': 'Faisons équipe le jour J',
+  'landing.footer.ctaBody': 'Contactez-nous : découvrez comment l’accompagnement de Weselny Żabojad couplé au Stage Deck garantit une coordination parfaite et une réussite éclatante.',
   'landing.footer.crew': 'Connexion de l’équipe mariage',
   'landing.footer.note': 'Stage Deck · un projet Weselny Żabojad / Erick Caron',
 };
