@@ -6,6 +6,7 @@ import {
   recordError,
 } from '../lib/errorLog.js';
 import { loadLatestLastKnownStep } from '../lib/lastKnownStep.js';
+import { captureAppError } from '../lib/sentry.js';
 import { t } from '../i18n/index.js';
 
 const SCOPE_LABEL_KEY = {
@@ -47,6 +48,15 @@ export default class AppErrorBoundary extends React.Component {
       weddingId: this.props.weddingId ?? lastKnown?.weddingId ?? null,
       stepId: lastKnown?.stepId ?? null,
       stepTitle: lastKnown?.title ?? null,
+    });
+
+    captureAppError({
+      error,
+      scope: this.props.scope ?? 'app',
+      role: entry.role,
+      weddingId: entry.weddingId,
+      stepId: entry.stepId,
+      errorId: entry.id,
     });
 
     this.setState({
