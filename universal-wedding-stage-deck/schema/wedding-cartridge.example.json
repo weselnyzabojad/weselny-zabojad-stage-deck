@@ -103,30 +103,16 @@
       }
     },
     {
-      "id": "photo_leave",
-      "time": "20:30",
+      "id": "vendor_leave",
+      "time": "21:15",
       "durationMin": 1,
-      "title": "Photographer leaves",
+      "title": "Vendor leaves",
       "type": "HARD_ANCHOR",
       "location": "",
       "mandatory": {
         "kind": "MILESTONE",
-        "label": "Photographer leaves",
-        "milestoneKind": "PHOTO",
-        "alertBeforeMin": 45
-      }
-    },
-    {
-      "id": "camera_leave",
-      "time": "20:30",
-      "durationMin": 1,
-      "title": "Cameraman leaves",
-      "type": "HARD_ANCHOR",
-      "location": "",
-      "mandatory": {
-        "kind": "MILESTONE",
-        "label": "Cameraman leaves",
-        "milestoneKind": "CAMERA",
+        "label": "Vendor leaves",
+        "milestoneKind": "VENDOR",
         "alertBeforeMin": 45
       }
     },
@@ -283,18 +269,11 @@
       "kind": "VENDOR"
     },
     {
-      "id": "photo_leave",
-      "time": "20:30",
-      "label": "Photographer leaves",
+      "id": "vendor_leave",
+      "time": "21:15",
+      "label": "Vendor leaves",
       "alertBeforeMin": 45,
-      "kind": "PHOTO"
-    },
-    {
-      "id": "camera_leave",
-      "time": "20:30",
-      "label": "Cameraman leaves",
-      "alertBeforeMin": 45,
-      "kind": "CAMERA"
+      "kind": "VENDOR"
     },
     {
       "id": "supper_1",

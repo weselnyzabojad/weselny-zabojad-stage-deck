@@ -249,16 +249,16 @@ with `type: "HARD_ANCHOR"` become the derived `hardAnchors` array.
 
 ```json
 {
-  "id": "photo_leave",
+  "id": "vendor_leave",
   "time": "20:30",
   "durationMin": 1,
-  "title": "Photographer leaves",
+  "title": "Vendor leaves",
   "type": "HARD_ANCHOR",
   "location": "Terrace",
   "mandatory": {
     "kind": "MILESTONE",
-    "label": "Photographer leaves",
-    "milestoneKind": "PHOTO",
+    "label": "Vendor leaves",
+    "milestoneKind": "VENDOR",
     "alertBeforeMin": 45
   }
 }
@@ -267,9 +267,13 @@ with `type: "HARD_ANCHOR"` become the derived `hardAnchors` array.
 `mandatory.kind` is one of `FIRST_GUESTS_ARRIVAL`, `KITCHEN_SERVICE`,
 `CAKE_SERVICE`, `CLOSURE` or `MILESTONE`. Kitchen courses carry
 `serviceMode`; the cake step carries `cakeServiceMode`; the closure step carries
-`closureExtensionAllowed`, `closureExtensionUntil` and `lastSong`. Photo and
-camera are separate milestones (`milestoneKind: "PHOTO"` and `"CAMERA"`);
-Oczepiny is a game step, not an anchor.
+`closureExtensionAllowed`, `closureExtensionUntil` and `lastSong`.
+
+Media departures are planning data on `mediaTeam[].endTime`, not timeline
+steps. The PHOTO and CAMERA milestone kinds stay accepted for legacy
+cartridges, but the application filters them out of every timeline and step
+count. Other milestones (`VENDOR`, `SUNSET`, `TRANSPORT`, `FAMILY`, `OTHER`)
+remain editable anchors; Oczepiny is a game step, not an anchor.
 
 `deriveHardAnchors(steps)` produces the `hardAnchors` array. `milestoneKind` is
 one of `PHOTO`, `CAMERA`, `VENDOR`, `SUNSET`, `TRANSPORT`, `FAMILY`, `OTHER`.

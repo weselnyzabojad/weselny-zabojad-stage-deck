@@ -314,34 +314,6 @@
       }
     },
     {
-      "id": "photo_leave",
-      "time": "20:30",
-      "durationMin": 1,
-      "title": "Photographer leaves",
-      "type": "HARD_ANCHOR",
-      "location": "",
-      "mandatory": {
-        "kind": "MILESTONE",
-        "label": "Photographer leaves",
-        "milestoneKind": "PHOTO",
-        "alertBeforeMin": 45
-      }
-    },
-    {
-      "id": "camera_leave",
-      "time": "20:30",
-      "durationMin": 1,
-      "title": "Cameraman leaves",
-      "type": "HARD_ANCHOR",
-      "location": "",
-      "mandatory": {
-        "kind": "MILESTONE",
-        "label": "Cameraman leaves",
-        "milestoneKind": "CAMERA",
-        "alertBeforeMin": 45
-      }
-    },
-    {
       "id": "step_06",
       "time": "21:00",
       "durationMin": 15,
@@ -664,20 +636,6 @@
       "time": "20:30",
       "label": "Wedding cake",
       "kind": "VENDOR"
-    },
-    {
-      "id": "photo_leave",
-      "time": "20:30",
-      "label": "Photographer leaves",
-      "alertBeforeMin": 45,
-      "kind": "PHOTO"
-    },
-    {
-      "id": "camera_leave",
-      "time": "20:30",
-      "label": "Cameraman leaves",
-      "alertBeforeMin": 45,
-      "kind": "CAMERA"
     },
     {
       "id": "supper_1",

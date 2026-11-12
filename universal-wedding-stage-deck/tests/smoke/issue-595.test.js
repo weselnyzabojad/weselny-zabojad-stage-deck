@@ -49,13 +49,11 @@ describe('issue #595 derived hard anchors', () => {
     expect(anchors[2]).toMatchObject({ label: 'Dinner', kind: 'VENDOR' });
   });
 
-  it('keeps photo and camera separate and drops the Oczepiny anchor in the demo', () => {
+  it('removes photo and camera media leaves from the demo anchors', () => {
     const ids = DEMO_WEDDING.hardAnchors.map((anchor) => anchor.id);
-    expect(ids).toEqual(expect.arrayContaining(['photo_leave', 'camera_leave']));
+    expect(ids).not.toContain('photo_leave');
+    expect(ids).not.toContain('camera_leave');
     expect(ids.join(' ')).not.toMatch(/ocsepiny|oczepiny/i);
-    const kinds = DEMO_WEDDING.hardAnchors.map((anchor) => anchor.kind);
-    expect(kinds).toContain('PHOTO');
-    expect(kinds).toContain('CAMERA');
   });
 
   it('removes HARD ANCHORS from the template and manifest', () => {
@@ -64,15 +62,15 @@ describe('issue #595 derived hard anchors', () => {
     expect(read('scripts/validate-google-doc-template.mjs')).not.toContain("'HARD ANCHORS'");
   });
 
-  it('keeps the real fixture on embedded milestones and derived anchors', () => {
+  it('removes media leave milestones from the real fixture', () => {
     const fixture = json('schema/fixtures/real-jennifer-guillaume.json');
     expect(fixture).not.toHaveProperty('mandatorySteps');
     const milestones = fixture.steps.filter(
       (step) => step.mandatory?.kind === 'MILESTONE',
     );
-    expect(milestones).toHaveLength(2);
-    expect(fixture.hardAnchors.map((anchor) => anchor.id)).toEqual(
-      expect.arrayContaining(['photo_leave', 'camera_leave']),
-    );
+    expect(milestones).toHaveLength(0);
+    const ids = fixture.hardAnchors.map((anchor) => anchor.id);
+    expect(ids).not.toContain('photo_leave');
+    expect(ids).not.toContain('camera_leave');
   });
 });

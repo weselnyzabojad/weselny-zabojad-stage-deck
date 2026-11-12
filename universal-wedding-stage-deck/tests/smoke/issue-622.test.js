@@ -68,10 +68,10 @@ describe('issue #622 mandatory data lives on timeline steps', () => {
         ],
         milestones: [
           {
-            id: 'photo_leave',
+            id: 'vendor_leave',
             time: '20:30',
-            label: 'Photographer leaves',
-            kind: 'PHOTO',
+            label: 'Vendor leaves',
+            kind: 'VENDOR',
             alertBeforeMin: 45,
             isHardAnchor: true,
           },
@@ -92,20 +92,20 @@ describe('issue #622 mandatory data lives on timeline steps', () => {
   it('derives hard anchors from HARD_ANCHOR steps', () => {
     const anchors = deriveHardAnchors([
       {
-        id: 'photo_leave',
+        id: 'vendor_leave',
         time: '20:30',
-        title: 'Photographer leaves',
+        title: 'Vendor leaves',
         type: 'HARD_ANCHOR',
-        mandatory: { kind: 'MILESTONE', label: 'Photographer leaves', milestoneKind: 'PHOTO' },
+        mandatory: { kind: 'MILESTONE', label: 'Vendor leaves', milestoneKind: 'VENDOR' },
       },
       { id: 'flex', time: '21:00', title: 'Flex', type: 'FLEXIBLE' },
     ]);
     expect(anchors).toEqual([
       {
-        id: 'photo_leave',
+        id: 'vendor_leave',
         time: '20:30',
-        label: 'Photographer leaves',
-        kind: 'PHOTO',
+        label: 'Vendor leaves',
+        kind: 'VENDOR',
       },
     ]);
   });
@@ -117,7 +117,7 @@ describe('issue #622 mandatory data lives on timeline steps', () => {
         { id: 'dinner', name: 'Dinner', time: '18:30', serviceMode: 'TABLE_SERVICE', isHardAnchor: true },
       ],
       milestones: [
-        { id: 'photo_leave', label: 'Photo', time: '20:30', kind: 'PHOTO', alertBeforeMin: 45, isHardAnchor: true },
+        { id: 'vendor_leave', label: 'Vendor', time: '20:30', kind: 'VENDOR', alertBeforeMin: 45, isHardAnchor: true },
       ],
       cakeServiceMode: 'CUT_IN_PLACE',
       closureTime: '02:00',
