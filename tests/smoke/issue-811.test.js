@@ -34,7 +34,7 @@ describe('issue #811 deck-focused landing', () => {
     const html = renderToStaticMarkup(createElement(LandingPage));
 
     expect(html).toContain('Całe wesele w jednym rytmie');
-    expect(html).toContain('Zapytaj o wesele ze Stage Deck');
+    expect(html).toContain('Formularz kontaktowy');
     expect(html).toContain('Stage Deck jest dołączony bez dodatkowych kosztów');
     expect(html).toContain('Jeden wspólny harmonogram');
     expect(html).toContain('Działa bez zasięgu');

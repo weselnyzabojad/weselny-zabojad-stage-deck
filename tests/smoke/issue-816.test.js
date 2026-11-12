@@ -52,8 +52,8 @@ describe('issue #816 landing header and provider-facing copy', () => {
       expect(dictionary['landing.intro.p2'].trim()).not.toBe('');
     }
 
-    expect(fr['landing.intro.p1']).toContain('Finies les enquêtes clients impersonnelles');
-    expect(fr['landing.intro.p2']).toContain('C’est précisément de cette vision qu’est né Stage Deck');
+    expect(fr['landing.intro.p1']).toContain('Parce qu’un mariage mérite mieux');
+    expect(fr['landing.intro.p2']).toContain('De cette approche est né le Stage Deck');
 
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));

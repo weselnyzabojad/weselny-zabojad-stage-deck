@@ -634,13 +634,13 @@ const en = {
   'speaker.hideSecret': 'Hide secrets',
   'speaker.unlockError': 'Could not decrypt this speech.',
   'speaker.footer': 'Read-only script · only the assigned speech is shown · no timeline controls',
-  // Deck-focused landing (#811, #816): presents the Stage Deck product to couples.
-  'landing.intro.p1': 'No more impersonal, vague client surveys like the ones too often found in the industry. At Weselny Żabojad, every wedding is treated as a unique project where every detail is heard, analysed and agreed together to deliver tailor-made solutions.',
-  'landing.intro.p2': 'Stage Deck was born from exactly that vision: giving wedding vendors one unified, synchronised workspace on the big day, so coordination runs perfectly while you savour every moment with peace of mind.',
+  // Deck-focused landing (#811, #816, #818): presents the Stage Deck product to couples.
+  'landing.intro.p1': 'Because a wedding deserves more than incomprehensible questionnaires, Weselny Żabojad treats every event as a true co-created project built on listening and dialogue.',
+  'landing.intro.p2': 'Stage Deck was born from that approach: a collaborative tool designed to connect every vendor and let them work in perfect synergy on the big day, leaving your mind completely free to enjoy your happiness.',
   'landing.hero.eyebrow': 'Available to wedding vendors, for future newlyweds',
   'landing.hero.title': 'Your whole wedding, in one rhythm',
   'landing.hero.lead': 'Stage Deck is one shared plan for you and the whole wedding team. The master of ceremonies, DJ, photographer, videographer and venue manager see the same live timeline — even when the venue signal drops.',
-  'landing.hero.cta': 'Ask about a wedding with Stage Deck',
+  'landing.hero.cta': 'Contact form',
   'landing.hero.included': 'Stage Deck is included at no extra cost with weddings hosted by Weselny Żabojad.',
   'landing.mock.timeline.title': 'One shared plan',
   'landing.mock.timeline.caption': 'Every step, time and change is visible to the whole team.',
@@ -681,8 +681,8 @@ const en = {
   'landing.faq.4.a': 'No. The wedding is not publicly visible; access to each view follows the role and the session.',
   'landing.faq.5.q': 'How do we get Stage Deck?',
   'landing.faq.5.a': 'Stage Deck is included at no extra cost with weddings hosted by Weselny Żabojad. Write through the contact form to talk about your wedding.',
-  'landing.footer.ctaTitle': 'Ask about Stage Deck',
-  'landing.footer.ctaBody': 'Tell us your date and venue — we will explain how Stage Deck runs your day.',
+  'landing.footer.ctaTitle': 'Let’s team up on the big day',
+  'landing.footer.ctaBody': 'Contact us: discover how Weselny Żabojad’s support combined with Stage Deck guarantees seamless coordination and a resounding success.',
   'landing.footer.crew': 'Wedding crew sign in',
   'landing.footer.note': 'Stage Deck · a Weselny Żabojad / Erick Caron project',
 };
