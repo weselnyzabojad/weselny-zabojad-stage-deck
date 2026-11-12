@@ -4692,3 +4692,41 @@ Simplify the MC current-step card and align the cake step across media roles: pr
 **Open questions.** None.
 
 **Tracking.** [#765](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/765), [#766](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/766), [#767](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/767).
+
+### 17.39 Remove redundant step metadata from the stage cards (decision, 2026-11-12)
+
+Strip the remaining low-value metadata from the step cards: MC planned/real/estimated times, the no-script fallback, the first-arrival/prestation chips and the shared duration label. Keep the completed counter, the start–end header summary, all timing/duration data and the first-arrival contract used by scheduling and anchors.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template or cartridge change. `FIRST_GUESTS_ARRIVAL`, derived prestation and `durationMin` remain in the data model.
+
+**View scope.**
+
+- In scope: MC step cards and mandatory-update popup; shared `StageStepCard` duration label across MC, DJ, Photographer, Cameraman, Venue Manager and Speaker; related i18n keys and now-dead presentation code.
+- Out of scope: start–end header summaries, completed counter, timing/drift/anchor engines, mini-session duration labels, schema/parser/template and cartridge data.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#771](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/771) | MC planned/real/estimated metadata and no-script fallback removal; keep completed counter | - |
+| [#772](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/772) | First-arrival/prestation chips and popup rows removal; keep data contract and derived values | - |
+| [#773](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/773) | Shared `X min` duration label removal across every role card; keep `durationMin` | - |
+
+**Task details.**
+
+1. **MC metadata.** Remove the `Prévu`, `Début réel` and `Fin est.` row on
+   desktop and compact, keep `X / Y terminés`, and remove the
+   `Aucun script attaché à cette étape` fallback while keeping the
+   teleprompter/game-clicker actions. Remove the four unused i18n keys.
+2. **First arrival / prestation.** Remove the two chips from MC step cards and
+   the matching rows from `MandatoryUpdatePopup`. Remove the now-unused
+   first-arrival/prestation item generation and labels, but keep
+   `resolveMandatoryConstraints` and the schema kind for scheduling, anchors and
+   parser compatibility.
+3. **Duration display.** Delete the `{durationMin} min` label from
+   `StageStepCard` for every role. Keep `durationMin` in the schema and drift,
+   anchor and mini-session calculations.
+
+**Open questions.** None.
+
+**Tracking.** [#771](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/771), [#772](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/772), [#773](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/773).
