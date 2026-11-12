@@ -4982,5 +4982,34 @@ were updated in place instead of creating duplicates.
 
 **Tracking.** [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805), [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806), [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
 
+### 17.45 Landing release metadata and public route contract (implemented, 2026-11-12)
+
+The public release now has service-focused document metadata and a documented
+route contract. Crawlers see the static metadata in `index.html`; the landing
+itself is the Polish-first public page, while `/join` remains the private crew
+entry. Booking stays on the main `www` site through the single contact link.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Document language | Static `lang="pl"` for the public landing; the app still applies the selected locale on mount |
+| Metadata | Title, description, Open Graph and Twitter tags describe the MC/DJ service |
+| Social image | Same-origin `/pwa-512x512.png` |
+| CTA | Single link to `https://www.weselnyzabojad.pl/#kontakt` |
+| Routing | `/` landing, `/join` crew, `/<room>/<role>` unchanged, `/admin` and `/request/:code` unchanged |
+| Tracking | No analytics or third-party scripts; no CSP change needed |
+| Direct loads | Existing SPA fallback covers every public route |
+
+**View scope.** Only `index.html`, `README.md`, `project.md` and release tests;
+no runtime UI or data behaviour changed.
+
+**Open questions.** None.
+
+**Tracking.** [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
+
 
 
