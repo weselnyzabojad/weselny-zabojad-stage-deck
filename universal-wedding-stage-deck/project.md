@@ -4611,3 +4611,43 @@ or application-code change.
 the owner and webmaster in #759.
 
 **Tracking.** [#759](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/759), [#760](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/760).
+
+### 17.37 Dev browser preview of every step and role (decision, 2026-11-12)
+
+Let a developer inspect every enabled timeline step in every role view directly in a browser, without touching the live show. A temporary, dev-only `?dev=1` mode switches the deck to an in-memory preview state; the existing role switcher gains previous/next and a direct step picker, while Supabase sync and `live_sync_state` persistence stay disabled for that preview session.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template, cartridge or Supabase change.
+
+**View scope.**
+
+- In scope: shared dev tooling and all preview roles — MC Master, DJ standard, DJ Mark, DJ Szymoniak, Photographer 1/2, Cameraman, Venue Manager, Speaker and Song Request.
+- Out of scope: overlays/cues (teleprompter, games, cake, first dance, closure, mandatory popups), admin, guest-facing Song Request internals, real stage commands, production builds, timeline reordering and replay/reset.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#761](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/761) | Local-only `?dev=1` preview state, direct step jump and no-sync/no-persist guards | - |
+| [#762](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/762) | Dev switcher step navigator (previous/next + picker), mobile opt-in and docs | [#761](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/761) |
+
+**Task details.**
+
+1. **Preview state.** Gate the preview behind `import.meta.env.DEV` and `?dev=1`.
+   In preview mode the live state stays in memory: no Supabase client or publish,
+   no write over `wzsd:v1:<weddingId>:live_sync_state`, and no effect on other
+   devices. A direct jump makes the selected step active without reordering and
+   without changing any other step's completion.
+2. **Navigator.** Extend `DevViewSwitcher` with previous/next and a picker built
+   from the enabled steps in the current `step_order`, showing index, time and
+   title. MC updates its current-step card and cues immediately; DJ, Photographer
+   and Venue Manager focus the selected step; Speaker and Song Request stay
+   stable. Step changes close open overlays and restore focus.
+3. **Visibility and safety.** Keep the current desktop-only dev switcher by
+   default. `?dev=1` also exposes it below 640px as an explicit opt-in, within
+   `45dvh`, scrollable and clear of the primary HOLD, Undo and Go-live controls.
+   Both tasks are temporary dev-only work and must be removed or disabled once
+   the preview flow is no longer needed.
+
+**Open questions.** None.
+
+**Tracking.** [#761](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/761), [#762](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/762).
