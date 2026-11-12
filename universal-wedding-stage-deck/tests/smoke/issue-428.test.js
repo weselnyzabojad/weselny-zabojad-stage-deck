@@ -22,10 +22,6 @@ describe('issue #428 MC view i18n', () => {
     for (const key of [
       'mc.step.holdAdvance',
       'mc.step.eventComplete',
-      'mc.step.realStart',
-      'mc.step.estimatedEnd',
-      'mc.step.planned',
-      'mc.step.noScript',
       'mc.step.openTeleprompter',
       'mc.step.gameClicker',
       'mc.step.cuesTitle',
@@ -47,10 +43,6 @@ describe('issue #428 MC view i18n', () => {
     const keys = [
       'mc.step.holdAdvance',
       'mc.step.eventComplete',
-      'mc.step.realStart',
-      'mc.step.estimatedEnd',
-      'mc.step.planned',
-      'mc.step.noScript',
       'mc.step.openTeleprompter',
       'mc.step.gameClicker',
       'mc.step.cuesTitle',

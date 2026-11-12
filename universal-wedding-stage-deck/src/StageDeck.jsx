@@ -374,8 +374,6 @@ export default function StageDeck({
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
-  const realStart = currentEntry?.projectedStart ?? null;
-  const estimatedEnd = currentEntry?.projectedEnd ?? null;
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.FLEXIBLE : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
   const game = currentStep?.game?.id
@@ -665,7 +663,6 @@ export default function StageDeck({
   const mcModel = {
     WEDDING,
     childrenExpected: WEDDING.childrenExpected === true,
-    realStart,
     driftReport: displayedDriftReport,
     handleUnpair,
     IS_PRODUCTION: isProduction,
@@ -684,7 +681,6 @@ export default function StageDeck({
     remoteUpdatedAt,
     currentStep,
     stepTypeClass,
-    estimatedEnd,
     showDjCues,
     stepSubtasks,
     liveState,
@@ -692,7 +688,6 @@ export default function StageDeck({
     script,
     game,
     setOverlay,
-    currentEntry,
     steps,
     completedCount,
     nextEntry,
