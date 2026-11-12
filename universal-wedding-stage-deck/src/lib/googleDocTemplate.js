@@ -60,10 +60,10 @@ export const SECTION_MANIFEST = Object.freeze([
   },
   {
     order: 8,
-    marker: 'MC CUES',
+    marker: 'NOTES',
     required: false,
-    schemaPath: ['steps[].mcCues'],
-    purpose: 'Localized MC lines per step.',
+    schemaPath: ['steps[].notes'],
+    purpose: 'Optional free-text notes per step.',
   },
   {
     order: 9,

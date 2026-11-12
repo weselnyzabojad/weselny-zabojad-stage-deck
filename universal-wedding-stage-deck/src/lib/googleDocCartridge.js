@@ -311,6 +311,24 @@ function parseTimelineNotes(step, notes, warnings) {
   }
 }
 
+function mapStepNotes(source, steps, warnings = []) {
+  const rows = table(source, ['Step ID', 'Notes']);
+  for (const row of rows) {
+    const id = text(row['Step ID']);
+    if (!id) {
+      warnings.push('NOTES row skipped: missing Step ID');
+      continue;
+    }
+    const step = steps.find((entry) => entry.id === id);
+    if (!step) {
+      warnings.push(`NOTES row skipped: unknown Step ID "${id}"`);
+      continue;
+    }
+    const note = text(row.Notes);
+    if (note) step.notes = note;
+  }
+}
+
 function mapTimeline(source, warnings) {
   const rows = table(source, [
     'Step ID',
@@ -860,22 +878,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     };
   });
 
-  mergeStepRows(
-    steps,
-    table(section(parsed, 'MC CUES'), ['Step ID', 'Language', 'Timing', 'Text']),
-    (step, row) => {
-      const cueText = text(row.Text);
-      if (!cueText) return;
-      step.mcCues = step.mcCues ?? [];
-      const language = text(row.Language);
-      const timing = text(row.Timing);
-      step.mcCues.push({
-        ...(language ? { language } : {}),
-        ...(timing ? { timing } : {}),
-        text: cueText,
-      });
-    },
-  );
+  mapStepNotes(section(parsed, 'NOTES'), steps, warnings);
 
   mergeStepRows(
     steps,

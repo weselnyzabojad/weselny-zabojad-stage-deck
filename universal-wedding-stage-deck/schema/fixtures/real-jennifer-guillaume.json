@@ -242,6 +242,7 @@
       "title": "Grand Entrance",
       "type": "FLEXIBLE",
       "location": "Main Hall",
+      "notes": "Keep the newlyweds by the door until the MC announces them.",
       "photographerCue": "Group photo before the toast",
       "isMainSongRequired": true,
       "grandEntranceOrder": "NEWLYWEDS_FIRST",
