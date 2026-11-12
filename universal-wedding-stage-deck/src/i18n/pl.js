@@ -506,8 +506,6 @@ const pl = {
   'mc.notice.undone': 'Cofnięto ostatnią akcję.',
 
   'mandatory.title': 'Obowiązkowe ograniczenia',
-  'mandatory.firstArrival': 'Przyjazd pierwszych gości',
-  'mandatory.prestation': 'Prestacja gotowa (wyliczona)',
   'mandatory.cake': 'Tort',
   'mandatory.serviceMode.TABLE_SERVICE': 'Obsługa przy stole',
   'mandatory.serviceMode.BUFFET': 'Bufet',

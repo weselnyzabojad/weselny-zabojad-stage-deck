@@ -504,8 +504,6 @@ const en = {
   'mc.notice.undone': 'Last action undone.',
 
   'mandatory.title': 'Mandatory constraints',
-  'mandatory.firstArrival': 'First guests arrival',
-  'mandatory.prestation': 'Prestation ready (derived)',
   'mandatory.cake': 'Cake',
   'mandatory.serviceMode.TABLE_SERVICE': 'Table service',
   'mandatory.serviceMode.BUFFET': 'Buffet',

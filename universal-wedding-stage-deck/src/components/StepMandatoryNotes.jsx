@@ -20,17 +20,6 @@ export default function StepMandatoryNotes({ items = [], showHeading = true }) {
       <div className={`flex flex-wrap gap-1.5 ${showHeading ? 'mt-1.5' : ''}`}>
         {items.map((item, index) => {
           const key = item.key ?? `${item.kind}_${index}`;
-          if (item.kind === 'firstArrival' || item.kind === 'prestationReady') {
-            return (
-              <span
-                key={key}
-                className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-[10px] text-ink"
-              >
-                {t(`mandatory.${item.kind === 'firstArrival' ? 'firstArrival' : 'prestation'}`)}:{' '}
-                <strong className="font-mono text-ink">{item.time}</strong>
-              </span>
-            );
-          }
           if (item.kind === 'kitchenService') {
             return (
               <span

@@ -86,14 +86,6 @@ export function mapMandatoryToSteps(
     const mandatory = mandatoryOf(step);
     if (!mandatory) continue;
 
-    if (mandatory.kind === 'FIRST_GUESTS_ARRIVAL') {
-      add(step, { kind: 'firstArrival', time: step.time });
-      if (isMc) {
-        const prestationReady = step.time ? addMinutesToClock(step.time, -60) : null;
-        if (prestationReady) add(step, { kind: 'prestationReady', time: prestationReady });
-      }
-    }
-
     if (!isMc) continue;
 
     if (mandatory.kind === 'KITCHEN_SERVICE') {

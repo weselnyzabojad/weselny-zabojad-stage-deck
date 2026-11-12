@@ -45,7 +45,6 @@ describe('issue #765 MC step card header and cue cleanup', () => {
       createElement(StepMandatoryNotes, {
         showHeading: false,
         items: [
-          { kind: 'firstArrival', time: '15:30' },
           { kind: 'kitchenService', label: 'Dinner', time: '18:30', mode: 'TABLE_SERVICE' },
           { kind: 'cakeServiceMode', mode: 'KITCHEN_RETURN' },
         ],
@@ -54,7 +53,7 @@ describe('issue #765 MC step card header and cue cleanup', () => {
 
     expect(html).not.toContain('<h3');
     expect(html).not.toContain('📌');
-    expect(html).toContain('15:30');
+    expect(html).toContain('18:30');
     expect(html).toContain('Dinner');
     expect(html).toContain('Cake');
   });
