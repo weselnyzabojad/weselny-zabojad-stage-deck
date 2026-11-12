@@ -7,6 +7,7 @@ import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
 import { isLandingPath } from './lib/publicRoutes.js'
+import { loadLocale, setLocale } from './i18n/index.js'
 import { initSentry } from './lib/sentry.js'
 
 initSentry()
@@ -18,6 +19,9 @@ const SongRequestApp = lazy(() => import('./components/SongRequestApp.jsx'))
 const LandingPage = lazy(() => import('./components/LandingPage.jsx'))
 const IS_LANDING =
   typeof window !== 'undefined' && isLandingPath(window.location.pathname)
+// The landing is Polish-first for the first release; an existing device
+// choice still wins and the crew deck keeps its English default.
+if (IS_LANDING && !loadLocale()) setLocale('pl')
 const LEGACY_ADMIN =
   typeof window !== 'undefined' && isLegacyAdminPath(window.location.pathname)
 if (LEGACY_ADMIN) {
