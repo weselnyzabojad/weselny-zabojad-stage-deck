@@ -5085,10 +5085,12 @@ or cartridge change.
 
 ### 17.48 Landing header polish and provider-facing copy (decision, 2026-11-12)
 
-The public landing gets a more prominent Weselny Żabojad logo and copy that
-addresses wedding vendors as well as future newlyweds. The page remains a Stage
-Deck product landing: the CTA, routes, metadata, tracking and deck behaviour are
-unchanged.
+The public landing gets a more prominent Weselny Żabojad logo, a prominent
+included-with-Weselny-Żabojad callout and copy that addresses wedding vendors as
+well as future newlyweds. A new intro band above the hero states the Weselny
+Żabojad project philosophy and how it led to Stage Deck. The page remains a
+Stage Deck product landing: the CTA, routes, metadata, tracking and deck
+behaviour are unchanged.
 
 **Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
 or cartridge change.
@@ -5097,7 +5099,7 @@ or cartridge change.
 
 | Route | Behaviour |
 | --- | --- |
-| `/` | Public landing: larger header logo and three corrected copy strings |
+| `/` | Public landing: larger logo, intro band, prominent included callout and three corrected copy strings |
 | `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
 
 **Decisions.**
@@ -5105,6 +5107,8 @@ or cartridge change.
 | Topic | Decision |
 | --- | --- |
 | Logo | Landing header only, 56 px mobile and 64 px desktop (`h-14 sm:h-16`) |
+| Intro | Two-paragraph band above the hero (`landing.intro.p1/p2`), FR source, PL/EN equivalents |
+| Included note | High-contrast bordered callout under the hero CTA, not a muted micro-paragraph |
 | Eyebrow | `À disposition des prestataires, pour les futurs mariés` (FR source) |
 | Roles | Maître de cérémonie, DJ, photographe, vidéaste, manager de la salle |
 | Song requests | Conditional: `— soumis à certaines conditions.` |
@@ -5113,8 +5117,8 @@ or cartridge change.
 | Metadata | `index.html` title/description/OG/Twitter unchanged |
 | Scope | Public landing only; internal crew logos and headers unchanged |
 
-**Task split.** One atomic task: a single view, one style change and three
-locale strings.
+**Task split.** One atomic task: a single view, header/callout styles, intro copy
+and three corrected locale strings.
 
 | Order | Issue | Scope | Depends on |
 | --- | --- | --- | --- |
