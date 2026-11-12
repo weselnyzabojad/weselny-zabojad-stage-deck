@@ -67,9 +67,9 @@ describe('issue #444 MC cues, game clicker and speeches i18n', () => {
     expect(read('src/components/SpeechesChip.jsx')).toContain('t(`speeches.mode.${mode}`)');
   });
 
-  it('keeps MC cue headings and warnings on i18n keys', () => {
+  it('keeps the Notes heading and warnings on i18n keys', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain("t('mc.step.cuesTitle')");
+    expect(mc).toContain("t('mc.step.notesTitle')");
     expect(mc).toContain("'mc.step.childrenCake'");
     expect(mc).toContain("'mc.step.childrenEntrance'");
     expect(mc).toContain("'mc.step.childrenDancefloor'");

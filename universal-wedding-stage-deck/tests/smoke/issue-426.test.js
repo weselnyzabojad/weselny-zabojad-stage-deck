@@ -9,7 +9,7 @@ const DEMO_CUES = [
   'Announce Instax + Guestbook + 1st Anniv Bottle.',
 ];
 
-describe('issue #426 remove hardcoded MC demo cues', () => {
+describe('issue #426 remove hardcoded MC cues and empty fallback', () => {
   it('leaves zero demo cue literals in the MC view', () => {
     const mc = read('src/views/McMasterView.jsx');
     for (const cue of DEMO_CUES) {
@@ -17,15 +17,15 @@ describe('issue #426 remove hardcoded MC demo cues', () => {
     }
   });
 
-  it('renders the translated empty state when the cartridge has no cue', () => {
+  it('renders notes only when the step has a note', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain("t('mc.cues.empty')");
-    expect(mc).toContain('useI18n');
+    expect(mc).toContain('{currentStep.notes ? (');
+    expect(mc).not.toContain("t('mc.cues.empty')");
   });
 
-  it('defines the empty state in every language', () => {
-    expect(read('src/i18n/en.js')).toContain("'mc.cues.empty': 'No MC cue'");
-    expect(read('src/i18n/fr.js')).toContain("'mc.cues.empty':");
-    expect(read('src/i18n/pl.js')).toContain("'mc.cues.empty':");
+  it('defines the Notes heading in every language', () => {
+    for (const locale of ['en', 'fr', 'pl']) {
+      expect(read(`src/i18n/${locale}.js`)).toContain("'mc.step.notesTitle'");
+    }
   });
 });

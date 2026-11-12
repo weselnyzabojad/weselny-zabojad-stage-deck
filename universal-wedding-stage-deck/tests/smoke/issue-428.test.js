@@ -24,7 +24,7 @@ describe('issue #428 MC view i18n', () => {
       'mc.step.eventComplete',
       'mc.step.openTeleprompter',
       'mc.step.gameClicker',
-      'mc.step.cuesTitle',
+      'mc.step.notesTitle',
       'mc.step.subtasksTitle',
       'mc.step.completed',
     ]) {
@@ -45,7 +45,7 @@ describe('issue #428 MC view i18n', () => {
       'mc.step.eventComplete',
       'mc.step.openTeleprompter',
       'mc.step.gameClicker',
-      'mc.step.cuesTitle',
+      'mc.step.notesTitle',
       'mc.step.subtasksTitle',
       'mc.step.completed',
       'mc.step.childrenCake',

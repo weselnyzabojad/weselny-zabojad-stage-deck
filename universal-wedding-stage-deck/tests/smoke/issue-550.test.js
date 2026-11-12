@@ -28,11 +28,12 @@ describe('issue #550 per-step MC cues', () => {
     ).toBe('Guests gather in the garden for the aperitif.');
   });
 
-  it('renders per-step cues in the MC Cues box, not only the empty placeholder', () => {
+  it('renders the Notes block instead of MC Cues', () => {
     const view = read('src/views/McMasterView.jsx');
-    expect(view).toContain('currentStep?.mcCues');
-    expect(view).toContain('mcCues.map((cue, index)');
-    expect(view).toContain('mcCues.length === 0 && !childrenWarning');
+    expect(view).toContain('{currentStep.notes ? (');
+    expect(view).toContain("t('mc.step.notesTitle')");
+    expect(view).not.toContain('mcCues.map((cue, index)');
+    expect(view).not.toContain("t('mc.cues.empty')");
   });
 
   it('carries MC cues on the demo Grand Entrance step', () => {

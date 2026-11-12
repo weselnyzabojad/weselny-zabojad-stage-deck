@@ -14,8 +14,9 @@ describe('issue #355 MC Cues children warnings and language tags', () => {
     expect(mc).toContain('childrenExpected');
   });
 
-  it('removes the language suffix and cue-line tags', () => {
-    expect(mc).toContain("t('mc.step.cuesTitle')");
+  it('removes the MC cue heading and language tags', () => {
+    expect(mc).toContain("t('mc.step.notesTitle')");
+    expect(mc).not.toContain("t('mc.step.cuesTitle')");
     expect(mc).not.toContain('MC Cues (FR / PL / EN)');
     expect(mc).not.toContain('[FR/PL]');
     expect(mc).not.toContain('>[FR]<');

@@ -11,8 +11,8 @@ describe('issue #199 remove MC DJ / Audio cues', () => {
     expect(mc).not.toContain('Remote Stage Ping Ready');
   });
 
-  it('keeps MC cues and the step launchers through i18n keys', () => {
-    expect(mc).toContain("t('mc.step.cuesTitle')");
+  it('keeps the Notes block and step launchers through i18n keys', () => {
+    expect(mc).toContain("t('mc.step.notesTitle')");
     expect(mc).toContain("t('mc.step.openTeleprompter')");
     expect(mc).toContain("t('mc.step.gameClicker'");
   });

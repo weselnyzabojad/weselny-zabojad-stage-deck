@@ -112,10 +112,10 @@ describe('issue #713 MC Master content polish', () => {
     expect(mc.match(/<TimelineFocusStack[\s\S]*?polished/g)?.length).toBe(2);
   });
 
-  it('refines the MC cues, warning and checklist surfaces', () => {
+  it('refines the Notes, warning and checklist surfaces', () => {
     const mc = read('src/views/McMasterView.jsx');
     expect(mc).toContain('border-tone-warning-border bg-tone-warning-bg');
-    expect(mc).toContain('border-brand-strong/30 bg-brand/10');
+    expect(mc).toContain('whitespace-pre-wrap break-words');
     expect(mc).toContain('rounded-2xl border border-panel-border bg-panel/40');
     expect(mc).toContain('hover:border-line-strong hover:bg-card/80 hover:shadow-sm');
   });
