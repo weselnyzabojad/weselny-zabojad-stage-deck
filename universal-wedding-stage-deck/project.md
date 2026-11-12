@@ -4651,3 +4651,44 @@ Let a developer inspect every enabled timeline step in every role view directly 
 **Open questions.** None.
 
 **Tracking.** [#761](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/761), [#762](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/762).
+
+### 17.38 MC stage card cleanup and media planning data (decision, 2026-11-12)
+
+Simplify the MC current-step card and align the cake step across media roles: promote the start–end schedule, remove redundant headings/controls and the game briefing, restyle Oczepiny, surface confirmed cake sparklers in green on MC/Photographer/Cameraman, and stop treating media departures as timeline steps. Media departures remain planning data on `mediaTeam.endTime`; legacy PHOTO/CAMERA milestones are filtered without breaking the generic Venue Manager milestones.
+
+**Google Doc contract.** Not Doc-linked. No parser, field-map or template change. Remove the two media-leave MILESTONE instances from app data; keep the generic `MILESTONE` capability for Venue Manager and accept legacy cartridges unchanged.
+
+**View scope.**
+
+- In scope: MC Master desktop/pocket step cards; Photographer 1/2 and Cameraman cake step; all role timelines for the media-leave filter; owner admin media-leave editor; demo/schema example/real fixture cleanup.
+- Out of scope: DJ Standard/VIP, Venue Manager and Speaker card styling; `photoPlan.specialEffects` approvals; generic MILESTONE removal; schema/parser/Doc changes; sync.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#765](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/765) | MC header start–end emphasis, mandatory heading, Plus/swap removal, game briefing removal and friendly Oczepiny rows | - |
+| [#766](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/766) | Cake cue/ON AIR removal, larger service mode and green sparklers on MC + Photographer + Cameraman | - |
+| [#767](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/767) | Remove media leave steps, filter legacy PHOTO/CAMERA milestones, keep `mediaTeam.endTime` and generic MILESTONE | - |
+
+**Task details.**
+
+1. **MC step card.** On MC only, render the right-hand start–end summary with the
+   same weight as the step title for every step. Drop the "Contraintes
+   obligatoires" heading while keeping its values, remove the whole "Plus"/swap
+   disclosure, remove the 🎲 game briefing card while keeping the Cliqueur de
+   jeu, and turn Oczepiny metadata into labeled rows/chips with icons.
+2. **Cake step.** Remove the photographer cue and the cake "ON AIR" chip, enlarge
+   the service-mode element, and show a green `✨ Sparklers ON` chip only when
+   `cake.sparklers === true`. Render the same cake card on Photographer 1/2 and
+   Cameraman. Use the existing positive tone tokens, not
+   `photoPlan.specialEffects`.
+3. **Media departures.** Remove `photo_leave`/`camera_leave` from current data,
+   filter legacy PHOTO/CAMERA milestones out of every timeline and step count,
+   and remove the dedicated admin editor. Keep `mediaTeam.endTime` as the
+   planning indication and keep the generic MILESTONE type for the other Venue
+   Manager milestones.
+
+**Open questions.** None.
+
+**Tracking.** [#765](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/765), [#766](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/766), [#767](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/767).
