@@ -46,27 +46,24 @@ describe('issue #302 mandatory constraints', () => {
     });
   });
 
-  it('embeds all MC constraints into their steps, including buffets', () => {
+  it('embeds MC kitchen and cake constraints without first-arrival chips', () => {
     const mapped = mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, { role: 'mc' });
     const html = render({ items: allItems(mapped) });
-    expect(html).toContain('First guests arrival');
-    expect(html).toContain('Prestation ready (derived)');
+    expect(html).not.toContain('First guests arrival');
+    expect(html).not.toContain('Prestation ready');
     expect(html).toContain('Dinner');
     expect(html).toContain('Buffet');
     expect(html).toContain('Cake');
   });
 
-  it('shows first arrival on DJ VIP but not kitchen detail', () => {
+  it('has no mandatory step chips for DJ VIP', () => {
     const mapped = mapMandatoryToSteps(DEMO_WEDDING, DEMO_WEDDING.steps, {
       role: 'dj',
       isVipDj: true,
     });
     const items = allItems(mapped);
-    expect(items.map((item) => item.kind)).toEqual(['firstArrival']);
-    const html = render({ items });
-    expect(html).toContain('First guests arrival');
-    expect(html).not.toContain('Dinner');
-    expect(html).not.toContain('Cake');
+    expect(items).toEqual([]);
+    expect(render({ items })).toBe('');
   });
 
   it('hides mandatory constraints from DJ Standard and other roles', () => {

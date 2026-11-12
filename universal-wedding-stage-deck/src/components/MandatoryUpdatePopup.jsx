@@ -26,22 +26,6 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
   const constraints = resolveMandatoryConstraints({}, update);
   const rows = [];
 
-  if (constraints.firstGuestsArrival) {
-    rows.push({
-      id: 'arrival',
-      label: t('mandatory.firstArrival'),
-      value: constraints.firstGuestsArrival,
-    });
-  }
-
-  if (isMc && constraints.prestationReady) {
-    rows.push({
-      id: 'prestation',
-      label: t('mandatory.prestation'),
-      value: constraints.prestationReady,
-    });
-  }
-
   if (isMc) {
     for (const service of constraints.kitchenServices) {
       rows.push({

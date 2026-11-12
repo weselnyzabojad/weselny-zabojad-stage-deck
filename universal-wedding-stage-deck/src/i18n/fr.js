@@ -508,8 +508,6 @@ const fr = {
   'mc.notice.undone': 'Dernière action annulée.',
 
   'mandatory.title': 'Contraintes obligatoires',
-  'mandatory.firstArrival': 'Arrivée des premiers invités',
-  'mandatory.prestation': 'Prestation prête (calculée)',
   'mandatory.cake': 'Pièce montée',
   'mandatory.serviceMode.TABLE_SERVICE': 'Service à table',
   'mandatory.serviceMode.BUFFET': 'Buffet',

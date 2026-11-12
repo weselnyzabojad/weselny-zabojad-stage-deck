@@ -68,19 +68,19 @@ const render = (role, isVipDj = false) =>
   );
 
 describe('issue #327 mandatory update popup role visibility', () => {
-  it('shows MC the complete constraint set and buffet mode', () => {
+  it('shows MC the kitchen, buffet and cake constraints', () => {
     const html = render('mc');
-    expect(html).toContain('First guests arrival: 15:30');
-    expect(html).toContain('Prestation ready (derived): 14:30');
+    expect(html).not.toContain('First guests arrival:');
+    expect(html).not.toContain('Prestation ready');
     expect(html).toContain('Dinner · Table service: 18:30');
     expect(html).toContain('Supper II · Buffet: 23:30');
     expect(html).toContain('Cake service: Kitchen return / plated pieces');
     expect(html).not.toContain('Last song:');
   });
 
-  it('shows DJ VIP first arrival and closure/last-song fields only', () => {
+  it('shows DJ VIP only closure and last-song fields', () => {
     const html = render('dj', true);
-    expect(html).toContain('First guests arrival: 15:30');
+    expect(html).not.toContain('First guests arrival:');
     expect(html).toContain('Wedding closure: 02:00');
     expect(html).toContain('Closure extension: Until 03:00');
     expect(html).toContain('Last song: Perfect - Ed Sheeran');

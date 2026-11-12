@@ -43,13 +43,9 @@ const steps = [
 ];
 
 describe('issue #384 mandatory data embedded in steps', () => {
-  it('places arrival, prestation and ceremony data on their steps', () => {
+  it('keeps ceremony data on its step without first-arrival chips', () => {
     const mapped = mapMandatoryToSteps(wedding, steps, { role: 'mc' });
-    expect(mapped.step_01.map((item) => item.kind)).toEqual([
-      'firstArrival',
-      'prestationReady',
-    ]);
-    expect(mapped.step_01.map((item) => item.time)).toEqual(['15:30', '14:30']);
+    expect(mapped.step_01).toBeUndefined();
     expect(mapped.step_02).toEqual([
       expect.objectContaining({
         kind: 'ceremonyNote',
@@ -73,10 +69,9 @@ describe('issue #384 mandatory data embedded in steps', () => {
     ]);
   });
 
-  it('limits DJ VIP to the first-arrival milestone', () => {
+  it('gives DJ VIP no step chips after removing first-arrival', () => {
     const mapped = mapMandatoryToSteps(wedding, steps, { role: 'dj', isVipDj: true });
-    expect(mapped.step_01).toEqual([{ kind: 'firstArrival', time: '15:30' }]);
-    expect(Object.values(mapped).flat()).toHaveLength(1);
+    expect(mapped).toEqual({});
   });
 
   it('gives no data to DJ Standard or unrelated roles', () => {
@@ -96,10 +91,7 @@ describe('issue #384 mandatory data embedded in steps', () => {
       return step;
     });
     const mapped = mapMandatoryToSteps(wedding, overridden, { role: 'mc' });
-    expect(mapped.step_01).toEqual([
-      { kind: 'firstArrival', time: '16:00' },
-      { kind: 'prestationReady', time: '15:00' },
-    ]);
+    expect(mapped.step_01).toBeUndefined();
     expect(mapped.dinner).toEqual([
       expect.objectContaining({ kind: 'kitchenService', time: '19:00', mode: 'BUFFET' }),
     ]);
