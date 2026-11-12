@@ -1,9 +1,8 @@
 # Netlify configuration for the Universal Wedding Stage Deck PWA.
-# The Vite app lives in a subdirectory of this repository, so Netlify must
-# treat that directory as the build base and publish its `dist` output.
+# The Vite app lives at the repository root, so Netlify builds and publishes
+# its `dist` output there.
 
 [build]
-  base = "universal-wedding-stage-deck"
   command = "npm run build"
   publish = "dist"
 

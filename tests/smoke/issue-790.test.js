@@ -36,7 +36,7 @@ function sourceFiles(dir) {
 
 
 describe('issue #790 Netlify CSP and theme bootstrap', () => {
-  const toml = read('../netlify.toml');
+  const toml = read('netlify.toml');
   const csp = parseCsp(toml);
   const connectSources = csp['connect-src'].split(/\s+/);
 

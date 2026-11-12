@@ -161,7 +161,8 @@ npm test
 npm run build
 ```
 
-CI runs the same commands for every pull request against `master`.
+CI runs the same commands for every pull request against `master` or
+`development`.
 
 ---
 

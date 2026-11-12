@@ -104,8 +104,7 @@ For a real wedding:
 ## CI
 
 [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) runs on pushes and pull
-requests to `master`, from the repository root with
-`working-directory: universal-wedding-stage-deck`:
+requests to `master` and `development`, from the repository root:
 
 1. `npm ci`
 2. `npm run lint`
