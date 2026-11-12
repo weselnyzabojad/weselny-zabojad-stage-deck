@@ -289,7 +289,7 @@ export default function LandingPage() {
             <img
               src={logoMark}
               alt="DJ Mark"
-              className="h-10 w-auto object-contain sm:h-12"
+              className="h-14 w-auto object-contain sm:h-16"
             />
             <img
               src={logoSzymoniak}
