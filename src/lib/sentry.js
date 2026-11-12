@@ -43,3 +43,29 @@ export function initSentry(env = import.meta.env, sdk = Sentry) {
     return false;
   }
 }
+
+// Reports a caught render error with identifiers only (issue #795). The local
+// error log already holds the message/stack for the operator; Sentry must not
+// receive cartridge contents, names, PINs, room codes or step titles.
+export function captureAppError(
+  { error, scope = 'app', role = null, weddingId = null, stepId = null, errorId = null },
+  sdk = Sentry,
+) {
+  if (!initialized) return false;
+
+  const app = Object.fromEntries(
+    Object.entries({ role, weddingId, stepId, errorId }).filter(
+      ([, value]) => value !== null && value !== undefined,
+    ),
+  );
+
+  try {
+    sdk.captureException(error, {
+      tags: { scope },
+      contexts: { app },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
