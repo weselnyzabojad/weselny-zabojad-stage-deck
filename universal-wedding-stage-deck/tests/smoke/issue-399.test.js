@@ -20,6 +20,8 @@ describe('issue #399 cake step consolidation', () => {
 
   it('does not render generic mandatory notes on the cake step', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('{isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}');
+    expect(mc).toContain(
+      '{isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} showHeading={false} />}',
+    );
   });
 });

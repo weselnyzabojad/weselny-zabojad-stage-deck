@@ -12,7 +12,6 @@ import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
 import FirstDanceCueCard from '../components/FirstDanceCueCard';
 import GamesCueCard from '../components/GamesCueCard';
 import CulturalRulesBar from '../components/CulturalRulesBar';
-import CurrentStepOverflow from '../components/CurrentStepOverflow';
 import DriftPill from '../components/DriftPill';
 import GameClickerOverlay from '../components/GameClickerOverlay';
 import GroupPhotoChecklist from '../components/GroupPhotoChecklist';
@@ -114,15 +113,12 @@ export default function McMasterView({ model }) {
   currentEntry,
   steps,
   completedCount,
-  nextEntry,
   cakeProtocol,
   cakeServiceMode = 'KITCHEN_RETURN',
   speechMode,
   speeches,
   setGameResults,
   isComplete,
-  handleSwap,
-  swapBlock,
   controlNotice,
   savedLocally,
   handleUndo,
@@ -149,8 +145,7 @@ export default function McMasterView({ model }) {
   const mandatoryItems = currentStep ? mandatoryByStep[currentStep.id] ?? [] : [];
   const isGameStep = Boolean(currentStep?.game);
   const hideMcCues = isPredefinedGameStep(currentStep);
-  // #539: predefined game steps must not offer the More/swap control.
-  const hideStepOverflow = isPredefinedGameStep(currentStep);
+  const showGameBriefing = isGameStep && !isPredefinedGameStep(currentStep);
   const isCakeStep = Boolean(
     currentStep && cakeProtocol?.stepId && currentStep.id === cakeProtocol.stepId,
   );
@@ -191,13 +186,13 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep ? (
+      {showGameBriefing ? (
         <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.game.id} />
       ) : null}
       {isCakeStep ? (
         <CakeCard cake={cakeProtocol} cakeServiceMode={cakeServiceMode} compact />
       ) : null}
-      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}
+      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} showHeading={false} />}
       {groupPhotoBody}
       <div className="flex flex-wrap items-center gap-3">
         <button
@@ -216,14 +211,6 @@ export default function McMasterView({ model }) {
           className={`min-h-12 flex-1 rounded-xl border px-4 py-2 text-sm font-bold shadow-sm ${isComplete ? 'bg-card text-muted border-line' : 'bg-brand hover:bg-brand-hover active:bg-brand-active text-on-accent border-brand-strong'}`}
         />
       </div>
-      {hideStepOverflow ? null : (
-        <CurrentStepOverflow
-          onSwap={handleSwap}
-          swapBlock={swapBlock}
-          nextEntry={nextEntry}
-          currentStep={currentStep}
-        />
-      )}
       {script ? (
         <button
           type="button"
@@ -356,7 +343,7 @@ export default function McMasterView({ model }) {
       {currentStep.firstDanceMode ? (
         <FirstDanceCueCard step={currentStep} audience="mc" />
       ) : null}
-      {isGameStep ? (
+      {showGameBriefing ? (
         <GamesCueCard wedding={WEDDING} role="mc" gameId={currentStep.game.id} />
       ) : null}
 
@@ -368,7 +355,7 @@ export default function McMasterView({ model }) {
         <OczepinyCueCard wedding={WEDDING} audience="mc" />
       ) : null}
 
-      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} />}
+      {isCakeStep ? null : <StepMandatoryNotes items={mandatoryItems} showHeading={false} />}
       {groupPhotoBody}
 
       {stepSubtasks.length > 0 ? (
@@ -405,15 +392,6 @@ export default function McMasterView({ model }) {
           </div>
         </div>
       ) : null}
-
-      {hideStepOverflow ? null : (
-        <CurrentStepOverflow
-          onSwap={handleSwap}
-          swapBlock={swapBlock}
-          nextEntry={nextEntry}
-          currentStep={currentStep}
-        />
-      )}
 
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line/70 pt-2">
         <div className="flex flex-wrap items-center gap-2">
