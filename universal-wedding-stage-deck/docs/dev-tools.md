@@ -16,3 +16,18 @@
 
 If a future dev flow needs the switcher on a phone, add an explicit `?dev=1`
 opt-in instead of showing it by default.
+
+## STEP PREVIEW (`?dev=1`)
+
+`?dev=1` enables the temporary step inspector for local review:
+
+- The switcher stays visible below 640px, positioned at the top-left so it does
+  not cover the HOLD, Undo or Go-live controls, and remains scrollable inside
+  `45dvh`.
+- The step section lists every enabled step in the current order. Use the
+  picker or the previous/next buttons to jump directly to a step.
+- The preview state is in memory only: it never creates a Supabase client, never
+  publishes or subscribes, and never writes the persisted
+  `wzsd:v1:<weddingId>:live_sync_state` entry. A reload discards the preview.
+- The preview is dev-only and must be removed or disabled with the rest of the
+  dev switcher before it can affect a production bundle.

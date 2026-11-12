@@ -104,6 +104,7 @@ export default function StageDeck({
     toggleSubtask,
     sendStagePing,
     swapWithNext,
+    devJumpToStep,
     setGameResults,
     setMediaOverride,
     savedLocally,
@@ -271,6 +272,13 @@ export default function StageDeck({
     window.setTimeout(() => document.getElementById('main-content')?.focus(), 50);
   };
 
+  const handleDevStepChange = (nextStepId) => {
+    if (!DEV_PREVIEW || !nextStepId) return;
+    setOverlay(null);
+    devJumpToStep(nextStepId);
+    window.setTimeout(() => document.getElementById('main-content')?.focus(), 50);
+  };
+
   const djTierLabel = djDetailTier(WEDDING) === 'vip' ? 'VIP' : 'STANDARD';
   const viewSwitch = productionDjViewAllowed ? (
     <ViewSwitchControl
@@ -283,15 +291,23 @@ export default function StageDeck({
   // Build-time gate: Vite replaces this with `false` in production and the
   // temporary switcher module is tree-shaken out of the production bundle.
   const DEV_VIEW_SWITCHER = import.meta.env.DEV;
-  const devViewSwitcher = DEV_VIEW_SWITCHER ? (
-    <DevViewSwitcher currentRole={currentRole} onChange={handleViewChange} />
-  ) : null;
 
   const overriddenSteps = liveState.media_overrides?.steps?.value;
   const steps = activeSteps(
     Array.isArray(overriddenSteps) ? overriddenSteps : WEDDING.steps,
     liveState,
   );
+
+  const devViewSwitcher = DEV_VIEW_SWITCHER ? (
+    <DevViewSwitcher
+      currentRole={currentRole}
+      onChange={handleViewChange}
+      previewEnabled={DEV_PREVIEW}
+      steps={steps}
+      currentStepId={liveState.active_step_id}
+      onStepChange={handleDevStepChange}
+    />
+  ) : null;
   const mandatorySettings = resolveMandatoryConstraints({ ...WEDDING, steps });
   const hardAnchors = deriveHardAnchors(steps);
   const driftReport = buildDriftReport(steps, liveState, {
