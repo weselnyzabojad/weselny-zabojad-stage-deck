@@ -82,6 +82,13 @@ complete setup, deployment and troubleshooting path.
 Roles: `mc`, `dj` (DJ VIP), `dj_standard`, `photo1`, `photo2`, `video`,
 `venue_manager`, `speaker`.
 
+### PWA registration
+
+The service worker registers from a route-independent mount in `src/main.jsx`,
+so `/`, `/admin` and `/request/:code` install it on their first visit. Updates
+remain deferred behind the "Update available" prompt (never a silent reload),
+and the manifest stays root-relative (`id`, `scope` and `start_url` are `./`).
+
 ---
 
 ## Role surfaces

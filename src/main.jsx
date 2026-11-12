@@ -57,11 +57,9 @@ createRoot(document.getElementById('root')).render(
           <AdminApp />
         </Suspense>
       ) : (
-        <>
-          <App />
-          <PwaUpdatePrompt />
-        </>
+        <App />
       )}
     </AppErrorBoundary>
+    <PwaUpdatePrompt />
   </StrictMode>,
 )
