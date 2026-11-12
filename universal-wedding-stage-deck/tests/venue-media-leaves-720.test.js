@@ -4,20 +4,17 @@ import { describe, expect, it } from 'vitest';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 describe('issue #720 Venue Manager media-leave editors removal', () => {
-  it('does not expose photo or camera milestone editing in Venue Manager', () => {
+  it('no longer exposes any milestone editor in Venue Manager', () => {
     const venue = read('src/components/VenueManagerView.jsx');
-    expect(venue).toContain('editableMilestones');
-    expect(venue).toContain("milestone.kind !== 'PHOTO'");
-    expect(venue).toContain("milestone.kind !== 'CAMERA'");
+    expect(venue).not.toContain('editableMilestones');
+    expect(venue).not.toContain('MilestoneCard');
     expect(venue).not.toContain("addMilestone('PHOTO')");
     expect(venue).not.toContain("addMilestone('CAMERA')");
-    expect(venue).not.toContain('addPhotoMilestone');
-    expect(venue).not.toContain('addCameraMilestone');
   });
 
-  it('keeps other milestone kinds editable', () => {
+  it('keeps the kitchen service editor', () => {
     const venue = read('src/components/VenueManagerView.jsx');
-    expect(venue).toContain('MilestoneCard');
-    expect(venue).toContain("addMilestone('OTHER')");
+    expect(venue).toContain('CourseCard');
+    expect(venue).toContain("t('venueManager.addCourse')");
   });
 });

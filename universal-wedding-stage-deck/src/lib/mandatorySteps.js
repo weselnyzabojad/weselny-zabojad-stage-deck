@@ -258,14 +258,14 @@ export function applyMandatorySettings(wedding, settings = {}) {
       step.time = course.time ?? step.time;
       step.title = course.name || step.title;
       step.mandatory = mandatory;
-      step.type = course.isHardAnchor === false ? 'FLEXIBLE' : 'HARD_ANCHOR';
+      step.type = 'HARD_ANCHOR';
     } else if (course.time) {
       steps.push(
         makeStep({
           id: course.id,
           time: course.time,
           title: course.name || course.id,
-          type: course.isHardAnchor === false ? 'FLEXIBLE' : 'HARD_ANCHOR',
+          type: 'HARD_ANCHOR',
           mandatory,
         }),
       );

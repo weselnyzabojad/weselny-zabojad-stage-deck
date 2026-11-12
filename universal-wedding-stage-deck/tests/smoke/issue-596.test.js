@@ -5,28 +5,12 @@ import { deriveHardAnchors } from '../../src/lib/hardAnchors.js';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #596 venue mandatory milestones', () => {
-  it('keeps only generic milestone controls in Venue Manager', () => {
+  it('removes the generic milestone editor from Venue Manager', () => {
     const view = read('src/components/VenueManagerView.jsx');
-    expect(view).toContain('MilestoneCard');
-    expect(view).toContain("addMilestone('OTHER')");
-    expect(view).not.toContain("addMilestone('PHOTO')");
-    expect(view).not.toContain("addMilestone('CAMERA')");
+    expect(view).not.toContain('MilestoneCard');
+    expect(view).not.toContain("addMilestone('OTHER')");
     expect(view).not.toContain('onHardAnchor');
     expect(view).not.toContain('checked={course.isHardAnchor');
-    expect(view).not.toContain('checked={milestone.isHardAnchor');
-  });
-
-  it('localizes the remaining milestone editor', () => {
-    for (const locale of ['en', 'fr', 'pl']) {
-      const source = read(`src/i18n/${locale}.js`);
-      for (const key of [
-        'venueManager.milestones',
-        'venueManager.addMilestone',
-        'venueManager.kind.OTHER',
-      ]) {
-        expect(source, `${locale}:${key}`).toContain(key);
-      }
-    }
   });
 
   it('derives anchors from step-scoped milestone data', () => {
