@@ -1,0 +1,4 @@
+# Missing hashed assets must 404 instead of being rewritten to the SPA shell.
+/assets/*    /404.html    404
+
+/*    /index.html    200

@@ -26,7 +26,8 @@ An offline-first, multi-device stage deck for a wedding MC and crew:
 - installable PWA with a deferred update prompt (never reloads a live stage
   silently).
 
-Primary deployment path is `/deck/`; the owner surface is `/admin`.
+The app is served from the deployment root (`/`) of
+`deck.weselnyzabojad.pl`; the owner surface is `/admin`.
 
 ---
 
@@ -2863,6 +2864,34 @@ npm run validate:env
 Never ship the service-role key or any other server secret. The complete setup
 and troubleshooting guide is
 [`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md).
+
+### Static hosting and SPA fallback
+
+Netlify publishes `dist/` (see [`netlify.toml`](netlify.toml)) at the root of
+`deck.weselnyzabojad.pl`. Vite must keep the default `base: '/'`; a sub-path base
+would break `/assets/*` and `/sw.js`.
+
+SPA routing is declared only in [`public/_redirects`](public/_redirects); do not
+duplicate it in `netlify.toml`:
+
+```text
+# Missing hashed assets must 404 instead of being rewritten to the SPA shell.
+/assets/*    /404.html    404
+
+/*    /index.html    200
+```
+
+Vite copies `public/` into `dist/`, so the file ships with every build. Netlify
+serves existing files before applying redirect rules, so `/favicon.svg`,
+`/manifest.webmanifest`, `/sw.js` and real `/assets/*` files keep their real
+content. Unknown routes (`/admin`, `/request/:id`, nested paths) fall back to
+`index.html` with status 200, while unknown `/assets/*` requests return
+`404.html` with status 404 so stale hashed assets surface as errors instead of
+an HTML app shell.
+
+`vite preview` does not read `_redirects` and is not Netlify. The authoritative
+routing test is a Netlify deploy preview or the production URL; `netlify dev` is
+only a local approximation.
 
 ### Supabase
 
