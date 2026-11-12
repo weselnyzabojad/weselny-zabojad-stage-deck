@@ -48,10 +48,11 @@ describe('issue #818 landing intro and contact CTA copy', () => {
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));
 
-    expect(html).toContain(fr['landing.intro.p1']);
-    expect(html).toContain(fr['landing.intro.p2']);
-    expect(html).not.toContain('Finies les enquêtes clients impersonnelles');
-    expect(html.indexOf(fr['landing.intro.p1'])).toBeLessThan(html.indexOf(fr['landing.hero.title']));
+    const text = html.replace(/<[^>]+>/g, '');
+    expect(text).toContain(fr['landing.intro.p1']);
+    expect(text).toContain(fr['landing.intro.p2']);
+    expect(text).not.toContain('Finies les enquêtes clients impersonnelles');
+    expect(text.indexOf(fr['landing.intro.p1'])).toBeLessThan(text.indexOf(fr['landing.hero.title']));
 
     expect(html).toContain('Faisons équipe le jour J');
     expect(html).toContain(fr['landing.footer.ctaBody']);

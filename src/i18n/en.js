@@ -634,9 +634,11 @@ const en = {
   'speaker.hideSecret': 'Hide secrets',
   'speaker.unlockError': 'Could not decrypt this speech.',
   'speaker.footer': 'Read-only script · only the assigned speech is shown · no timeline controls',
-  // Deck-focused landing (#811, #816, #818): presents the Stage Deck product to couples.
+  // Deck-focused landing (#811, #816, #818, #826): presents the Stage Deck product to couples.
   'landing.intro.p1': 'Because a wedding deserves more than incomprehensible questionnaires, Weselny Żabojad treats every event as a true co-created project built on listening and dialogue.',
+  'landing.intro.p1.highlight': 'co-created project',
   'landing.intro.p2': 'Stage Deck was born from that approach: a collaborative tool designed to connect every vendor and let them work in perfect synergy on the big day, leaving your mind completely free to enjoy your happiness.',
+  'landing.intro.p2.highlight': 'Stage Deck',
   'landing.hero.eyebrow': 'Available to wedding vendors, for future newlyweds',
   'landing.hero.title': 'Your whole wedding, in one rhythm',
   'landing.hero.lead': 'Stage Deck is one shared plan for you and the whole wedding team. The master of ceremonies, DJ, photographer, videographer, venue manager and any other vendor see the same live timeline — even when the venue signal drops.',

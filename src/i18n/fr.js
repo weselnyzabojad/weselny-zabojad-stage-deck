@@ -638,9 +638,11 @@ const fr = {
   'speaker.hideSecret': 'Masquer les secrets',
   'speaker.unlockError': 'Impossible de déchiffrer ce discours.',
   'speaker.footer': 'Script en lecture seule · seul le discours assigné est affiché · aucun contrôle de timeline',
-  // Landing produit Stage Deck (#811, #816, #818) : présente le produit aux futurs mariés.
+  // Landing produit Stage Deck (#811, #816, #818, #826) : présente le produit aux futurs mariés.
   'landing.intro.p1': 'Parce qu’un mariage mérite mieux que de simples questionnaires incompréhensibles, Weselny Żabojad traite chaque événement comme un véritable projet coconstruit, fondé sur l’écoute et le dialogue.',
+  'landing.intro.p1.highlight': 'projet coconstruit',
   'landing.intro.p2': 'De cette approche est né le Stage Deck : un outil collaboratif pensé pour relier tous les prestataires et leur permettre de travailler en parfaite synergie le jour J, vous laissant ainsi l’esprit entièrement libre pour profiter de votre bonheur.',
+  'landing.intro.p2.highlight': 'Stage Deck',
   'landing.hero.eyebrow': 'À disposition des prestataires, pour les futurs mariés',
   'landing.hero.title': 'Tout votre mariage, sur un même rythme',
   'landing.hero.lead': 'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle et tout autre prestataire voient la même timeline en direct — même quand le réseau de la salle tombe.',
