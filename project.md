@@ -4890,3 +4890,51 @@ or cartridge change.
 
 **Tracking.** [#794](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/794), [#795](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/795), [#796](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/796).
 
+### 17.43 Public newlywed landing page (decision, 2026-11-12)
+
+Turn `https://deck.weselnyzabojad.pl/` into the first public product release: a
+marketing page for engaged couples, in Polish with EN/FR switching, while the
+stage deck stays private behind its role PINs. The landing uses the existing
+logo and CSS mockups, explains the product, and sends interested couples to the
+main site contact section. No wedding or demo cartridge data is loaded on the
+public page.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Public newlywed landing (marketing, no deck data) |
+| `/join` | Crew entry / production join gate, unchanged deck behaviour |
+| `/<room>/<role>`, `/?room=…&role=…` | Existing role intent, unchanged |
+| `/admin` | Owner admin, unchanged |
+| `/request/:code` | Guest song request, unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Page type | Static marketing landing; no interactive public demo |
+| Routing | Landing at `/`, crew entry at `/join`; QR role links stay valid |
+| Language | Polish primary, EN/FR via the existing locale storage |
+| CTA | Direct link to `https://www.weselnyzabojad.pl/#kontakt` |
+| Visuals | Existing logo plus CSS product mockups; no real weddings |
+| Copy | Written from `project.md` product facts, owner-reviewable |
+| Release scope | No forms, analytics, tracking pixels or new third-party origins |
+| Privacy | No cartridge, demo, Supabase or session data on `/` |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805) | Public `/` route, `/join` split, routing tests | - |
+| 2 | [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806) | Content, PL/EN/FR i18n, logo and CSS mockups | #805 |
+| 3 | [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807) | Metadata, CTA, deployment docs and release tests | #805, #806 |
+
+**Open questions.** None.
+
+**Tracking.** [#805](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/805), [#806](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/806), [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
+
+
