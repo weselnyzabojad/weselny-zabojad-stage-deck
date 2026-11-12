@@ -5210,6 +5210,48 @@ or cartridge change.
 
 **Tracking.** [#820](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/820).
 
+### 17.51 Landing FAQ partner copy and partner logos (decision, 2026-11-12)
+
+The public landing now says Stage Deck is also included through Weselny
+Żabojad's privileged partners, and the footer shows a small `En partenariat
+avec :` strip with the DJ Mark and DJ Szymoniak logos. The included-note callout
+in the hero stays unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | FAQ answer about obtaining Stage Deck, plus a centered footer partner strip |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| FAQ answer | Included with Weselny Żabojad weddings and/or `ses partenaires privilégiés` |
+| Contact sentence | Removed from the FAQ answer |
+| Partner label | `En partenariat avec :`; PL/EN equivalents |
+| Placement | Footer, above the existing bottom row |
+| Logos | Existing `logo_mark.png` and `logo_szymoniak.png`; alt `DJ Mark` and `DJ Szymoniak` |
+| Links | None; logos are non-interactive |
+| Hero callout | `landing.hero.included` unchanged |
+| Languages | FR authoritative; PL/EN kept in parity |
+| Spelling | `priviligés` → `privilégiés`; `ces` → `ses` |
+
+**Task split.** Two independent landing tasks: copy and the footer logo strip.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#821](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/821) | FAQ partner copy in FR/PL/EN and tests | - |
+| 2 | [#822](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/822) | Footer partner label and DJ Mark / DJ Szymoniak logos | - |
+
+**Open questions.** None.
+
+**Tracking.** [#821](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/821), [#822](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/822).
+
 
 
 
