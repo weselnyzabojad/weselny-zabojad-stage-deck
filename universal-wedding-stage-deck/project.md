@@ -4730,3 +4730,41 @@ Strip the remaining low-value metadata from the step cards: MC planned/real/esti
 **Open questions.** None.
 
 **Tracking.** [#771](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/771), [#772](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/772), [#773](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/773).
+
+### 17.40 Step notes from Google Docs and active-status cleanup (decision, 2026-11-12)
+
+Replace the MC "Répliques MC" block with a "Notes" block fed by a new `## NOTES` Google Doc section, and remove the active "EN DIRECT / ON AIR" status chip from step cards. The notes contract adds an optional per-step field, while `mcCues` stays accepted for legacy cartridges but is no longer parsed or rendered.
+
+**Google Doc contract.** Doc-linked. New `## NOTES` table `Step ID | Notes`, one optional free-text row per step. Add optional `steps[].notes` to the step schema and shared Supabase copy, map it in `src/lib/googleDocCartridge.js`, and add `steps[].notes: optional` to `schema/google-doc-field-map.json`. Replace `## MC CUES` with `## NOTES` in the template, `SECTION_MANIFEST` and the template validator. Stop parsing `MC CUES`; keep the `mcCues` schema field for backward compatibility.
+
+**View scope.**
+
+- In scope: shared `StageStepCard` active status in MC, DJ, Photographer, Cameraman, Venue Manager and Speaker; MC Master Notes block; Google Doc template, field map, schema, parser and fixtures.
+- Out of scope: DONE/NEXT/PLANNED statuses, timing/drift data, other Doc sections, other role views for Notes, and teleprompter/game-clicker behavior.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#774](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/774) | Google Doc `## NOTES` section, `steps[].notes` schema/parser/field-map/template; stop parsing MC CUES | - |
+| [#775](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/775) | Remove only the active status chip from shared step cards; keep other statuses | - |
+| [#776](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/776) | MC Notes block replaces MC Cues; raw note text, empty hidden, children warning kept | [#774](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/774) |
+
+**Task details.**
+
+1. **Doc contract.** Add the NOTES table and map each row to `steps[].notes`.
+   Remove the MC CUES section from the template/manifest/validator and stop its
+   parser mapping; old cartridges with `mcCues` still validate and load. Add
+   representative notes to examples/fixtures and cover the field map/template
+   validators.
+2. **Active status.** Remove only the active status chip from `StageStepCard`
+   in every role view. Keep DONE, NEXT and PLANNED labels and remove the unused
+   `mc.rail.status.active` key.
+3. **MC Notes.** Replace the MC Cues block with a localized Notes block showing
+   raw `currentStep.notes`, preserving line breaks and hiding the block when
+   empty. Show it on predefined game steps too, keep `childrenWarning` visible,
+   and stop rendering `mcCues`.
+
+**Open questions.** None.
+
+**Tracking.** [#774](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/774), [#775](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/775), [#776](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/776).
