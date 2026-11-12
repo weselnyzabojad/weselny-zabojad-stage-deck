@@ -1,8 +1,8 @@
 // Deck-focused public landing (issue #811).
 //
-// Presents the Stage Deck product to future newlyweds. The deck is included
-// with a booked Weselny Żabojad wedding; the page contains no service sales,
-// no commercial offers, no tracking and no external assets.
+// Presents the Stage Deck product to future newlyweds and their wedding
+// vendors. The deck is included with a booked Weselny Żabojad wedding; the
+// page contains no commercial offers, no tracking and no external assets.
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import logo from '../assets/img/logo.png';
@@ -127,7 +127,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-page text-ink">
       <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="Weselny Żabojad" className="h-11 w-auto object-contain" />
+          <img src={logo} alt="Weselny Żabojad" className="h-14 w-auto object-contain sm:h-16" />
           <div>
             <p className="font-heading text-lg font-bold leading-none text-ink">Stage Deck</p>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-muted">
@@ -139,6 +139,17 @@ export default function LandingPage() {
       </header>
 
       <main>
+        <div className="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
+          <div className="rounded-2xl border border-line bg-card/60 p-5 text-left sm:p-6">
+            <p className="text-sm leading-relaxed text-ink sm:text-base">
+              {t('landing.intro.p1')}
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-ink sm:text-base">
+              {t('landing.intro.p2')}
+            </p>
+          </div>
+        </div>
+
         <section className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 text-center sm:px-6">
           <h1 className="mx-auto max-w-4xl font-heading text-4xl font-bold leading-tight text-ink sm:text-5xl">
             {t('landing.hero.title')}
@@ -148,7 +159,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-7 flex flex-col items-center gap-3">
             <ContactCta label={t('landing.hero.cta')} />
-            <p className="max-w-xl text-xs leading-relaxed text-muted">
+            <p className="mt-1 max-w-2xl rounded-xl border border-brand-strong/40 bg-brand/10 px-4 py-3 text-sm font-semibold leading-relaxed text-ink sm:text-base">
               {t('landing.hero.included')}
             </p>
           </div>
