@@ -4,26 +4,26 @@ import { describe, expect, it } from 'vitest';
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 
-describe('issue #807 service landing metadata and release docs', () => {
+describe('issue #812 deck landing metadata and release docs', () => {
   const html = read('index.html');
   const landing = read('src/components/LandingPage.jsx');
   const readme = read('README.md');
   const project = read('project.md');
 
-  it('describes the wedding MC/DJ service in static metadata', () => {
+  it('describes the Stage Deck product in static metadata', () => {
     expect(html).toContain('<html lang="pl"');
-    expect(html).toContain('Weselny Żabojad — Konferansjer i DJ weselny FR / PL / EN');
+    expect(html).toContain('<title>Stage Deck — wspólny plan wesela dla Was i całej ekipy</title>');
     expect(html).toMatch(/<meta\s+name="description"/);
-    expect(html).toContain('konferansjer i DJ weselny');
-    expect(html).toContain('property="og:title"');
+    expect(html).toContain('Stage Deck to jeden wspólny, działający offline plan dnia');
+    expect(html).toContain('property="og:site_name" content="Stage Deck"');
+    expect(html).toContain('property="og:title" content="Stage Deck');
     expect(html).toContain('property="og:description"');
     expect(html).toContain('property="og:url" content="https://deck.weselnyzabojad.pl/"');
-    expect(html).toContain('property="og:image" content="https://deck.weselnyzabojad.pl/pwa-512x512.png"');
     expect(html).toContain('name="twitter:card"');
-    expect(html).toContain('name="twitter:title"');
+    expect(html).not.toMatch(/konferansjer|MC\/DJ|DJ weselny/i);
   });
 
-  it('keeps a single contact CTA and adds no tracking', () => {
+  it('keeps the single contact CTA and no tracking', () => {
     expect(landing).toContain("const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';");
     expect(landing).toContain('rel="noopener noreferrer"');
     expect(landing).not.toMatch(/tel:|wa\.me|mailto:|calendly|cal\.com/i);
@@ -31,13 +31,13 @@ describe('issue #807 service landing metadata and release docs', () => {
     expect(html).not.toMatch(/googletagmanager|google-analytics|facebook\.net|hotjar/i);
   });
 
-  it('documents the public route contract', () => {
-    expect(readme).toContain('| `/` | Public service landing');
+  it('documents the deck landing and public route contract', () => {
+    expect(readme).toContain('| `/` | Public Stage Deck product landing');
     expect(readme).toContain('| `/join` | Crew entry');
     expect(readme).toContain('| `/<roomCode>/<role>` | Role-scoped production deck |');
-    expect(readme).toContain('Existing role QR links keep the');
-    expect(project).toContain('### 17.45 Landing release metadata and public route contract');
-    expect(project).toContain('single contact link');
+    expect(readme).toContain('The public root presents the Stage Deck product');
+    expect(project).toContain('### 17.47 Deck landing metadata and release contract');
+    expect(project).toContain('Stage Deck product for future newlyweds');
   });
 
   it('adds no new third-party origin beyond the existing font hosts', () => {
