@@ -109,9 +109,15 @@ export function parseDeckIntent(pathname = '', search = '', baseUrl = '/') {
     rest = rest.slice(baseUrl.length);
   }
   const segments = rest.split('/').filter(Boolean);
+  // `/join` is the crew entry, not a room code. Query-based intent still works
+  // (`/join?room=…&role=…`), and role QR links stay `/<room>/<role>`.
+  const joinRoute = segments[0] === 'join';
 
-  const roomCode = (params.get('room') || segments[0] || '').trim() || null;
-  const role = normalizeRole((params.get('role') || segments[1] || '').trim());
+  const roomCode =
+    (params.get('room') || (joinRoute ? '' : segments[0]) || '').trim() || null;
+  const role = normalizeRole(
+    (params.get('role') || (joinRoute ? '' : segments[1]) || '').trim(),
+  );
   const requirePin = params.get('phone') === 'true';
 
   return { roomCode, role, requirePin };
