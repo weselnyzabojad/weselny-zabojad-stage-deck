@@ -684,7 +684,7 @@ const fr = {
   'landing.faq.4.q': 'Les données de notre mariage sont-elles publiques ?',
   'landing.faq.4.a': 'Non. Le mariage n’est pas visible publiquement ; l’accès à chaque vue dépend du rôle et de la session.',
   'landing.faq.5.q': 'Comment obtenir Stage Deck ?',
-  'landing.faq.5.a': 'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad. Écrivez via le formulaire de contact pour parler de votre mariage.',
+  'landing.faq.5.a': 'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad et/ou avec ses partenaires privilégiés.',
   'landing.footer.ctaTitle': 'Faisons équipe le jour J',
   'landing.footer.ctaBody': 'Contactez-nous : découvrez comment l’accompagnement de Weselny Żabojad couplé au Stage Deck garantit une coordination parfaite et une réussite éclatante.',
   'landing.footer.crew': 'Connexion de l’équipe mariage',

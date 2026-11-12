@@ -682,7 +682,7 @@ const pl = {
   'landing.faq.4.q': 'Czy nasze dane są publiczne?',
   'landing.faq.4.a': 'Nie. Wesele nie jest widoczne publicznie; dostęp do widoków wynika z roli i sesji.',
   'landing.faq.5.q': 'Jak otrzymamy Stage Deck?',
-  'landing.faq.5.a': 'Stage Deck jest dołączony bez dodatkowych kosztów do wesel prowadzonych przez Weselny Żabojad. Napiszcie przez formularz kontaktowy, aby porozmawiać o Waszym weselu.',
+  'landing.faq.5.a': 'Stage Deck jest dołączony bez dodatkowych kosztów do wesel prowadzonych przez Weselny Żabojad i/lub z jego partnerami premium.',
   'landing.footer.ctaTitle': 'Połączmy siły w dniu ślubu',
   'landing.footer.ctaBody': 'Napiszcie do nas: odkryjcie, jak wsparcie Weselny Żabojad połączone ze Stage Deck gwarantuje perfekcyjną koordynację i spektakularny sukces.',
   'landing.footer.crew': 'Logowanie ekipy',
