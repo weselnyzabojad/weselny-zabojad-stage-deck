@@ -1,37 +1,27 @@
 import { useI18n } from '../i18n/useI18n.js';
+import { desktopTone } from '../lib/topBarStyles.js';
 
 const STATE_CHIPS = {
   done: 'border-emerald-800 bg-emerald-950/60 text-emerald-300',
-  active: 'border-brand-strong bg-brand/40 text-brand-tint animate-pulse',
   next: 'border-amber-800 bg-amber-950/60 text-amber-200',
   planned: 'border-line-strong bg-raised text-muted',
 };
 
 const STATE_LABELS = {
   done: 'DONE',
-  active: 'ON AIR',
   next: 'NEXT',
   planned: 'PLANNED',
 };
 
 function SparklersChip({ sparklers }) {
-  if (sparklers === true) {
-    return (
-      <span className="rounded border border-amber-600/70 bg-amber-950/60 px-1.5 py-0.5 font-semibold text-amber-200">
-        ✨ Sparklers ON
-      </span>
-    );
-  }
-  if (sparklers === false) {
-    return (
-      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
-        ✨ Sparklers OFF
-      </span>
-    );
-  }
+  if (sparklers !== true) return null;
+
   return (
-    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
-      ✨ Sparklers —
+    <span
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-1 font-heading text-[11px] font-bold uppercase tracking-wide ${desktopTone('positive')}`}
+    >
+      <span aria-hidden="true">✨</span>
+      <span>Sparklers ON</span>
     </span>
   );
 }
@@ -70,6 +60,7 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
   const song = cake.song || 'Song TBC';
   const serviceModeLabel = t(`mandatory.cakeMode.${cakeServiceMode}`);
   const hasState = Boolean(cake.stepId);
+  const showState = hasState && Boolean(STATE_LABELS[cake.state]);
 
   if (compact) {
     return (
@@ -86,16 +77,11 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
           {song}
         </div>
         <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px]">
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
+          <span className="rounded border border-line-strong bg-raised px-2 py-1 text-xs font-semibold text-ink">
             {t('mandatory.cake')}: <strong className="text-ink">{serviceModeLabel}</strong>
           </span>
           <SparklersChip sparklers={cake.sparklers} />
-          {cake.photographerCue ? (
-            <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
-              📷 {cake.photographerCue}
-            </span>
-          ) : null}
-          {hasState ? (
+          {showState ? (
             <span
               className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold ${STATE_CHIPS[cake.state]}`}
             >
@@ -121,7 +107,7 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
           🎂 Cake protocol
         </h2>
         <div className="flex flex-wrap items-center gap-1.5">
-          {hasState ? (
+          {showState ? (
             <span
               className={`rounded border px-1.5 py-0.5 font-mono text-[9px] font-bold ${STATE_CHIPS[cake.state]}`}
             >
@@ -137,22 +123,10 @@ export default function CakeCard({ cake, compact = false, cakeServiceMode = 'KIT
       <SyncNote cake={cake} />
 
       <div className="mt-2 flex flex-wrap gap-1.5 text-[10px]">
-        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink">
+        <span className="rounded border border-line-strong bg-raised px-2 py-1 text-xs font-semibold text-ink">
           {t('mandatory.cake')}: <strong className="text-ink">{serviceModeLabel}</strong>
         </span>
         <SparklersChip sparklers={cake.sparklers} />
-        {cake.photographerCue ? (
-          <span
-            title={cake.photographerCue}
-            className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-ink"
-          >
-            📷 {cake.photographerCue}
-          </span>
-        ) : (
-          <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
-            📷 Photographer cue —
-          </span>
-        )}
       </div>
     </section>
   );

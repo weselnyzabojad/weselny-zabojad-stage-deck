@@ -27,11 +27,29 @@ describe('issue #356 cake protocol time removal', () => {
     expect(html).not.toContain('Cutting time');
   });
 
-  it('keeps song, sparklers, photographer cue and state', () => {
+  it('keeps the song and green sparklers, without the photographer cue or ON AIR', () => {
     const html = renderToStaticMarkup(createElement(CakeCard, { cake }));
     expect(html).toContain('Cake — The Coup');
     expect(html).toContain('Sparklers ON');
-    expect(html).toContain('Front-left of the cake table');
-    expect(html).toContain('ON AIR');
+    expect(html).toContain('bg-tone-positive-bg');
+    expect(html).not.toContain('Front-left of the cake table');
+    expect(html).not.toContain('ON AIR');
+    expect(html).not.toContain('📷');
+  });
+
+  it('keeps the other schedule states', () => {
+    const html = renderToStaticMarkup(
+      createElement(CakeCard, { cake: { ...cake, state: 'done' } }),
+    );
+    expect(html).toContain('DONE');
+  });
+
+  it('hides the sparkler chip when false or unknown', () => {
+    for (const sparklers of [false, undefined, null]) {
+      const html = renderToStaticMarkup(
+        createElement(CakeCard, { cake: { ...cake, sparklers } }),
+      );
+      expect(html).not.toContain('Sparklers');
+    }
   });
 });
