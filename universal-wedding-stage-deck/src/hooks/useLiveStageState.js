@@ -13,6 +13,7 @@ import {
   updateGameResult,
 } from '../lib/liveStageState';
 import { reconcileLiveStateWithCartridge } from '../lib/cartridgeReconciliation';
+import { previewStepState } from '../lib/devPreview';
 import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
@@ -52,6 +53,7 @@ export function useLiveStageState({
   role = 'mc',
   cartridgeRevision = null,
   speeches = [],
+  preview = false,
 }) {
   const key = storageKey(weddingId);
   const eventContext = useMemo(
@@ -59,9 +61,12 @@ export function useLiveStageState({
     [eventDateISO, timeZone],
   );
   const [model, setModel] = useState(() => ({
-    state:
-      loadLiveState(key, steps, eventContext) ??
-      normalizeLiveState(initialLiveState, steps, eventContext),
+    // Preview always starts from the cartridge/demo snapshot and never reads
+    // the persisted live state, so an inspection session cannot disturb it.
+    state: preview
+      ? normalizeLiveState(initialLiveState, steps, eventContext)
+      : loadLiveState(key, steps, eventContext) ??
+        normalizeLiveState(initialLiveState, steps, eventContext),
     undo: [],
   }));
   const liveState = model.state;
@@ -77,7 +82,10 @@ export function useLiveStageState({
   // Production rooms only sync with a role token from join_room; the token also
   // authorizes the RLS policies. Local mode keeps the legacy anon client.
   const canSync =
-    syncConfig.enabled && Boolean(roomId) && (!requireToken || Boolean(accessToken));
+    !preview &&
+    syncConfig.enabled &&
+    Boolean(roomId) &&
+    (!requireToken || Boolean(accessToken));
   const client = useMemo(
     () => (canSync ? createSupabaseSyncClient(syncConfig, { accessToken }) : null),
     [canSync, syncConfig, accessToken],
@@ -241,13 +249,18 @@ export function useLiveStageState({
   );
 
   useEffect(() => {
+    // Preview state is in-memory only: never overwrite the real live snapshot.
+    if (preview) return;
     // Skip the echo write after adopting a payload from another tab.
     if (lastSerializedRef.current === serialized) return;
     lastSerializedRef.current = serialized;
     setSavedLocally(saveLiveState(key, liveState));
-  }, [key, liveState, serialized]);
+  }, [key, liveState, serialized, preview]);
 
   useEffect(() => {
+    // Preview is isolated from tab-to-tab live state changes.
+    if (preview) return undefined;
+
     const handleStorage = (event) => {
       if (event.key !== key || !event.newValue) return;
       try {
@@ -268,7 +281,7 @@ export function useLiveStageState({
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, [key, steps, eventContext]);
+  }, [key, steps, eventContext, preview]);
 
   // Subscribe to the room channel and hydrate from the authoritative row.
   // Realtime events are hints; reconnect/online always triggers a fresh fetch so
@@ -511,6 +524,20 @@ export function useLiveStageState({
     });
   }, [apply, steps, actor]);
 
+  // Development preview only. The caller wires this behind `import.meta.env.DEV`
+  // and the `?dev=1` flag; it is a no-op in every other mode.
+  const devJumpToStep = useCallback(
+    (stepId) => {
+      if (!preview) return;
+      apply((state) => previewStepState(state, stepId, steps), {
+        op: 'dev_preview_step',
+        label: 'Dev preview step',
+        undo: false,
+      });
+    },
+    [apply, preview, steps],
+  );
+
   // Game results are durable state but never an undoable timeline command.
   const setGameResults = useCallback(
     (gameId, result) => {
@@ -561,6 +588,7 @@ export function useLiveStageState({
     toggleSubtask,
     sendStagePing,
     swapWithNext,
+    devJumpToStep,
     setGameResults,
     setMediaOverride,
     savedLocally,
