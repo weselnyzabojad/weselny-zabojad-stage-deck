@@ -4768,3 +4768,46 @@ Replace the MC "Répliques MC" block with a "Notes" block fed by a new `## NOTES
 **Open questions.** None.
 
 **Tracking.** [#774](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/774), [#775](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/775), [#776](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/776).
+
+### 17.41 Song request language, speaker identity and Venue service anchors (decision, 2026-11-12)
+
+Align the Song Request language control with the pocket cycle control, surface the active speaker identity in the Speaker top bar, and clean up the Venue Manager planning editors. "Jalons" is removed from Venue while existing MILESTONE data stays in the cartridge and radar; kitchen services remain editable and are always persisted as HARD_ANCHOR steps.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template or cartridge-data change. The speaker identity reads the existing active speech; the Venue editor works on existing KITCHEN_SERVICE/MILESTONE steps.
+
+**View scope.**
+
+- In scope: Song Request guest header; Speaker desktop secondary top bar; Venue Manager mandatory-services and milestone sections.
+- Out of scope: MC, DJ, Photographer, Cameraman, owner admin, compact Speaker shell, teleprompter content, schema/parser and Google Doc.
+
+**Task split.**
+
+| Issue | Scope | Depends on |
+| --- | --- | --- |
+| [#777](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/777) | Speaker desktop top-bar identity from the active speech | - |
+| [#778](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/778) | Song Request language control switched to the pocket cycle variant | - |
+| [#779](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/779) | Remove Venue Jalons editor; keep/fix services and force HARD_ANCHOR | - |
+
+**Task details.**
+
+1. **Speaker identity.** Add a centered `Name · Relationship` element to the
+   desktop secondary bar, sourced from the active speech and hidden when no
+   speech is active. Keep the pocket shell and other role views unchanged.
+2. **Song Request language.** Replace the segmented control with the existing
+   `LanguageToggle variant="cycle"` single button so EN/FR/PL cycle in place.
+3. **Venue services.** Remove the Jalons section and its milestone editor, but
+   keep existing MILESTONE data in the timeline/radar. Keep
+   `+ Ajouter un service`, preserve blank drafts while editing, persist only
+   valid steps, and write every KITCHEN_SERVICE as `HARD_ANCHOR`.
+
+**Venue answers.** "Jalons" edits generic hard-anchor milestones
+(`VENDOR`, `TRANSPORT`, `FAMILY`, `SUNSET`, `OTHER`) used by the hard-anchor
+radar. "+ Ajouter un service" adds a kitchen-service step used by the MC
+mandatory constraints and timeline. Both appeared inert because a newly added
+entry has no time and is dropped when the editor state round-trips through the
+step list. Decision: delete the Jalons UI, keep and fix services, and treat
+every service as a hard anchor.
+
+**Open questions.** None.
+
+**Tracking.** [#777](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/777), [#778](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/778), [#779](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/779).
