@@ -17,6 +17,8 @@ export const OPTIONAL_CLIENT_VARS = {
   VITE_SUPABASE_ROOM_PREFIX: 'defaults to wzsd',
   VITE_ADMIN_DEMO: 'dev-only read-only admin preview when set to 1',
   VITE_VIEW: 'dev-only role/view override',
+  VITE_SENTRY_DSN: 'public Sentry DSN; production error monitoring when set',
+  VITE_SENTRY_ENVIRONMENT: 'Sentry environment label, defaults to production',
 };
 
 export const SERVER_SECRET_VARS = [

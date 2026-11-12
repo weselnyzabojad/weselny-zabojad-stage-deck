@@ -6,6 +6,9 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
+import { initSentry } from './lib/sentry.js'
+
+initSentry()
 
 // `/admin` is the owner-only surface. The legacy `/deck/admin` path redirects.
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
