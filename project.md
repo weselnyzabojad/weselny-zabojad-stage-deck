@@ -5011,5 +5011,52 @@ no runtime UI or data behaviour changed.
 
 **Tracking.** [#807](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/807).
 
+### 17.46 Landing repositioned to the Stage Deck product (decision, 2026-11-12)
+
+The public landing must present the Stage Deck itself to future newlyweds, with
+100% product focus. The service-sales positioning from §17.44 is reversed:
+Erick's MC/DJ offers, performance languages, experience pitch and service FAQ
+leave the page. The deck is included at no extra cost with a booked Weselny
+Żabojad wedding, which is the only connection to the service that remains.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Stage Deck product landing for future newlyweds |
+| `/join` | Crew entry / private deck, unchanged |
+| `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Audience | Future newlyweds as the deck's customer |
+| Subject | 100% the Stage Deck; no service sales copy |
+| Access | Included free when booking Weselny Żabojad wedding services |
+| Brand | Stage Deck, with a discreet Weselny Żabojad / Erick Caron attribution |
+| CTA | Single link to `https://www.weselnyzabojad.pl/#kontakt` |
+| Features | Shared timeline, offline, live sync, role views, privacy, PWA, conditional song requests |
+| Song requests | Described as optional/conditional, never always-on |
+| Visuals | Rich CSS mockups of deck screens; no real or demo wedding data |
+| Pricing | No price or package on the landing |
+| Languages | Polish primary, EN/FR through the existing locale storage |
+
+**Task split.** New correction tasks replace the copy/metadata delivered by
+#806/#807; routing from #805 is unchanged.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#811](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/811) | Deck-focused copy, PL/EN/FR, rich CSS mockups | - |
+| 2 | [#812](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/812) | Deck metadata, single CTA, release docs | #811 |
+
+**Open questions.** None.
+
+**Tracking.** [#811](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/811), [#812](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/812).
+
+
 
 
