@@ -450,7 +450,6 @@ const pl = {
   'mc.rail.upcoming': 'Nadchodzące kroki',
   'mc.rail.now': 'Bieżący krok',
   'mc.rail.status.done': 'GOTOWE',
-  'mc.rail.status.active': 'NA ANTENIE',
   'mc.rail.status.next': 'NASTĘPNY',
   'mc.rail.status.planned': 'PLANOWANY',
   'mc.rail.completed': 'Ukończono',

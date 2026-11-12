@@ -452,7 +452,6 @@ const fr = {
   'mc.rail.upcoming': 'Étapes à venir',
   'mc.rail.now': 'Étape en cours',
   'mc.rail.status.done': 'TERMINÉ',
-  'mc.rail.status.active': 'EN DIRECT',
   'mc.rail.status.next': 'SUIVANT',
   'mc.rail.status.planned': 'PRÉVU',
   'mc.rail.completed': 'Terminé',

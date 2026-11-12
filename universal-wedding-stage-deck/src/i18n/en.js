@@ -450,7 +450,6 @@ const en = {
   'mc.rail.upcoming': 'Upcoming steps',
   'mc.rail.now': 'Current step',
   'mc.rail.status.done': 'DONE',
-  'mc.rail.status.active': 'ON AIR',
   'mc.rail.status.next': 'NEXT',
   'mc.rail.status.planned': 'PLANNED',
   'mc.rail.completed': 'Completed',

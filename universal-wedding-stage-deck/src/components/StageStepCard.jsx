@@ -95,6 +95,7 @@ export default function StageStepCard({
   const variants = polished ? POLISHED_VARIANTS : VARIANTS;
   const meta = variants[variant] ?? variants.later;
   const statusLabel = t(`mc.rail.status.${meta.status}`);
+  const showStatusChip = variant !== 'current';
   const summary = stageRailSummary(entry);
   const drift = entry?.projectedDriftMinutes;
   const title = step.title ?? '—';
@@ -108,11 +109,13 @@ export default function StageStepCard({
       <div className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span
-              className={`${polished ? 'rounded-full px-2 py-0.5 shadow-sm' : 'rounded px-1.5 py-0.5'} border font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}
-            >
-              {statusLabel}
-            </span>
+            {showStatusChip ? (
+              <span
+                className={`${polished ? 'rounded-full px-2 py-0.5 shadow-sm' : 'rounded px-1.5 py-0.5'} border font-mono text-[9px] font-bold tracking-wider ${meta.chip}`}
+              >
+                {statusLabel}
+              </span>
+            ) : null}
             {step.game?.requiresPhotographer ? (
               <span
                 className={`${polished ? 'rounded-full px-2' : 'rounded px-1.5'} border border-amber-500/40 bg-amber-500/10 py-0.5 font-mono text-[9px] font-bold text-amber-600`}
