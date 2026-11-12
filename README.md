@@ -85,11 +85,16 @@ complete setup, deployment and troubleshooting path.
 
 | Route | Surface |
 | --- | --- |
-| `/deck/` | Stage deck entry / local pairing or production role join |
-| `/deck/:roomCode/:role` | Role-scoped production deck |
-| `/deck/?room=...&role=...` | Query form of the same deck deep link |
+| `/` | Public service landing for engaged couples (no deck data) |
+| `/join` | Crew entry / local pairing or production role join |
+| `/<roomCode>/<role>` | Role-scoped production deck |
+| `/?room=...&role=...` | Query form of the same deck deep link |
 | `/admin` | Owner admin panel (laptop/desktop-oriented) |
 | `/request/:roomCode` | Guest song-request page |
+
+The public root is marketing for the service; the Stage Deck itself stays
+private behind the crew join and per-role PINs. Existing role QR links keep the
+`/<roomCode>/<role>` shape.
 
 Roles: `mc`, `dj` (DJ VIP), `dj_standard`, `photo1`, `photo2`, `video`,
 `venue_manager`, `speaker`.
