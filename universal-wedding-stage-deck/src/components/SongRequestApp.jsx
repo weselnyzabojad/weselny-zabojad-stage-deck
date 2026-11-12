@@ -219,7 +219,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
             </div>
             <h1 className="mt-1 font-heading text-2xl font-bold text-ink">{t('songRequest.title')}</h1>
           </div>
-          <LanguageToggle />
+          <LanguageToggle variant="cycle" />
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted">{t('songRequest.intro')}</p>
 
