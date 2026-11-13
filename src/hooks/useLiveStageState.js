@@ -293,6 +293,7 @@ export function useLiveStageState({
     lastPublishedRef.current = null;
     lastAdoptedRef.current = null;
     latestRemoteAtRef.current = 0;
+    // eslint-disable-next-line react/set-state-in-effect -- resets the catch-up badge before the room channel re-subscribes
     setLiveCaughtUp(false);
 
     let cancelled = false;

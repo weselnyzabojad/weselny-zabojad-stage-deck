@@ -21,6 +21,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
   useEffect(() => {
     if (!open) return undefined;
     let active = true;
+    // eslint-disable-next-line react/set-state-in-effect -- initializes loading state for the external revision fetch
     setLoading(true);
     setError('');
     getRevisionContext(wedding.wedding_id)

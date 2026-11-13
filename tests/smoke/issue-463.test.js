@@ -95,7 +95,7 @@ describe('issue #463 parallel attractions contract', () => {
 
     const missingEnd = {
       ...cartridge,
-      attractions: cartridge.attractions.map(({ endTime, ...rest }) => rest),
+      attractions: cartridge.attractions.map(({ endTime: _endTime, ...rest }) => rest),
     };
     expect(await validateCartridge(missingEnd)).not.toEqual([]);
   });

@@ -107,12 +107,15 @@ For a real wedding:
 requests to `master` and `development`, from the repository root:
 
 1. `npm ci`
-2. `npm run lint`
-3. `npm run validate:schema`
-4. `npm run validate:fixtures`
-5. `npm test`
-6. `npm run validate:template`
-7. `npm run build`
+2. `npm run lint` (warnings are fatal)
+3. `npm run validate:env -- --allow-missing`
+4. `npm run validate:i18n`
+5. `npm run validate:schema`
+6. `npm run validate:fixtures`
+7. `npm test`
+8. `npm run validate:template`
+9. `npm run validate:google-doc-map`
+10. `npm run build`
 
 The canonical `npm run validate:schema` step is always present, so the same
 contract used by the browser importer is checked in CI before the fixture suite.

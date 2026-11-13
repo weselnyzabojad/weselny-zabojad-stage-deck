@@ -137,10 +137,12 @@ export default function AdminWeddingFolders() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- loadYears sets its loading flag before the external Drive fetch
     void loadYears();
   }, [loadYears]);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- loadYear sets its loading flag before the external Drive fetch
     if (selectedYearId) void loadYear(selectedYearId);
   }, [loadYear, selectedYearId]);
 

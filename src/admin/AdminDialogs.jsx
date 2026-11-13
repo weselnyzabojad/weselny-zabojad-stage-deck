@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react';
+import { useId, useState } from 'react';
 import ModalShell from '../components/ModalShell';
 import { challengeExistingFactor } from './adminApi';
 import { roleShort } from '../lib/roles';
@@ -33,10 +33,14 @@ export function AdminConfirmDialog({
   const [typed, setTyped] = useState('');
   const titleId = useId();
   const descriptionId = useId();
+  const [wasOpen, setWasOpen] = useState(open);
+  const [prevRequireText, setPrevRequireText] = useState(requireText);
 
-  useEffect(() => {
+  if (open !== wasOpen || requireText !== prevRequireText) {
+    setWasOpen(open);
+    setPrevRequireText(requireText);
     if (open) setTyped('');
-  }, [open, requireText]);
+  }
 
   const blocked = Boolean(requireText) && typed !== requireText;
 
@@ -96,14 +100,16 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
   const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [wasOpen, setWasOpen] = useState(open);
 
-  useEffect(() => {
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setCode('');
       setBusy(false);
       setError('');
     }
-  }, [open]);
+  }
 
   const submit = async () => {
     setBusy(true);
@@ -164,15 +170,17 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [wasOpen, setWasOpen] = useState(open);
 
-  useEffect(() => {
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setPassword('');
       setConfirm('');
       setError('');
       setBusy(false);
     }
-  }, [open]);
+  }
 
   const submit = async () => {
     if (password.length < 12) {
@@ -245,10 +253,12 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
 
 export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = false, error = '' }) {
   const [pins, setPins] = useState({});
+  const [wasOpen, setWasOpen] = useState(open);
 
-  useEffect(() => {
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) setPins({});
-  }, [open]);
+  }
 
   const update = (role, value) => {
     setPins((current) => ({ ...current, [role]: value.replace(/\D/g, '').slice(0, 6) }));
@@ -307,12 +317,15 @@ export function AdminPublishRevisionDialog({
 }) {
   const [cartridgeJson, setCartridgeJson] = useState('');
   const [parseError, setParseError] = useState('');
+  const [resetKey, setResetKey] = useState([open, wedding]);
 
-  useEffect(() => {
-    if (!open) return;
-    setCartridgeJson('');
-    setParseError('');
-  }, [open, wedding]);
+  if (open !== resetKey[0] || wedding !== resetKey[1]) {
+    setResetKey([open, wedding]);
+    if (open) {
+      setCartridgeJson('');
+      setParseError('');
+    }
+  }
 
   const submit = () => {
     setParseError('');

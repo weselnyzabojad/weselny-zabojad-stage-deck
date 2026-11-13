@@ -32,7 +32,8 @@ export function DjSetCountdown({ wedding, clock, nextEntry }) {
   const { t } = useI18n();
   if (!nextEntry?.projectedStart) return null;
 
-  const now = clock?.now instanceof Date ? clock.now : new Date();
+  const now = clock?.now instanceof Date ? clock.now : null;
+  if (!now) return null;
   const nextAt = clockToEventDate({
     clock: nextEntry.projectedStart,
     eventDateISO: resolveEventDateISO(wedding),

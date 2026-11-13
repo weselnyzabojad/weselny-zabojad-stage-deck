@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   deactivateProvider,
   deleteProvider,
@@ -31,13 +31,6 @@ const EMPTY_FORM = {
   active: true,
 };
 
-function categoryLabel(provider) {
-  const base = CATEGORIES.find(([value]) => value === provider.category)?.[1] ?? provider.category;
-  return provider.category === 'other' && provider.function_label
-    ? `${base} · ${provider.function_label}`
-    : base;
-}
-
 export default function AdminServiceProviders({ wedding, readOnly = false, onChanged = null }) {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -51,7 +44,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -63,11 +56,12 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
     } finally {
       setLoading(false);
     }
-  };
+  }, [wedding.wedding_id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- load() sets its loading flag before the provider list request
     if (open && !loaded && !loading) void load();
-  }, [open, loaded, loading]);
+  }, [open, loaded, loading, load]);
 
   const edit = (provider) => {
     setForm({

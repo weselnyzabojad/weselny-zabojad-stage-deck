@@ -37,7 +37,7 @@ while `development` is at `fbaaa09` (2026-11-13).
 | #533 live admin smoke test | Owner | Passed at API level; see `docs/admin-live-smoke-533.md` | Final production visual QR/browser pass |
 | #736 `admin_drive` verify | Owner | Function ACTIVE v2; AAL2/Drive check pending | `configured: true` + Drive panel check |
 | #760 Supabase secrets | Owner | Names not confirmed | All required names set and verified |
-| #792 zero-warning gate | Owner | 36 pre-existing lint warnings; build chunk advisory | Hard gate decision: fix now or defer |
+| #792 zero-warning gate | Owner | Implemented: `oxlint --deny-warnings`, env validation in CI, build chunk limit documented | Gate green on `development` |
 | Netlify public access | Owner | `deck.weselnyzabojad.pl` returns **401 Edge Access** | Project visibility set to Public |
 | `search_song_metadata` deploy | Owner | Code merged, function not deployed | Deploy + live lookup smoke |
 | PR #815 Sentry DSN | Owner | Open, CI green | Merge or defer |
