@@ -281,6 +281,9 @@ See [`project.md`](project.md) and [`docs/`](docs/) for the full decisions.
 - [`project.md`](project.md) — current status, decisions and roadmap.
 - [`docs/admin-setup-and-secrets.md`](docs/admin-setup-and-secrets.md)
   — environment variables, server secrets and full admin deployment setup.
+- [`docs/production-release-checklist.md`](docs/production-release-checklist.md)
+  — release gates, pre-flight, production smoke checks and rollback. Prepared
+  only; do not execute until the owner records GO.
 - [`schema/README.md`](schema/README.md) — cartridge schema and fixtures.
 - [`docs/google-doc-template-conventions.md`](docs/google-doc-template-conventions.md)
   — Google Doc template parser contract.
