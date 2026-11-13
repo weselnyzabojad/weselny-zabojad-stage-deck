@@ -142,54 +142,70 @@ export default function LandingPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-page text-ink">
-      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
-        <div className="flex items-center gap-3">
-          <img src={logo} alt="Weselny Żabojad" className="h-14 w-auto object-contain sm:h-16" />
-          <div>
-            <p className="font-heading text-lg font-bold leading-none text-ink">Stage Deck</p>
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-muted">
-              {t('landing.hero.eyebrow')}
-            </p>
+    <div
+      data-theme="day"
+      className="min-h-screen bg-[#FBF9F5] font-heading text-[#1A1A1A]"
+    >
+      <header className="border-b border-[#C5A059]/15 bg-white/60 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
+          <div className="flex items-center gap-3">
+            <img src={logo} alt="Weselny Żabojad" className="h-14 w-auto object-contain sm:h-16" />
+            <div>
+              <p className="font-heading text-lg font-bold leading-none text-[#1A1A1A]">
+                Stage Deck
+              </p>
+              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-[#8A6A2F]">
+                {t('landing.hero.eyebrow')}
+              </p>
+            </div>
           </div>
+          <LanguageToggle variant="desktop" />
         </div>
-        <LanguageToggle variant="desktop" />
       </header>
 
       <main>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-8 sm:px-6">
-          <div className="relative overflow-hidden rounded-3xl border border-line bg-card p-5 text-left shadow-sm sm:p-7">
+        <div className="mx-auto w-full max-w-4xl px-4 pt-10 sm:px-6">
+          <div className="relative overflow-hidden rounded-3xl border border-[#C5A059]/30 bg-white/90 p-6 text-left shadow-xl shadow-slate-900/5 backdrop-blur sm:p-10">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-brand/15 blur-2xl"
+              className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-[#C5A059]/15 blur-3xl"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-24 -left-16 h-48 w-48 rounded-full bg-[#D4AF37]/10 blur-3xl"
             />
             <span
               aria-hidden="true"
-              className="absolute left-0 top-7 h-10 w-1 rounded-r-full bg-brand-strong/70"
+              className="absolute left-0 top-10 h-12 w-1 rounded-r-full bg-gradient-to-b from-[#D4AF37] to-[#C5A059]/20"
             />
             <div className="relative">
-              <p className="text-base leading-relaxed text-ink sm:text-lg sm:leading-8">
+              <p className="font-body text-base italic leading-relaxed text-[#1E293B] sm:text-lg sm:leading-8">
                 <HighlightedText
                   text={t('landing.intro.p1')}
                   phrase={t('landing.intro.p1.highlight')}
+                  className="font-semibold not-italic text-[#8A6A2F]"
                 />
               </p>
-              <div className="mt-5 rounded-2xl border border-brand-strong/25 bg-brand/10 p-4 sm:p-5">
+              <div className="mt-6 rounded-2xl border border-[#C5A059]/25 bg-[#FBF9F5]/80 p-5 sm:p-6">
                 <div className="flex items-center gap-3">
                   <svg
                     aria-hidden="true"
                     viewBox="0 0 24 24"
-                    className="h-5 w-5 shrink-0 text-brand-strong"
+                    className="h-5 w-5 shrink-0 text-[#C5A059]"
                     fill="currentColor"
                   >
                     <path d="M12 2.5l2.1 6.1 6.4 2.1-6.4 2.1L12 19l-2.1-6.2-6.4-2.1 6.4-2.1L12 2.5z" />
                   </svg>
-                  <span aria-hidden="true" className="h-px flex-1 bg-brand-strong/20" />
+                  <span
+                    aria-hidden="true"
+                    className="h-px flex-1 bg-gradient-to-r from-[#C5A059]/40 to-transparent"
+                  />
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-ink sm:text-base">
+                <p className="mt-3 text-sm leading-relaxed text-[#1E293B] sm:text-base">
                   <HighlightedText
                     text={t('landing.intro.p2')}
                     phrase={t('landing.intro.p2.highlight')}
+                    className="font-semibold text-[#8A6A2F]"
                   />
                 </p>
               </div>
@@ -197,16 +213,29 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <section className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 text-center sm:px-6">
-          <h1 className="mx-auto max-w-4xl font-heading text-4xl font-bold leading-tight text-ink sm:text-5xl">
+        <section className="mx-auto w-full max-w-6xl px-4 pb-12 pt-12 text-center sm:px-6 sm:pt-14">
+          <div aria-hidden="true" className="mx-auto mb-5 flex items-center justify-center gap-3">
+            <span className="h-px w-12 bg-gradient-to-r from-transparent to-[#C5A059]/70" />
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5 text-[#C5A059]"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.25"
+            >
+              <path d="M12 3l2.2 6.3L20.5 12l-6.3 2.7L12 21l-2.2-6.3L3.5 12l6.3-2.7L12 3Z" />
+            </svg>
+            <span className="h-px w-12 bg-gradient-to-l from-transparent to-[#C5A059]/70" />
+          </div>
+          <h1 className="mx-auto max-w-4xl font-heading text-4xl font-bold leading-tight tracking-tight text-[#1A1A1A] sm:text-5xl">
             {t('landing.hero.title')}
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-[#475569]">
             {t('landing.hero.lead')}
           </p>
           <div className="mt-7 flex flex-col items-center gap-3">
             <ContactCta label={t('landing.hero.cta')} />
-            <p className="mt-1 max-w-5xl rounded-xl border border-brand-strong/40 bg-brand/10 px-4 py-3 text-center text-sm font-semibold leading-relaxed text-ink sm:whitespace-nowrap sm:text-base">
+            <p className="mt-1 max-w-5xl rounded-xl border border-[#C5A059]/35 bg-[#C5A059]/10 px-4 py-3 text-center text-sm font-semibold leading-relaxed text-[#1A1A1A] sm:whitespace-nowrap sm:text-base">
               {t('landing.hero.included')}
             </p>
           </div>
