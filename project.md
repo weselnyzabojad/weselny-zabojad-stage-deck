@@ -5512,3 +5512,56 @@ template change; only role constraints and admin/auth code.
 **Open questions.** None.
 
 **Tracking.** [#875](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/875), [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877).
+
+### 17.58 Service-package review and DJ tier contract (decision, 2026-11-14)
+
+Only three `Service package` values remain valid in the Google Doc:
+`HOST_ONLY`, `DJ_MC` and `HOST_AND_DJ_VIP`. `HOST_AND_DJ`,
+`HOST_AND_DJ_STANDARD`, `HOST_AND_DJ_SOLO` and `MC_DJ` are rejected at
+validation. VIP access is reserved to DJ Mark and DJ Szymoniak; no other DJ can
+receive the VIP view. `DJ_MC` becomes a first-class role with one PIN and a view
+combining MC Master controls and DJ VIP surfaces.
+
+**Google Doc contract.**
+
+- Doc/section: `## EVENT` → `Service package`.
+- Parser: `src/lib/googleDocCartridge.js` must preserve the exact value and
+  reject unknown values instead of collapsing them to `HOST_AND_DJ`.
+- Schema/template: one canonical `servicePackage` value; template and
+  conventions list only the three valid values.
+
+**Target matrix.**
+
+| Doc value | Tier | Role and DJ view |
+| --- | --- | --- |
+| `HOST_ONLY` | Standard | DJ role visible, DJ Standard view |
+| `DJ_MC` | VIP | New `dj_mc` role and PIN; combined MC Master + DJ VIP view; replaces `mc`+`dj` |
+| `HOST_AND_DJ_VIP` | VIP | DJ VIP, valid only for DJ Mark or DJ Szymoniak |
+| `HOST_AND_DJ`, `HOST_AND_DJ_STANDARD`, `HOST_AND_DJ_SOLO`, `MC_DJ` | — | Rejected at validation |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Valid Document values | `HOST_ONLY`, `DJ_MC`, `HOST_AND_DJ_VIP` only |
+| `HOST_ONLY` | DJ Standard role and view available; today the role is hidden |
+| `DJ_MC` model | New role `dj_mc`, one PIN, replaces `mc` and `dj` |
+| `DJ_MC` view | MC Master controls plus DJ VIP features |
+| `DJ_MC` provisioning | Owner-only admin roles/PINs panel; no provider category |
+| VIP identity | Only `dj_mark` or `dj_szymoniak`; no other DJ can get VIP |
+| VIP warning | Admin wedding list flags VIP packages whose DJ is missing or non-VIP |
+| Unknown values | Rejected at validation, never defaulted |
+| Data migration | None; production has zero weddings |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#881](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/881) | Package contract and parser rejection | - |
+| 2 | [#882](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/882) | `HOST_ONLY` DJ Standard role and view | #881 |
+| 3 | [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879) | VIP identity enforcement and admin warning | #881, #876 |
+| 4 | [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880) | `dj_mc` role and combined view | #881, #875, #877, #876, #879 |
+
+**Open questions.** None.
+
+**Tracking.** [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880), [#881](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/881), [#882](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/882).
