@@ -62,7 +62,8 @@ Use `npm run validate:env -- --allow-missing` for a local-only checkout. The
 script rejects missing values, malformed URLs, invalid deck modes and any
 server secret placed behind a `VITE_*` variable.
 
-Sentry error monitoring is production-only and opt-in through `VITE_SENTRY_DSN`.
+Sentry error monitoring is production-only and uses the public project DSN by
+default; set `VITE_SENTRY_DSN` to override it or to an empty value to opt out.
 Sourcemap upload is a separate build step: set `SENTRY_AUTH_TOKEN`,
 `SENTRY_ORG` and `SENTRY_PROJECT` in Netlify's build environment (never
 `VITE_*`). With the token, the build emits hidden maps, uploads them and deletes

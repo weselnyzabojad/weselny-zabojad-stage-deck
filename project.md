@@ -4846,7 +4846,8 @@ every service as a hard anchor.
 
 Add opt-in production error monitoring with Sentry's free tier, without
 changing deck behaviour, data contracts or the existing recovery UI. Sentry
-initialises only in production builds that define `VITE_SENTRY_DSN`, reports
+initialises only in production builds, using the built-in public project DSN
+unless `VITE_SENTRY_DSN` overrides it (an empty value opts out). It reports
 unhandled errors and React render crashes, and receives hidden sourcemaps
 deleted from `dist/` after upload. Session Replay is limited to error sessions
 and fully masked because cartridges contain wedding PII.
@@ -4869,7 +4870,7 @@ or cartridge change.
 
 | Topic | Decision |
 | --- | --- |
-| DSN | Public `VITE_SENTRY_DSN`; Sentry stays off when it is unset |
+| DSN | Built-in public project DSN; `VITE_SENTRY_DSN` overrides it, empty opts out |
 | Environments | Production builds only; `VITE_SENTRY_ENVIRONMENT` overrides `production` |
 | Tracing | `browserTracingIntegration()`, `tracesSampleRate: 0.1` |
 | Replay | Error sessions only (`1.0`), no session sampling, `maskAllText`, `blockAllMedia` |
