@@ -14,7 +14,7 @@ Prepared 2026-11-13 against `development` at `fbaaa09`.
 | Current production deploy | `6af60cd14998c3e401f8923e`, commit `b74bfe8`, 2026-11-12 |
 | Access controls | SSO team login required for **all projects**; password not required |
 | Public URL | `https://deck.weselnyzabojad.pl` |
-| Netlify env vars reported by MCP | none at project or team level |
+| Netlify env vars | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=production`, `NODE_VERSION=22` verified in the production context via Netlify CLI on 2026-11-13 |
 
 The SSO team-login rule is why the public URL returns **401**. The Netlify MCP
 can update access controls, but this checklist intentionally does **not** change
@@ -59,9 +59,9 @@ Verify in the Netlify dashboard (or authenticated Netlify MCP):
 
 - [x] Production branch is `master` (verified via Netlify MCP).
 - [ ] **SSO team login is removed for production** / project is public.
-- [ ] `VITE_SUPABASE_URL` is set (MCP currently reports no env vars).
-- [ ] `VITE_SUPABASE_ANON_KEY` is set (public anon/publishable key only).
-- [ ] `VITE_DECK_MODE=production`.
+- [x] `VITE_SUPABASE_URL` is set.
+- [x] `VITE_SUPABASE_ANON_KEY` is set (public anon/publishable key only).
+- [x] `VITE_DECK_MODE=production`.
 - [ ] Optional Sentry build variables are set only if sourcemap upload is wanted:
       `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT`.
 - [ ] No server secret is stored behind a `VITE_*` name.
