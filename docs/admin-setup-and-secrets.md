@@ -69,10 +69,11 @@ supabase secrets set \
   SUPABASE_URL=https://your-project-ref.supabase.co \
   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
   DECK_SUPABASE_JWT_SECRET=your-jwt-secret \
-  PUBLIC_DECK_URL=https://www.your-domain.example/deck \
+  PUBLIC_DECK_URL=https://your-domain.example \
   ALLOWED_ORIGIN=http://localhost:5173 \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com \
-  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+  GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----" \
+  SPEECH_SECRET_MASTER_KEY=your-32-byte-random-secret
 ```
 
 Optional:
@@ -81,10 +82,11 @@ Optional:
 supabase secrets set GOOGLE_DRIVE_TEST_FILE_ID=your-test-file-id
 ```
 
-Production `ALLOWED_ORIGIN` must be the deployed admin origin, for example:
+Production `ALLOWED_ORIGIN` must be the deployed admin origin, for example the
+deck origin that serves `/admin`:
 
 ```sh
-supabase secrets set ALLOWED_ORIGIN=https://www.weselnyzabojad.pl
+supabase secrets set ALLOWED_ORIGIN=https://deck.weselnyzabojad.pl
 ```
 
 If local and production origins are both needed, update `ALLOWED_ORIGIN`
@@ -136,6 +138,7 @@ The application uses these functions:
 | `join_room` | Production per-role PIN join and role JWT |
 | `submit_song_request` | Guest song requests |
 | `get_song_request_status` | Guest-only status lookup for the guest's own request |
+| `reveal_speech_key` | Role-JWT-gated per-speech key reveal; deployed with `--no-verify-jwt` |
 
 Deploy all of them:
 
@@ -145,6 +148,9 @@ supabase functions deploy admin_drive
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
 supabase functions deploy get_song_request_status
+# reveal_speech_key verifies the speaker role JWT itself. Platform JWT
+# verification rejects the legacy HS256 role token with UNAUTHORIZED_LEGACY_JWT.
+supabase functions deploy reveal_speech_key --no-verify-jwt
 ```
 
 Verify the admin endpoints return a CORS preflight response:

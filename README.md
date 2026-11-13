@@ -230,9 +230,12 @@ Deploy every function the admin and stage roles use:
 ```sh
 supabase functions deploy admin_api
 supabase functions deploy admin_drive
-supabase functions deploy reveal_speech_key
+# reveal_speech_key verifies the role JWT itself; platform JWT verification
+# rejects the legacy HS256 role token with UNAUTHORIZED_LEGACY_JWT.
+supabase functions deploy reveal_speech_key --no-verify-jwt
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
+supabase functions deploy get_song_request_status
 ```
 
 Set server secrets:
@@ -243,6 +246,7 @@ supabase secrets set \
   SUPABASE_URL=... \
   SUPABASE_SERVICE_ROLE_KEY=... \
   DECK_SUPABASE_JWT_SECRET=... \
+  PUBLIC_DECK_URL=https://your-domain.example \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=... \
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=... \
   SPEECH_SECRET_MASTER_KEY=...
