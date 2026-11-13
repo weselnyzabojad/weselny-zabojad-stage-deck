@@ -67,9 +67,9 @@ describe('issue #816 landing header and provider-facing copy', () => {
 
   it('renders the included note as a prominent callout', () => {
     const landing = read('src/components/LandingPage.jsx');
-    expect(landing).toContain('rounded-xl border border-brand-strong/40 bg-brand/10');
+    expect(landing).toContain('rounded-xl border border-[#C5A059]/35 bg-[#C5A059]/10');
     expect(landing).toContain(
-      'text-center text-sm font-semibold leading-relaxed text-ink sm:whitespace-nowrap sm:text-base',
+      'text-center text-sm font-semibold leading-relaxed text-[#1A1A1A] sm:whitespace-nowrap sm:text-base',
     );
 
     setLocale('pl', { persist: false });

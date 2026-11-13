@@ -35,8 +35,8 @@ describe('issue #826 landing intro vision card', () => {
   it('renders a layered card with both highlights in strong tags', () => {
     const landing = read('src/components/LandingPage.jsx');
     expect(landing).toContain('rounded-3xl');
-    expect(landing).toContain('bg-card p-5 text-left shadow-sm sm:p-7');
-    expect(landing).toContain('border-brand-strong/25 bg-brand/10');
+    expect(landing).toContain('bg-white/90 p-6 text-left shadow-xl shadow-slate-900/5');
+    expect(landing).toContain('border-[#C5A059]/25 bg-[#FBF9F5]/80');
     expect(landing).toContain('viewBox="0 0 24 24"');
     expect(landing).toContain('function HighlightedText');
 
@@ -44,9 +44,9 @@ describe('issue #826 landing intro vision card', () => {
     const html = renderToStaticMarkup(createElement(LandingPage));
 
     expect(html).toContain(
-      '<strong class="font-semibold text-brand-strong">projet coconstruit</strong>',
+      '<strong class="font-semibold not-italic text-[#8A6A2F]">projet coconstruit</strong>',
     );
-    expect(html).toContain('<strong class="font-semibold text-brand-strong">Stage Deck</strong>');
+    expect(html).toContain('<strong class="font-semibold text-[#8A6A2F]">Stage Deck</strong>');
 
     const text = html.replace(/<[^>]+>/g, '');
     expect(text).toContain(fr['landing.intro.p1']);
