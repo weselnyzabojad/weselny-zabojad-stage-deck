@@ -4,6 +4,7 @@ import QrCodeImage from './QrCodeImage';
 import {
   formatCueSeconds,
   isCustomerFile,
+  isHttpUrl,
   isStreamingSource,
   isVipTier,
   momentMeta,
@@ -57,6 +58,7 @@ async function writeClipboard(text) {
 }
 
 function ActionLink({ href, children }) {
+  if (!isHttpUrl(href)) return null;
   return (
     <a
       href={href}
