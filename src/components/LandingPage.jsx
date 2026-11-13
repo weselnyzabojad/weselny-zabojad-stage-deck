@@ -321,26 +321,38 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-line bg-card/60">
-        <div className="mx-auto w-full max-w-6xl border-b border-line/60 px-4 py-6 text-center sm:px-6">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
-            {t('landing.footer.partners')}
-          </p>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-6">
-            <img
-              src={logoMark}
-              alt="DJ Mark"
-              className="h-14 w-auto object-contain sm:h-16"
-            />
-            <img
-              src={logoSzymoniak}
-              alt="DJ Szymoniak"
-              className="h-10 w-auto object-contain sm:h-12"
-            />
+      <footer className="border-t border-[#C5A059]/15 bg-[#FBF9F5]">
+        <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
+          <div className="rounded-2xl border border-[#C5A059]/20 bg-white/80 px-5 py-8 text-center shadow-sm sm:px-8">
+            <div className="flex items-center justify-center gap-4">
+              <span
+                aria-hidden="true"
+                className="h-px min-w-6 flex-1 bg-gradient-to-r from-transparent to-[#C5A059]/50"
+              />
+              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8A6A2F]">
+                {t('landing.footer.partners')}
+              </p>
+              <span
+                aria-hidden="true"
+                className="h-px min-w-6 flex-1 bg-gradient-to-l from-transparent to-[#C5A059]/50"
+              />
+            </div>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
+              <img
+                src={logoMark}
+                alt="DJ Mark"
+                className="h-14 w-auto object-contain sm:h-16"
+              />
+              <img
+                src={logoSzymoniak}
+                alt="DJ Szymoniak"
+                className="h-10 w-auto object-contain sm:h-12"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 border-t border-[#C5A059]/15 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>{t('landing.footer.note')}</span>
           <a
             href="/join"
