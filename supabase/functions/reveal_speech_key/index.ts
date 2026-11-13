@@ -52,17 +52,11 @@ Deno.serve(async (req) => {
     let payload;
     try {
       const header = decodeProtectedHeader(token);
-      if (header.alg === 'ES256') {
-        if (!JWKS) throw new Error('SUPABASE_URL is not configured.');
-        ({ payload } = await jwtVerify(token, JWKS, { algorithms: ['ES256'] }));
-      } else {
-        // Temporary fallback for already-issued HS256 tokens during rotation.
-        ({ payload } = await jwtVerify(
-          token,
-          new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')),
-          { algorithms: ['HS256'] },
-        ));
-      }
+      // ES256 only: the legacy HS256 shared secret was removed after the
+      // rotation window (#853).
+      if (header.alg !== 'ES256') throw new Error('Only ES256 role tokens are accepted.');
+      if (!JWKS) throw new Error('SUPABASE_URL is not configured.');
+      ({ payload } = await jwtVerify(token, JWKS, { algorithms: ['ES256'] }));
     } catch {
       return json({ error: 'Invalid role session.' }, 401);
     }

@@ -70,7 +70,6 @@ supabase secrets set \
   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
   DECK_SUPABASE_JWT_PRIVATE_KEY='{"kty":"EC",...}' \
   DECK_SUPABASE_JWT_KEY_ID=your-signing-key-kid \
-  DECK_SUPABASE_JWT_SECRET=your-temporary-hs256-fallback \
   PUBLIC_DECK_URL=https://your-domain.example \
   ALLOWED_ORIGIN=http://localhost:5173 \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com \
@@ -91,12 +90,12 @@ deck origin that serves `/admin`:
 supabase secrets set ALLOWED_ORIGIN=https://deck.weselnyzabojad.pl
 ```
 
-If the project has migrated to JWT Signing Keys, role tokens must use a signing
-key we control. Import an HS256 shared-secret key, rotate to it, then set
-`DECK_SUPABASE_JWT_SECRET` to that secret and `DECK_SUPABASE_JWT_KEY_ID` to the
-key's `kid`. `join_room` includes the `kid` header so PostgREST can select the
-shared secret. The current Supabase ES256 key cannot sign custom role tokens
-because its private key is not extractable.
+If the project uses JWT Signing Keys, role tokens are signed with our own ES256
+private key: import the private JWK as a signing key, rotate to it, then set
+`DECK_SUPABASE_JWT_PRIVATE_KEY` to the private JWK and `DECK_SUPABASE_JWT_KEY_ID`
+to the key's `kid`. `join_room` includes the `kid` header so PostgREST can select
+the matching public key. There is no HS256 fallback; the old shared secret was
+removed after the rotation window.
 
 If local and production origins are both needed, update `ALLOWED_ORIGIN`
 accordingly or extend the CORS helper to support a comma-separated allowlist.

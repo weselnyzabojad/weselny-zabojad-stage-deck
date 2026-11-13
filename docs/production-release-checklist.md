@@ -84,7 +84,8 @@ Verify names only; never paste values into GitHub.
       and `search_song_metadata`.
 - [ ] Secrets exist:
       `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`,
-      `DECK_SUPABASE_JWT_SECRET`, `PUBLIC_DECK_URL`, `ALLOWED_ORIGIN`,
+      `DECK_SUPABASE_JWT_PRIVATE_KEY`, `DECK_SUPABASE_JWT_KEY_ID`,
+      `PUBLIC_DECK_URL`, `ALLOWED_ORIGIN`,
       `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`,
       `SPEECH_SECRET_MASTER_KEY`.
 - [ ] `PUBLIC_DECK_URL=https://deck.weselnyzabojad.pl`.

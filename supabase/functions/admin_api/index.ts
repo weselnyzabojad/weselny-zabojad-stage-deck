@@ -78,7 +78,7 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'restore_revision',
   'change_password',
 ]);
-const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'DECK_SUPABASE_JWT_SECRET'];
+const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
 

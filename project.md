@@ -5430,3 +5430,25 @@ different mechanism, and replacing `AppErrorBoundary` with
 **Open questions.** None.
 
 **Tracking.** [#861](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/861).
+
+### 17.56 Retire the HS256 role-token fallback (implemented, 2026-11-14)
+
+The ES256 rotation ([#853](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/853)) is complete: `DECK_SUPABASE_JWT_SECRET` was unset in production on 2026-11-14 after the 24-hour window. `join_room` now signs only with `DECK_SUPABASE_JWT_PRIVATE_KEY`, `reveal_speech_key` accepts only ES256 tokens verified through the project JWKS, and `admin_api` no longer lists the removed secret in `REQUIRED_ADMIN_ENV`. Documentation, env validation and smoke tests no longer require the HS256 fallback.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template or cartridge change.
+
+**Scope.** Edge Functions (`join_room`, `reveal_speech_key`, `admin_api`), deployment docs, env validation and smoke tests. No UI or data change.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Signing | ES256 only; fail closed when the private key is missing |
+| Verification | ES256 only through the project JWKS; HS256 tokens are rejected |
+| Admin API | Requires only `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` |
+| Rollback | Rotate a new ES256 key; the HS256 path is not restored |
+| Out of scope | UI, data migration, session invalidation |
+
+**Open questions.** None.
+
+**Tracking.** [#853](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/853).

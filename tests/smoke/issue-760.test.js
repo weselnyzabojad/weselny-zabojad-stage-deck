@@ -10,7 +10,7 @@ describe('issue #760 Supabase Edge Function secrets and deployment docs', () => 
     const docs = read('docs/admin-setup-and-secrets.md');
 
     for (const name of [
-      'DECK_SUPABASE_JWT_SECRET',
+      'DECK_SUPABASE_JWT_PRIVATE_KEY',
       'DECK_SUPABASE_JWT_KEY_ID',
       'PUBLIC_DECK_URL',
       'ALLOWED_ORIGIN',
