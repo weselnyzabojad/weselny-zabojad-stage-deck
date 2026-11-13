@@ -3,6 +3,26 @@
 Status: **prepared only — do not execute until the owner gives an explicit GO.**
 Prepared 2026-11-13 against `development` at `fbaaa09`.
 
+## 0. Verified Netlify state (2026-11-13)
+
+| Item | Value |
+| --- | --- |
+| Netlify site | `universal-wedding-stage-deck` |
+| Site ID | `7e0ee50d-8f12-426e-ac79-51141fb34aed` |
+| Team ID | `6ae7887116d48ca03672643b` |
+| Production branch | `master` |
+| Current production deploy | `6af60cd14998c3e401f8923e`, commit `b74bfe8`, 2026-11-12 |
+| Access controls | SSO team login required for **all projects**; password not required |
+| Public URL | `https://deck.weselnyzabojad.pl` |
+| Netlify env vars reported by MCP | none at project or team level |
+
+The SSO team-login rule is why the public URL returns **401**. The Netlify MCP
+can update access controls, but this checklist intentionally does **not** change
+them until GO.
+
+The production deploy is behind `development`: production is at `b74bfe8`,
+while `development` is at `fbaaa09` (2026-11-13).
+
 ## 1. Release decision gates
 
 | Gate | Owner | Current state | Required before GO |
@@ -37,9 +57,9 @@ Also confirm the latest `development` CI run is green.
 
 Verify in the Netlify dashboard (or authenticated Netlify MCP):
 
-- [ ] Production branch is confirmed.
-- [ ] **Project visibility is Public** (or production is excluded from preview-only protection).
-- [ ] `VITE_SUPABASE_URL` is set.
+- [x] Production branch is `master` (verified via Netlify MCP).
+- [ ] **SSO team login is removed for production** / project is public.
+- [ ] `VITE_SUPABASE_URL` is set (MCP currently reports no env vars).
 - [ ] `VITE_SUPABASE_ANON_KEY` is set (public anon/publishable key only).
 - [ ] `VITE_DECK_MODE=production`.
 - [ ] Optional Sentry build variables are set only if sourcemap upload is wanted:
@@ -72,7 +92,7 @@ Verify names only; never paste values into GitHub.
 ## 5. Release sequence (only after GO)
 
 1. Freeze merges and record the release commit.
-2. Open/approve the production PR from `development` to the confirmed production branch.
+2. Open/approve the production PR from `development` to `master`.
 3. Wait for CI green.
 4. Merge the production PR.
 5. Confirm the Netlify production deploy succeeds and is public.
@@ -110,7 +130,7 @@ Verify names only; never paste values into GitHub.
 | Item | Value |
 | --- | --- |
 | Release commit | |
-| Production branch | |
+| Production branch | `master` |
 | Netlify deploy ID | |
 | Supabase project | `qdcuxefperykmjlirufe` |
 | Owner GO | ☐ |
