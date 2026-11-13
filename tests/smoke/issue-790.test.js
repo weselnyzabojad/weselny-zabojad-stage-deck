@@ -74,7 +74,7 @@ describe('issue #790 Netlify CSP and theme bootstrap', () => {
     expect(csp['style-src']).toContain('https://fonts.googleapis.com');
     expect(csp['font-src']).toContain('https://fonts.gstatic.com');
     expect(csp['img-src']).toContain('data:');
-    expect(csp['worker-src']).toBe("'self'");
+    expect(csp['worker-src']).toBe("'self' blob:");
     expect(csp['manifest-src']).toBe("'self'");
     expect(csp['frame-ancestors']).toBe("'none'");
     expect(csp['frame-src']).toBe("'none'");
