@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 export const COMPACT_QUERY = '(max-width: 639px)';
 
@@ -13,20 +13,23 @@ function mediaMatches(query) {
 /**
  * Shared phone/compact breakpoint hook. Every role view uses the same query so
  * the RoleShell, view layout and bottom bar cannot disagree at 639/640px.
+ *
+ * `matchMedia` is an external store, so `useSyncExternalStore` subscribes to it
+ * directly instead of mirroring it into state from an effect.
  */
 export default function useCompact(query = COMPACT_QUERY) {
-  const [compact, setCompact] = useState(() => mediaMatches(query));
+  const subscribe = useCallback(
+    (onChange) => {
+      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        return () => {};
+      }
+      const mq = window.matchMedia(query);
+      mq.addEventListener('change', onChange);
+      return () => mq.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+  const getSnapshot = useCallback(() => mediaMatches(query), [query]);
 
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return undefined;
-    }
-    const mq = window.matchMedia(query);
-    setCompact(mq.matches);
-    const listener = () => setCompact(mq.matches);
-    mq.addEventListener('change', listener);
-    return () => mq.removeEventListener('change', listener);
-  }, [query]);
-
-  return compact;
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
 }

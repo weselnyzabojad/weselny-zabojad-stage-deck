@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -122,8 +122,10 @@ export default function VenueManagerView({
     settingsFromSteps(loadSteps(wedding, mandatoryOverride)),
   );
   const [saved, setSaved] = useState('');
+  const [previousInputs, setPreviousInputs] = useState([wedding, mandatoryOverride]);
 
-  useEffect(() => {
+  if (wedding !== previousInputs[0] || mandatoryOverride !== previousInputs[1]) {
+    setPreviousInputs([wedding, mandatoryOverride]);
     setSettings((current) => {
       const next = settingsFromSteps(loadSteps(wedding, mandatoryOverride));
       // Keep freshly added service drafts alive across the parent round-trip;
@@ -132,7 +134,7 @@ export default function VenueManagerView({
       if (drafts.length === 0) return next;
       return { ...next, kitchenServices: [...next.kitchenServices, ...drafts] };
     });
-  }, [wedding, mandatoryOverride]);
+  }
 
   const update = (patch) => {
     setSettings((current) => {

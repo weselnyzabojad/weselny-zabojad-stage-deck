@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Validate environment
+        run: npm run validate:env -- --allow-missing
+
       - name: Validate translations
         run: npm run validate:i18n
 

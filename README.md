@@ -178,6 +178,7 @@ Run the full suite from the project directory:
 
 ```sh
 npm run lint
+npm run validate:env -- --allow-missing
 npm run validate:i18n
 npm run validate:schema
 npm run validate:fixtures
@@ -185,6 +186,9 @@ npm run validate:template
 npm test
 npm run build
 ```
+
+`npm run lint` runs oxlint with `--deny-warnings`, so any warning fails the
+gate; the production build has no chunk-size warnings either.
 
 CI runs the same commands for every pull request against `master` or
 `development`.

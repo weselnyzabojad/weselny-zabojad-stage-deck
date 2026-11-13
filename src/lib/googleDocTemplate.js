@@ -211,7 +211,7 @@ export const SECTION_BY_MARKER = Object.freeze(
 const MARKER_PATTERN = /^##[ \t]+(.+?)[ \t]*$/;
 const SUBSECTION_PATTERN = /^###[ \t]+(.+?)[ \t]*$/;
 const TABLE_SEPARATOR_PATTERN = /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/;
-const KEY_VALUE_PATTERN = /^([A-Za-z][\w .\/+-]*?):[ \t]*(.*)$/;
+const KEY_VALUE_PATTERN = /^([A-Za-z][\w ./+-]*?):[ \t]*(.*)$/;
 const BULLET_PATTERN = /^\s*[-*][ \t]+(.*)$/;
 const FENCE_PATTERN = /^\s*```([A-Za-z0-9_-]*)\s*$/;
 

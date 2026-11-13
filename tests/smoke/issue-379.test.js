@@ -2,13 +2,14 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import GroupPhotoChecklist, {
+import GroupPhotoChecklist from '../../src/components/GroupPhotoChecklist.jsx';
+import {
   GROUP_PHOTO_ALL_GUESTS_KEY,
   GROUP_PHOTO_EXTRA_ALL_GUESTS_KEY,
   GROUP_PHOTO_WALK_INS_KEY,
   buildGroupPhotoItems,
   groupPhotoGroupKey,
-} from '../../src/components/GroupPhotoChecklist.jsx';
+} from '../../src/lib/groupPhotoChecklist.js';
 import PhotographerView from '../../src/components/PhotographerView.jsx';
 import { resolveGroupPhotoStepId } from '../../src/lib/photoPlan.js';
 

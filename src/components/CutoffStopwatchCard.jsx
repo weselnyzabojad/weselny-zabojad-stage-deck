@@ -1,6 +1,5 @@
 import {
   formatCountdown,
-  formatDuration,
   resolveEventDateISO,
   resolveVenueTimeZone,
 } from '../lib/eventTime.js';

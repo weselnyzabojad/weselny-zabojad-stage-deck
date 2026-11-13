@@ -393,9 +393,10 @@ export default function AdminApp() {
 }
 
 function AdminAppContent() {
+  const configured = adminConfigured();
   const [session, setSession] = useState(null);
   const [mfa, setMfa] = useState(null);
-  const [booting, setBooting] = useState(true);
+  const [booting, setBooting] = useState(configured);
   const [authError, setAuthError] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -424,7 +425,6 @@ function AdminAppContent() {
   const [backendHealth, setBackendHealth] = useState(null);
   const [backendChecking, setBackendChecking] = useState(true);
 
-  const configured = adminConfigured();
   const readOnly = backendHealth?.readOnly === true;
 
   const refreshBackendHealth = useCallback(async () => {
@@ -456,18 +456,17 @@ function AdminAppContent() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- preflight sets its checking flag before the backend request
     void refreshBackendHealth();
   }, [refreshBackendHealth]);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- preflight sets its checking flag before the backend request
     if (session?.access_token) void refreshBackendHealth();
   }, [refreshBackendHealth, session?.access_token]);
 
   useEffect(() => {
-    if (!configured) {
-      setBooting(false);
-      return undefined;
-    }
+    if (!configured) return undefined;
     let cancelled = false;
     getAdminSession()
       .then(async (next) => {
@@ -569,6 +568,7 @@ function AdminAppContent() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- load() sets its loading flag before the admin library request
     if (session && mfa?.currentLevel === 'aal2') load();
   }, [session, mfa?.currentLevel]);
 
@@ -804,12 +804,13 @@ function AdminAppContent() {
 
   const sessionState = getAdminSessionState({ session: clock });
   const showIdleWarning = shouldWarnAdminSession({ session: clock }) && !warningDismissed;
+  const idleAboveWarningWindow = sessionState.idleRemainingMs > ADMIN_WARNING_MS;
+  const [prevIdleAboveWarningWindow, setPrevIdleAboveWarningWindow] = useState(idleAboveWarningWindow);
 
-  useEffect(() => {
-    if (getAdminSessionState({ session: clock }).idleRemainingMs > ADMIN_WARNING_MS) {
-      setWarningDismissed(false);
-    }
-  }, [clock]);
+  if (idleAboveWarningWindow !== prevIdleAboveWarningWindow) {
+    setPrevIdleAboveWarningWindow(idleAboveWarningWindow);
+    if (idleAboveWarningWindow) setWarningDismissed(false);
+  }
 
   if (!configured) {
     return (

@@ -26,10 +26,13 @@ export default defineConfig(({ command }) => {
         )
       }
     },
-    // The PWA precaches the whole deck for offline use, so one ~0.5 MB bundle is
-    // expected. Raise the advisory limit instead of splitting a cached payload.
+    // The PWA deliberately precaches the whole deck as one payload: the crew
+    // needs a single offline download before the venue Wi-Fi disappears, so
+    // splitting the entry bundle would only add round trips. The entry chunk is
+    // ~1.35 MB minified (~406 kB gzip); keep the advisory limit above it with
+    // headroom for release growth instead of silencing a warning we still need.
     build: {
-      chunkSizeWarningLimit: 600,
+      chunkSizeWarningLimit: 1500,
       // Hidden maps are produced only when they will be uploaded. The Sentry
       // plugin deletes them from dist after upload, so Netlify never serves
       // source. Without the token no map is emitted and no upload is attempted.

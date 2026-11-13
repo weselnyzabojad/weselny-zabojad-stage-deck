@@ -50,7 +50,6 @@ export function usePublishedCartridge({ enabled, weddingId, accessToken, syncCon
 
   useEffect(() => {
     if (!enabled || !weddingId || !accessToken) {
-      setState(idleState());
       return undefined;
     }
 
@@ -60,6 +59,7 @@ export function usePublishedCartridge({ enabled, weddingId, accessToken, syncCon
       ? { cartridge: cached.cartridge, revision: cached.revision }
       : null;
 
+    // eslint-disable-next-line react/set-state-in-effect -- seeds the view from the external offline cache before the server fetch
     setState({
       weddingId,
       cartridge: cached?.cartridge ?? null,
@@ -223,5 +223,10 @@ export function usePublishedCartridge({ enabled, weddingId, accessToken, syncCon
     state.freshness === 'offline' ||
     (!state.cartridge && state.freshness === 'error');
 
+  // When the session is inactive the published cartridge is not exposed at all,
+  // so a stale internal snapshot cannot leak into a signed-out/disabled view.
+  if (!enabled || !weddingId || !accessToken) {
+    return { ...idleState(), stale: false, retry };
+  }
   return { ...state, stale, retry };
 }

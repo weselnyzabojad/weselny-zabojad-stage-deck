@@ -43,7 +43,7 @@ export default function GameClickerOverlay({
   const isCompatibility = game?.gameType === 'TEST_ZGODNOSCI';
   const complete = Boolean(current) === false && remaining.length === 0;
 
-  const persist = (nextAnswered, { completed = false } = {}) => {
+  const persist = useCallback((nextAnswered, { completed = false } = {}) => {
     if (!game?.id) return;
     const entries = Object.values(nextAnswered);
     const compatibility = game.gameType === 'TEST_ZGODNOSCI';
@@ -59,15 +59,19 @@ export default function GameClickerOverlay({
         : {}),
       questions: nextAnswered,
     });
-  };
+  }, [game, items.length, onResultsChange, startedAt]);
 
+  // Reset the runner only when a different game is opened. Persisted results
+  // echo back through `results`, so depending on them would reset mid-game.
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect, react-hooks/exhaustive-deps -- reset per selected game, not per persisted result
     setAnswered(results?.questions ?? {});
     setStartedAt(results?.startedAt ?? new Date().toISOString());
     setDisplayId(null);
     setOverrideId(null);
     setRevealed(false);
     setLevelFilter('ALL');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset per selected game, not per persisted result
   }, [game?.id]);
 
   const advance = useCallback(() => {

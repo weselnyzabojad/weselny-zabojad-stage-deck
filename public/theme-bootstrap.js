@@ -27,7 +27,7 @@
     document.documentElement.style.colorScheme = theme === 'day' ? 'light' : 'dark';
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme === 'day' ? '#eef2f7' : '#070b19');
-  } catch (error) {
+  } catch {
     document.documentElement.dataset.theme = 'night';
   }
 })();

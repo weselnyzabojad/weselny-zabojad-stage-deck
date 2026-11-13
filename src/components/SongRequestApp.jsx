@@ -71,6 +71,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
 
   useEffect(() => {
     if (!code || !config.enabled) return undefined;
+    // eslint-disable-next-line react/set-state-in-effect -- sets the connection badge before probing the external song-request service
     checkConnection();
 
     const onOnline = () => checkConnection();
@@ -93,6 +94,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
     if (!code) return;
     const stored = loadGuestRequest(code);
     if (!stored) return;
+    // eslint-disable-next-line react/set-state-in-effect -- hydrates the form from the guest's local storage record
     setRecord(stored);
     setSong(stored.song);
     setArtist(stored.artist);

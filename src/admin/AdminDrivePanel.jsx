@@ -76,7 +76,7 @@ export default function AdminDrivePanel({
   useEffect(() => {
     void loadSources();
     // Initial admin-only listing; subsequent searches are explicit.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial admin-only listing; subsequent searches are explicit
   }, []);
 
   const selectFile = async (file) => {

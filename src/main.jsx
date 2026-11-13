@@ -1,3 +1,4 @@
+/* eslint-disable react/only-export-components -- entry module: it renders the root and is not a hot-reload boundary */
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

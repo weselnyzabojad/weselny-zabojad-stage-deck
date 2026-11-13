@@ -239,6 +239,7 @@ export default function DjSongRequestQueue({
 
   useEffect(() => {
     if (!connected) return undefined;
+    // eslint-disable-next-line react/set-state-in-effect -- load() sets its loading flag before the external song-request fetch
     load();
     const timer = window.setInterval(load, 30000);
     const unsubscribe = subscribeSongRequestChanges({
