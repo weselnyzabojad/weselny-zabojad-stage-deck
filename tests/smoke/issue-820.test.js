@@ -48,7 +48,7 @@ describe('issue #820 landing feature copy and centered features', () => {
     expect(landing).toContain('max-w-5xl');
     expect(landing).toContain('sm:whitespace-nowrap');
     expect(landing).toContain('id="landing-features" className="text-center"');
-    expect(landing).toContain('bg-card p-5 text-center');
+    expect(landing).toContain('bg-white p-6 text-center');
     expect(landing).not.toContain('id="landing-how" className=');
     expect(landing).not.toContain('id="landing-faq" className=');
   });

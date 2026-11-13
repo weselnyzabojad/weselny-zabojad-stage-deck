@@ -138,9 +138,41 @@ function SongsMock() {
   );
 }
 
+const FEATURE_ICON_PATHS = [
+  'M4 6h16M4 12h10M4 18h7',
+  'M3 3l18 18M8 8a6 6 0 0 0-2 11h10a4 4 0 0 0 2.5-7.1M9 5.5A6 6 0 0 1 18.5 10',
+  'M20 7v5h-5M4 17v-5h5M6.1 9a7 7 0 0 1 11.5-2L20 9M4 15l2.4 2A7 7 0 0 0 18 15',
+  'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',
+  'M6 11h12v10H6zM9 11V7a3 3 0 0 1 6 0v4',
+  'M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM11 18h2',
+  'M9 18V5l10-2v13M9 18a3 3 0 1 1-3-3M19 16a3 3 0 1 1-3-3',
+];
+
+function FeatureIcon({ index }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#C5A059]/10 text-[#C5A059]"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d={FEATURE_ICON_PATHS[index - 1]} />
+      </svg>
+    </span>
+  );
+}
+
 export default function LandingPage() {
   const { t } = useI18n();
   const features = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
+    index,
     title: t(`landing.features.${index}.title`),
     body: t(`landing.features.${index}.body`),
   }));
@@ -258,19 +290,25 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section aria-labelledby="landing-features" className="border-t border-line bg-card/40">
-          <div className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6">
+        <section
+          aria-labelledby="landing-features"
+          className="border-t border-[#C5A059]/15 bg-[#FBF9F5]"
+        >
+          <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
             <SectionTitle id="landing-features" className="text-center">
               {t('landing.features.title')}
             </SectionTitle>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((item) => (
                 <article
                   key={item.title}
-                  className="rounded-xl border border-line bg-card p-5 text-center"
+                  className="rounded-2xl border border-[#C5A059]/20 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C5A059]/60 hover:shadow-lg hover:shadow-[#C5A059]/10 motion-reduce:transition-none motion-reduce:hover:transform-none sm:p-8"
                 >
-                  <h3 className="font-heading text-base font-semibold text-ink">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">{item.body}</p>
+                  <FeatureIcon index={item.index} />
+                  <h3 className="mt-4 font-heading text-base font-semibold text-[#1A1A1A]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[#475569]">{item.body}</p>
                 </article>
               ))}
             </div>
