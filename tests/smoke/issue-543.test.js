@@ -123,6 +123,6 @@ describe('issue #543 review follow-ups', () => {
     const optional459 = doc
       .split('\n')
       .find((line) => line.includes('| Optional | [#459]'));
-    expect(optional459).toContain('| Open; owner approval required');
+    expect(optional459).toContain('| Shipped');
   });
 });
