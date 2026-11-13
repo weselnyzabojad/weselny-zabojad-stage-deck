@@ -5,6 +5,7 @@ import {
   adminConfigured,
   archiveWedding,
   challengeExistingFactor,
+  changeAdminPassword,
   checkAdminBackend,
   deleteWedding,
   enrollTotp,
@@ -45,6 +46,7 @@ const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1
 import {
   AdminConfirmDialog,
   AdminMfaDialog,
+  AdminPasswordDialog,
   AdminPinDialog,
 } from './AdminDialogs';
 
@@ -410,6 +412,7 @@ function AdminAppContent() {
   const [publishDialog, setPublishDialog] = useState(null);
   const [confirmDialog, setConfirmDialog] = useState(null);
   const [mfaAction, setMfaAction] = useState(null);
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const [dialogBusy, setDialogBusy] = useState(false);
   const [dialogError, setDialogError] = useState('');
   const [nowTick, setNowTick] = useState(() => Date.now());
@@ -860,6 +863,13 @@ function AdminAppContent() {
             </span>
             <button
               type="button"
+              onClick={() => setPasswordOpen(true)}
+              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink"
+            >
+              Password
+            </button>
+            <button
+              type="button"
               onClick={() => load()}
               disabled={loading}
               className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink disabled:opacity-50"
@@ -1256,6 +1266,22 @@ function AdminAppContent() {
         onCancel={() => {
           setConfirmDialog(null);
           closeDialogs();
+        }}
+      />
+
+      <AdminPasswordDialog
+        open={passwordOpen}
+        onCancel={() => setPasswordOpen(false)}
+        onSubmit={(newPassword) => {
+          setPasswordOpen(false);
+          askMfa(async () => {
+            try {
+              await changeAdminPassword(newPassword);
+              pushToast('Password changed.', 'success');
+            } catch (err) {
+              pushToast(err.message ?? 'Password change failed.', 'error');
+            }
+          });
         }}
       />
 

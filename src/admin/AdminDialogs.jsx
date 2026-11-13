@@ -159,6 +159,90 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
   );
 }
 
+export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setPassword('');
+      setConfirm('');
+      setError('');
+      setBusy(false);
+    }
+  }, [open]);
+
+  const submit = async () => {
+    if (password.length < 12) {
+      setError('Use at least 12 characters.');
+      return;
+    }
+    if (password !== confirm) {
+      setError('The passwords do not match.');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      await onSubmit(password);
+    } catch (err) {
+      setError(err.message ?? 'Could not change the password.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+      <DialogBody
+        title="Change password"
+        description="The new password is checked against HaveIBeenPwned before it is saved. Only a SHA-1 prefix is sent."
+      >
+        <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
+          New password
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="new-password"
+            className="mt-1 w-full rounded border border-line bg-card px-3 py-2 text-sm text-ink"
+          />
+        </label>
+        <label className="mt-3 block text-[10px] font-semibold uppercase tracking-widest text-muted">
+          Confirm password
+          <input
+            type="password"
+            value={confirm}
+            onChange={(event) => setConfirm(event.target.value)}
+            autoComplete="new-password"
+            className="mt-1 w-full rounded border border-line bg-card px-3 py-2 text-sm text-ink"
+          />
+        </label>
+        {error ? (
+          <p role="alert" className="mt-3 rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+      </DialogBody>
+      <div className="flex justify-end gap-2 border-t border-line px-5 py-3">
+        <button type="button" onClick={onCancel} className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink">
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={submit}
+          disabled={busy || password.length < 12 || confirm.length < 12}
+          className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
+        >
+          {busy ? 'Checking…' : 'Change password'}
+        </button>
+      </div>
+    </ModalShell>
+  );
+}
+
 export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = false, error = '' }) {
   const [pins, setPins] = useState({});
 

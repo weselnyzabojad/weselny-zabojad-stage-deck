@@ -55,6 +55,7 @@ import {
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
+import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 
 const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain]);
 const driveConnector = createGoogleDriveConnector({
@@ -75,6 +76,7 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'revoke_session',
   'publish_drive',
   'restore_revision',
+  'change_password',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'DECK_SUPABASE_JWT_SECRET'];
 
@@ -934,6 +936,47 @@ Deno.serve(async (req) => {
         before,
         revokedRole: role,
       });
+      return json({ ok: true });
+    }
+
+    if (action === 'change_password') {
+      const newPassword = typeof body?.newPassword === 'string' ? body.newPassword : '';
+      if (newPassword.length < 12 || newPassword.length > 200) {
+        return json(
+          {
+            code: 'password_policy',
+            error: 'Use a password between 12 and 200 characters.',
+          },
+          400,
+        );
+      }
+
+      const breach = await checkPasswordBreach(newPassword);
+      if (!breach.ok) {
+        return json(
+          {
+            code: 'password_check_unavailable',
+            error: 'The password breach check is unavailable. Try again shortly.',
+          },
+          503,
+        );
+      }
+      if (breach.breached) {
+        return json(
+          {
+            code: 'password_breached',
+            error: 'This password appears in a public data breach. Choose a different password.',
+          },
+          400,
+        );
+      }
+
+      const { error: updateError } = await admin.auth.admin.updateUserById(
+        allowlisted.user_id,
+        { password: newPassword },
+      );
+      if (updateError) throw updateError;
+      await writeAudit(admin, allowlisted, 'change_password', allowlisted.user_id, null);
       return json({ ok: true });
     }
 
