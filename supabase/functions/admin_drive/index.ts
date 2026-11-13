@@ -22,7 +22,12 @@ import {
 } from '../_shared/googleDrive.js';
 import { encryptSecret, parseSecretMarkers } from '../_shared/speechSecrets.js';
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
@@ -48,6 +53,9 @@ function serverEnv(name: string) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
   if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 

@@ -22,7 +22,12 @@ const MAX_ROOM_ATTEMPTS = 120;
 const WINDOW_MS = 10 * 60 * 1000;
 const DEVICE_COOLDOWN_MS = 10 * 60 * 1000;
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 
 function corsHeaders() {
   return {
@@ -67,6 +72,9 @@ function cleanField(value: unknown) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
   }

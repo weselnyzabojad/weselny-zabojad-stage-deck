@@ -16,7 +16,12 @@ const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
 const DEVICE_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 const REQUEST_ID_PATTERN = /^[0-9a-f-]{36}$/i;
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 
 function corsHeaders() {
   return {
@@ -38,6 +43,9 @@ function serverEnv(name: string) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
   }

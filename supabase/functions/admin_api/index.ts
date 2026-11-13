@@ -78,7 +78,12 @@ const DESTRUCTIVE_ACTIONS = new Set([
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'DECK_SUPABASE_JWT_SECRET'];
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 
 function corsHeaders() {
   return {
@@ -361,6 +366,9 @@ async function handlePublish(admin: any, allowlisted: any, body: any, { source =
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
   if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 

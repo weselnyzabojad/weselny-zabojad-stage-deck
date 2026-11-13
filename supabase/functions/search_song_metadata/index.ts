@@ -14,7 +14,12 @@ type Suggestion = {
   album?: string;
 };
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 const MAX_FIELD_LENGTH = 120;
 const MAX_RESULTS = 5;
 const CACHE_TTL_MS = 15 * 60 * 1000;
@@ -213,6 +218,9 @@ async function searchMusicBrainz(song: string, artist: string) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
   }
