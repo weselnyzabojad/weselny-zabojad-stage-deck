@@ -8,7 +8,12 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { jwtVerify } from 'npm:jose@5';
 import { bytesToBase64Url, deriveSpeechKeyBytes } from '../_shared/speechSecrets.js';
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 
 function corsHeaders() {
   return {
@@ -30,6 +35,9 @@ function serverEnv(name: string) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
   if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 

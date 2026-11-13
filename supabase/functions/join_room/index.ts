@@ -24,7 +24,12 @@ const WINDOW_MS = 15 * 60 * 1000;
 const MAX_FAILURES = 5;
 const TOKEN_TTL_SECONDS = 24 * 60 * 60;
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+
+function originAllowed(req: Request) {
+  const origin = req.headers.get('origin') ?? '';
+  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
+}
 const JWT_KEY_ID = Deno.env.get('DECK_SUPABASE_JWT_KEY_ID')?.trim() ?? '';
 
 function corsHeaders() {
@@ -59,6 +64,9 @@ async function sha256Hex(value: string) {
 }
 
 Deno.serve(async (req) => {
+  if (!originAllowed(req)) {
+    return json({ error: 'Origin not allowed.' }, 403);
+  }
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders() });
   }
