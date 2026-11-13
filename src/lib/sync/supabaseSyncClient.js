@@ -65,8 +65,8 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data ?? null;
   }
 
-  // Role-scoped cartridge fetch after a successful join. RLS only returns the
-  // wedding whose `wedding_id` matches the token claim.
+  // Role-scoped cartridge fetch after a successful join. The RPC redacts
+  // speeches for non-speaking roles and verifies the active session itself.
   // Presence heartbeat (issue #76). The RPC derives room/role/device from the
   // signed role token and refuses revoked/expired sessions.
   async function touchPresence(currentView = null) {
@@ -77,16 +77,11 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
   }
 
   async function fetchWedding(weddingId) {
-    const { data, error } = await supabase
-      .from('weddings')
-      .select(
-        'wedding_id, couple, date, cartridge, updated_at, cartridge_revision, cartridge_source, cartridge_published_at',
-      )
-      .eq('wedding_id', weddingId)
-      .maybeSingle();
-
+    if (!weddingId) return null;
+    const { data, error } = await supabase.rpc('stage_deck_wedding');
     if (error) throw new Error(describeError(error));
-    return data ?? null;
+    if (!data || data.wedding_id !== weddingId) return null;
+    return data;
   }
 
   async function publish(roomKey, state) {
