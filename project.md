@@ -5452,3 +5452,63 @@ The ES256 rotation ([#853](https://github.com/weselnyzabojad/weselny-zabojad-sta
 **Open questions.** None.
 
 **Tracking.** [#853](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/853).
+
+### 17.57 Stage-role coverage and provisioning audit (decision, 2026-11-14)
+
+Every current stage role has a view, but role assignment and PIN provisioning are
+incomplete and the role list is duplicated across the app. Hardcoded lists
+disagree: `ROLE_ORDER` has seven roles, `ROLE_IDS` adds legacy `photo`, while
+`RoleJoinScreen.JOIN_ROLES` and `openOnPhone.ROLES` only allow `mc`, `dj`,
+`photo` and `speaker`. Deep links for `photo1`, `photo2`, `video` or
+`venue_manager` therefore fall back to `mc`. Publication creates only
+`mc`/`dj`, rotation drops the four newer roles through `ALLOWED_ROLES`, and
+`speaker` cannot be provisioned from the admin at all.
+
+**Google Doc contract.** Not Doc-linked. No schema domain, parser, field-map or
+template change; only role constraints and admin/auth code.
+
+**View coverage.**
+
+| Role | View | Status |
+| --- | --- | --- |
+| `mc` | `McMasterView` | Present |
+| `dj` | `DjBoothView` | Present; `dj_standard` is a legacy pseudo-role |
+| `photo1`, `photo2`, `video` | `PhotographerView` | Present |
+| `venue_manager` | `VenueManagerView` | Present |
+| `speaker` | `SpeakerView` | Present, but no provisioning path |
+| `photo` | none; normalizes to `photo1` | Legacy, to remove |
+
+**Provisioning gaps.**
+
+| Area | Current behaviour |
+| --- | --- |
+| First publish | Admin sends no `roles`; server defaults to `mc`+`dj` |
+| Rotation | `ALLOWED_ROLES` = `mc`, `dj`, `photo`, `speaker`; four roles silently dropped |
+| Providers | Auto-create `dj`/`photo1`/`photo2`/`video`/`venue_manager` only when the role is missing |
+| Existing provider role | Returns `pin: null`, so the owner never sees the PIN |
+| Speaker / MC | No provider category and no admin control; speaker PIN cannot be created |
+| Join / QR / Open on phone | Only four legacy roles accepted; new roles fall back to `mc` |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Role assignment | Explicit role selection at first publish, plus a generic per-wedding roles/PIN panel |
+| MC / Speaker | Managed by the generic panel; no new provider categories |
+| Speaker model | One speaker role per wedding, shared by all speeches |
+| Provider multiplicity | One provider per role-bearing category (unchanged) |
+| Legacy roles | Remove `photo`; keep normalization for old devices/tokens; remove `dj_standard` as a role id |
+| Data migration | None; production has zero weddings and zero role rows |
+| Out of scope | Per-speech tokens, multiple providers per role, new views |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#875](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/875) | Remove legacy `photo` and `dj_standard` role aliases | - |
+| 2 | [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877) | Unified role catalog, join screen, QR and Open on phone | #875 |
+| 3 | [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876) | Admin role selection and PIN provisioning per wedding | #875, #877 |
+
+**Open questions.** None.
+
+**Tracking.** [#875](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/875), [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877).
