@@ -78,7 +78,7 @@ sections below and in git history.
 | --- | --- | --- |
 | [#80](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/80) | Cartridge-driven MC cues (remove hardcoded demo cues) | Implementation |
 | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Speaker dedicated speech cartridge | Planning TODO |
-| [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Optional free song metadata validation | Planning TODO; owner approval required |
+| [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Advisory free song metadata validation | Shipped; see `docs/song-metadata-validation.md` |
 | [#533](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/533) | Admin: live Supabase smoke test | Release validation; blocked on production access |
 
 
@@ -123,7 +123,7 @@ The Google Doc "Plan of the day" mapping for `example.pdf` is catalogued in
 [Google Doc plan-of-the-day mapping](#google-doc-plan-of-the-day-mapping-decision-2026-11-09).
 The 2026-11-10 cartridge schema consolidation is catalogued in
 [schema consolidation](#1710-cartridge-schema-consolidation-decision-2026-11-10).
-Both registers keep #80, #245 and #459 open.
+Both registers keep #80 and #245 open; #459 shipped as advisory validation.
 
 ### Planning TODO register
 
@@ -136,7 +136,7 @@ follow-up implementation issue exists.
 | Dedicated Speaker speech cartridge | [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245) | Open; needs schema, validation, revision/publication and offline-cache contract |
 | Media-team visibility and restrictions | [#233](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/233) | Closed; the Media team card stays removed and its data remains in the model |
 | Precise predefined-step definitions | [#263](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/263) | Closed; see [`docs/predefined-step-audit.md`](docs/predefined-step-audit.md) for the current concept audit |
-| Optional free song metadata validation | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Open; iTunes Search/MusicBrainz research, owner approval required before implementation |
+| Optional free song metadata validation | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Shipped; owner approved the privacy/UX contract; see `docs/song-metadata-validation.md` |
 
 There are no open TODO entries for schema, MC cues, group photos or
 predefined-step work: group photos were implemented in #378 and #379; #77 and
@@ -1827,7 +1827,7 @@ independent of this transport decision.
 ### UI review fixes 2026-11-08
 
 Review register opened 2026-11-08. This section is historical: the tracked
-items were delivered through PRs #473-#522 (except the optional #459). Do
+items were delivered through PRs #473-#522; the optional #459 shipped separately as advisory validation. Do
 **not** close #77 (schema v1.2), #80 (cartridge `mcCues`, P0) or #245 (speaker
 cartridge TODO) while working through this list.
 
@@ -2231,12 +2231,13 @@ from production bundles. Tracked by
 [#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458).
 
 **Optional free metadata validation.** iTunes Search API (free, no key) is the
-recommended first choice for song/artist suggestions and canonical spelling,
-with MusicBrainz (free, no key, rate-limited) as fallback. Validation is
-advisory only, runs through a server proxy/cache and never blocks submission.
-Audio fingerprinting (for example AcoustID) is out of scope unless separately
-approved. This remains a planning TODO tracked by
-[#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459).
+first choice for song/artist suggestions and canonical spelling, with
+MusicBrainz (free, no key, rate-limited) as fallback. Validation is advisory
+only, runs through the `search_song_metadata` Edge Function with cache/rate
+limits and never blocks submission. Audio fingerprinting (for example AcoustID)
+is out of scope. Implemented by
+[#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459);
+see `docs/song-metadata-validation.md`.
 
 **Supersession and retained rules.** This supersedes the “received-only”
 confirmation and declined-outcomes UI from #148/#149. The room-scoped QR, no
@@ -2516,7 +2517,7 @@ impact outside MC.
 | P1 | [#456](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/456) | Song request backend: device id, 10-minute cooldown, realtime status | Shipped |
 | P1 | [#457](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/457) | DJ VIP: accept/deny, accepted list, Played action | Shipped |
 | P1 | [#458](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/458) | Dev-only song request simulator on DJ VIP | Shipped |
-| Optional | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Planning TODO: free song metadata validation | Open; owner approval required |
+| Optional | [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459) | Advisory free song metadata validation | Shipped; see `docs/song-metadata-validation.md` |
 | P1 | [#460](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/460) | DJ VIP: Song's request QR button and fullscreen QR (laptop + pocket) | Shipped; pocket QR launcher exception |
 | P1 | [#461](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/461) | Data: `discoPoloPolicy` enum from Google Doc to cartridge | Shipped; no DB persistence |
 | P1 | [#462](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/462) | DJ VIP: Disco Polo policy in Music Policy + Guest requests bar | Shipped; display only |
@@ -2532,8 +2533,8 @@ impact outside MC.
 
 Alignment for this review: last aligned 2026-11-08 against `master` @
 `f1aa283`; roadmap rows above are classified P0/P1 unless marked optional.
-#77, #80, #245 and #459 stay open. The status column in the historical review
-table above is superseded: #421-#471 (except the optional #459) were delivered
+#77, #80 and #245 stay open; #459 shipped as advisory validation. The status column in the historical review
+table above is superseded: #421-#471 were delivered
 through PRs #473-#522. #523-#525 were delivered through PRs #527-#529; #530 was
 delivered through PR #532; #534/#535 through PRs #537/#538. #539 and #541 were
 delivered through PRs #544/#545, and the #543 follow-ups (residual i18n strings,
@@ -5345,6 +5346,45 @@ palette consumed by the other four.
 **Open questions.** None.
 
 **Tracking.** [#830](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/830), [#831](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/831), [#832](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/832), [#833](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/833), [#834](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/834).
+
+### 17.54 Advisory song metadata validation (implemented, 2026-11-13)
+
+The public guest request form can now show up to five advisory song/artist
+suggestions while the guest types. Canonical spelling is optional: unmatched,
+offline or rate-limited lookups never block submission, and no artwork, preview,
+third-party id or personal data is stored. The owner approved the privacy/UX
+contract for [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459).
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/request/:code` | Debounced advisory suggestions; selecting one fills song/artist; submit stays available |
+| `/join`, `/<room>/<role>`, `/admin` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Privacy | Only typed song/artist leave the browser; no names, emails, device ids, room code or event data |
+| Proxy | Browser calls only `search_song_metadata`; no third-party request or API key in the bundle |
+| Upstreams | iTunes Search first, MusicBrainz fallback with descriptive User-Agent |
+| Cache | In-memory 15-minute TTL, 100 entries per function instance |
+| Rate limits | 20 lookups/minute per IP per instance; MusicBrainz calls spaced 1.1 s |
+| Failure mode | Empty results or upstream/network errors are advisory and never block sending |
+| Data returned | `title`, `artist`, optional `album` only |
+| Out of scope | Audio upload/fingerprint, artwork/preview storage, paid APIs, analytics |
+| Documentation | `docs/song-metadata-validation.md` |
+
+**Task split.** One atomic change: Edge Function, guest suggestions, i18n, docs
+and tests.
+
+**Open questions.** None.
+
+**Tracking.** [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459).
 
 
 

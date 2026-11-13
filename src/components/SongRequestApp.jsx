@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import { useI18n } from '../i18n/useI18n.js';
 import {
   normalizeRoomCode,
   normalizeSongRequestInput,
   probeSongRequestService,
+  searchSongMetadata,
   submitSongRequest,
 } from '../lib/songRequests.js';
 import { getGuestDeviceId } from '../lib/guestDeviceId.js';
@@ -51,6 +52,9 @@ export default function SongRequestApp({ roomCode, preview = false }) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [connection, setConnection] = useState('checking');
+  const [suggestions, setSuggestions] = useState([]);
+  const [lookupState, setLookupState] = useState('idle');
+  const skipLookupRef = useRef(false);
 
   const checkConnection = useMemo(
     () => async () => {
@@ -94,6 +98,37 @@ export default function SongRequestApp({ roomCode, preview = false }) {
     setArtist(stored.artist);
   }, [code]);
 
+  useEffect(() => {
+    if (!code || !config.enabled || record) return undefined;
+    const term = `${song} ${artist}`.trim();
+    if (term.length < 2) return undefined;
+    if (skipLookupRef.current) {
+      skipLookupRef.current = false;
+      return undefined;
+    }
+
+    let active = true;
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setLookupState('searching');
+      const result = await searchSongMetadata({
+        config,
+        song,
+        artist,
+        signal: controller.signal,
+      });
+      if (!active || result.aborted) return;
+      setSuggestions(result.suggestions);
+      setLookupState(result.unavailable ? 'unavailable' : 'done');
+    }, 450);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [song, artist, code, config, record]);
+
   const status = record?.status ?? null;
 
   useEffect(() => {
@@ -130,6 +165,30 @@ export default function SongRequestApp({ roomCode, preview = false }) {
     return () => window.removeEventListener('beforeunload', warn);
   }, [status]);
 
+  const clearSuggestions = () => {
+    skipLookupRef.current = false;
+    setSuggestions([]);
+    setLookupState('idle');
+  };
+
+  const handleArtistChange = (event) => {
+    setArtist(event.target.value);
+    clearSuggestions();
+  };
+
+  const handleSongChange = (event) => {
+    setSong(event.target.value);
+    clearSuggestions();
+  };
+
+  const applySuggestion = (suggestion) => {
+    skipLookupRef.current = suggestion.title !== song || suggestion.artist !== artist;
+    setSong(suggestion.title);
+    setArtist(suggestion.artist);
+    setSuggestions([]);
+    setLookupState('idle');
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (preview || sending || connection !== 'online') return;
@@ -163,6 +222,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
       saveGuestRequest(code, next);
       setSong('');
       setArtist('');
+      clearSuggestions();
       return;
     }
 
@@ -182,6 +242,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
     setError('');
     setSong('');
     setArtist('');
+    clearSuggestions();
   };
 
   if (!code) {
@@ -208,6 +269,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
 
   const offline = connection !== 'online';
   const showForm = !record;
+  const canShowNoMatch = song.trim().length >= 2 && artist.trim().length >= 2;
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-page px-4 py-8 text-ink">
@@ -310,7 +372,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
               <input
                 type="text"
                 value={artist}
-                onChange={(event) => setArtist(event.target.value)}
+                onChange={handleArtistChange}
                 maxLength={120}
                 autoComplete="off"
                 required
@@ -326,7 +388,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
               <input
                 type="text"
                 value={song}
-                onChange={(event) => setSong(event.target.value)}
+                onChange={handleSongChange}
                 maxLength={120}
                 autoComplete="off"
                 required
@@ -334,6 +396,48 @@ export default function SongRequestApp({ roomCode, preview = false }) {
                 placeholder={t('songRequest.songPlaceholder')}
               />
             </label>
+
+            {lookupState === 'searching' ? (
+              <p className="text-xs text-muted" role="status">
+                {t('songRequest.lookingUp')}
+              </p>
+            ) : null}
+
+            {suggestions.length > 0 ? (
+              <div className="rounded-lg border border-line bg-raised p-2" aria-live="polite">
+                <p className="px-1 font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
+                  {t('songRequest.suggestionsTitle')}
+                </p>
+                <ul className="mt-1 space-y-1">
+                  {suggestions.map((suggestion, index) => (
+                    <li key={`${suggestion.title}-${suggestion.artist}-${index}`}>
+                      <button
+                        type="button"
+                        onClick={() => applySuggestion(suggestion)}
+                        className="w-full rounded px-2 py-1.5 text-left text-xs text-ink transition hover:bg-line"
+                      >
+                        <span className="block font-semibold">{suggestion.title}</span>
+                        <span className="block text-muted">
+                          {suggestion.artist}
+                          {suggestion.album ? ` — ${suggestion.album}` : ''}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1 px-1 text-[10px] leading-relaxed text-muted">
+                  {t('songRequest.suggestionsHint')}
+                </p>
+              </div>
+            ) : null}
+
+            {lookupState === 'done' && suggestions.length === 0 && canShowNoMatch ? (
+              <p className="text-xs text-muted">{t('songRequest.lookupNoMatch')}</p>
+            ) : null}
+
+            {lookupState === 'unavailable' ? (
+              <p className="text-xs text-muted">{t('songRequest.lookupUnavailable')}</p>
+            ) : null}
 
             {error ? (
               <p className="rounded-lg border border-alert/60 bg-alert/20 px-3 py-2 text-xs text-alert-soft" role="alert">

@@ -93,6 +93,67 @@ export async function probeSongRequestService({
   }
 }
 
+export const SONG_METADATA_MAX_RESULTS = 5;
+
+function cleanSuggestion(item) {
+  if (!item || typeof item !== 'object') return null;
+  const title = typeof item.title === 'string' ? item.title.trim() : '';
+  const artist = typeof item.artist === 'string' ? item.artist.trim() : '';
+  const album = typeof item.album === 'string' ? item.album.trim() : '';
+  if (!title || !artist || title.length > 160 || artist.length > 160) return null;
+  if (hasControlChars(title) || hasControlChars(artist)) return null;
+  if (album && (album.length > 160 || hasControlChars(album))) return null;
+  return album ? { title, artist, album } : { title, artist };
+}
+
+// Advisory only: callers must keep submission available when this fails.
+export async function searchSongMetadata({
+  config,
+  song = '',
+  artist = '',
+  fetchImpl = globalThis.fetch,
+  signal,
+} = {}) {
+  const term = [song, artist]
+    .filter((value) => typeof value === 'string')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  if (term.length < 2) return { ok: true, suggestions: [] };
+
+  if (!config?.enabled || !config?.functionsUrl || typeof fetchImpl !== 'function') {
+    return { ok: false, unavailable: true, suggestions: [] };
+  }
+
+  try {
+    const response = await fetchImpl(`${config.functionsUrl}/search_song_metadata`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: config.anonKey,
+        Authorization: `Bearer ${config.anonKey}`,
+      },
+      body: JSON.stringify({ song: song.trim(), artist: artist.trim() }),
+      ...(signal ? { signal } : {}),
+    });
+
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !Array.isArray(data?.suggestions)) {
+      return { ok: false, unavailable: true, suggestions: [] };
+    }
+
+    const suggestions = data.suggestions
+      .map(cleanSuggestion)
+      .filter(Boolean)
+      .slice(0, SONG_METADATA_MAX_RESULTS);
+    return { ok: true, suggestions };
+  } catch (error) {
+    if (error?.name === 'AbortError') return { ok: false, aborted: true, suggestions: [] };
+    return { ok: false, unavailable: true, suggestions: [] };
+  }
+}
+
 export async function submitSongRequest({
   config,
   roomCode,
