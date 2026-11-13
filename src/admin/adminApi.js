@@ -200,6 +200,11 @@ export async function signOutAdmin() {
   if (error) throw error;
 }
 
+export async function changeAdminPassword(newPassword) {
+  if (ADMIN_DEMO) throw new Error('Password changes are unavailable in demo mode.');
+  return callAdmin('change_password', { newPassword: String(newPassword) });
+}
+
 export async function getMfaState() {
   if (ADMIN_DEMO) {
     const { demoMfaState } = await import('./adminDemoApi.js');
