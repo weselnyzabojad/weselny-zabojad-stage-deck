@@ -5387,6 +5387,46 @@ and tests.
 
 **Tracking.** [#459](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/459).
 
+### 17.55 Sentry end-to-end verification and CSP allowlist (decision, 2026-11-13)
 
+Sentry now ships the public project DSN by default (#815) and its SDK path is
+already implemented (#794–#796), but Netlify's CSP `connect-src` still omitted
+the Sentry ingest origin, so production events could be dropped even with a
+valid DSN. This task adds only the required CSP sources and proves delivery
+with a throwaway production build before removing the temporary test button.
 
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
 
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| all routes | Unchanged; `initSentry` and `AppErrorBoundary` stay as implemented |
+| Netlify headers | Allow the Sentry ingest origin and the error-session Replay worker |
+
+Out of scope: deck/landing/admin UI changes, replacing the built-in DSN with a
+different mechanism, and replacing `AppErrorBoundary` with
+`Sentry.ErrorBoundary`.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Trigger | Production events were blocked because `connect-src` omitted the Sentry host |
+| DSN | Built-in public project DSN (#815); `VITE_SENTRY_DSN` overrides it, empty opts out |
+| CSP connect | Exact origin `https://o4512420559716352.ingest.de.sentry.io` |
+| CSP worker | `worker-src 'self' blob:` so error-session Replay can start its worker |
+| Verification | Throwaway local production build with a temporary throwing button; owner confirms the event in the Sentry dashboard; button and branch removed |
+| Environment | Local build verifies SDK/DSN delivery; Netlify header enforcement is checked statically or on a deploy preview |
+| Out of scope | UI, data contracts, DSN mechanism changes, boundary replacement |
+
+**Task split.** One atomic ops/security task, after the merged DSN hotfix.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#861](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/861) | CSP allowlist and end-to-end Sentry verification | #815 (merged) |
+
+**Open questions.** None.
+
+**Tracking.** [#861](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/861).
