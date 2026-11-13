@@ -5295,6 +5295,57 @@ or cartridge change.
 
 **Tracking.** [#826](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/826), [#827](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/827).
 
+### 17.53 Landing "Mariage Chic" UI/UX redesign (decision, 2026-11-13)
+
+The public `/` landing moves to a fixed "Mariage Chic" visual system: warm
+ivory canvas `#FBF9F5`, champagne-gold accents `#C5A059`/`#D4AF37`, charcoal
+editorial text and a midnight-navy `#0B132B` closing banner. The page ignores
+the deck's day/night preference, while the internal role views keep their
+existing themes. Copy, routes, CTA destination, metadata and tracking are
+untouched; Montserrat and Lora are already loaded.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Fixed light palette, glass hero intro, gold CTAs, seven feature cards, navy closing banner and editorial partner strip |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged; existing day/night themes and components |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Palette | Landing-scoped ivory/champagne/navy colors; no change to global `src/index.css` theme variables |
+| Theme | `/` always renders the light Mariage Chic palette, regardless of stored or OS day/night preference |
+| Typography | Existing Montserrat 400–700 for UI/headings; Lora italic for emotional lead-ins |
+| Hero | Glassmorphism intro card with 1px gold border, layered shadow, generous padding and an inline gold SVG ornament above the H1 |
+| CTA | Full champagne-gold fill `#C5A059`, charcoal text `#1A1A1A`, gold border, hover elevation/glow and sliding arrow |
+| Feature grid | All seven existing cards restyled with white surfaces, gold hover borders and inline line icons in gold circular backdrops |
+| Conversion banner | Midnight-navy closing section with gold ambient glow and the shared gold CTA |
+| Partners | Existing localized label styled as an uppercase tracked divider header; logos keep their size, alt text and non-interactive behaviour |
+| Copy | Zero text/i18n changes; uppercase treatments are CSS-only |
+| Accessibility | Decorative SVGs/glows `aria-hidden`, visible focus rings, 4.5:1 text contrast, 44 px targets, reduced-motion handling |
+| Tests | Update old class assertions in #820/#822/#826 to the new design; keep all copy, destination, order and accessibility assertions |
+| Out of scope | Copy/i18n, routes, CTA destination, metadata, tracking, deck views, global theme tokens |
+
+**Task split.** Five independently closable landing tasks; #830 establishes the
+palette consumed by the other four.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#830](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/830) | Hero glass card, fixed light landing palette and gold ornament | - |
+| 2 | [#831](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/831) | Shared champagne-gold contact CTA | #830 |
+| 3 | [#833](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/833) | Seven feature cards with gold icons and hover borders | #830 |
+| 4 | [#834](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/834) | Navy closing conversion banner with gold glow | #830, #831 |
+| 5 | [#832](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/832) | Editorial partner trust strip | #830 |
+
+**Open questions.** None.
+
+**Tracking.** [#830](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/830), [#831](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/831), [#832](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/832), [#833](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/833), [#834](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/834).
+
 
 
 
