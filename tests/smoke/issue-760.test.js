@@ -28,7 +28,7 @@ describe('issue #760 Supabase Edge Function secrets and deployment docs', () => 
 
     expect(joinRoom).toContain('DECK_SUPABASE_JWT_KEY_ID');
     expect(joinRoom).toContain('kid: JWT_KEY_ID');
-    expect(joinRoom).toContain("alg: 'HS256'");
+    expect(joinRoom).toContain('alg: signingAlg');
   });
 
   it('deploys reveal_speech_key without platform JWT verification', () => {

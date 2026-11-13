@@ -7,9 +7,10 @@
 // Deploy:
 //   supabase functions deploy join_room
 // Secrets:
-//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DECK_SUPABASE_JWT_SECRET,
-//   DECK_SUPABASE_JWT_KEY_ID (the signing-key kid; required after migrating to
-//   JWT Signing Keys so PostgREST can select the shared secret)
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
+//   DECK_SUPABASE_JWT_PRIVATE_KEY (ES256 private JWK; preferred),
+//   DECK_SUPABASE_JWT_KEY_ID (the ES256 signing-key kid),
+//   DECK_SUPABASE_JWT_SECRET (temporary HS256 fallback during rotation),
 //   ALLOWED_ORIGIN (optional, default *)
 //
 // The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
@@ -17,7 +18,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
-import { SignJWT } from 'npm:jose@5';
+import { SignJWT, importJWK } from 'npm:jose@5';
 
 const ALLOWED_ROLES = new Set(['mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker']);
 const WINDOW_MS = 15 * 60 * 1000;
@@ -31,6 +32,7 @@ function originAllowed(req: Request) {
   return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
 }
 const JWT_KEY_ID = Deno.env.get('DECK_SUPABASE_JWT_KEY_ID')?.trim() ?? '';
+const JWT_PRIVATE_KEY = Deno.env.get('DECK_SUPABASE_JWT_PRIVATE_KEY')?.trim() ?? '';
 
 function corsHeaders() {
   return {
@@ -193,6 +195,11 @@ Deno.serve(async (req) => {
       { onConflict: 'wedding_id,role,device_id' },
     );
 
+    const signingKey = JWT_PRIVATE_KEY
+      ? await importJWK(JSON.parse(JWT_PRIVATE_KEY), 'ES256')
+      : new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET'));
+    const signingAlg = JWT_PRIVATE_KEY ? 'ES256' : 'HS256';
+
     const token = await new SignJWT({
       // Reserved Supabase/PostgREST claim: the Postgres role, not the device role.
       role: 'authenticated',
@@ -201,7 +208,7 @@ Deno.serve(async (req) => {
       app_role: role,
     })
       .setProtectedHeader({
-        alg: 'HS256',
+        alg: signingAlg,
         typ: 'JWT',
         ...(JWT_KEY_ID ? { kid: JWT_KEY_ID } : {}),
       })
@@ -211,7 +218,7 @@ Deno.serve(async (req) => {
       .setIssuedAt()
       .setJti(sessionId)
       .setExpirationTime(expiry)
-      .sign(new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')));
+      .sign(signingKey);
 
     return json({
       token,
