@@ -17,9 +17,21 @@ function ContactCta({ label, className = '' }) {
       href={CONTACT_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-strong bg-brand px-6 py-3 text-sm font-bold text-on-accent transition hover:bg-brand-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-strong ${className}`}
+      className={`group inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#D4AF37]/60 bg-[#C5A059] px-7 py-3.5 text-sm font-bold text-[#1A1A1A] shadow-lg shadow-[#C5A059]/20 transition-all duration-300 hover:bg-[#D4AF37] hover:shadow-xl hover:shadow-[#C5A059]/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A6A2F] active:translate-y-0 active:shadow-lg motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none ${className}`}
     >
       {label}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="h-4 w-4 shrink-0 transition-transform duration-300 motion-safe:group-hover:translate-x-0.5 motion-reduce:transition-none"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M4 10h11m-4-4 4 4-4 4" />
+      </svg>
     </a>
   );
 }
