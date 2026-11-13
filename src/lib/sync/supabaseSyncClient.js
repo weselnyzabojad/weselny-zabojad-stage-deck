@@ -89,12 +89,6 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data ?? null;
   }
 
-  // End-of-event wipe: the RPC validates the MC role claim server-side.
-  async function wipeRoom() {
-    const { error } = await supabase.rpc('stage_deck_wipe_my_room');
-    if (error) throw new Error(describeError(error));
-  }
-
   async function publish(roomKey, state) {
     const { error } = await supabase.from(config.table).upsert(
       {
@@ -206,6 +200,5 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     publish,
     subscribe,
     subscribeWedding,
-    wipeRoom,
   };
 }

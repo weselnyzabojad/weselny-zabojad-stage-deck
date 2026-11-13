@@ -342,30 +342,6 @@ $$;
 
 revoke all on function public.stage_deck_wipe_room(text) from public, anon, authenticated;
 
--- Client-triggered wipe: only the MC role token may remove its own room.
-create or replace function public.stage_deck_wipe_my_room()
-returns void
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  wid text := nullif(auth.jwt() ->> 'wedding_id', '');
-begin
-  if wid is null then
-    raise exception 'No room claim';
-  end if;
-  if coalesce(auth.jwt() ->> 'app_role', '') <> 'mc' then
-    raise exception 'Only the MC role may wipe this room';
-  end if;
-
-  delete from public.live_sync_state where wedding_id = 'wzsd:' || wid;
-  delete from public.weddings where wedding_id = wid;
-end $$;
-
-grant execute on function public.stage_deck_wipe_my_room() to authenticated;
-revoke all on function public.stage_deck_wipe_my_room() from public, anon;
-
 -- TTL purge: deletes rooms past `expires_at` (state, wedding, roles, notes).
 -- Schedule daily with pg_cron when available:
 --   select cron.schedule(
