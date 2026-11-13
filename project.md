@@ -5565,3 +5565,39 @@ combining MC Master controls and DJ VIP surfaces.
 **Open questions.** None.
 
 **Tracking.** [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880), [#881](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/881), [#882](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/882).
+
+### 17.59 DJ_MC provider category correction (decision, 2026-11-14)
+
+Corrects §17.58: `DJ_MC` is always **one person** performing both DJ and MC. The
+wedding has exactly one `dj_mc` role and one PIN, with no separate `mc` or `dj`
+role. The role is provisioned through a new service-provider category
+`dj_mc`, **reserved to the product owner**. An active `dj_mc` provider
+auto-creates the role and PIN; deactivation revokes the role, sessions and
+presence.
+
+The ability for the MC to be a different person applies to the other packages:
+there the existing `mc` and `dj` roles remain separate and can belong to
+different providers. It never combines with `dj_mc`.
+
+**Google Doc contract.** Same as §17.58: `HOST_ONLY`, `DJ_MC`,
+`HOST_AND_DJ_VIP` are the only valid package values.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| DJ_MC people | Always one person, never a DJ+MC pair |
+| DJ_MC role set | Exactly `dj_mc`; no `mc`, no `dj` |
+| Provisioning | New `dj_mc` provider category, reserved to the owner |
+| Revocation | Deactivating the `dj_mc` provider revokes role, sessions and presence |
+| MC as another person | Non-DJ_MC packages only, via the existing `mc` role |
+| Other packages | Keep separate `mc` and `dj` roles |
+
+**Task split.** [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880)
+now includes the owner-only `dj_mc` provider category. [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876)
+and [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877)
+carry scope notes for provider provisioning and the role catalog.
+
+**Open questions.** None.
+
+**Tracking.** [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880).
