@@ -5,10 +5,14 @@
 // the key as a non-exportable CryptoKey and decrypts locally.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { jwtVerify } from 'npm:jose@5';
+import { createRemoteJWKSet, decodeProtectedHeader, jwtVerify } from 'npm:jose@5';
 import { bytesToBase64Url, deriveSpeechKeyBytes } from '../_shared/speechSecrets.js';
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')?.trim() ?? '';
+const JWKS = SUPABASE_URL
+  ? createRemoteJWKSet(new URL(`${SUPABASE_URL}/auth/v1/.well-known/jwks.json`))
+  : null;
 
 function originAllowed(req: Request) {
   const origin = req.headers.get('origin') ?? '';
@@ -47,9 +51,18 @@ Deno.serve(async (req) => {
 
     let payload;
     try {
-      ({ payload } = await jwtVerify(token, new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')), {
-        algorithms: ['HS256'],
-      }));
+      const header = decodeProtectedHeader(token);
+      if (header.alg === 'ES256') {
+        if (!JWKS) throw new Error('SUPABASE_URL is not configured.');
+        ({ payload } = await jwtVerify(token, JWKS, { algorithms: ['ES256'] }));
+      } else {
+        // Temporary fallback for already-issued HS256 tokens during rotation.
+        ({ payload } = await jwtVerify(
+          token,
+          new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET')),
+          { algorithms: ['HS256'] },
+        ));
+      }
     } catch {
       return json({ error: 'Invalid role session.' }, 401);
     }

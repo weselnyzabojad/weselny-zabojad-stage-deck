@@ -68,8 +68,9 @@ Set these with the Supabase CLI:
 supabase secrets set \
   SUPABASE_URL=https://your-project-ref.supabase.co \
   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
-  DECK_SUPABASE_JWT_SECRET=your-jwt-secret \
+  DECK_SUPABASE_JWT_PRIVATE_KEY='{"kty":"EC",...}' \
   DECK_SUPABASE_JWT_KEY_ID=your-signing-key-kid \
+  DECK_SUPABASE_JWT_SECRET=your-temporary-hs256-fallback \
   PUBLIC_DECK_URL=https://your-domain.example \
   ALLOWED_ORIGIN=http://localhost:5173 \
   GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com \
