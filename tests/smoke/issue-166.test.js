@@ -190,8 +190,8 @@ describe('issue #166 removes non-admin cartridge import, activation and reset', 
       sync.indexOf('async function fetchWedding'),
       sync.indexOf('async function publish('),
     );
-    expect(fetchWedding).toContain(".from('weddings')");
-    expect(fetchWedding).toContain('.select(');
+    expect(fetchWedding).toContain("supabase.rpc('stage_deck_wedding')");
+    expect(fetchWedding).not.toContain(".from('weddings')");
     expect(fetchWedding).not.toContain('.insert(');
     expect(fetchWedding).not.toContain('.update(');
     expect(fetchWedding).not.toContain('.upsert(');

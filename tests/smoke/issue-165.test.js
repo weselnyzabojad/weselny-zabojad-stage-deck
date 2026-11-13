@@ -511,9 +511,20 @@ describe('issue #165 migration and source contract', () => {
       path.join(ROOT, 'src', 'lib', 'sync', 'supabaseSyncClient.js'),
       'utf8',
     );
-    expect(syncClient).toMatch(/cartridge_revision/);
-    expect(syncClient).toMatch(/cartridge_source/);
-    expect(syncClient).toMatch(/cartridge_published_at/);
+    expect(syncClient).toMatch(/stage_deck_wedding/);
+
+    const projection = await readFile(
+      path.join(
+        ROOT,
+        'supabase',
+        'migrations',
+        '202611130003_role_cartridge_projection.sql',
+      ),
+      'utf8',
+    );
+    expect(projection).toMatch(/cartridge_revision/);
+    expect(projection).toMatch(/cartridge_source/);
+    expect(projection).toMatch(/cartridge_published_at/);
   });
 
   it('returns revision metadata from the admin list', async () => {
