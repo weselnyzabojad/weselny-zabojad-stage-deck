@@ -20,6 +20,12 @@ The SSO team-login rule is why the public URL returns **401**. The Netlify MCP
 can update access controls, but this checklist intentionally does **not** change
 them until GO.
 
+**Owner decision (2026-11-13):** keep the SSO gate until the release deploy is
+ready. At release time, open production only and keep Deploy Previews/branch
+deploys behind SSO where the plan permits. Do not expose the current older
+production build (`b74bfe8`) before the `development` release candidate is
+deployed.
+
 The production deploy is behind `development`: production is at `b74bfe8`,
 while `development` is at `fbaaa09` (2026-11-13).
 
