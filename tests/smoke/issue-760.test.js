@@ -11,6 +11,7 @@ describe('issue #760 Supabase Edge Function secrets and deployment docs', () => 
 
     for (const name of [
       'DECK_SUPABASE_JWT_SECRET',
+      'DECK_SUPABASE_JWT_KEY_ID',
       'PUBLIC_DECK_URL',
       'ALLOWED_ORIGIN',
       'GOOGLE_SERVICE_ACCOUNT_EMAIL',
@@ -20,6 +21,14 @@ describe('issue #760 Supabase Edge Function secrets and deployment docs', () => 
       expect(readme).toContain(name);
       expect(docs).toContain(name);
     }
+  });
+
+  it('includes the signing-key kid in role tokens', () => {
+    const joinRoom = read('supabase/functions/join_room/index.ts');
+
+    expect(joinRoom).toContain('DECK_SUPABASE_JWT_KEY_ID');
+    expect(joinRoom).toContain('kid: JWT_KEY_ID');
+    expect(joinRoom).toContain("alg: 'HS256'");
   });
 
   it('deploys reveal_speech_key without platform JWT verification', () => {

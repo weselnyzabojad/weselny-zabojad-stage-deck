@@ -7,7 +7,9 @@
 // Deploy:
 //   supabase functions deploy join_room
 // Secrets:
-//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DECK_SUPABASE_JWT_SECRET
+//   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DECK_SUPABASE_JWT_SECRET,
+//   DECK_SUPABASE_JWT_KEY_ID (the signing-key kid; required after migrating to
+//   JWT Signing Keys so PostgREST can select the shared secret)
 //   ALLOWED_ORIGIN (optional, default *)
 //
 // The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
@@ -23,6 +25,7 @@ const MAX_FAILURES = 5;
 const TOKEN_TTL_SECONDS = 24 * 60 * 60;
 
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? '*';
+const JWT_KEY_ID = Deno.env.get('DECK_SUPABASE_JWT_KEY_ID')?.trim() ?? '';
 
 function corsHeaders() {
   return {
@@ -189,7 +192,11 @@ Deno.serve(async (req) => {
       room_id: roomId,
       app_role: role,
     })
-      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setProtectedHeader({
+        alg: 'HS256',
+        typ: 'JWT',
+        ...(JWT_KEY_ID ? { kid: JWT_KEY_ID } : {}),
+      })
       .setSubject(wedding.wedding_id)
       .setAudience('authenticated')
       .setIssuer('supabase')
