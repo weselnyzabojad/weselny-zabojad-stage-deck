@@ -1,0 +1,7 @@
+# Hosted Supabase project configuration mirrored in git.
+# Only properties declared here are pushed by `supabase config push`.
+project_id = "stage-deck"
+
+[auth]
+# The owner account is provisioned manually; public signup is not needed.
+enable_signup = false
