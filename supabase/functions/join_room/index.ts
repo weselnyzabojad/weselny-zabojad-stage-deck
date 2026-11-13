@@ -10,7 +10,6 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
 //   DECK_SUPABASE_JWT_PRIVATE_KEY (ES256 private JWK; preferred),
 //   DECK_SUPABASE_JWT_KEY_ID (the ES256 signing-key kid),
-//   DECK_SUPABASE_JWT_SECRET (temporary HS256 fallback during rotation),
 //   ALLOWED_ORIGIN (optional, default *)
 //
 // The JWT uses Supabase's reserved `role: "authenticated"` claim for PostgREST,
@@ -32,7 +31,6 @@ function originAllowed(req: Request) {
   return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
 }
 const JWT_KEY_ID = Deno.env.get('DECK_SUPABASE_JWT_KEY_ID')?.trim() ?? '';
-const JWT_PRIVATE_KEY = Deno.env.get('DECK_SUPABASE_JWT_PRIVATE_KEY')?.trim() ?? '';
 
 function corsHeaders() {
   return {
@@ -195,19 +193,16 @@ Deno.serve(async (req) => {
       { onConflict: 'wedding_id,role,device_id' },
     );
 
-    let signingKey;
-    let signingAlg = 'HS256';
-    if (JWT_PRIVATE_KEY) {
-      const jwk = JSON.parse(JWT_PRIVATE_KEY);
-      // `key_ops` from `supabase gen signing-key` includes verify; WebCrypto
-      // rejects that for a private signing key, so let jose derive the usage.
-      delete jwk.key_ops;
-      delete jwk.use;
-      signingKey = await importJWK(jwk, 'ES256');
-      signingAlg = 'ES256';
-    } else {
-      signingKey = new TextEncoder().encode(serverEnv('DECK_SUPABASE_JWT_SECRET'));
-    }
+    // ES256 is the only accepted signing path; the HS256 shared secret was
+    // removed after the rotation window (#853). Fail closed when the key is
+    // missing instead of falling back to a shared secret.
+    const jwk = JSON.parse(serverEnv('DECK_SUPABASE_JWT_PRIVATE_KEY'));
+    // `key_ops` from `supabase gen signing-key` includes verify; WebCrypto
+    // rejects that for a private signing key, so let jose derive the usage.
+    delete jwk.key_ops;
+    delete jwk.use;
+    const signingKey = await importJWK(jwk, 'ES256');
+    const signingAlg = 'ES256';
 
     const token = await new SignJWT({
       // Reserved Supabase/PostgREST claim: the Postgres role, not the device role.
