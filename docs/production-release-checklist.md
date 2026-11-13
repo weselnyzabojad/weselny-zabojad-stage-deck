@@ -34,7 +34,7 @@ while `development` is at `fbaaa09` (2026-11-13).
 | Gate | Owner | Current state | Required before GO |
 | --- | --- | --- | --- |
 | #80 P0 MC cues | Product/owner | Resolution needed: later Notes decision (#774/#776) supersedes legacy `mcCues` rendering | Close as superseded or re-scope |
-| #533 live admin smoke test | Owner | Not executed; needs owner TOTP/session | 12-step pass/fail recorded |
+| #533 live admin smoke test | Owner | Passed at API level; see `docs/admin-live-smoke-533.md` | Final production visual QR/browser pass |
 | #736 `admin_drive` verify | Owner | Function ACTIVE v2; AAL2/Drive check pending | `configured: true` + Drive panel check |
 | #760 Supabase secrets | Owner | Names not confirmed | All required names set and verified |
 | #792 zero-warning gate | Owner | 36 pre-existing lint warnings; build chunk advisory | Hard gate decision: fix now or defer |
