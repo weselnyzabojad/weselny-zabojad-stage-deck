@@ -10,6 +10,7 @@ describe('issue #853 ES256 role token signing', () => {
 
     expect(join).toContain('DECK_SUPABASE_JWT_PRIVATE_KEY');
     expect(join).toContain('importJWK');
+    expect(join).toContain('delete jwk.key_ops');
     expect(join).toContain("alg: signingAlg");
     expect(join).toContain("'ES256'");
     expect(join).toContain('DECK_SUPABASE_JWT_SECRET');
