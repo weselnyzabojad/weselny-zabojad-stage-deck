@@ -348,13 +348,33 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t border-line">
-          <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-16 text-center sm:px-6">
-            <h2 className="font-heading text-2xl font-bold text-ink sm:text-3xl">
-              {t('landing.footer.ctaTitle')}
-            </h2>
-            <p className="mt-3 text-sm text-muted">{t('landing.footer.ctaBody')}</p>
-            <ContactCta label={t('landing.hero.cta')} className="mt-6" />
+        <section aria-labelledby="landing-contact" className="bg-[#FBF9F5] px-4 py-8 sm:px-6 sm:py-12">
+          <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-3xl border border-[#C5A059]/20 bg-[#0B132B] px-6 py-16 text-center shadow-2xl shadow-[#0B132B]/20 sm:px-10 sm:py-20">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#C5A059]/15 blur-3xl"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-32 -left-20 h-64 w-64 rounded-full bg-[#D4AF37]/10 blur-3xl"
+            />
+            <div className="relative">
+              <div aria-hidden="true" className="mx-auto mb-5 flex items-center justify-center gap-3">
+                <span className="h-px w-10 bg-gradient-to-r from-transparent to-[#C5A059]/70" />
+                <span className="h-1.5 w-1.5 rotate-45 bg-[#C5A059]" />
+                <span className="h-px w-10 bg-gradient-to-l from-transparent to-[#C5A059]/70" />
+              </div>
+              <h2
+                id="landing-contact"
+                className="font-heading text-2xl font-bold tracking-tight text-[#FFFFFF] sm:text-4xl"
+              >
+                {t('landing.footer.ctaTitle')}
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#CBD5E1] sm:text-base">
+                {t('landing.footer.ctaBody')}
+              </p>
+              <ContactCta label={t('landing.hero.cta')} className="mt-8" />
+            </div>
           </div>
         </section>
       </main>
