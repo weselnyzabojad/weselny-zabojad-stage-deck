@@ -65,7 +65,17 @@ export function djDetailTier(weddingOrPackage) {
   }
 
   const assigned = resolveDjIdentityId(weddingOrPackage);
-  if (assigned) return isVipDjId(assigned) ? DJ_DETAIL_TIERS.VIP : DJ_DETAIL_TIERS.STANDARD;
+  if (assigned) {
+    // A VIP package can reference any admin-registered VIP identity. Standard
+    // packages fall back to the seeded identities until the registry is loaded.
+    if (
+      servicePackage === 'HOST_AND_DJ_VIP' ||
+      servicePackage === 'DJ_MC'
+    ) {
+      return DJ_DETAIL_TIERS.VIP;
+    }
+    return isVipDjId(assigned) ? DJ_DETAIL_TIERS.VIP : DJ_DETAIL_TIERS.STANDARD;
+  }
   return defaultVipDjId(servicePackage)
     ? DJ_DETAIL_TIERS.VIP
     : DJ_DETAIL_TIERS.STANDARD;

@@ -34,7 +34,7 @@ describe('issue #467 hardcoded VIP DJ registry', () => {
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP' })).toBe('vip');
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'dj_mark' })).toBe('vip');
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_STANDARD', djIdentityId: 'dj_szymoniak' })).toBe('vip');
-    expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'other_dj' })).toBe('standard');
+    expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'other_dj' })).toBe('vip');
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_STANDARD' })).toBe('standard');
     expect(djDetailTier({ servicePackage: 'HOST_ONLY' })).toBe('standard');
   });
@@ -51,20 +51,22 @@ describe('issue #467 hardcoded VIP DJ registry', () => {
     expect(vipDjById('DJ Mark')).toBe(null);
   });
 
-  it('keeps the registry read-only in admin and stores only the assignment', () => {
+  it('moves the registry into the admin panel and database', () => {
     const panel = read('src/admin/AdminServiceProviders.jsx');
-    expect(panel).toContain('VIP DJ registry · read-only');
-    expect(panel).toContain('VIP_DJS.map');
+    expect(panel).toContain('VIP DJ registry');
+    expect(panel).toContain('vipDjs.filter');
     expect(panel).toContain('VIP DJ identity');
     expect(panel).toContain('vipDjId');
-    expect(panel).not.toContain('onChange={(event) => setForm((current) => ({ ...current, displayName');
+    expect(panel).toContain('submitVip');
     const api = read('supabase/functions/admin_api/index.ts');
-    expect(api).toContain("['dj_mark', 'dj_szymoniak']");
+    expect(api).toContain('list_vip_djs');
+    expect(api).toContain('upsert_vip_dj');
+    expect(api).toContain('deactivate_vip_dj');
     expect(api).toContain('vip_dj_id: vipDjId');
-    expect(read('supabase/migrations/202611090004_provider_vip_dj_assignment.sql')).toContain(
-      "vip_dj_id in ('dj_mark', 'dj_szymoniak')",
-    );
     expect(read('supabase/schema.sql')).toContain('vip_dj_id');
+    expect(read('supabase/migrations/202611140004_vip_dj_registry.sql')).toContain(
+      'references public.vip_djs(id)',
+    );
   });
 
   it('wires the shared tier resolver into the DJ view', () => {

@@ -7,7 +7,7 @@ const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 
 describe('issue #886 Song Requestor eligibility', () => {
-  it('requires a VIP package and a VIP DJ identity', () => {
+  it('requires a VIP package and an assigned VIP DJ identity', () => {
     expect(
       songRequestEligible({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'dj_mark' }),
     ).toBe(true);
@@ -19,7 +19,7 @@ describe('issue #886 Song Requestor eligibility', () => {
     );
     expect(
       songRequestEligible({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'other_dj' }),
-    ).toBe(false);
+    ).toBe(true);
     expect(songRequestEligible({ servicePackage: 'HOST_AND_DJ_VIP' })).toBe(false);
   });
 

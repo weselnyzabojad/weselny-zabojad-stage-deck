@@ -155,6 +155,35 @@ create trigger touch_song_requests
   for each row execute function public.touch_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Owner-admin VIP DJ registry (admin_api only, public projection via Edge)
+-- ---------------------------------------------------------------------------
+create table if not exists public.vip_djs (
+  id              text primary key,
+  display_name    text not null,
+  phone           text,
+  instagram       text,
+  logo_url        text,
+  package_default text,
+  sort_order      integer not null default 0,
+  active          boolean not null default true,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  constraint vip_djs_id_format check (id ~ '^[a-z0-9_]{3,40}$'),
+  constraint vip_djs_package_default check (
+    package_default is null or package_default in ('HOST_AND_DJ_VIP', 'DJ_MC')
+  )
+);
+
+alter table public.vip_djs enable row level security;
+revoke all on public.vip_djs from anon, authenticated;
+
+insert into public.vip_djs (id, display_name, package_default, sort_order)
+values
+  ('dj_mark', 'DJ Mark', 'HOST_AND_DJ_VIP', 1),
+  ('dj_szymoniak', 'DJ Szymoniak', null, 2)
+on conflict (id) do nothing;
+
+-- ---------------------------------------------------------------------------
 -- Owner-admin service provider registry (admin_api only)
 -- ---------------------------------------------------------------------------
 create table if not exists public.wedding_service_providers (
@@ -162,7 +191,7 @@ create table if not exists public.wedding_service_providers (
   wedding_id     text not null references public.weddings(wedding_id) on delete cascade,
   category       text not null check (category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other')),
   function_label text,
-  vip_dj_id      text,
+  vip_dj_id      text references public.vip_djs(id) on update cascade on delete restrict,
   first_name     text not null check (char_length(first_name) between 1 and 120),
   last_name      text not null check (char_length(last_name) between 1 and 120),
   phone          text,
@@ -174,8 +203,8 @@ create table if not exists public.wedding_service_providers (
   updated_at     timestamptz not null default now(),
   constraint wedding_service_providers_other_function
     check (category <> 'other' or (function_label is not null and char_length(function_label) between 1 and 120)),
-  constraint wedding_service_providers_vip_dj_check
-    check (vip_dj_id is null or (category in ('dj', 'dj_mc') and vip_dj_id in ('dj_mark', 'dj_szymoniak')))
+  constraint wedding_service_providers_vip_dj_category
+    check (vip_dj_id is null or category in ('dj', 'dj_mc'))
 );
 
 create unique index if not exists wedding_service_providers_role_unique_idx

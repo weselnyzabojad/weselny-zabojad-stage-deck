@@ -27,18 +27,15 @@ describe('issue #832 landing partner trust strip', () => {
     expect(partnerBlock.match(/aria-hidden="true"/g)).toHaveLength(2);
   });
 
-  it('keeps the logos at their shipped sizes and non-interactive', () => {
+  it('renders registry logos at a consistent size and non-interactive', () => {
     const landing = read('src/components/LandingPage.jsx');
     const start = landing.indexOf('rounded-2xl border border-[#C5A059]/40 bg-white');
     const end = landing.indexOf('<div className="mx-auto w-full max-w-6xl border-t', start);
     const partnerBlock = landing.slice(start, end);
 
-    expect(partnerBlock).toContain('src={logoMark}');
-    expect(partnerBlock).toContain('alt="DJ Mark"');
+    expect(partnerBlock).toContain('src={partner.logoUrl}');
+    expect(partnerBlock).toContain('alt={partner.displayName}');
     expect(partnerBlock).toContain('h-20 w-auto object-contain sm:h-24');
-    expect(partnerBlock).toContain('src={logoSzymoniak}');
-    expect(partnerBlock).toContain('alt="DJ Szymoniak"');
-    expect(partnerBlock).toContain('h-14 w-auto object-contain sm:h-16');
     expect(partnerBlock).not.toContain('<a');
   });
 

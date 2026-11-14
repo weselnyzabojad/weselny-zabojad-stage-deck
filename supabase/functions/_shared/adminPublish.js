@@ -156,7 +156,7 @@ export function vipAssignmentError(cartridge) {
   if (!isVipPackage(servicePackage)) return null;
   const djIdentityId = cartridge?.djIdentityId ?? cartridge?.dj?.identityId ?? null;
   if (!isVipDjId(djIdentityId)) {
-    return 'A VIP package requires DJ Mark or DJ Szymoniak.';
+    return 'A VIP package requires an active VIP DJ.';
   }
   return null;
 }

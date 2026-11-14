@@ -485,6 +485,36 @@ export async function deleteProvider(weddingId, id) {
   return callAdmin('delete_provider', { weddingId, id });
 }
 
+export async function listVipDjs() {
+  if (ADMIN_DEMO) {
+    return {
+      vipDjs: [
+        { id: 'dj_mark', display_name: 'DJ Mark', active: true, package_default: 'HOST_AND_DJ_VIP' },
+        { id: 'dj_szymoniak', display_name: 'DJ Szymoniak', active: true, package_default: null },
+      ],
+    };
+  }
+  return callAdmin('list_vip_djs');
+}
+
+export async function upsertVipDj(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('vip_dj_upsert');
+    return { vipDj: payload };
+  }
+  return callAdmin('upsert_vip_dj', payload);
+}
+
+export async function deactivateVipDj(id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('vip_dj_deactivate');
+    return { ok: true };
+  }
+  return callAdmin('deactivate_vip_dj', { id });
+}
+
 export async function revokeSession(jti) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');

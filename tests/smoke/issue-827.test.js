@@ -13,18 +13,15 @@ afterEach(() => {
 });
 
 describe('issue #827 footer DJ Mark logo', () => {
-  it('enlarges Mark without changing Szymoniak', () => {
+  it('keeps both registry logos at the same accessible size', () => {
     const landing = read('src/components/LandingPage.jsx');
 
-    const markStart = landing.indexOf('src={logoMark}');
-    const szymoniakStart = landing.indexOf('src={logoSzymoniak}');
-    const markBlock = landing.slice(markStart, szymoniakStart);
-    const szymoniakBlock = landing.slice(szymoniakStart, landing.indexOf('</div>', szymoniakStart));
-
-    expect(markBlock).toContain('alt="DJ Mark"');
-    expect(markBlock).toContain('h-20 w-auto object-contain sm:h-24');
-    expect(szymoniakBlock).toContain('alt="DJ Szymoniak"');
-    expect(szymoniakBlock).toContain('h-14 w-auto object-contain sm:h-16');
+    expect(landing).toContain('{partners.map((partner) => (');
+    expect(landing).toContain('src={partner.logoUrl}');
+    expect(landing).toContain('alt={partner.displayName}');
+    expect(landing).toContain('h-20 w-auto object-contain sm:h-24');
+    expect(landing).toContain("displayName: 'DJ Mark'");
+    expect(landing).toContain("displayName: 'DJ Szymoniak'");
   });
 
   it('renders both partner logos with their accessible names', () => {

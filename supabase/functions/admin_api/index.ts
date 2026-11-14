@@ -130,11 +130,8 @@ function normalizeProviderPayload(body: any) {
   }
 
   const requestedVipDjId = cleanProviderField(body?.vipDjId, 40);
-  if (requestedVipDjId && !['dj_mark', 'dj_szymoniak'].includes(requestedVipDjId)) {
-    return { error: 'Choose a known VIP DJ.' };
-  }
   if (category === 'dj_mc' && !requestedVipDjId) {
-    return { error: 'DJ_MC providers require DJ Mark or DJ Szymoniak.' };
+    return { error: 'DJ_MC providers require an active VIP DJ.' };
   }
   const vipDjId = category === 'dj' || category === 'dj_mc' ? requestedVipDjId : null;
 
@@ -429,7 +426,101 @@ async function handleRequest(req: Request) {
       );
     }
 
+    if (action === 'list_vip_djs') {
+      const { data, error } = await admin
+        .from('vip_djs')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .order('display_name', { ascending: true });
+      if (error) throw error;
+      return json({ vipDjs: data ?? [] });
+    }
+
+    if (action === 'upsert_vip_dj') {
+      const id = typeof body?.id === 'string' ? body.id.trim().toLowerCase() : '';
+      const displayName = cleanProviderField(body?.displayName, 120);
+      if (!/^[a-z0-9_]{3,40}$/.test(id)) {
+        return json({ error: 'VIP DJ id must be 3-40 lowercase letters, digits or underscores.' }, 400);
+      }
+      if (!displayName) return json({ error: 'Display name is required.' }, 400);
+      const logoUrl = cleanProviderField(body?.logoUrl, 500);
+      if (logoUrl && !/^https?:\/\//i.test(logoUrl) && !logoUrl.startsWith('/')) {
+        return json({ error: 'Logo URL must be an http(s) or root-relative URL.' }, 400);
+      }
+      const packageDefault =
+        body?.packageDefault === 'HOST_AND_DJ_VIP' || body?.packageDefault === 'DJ_MC'
+          ? body.packageDefault
+          : null;
+      const record = {
+        id,
+        display_name: displayName,
+        phone: cleanProviderField(body?.phone, 60) || null,
+        instagram: cleanProviderField(body?.instagram, 200) || null,
+        logo_url: logoUrl || null,
+        package_default: packageDefault,
+        sort_order: Number.isFinite(Number(body?.sortOrder)) ? Number(body.sortOrder) : 0,
+        active: body?.active !== false,
+        updated_at: new Date().toISOString(),
+      };
+      const { data: before } = await admin.from('vip_djs').select('*').eq('id', id).maybeSingle();
+      const { data, error } = await admin
+        .from('vip_djs')
+        .upsert(record, { onConflict: 'id' })
+        .select('*')
+        .single();
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'vip_dj_upsert', id, { before, after: data });
+      return json({ vipDj: data });
+    }
+
+    if (action === 'deactivate_vip_dj') {
+      const id = typeof body?.id === 'string' ? body.id.trim().toLowerCase() : '';
+      if (!id) return json({ error: 'VIP DJ id is required.' }, 400);
+      const { data: current, error: readError } = await admin
+        .from('vip_djs')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!current) return json({ error: 'VIP DJ not found.' }, 404);
+      if (current.package_default) {
+        return json(
+          { error: 'This DJ is still a package default. Clear the default before deactivating.' },
+          409,
+        );
+      }
+      const { count, error: countError } = await admin
+        .from('wedding_service_providers')
+        .select('id', { count: 'exact', head: true })
+        .eq('vip_dj_id', id)
+        .eq('active', true);
+      if (countError) throw countError;
+      if ((count ?? 0) > 0) {
+        return json(
+          { error: 'This DJ is still assigned to a wedding. Reassign before deactivating.' },
+          409,
+        );
+      }
+      const { data, error } = await admin
+        .from('vip_djs')
+        .update({ active: false, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select('*')
+        .single();
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'vip_dj_deactivate', id, {
+        before: current,
+        after: data,
+      });
+      return json({ vipDj: data });
+    }
+
     if (action === 'list') {
+      const { data: vipRows } = await admin
+        .from('vip_djs')
+        .select('id')
+        .eq('active', true);
+      const activeVipIds = new Set((vipRows ?? []).map((row: any) => row.id));
       const [weddings, roles, sessions, presence, audit] = await Promise.all([
         admin
           .from('weddings')
@@ -473,8 +564,7 @@ async function handleRequest(req: Request) {
             row.cartridge?.djIdentityId ?? row.cartridge?.dj?.identityId ?? null;
           const requiresVip =
             servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC';
-          const vipDjValid =
-            !requiresVip || ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
+          const vipDjValid = !requiresVip || activeVipIds.has(djIdentityId);
           const mcConfirmed = !requiresVip || Boolean(row.mc_confirmed_by);
           const vipWarning = requiresVip
             ? [
@@ -486,7 +576,7 @@ async function handleRequest(req: Request) {
             : null;
           const songRequestEligible =
             (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
-            ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
+            activeVipIds.has(djIdentityId);
           return {
             ...summary,
             venue,
@@ -868,13 +958,18 @@ async function handleRequest(req: Request) {
         .select('category, active')
         .eq('wedding_id', weddingId)
         .eq('active', true);
+      const { data: vipRows } = await admin
+        .from('vip_djs')
+        .select('id')
+        .eq('active', true);
+      const activeVipIds = new Set((vipRows ?? []).map((row: any) => row.id));
       const managed = new Set((providers ?? []).map((row: any) => row.category));
       const servicePackage = wedding.cartridge?.servicePackage ?? null;
       const djIdentityId =
         wedding.cartridge?.djIdentityId ?? wedding.cartridge?.dj?.identityId ?? null;
       const vipEligible =
         (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
-        ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
+        activeVipIds.has(djIdentityId);
 
       return json({
         weddingId,
@@ -989,6 +1084,16 @@ async function handleRequest(req: Request) {
 
       const normalized = normalizeProviderPayload(body);
       if (normalized.error) return json({ error: normalized.error }, 400);
+      if (normalized.provider.vip_dj_id) {
+        const { data: vipDj, error: vipError } = await admin
+          .from('vip_djs')
+          .select('id')
+          .eq('id', normalized.provider.vip_dj_id)
+          .eq('active', true)
+          .maybeSingle();
+        if (vipError) throw vipError;
+        if (!vipDj) return json({ error: 'Choose an active VIP DJ.' }, 400);
+      }
 
       const id = typeof body?.id === 'string' && body.id.trim() ? body.id.trim() : null;
       let before = null;

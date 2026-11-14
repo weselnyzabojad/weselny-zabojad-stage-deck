@@ -6,18 +6,18 @@ const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 
 describe('issue #879 VIP DJ identity and MC warning', () => {
-  it('accepts VIP packages only with DJ Mark or DJ Szymoniak', () => {
-    for (const dj of ['dj_mark', 'dj_szymoniak']) {
+  it('accepts VIP packages with any registered VIP identity', () => {
+    for (const dj of ['dj_mark', 'dj_szymoniak', 'new_registered_dj']) {
       expect(vipAssignmentError({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: dj })).toBeNull();
       expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: dj })).toBeNull();
     }
 
-    for (const dj of [null, 'other_dj']) {
+    for (const dj of [null, '']) {
       expect(vipAssignmentError({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: dj })).toContain(
-        'DJ Mark or DJ Szymoniak',
+        'active VIP DJ',
       );
       expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: dj })).toContain(
-        'DJ Mark or DJ Szymoniak',
+        'active VIP DJ',
       );
     }
   });
@@ -51,9 +51,10 @@ describe('issue #879 VIP DJ identity and MC warning', () => {
     expect(app).toContain('VIP package ${wedding.servicePackage}');
   });
 
-  it('keeps the provider VIP identity restricted to Mark/Szymoniak', () => {
+  it('validates provider VIP identity against the active registry', () => {
     const api = read('supabase/functions/admin_api/index.ts');
-    expect(api).toContain("!['dj_mark', 'dj_szymoniak'].includes(requestedVipDjId)");
-    expect(api).toContain("return { error: 'Choose a known VIP DJ.' }");
+    expect(api).toContain(".from('vip_djs')");
+    expect(api).toContain(".eq('active', true)");
+    expect(api).toContain("return json({ error: 'Choose an active VIP DJ.' }, 400);");
   });
 });
