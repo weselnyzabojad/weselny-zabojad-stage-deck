@@ -373,6 +373,55 @@ export async function importSpeechSource(fileId, { weddingId, speechId } = {}) {
   return callAdminDrive('parse_speech', { fileId, weddingId, speechId });
 }
 
+export async function listSpeeches(weddingId) {
+  return callAdmin('list_speeches', { weddingId });
+}
+
+export async function createSpeechDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Speech Doc creation is unavailable in demo mode.');
+  return callAdminDrive('create_speech_doc', payload);
+}
+
+export async function renameSpeechDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Speech Doc rename is unavailable in demo mode.');
+  return callAdminDrive('rename_speech_doc', payload);
+}
+
+export async function parseSpeechDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Speech Doc parsing is unavailable in demo mode.');
+  return callAdminDrive('parse_speech_doc', payload);
+}
+
+export async function publishSpeech(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('speech_publish');
+    return { ok: true };
+  }
+  return callAdmin('publish_speech', payload);
+}
+
+export async function upsertSpeechMetadata(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('speech_metadata');
+    return { speech: payload };
+  }
+  return callAdmin('upsert_speech_metadata', payload);
+}
+
+export async function restoreSpeech(payload) {
+  return callAdmin('restore_speech', payload);
+}
+
+export async function deleteSpeech(payload) {
+  return callAdmin('delete_speech', payload);
+}
+
+export async function setSpeechMode(payload) {
+  return callAdmin('set_speech_mode', payload);
+}
+
 export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
   if (ADMIN_DEMO) return { changed: false, reason: 'unchanged', file: null };
   return callAdminDrive('check', { fileId, expectedVersion, expectedChecksum });

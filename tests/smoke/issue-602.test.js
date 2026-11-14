@@ -85,7 +85,8 @@ describe('issue #602 encrypted speech redactions', () => {
       'AES-256-GCM',
     ]);
     expect(read('src/components/SpeakerView.jsx')).toContain('SecretScript');
-    expect(read('src/admin/AdminSpeechesPanel.jsx')).toContain('redactions');
+    expect(read('src/admin/AdminSpeechesPanel.jsx')).toContain('parseSpeechDoc');
+    expect(read('supabase/functions/_shared/speechBundle.js')).toContain('AES-256-GCM');
     expect(read('supabase/functions/reveal_speech_key/index.ts')).toContain(
       "payload.app_role !== 'speaker'",
     );
