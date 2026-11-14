@@ -262,8 +262,9 @@ supabase secrets set \
 ```
 
 `SPEECH_SECRET_MASTER_KEY` is a 32-byte random value used to derive per-speech
-AES-256-GCM keys for redacted speech text. Rotate it only with a re-import of
-affected speeches; `keyVersion` in each redaction supports staged rotation.
+AES-256-GCM keys for the dedicated whole-script speech bundle. Rotating it
+requires republishing affected speeches; the bundle keeps `keyVersion` on each
+encrypted entry so staged rotation remains possible.
 
 For production, `ALLOWED_ORIGIN` must be the deployed admin origin, not only
 localhost. Verify CORS `OPTIONS` responses and the `admin_drive` `status` action.
@@ -281,7 +282,7 @@ preflight succeeds again.
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
 4. Deploy the `admin_drive` and `admin_api` Edge Functions.
-5. Verify revoked sharing, service-account key rotation and token redaction.
+5. Verify revoked sharing and service-account key rotation.
 6. Run the smoke flow: preview, diff, fresh-MFA publish, offline catch-up and
    restore. No automatic publication may occur.
 
