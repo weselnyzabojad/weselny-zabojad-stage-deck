@@ -6143,4 +6143,60 @@ Docker stack instead of the hosted project.
 
 **Tracking.** [#917](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/917), [#918](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/918), [#919](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/919), [#920](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/920).
 
+### 17.71 Landing security disclosure (decision, 2026-11-14)
+
+The landing page gets one more public section: a closed-by-default explanation of
+how Stage Deck handles security. It is written for a semi-technical reader such
+as a couple or a wedding vendor, so each guarantee is stated in plain language
+first and the concrete mechanism is named in parentheses. The section is
+informational only; it adds no offer, no tracking and no external link.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change. Copy lives in `src/i18n/{pl,en,fr}.js` under
+`landing.security.*`; `LandingPage.jsx` only maps keys to disclosures.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | New **Security** section between the FAQ and the final contact banner: one lead paragraph plus five native `<details>` disclosures, all closed on load |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+| Deck, admin UI, Edge Functions, database | Unchanged |
+
+**Content contract.** Five disclosures, all self-contained:
+
+| Topic | Facts to state | Named standards/tools |
+| --- | --- | --- |
+| Transport & hosting | HTTPS-only delivery; Netlify front end with Supabase backend; headers block framing, sniffing and unwanted capabilities; no advertising or profiling trackers | TLS, HSTS preload, CSP, `X-Frame-Options: DENY`, Permissions-Policy |
+| Roles & access | Per-role 6-digit PIN stored as a bcrypt hash; five failures per room/role/IP in 15 minutes rejected; join returns a 24-hour role token; owner can list and revoke device sessions; rows scoped to wedding, role and active session | bcrypt, ES256 (ECDSA P-256) JWT, Postgres row-level security |
+| Admin protection | No public signup; explicit owner allowlist; password plus TOTP second factor before any admin action; actions audited server-side | TOTP, AAL2, allowlist |
+| Secrets & key rotation | Secrets only in the server-side Edge Function environment, never in the browser bundle; ES256 private key server-side with the public half published via JWKS; rotation without a shared-secret fallback; HS256 rejected; speaker secrets encrypted with per-speech keys | ES256/JWKS, HS256 removed (fail closed), AES-256-GCM, HKDF |
+| Data & retention | Per-wedding isolation; 30-day default expiry; scheduled purge deletes live state, roles and wedding row; archived weddings read-only; Sentry diagnostics with PII disabled, masked text and error-only replay; offline copy remains on the device and is cleared with browser storage | 30-day TTL, scheduled purge, Sentry privacy controls |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Placement | Dedicated section after FAQ, before the final contact banner |
+| Default state | Closed; no `open` attribute on any disclosure |
+| Packaging | Five `<details>` blocks reusing the FAQ pattern, not one long wall of text |
+| Depth | Plain language plus the named standard in parentheses |
+| Locales | PL primary, with complete EN and FR translations validated together |
+| Links | Self-contained; no repository or external links |
+| Sentry | Disclosed briefly and honestly |
+| Retention | Concrete 30-day default, purge behaviour and read-only archive |
+| Out of scope | npm audit/build-time dependency risk, security contact or disclosure channel |
+| Dependencies | None; no new package or asset |
+
+**Task split.** One atomic issue: a single view (`/`), one ownership boundary
+(landing section plus its three dictionaries) and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#921](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/921) | Security section on `/` with five closed disclosures, PL/EN/FR copy and a smoke test | - |
+
+**Open questions.** None.
+
+**Tracking.** [#921](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/921).
+
 
