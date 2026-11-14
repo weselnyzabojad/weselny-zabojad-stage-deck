@@ -154,7 +154,6 @@ Manager email: anna@venue.example
 Installation latest start: 12:00
 Load-in minutes: 45
 Setup minutes: 90
-Load-out minutes: 45
 Parking: Staff car park behind the building.
 Power: 2x 230V sockets at the DJ table.
 Loading dock: true

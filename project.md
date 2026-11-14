@@ -3646,6 +3646,13 @@ mapper and importer in
 The domain files remain the mapping contract; no runtime top-level replacement
 was added.
 
+Dead venue-access code was removed in
+[#947](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/947):
+`resolveVenueAccess()` and `mapsUrlFor()` in `src/lib/photoPlan.js`, the unused
+`venueDetails.installation.loadOutMinutes` field in the domain and its Edge
+mirror, and the matching `Load-out minutes:` template key. The remaining
+`venueDetails` contract is unchanged.
+
 ### 17.13 Embed ceremony, games and wishes in steps (decision, 2026-11-10)
 
 The remaining top-level feature blocks move into the timeline steps they belong

@@ -250,59 +250,6 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
   };
 }
 
-function mapsUrlFor(venue) {
-  const address = text(venue?.address);
-  if (address) {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  }
-  const lat = finite(venue?.coordinates?.latitude);
-  const lng = finite(venue?.coordinates?.longitude);
-  if (lat != null && lng != null) {
-    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-  }
-  return null;
-}
-
-export function resolveVenueAccess(wedding) {
-  const venue = wedding?.venueDetails;
-  if (!venue || typeof venue !== 'object') return null;
-
-  const manager = venue.manager && typeof venue.manager === 'object' ? venue.manager : null;
-  const installation =
-    venue.installation && typeof venue.installation === 'object' ? venue.installation : null;
-
-  const resolved = {
-    address: text(venue.address),
-    mapsUrl: mapsUrlFor(venue),
-    manager: manager
-      ? {
-          name: text(manager.name),
-          phone: text(manager.phone),
-          phoneHref: normalizePhoneHref(manager.phone),
-        }
-      : null,
-    installation: installation
-      ? {
-          windowStart: clockText(installation.windowStart),
-          windowEnd: clockText(installation.windowEnd),
-          latestStart: clockText(installation.latestStart),
-          loadInMinutes: Number.isFinite(installation.loadInMinutes)
-            ? installation.loadInMinutes
-            : null,
-          setupMinutes: Number.isFinite(installation.setupMinutes) ? installation.setupMinutes : null,
-          parking: text(installation.parking),
-          power: text(installation.power),
-          loadingDock: installation.loadingDock === true,
-          elevator: installation.elevator === true,
-          noiseCurfew: clockText(installation.noiseCurfew),
-        }
-      : null,
-    notes: text(venue.notes),
-  };
-
-  return resolved;
-}
-
 // Last fetched time for a STALE badge; accepts ISO strings only.
 export function sunsetFreshnessLabel(sunset) {
   if (!sunset?.lastFetchedAt || !isIsoTimestamp(sunset.lastFetchedAt)) return null;

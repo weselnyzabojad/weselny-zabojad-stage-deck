@@ -65,10 +65,6 @@
               "type": "integer",
               "minimum": 0
             },
-            "loadOutMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
             "parking": {
               "type": "string"
             },
