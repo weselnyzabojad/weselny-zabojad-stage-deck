@@ -6435,4 +6435,80 @@ enabled flags and existing game results stay.
 
 **Tracking.** [#930](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/930), [#931](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/931), [#932](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/932), [#933](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/933), [#934](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/934), [#935](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/935).
 
+### 17.74 UM wedding ID and private Drive secrets layout (decision, 2026-11-15)
+
+The internal `weddingId` becomes the production identifier
+`Name&Name-UM-YYYY-MM-NNN`, e.g. `Weronika&Guillaume-UM-2027-04-002`, read from
+`Wedding ID` in the Google Doc's `## EVENT` section. `room_code` and
+`/deck/<room_code>/<role>` URLs stay unchanged. The old
+`YYYY-MM-DD_slug` value is development-only and no production wedding uses it.
+
+Customer-visible Drive content and private wedding material are separated by
+folder, not by ACL changes inside a shared tree. Google Drive inherits parent
+folder access, so `secrets/` cannot safely live under a folder shared with the
+newlyweds. The customer folder contains `games/Test Wiedzy - <weddingId>`;
+private Docs live in a sibling `secrets/` root outside that folder.
+
+**Google Doc contract.** `## EVENT` → `Wedding ID` must match
+`^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$`; the prefix is filename-safe, with no
+spaces, accents or slashes. The value is required and is rejected in the old
+format at parse, admin and publish time. TTL/date logic uses `date` /
+`dateISO`, never a date parsed from `weddingId`.
+
+**Drive contract.** Relative to the annual/month root:
+
+```text
+2027/April/
+├── Weronika&Guillaume-UM-2027-04-002/
+│   └── games/
+│       └── Test Wiedzy - Weronika&Guillaume-UM-2027-04-002
+└── secrets/
+    ├── speeches/
+    │   └── Weronika&Guillaume-UM-2027-04-002 - 1 - Bartek - Best man
+    └── compatibility-test-game/
+        └── Test Zgodności - Weronika&Guillaume-UM-2027-04-002
+```
+
+`secrets/` contains exactly `speeches/` and `compatibility-test-game/`. It is
+resolved from the wedding folder's parent as a sibling, never created below the
+customer-visible folder. Speech and game filenames include `<weddingId>` because
+the month-level private folders are shared across weddings.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin | Creates Docs in the customer/private paths, shows the boundary, and offers an idempotent migration for existing Docs |
+| Customer Drive | Sees only `YYYY/Month/<weddingId>/` and Test Wiedzy; never `secrets/` |
+| Deck / MC / Speaker / DJ / Photographer / Venue / Song Request | No visual changes; only internal `weddingId` values and room keys change |
+
+**Invariant.** No speech script or Test Zgodności question may be created,
+moved or exposed below the customer-visible wedding folder.
+
+**Decision table.**
+
+| Topic | Decision |
+| --- | --- |
+| Identifier | Replace the internal `weddingId` value with `Name&Name-UM-YYYY-MM-NNN`; no separate code field |
+| Doc source | `## EVENT` → `Wedding ID` |
+| Room links | Keep `room_code` and `/deck/<room_code>/<role>` unchanged |
+| Customer folder | `YYYY/Month/<weddingId>/` with `games/Test Wiedzy - <weddingId>` |
+| Private root | `YYYY/Month/secrets/`, a sibling outside the customer folder |
+| Speech Docs | `secrets/speeches/<weddingId> - <order> - <speaker> - <relationship>` |
+| Zgodności Docs | `secrets/compatibility-test-game/Test Zgodności - <weddingId>` |
+| Existing Docs | Owner-triggered, idempotent move/rename migration; never delete or rewrite content |
+| Old IDs | Development-only; no production migration |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#967](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/967) | Replace `weddingId` with the UM contract across Doc, schema, parser, admin and fixtures | - |
+| 2 | [#968](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/968) | Customer-visible vs private Drive layout, filenames and permission boundary | #967 |
+| 3 | [#969](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/969) | Migrate and rename existing speech/game Docs to UM paths | #967, #968 |
+
+**Open questions.** None.
+
+**Tracking.** [#967](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/967), [#968](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/968), [#969](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/969).
+
 
