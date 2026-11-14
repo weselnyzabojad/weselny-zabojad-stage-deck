@@ -1,25 +1,38 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import Ajv2020 from 'ajv/dist/2020.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
 
-describe('issue #575 guest-coverage domain schema', () => {
-  it('defines the domain schema and validates its example', () => {
-    const domain = json('schema/domains/guest-coverage.json');
-    expect(domain.properties.guestCoverage.properties.groups.type).toBe('array');
-    expect(domain.properties.guestCoverage.properties.selectedGuests).toBeUndefined();
-    expect(domain.properties.guestCoverage.properties.consent).toBeUndefined();
-    const ajv = new Ajv2020({ allErrors: true, strict: false });
-    expect(ajv.compile(domain)(json('schema/domains/guest-coverage.example.json'))).toBe(true);
+describe('issue #575 group-photos domain schema after guest-coverage merge', () => {
+  it('removes the separate guest-coverage domain and photo-plan reference', () => {
+    expect(existsSync(new URL('../../schema/domains/guest-coverage.json', import.meta.url))).toBe(
+      false,
+    );
+    expect(
+      existsSync(new URL('../../schema/domains/guest-coverage.example.json', import.meta.url)),
+    ).toBe(false);
+    const photoPlan = json('schema/domains/photo-plan.json');
+    expect(photoPlan.properties.photoPlan.properties.guestCoverage).toBeUndefined();
+    expect(photoPlan.properties.photoPlan.properties.groupPhotos.$ref).toBe(
+      'https://weselnyzabojad.example/schemas/domains/group-photos.json#/properties/groupPhotos',
+    );
   });
 
-  it('references the domain from photo-plan.json', () => {
-    const photoPlan = json('schema/domains/photo-plan.json');
-    expect(photoPlan.properties.photoPlan.properties.guestCoverage.$ref).toBe(
-      'https://weselnyzabojad.example/schemas/domains/guest-coverage.json#/properties/guestCoverage',
+  it('carries the optional description in the group-photos domain and example', () => {
+    const domain = json('schema/domains/group-photos.json');
+    expect(domain.properties.groupPhotos.properties.description).toEqual({ type: 'string' });
+    expect(domain.properties.groupPhotos.properties.groups.items.required).toEqual([
+      'id',
+      'label',
+    ]);
+    const example = json('schema/domains/group-photos.example.json');
+    expect(example.groupPhotos.description).toBe(
+      'Formal photos with immediate family and witnesses only.',
     );
+    const ajv = new Ajv2020({ allErrors: true, strict: false });
+    expect(ajv.compile(domain)(example)).toBe(true);
   });
 
   it('removes guestCoverage from the photo-plan example', () => {

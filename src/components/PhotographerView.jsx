@@ -123,7 +123,6 @@ function PhotoPlanBlock({ type, data }) {
     miniSession: 'Mini session',
     groupPhotos: 'Group photos',
     specialEffects: 'Special effects',
-    guestCoverage: 'Guest coverage',
   }[type] ?? type;
 
   return (
@@ -166,23 +165,6 @@ function PhotoPlanBlock({ type, data }) {
             {data.heavySmoke ? <DeferredBadge>💨 Smoke</DeferredBadge> : null}
             {data.other ? <DeferredBadge>{data.other}</DeferredBadge> : null}
           </div>
-        ) : null}
-        {type === 'guestCoverage' ? (
-          <>
-            <Row
-              label="Coverage"
-              value={data.allGuests ? 'All guests' : 'Selected small groups'}
-            />
-            {data.groups?.length ? (
-              <Row
-                label="Groups"
-                value={data.groups.map((group) => group.label).join(', ')}
-              />
-            ) : null}
-            {data.description ? (
-              <p className="text-muted">{data.description}</p>
-            ) : null}
-          </>
         ) : null}
       </div>
     </div>
@@ -303,6 +285,7 @@ export default function PhotographerView({
             <GroupPhotoChecklist
               groups={groupEntry.data.groups}
               location={groupEntry.data.location}
+              description={groupEntry.data.description}
               mediaTeam={wedding?.mediaTeam}
               checked={checkedSubtasks}
               onToggle={onToggleSubtask}

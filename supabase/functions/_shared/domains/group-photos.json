@@ -15,6 +15,9 @@
         "location": {
           "type": "string"
         },
+        "description": {
+          "type": "string"
+        },
         "groups": {
           "type": "array",
           "items": {

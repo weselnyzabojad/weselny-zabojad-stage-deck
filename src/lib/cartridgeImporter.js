@@ -7,7 +7,6 @@ import coupleProfileDomain from '../../schema/domains/couple-profile.json';
 import photoPlanDomain from '../../schema/domains/photo-plan.json';
 import miniSessionDomain from '../../schema/domains/mini-session.json';
 import groupPhotosDomain from '../../schema/domains/group-photos.json';
-import guestCoverageDomain from '../../schema/domains/guest-coverage.json';
 import specialEffectsDomain from '../../schema/domains/special-effects.json';
 import cakeDomain from '../../schema/domains/cake.json';
 import musicPolicyDomain from '../../schema/domains/music-policy.json';
@@ -37,7 +36,6 @@ async function getValidator() {
       ajv.addSchema(photoPlanDomain);
       ajv.addSchema(miniSessionDomain);
       ajv.addSchema(groupPhotosDomain);
-      ajv.addSchema(guestCoverageDomain);
       ajv.addSchema(specialEffectsDomain);
       ajv.addSchema(cakeDomain);
       ajv.addSchema(musicPolicyDomain);
@@ -132,6 +130,59 @@ function migrateLegacyCouple(cartridge) {
   delete cartridge.couple;
 }
 
+// Issue #945: the retired guest-coverage block becomes part of the ordered
+// group-photo list. Keep groupPhotos order first, then append coverage groups
+// that are not already present (by id, then by normalized label). The merge is
+// idempotent because the source block is deleted after the first pass.
+function mergeGuestCoverageIntoGroupPhotos(cartridge) {
+  const plan = cartridge.photoPlan;
+  if (!plan || typeof plan !== 'object' || Array.isArray(plan)) return;
+
+  const coverage = plan.guestCoverage;
+  if (!coverage || typeof coverage !== 'object' || Array.isArray(coverage)) {
+    delete plan.guestCoverage;
+    return;
+  }
+
+  const groupPhotos =
+    plan.groupPhotos && typeof plan.groupPhotos === 'object' && !Array.isArray(plan.groupPhotos)
+      ? plan.groupPhotos
+      : {};
+  const groups = [];
+  const seenIds = new Set();
+  const seenLabels = new Set();
+
+  const append = (group) => {
+    if (!group || typeof group !== 'object' || Array.isArray(group)) return;
+    const id = typeof group.id === 'string' ? group.id.trim() : '';
+    const label = typeof group.label === 'string' ? group.label.trim() : '';
+    const idKey = id;
+    const labelKey = label.replace(/\s+/g, ' ').toLowerCase();
+    if (!idKey && !labelKey) return;
+    if ((idKey && seenIds.has(idKey)) || (labelKey && seenLabels.has(labelKey))) return;
+    if (idKey) seenIds.add(idKey);
+    if (labelKey) seenLabels.add(labelKey);
+    groups.push({ id, label });
+  };
+
+  const existingGroups = Array.isArray(groupPhotos.groups) ? groupPhotos.groups : [];
+  const coverageGroups = Array.isArray(coverage.groups) ? coverage.groups : [];
+  existingGroups.forEach(append);
+  coverageGroups.forEach(append);
+  if (Array.isArray(groupPhotos.groups) || coverageGroups.length > 0) {
+    groupPhotos.groups = groups;
+  }
+
+  if (typeof groupPhotos.description !== 'string' || !groupPhotos.description.trim()) {
+    const description =
+      typeof coverage.description === 'string' ? coverage.description.trim() : '';
+    if (description) groupPhotos.description = description;
+  }
+
+  plan.groupPhotos = groupPhotos;
+  delete plan.guestCoverage;
+}
+
 export function sanitizeCartridge(cartridge) {
   if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
     return cartridge;
@@ -139,6 +190,7 @@ export function sanitizeCartridge(cartridge) {
 
   const clean = JSON.parse(JSON.stringify(cartridge));
   migrateLegacyCouple(clean);
+  mergeGuestCoverageIntoGroupPhotos(clean);
   delete clean.venue;
   delete clean.venueLogistics;
   delete clean.venueDetails;

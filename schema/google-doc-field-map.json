@@ -60,14 +60,9 @@
     },
     "group-photos.example.json": {
       "groupPhotos.location": "required",
+      "groupPhotos.description": "optional",
       "groupPhotos.groups[].id": "no",
       "groupPhotos.groups[].label": "required"
-    },
-    "guest-coverage.example.json": {
-      "guestCoverage.allGuests": "required",
-      "guestCoverage.description": "optional",
-      "guestCoverage.groups[].id": "no",
-      "guestCoverage.groups[].label": "required"
     },
     "mini-session.example.json": {
       "miniSession.enabled": "required",

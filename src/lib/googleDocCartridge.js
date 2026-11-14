@@ -479,6 +479,7 @@ function mapPhotoPlan(source, warnings = []) {
     groupPhotos: {
       stepId: text(kv(source, 'Group photos step ID')),
       location,
+      description: text(kv(source, 'Group photos description')),
       groups,
     },
     specialEffects: (() => {
@@ -499,18 +500,6 @@ function mapPhotoPlan(source, warnings = []) {
         fire: fire ?? false,
         heavySmoke: heavySmoke ?? false,
         other: text(kv(source, 'Other effects')),
-      };
-    })(),
-    guestCoverage: (() => {
-      const allGuests = bool(kv(source, 'Guest coverage all guests'));
-      if (allGuests === null) warnings.push('GUEST COVERAGE: missing all guests');
-      return {
-        allGuests: allGuests ?? false,
-        description: text(kv(source, 'Guest coverage description')),
-        groups: list(kv(source, 'Guest coverage groups')).map((label) => ({
-          id: slug(label),
-          label,
-        })),
       };
     })(),
   };

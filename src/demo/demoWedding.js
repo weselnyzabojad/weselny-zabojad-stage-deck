@@ -103,10 +103,13 @@ export const DEMO_WEDDING = {
     },
     groupPhotos: {
       location: "OUTDOOR",
+      description: "Formal photos with immediate family and witnesses only.",
       groups: [
         { id: "bride_family", label: "Bride's family" },
         { id: "groom_family", label: "Groom's family" },
-        { id: "friends", label: "Friends" }
+        { id: "friends", label: "Friends" },
+        { id: "immediate_family", label: "Immediate family" },
+        { id: "witnesses", label: "Witnesses" }
       ],
       minGroupSize: 5,
       durationMin: 25
@@ -122,14 +125,6 @@ export const DEMO_WEDDING = {
         heavySmoke: true,
         other: true
       }
-    },
-    guestCoverage: {
-      allGuests: false,
-      description: "Formal photos with immediate family and witnesses only.",
-      groups: [
-        { id: "immediate_family", label: "Immediate family" },
-        { id: "witnesses", label: "Witnesses" }
-      ]
     }
   },
   oczepiny: {

@@ -205,13 +205,11 @@ Mini session location: Garden
 Mini session backup location: Ballroom window
 Group photos step ID:
 Group photos location: OUTDOOR
+Group photos description: Formal photos with immediate family and witnesses only.
 Sparklers: true
 Fire: false
 Heavy smoke: true
 Other effects: Cold sparks
-Guest coverage all guests: false
-Guest coverage description: Formal photos with immediate family and witnesses only.
-Guest coverage groups: Immediate family, Witnesses
 
 ### Group Photos
 

@@ -657,13 +657,15 @@ implemented in #378 and #379.
 
 **Photo plan into steps.** Delete the standalone Photo plan card and render each
 plan element inside its mapped step card: mini session, group photos, speed
-foto, special effects and guest coverage. Only `photoPlan.groupPhotos.stepId`
-is an explicit step binding; guest coverage and special effects use the
-documented deterministic title/keyword mapping. The mini session is placed by
-the photographer-chosen hour through `resolveMiniSessionTwinStepId()`, not by a
-`stepId`. Dead `stepId` reads for these blocks were removed in #944.
+foto and special effects. Only `photoPlan.groupPhotos.stepId` is an explicit
+step binding; special effects use the documented deterministic title/keyword
+mapping. The mini session is placed by the photographer-chosen hour through
+`resolveMiniSessionTwinStepId()`, not by a `stepId`. Dead `stepId` reads for
+these blocks were removed in #944. Guest coverage is merged into the ordered
+group-photo list and its optional description in #945.
 ([#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228),
-[#944](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/944))
+[#944](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/944),
+[#945](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/945))
 
 **Sunset & Golden Hour.** Keep the card in its current location. It disappears
 automatically once the mini session is done. The photographer can overwrite the
@@ -3336,13 +3338,12 @@ sub-blocks.
 | --- | --- | --- | --- |
 | miniSession | `schema/domains/mini-session.json` | `photoPlan.miniSession` | [#572](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/572) |
 | groupPhotos | `schema/domains/group-photos.json` | `photoPlan.groupPhotos` | [#573](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/573) |
-| guestCoverage | `schema/domains/guest-coverage.json` | `photoPlan.guestCoverage` | [#575](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/575) |
 | specialEffects | `schema/domains/special-effects.json` | `photoPlan.specialEffects` | [#576](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/576) |
 
 Notes:
 
 - `photoPlan` itself was extracted in [#565](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/565);
-  `wedding-cartridge.example.json` already omits it, so these five blocks are
+  `wedding-cartridge.example.json` already omits it, so these four blocks are
   moved out of `schema/domains/photo-plan.example.json` into per-sub-domain
   examples rather than deleted from the cartridge example again.
 - **`speedFoto` is a game, not a photo-plan sub-block.** It is modeled as a

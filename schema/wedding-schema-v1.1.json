@@ -589,6 +589,9 @@
             "location": {
               "type": "string"
             },
+            "description": {
+              "type": "string"
+            },
             "groups": {
               "type": "array",
               "items": {
@@ -641,39 +644,6 @@
                 },
                 "other": {
                   "type": "boolean"
-                }
-              }
-            }
-          }
-        },
-        "guestCoverage": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "allGuests": {
-              "type": "boolean"
-            },
-            "description": {
-              "type": "string"
-            },
-            "groups": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "id",
-                  "label"
-                ],
-                "properties": {
-                  "id": {
-                    "type": "string",
-                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
-                  },
-                  "label": {
-                    "type": "string",
-                    "minLength": 1
-                  }
                 }
               }
             }

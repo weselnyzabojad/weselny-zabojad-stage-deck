@@ -13,19 +13,18 @@ const timeline = [
 ];
 
 describe('issue #944 photo-plan dead stepId removal', () => {
-  it('drops stepId from guest coverage, special effects and mini session', () => {
+  it('drops stepId from special effects and mini session', () => {
     const plan = resolvePhotoPlan({
       photoPlan: {
         miniSession: { enabled: true, stepId: 'step_01', location: 'Garden' },
         groupPhotos: { stepId: 'step_02', groups: [] },
         specialEffects: { stepId: 'step_04', sparklers: true },
-        guestCoverage: { stepId: 'step_03', allGuests: true },
       },
     });
 
     expect(plan.miniSession).not.toHaveProperty('stepId');
     expect(plan.specialEffects).not.toHaveProperty('stepId');
-    expect(plan.guestCoverage).not.toHaveProperty('stepId');
+    expect(plan).not.toHaveProperty('guestCoverage');
   });
 
   it('keeps the group-photo explicit step binding', () => {
@@ -43,16 +42,14 @@ describe('issue #944 photo-plan dead stepId removal', () => {
     expect(map.step_01).toBeUndefined();
   });
 
-  it('maps guest coverage and special effects by title keywords', () => {
+  it('maps special effects by title keywords', () => {
     const plan = resolvePhotoPlan({
       photoPlan: {
-        guestCoverage: { allGuests: true },
         specialEffects: { sparklers: true },
       },
     });
 
     const map = mapPhotoPlanToSteps(plan, timeline);
-    expect(map.step_03[0]).toMatchObject({ type: 'guestCoverage' });
     expect(map.step_04[0]).toMatchObject({ type: 'specialEffects' });
   });
 
