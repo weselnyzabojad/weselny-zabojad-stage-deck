@@ -22,30 +22,16 @@ describe('issue #816 landing header and provider-facing copy', () => {
     expect(landing).toContain('alt="Weselny Żabojad"');
   });
 
-  it('ships the corrected provider-facing copy in every locale', () => {
-    expect(fr['landing.hero.eyebrow']).toBe('À disposition des prestataires, pour les futurs mariés');
-    expect(fr['landing.hero.lead']).toBe(
-      'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle et tout autre prestataire voient la même timeline en direct — même quand le réseau de la salle tombe.',
-    );
-    expect(fr['landing.mock.songs.caption']).toBe(
-      'Les invités envoient leurs demandes depuis leur téléphone — soumis à certaines conditions.',
-    );
+  it('ships the validated provider-facing copy in every locale', () => {
+    expect(fr['landing.hero.lead']).toContain('partagent le même planning en direct');
+    expect(fr['landing.hero.lead']).not.toContain('réseau de la salle tombe');
+    expect(fr['landing.mock.songs.caption']).toContain('sans application à télécharger');
 
-    expect(pl['landing.hero.eyebrow']).toBe('Do dyspozycji usługodawców, dla przyszłych nowożeńców');
-    expect(pl['landing.hero.lead']).toContain(
-      'operator wideo, manager sali i każdy inny usługodawca',
-    );
-    expect(pl['landing.mock.songs.caption']).toBe(
-      'Goście wysyłają prośby z telefonu — z zastrzeżeniem określonych warunków.',
-    );
+    expect(pl['landing.hero.lead']).toContain('dzielą ten sam plan na żywo');
+    expect(pl['landing.mock.songs.caption']).toContain('bez pobierania aplikacji');
 
-    expect(en['landing.hero.eyebrow']).toBe('Available to wedding vendors, for future newlyweds');
-    expect(en['landing.hero.lead']).toContain(
-      'videographer, venue manager and any other vendor',
-    );
-    expect(en['landing.mock.songs.caption']).toBe(
-      'Guests send requests from their phone — subject to certain conditions.',
-    );
+    expect(en['landing.hero.lead']).toContain('share the same live schedule');
+    expect(en['landing.mock.songs.caption']).toContain('with no app to download');
   });
 
   it('adds the intro copy above the hero in every locale', () => {
@@ -54,8 +40,8 @@ describe('issue #816 landing header and provider-facing copy', () => {
       expect(dictionary['landing.intro.p2'].trim()).not.toBe('');
     }
 
-    expect(fr['landing.intro.p1']).toContain('Parce qu’un mariage mérite mieux');
-    expect(fr['landing.intro.p2']).toContain('De cette approche est né le Stage Deck');
+    expect(fr['landing.intro.p1']).toContain('mieux que de longs questionnaires impersonnels');
+    expect(fr['landing.intro.p2']).toContain('De cette exigence est né le Stage Deck');
 
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));

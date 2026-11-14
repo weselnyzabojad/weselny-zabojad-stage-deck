@@ -17,19 +17,17 @@ afterEach(() => {
 
 describe('issue #826 landing intro vision card', () => {
   it('keeps the full copy and adds a highlight phrase in every locale', () => {
-    expect(fr['landing.intro.p1']).toContain(fr['landing.intro.p1.highlight']);
-    expect(fr['landing.intro.p2']).toContain('Stage Deck');
-
     for (const dictionary of [fr, pl, en]) {
-      expect(dictionary['landing.intro.p1'].trim()).not.toBe('');
-      expect(dictionary['landing.intro.p1.highlight'].trim()).not.toBe('');
-      expect(dictionary['landing.intro.p2'].trim()).not.toBe('');
+      expect(dictionary['landing.intro.p1']).toContain(
+        dictionary['landing.intro.p1.highlight'],
+      );
+      expect(dictionary['landing.intro.p2']).toContain('Stage Deck');
       expect(dictionary['landing.intro.p2.highlight']).toBe('Stage Deck');
     }
 
-    expect(fr['landing.intro.p1.highlight']).toBe('projet coconstruit');
-    expect(pl['landing.intro.p1.highlight']).toBe('wspólnie tworzony projekt');
-    expect(en['landing.intro.p1.highlight']).toBe('co-created project');
+    expect(fr['landing.intro.p1.highlight']).toBe('une écoute absolue');
+    expect(pl['landing.intro.p1.highlight']).toBe('z absolutną uwagą');
+    expect(en['landing.intro.p1.highlight']).toBe('absolute attention');
   });
 
   it('renders a layered card with both highlights in strong tags', () => {
@@ -44,7 +42,7 @@ describe('issue #826 landing intro vision card', () => {
     const html = renderToStaticMarkup(createElement(LandingPage));
 
     expect(html).toContain(
-      '<strong class="font-semibold not-italic text-[#8A6A2F]">projet coconstruit</strong>',
+      '<strong class="font-semibold not-italic text-[#8A6A2F]">une écoute absolue</strong>',
     );
     expect(html).toContain('<strong class="font-semibold text-[#8A6A2F]">Stage Deck</strong>');
 
