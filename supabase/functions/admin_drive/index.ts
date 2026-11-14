@@ -21,6 +21,7 @@ import {
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
 import { encryptSecret, parseSecretMarkers } from '../_shared/speechSecrets.js';
+import { buildSpeechDocTemplate, parseSpeechDoc, speechDocFilename } from '../_shared/speechDoc.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
 const connector = createGoogleDriveConnector({
@@ -82,9 +83,18 @@ async function handleRequest(req: Request) {
     const body = await req.json().catch(() => null);
     const action = typeof body?.action === 'string' ? body.action : '';
     if (
-      !['status', 'metadata', 'list', 'children', 'preview', 'check', 'parse_speech'].includes(
-        action,
-      )
+      ![
+        'status',
+        'metadata',
+        'list',
+        'children',
+        'preview',
+        'check',
+        'parse_speech',
+        'create_speech_doc',
+        'rename_speech_doc',
+        'parse_speech_doc',
+      ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
     }
@@ -123,6 +133,163 @@ async function handleRequest(req: Request) {
         checkedAt: new Date().toISOString(),
         files: result.files,
         nextPageToken: result.nextPageToken,
+      });
+    }
+
+    if (action === 'create_speech_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const weddingFolderId =
+        typeof body?.weddingFolderId === 'string' ? body.weddingFolderId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      const speakerName =
+        typeof body?.speakerName === 'string' ? body.speakerName.trim() : '';
+      const relationship =
+        typeof body?.relationship === 'string' ? body.relationship.trim() : '';
+      const speakerLanguage =
+        typeof body?.speakerLanguage === 'string' ? body.speakerLanguage.trim().toUpperCase() : '';
+      const mcLanguage =
+        typeof body?.mcLanguage === 'string' ? body.mcLanguage.trim().toUpperCase() : '';
+      const order = Number(body?.order);
+      if (
+        !weddingId ||
+        !weddingFolderId ||
+        !speechId ||
+        !speakerName ||
+        !Number.isInteger(order) ||
+        order < 1 ||
+        !/^[A-Z]{2}$/.test(speakerLanguage) ||
+        !/^[A-Z]{2}$/.test(mcLanguage)
+      ) {
+        return json({ error: 'Complete speech metadata is required.' }, 400);
+      }
+      if (speakerLanguage === mcLanguage) {
+        return json({ error: 'Speaker and MC languages must differ.' }, 400);
+      }
+      const folder = await connector.ensureSpeechFolder({ weddingFolderId });
+      const name = speechDocFilename({ order, speakerName, relationship });
+      const text = buildSpeechDocTemplate({
+        speakerName,
+        relationship,
+        speakerLanguage,
+        mcLanguage,
+      });
+      const file = await connector.createGoogleDoc({
+        parentId: folder.folder.id,
+        name,
+        text,
+      });
+      const { error } = await admin.from('speech_records').upsert(
+        {
+          wedding_id: weddingId,
+          id: speechId,
+          sort_order: order,
+          speaker_name: speakerName,
+          speaker_relationship: relationship || null,
+          speaker_language: speakerLanguage,
+          mc_language: mcLanguage,
+          drive_doc_id: file.id,
+          drive_doc_url: file.webViewLink ?? null,
+          drive_doc_name: file.name,
+          drive_doc_version: file.version ?? null,
+          drive_doc_modified_at: file.modifiedTime ?? null,
+          drive_doc_retrieved_at: new Date().toISOString(),
+          status: 'DRAFT',
+        },
+        { onConflict: 'wedding_id,id' },
+      );
+      if (error) throw error;
+      return json({ ok: true, action, folder: folder.folder, file });
+    }
+
+    if (action === 'rename_speech_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      const fileIdValue = typeof body?.fileId === 'string' ? body.fileId.trim() : '';
+      const order = Number(body?.order);
+      const speakerName =
+        typeof body?.speakerName === 'string' ? body.speakerName.trim() : '';
+      const relationship =
+        typeof body?.relationship === 'string' ? body.relationship.trim() : '';
+      if (!weddingId || !speechId || !fileIdValue || !Number.isInteger(order) || !speakerName) {
+        return json({ error: 'Complete rename metadata is required.' }, 400);
+      }
+      const name = speechDocFilename({ order, speakerName, relationship });
+      const file = await connector.renameFile({ fileId: fileIdValue, name });
+      await admin
+        .from('speech_records')
+        .update({
+          sort_order: order,
+          speaker_name: speakerName,
+          speaker_relationship: relationship || null,
+          drive_doc_name: file.name,
+          drive_doc_version: file.version ?? null,
+          drive_doc_modified_at: file.modifiedTime ?? null,
+          drive_doc_retrieved_at: new Date().toISOString(),
+        })
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId);
+      return json({ ok: true, action, file });
+    }
+
+    if (action === 'parse_speech_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      const fileIdValue = typeof body?.fileId === 'string' ? body.fileId.trim() : '';
+      const speakerLanguage =
+        typeof body?.speakerLanguage === 'string' ? body.speakerLanguage.trim().toUpperCase() : '';
+      const mcLanguage =
+        typeof body?.mcLanguage === 'string' ? body.mcLanguage.trim().toUpperCase() : '';
+      const order = Number(body?.order);
+      if (!weddingId || !speechId || !fileIdValue) {
+        return json({ error: 'weddingId, speechId and fileId are required.' }, 400);
+      }
+      const progress = ['fetch', 'parse', 'validate'];
+      const source = await connector.readSource(fileIdValue);
+      const parsed = parseSpeechDoc(source.text, {
+        speakerLanguage,
+        mcLanguage,
+        order: Number.isInteger(order) ? order : null,
+      });
+      const errors = parsed.errors;
+      if (errors.length > 0) {
+        await admin.from('speech_logs').insert(
+          errors.map((error) => ({
+            wedding_id: weddingId,
+            action: 'speech_parse_invalid',
+            doc_id: fileIdValue,
+            doc_version: source.file.version ?? null,
+            error_code: error.code,
+            message: error.message,
+          })),
+        );
+        return json(
+          {
+            ok: false,
+            action,
+            progress,
+            file: source.file,
+            errors,
+          },
+          422,
+        );
+      }
+      await admin
+        .from('speech_records')
+        .update({
+          drive_doc_version: source.file.version ?? null,
+          drive_doc_modified_at: source.file.modifiedTime ?? null,
+          drive_doc_retrieved_at: source.retrievedAt,
+          status: 'READY',
+        })
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId);
+      return json({
+        ok: true,
+        action,
+        progress: [...progress, 'encrypt'],
+        file: source.file,
+        pairs: parsed.pairs,
+        script: parsed.script,
       });
     }
 
