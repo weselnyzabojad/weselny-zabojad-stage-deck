@@ -11,15 +11,24 @@ Nothing in this guide points at the production project.
 
 ## Start the stack
 
+The repository keeps the base schema in `supabase/schema.sql` (not in the
+migrations folder), so local startup needs a temporary baseline migration
+before the versioned migrations can run. Do **not** commit this file:
+
 ```bash
-npx supabase start
+cp supabase/schema.sql supabase/migrations/00000000000000_base_schema.sql
+npx supabase start -x studio,imgproxy,storage-api,logflare,vector,supavisor
 npx supabase db reset
 npx supabase status
 ```
 
-`db reset` applies `supabase/migrations` in order. The local API and Studio are
-printed by `supabase status` (defaults: API `http://127.0.0.1:54321`, Studio
-`http://127.0.0.1:54323`).
+`-x` skips optional services to keep the local stack light; add them back if a
+specific task needs Studio, Storage or analytics. `db reset` applies the
+baseline first, then `supabase/migrations` in order. Remove the temporary
+baseline file after the stack is up.
+
+The local auth config enables TOTP enrollment/verification (`[auth.mfa.totp]`)
+so the owner admin flow can be exercised with a real authenticator.
 
 ## Serve the Edge Functions
 
