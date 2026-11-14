@@ -695,7 +695,6 @@ const pl = {
   'landing.contact.prefill': 'Kontaktuję się ze strony głównej Stage Deck (weselnyzabojad.pl).',
   'landing.footer.ctaTitle': 'Połączmy siły w dniu ślubu',
   'landing.footer.ctaBody': 'Marzycie o eleganckim, płynnym i perfekcyjnie zaplanowanym weselu? Porozmawiajmy o Waszych pragnieniach i odkryjcie, jak nasze dopasowane wsparcie robi całą różnicę.',
-  'landing.footer.crew': 'Logowanie ekipy',
   'landing.footer.note': 'Stage Deck · projekt Weselny Żabojad / Erick Caron',
 };
 

@@ -389,7 +389,7 @@ export default function LandingPage() {
 
       <footer className="border-t border-[#C5A059]/15 bg-[#FBF9F5]">
         <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6">
-          <div className="rounded-2xl border border-[#C5A059]/20 bg-white/80 px-5 py-8 text-center shadow-sm sm:px-8">
+          <div className="rounded-2xl border border-[#C5A059]/40 bg-white px-6 py-10 text-center shadow-lg shadow-[#C5A059]/10 sm:px-10 sm:py-12">
             <div className="flex items-center justify-center gap-4">
               <span
                 aria-hidden="true"
@@ -403,29 +403,23 @@ export default function LandingPage() {
                 className="h-px min-w-6 flex-1 bg-gradient-to-l from-transparent to-[#C5A059]/50"
               />
             </div>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
               <img
                 src={logoMark}
                 alt="DJ Mark"
-                className="h-14 w-auto object-contain sm:h-16"
+                className="h-20 w-auto object-contain sm:h-24"
               />
               <img
                 src={logoSzymoniak}
                 alt="DJ Szymoniak"
-                className="h-10 w-auto object-contain sm:h-12"
+                className="h-14 w-auto object-contain sm:h-16"
               />
             </div>
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 border-t border-[#C5A059]/15 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto w-full max-w-6xl border-t border-[#C5A059]/15 px-4 py-6 text-center text-xs text-muted sm:px-6">
           <span>{t('landing.footer.note')}</span>
-          <a
-            href="/join"
-            className="inline-flex min-h-11 items-center rounded px-2 font-semibold text-muted underline-offset-4 hover:text-ink hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-strong"
-          >
-            {t('landing.footer.crew')}
-          </a>
         </div>
       </footer>
     </div>

@@ -697,7 +697,6 @@ const fr = {
   'landing.contact.prefill': 'Je vous contacte depuis la page d’accueil Stage Deck (weselnyzabojad.pl).',
   'landing.footer.ctaTitle': 'Faisons équipe le jour J',
   'landing.footer.ctaBody': 'Envie d’un mariage élégant, fluide et parfaitement orchestré ? Échangeons sur vos envies et découvrez comment notre accompagnement sur-mesure fait toute la différence.',
-  'landing.footer.crew': 'Connexion de l’équipe mariage',
   'landing.footer.note': 'Stage Deck · un projet Weselny Żabojad / Erick Caron',
 };
 

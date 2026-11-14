@@ -693,7 +693,6 @@ const en = {
   'landing.contact.prefill': "I'm contacting you from the Stage Deck landing page (weselnyzabojad.pl).",
   'landing.footer.ctaTitle': 'Let’s team up on the big day',
   'landing.footer.ctaBody': 'Dreaming of an elegant, seamless and perfectly orchestrated wedding? Let’s talk about your wishes and discover how our tailored support makes all the difference.',
-  'landing.footer.crew': 'Wedding crew sign in',
   'landing.footer.note': 'Stage Deck · a Weselny Żabojad / Erick Caron project',
 };
 

@@ -22,9 +22,9 @@ describe('issue #827 footer DJ Mark logo', () => {
     const szymoniakBlock = landing.slice(szymoniakStart, landing.indexOf('</div>', szymoniakStart));
 
     expect(markBlock).toContain('alt="DJ Mark"');
-    expect(markBlock).toContain('h-14 w-auto object-contain sm:h-16');
+    expect(markBlock).toContain('h-20 w-auto object-contain sm:h-24');
     expect(szymoniakBlock).toContain('alt="DJ Szymoniak"');
-    expect(szymoniakBlock).toContain('h-10 w-auto object-contain sm:h-12');
+    expect(szymoniakBlock).toContain('h-14 w-auto object-contain sm:h-16');
   });
 
   it('renders both partner logos with their accessible names', () => {
