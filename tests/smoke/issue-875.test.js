@@ -5,7 +5,7 @@ import { ROLE_IDS, validateRoles } from '../../src/admin/adminUtils.js';
 
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
-const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
+const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];
 
 describe('issue #875 canonical role catalog', () => {
   it('has exactly the seven canonical roles and no photo role', () => {
@@ -26,10 +26,10 @@ describe('issue #875 canonical role catalog', () => {
       'const JOIN_ROLES = JOINABLE_ROLE_IDS;',
     );
     expect(read('supabase/functions/_shared/adminPublish.js')).toContain(
-      "export const ALLOWED_ROLES = ['mc', 'dj', 'speaker'];",
+      "export const ALLOWED_ROLES = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];",
     );
     const join = read('supabase/functions/join_room/index.ts');
-    expect(join).toContain("'photo1', 'photo2', 'video', 'venue_manager', 'speaker'");
+    expect(join).toContain("'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'");
     expect(join).not.toContain("'photo'");
   });
 

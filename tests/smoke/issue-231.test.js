@@ -9,7 +9,7 @@ const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), '
 describe('issue #231 separate media roles', () => {
   it('defines Photographer 1, Photographer 2 and Cameraman', () => {
     expect(MEDIA_ROLE_IDS).toEqual(['photo1', 'photo2', 'video']);
-    expect(ROLE_ORDER).toEqual(['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker']);
+    expect(ROLE_ORDER).toEqual(['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc']);
     for (const role of MEDIA_ROLE_IDS) expect(isMediaRole(role)).toBe(true);
   });
 

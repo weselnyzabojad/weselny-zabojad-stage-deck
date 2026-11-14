@@ -6,6 +6,8 @@
 // and callbacks so there is exactly one place to wire a future routed shell.
 
 import CakeCard from '../components/CakeCard';
+import DjSongRequestQueue from '../components/DjSongRequestQueue';
+import MusicPolicyCard from '../components/MusicPolicyCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
 import GrandEntranceCueCard from '../components/GrandEntranceCueCard';
@@ -92,6 +94,10 @@ export default function McMasterView({ model }) {
   roleSession,
   pairing,
   currentRole,
+  djMc = false,
+  djMcAccessToken = null,
+  djMcRoomCode = null,
+  musicPolicy,
   viewSwitch,
   roomCode,
   theme,
@@ -484,6 +490,20 @@ export default function McMasterView({ model }) {
 
           {speeches?.length > 0 ? (
             <SpeechesCard mode={speechMode} speeches={speeches} />
+          ) : null}
+
+          {djMc ? (
+            <section aria-label="DJ VIP" className="space-y-4">
+              <DjSongRequestQueue
+                enabled
+                role="dj"
+                accessToken={djMcAccessToken}
+                roomCode={djMcRoomCode}
+                variant="card"
+                discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+              />
+              <MusicPolicyCard policy={musicPolicy} />
+            </section>
           ) : null}
         </div>
       </main>

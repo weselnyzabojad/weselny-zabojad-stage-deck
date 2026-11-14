@@ -48,6 +48,7 @@ import {
   driveSourceChanged,
   normalizePublishRequest,
   normalizeRoles,
+  projectedRolesForPackage,
   publishCartridge,
 } from '../_shared/adminPublish.js';
 import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
@@ -756,9 +757,20 @@ async function handleRequest(req: Request) {
 
     if (action === 'rotate_pins') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-      const roles = normalizeRoles(body?.roles);
+      const requestedRoles = normalizeRoles(body?.roles);
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
-      if (roles.length === 0) return json({ error: 'Provide at least one role.' }, 400);
+      if (requestedRoles.length === 0) return json({ error: 'Provide at least one role.' }, 400);
+
+      const { data: weddingRow, error: weddingError } = await admin
+        .from('weddings')
+        .select('cartridge')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (weddingError) throw weddingError;
+      const roles = projectedRolesForPackage(
+        weddingRow?.cartridge?.servicePackage,
+        requestedRoles,
+      );
 
       const requestedPins = body?.pins && typeof body.pins === 'object' ? body.pins : null;
       const pins: Record<string, string> = {};

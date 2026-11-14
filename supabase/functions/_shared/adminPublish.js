@@ -6,13 +6,21 @@
 
 export const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 export const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
-export const ALLOWED_ROLES = ['mc', 'dj', 'speaker'];
+export const ALLOWED_ROLES = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];
 export const DEFAULT_ROLES = ['mc', 'dj'];
 const ROOM_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 
 export function normalizeRoles(value) {
   const requested = Array.isArray(value) && value.length > 0 ? value : DEFAULT_ROLES;
   return [...new Set(requested)].filter((role) => ALLOWED_ROLES.includes(role));
+}
+
+// DJ_MC is always one person: exactly one dj_mc role/PIN and no mc/dj rows.
+// Other packages never carry dj_mc.
+export function projectedRolesForPackage(servicePackage, roles = []) {
+  const normalized = normalizeRoles(roles);
+  if (servicePackage === 'DJ_MC') return ['dj_mc'];
+  return normalized.filter((role) => role !== 'dj_mc');
 }
 
 export function randomRoomCode(length = 8) {
@@ -222,6 +230,7 @@ export async function publishCartridge({ admin, request, actor, validate }) {
       stale: true,
     };
   }
+  request.roles = projectedRolesForPackage(cartridge.servicePackage, request.roles);
   if (!existing && request.roles.length === 0) {
     return { ok: false, status: 400, error: 'Provide at least one role for a new wedding.' };
   }
