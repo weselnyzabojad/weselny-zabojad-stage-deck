@@ -43,8 +43,8 @@ describe('issue #822 landing partner logos', () => {
     );
     const partnerBlock = landing.slice(start, end);
 
-    expect(partnerBlock).toContain("src={logoMark}");
-    expect(partnerBlock).toContain("src={logoSzymoniak}");
+    expect(partnerBlock).toContain('src={partner.logoUrl}');
+    expect(partnerBlock).toContain('{partners.map((partner) => (');
     expect(partnerBlock).not.toContain('<a');
   });
 });

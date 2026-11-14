@@ -1,5 +1,5 @@
-// Source-controlled VIP DJ registry. Identity data is read-only in admin and
-// never stored in the provider table; only the stable assignment id is.
+// Seed/fallback VIP DJ registry. The live registry is stored in `vip_djs` and
+// fetched by admin/landing; these records keep local/demo mode usable offline.
 export const VIP_DJS = [
   {
     id: 'dj_mark',

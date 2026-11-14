@@ -4,12 +4,19 @@
 // vendors. The deck is included with a booked Weselny Żabojad wedding; the
 // page contains no commercial offers, no tracking and no external assets.
 import LanguageToggle from './LanguageToggle';
+import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n/useI18n.js';
+import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import logo from '../assets/img/logo.png';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
 
 const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';
+
+const FALLBACK_PARTNERS = [
+  { id: 'dj_mark', displayName: 'DJ Mark', logoUrl: logoMark },
+  { id: 'dj_szymoniak', displayName: 'DJ Szymoniak', logoUrl: logoSzymoniak },
+];
 
 function buildContactHref(prefill) {
   const url = new URL(CONTACT_BASE);
@@ -178,6 +185,24 @@ function FeatureIcon({ index }) {
 
 export default function LandingPage() {
   const { t } = useI18n();
+  const [partners, setPartners] = useState(FALLBACK_PARTNERS);
+
+  useEffect(() => {
+    const config = getSyncConfig();
+    if (!config.enabled) return undefined;
+    const controller = new AbortController();
+    const headers = { apikey: config.anonKey, Authorization: `Bearer ${config.anonKey}` };
+    fetch(`${config.functionsUrl}/public_vip_djs`, { headers, signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        const rows = Array.isArray(data?.partners) ? data.partners : [];
+        const active = rows.filter((row) => row?.id && row?.displayName && row?.logoUrl);
+        if (active.length > 0) setPartners(active);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
   const contactHref = buildContactHref(t('landing.contact.prefill'));
   const features = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
     index,
@@ -404,16 +429,14 @@ export default function LandingPage() {
               />
             </div>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
-              <img
-                src={logoMark}
-                alt="DJ Mark"
-                className="h-20 w-auto object-contain sm:h-24"
-              />
-              <img
-                src={logoSzymoniak}
-                alt="DJ Szymoniak"
-                className="h-14 w-auto object-contain sm:h-16"
-              />
+              {partners.map((partner) => (
+                <img
+                  key={partner.id}
+                  src={partner.logoUrl}
+                  alt={partner.displayName}
+                  className="h-20 w-auto object-contain sm:h-24"
+                />
+              ))}
             </div>
           </div>
         </div>

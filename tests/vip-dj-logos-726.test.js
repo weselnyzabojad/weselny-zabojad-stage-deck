@@ -10,13 +10,13 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const exists = (path) => existsSync(new URL(`../${path}`, import.meta.url));
 
 describe('issue #726 VIP DJ logos', () => {
-  it('keeps the registry limited to Mark and Szymoniak', () => {
+  it('keeps the seeded registry and accepts registered identities on VIP packages', () => {
     expect(VIP_DJS.map((dj) => dj.id)).toEqual(['dj_mark', 'dj_szymoniak']);
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP' })).toBe('vip');
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_STANDARD' })).toBe('standard');
     expect(
       djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP', djIdentityId: 'unknown_dj' }),
-    ).toBe('standard');
+    ).toBe('vip');
   });
 
   it('renders the matching logo for each VIP identity', () => {

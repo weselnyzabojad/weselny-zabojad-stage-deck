@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   deactivateProvider,
+  deactivateVipDj,
   deleteProvider,
   listProviders,
+  listVipDjs,
   upsertProvider,
+  upsertVipDj,
 } from './adminApi.js';
-import { VIP_DJS } from '../lib/vipDjs.js';
 import { AdminConfirmDialog } from './AdminDialogs';
 
 const CATEGORIES = [
@@ -33,10 +35,25 @@ const EMPTY_FORM = {
   active: true,
 };
 
+const EMPTY_VIP_FORM = {
+  id: '',
+  displayName: '',
+  phone: '',
+  instagram: '',
+  logoUrl: '',
+  packageDefault: '',
+  sortOrder: 0,
+  active: true,
+};
+
 export default function AdminServiceProviders({ wedding, readOnly = false, onChanged = null }) {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [providers, setProviders] = useState([]);
+  const [vipDjs, setVipDjs] = useState([]);
+  const [vipForm, setVipForm] = useState(EMPTY_VIP_FORM);
+  const [vipError, setVipError] = useState('');
+  const [vipSaving, setVipSaving] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -50,8 +67,12 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
     setLoading(true);
     setError('');
     try {
-      const result = await listProviders(wedding.wedding_id);
+      const [result, registry] = await Promise.all([
+        listProviders(wedding.wedding_id),
+        listVipDjs(),
+      ]);
       setProviders(result.providers ?? []);
+      setVipDjs(registry.vipDjs ?? []);
       setLoaded(true);
     } catch (cause) {
       setError(cause?.message ?? 'Could not load providers.');
@@ -143,6 +164,48 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
     }
   };
 
+  const editVip = (dj) => {
+    setVipForm({
+      id: dj.id,
+      displayName: dj.display_name ?? '',
+      phone: dj.phone ?? '',
+      instagram: dj.instagram ?? '',
+      logoUrl: dj.logo_url ?? '',
+      packageDefault: dj.package_default ?? '',
+      sortOrder: dj.sort_order ?? 0,
+      active: dj.active !== false,
+    });
+    setVipError('');
+  };
+
+  const submitVip = async (event) => {
+    event.preventDefault();
+    setVipError('');
+    setVipSaving(true);
+    try {
+      await upsertVipDj({
+        ...vipForm,
+        packageDefault: vipForm.packageDefault || null,
+      });
+      setVipForm(EMPTY_VIP_FORM);
+      await load();
+    } catch (cause) {
+      setVipError(cause?.message ?? 'Could not save the VIP DJ.');
+    } finally {
+      setVipSaving(false);
+    }
+  };
+
+  const deactivateVip = async (dj) => {
+    setVipError('');
+    try {
+      await deactivateVipDj(dj.id);
+      await load();
+    } catch (cause) {
+      setVipError(cause?.message ?? 'Could not deactivate the VIP DJ.');
+    }
+  };
+
   const grouped = CATEGORIES.map(([category, label]) => ({
     category,
     label,
@@ -171,21 +234,115 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
 
       <div className="mt-2 rounded border border-line bg-card/70 px-2 py-1.5">
         <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-muted">
-          VIP DJ registry · read-only
+          VIP DJ registry
         </p>
         <ul className="mt-1 space-y-0.5">
-          {VIP_DJS.map((dj) => (
+          {vipDjs.map((dj) => (
             <li key={dj.id} className="flex flex-wrap items-center gap-1.5 text-[10px]">
-              <span className="font-semibold text-ink">{dj.displayName}</span>
+              <span className="font-semibold text-ink">{dj.display_name}</span>
               <span className="rounded border border-brand-strong bg-brand/30 px-1 py-0.5 font-mono text-[8px] font-bold text-brand-tint">
-                {dj.tier}
+                {dj.active === false ? 'INACTIVE' : 'VIP'}
               </span>
               <span className="font-mono text-[9px] text-muted">
-                {dj.phone} · {dj.instagram}
+                {dj.id}
+                {dj.package_default ? ` · ${dj.package_default}` : ''}
+              </span>
+              <span className="ml-auto flex gap-1">
+                <button
+                  type="button"
+                  onClick={() => editVip(dj)}
+                  disabled={readOnly}
+                  className="rounded border border-line px-1.5 py-0.5 text-[9px] text-ink disabled:opacity-40"
+                >
+                  Edit
+                </button>
+                {dj.active !== false ? (
+                  <button
+                    type="button"
+                    onClick={() => deactivateVip(dj)}
+                    disabled={readOnly}
+                    className="rounded border border-amber-800 px-1.5 py-0.5 text-[9px] text-amber-200 disabled:opacity-40"
+                  >
+                    Deactivate
+                  </button>
+                ) : null}
               </span>
             </li>
           ))}
         </ul>
+        <form onSubmit={submitVip} className="mt-2 grid gap-1.5 sm:grid-cols-2">
+          <input
+            aria-label="VIP DJ id"
+            placeholder="id (lowercase)"
+            value={vipForm.id}
+            onChange={(event) => setVipForm((current) => ({ ...current, id: event.target.value }))}
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 font-mono text-[10px] text-ink"
+          />
+          <input
+            aria-label="VIP DJ display name"
+            placeholder="Display name"
+            value={vipForm.displayName}
+            onChange={(event) =>
+              setVipForm((current) => ({ ...current, displayName: event.target.value }))
+            }
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
+          />
+          <input
+            aria-label="VIP DJ phone"
+            placeholder="Phone (private)"
+            value={vipForm.phone}
+            onChange={(event) => setVipForm((current) => ({ ...current, phone: event.target.value }))}
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
+          />
+          <input
+            aria-label="VIP DJ Instagram"
+            placeholder="Instagram (private)"
+            value={vipForm.instagram}
+            onChange={(event) =>
+              setVipForm((current) => ({ ...current, instagram: event.target.value }))
+            }
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
+          />
+          <input
+            aria-label="VIP DJ logo URL"
+            placeholder="Logo URL"
+            value={vipForm.logoUrl}
+            onChange={(event) =>
+              setVipForm((current) => ({ ...current, logoUrl: event.target.value }))
+            }
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
+          />
+          <select
+            aria-label="VIP DJ package default"
+            value={vipForm.packageDefault}
+            onChange={(event) =>
+              setVipForm((current) => ({ ...current, packageDefault: event.target.value }))
+            }
+            disabled={readOnly}
+            className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
+          >
+            <option value="">No package default</option>
+            <option value="HOST_AND_DJ_VIP">HOST_AND_DJ_VIP</option>
+            <option value="DJ_MC">DJ_MC</option>
+          </select>
+          <button
+            type="submit"
+            disabled={readOnly || vipSaving}
+            className="rounded border border-brand-strong bg-brand/30 px-2 py-1 text-[10px] font-bold text-brand-tint disabled:opacity-40 sm:col-span-2"
+          >
+            {vipSaving ? 'Saving…' : vipForm.id ? 'Save VIP DJ' : 'Add VIP DJ'}
+          </button>
+        </form>
+        {vipError ? (
+          <p className="mt-1 text-[10px] text-alert-soft" role="alert">
+            {vipError}
+          </p>
+        ) : null}
       </div>
 
       {error ? (
@@ -309,9 +466,9 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
                 onChange={(event) => setForm((current) => ({ ...current, vipDjId: event.target.value }))}
                 className="mt-0.5 w-full rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
               >
-                <option value="">Package default (DJ Mark for VIP/MC+DJ)</option>
-                {VIP_DJS.map((dj) => (
-                  <option key={dj.id} value={dj.id}>{dj.displayName}</option>
+                <option value="">Package default</option>
+                {vipDjs.filter((dj) => dj.active !== false).map((dj) => (
+                  <option key={dj.id} value={dj.id}>{dj.display_name}</option>
                 ))}
               </select>
             </label>

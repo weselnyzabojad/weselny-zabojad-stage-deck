@@ -30,10 +30,11 @@ describe('issue #880 DJ_MC combined role', () => {
     ]);
   });
 
-  it('keeps DJ_MC VIP-only for Mark/Szymoniak', () => {
+  it('keeps DJ_MC VIP-only for registered identities', () => {
     expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: 'dj_mark' })).toBeNull();
-    expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: 'other' })).toContain(
-      'DJ Mark or DJ Szymoniak',
+    expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: 'other' })).toBeNull();
+    expect(vipAssignmentError({ servicePackage: 'DJ_MC', djIdentityId: null })).toContain(
+      'active VIP DJ',
     );
   });
 
