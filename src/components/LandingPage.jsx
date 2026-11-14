@@ -217,6 +217,10 @@ export default function LandingPage() {
     q: t(`landing.faq.${index}.q`),
     a: t(`landing.faq.${index}.a`),
   }));
+  const securityTopics = ['transport', 'access', 'admin', 'secrets', 'data'].map((topic) => ({
+    q: t(`landing.security.${topic}.q`),
+    a: t(`landing.security.${topic}.a`),
+  }));
 
   return (
     <div
@@ -378,6 +382,26 @@ export default function LandingPage() {
                 </details>
               ))}
             </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="landing-security" className="border-t border-line">
+          <div className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-6">
+            <SectionTitle id="landing-security">{t('landing.security.title')}</SectionTitle>
+            <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">
+              {t('landing.security.lead')}
+            </p>
+            <div className="mt-6 space-y-3">
+              {securityTopics.map((topic) => (
+                <details key={topic.q} className="rounded-xl border border-line bg-card px-4 py-3">
+                  <summary className="cursor-pointer break-words font-heading text-sm font-semibold text-ink">
+                    {topic.q}
+                  </summary>
+                  <p className="mt-2 break-words text-sm leading-relaxed text-muted">{topic.a}</p>
+                </details>
+              ))}
+            </div>
+            <p className="mt-6 text-sm leading-relaxed text-muted">{t('landing.security.closing')}</p>
           </div>
         </section>
 
