@@ -22,7 +22,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     ).toBe('RELIGIOUS');
   });
 
-  it('maps the timeline and derived durations', () => {
+  it('maps the timeline without storing derived durations', () => {
     expect(result.cartridge.steps.map((step) => step.id)).toEqual(
       expect.arrayContaining([
         'step_01',
@@ -38,7 +38,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
         'step_12',
       ]),
     );
-    expect(result.cartridge.steps.find((step) => step.id === 'step_01').durationMin).toBe(30);
+    expect(result.cartridge.steps.every((step) => !('durationMin' in step))).toBe(true);
     const entrance = result.cartridge.steps.find((step) => step.id === 'step_03');
     expect(entrance.grandEntranceOrder).toBe('NEWLYWEDS_FIRST');
     const firstDance = result.cartridge.steps.find((step) => step.id === 'step_08');

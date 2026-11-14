@@ -16,7 +16,6 @@ import stepsDomain from '../../schema/domains/steps.json';
 import speechesDomain from '../../schema/domains/speeches.json';
 import witnessesDomain from '../../schema/domains/witnesses.json';
 import { collectSemanticErrors } from './cartridgeValidation';
-import { applyCalculatedDurations } from './stepDurations.js';
 import { coupleDisplayName } from './coupleIdentity.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
 
@@ -153,19 +152,13 @@ export function sanitizeCartridge(cartridge) {
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
     if (!step || typeof step !== 'object') continue;
+    delete step.durationMin;
     for (const field of DEPRECATED_STEP_FIELDS) delete step[field];
   }
 
   if (clean.liveSyncState && typeof clean.liveSyncState === 'object') {
     delete clean.liveSyncState.deferred_step_ids;
     delete clean.liveSyncState.manual_offset_minutes;
-  }
-
-  if (Array.isArray(clean.steps)) {
-    const closureTime =
-      clean.steps.find((step) => step?.mandatory?.kind === 'CLOSURE')?.time ?? null;
-    const computed = applyCalculatedDurations(clean.steps, { closureTime });
-    if (computed.errors.length === 0) clean.steps = computed.steps;
   }
 
   return clean;

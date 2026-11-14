@@ -19,6 +19,7 @@ import {
 } from './eventTime.js';
 import { buildHardAnchorRadar } from './hardAnchorRadar.js';
 import { buildReelClock } from './reelClock.js';
+import { calculateStepDurations } from './stepDurations.js';
 
 export { clockDeltaMinutes, clockToMinutes };
 
@@ -86,13 +87,15 @@ export function buildTimeline(
   const { eventDateISO = null, timeZone = 'UTC' } = eventContext;
   const completed = new Set(liveState?.completed_step_ids ?? []);
   const actuals = liveState?.actual_timestamps ?? {};
+  const closureTime =
+    steps.find((step) => step?.mandatory?.kind === 'CLOSURE')?.time ?? null;
+  const { durations } = calculateStepDurations(steps, { closureTime });
   let cursor = null;
 
   const entries = steps.map((step, index) => {
     const plannedStart = stepPlannedStart(step);
-    const plannedDurationMin = Number.isFinite(step.durationMin) ? step.durationMin : null;
-    const durationMin = plannedDurationMin;
-    const plannedEnd = addMinutesToClock(plannedStart, plannedDurationMin);
+    const durationMin = Number.isFinite(durations[index]) ? durations[index] : null;
+    const plannedEnd = addMinutesToClock(plannedStart, durationMin);
 
     // TODO 23: actual starts are ISO internally; legacy HH:MM still loads and
     // is rendered as-is until the normalizer upgrades it.
@@ -162,9 +165,7 @@ export function buildTimeline(
       actualDate,
       projectedStart,
       projectedEnd,
-      plannedDurationMin,
       durationMin,
-      durationAdjusted: durationMin !== plannedDurationMin,
       actualDriftMinutes,
       projectedDriftMinutes,
       driftMinutes,

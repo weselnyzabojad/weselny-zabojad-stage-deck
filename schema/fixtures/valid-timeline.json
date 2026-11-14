@@ -2,8 +2,14 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_test_wedding",
   "coupleProfile": {
-    "bride": { "firstName": "Test", "nationalities": [] },
-    "groom": { "firstName": "Couple", "nationalities": [] },
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
     "commonLanguages": []
   },
   "date": "20.08.2026",
@@ -24,7 +30,6 @@
     {
       "id": "step_01",
       "time": "16:30",
-      "durationMin": 30,
       "title": "Aperitif",
       "type": "FLEXIBLE",
       "location": "Garden"
@@ -32,7 +37,6 @@
     {
       "id": "step_02",
       "time": "17:30",
-      "durationMin": 60,
       "title": "Dinner",
       "type": "FLEXIBLE",
       "location": "Hall"
@@ -40,10 +44,20 @@
     {
       "id": "step_03",
       "time": "20:30",
-      "durationMin": 30,
       "title": "Cake",
       "type": "HARD_ANCHOR",
       "location": "Terrace"
+    },
+    {
+      "id": "closure",
+      "time": "21:30",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure"
+      }
     }
   ],
   "hardAnchors": [

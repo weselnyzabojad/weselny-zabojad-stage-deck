@@ -279,7 +279,7 @@ export default function PhotographerView({
   const miniTwinStepId = resolveMiniSessionTwinStepId(timeline, miniSessionOverride);
   const miniTwinDuration = timeline.find(
     (entry) => entry?.step?.id === miniTwinStepId,
-  )?.step?.durationMin;
+  )?.durationMin;
   const miniSessionDuration = Number.isFinite(miniTwinDuration) ? miniTwinDuration : null;
   const miniSessionStart = miniSessionOverride
     ? clockToEventDate({ clock: miniSessionOverride, eventDateISO, timeZone, after: now })

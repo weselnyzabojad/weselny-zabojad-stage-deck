@@ -184,7 +184,11 @@ export function validateFieldMap({ mapPath = FIELD_MAP_PATH } = {}) {
       if (!FIELD_STATUSES.has(status)) {
         errors.push(`${fileName}: field ${fieldPath} has unknown status ${JSON.stringify(status)}.`);
       }
-      if (!leafSet.has(fieldPath) && !isContainerFor(fieldPath, leaves)) {
+      if (
+        status !== 'delete' &&
+        !leafSet.has(fieldPath) &&
+        !isContainerFor(fieldPath, leaves)
+      ) {
         errors.push(`${fileName}: flagged field ${fieldPath} does not exist in the example.`);
       }
     }

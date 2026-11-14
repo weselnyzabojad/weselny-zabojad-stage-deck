@@ -2,8 +2,14 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_test_wedding",
   "coupleProfile": {
-    "bride": { "firstName": "Test", "nationalities": [] },
-    "groom": { "firstName": "Couple", "nationalities": [] },
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
     "commonLanguages": []
   },
   "date": "20.08.2026",
@@ -24,13 +30,23 @@
     {
       "id": "step_01",
       "time": "16:30",
-      "durationMin": 70,
       "title": "Legacy Buffer Field",
       "type": "FLEXIBLE",
       "location": "Garden",
       "buffer": {
         "minDurationMin": 60,
         "maxDurationMin": 30
+      }
+    },
+    {
+      "id": "closure",
+      "time": "17:30",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure"
       }
     }
   ]

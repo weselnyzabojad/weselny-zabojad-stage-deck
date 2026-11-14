@@ -32,10 +32,15 @@ Supported: FR, PL
 | gorzko | NO |  |
 | breadSalt | YES |  |
 
+## MANDATORY STEPS
+| Field | Time |
+| --- | --- |
+| Wedding closure | 18:00 |
+
 ## TIMELINE
-| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:00 | 15 | Grand Entrance | FLEXIBLE | Main Hall |  | false |  |  |
+| Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| step_01 | 16:00 | Grand Entrance | FLEXIBLE | Main Hall |  | false |  |  |
 
 ## NOTES
 | Step ID | Notes |

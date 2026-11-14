@@ -35,8 +35,8 @@ describe('issue #672 steps Google Doc source flags', () => {
 
   it('warns and omits an unknown optional flag', () => {
     const source = template.replace(
-      '| step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |',
-      '| step_09 | 00:00 | 60 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | mystery |  |',
+      '| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |',
+      '| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | mystery |  |',
     );
     const result = parse(source);
 

@@ -48,7 +48,15 @@ const BASE_CARTRIDGE = {
     bread_salt: { status: 'TBC' },
   },
   steps: [
-    { id: 'arrival', time: '16:00', durationMin: 30, title: 'Arrival', type: 'FLEXIBLE', location: 'Garden' },
+    { id: 'arrival', time: '16:00', title: 'Arrival', type: 'FLEXIBLE', location: 'Garden' },
+    {
+      id: 'closure',
+      time: '17:00',
+      title: 'Wedding closure',
+      type: 'HARD_ANCHOR',
+      location: 'Garden',
+      mandatory: { kind: 'CLOSURE', label: 'Wedding closure' },
+    },
   ],
 };
 

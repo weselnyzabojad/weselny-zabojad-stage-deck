@@ -1,4 +1,4 @@
-import { applyCalculatedDurations } from './stepDurations.js';
+import { calculateStepDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
 import { normalizeLiveSyncState, normalizePrivacy } from '../config/index.js';
@@ -334,7 +334,6 @@ function mapTimeline(source, warnings) {
   const rows = table(source, [
     'Step ID',
     'Time',
-    'Duration (min)',
     'Title',
     'Type',
     'Location',
@@ -357,7 +356,6 @@ function mapTimeline(source, warnings) {
     const step = {
       id,
       time,
-      durationMin: int(row['Duration (min)'], 1),
       title,
       type,
       location: text(row.Location) ?? 'Venue',
@@ -1024,13 +1022,11 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     ? normalizeLiveSyncState(mapLiveSync(liveSyncSource, stepsWithMandatory))
     : undefined;
 
-  const calculated = applyCalculatedDurations(stepsWithMandatory, {
+  const calculated = calculateStepDurations(stepsWithMandatory, {
     closureTime: mandatorySettings.closureTime,
   });
   if (calculated.errors.length) {
     errors.push(...calculated.errors.map((message) => `TIMELINE: ${message}`));
-  } else {
-    stepsWithMandatory.splice(0, stepsWithMandatory.length, ...calculated.steps);
   }
 
   const cartridge = {

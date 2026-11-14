@@ -28,7 +28,6 @@ const EXPECTED_TABLES = {
   'TIMELINE': [
     'Step ID',
     'Time',
-    'Duration (min)',
     'Title',
     'Type',
     'Location',
