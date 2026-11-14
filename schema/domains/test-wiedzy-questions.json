@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/test-wiedzy-questions.json",
+  "title": "Test Wiedzy question set",
+  "description": "Parsed Test Wiedzy question set. Prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.supported. Level is EASY/MEDIUM/HARD and Answer is the BRIDE/GROOM token; the display layer resolves names from coupleProfile.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gameType",
+    "questions"
+  ],
+  "properties": {
+    "gameType": {
+      "const": "TEST_WIEDZY"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    }
+  },
+  "$defs": {
+    "localizedPrompt": {
+      "type": "object",
+      "description": "One prompt per supported language. Keys are ISO 639-1 codes; values are copied verbatim from the Doc.",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Z]{2}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "EASY",
+        "MEDIUM",
+        "HARD"
+      ]
+    },
+    "answer": {
+      "type": "string",
+      "enum": [
+        "BRIDE",
+        "GROOM"
+      ],
+      "description": "Stable token; never the couple's resolved first name."
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "prompt",
+        "level",
+        "answer"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "prompt": {
+          "$ref": "#/$defs/localizedPrompt"
+        },
+        "level": {
+          "$ref": "#/$defs/level"
+        },
+        "answer": {
+          "$ref": "#/$defs/answer"
+        }
+      }
+    }
+  }
+}

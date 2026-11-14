@@ -6,10 +6,15 @@
 // key, Authorization headers or raw Google error payloads.
 
 export const DRIVE_READONLY_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+// Issue #924/#932: the service account creates and rewrites its own Docs. Pair
+// drive.file (write only files this app creates) with readonly (read the shared
+// wedding tree). Do not request full `drive` scope.
+export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+export const DRIVE_REQUEST_SCOPES = `${DRIVE_READONLY_SCOPE} ${DRIVE_FILE_SCOPE}`;
 export const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 export const GOOGLE_DRIVE_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/files';
 export const DRIVE_METADATA_FIELDS =
-  'id,name,mimeType,modifiedTime,version,md5Checksum,size';
+  'id,name,mimeType,modifiedTime,version,md5Checksum,size,parents,webViewLink';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
 export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
@@ -105,7 +110,7 @@ export async function signServiceAccountAssertion({
   const claims = base64UrlText(
     JSON.stringify({
       iss: clientEmail,
-      scope: DRIVE_READONLY_SCOPE,
+      scope: DRIVE_REQUEST_SCOPES,
       aud: GOOGLE_TOKEN_ENDPOINT,
       iat: nowSeconds,
       exp: nowSeconds + lifetimeSeconds,
@@ -151,6 +156,10 @@ function sanitizedMetadata(payload) {
     version: typeof payload?.version === 'string' ? payload.version : null,
     md5Checksum: typeof payload?.md5Checksum === 'string' ? payload.md5Checksum : null,
     size: typeof size === 'string' ? size : Number.isFinite(size) ? String(size) : null,
+    parents: Array.isArray(payload?.parents)
+      ? payload.parents.filter((parent) => typeof parent === 'string')
+      : null,
+    webViewLink: typeof payload?.webViewLink === 'string' ? payload.webViewLink : null,
   };
 }
 
@@ -439,16 +448,28 @@ export function createGoogleDriveConnector({
     return sanitizedMetadata(await readJson(response));
   }
 
-  async function ensureSpeechFolder({ weddingFolderId, segments = ['secrets', 'speeches'] }) {
+  async function ensureFolderPath({ weddingFolderId, segments = [] }) {
     let parent = typeof weddingFolderId === 'string' ? weddingFolderId.trim() : '';
     if (!parent) throw createDriveError('drive_invalid_request', 'A wedding folder id is required.');
+    const path = Array.isArray(segments) ? segments : [];
+    if (path.length === 0) {
+      throw createDriveError('drive_invalid_request', 'At least one folder name is required.');
+    }
     const created = [];
-    for (const segment of segments) {
-      const folder = await createFolder({ parentId: parent, name: segment });
+    for (const segment of path) {
+      const folderName = typeof segment === 'string' ? segment.trim() : '';
+      if (!folderName) {
+        throw createDriveError('drive_invalid_request', 'Folder names cannot be empty.');
+      }
+      const folder = await createFolder({ parentId: parent, name: folderName });
       created.push(folder);
       parent = folder.id;
     }
     return { folder: created[created.length - 1], folders: created };
+  }
+
+  async function ensureSpeechFolder({ weddingFolderId, segments = ['secrets', 'speeches'] }) {
+    return ensureFolderPath({ weddingFolderId, segments });
   }
 
   async function createGoogleDoc({ parentId, name, text }) {
@@ -484,6 +505,28 @@ export function createGoogleDriveConnector({
         method: 'POST',
         headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
         body,
+      },
+    );
+    return sanitizedMetadata(await readJson(response));
+  }
+
+  async function updateGoogleDocText({ fileId, text }) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    const content = typeof text === 'string' ? text : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    if (!content.trim()) {
+      throw createDriveError('drive_invalid_request', 'Question Doc content cannot be empty.');
+    }
+    const endpoint = filesEndpoint.replace(
+      'https://www.googleapis.com/drive/v3/files',
+      'https://www.googleapis.com/upload/drive/v3/files',
+    );
+    const response = await authorizedRequest(
+      `${endpoint}/${encodeURIComponent(id)}?uploadType=media&fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'text/plain; charset=UTF-8' },
+        body: content,
       },
     );
     return sanitizedMetadata(await readJson(response));
@@ -581,8 +624,10 @@ export function createGoogleDriveConnector({
     listFiles,
     listChildren,
     createFolder,
+    ensureFolderPath,
     ensureSpeechFolder,
     createGoogleDoc,
+    updateGoogleDocText,
     renameFile,
     readSource,
     isConfigured: Boolean(clientEmail && privateKey),

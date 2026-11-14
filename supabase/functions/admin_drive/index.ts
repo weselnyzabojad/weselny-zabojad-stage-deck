@@ -19,9 +19,24 @@ import { authorizeAdminSession, decodeJwt } from '../_shared/adminAuth.js';
 import {
   createGoogleDriveConnector,
   driveErrorHttpStatus,
+  DRIVE_DOC_MIME_TYPE,
 } from '../_shared/googleDrive.js';
+import {
+  buildGameQuestionDocTemplate,
+  defaultGameId,
+  defaultGameTitle,
+  gameQuestionDocCreatePreflight,
+  gameQuestionDocFileName,
+  gameQuestionDocFolderSegments,
+  normalizeGameLanguages,
+  normalizeGameType,
+  parseGameQuestionDoc,
+  rebuildGameQuestionDocColumns,
+} from '../_shared/gameQuestions.js';
 import { buildSpeechDocTemplate, parseSpeechDoc, speechDocFilename } from '../_shared/speechDoc.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
+
+const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
@@ -39,6 +54,67 @@ function serverEnv(name: string) {
   const value = Deno.env.get(name) ?? '';
   if (!value) throw new Error(`Missing secret ${name}`);
   return value;
+}
+
+function gameQuestionDocRecord({
+  weddingId,
+  gameType,
+  gameId,
+  title,
+  file,
+  folderId = null,
+  languages,
+  status,
+  reviewRequired,
+  questionCount,
+  lastParsedAt = null,
+  retrievedAt = new Date().toISOString(),
+}: {
+  weddingId: string;
+  gameType: string;
+  gameId?: string | null;
+  title?: string | null;
+  file: any;
+  folderId?: string | null;
+  languages: string[];
+  status: string;
+  reviewRequired: boolean;
+  questionCount: number;
+  lastParsedAt?: string | null;
+  retrievedAt?: string;
+}) {
+  return {
+    wedding_id: weddingId,
+    game_type: gameType,
+    game_id: gameId || defaultGameId(gameType),
+    title: title || defaultGameTitle(gameType),
+    drive_doc_id: file?.id ?? null,
+    drive_doc_url:
+      file?.webViewLink ??
+      (file?.id ? `https://docs.google.com/document/d/${file.id}/edit` : null),
+    drive_doc_name: file?.name ?? null,
+    drive_doc_version: file?.version ?? null,
+    drive_doc_modified_at: file?.modifiedTime ?? null,
+    drive_doc_retrieved_at: retrievedAt,
+    drive_folder_id: folderId,
+    languages,
+    status,
+    review_required: reviewRequired,
+    question_count: questionCount,
+    last_parsed_at: lastParsedAt,
+  };
+}
+
+async function upsertGameQuestionDoc(admin: any, record: Record<string, unknown>) {
+  const { error } = await admin
+    .from('game_question_docs')
+    .upsert(record, { onConflict: 'wedding_id,game_type' });
+  if (error) throw error;
+}
+
+function expectedGameQuestionFolder(source: any, folderId: string | null) {
+  if (!folderId) return false;
+  return Array.isArray(source?.file?.parents) && source.file.parents.includes(folderId);
 }
 
 async function handleRequest(req: Request) {
@@ -93,6 +169,9 @@ async function handleRequest(req: Request) {
         'create_speech_doc',
         'rename_speech_doc',
         'parse_speech_doc',
+        'create_game_question_doc',
+        'rewrite_game_question_doc_columns',
+        'parse_game_question_doc',
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
@@ -290,6 +369,367 @@ async function handleRequest(req: Request) {
         file: source.file,
         pairs: parsed.pairs,
         script: parsed.script,
+      });
+    }
+
+    if (action === 'create_game_question_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const weddingFolderId =
+        typeof body?.weddingFolderId === 'string' ? body.weddingFolderId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !weddingFolderId) {
+        return json({ error: 'weddingId and weddingFolderId are required.' }, 400);
+      }
+      const preflight = gameQuestionDocCreatePreflight({
+        gameType: body?.gameType,
+        enabled: body?.enabled,
+        languages: body?.languages,
+      });
+      if (preflight.error) {
+        return json(
+          { error: preflight.error, code: preflight.code },
+          preflight.code === 'game_disabled' ? 409 : 400,
+        );
+      }
+      const { gameType, languages } = preflight.value;
+      const gameId =
+        typeof body?.gameId === 'string' && body.gameId.trim()
+          ? body.gameId.trim()
+          : defaultGameId(gameType);
+      const title =
+        typeof body?.title === 'string' && body.title.trim()
+          ? body.title.trim()
+          : defaultGameTitle(gameType);
+      const segments = gameQuestionDocFolderSegments(gameType, weddingId);
+      const folder = await connector.ensureFolderPath({ weddingFolderId, segments });
+      const name = gameQuestionDocFileName(gameType, weddingId);
+      const existing = await connector.listChildren({
+        parentId: folder.folder.id,
+        name,
+        mimeType: DRIVE_DOC_MIME_TYPE,
+      });
+      if (existing.files[0]) {
+        const { data: current } = await admin
+          .from('game_question_docs')
+          .select('status, review_required, question_count, last_parsed_at, languages')
+          .eq('wedding_id', weddingId)
+          .eq('game_type', gameType)
+          .maybeSingle();
+        const storedLanguages = Array.isArray(current?.languages)
+          ? normalizeGameLanguages(current.languages) ?? languages
+          : languages;
+        await upsertGameQuestionDoc(
+          admin,
+          gameQuestionDocRecord({
+            weddingId,
+            gameType,
+            gameId,
+            title,
+            file: existing.files[0],
+            folderId: folder.folder.id,
+            languages: storedLanguages,
+            status: current?.status ?? 'DRAFT',
+            reviewRequired: Boolean(current?.review_required),
+            questionCount: Number(current?.question_count ?? 0),
+            lastParsedAt: current?.last_parsed_at ?? null,
+          }),
+        );
+        return json({
+          ok: true,
+          action,
+          created: false,
+          folder: folder.folder,
+          file: existing.files[0],
+          languages: storedLanguages,
+        });
+      }
+      const text = buildGameQuestionDocTemplate({ gameType, languages });
+      const file = await connector.createGoogleDoc({
+        parentId: folder.folder.id,
+        name,
+        text,
+      });
+      await upsertGameQuestionDoc(
+        admin,
+        gameQuestionDocRecord({
+          weddingId,
+          gameType,
+          gameId,
+          title,
+          file,
+          folderId: folder.folder.id,
+          languages,
+          status: 'DRAFT',
+          reviewRequired: false,
+          questionCount: 0,
+        }),
+      );
+      await admin.from('game_question_logs').insert({
+        wedding_id: weddingId,
+        game_type: gameType,
+        actor: allowlisted.email,
+        action: 'game_question_doc_create',
+        message: name,
+      });
+      return json({ ok: true, action, created: true, folder: folder.folder, file, languages });
+    }
+
+    if (action === 'rewrite_game_question_doc_columns') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const gameType = normalizeGameType(body?.gameType);
+      const languages = normalizeGameLanguages(body?.languages);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !gameType) {
+        return json({ error: 'weddingId and gameType are required.' }, 400);
+      }
+      if (!languages || languages.length === 0) {
+        return json(
+          { error: 'At least one ordered ISO 639-1 language is required.', code: 'missing_languages' },
+          400,
+        );
+      }
+      const { data: current } = await admin
+        .from('game_question_docs')
+        .select('*')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .maybeSingle();
+      const fileIdValue =
+        typeof body?.fileId === 'string' && body.fileId.trim()
+          ? body.fileId.trim()
+          : current?.drive_doc_id ?? '';
+      if (!fileIdValue) {
+        return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
+      }
+      const source = await connector.readSource(fileIdValue);
+      const folderId =
+        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
+        current?.drive_folder_id ||
+        null;
+      if (folderId && !expectedGameQuestionFolder(source, folderId)) {
+        await admin.from('game_question_logs').insert({
+          wedding_id: weddingId,
+          game_type: gameType,
+          actor: allowlisted.email,
+          action: 'game_question_doc_parse_invalid',
+          code: 'wrong_folder',
+          message: fileIdValue,
+        });
+        return json(
+          { error: 'The question Doc is not in the expected game folder.', code: 'wrong_folder' },
+          422,
+        );
+      }
+      const rebuilt = rebuildGameQuestionDocColumns(source.text, gameType, languages);
+      if (!rebuilt.changed) {
+        return json({
+          ok: true,
+          action,
+          changed: false,
+          languages,
+          file: source.file,
+          reviewRequired: Boolean(current?.review_required),
+        });
+      }
+      const file = await connector.updateGoogleDocText({ fileId: fileIdValue, text: rebuilt.text });
+      await upsertGameQuestionDoc(
+        admin,
+        gameQuestionDocRecord({
+          weddingId,
+          gameType,
+          gameId: current?.game_id,
+          title: current?.title,
+          file,
+          folderId,
+          languages,
+          status: 'NEEDS_REVIEW',
+          reviewRequired: true,
+          questionCount: 0,
+          lastParsedAt: null,
+          retrievedAt: source.retrievedAt,
+        }),
+      );
+      await admin.from('game_question_logs').insert({
+        wedding_id: weddingId,
+        game_type: gameType,
+        actor: allowlisted.email,
+        action: 'game_question_doc_columns_rewrite',
+        message: JSON.stringify({
+          added: rebuilt.addedLanguages,
+          removed: rebuilt.removedLanguages,
+          dropped: rebuilt.droppedColumns,
+          languages,
+        }),
+      });
+      return json({
+        ok: true,
+        action,
+        changed: true,
+        languages,
+        addedLanguages: rebuilt.addedLanguages,
+        removedLanguages: rebuilt.removedLanguages,
+        reviewRequired: true,
+        file,
+      });
+    }
+
+    if (action === 'parse_game_question_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const gameType = normalizeGameType(body?.gameType);
+      const languages = normalizeGameLanguages(body?.languages);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !gameType) {
+        return json({ error: 'weddingId and gameType are required.' }, 400);
+      }
+      if (!languages || languages.length === 0) {
+        return json(
+          { error: 'The order content languages list is missing.', code: 'missing_languages' },
+          409,
+        );
+      }
+      if (body?.docReady !== true) {
+        return json(
+          { error: 'Tick "Doc ready" before parsing the question Doc.', code: 'doc_not_ready' },
+          409,
+        );
+      }
+      const { data: current } = await admin
+        .from('game_question_docs')
+        .select('*')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .maybeSingle();
+      const fileIdValue =
+        typeof body?.fileId === 'string' && body.fileId.trim()
+          ? body.fileId.trim()
+          : current?.drive_doc_id ?? '';
+      if (!fileIdValue) {
+        return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
+      }
+      const folderId =
+        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
+        current?.drive_folder_id ||
+        null;
+      if (!folderId) {
+        return json(
+          {
+            error: 'The expected question Doc folder id is required to validate the source.',
+            code: 'missing_expected_folder',
+          },
+          400,
+        );
+      }
+      if (current?.review_required && body?.reviewed !== true) {
+        return json(
+          {
+            error: 'The Doc columns changed. Review the Doc and confirm before re-parsing.',
+            code: 'review_required',
+          },
+          409,
+        );
+      }
+
+      let source;
+      try {
+        source = await connector.readSource(fileIdValue);
+      } catch (error: any) {
+        await admin.from('game_question_logs').insert({
+          wedding_id: weddingId,
+          game_type: gameType,
+          actor: allowlisted.email,
+          action: 'game_question_doc_parse_invalid',
+          code: typeof error?.code === 'string' ? error.code : 'unreadable_doc',
+          message: typeof error?.message === 'string' ? error.message : fileIdValue,
+        });
+        throw error;
+      }
+
+      if (!expectedGameQuestionFolder(source, folderId)) {
+        await admin.from('game_question_logs').insert({
+          wedding_id: weddingId,
+          game_type: gameType,
+          actor: allowlisted.email,
+          action: 'game_question_doc_parse_invalid',
+          code: 'wrong_folder',
+          message: fileIdValue,
+        });
+        return json(
+          { error: 'The question Doc is not in the expected game folder.', code: 'wrong_folder' },
+          422,
+        );
+      }
+
+      const parsed = parseGameQuestionDoc(source.text, gameType, { languages });
+      if (parsed.errors.length > 0) {
+        await admin.from('game_question_logs').insert(
+          parsed.errors.slice(0, 20).map((error) => ({
+            wedding_id: weddingId,
+            game_type: gameType,
+            actor: allowlisted.email,
+            action: 'game_question_doc_parse_invalid',
+            code: error.code,
+            message: error.message,
+          })),
+        );
+        await upsertGameQuestionDoc(
+          admin,
+          gameQuestionDocRecord({
+            weddingId,
+            gameType,
+            gameId: current?.game_id,
+            title: current?.title,
+            file: source.file,
+            folderId,
+            languages,
+            status: 'NEEDS_REVIEW',
+            reviewRequired: true,
+            questionCount: 0,
+            lastParsedAt: null,
+            retrievedAt: source.retrievedAt,
+          }),
+        );
+        return json(
+          {
+            ok: false,
+            action,
+            progress: ['fetch', 'parse', 'validate'],
+            file: source.file,
+            languages,
+            errors: parsed.errors,
+          },
+          422,
+        );
+      }
+
+      await upsertGameQuestionDoc(
+        admin,
+        gameQuestionDocRecord({
+          weddingId,
+          gameType,
+          gameId: current?.game_id,
+          title: current?.title,
+          file: source.file,
+          folderId,
+          languages,
+          status: 'PARSED',
+          reviewRequired: false,
+          questionCount: parsed.questions.length,
+          lastParsedAt: new Date().toISOString(),
+          retrievedAt: source.retrievedAt,
+        }),
+      );
+      await admin.from('game_question_logs').insert({
+        wedding_id: weddingId,
+        game_type: gameType,
+        actor: allowlisted.email,
+        action: 'game_question_doc_parse',
+        message: `Parsed ${parsed.questions.length} questions`,
+      });
+      return json({
+        ok: true,
+        action,
+        progress: ['fetch', 'parse', 'validate', 'encrypt'],
+        file: source.file,
+        languages,
+        questions: parsed.questions,
+        readyForBundle: true,
       });
     }
 
