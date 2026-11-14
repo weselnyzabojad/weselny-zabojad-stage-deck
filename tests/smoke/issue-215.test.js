@@ -21,7 +21,7 @@ describe('issue #215 DJ top bar rework', () => {
     expect(dj).toContain('grid');
     expect(dj).toContain('dense');
     expect(dj).toContain('{caps.guestRequests ? (');
-    expect(dj).toContain('<SpeechesChip');
+    expect(dj).toContain('<SpeechSummaryChip');
     expect(dj).toContain('{caps.vipAuth && authControl ? authControl : null}');
   });
 
@@ -31,7 +31,7 @@ describe('issue #215 DJ top bar rework', () => {
 
   it('passes VIP data and the authenticated control from StageDeck', () => {
     expect(deck).toContain('culturalRules={WEDDING.culturalRules}');
-    expect(deck).toContain('speeches={speeches}');
+    expect(deck).toContain('speeches={summarySpeeches}');
     expect(deck).toContain('speechMode={speechMode}');
     expect(deck).toContain('liveState.active_speech_id');
     expect(deck).toContain('<RoleSignOutControl');

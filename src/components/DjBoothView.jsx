@@ -12,7 +12,7 @@ import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import StepMandatoryNotes from './StepMandatoryNotes';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
-import SpeechesChip from './SpeechesChip';
+import SpeechSummaryChip from './SpeechSummaryChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
@@ -248,7 +248,7 @@ export default function DjBoothView({
                 dense
               >
                 {caps.speeches ? (
-                  <SpeechesChip mode={speechMode} speeches={speeches} dense />
+                  <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
                 ) : null}
               </CulturalRulesBar>
             ) : null}

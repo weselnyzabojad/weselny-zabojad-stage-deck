@@ -266,6 +266,8 @@ const en = {
   'speeches.read': 'Read full screen',
   'speeches.startSpeech': 'Start speech',
   'speeches.endSpeech': 'End speech',
+  'speeches.summaryTitle': 'Speakers',
+  'speeches.summaryEmpty': 'No speaker names are available yet.',
   'speeches.actionError': 'The live speech action failed. Try again.',
   'speeches.bundleUnavailable': 'The speech bundle is unavailable. No scripts can be opened.',
   'speeches.readerLabel': 'MC reader',

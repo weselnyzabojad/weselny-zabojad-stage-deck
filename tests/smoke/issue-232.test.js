@@ -9,7 +9,7 @@ describe('issue #232 Photographer VIP parity', () => {
 
   it('adds cultural, Speeches and auth controls to the Photographer top bar', () => {
     expect(photo).toContain('<CulturalRulesBar');
-    expect(photo).toContain('<SpeechesChip');
+    expect(photo).toContain('<SpeechSummaryChip');
     expect(photo).toContain('{authControl}');
     expect(deck).toContain('culturalRules={WEDDING.culturalRules}');
     expect(deck).toContain('liveState.active_speech_id');

@@ -261,16 +261,27 @@ export default function StageDeck({
     allowedRoles: allowedViewRoles,
     baseRole,
   });
-  const mcSpeechBundleEnabled =
-    isProduction &&
-    (currentRole === 'mc' || currentRole === 'dj_mc') &&
-    speechMode !== 'OFF';
-  const mcSpeechBundle = useSpeechBundle({
+  const summarySpeechRole =
+    currentRole === 'dj' ||
+    currentRole === 'photo1' ||
+    currentRole === 'photo2' ||
+    currentRole === 'video' ||
+    currentRole === 'venue_manager';
+  const speechBundleRole =
+    currentRole === 'mc' || currentRole === 'dj_mc' || summarySpeechRole;
+  const speechBundleEnabled =
+    isProduction && speechBundleRole && speechMode !== 'OFF';
+  const speechBundleData = useSpeechBundle({
     session: isProduction ? roleSession : null,
     weddingId: WEDDING.weddingId,
-    enabled: mcSpeechBundleEnabled,
+    enabled: speechBundleEnabled,
   });
-  const mcSpeeches = mcSpeechBundleEnabled ? mcSpeechBundle.speeches : speeches;
+  const mcSpeeches =
+    isProduction && (currentRole === 'mc' || currentRole === 'dj_mc')
+      ? speechBundleData.speeches
+      : speeches;
+  const summarySpeeches =
+    isProduction && summarySpeechRole ? speechBundleData.speeches : speeches;
   const devDjPreviewId =
     import.meta.env.DEV && ['dj_mark', 'dj_szymoniak'].includes(currentRole)
       ? currentRole
@@ -578,7 +589,7 @@ export default function StageDeck({
             viewSwitch={viewSwitch}
             culturalRules={WEDDING.culturalRules}
             oczepinyStatus={djOczepinyStatus}
-            speeches={speeches}
+            speeches={summarySpeeches}
             speechMode={speechMode}
             authControl={authControl}
             onExtendMusicalSet={handleExtendMusicalSet}
@@ -618,7 +629,7 @@ export default function StageDeck({
             roomCode={deckIntent.roomCode}
             culturalRules={WEDDING.culturalRules}
             oczepinyStatus={djOczepinyStatus}
-            speeches={speeches}
+            speeches={summarySpeeches}
             speechMode={speechMode}
             authControl={authControl}
             mediaOverrides={liveState.media_overrides}
@@ -656,6 +667,8 @@ export default function StageDeck({
             outbox={outbox}
             theme={theme}
             onToggleTheme={toggleTheme}
+            speechMode={speechMode}
+            speeches={summarySpeeches}
             mandatoryOverride={liveState.media_overrides?.steps ?? null}
             onUpdateMandatory={(nextSteps) => setMediaOverride('steps', nextSteps)}
           />
@@ -745,7 +758,7 @@ export default function StageDeck({
     musicPolicy,
     speechMode,
     speeches: mcSpeeches,
-    speechBundle: mcSpeechBundleEnabled ? mcSpeechBundle : null,
+    speechBundle: speechBundleEnabled ? speechBundleData : null,
     setGameResults,
     sendStagePing,
     isComplete,

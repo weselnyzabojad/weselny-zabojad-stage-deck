@@ -39,7 +39,7 @@ describe('issue #331 shared compact mobile top bar', () => {
     expect(html).not.toContain('PIN 2048');
     // The former disclosure content is visible without an extra tap.
     expect(html).toContain('Sto Lat');
-    expect(html).toContain('Speeches');
+    expect(html).not.toContain('Speeches');
   });
 
   it('does not duplicate utility controls in the bottom nav', () => {

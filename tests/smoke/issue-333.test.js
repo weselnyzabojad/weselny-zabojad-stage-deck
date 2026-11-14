@@ -32,8 +32,8 @@ describe('issue #333 mobile status pills', () => {
   it('renders all four pills inside the shared grid', () => {
     const shell = read('src/components/RoleShell.jsx');
     expect(shell).toContain('<CulturalRulesBar');
-    expect(shell).toContain('<SpeechesChip');
-    expect(shell.indexOf('<SpeechesChip')).toBeGreaterThan(shell.indexOf('<CulturalRulesBar'));
+    expect(shell).toContain('<SpeechSummaryChip');
+    expect(shell.indexOf('<SpeechSummaryChip')).toBeGreaterThan(shell.indexOf('<CulturalRulesBar'));
   });
 
   it('keeps the full accessible status label', () => {
