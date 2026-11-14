@@ -117,7 +117,7 @@ describe('issue #167 revision application', () => {
     }
 
     expect(availableRoleIds('CLOUD')).toEqual(ROLE_ORDER);
-    expect(availableRoleIds('HOST_ONLY')).toEqual(ROLE_ORDER.filter((role) => role !== 'dj'));
+    expect(availableRoleIds('HOST_ONLY')).toEqual(ROLE_ORDER);
   });
 });
 

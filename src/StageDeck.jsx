@@ -230,7 +230,7 @@ export default function StageDeck({
     onSignOut?.();
   };
 
-  const availableRoles = availableRoleIds(WEDDING.servicePackage);
+  const availableRoles = availableRoleIds();
   // Production: the role token fixes this device to exactly one role. The MC
   // may render the read-only DJ view locally, but keeps its MC identity/token.
   const roleIds = isProduction ? [roleSession?.role ?? 'mc'] : availableRoles;
