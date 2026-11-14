@@ -5642,3 +5642,50 @@ carries the `mc` provider category and provisioning.
 **Open questions.** None.
 
 **Tracking.** [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876).
+
+### 17.61 Admin role and view management review (decision, 2026-11-14)
+
+The admin currently rotates PINs only for roles that already exist; roles are
+created indirectly by the package (mc+dj) or by service providers. Views are
+fixed in code and have no admin surface. The owner wants each role and view to
+be managed independently from the admin page.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Role source | Package provides defaults at first publish; admin can override afterwards |
+| Role actions | Enable/disable, create if missing, rotate PIN, show/copy QR, remove where allowed |
+| Provider-owned roles | Disabling is blocked until the provider is deactivated |
+| Role-to-view mapping | Fixed per role |
+| Roles | `mc`, `dj`, `photo1`, `photo2`, `video`, `venue_manager`, `speaker`, `dj_mc` |
+| Views | MC Master, DJ Booth, Photographer, Venue Manager, Speaker, MC+DJ VIP, Song Requestor |
+| Song Requestor | Independent view, public link/code, no PIN, VIP DJ only |
+| DJ_MC | Owner-only category, one person, no `mc` role |
+| Google Doc | No MC or view field; package only |
+
+**Role/view matrix.**
+
+| Role | View | Admin actions |
+| --- | --- | --- |
+| `mc` | MC Master | Enable/disable, PIN, QR |
+| `dj` | DJ Booth | Enable/disable, PIN, QR |
+| `photo1`, `photo2`, `video` | Photographer | Enable/disable, PIN, QR |
+| `venue_manager` | Venue Manager | Enable/disable, PIN, QR |
+| `speaker` | Speaker | Enable/disable, PIN, QR |
+| `dj_mc` | MC Master + DJ VIP | Owner-only provider, PIN, QR; no `mc` role |
+| — | Song Requestor | Status, public link and QR; VIP DJ only, no PIN |
+
+**Task split.**
+
+| Issue | Scope |
+| --- | --- |
+| [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876) | Admin role and view panel, package defaults, provider blocking, fixed mapping, Song Requestor link/QR |
+| [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877) | Role/view catalog with Song Requestor as an independent view |
+| [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886) | Song Requestor public view, VIP eligibility, server enforcement and admin QR |
+| [#882](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/882) | `HOST_ONLY` DJ Standard view; no Song Requestor |
+| [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880) | `dj_mc` combined view; Song Requestor available because VIP |
+
+**Open questions.** None.
+
+**Tracking.** [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877), [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886).
