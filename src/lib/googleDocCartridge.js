@@ -8,6 +8,9 @@ import { normalizeLiveSyncState, normalizePrivacy } from '../config/index.js';
 // single-digit hours; the importer normalizes them to a strict `HH:MM`.
 const CLOCK_TOKEN = /^([01]?\d|2[0-3])[:.hH]([0-5]\d)/;
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+// UM contract from `## EVENT` → `Wedding ID`; the old YYYY-MM-DD_slug format
+// is rejected here so a bad Doc cannot reach admin publication.
+const WEDDING_ID = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 
 function text(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
@@ -803,7 +806,13 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       'EVENT: Service package must be one of HOST_ONLY, DJ_MC or HOST_AND_DJ_VIP',
     );
   }
-  if (!weddingId) errors.push('EVENT: Wedding ID is required');
+  if (!weddingId) {
+    errors.push('EVENT: Wedding ID is required');
+  } else if (!WEDDING_ID.test(weddingId)) {
+    errors.push(
+      `EVENT: Wedding ID "${weddingId}" must match Name&Name-UM-YYYY-MM-NNN, e.g. Weronika&Guillaume-UM-2027-04-002`,
+    );
+  }
   if (!brideFirstName) errors.push('COUPLE IDENTITY: Bride first name is required');
   if (!groomFirstName) errors.push('COUPLE IDENTITY: Groom first name is required');
   const missingCoupleFields = [

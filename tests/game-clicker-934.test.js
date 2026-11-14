@@ -27,7 +27,7 @@ import { isGameActive } from '../supabase/functions/_shared/gameQuestions.js';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const masterKey = 'local-32-byte-random-value-000000';
-const weddingId = '2026-08-20_test';
+const weddingId = 'Test&Wedding-UM-2026-08-001';
 
 const wedding = {
   extensions: { languages: { supported: ['FR', 'PL', 'EN'] } },

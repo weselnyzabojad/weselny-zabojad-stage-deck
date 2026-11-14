@@ -6,7 +6,7 @@ import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.j
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 const MINIMAL_TEMPLATE = `## EVENT
-Wedding ID: 2026-10-10_ilona_adrien
+Wedding ID: Ilona&Adrien-UM-2026-10-001
 Date: 10.10.2026
 Date ISO: 2026-10-10
 Sync PIN: 1010

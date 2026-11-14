@@ -7,7 +7,7 @@ import RoleShell from '../../src/components/RoleShell.jsx';
 const renderSpeaker = (childrenExpected) => renderToStaticMarkup(
   createElement(SpeakerView, {
     wedding: {
-      weddingId: '2026-08-20_test',
+      weddingId: 'Test&Wedding-UM-2026-08-001',
       date: '20.08.2026',
       childrenExpected,
     },

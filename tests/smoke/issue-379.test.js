@@ -93,7 +93,7 @@ describe('issue #379 group-photo checklist', () => {
 
   it('renders the checklist inside the Photographer step card', () => {
     const wedding = {
-      weddingId: '2026-08-20_test',
+      weddingId: 'Test&Wedding-UM-2026-08-001',
       coupleProfile: {
         bride: { firstName: 'A', nationalities: [] },
         groom: { firstName: 'B', nationalities: [] },

@@ -10,7 +10,7 @@ describe('SpeakerView module load', () => {
   it('renders the speeches-off state without a module-scope t() crash', () => {
     const html = renderToStaticMarkup(
       createElement(SpeakerView, {
-        wedding: { weddingId: '2026-08-20_test', date: '20.08.2026' },
+        wedding: { weddingId: 'Test&Wedding-UM-2026-08-001', date: '20.08.2026' },
         clock: { now: new Date('2026-08-20T18:00:00Z') },
         speechMode: 'OFF',
         speechCount: 0,

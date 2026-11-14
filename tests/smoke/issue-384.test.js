@@ -5,7 +5,7 @@ import { mapMandatoryToSteps } from '../../src/lib/mandatorySteps.js';
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 const wedding = {
-  weddingId: '2026-08-20_test',
+  weddingId: 'Test&Wedding-UM-2026-08-001',
   ceremony: {
     type: 'RELIGIOUS',
     mcSupportRequested: false,

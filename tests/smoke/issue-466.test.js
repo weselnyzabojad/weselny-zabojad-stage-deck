@@ -55,7 +55,7 @@ describe('issue #466 provider role provisioning', () => {
   it('shows role status, one-time PIN and revoke state in admin', () => {
     const html = renderToStaticMarkup(
       createElement(AdminServiceProviders, {
-        wedding: { wedding_id: '2026-08-20_test', roles: ['dj'] },
+        wedding: { wedding_id: 'Test&Wedding-UM-2026-08-001', roles: ['dj'] },
       }),
     );
     expect(html).toContain('Service providers');

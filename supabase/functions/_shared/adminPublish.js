@@ -5,7 +5,9 @@
 // invalid/mismatched cartridges without deploying anything.
 import { isVipDjId, isVipPackage } from './vipRules.js';
 
-export const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
+// UM contract: Name&Name-UM-YYYY-MM-NNN. The old YYYY-MM-DD_slug format is
+// rejected so no production row can be created from a development value.
+export const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 export const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
 export const ALLOWED_ROLES = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];
 export const DEFAULT_ROLES = ['mc', 'dj'];
@@ -29,22 +31,22 @@ export function randomRoomCode(length = 8) {
   return Array.from(bytes, (byte) => ROOM_CODE_ALPHABET[byte % ROOM_CODE_ALPHABET.length]).join('');
 }
 
-function parseEventDateISO(cartridge, fallbackDate, weddingId) {
+// The event date comes from `dateISO` or the display `date`, never from the
+// identifier: `weddingId` carries no parseable event date in the UM contract.
+function parseEventDateISO(cartridge, fallbackDate) {
   if (typeof cartridge.dateISO === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(cartridge.dateISO)) {
     return cartridge.dateISO;
   }
   const display = typeof cartridge.date === 'string' ? cartridge.date : fallbackDate;
   const match = /^([0-3]\d)\.([01]\d)\.(\d{4})$/.exec(display ?? '');
-  if (match) return `${match[3]}-${match[2]}-${match[1]}`;
-  const fromId = /^(\d{4}-\d{2}-\d{2})/.exec(weddingId);
-  return fromId?.[1] ?? null;
+  return match ? `${match[3]}-${match[2]}-${match[1]}` : null;
 }
 
 // TTL runs from the event, not from publish time. `null` means "keep the
 // existing expiry" (content-only republication); inserts default to 30 days.
-export function resolveExpiresAt(body, cartridge, date, weddingId) {
+export function resolveExpiresAt(body, cartridge, date) {
   const requested = Number.isFinite(body?.expiresInDays) ? Math.round(body.expiresInDays) : null;
-  const eventDateISO = parseEventDateISO(cartridge, date, weddingId);
+  const eventDateISO = parseEventDateISO(cartridge, date);
   if (requested == null && !eventDateISO) return null;
 
   const days = Math.min(365, Math.max(1, requested ?? 7));
@@ -90,7 +92,10 @@ export function normalizePublishRequest(body, { source = 'admin_json' } = {}) {
       : null;
 
   if (!WEDDING_ID_PATTERN.test(weddingId)) {
-    return { error: 'weddingId must look like YYYY-MM-DD_bride_groom.', status: 400 };
+    return {
+      error: 'weddingId must match Name&Name-UM-YYYY-MM-NNN, e.g. Weronika&Guillaume-UM-2027-04-002.',
+      status: 400,
+    };
   }
   if (expected.error) return { error: expected.error, status: 400 };
   if (!cartridge || Array.isArray(cartridge)) {
@@ -245,7 +250,6 @@ export async function publishCartridge({ admin, request, actor, validate }) {
     { expiresInDays: request.expiresInDays },
     cartridge,
     request.date,
-    request.weddingId,
   );
 
   const { data, error } = await admin.rpc('stage_deck_publish_cartridge', {

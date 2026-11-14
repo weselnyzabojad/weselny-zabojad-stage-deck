@@ -27,7 +27,7 @@ const storage = () => {
   };
 };
 
-const weddingId = '2026-08-20_test';
+const weddingId = 'Test&Wedding-UM-2026-08-001';
 const speechId = 'speech_witness';
 
 describe('issue #926 per-speech speaker access', () => {

@@ -23,7 +23,7 @@ Key: `wzsd:v1:sync-outbox:<roomKey>` in `localStorage`.
 
 ```json
 {
-  "roomKey": "wzsd:2026-08-20_jennifer_guillaume",
+  "roomKey": "wzsd:Jennifer&Guillaume-UM-2026-08-001",
   "queuedAt": "2026-08-20T18:25:03.000Z",
   "attempts": 3,
   "lastAttemptAt": "2026-08-20T18:25:33.000Z",

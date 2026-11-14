@@ -17,7 +17,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const json = (path) => JSON.parse(read(path));
 
 const masterKey = 'local-32-byte-random-value-000000';
-const weddingId = '2026-08-20_test';
+const weddingId = 'Test&Wedding-UM-2026-08-001';
 const questions = [
   {
     id: 'w01',
@@ -72,7 +72,7 @@ describe('issue #931 encrypted game question bundles', () => {
       questions,
     });
     for (const mismatch of [
-      { weddingId: '2026-08-21_other' },
+      { weddingId: 'Other&Wedding-UM-2026-08-002' },
       { gameType: 'TEST_ZGODNOSCI' },
       { revision: 3 },
     ]) {

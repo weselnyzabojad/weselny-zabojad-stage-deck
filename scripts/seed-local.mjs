@@ -94,6 +94,16 @@ async function seed() {
     djIdentityId: 'dj_mark',
   };
 
+  // Local-only cleanup: clear a stale demo row from before the UM identifier
+  // rename (same reserved room code) so reseeding stays idempotent. There is no
+  // production migration.
+  const { error: cleanupError } = await admin
+    .from('weddings')
+    .delete()
+    .eq('room_code', ROOM_CODE)
+    .neq('wedding_id', WEDDING_ID);
+  if (cleanupError) throw cleanupError;
+
   const { error: weddingError } = await admin.from('weddings').upsert(
     {
       wedding_id: WEDDING_ID,

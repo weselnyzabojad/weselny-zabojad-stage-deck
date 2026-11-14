@@ -87,7 +87,7 @@ describe('issue #76 owner admin panel', () => {
     const cards = buildQrCards({
       baseUrl: 'https://weselnyzabojad.pl/deck',
       roomCode: '8f3k2q',
-      wedding: { weddingId: '2026-08-20_jennifer_guillaume', couple: 'Jennifer & Guillaume', date: '20.08.2026' },
+      wedding: { weddingId: 'Jennifer&Guillaume-UM-2026-08-001', couple: 'Jennifer & Guillaume', date: '20.08.2026' },
       roles: ['mc', 'dj', 'bogus', 'mc'],
       labels: { mc: 'MC Master', dj: 'DJ Booth' },
     });
@@ -108,7 +108,7 @@ describe('issue #76 owner admin panel', () => {
   });
 
   it('validates ids, room codes and roles', () => {
-    expect(validateWeddingId('2026-08-20_jennifer_guillaume')).toBe(true);
+    expect(validateWeddingId('Jennifer&Guillaume-UM-2026-08-001')).toBe(true);
     expect(validateWeddingId('jennifer')).toBe(false);
     expect(validateRoomCode('8f3k2q')).toBe(true);
     expect(validateRoomCode('NO SPACES')).toBe(false);
@@ -131,19 +131,19 @@ describe('issue #76 owner admin panel', () => {
       createElement(AdminConfirmDialog, {
         open: true,
         title: 'Delete wedding',
-        requireText: '2026-08-20_x',
+        requireText: 'X&Wedding-UM-2026-08-003',
         onConfirm: () => {},
         onCancel: () => {},
       }),
     );
     expect(confirm).toContain('Delete wedding');
-    expect(confirm).toContain('2026-08-20_x');
+    expect(confirm).toContain('X&amp;Wedding-UM-2026-08-003');
   });
 
   it('filters the wedding library by query, archive state and role', () => {
     const rows = [
-      { wedding_id: '2026-08-20_jennifer_guillaume', couple: 'Jennifer & Guillaume', room_code: '8f3k2q', roles: ['mc', 'dj'] },
-      { wedding_id: '2026-09-12_anna_tomek', couple: 'Anna & Tomek', room_code: 'abc123', roles: ['mc', 'photo1'], archived_at: '2026-10-01T00:00:00Z' },
+      { wedding_id: 'Jennifer&Guillaume-UM-2026-08-001', couple: 'Jennifer & Guillaume', room_code: '8f3k2q', roles: ['mc', 'dj'] },
+      { wedding_id: 'Anna&Tomek-UM-2026-09-001', couple: 'Anna & Tomek', room_code: 'abc123', roles: ['mc', 'photo1'], archived_at: '2026-10-01T00:00:00Z' },
     ];
     expect(filterWeddings(rows)).toHaveLength(1);
     expect(filterWeddings(rows, { status: 'all' })).toHaveLength(2);
@@ -176,7 +176,7 @@ describe('issue #76 owner admin panel', () => {
   it('normalizes a wedding row for the admin list', () => {
     expect(
       summarizeWedding({
-        wedding_id: '2026-08-20_x',
+        wedding_id: 'X&Wedding-UM-2026-08-003',
         room_code: '8f3k2q',
         couple: 'X & Y',
         date: '20.08.2026',
@@ -184,7 +184,7 @@ describe('issue #76 owner admin panel', () => {
         archived_at: '2026-11-01T00:00:00Z',
       }),
     ).toMatchObject({
-      weddingId: '2026-08-20_x',
+      weddingId: 'X&Wedding-UM-2026-08-003',
       roomCode: '8f3k2q',
       roles: ['mc', 'dj'],
       archived: true,

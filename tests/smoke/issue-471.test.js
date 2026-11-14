@@ -111,12 +111,12 @@ describe('issue #471 persisted game results', () => {
 
   it('exports the documented JSON shape', () => {
     const exported = buildGameResultsExport({
-      weddingId: '2026-08-20_test',
+      weddingId: 'Test&Wedding-UM-2026-08-001',
       game: { id: 'test_zgodnosci', title: 'Test Zgodności', gameType: 'TEST_ZGODNOSCI', items: [1, 2] },
       result: sample,
     });
     expect(exported).toMatchObject({
-      weddingId: '2026-08-20_test',
+      weddingId: 'Test&Wedding-UM-2026-08-001',
       gameId: 'test_zgodnosci',
       gameType: 'TEST_ZGODNOSCI',
       score: 2,

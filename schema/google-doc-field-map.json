@@ -216,7 +216,7 @@
     },
     "wedding-cartridge.example.json": {
       "schemaVersion": "no",
-      "weddingId": "no",
+      "weddingId": "required",
       "coupleProfile.bride.firstName": "required",
       "coupleProfile.bride.nationalities": "required",
       "coupleProfile.groom.firstName": "required",

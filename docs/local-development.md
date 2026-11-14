@@ -95,7 +95,7 @@ wedding:
 | Item | Value |
 | --- | --- |
 | Admin | `owner@local.test` / `local-owner-123` |
-| Wedding | `2026-08-20_jennifer_guillaume` |
+| Wedding | `Jennifer&Guillaume-UM-2026-08-001` |
 | Room code | `demo01` |
 | MC / DJ / photo1 / photo2 / video / venue / speaker PINs | `111111` … `777777` |
 

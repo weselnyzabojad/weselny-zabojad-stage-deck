@@ -129,8 +129,8 @@
     },
     "weddingId": {
       "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}_[a-z0-9_]+$",
-      "description": "Stable room identifier, e.g. 2026-08-20_jennifer_guillaume."
+      "pattern": "^[A-Za-z0-9&]+-UM-\\d{4}-\\d{2}-\\d{3}$",
+      "description": "Stable room identifier in the UM contract, e.g. Weronika&Guillaume-UM-2027-04-002. The prefix is filename-safe: letters, digits and ampersand only."
     },
     "syncPin": {
       "type": "string",

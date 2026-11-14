@@ -14,7 +14,7 @@ import {
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 const wedding = {
-  weddingId: '2026-08-20_jennifer_guillaume',
+  weddingId: 'Jennifer&Guillaume-UM-2026-08-001',
   coupleProfile: {
     bride: { firstName: 'Jennifer', nationalities: ['FR'] },
     groom: { firstName: 'Guillaume', nationalities: ['FR'] },
@@ -91,10 +91,10 @@ describe('issue #147 VIP export & print pack', () => {
 
   it('sanitizes export filenames', () => {
     expect(cueSheetFilename(wedding)).toBe(
-      '2026-08-20_jennifer_guillaume-cue-sheet.html',
+      'Jennifer-Guillaume-UM-2026-08-001-cue-sheet.html',
     );
     expect(setListFilename(wedding)).toBe(
-      '2026-08-20_jennifer_guillaume-set-list.csv',
+      'Jennifer-Guillaume-UM-2026-08-001-set-list.csv',
     );
   });
 

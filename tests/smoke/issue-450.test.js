@@ -5,7 +5,7 @@ import SpeakerView from '../../src/components/SpeakerView.jsx';
 
 const render = (activeSpeech) => renderToStaticMarkup(
   createElement(SpeakerView, {
-    wedding: { weddingId: '2026-08-20_test', date: '20.08.2026' },
+    wedding: { weddingId: 'Test&Wedding-UM-2026-08-001', date: '20.08.2026' },
     clock: { now: new Date('2026-08-20T18:00:00Z') },
     speechMode: 'AUTO',
     speechCount: 1,

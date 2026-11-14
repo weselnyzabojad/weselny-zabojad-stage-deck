@@ -15,7 +15,7 @@ import { GAME_TYPES } from '../src/lib/gameQuestions.js';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 const wedding = (cartridge) => ({
-  wedding_id: '2026-08-20_test',
+  wedding_id: 'Test&Wedding-UM-2026-08-001',
   room_code: 'testroom',
   couple: 'Bride & Groom',
   archived_at: null,

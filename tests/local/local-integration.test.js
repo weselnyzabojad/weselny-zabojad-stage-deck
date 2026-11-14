@@ -7,7 +7,7 @@ const ANON = process.env.LOCAL_SUPABASE_ANON_KEY;
 const SERVICE = process.env.LOCAL_SUPABASE_SERVICE_ROLE_KEY;
 const JWT_SECRET = process.env.LOCAL_JWT_SECRET;
 const FUNCTIONS = process.env.LOCAL_FUNCTIONS_URL;
-const WEDDING_ID = '2026-08-20_jennifer_guillaume';
+const WEDDING_ID = 'Jennifer&Guillaume-UM-2026-08-001';
 const ROOM_CODE = 'demo01';
 const DEVICE = `local-test-${Date.now()}`;
 

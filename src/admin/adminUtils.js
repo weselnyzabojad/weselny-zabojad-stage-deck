@@ -79,8 +79,12 @@ export function presenceStatus({ lastSeen, tokenExpiresAt, now = Date.now() } = 
   return 'offline';
 }
 
+// UM contract: Name&Name-UM-YYYY-MM-NNN, e.g. Weronika&Guillaume-UM-2027-04-002.
+// The prefix is filename/URL-safe; the old YYYY-MM-DD_slug format is rejected.
+export const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
+
 export function validateWeddingId(value) {
-  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/.test(value.trim());
+  return typeof value === 'string' && WEDDING_ID_PATTERN.test(value.trim());
 }
 
 export function validateRoomCode(value) {

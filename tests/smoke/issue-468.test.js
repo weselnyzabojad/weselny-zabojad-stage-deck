@@ -6,7 +6,7 @@ import DjBoothView from '../../src/components/DjBoothView.jsx';
 import { djCapabilities } from '../../src/lib/djCapabilities.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
-const wedding = { weddingId: '2026-08-20_test', dateISO: '2026-08-20' };
+const wedding = { weddingId: 'Test&Wedding-UM-2026-08-001', dateISO: '2026-08-20' };
 const clock = {
   now: new Date('2026-08-20T20:00:00Z'),
   nowClock: '22:00:00',
