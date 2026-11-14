@@ -145,6 +145,7 @@ describe('issue #469 predefined game steps and question Docs', () => {
       'TEST_WIEDZY',
       'TEST_ZGODNOSCI',
     ]);
+    expect(games.every((list) => !('questions' in list))).toBe(true);
     expect(await validateCartridge(example)).toEqual([]);
 
     const bad = {
@@ -155,7 +156,7 @@ describe('issue #469 predefined game steps and question Docs', () => {
               ...step,
               game: {
                 ...step.game,
-                questions: [{ ...step.game.questions[0], level: 'EXPERT' }],
+                questions: [{ id: 'w01', prompt: { PL: 'Pytanie?' } }],
               },
             }
           : step,
@@ -164,11 +165,12 @@ describe('issue #469 predefined game steps and question Docs', () => {
     expect(await validateCartridge(bad)).not.toEqual([]);
   });
 
-  it('fetches question Docs during admin publish, never at runtime', () => {
+  it('publishes question bundles separately from cartridge publication', () => {
     const api = read('supabase/functions/admin_api/index.ts');
-    expect(api).toContain("from '../_shared/gameQuestions.js'");
-    expect(api).toContain('driveConnector.readSource(list.sourceDocId)');
-    expect(api).toContain('list.status = questions.length > 0');
+    expect(api).toContain('publish_game_questions');
+    expect(api).toContain('game_question_bundles');
+    expect(api).not.toContain('driveConnector.readSource(list.sourceDocId)');
+    expect(api).not.toContain('list.status = questions.length > 0');
     const games = read('src/lib/games.js');
     expect(games).not.toContain('fetch(');
     expect(games).not.toContain('driveConnector');

@@ -14,7 +14,7 @@ describe('issue #530 MC game card heading', () => {
     expect(html).toContain('🎲 Test Wiedzy');
     expect(html).not.toContain('>Games<');
     expect((html.match(/Test Wiedzy/g) ?? []).length).toBe(1);
-    expect(html).toContain('3 questions');
+    expect(html).toContain('Questions unavailable');
   });
 
   it('uses Test Zgodności as the single card heading', () => {
@@ -22,7 +22,7 @@ describe('issue #530 MC game card heading', () => {
     expect(html).toContain('🎲 Test Zgodności');
     expect(html).not.toContain('>Games<');
     expect((html.match(/Test Zgodności/g) ?? []).length).toBe(1);
-    expect(html).toContain('questions');
+    expect(html).toContain('Questions unavailable');
   });
 
   it('keeps the safe unavailable state for the selected game', () => {

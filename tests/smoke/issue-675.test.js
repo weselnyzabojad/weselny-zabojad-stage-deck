@@ -28,15 +28,10 @@ describe('issue #675 wedding-cartridge Google Doc source flags', () => {
     expect(await validateCartridge(combined.cartridge)).toEqual([]);
   });
 
-  it('uses the couple first names in the cartridge example answers', () => {
-    const answers = json('schema/wedding-cartridge.example.json').steps
-      .flatMap((step) => step.game?.questions ?? [])
-      .map((question) => question.answer)
-      .filter(Boolean);
-    expect(answers).toContain('Jennifer');
-    expect(answers).toContain('Guillaume');
-    expect(answers).not.toContain('BRIDE');
-    expect(answers).not.toContain('GROOM');
+  it('keeps question text out of the cartridge example', () => {
+    const gameQuestions = json('schema/wedding-cartridge.example.json').steps
+      .flatMap((step) => step.game?.questions ?? []);
+    expect(gameQuestions).toEqual([]);
   });
 
   it('resolves BRIDE/GROOM placeholders from the separate question Doc', () => {

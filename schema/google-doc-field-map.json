@@ -182,7 +182,6 @@
       "steps[].game.gameType": "required",
       "steps[].game.enabled": "required",
       "steps[].game.status": "no",
-      "steps[].game.questions": "separate",
       "steps[].game.requiresPhotographer": "required"
     },
     "venue-details.example.json": {
@@ -251,12 +250,6 @@
       "steps[].game.enabled": "required",
       "steps[].game.sourceDocId": "no",
       "steps[].game.status": "no",
-      "steps[].game.questions[].id": "no",
-      "steps[].game.questions[].level": "optional",
-      "steps[].game.questions[].prompt.PL": "required",
-      "steps[].game.questions[].prompt.FR": "required",
-      "steps[].game.questions[].prompt.EN": "required",
-      "steps[].game.questions[].answer": "required",
       "privacy.cloudSync": "no",
       "privacy.encryption.alg": "no",
       "privacy.encryption.keyHolder": "no",
@@ -274,8 +267,7 @@
       "hardAnchors[].time": "no",
       "hardAnchors[].label": "no",
       "hardAnchors[].kind": "no",
-      "hardAnchors[].alertBeforeMin": "no",
-      "steps[].game.questions": "separate"
+      "hardAnchors[].alertBeforeMin": "no"
     }
   },
   "todos": []

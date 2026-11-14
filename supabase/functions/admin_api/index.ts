@@ -58,7 +58,12 @@ import {
   createGoogleDriveConnector,
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
-import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
+import { decryptGameBundle, encryptGameBundle } from '../_shared/gameBundle.js';
+import {
+  isGameActive,
+  normalizeGameType,
+  validateGameQuestionPayload,
+} from '../_shared/gameQuestions.js';
 import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
 import { decryptSecret } from '../_shared/speechSecrets.js';
@@ -82,6 +87,9 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'revoke_session',
   'publish_drive',
   'restore_revision',
+  'publish_game_questions',
+  'restore_game_questions',
+  'delete_game_questions',
   'change_password',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
@@ -422,6 +430,32 @@ async function writeSpeechLog(
     error_code: detail.code ?? null,
     message: detail.message ?? null,
   });
+}
+
+async function writeGameQuestionLog(
+  admin: any,
+  weddingId: string,
+  gameType: string | null,
+  action: string,
+  detail: { actor?: string; code?: string; message?: string } = {},
+) {
+  await admin.from('game_question_logs').insert({
+    wedding_id: weddingId,
+    game_type: gameType,
+    actor: detail.actor ?? null,
+    action,
+    code: detail.code ?? null,
+    message: detail.message ?? null,
+  });
+}
+
+async function liveGameState(admin: any, weddingId: string) {
+  const { data } = await admin
+    .from('live_sync_state')
+    .select('state')
+    .eq('wedding_id', `wzsd:${weddingId}`)
+    .maybeSingle();
+  return data?.state ?? null;
 }
 
 async function revokeSpeechSessions(admin: any, weddingId: string, speechId: string) {
@@ -1168,6 +1202,216 @@ async function handleRequest(req: Request) {
       return json({ mode });
     }
 
+    if (action === 'list_game_questions') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const [bundles, revisions, logs] = await Promise.all([
+        admin
+          .from('game_question_bundles')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('game_type', { ascending: true }),
+        admin
+          .from('game_question_revisions')
+          .select('game_type, revision, published_at, published_by, question_count, source_doc_id, entry')
+          .eq('wedding_id', weddingId)
+          .order('revision', { ascending: false }),
+        admin
+          .from('game_question_logs')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: false })
+          .limit(100),
+      ]);
+      if (bundles.error) throw bundles.error;
+      const liveState = await liveGameState(admin, weddingId);
+      const revisionRows = revisions.data ?? [];
+      const byRevision = new Map(
+        revisionRows.map((row: any) => [`${row.game_type}:${row.revision}`, row]),
+      );
+      const games = [];
+      for (const bundle of bundles.data ?? []) {
+        const revision = bundle.live_revision
+          ? byRevision.get(`${bundle.game_type}:${bundle.live_revision}`)
+          : null;
+        let preview = null;
+        if (revision?.entry && bundle.status === 'PUBLISHED') {
+          try {
+            preview = await decryptGameBundle({
+              masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
+              weddingId,
+              gameType: bundle.game_type,
+              revision: bundle.live_revision,
+              entry: revision.entry,
+            });
+          } catch {
+            preview = null;
+          }
+        }
+        games.push({
+          ...bundle,
+          preview,
+          active: isGameActive(liveState, {
+            gameId: bundle.game_id,
+            gameType: bundle.game_type,
+          }),
+        });
+      }
+      return json({
+        games,
+        revisions: revisionRows.map((row: any) => ({
+          gameType: row.game_type,
+          revision: row.revision,
+          publishedAt: row.published_at,
+          publishedBy: row.published_by,
+          questionCount: row.question_count,
+          sourceDocId: row.source_doc_id,
+        })),
+        logs: logs.data ?? [],
+      });
+    }
+
+    if (action === 'publish_game_questions') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const gameTypeHint = normalizeGameType(body?.gameType);
+      const validated = validateGameQuestionPayload(body);
+      if (validated.error) {
+        await writeGameQuestionLog(admin, weddingId, gameTypeHint, 'game_questions_publish_invalid', {
+          actor: allowlisted.email,
+          code: 'invalid_game_questions',
+          message: validated.error,
+        });
+        return json({ error: validated.error }, 400);
+      }
+      const { gameType, gameId, title, sourceDocId, questions } = validated.value;
+      const liveState = await liveGameState(admin, weddingId);
+      if (isGameActive(liveState, { gameId, gameType })) {
+        return json({ error: 'Publishing is blocked while the game is active.' }, 409);
+      }
+
+      const { data: latest } = await admin
+        .from('game_question_revisions')
+        .select('revision')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .order('revision', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const revision = Number(latest?.revision ?? 0) + 1;
+      const entry = await encryptGameBundle({
+        masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
+        weddingId,
+        gameType,
+        revision,
+        questions,
+      });
+      const { error: revisionError } = await admin.from('game_question_revisions').insert({
+        wedding_id: weddingId,
+        game_type: gameType,
+        revision,
+        published_by: allowlisted.user_id,
+        source_doc_id: sourceDocId,
+        question_count: questions.length,
+        entry,
+      });
+      if (revisionError) throw revisionError;
+
+      const { error: upsertError } = await admin.from('game_question_bundles').upsert(
+        {
+          wedding_id: weddingId,
+          game_type: gameType,
+          game_id: gameId,
+          title,
+          source_doc_id: sourceDocId,
+          status: 'PUBLISHED',
+          live_revision: revision,
+          question_count: questions.length,
+        },
+        { onConflict: 'wedding_id,game_type' },
+      );
+      if (upsertError) throw upsertError;
+
+      await writeGameQuestionLog(admin, weddingId, gameType, 'game_questions_publish', {
+        actor: allowlisted.email,
+        message: `Revision ${revision}`,
+      });
+      return json({ gameType, gameId, revision, questionCount: questions.length });
+    }
+
+    if (action === 'restore_game_questions') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const gameType = normalizeGameType(body?.gameType);
+      const revision = Number(body?.revision);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !gameType || !Number.isInteger(revision) || revision < 1) {
+        return json({ error: 'weddingId, gameType and revision are required.' }, 400);
+      }
+      const { data: bundle } = await admin
+        .from('game_question_bundles')
+        .select('game_id, game_type')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .maybeSingle();
+      if (!bundle) return json({ error: 'Game bundle not found.' }, 404);
+      const liveState = await liveGameState(admin, weddingId);
+      if (isGameActive(liveState, { gameId: bundle.game_id, gameType })) {
+        return json({ error: 'Restore is blocked while the game is active.' }, 409);
+      }
+      const { data: target } = await admin
+        .from('game_question_revisions')
+        .select('revision, question_count, source_doc_id')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .eq('revision', revision)
+        .maybeSingle();
+      if (!target) return json({ error: 'Revision not found.' }, 404);
+      const { error } = await admin
+        .from('game_question_bundles')
+        .update({
+          status: 'PUBLISHED',
+          live_revision: revision,
+          question_count: target.question_count,
+          source_doc_id: target.source_doc_id,
+        })
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType);
+      if (error) throw error;
+      await writeGameQuestionLog(admin, weddingId, gameType, 'game_questions_restore', {
+        actor: allowlisted.email,
+        message: `Revision ${revision}`,
+      });
+      return json({ gameType, revision });
+    }
+
+    if (action === 'delete_game_questions') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const gameType = normalizeGameType(body?.gameType);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !gameType) {
+        return json({ error: 'weddingId and gameType are required.' }, 400);
+      }
+      const { data: bundle } = await admin
+        .from('game_question_bundles')
+        .select('game_id, game_type')
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType)
+        .maybeSingle();
+      if (!bundle) return json({ error: 'Game bundle not found.' }, 404);
+      const liveState = await liveGameState(admin, weddingId);
+      if (isGameActive(liveState, { gameId: bundle.game_id, gameType })) {
+        return json({ error: 'Delete is blocked while the game is active.' }, 409);
+      }
+      const { error } = await admin
+        .from('game_question_bundles')
+        .update({ status: 'DELETED', live_revision: null })
+        .eq('wedding_id', weddingId)
+        .eq('game_type', gameType);
+      if (error) throw error;
+      await writeGameQuestionLog(admin, weddingId, gameType, 'game_questions_delete', {
+        actor: allowlisted.email,
+      });
+      return json({ ok: true });
+    }
+
     if (action === 'list_vip_djs') {
       const { data, error } = await admin
         .from('vip_djs')
@@ -1467,26 +1711,8 @@ async function handleRequest(req: Request) {
         cartridge = submitted;
       }
 
-      // Fetch each game's dedicated question Doc at publish time and embed the
-      // parsed questions. Missing Docs stay MISSING/UNAVAILABLE rather than
-      // blocking the cartridge publication.
-      const gameSteps = Array.isArray(cartridge?.steps)
-        ? cartridge.steps.filter((step) => step?.game)
-        : [];
-      for (const step of gameSteps) {
-        const list = step.game;
-        if (!list?.sourceDocId) continue;
-        try {
-          const questionDoc = await driveConnector.readSource(list.sourceDocId);
-          const questions = parseGameQuestionDoc(questionDoc.text, list.gameType);
-          list.questions = questions;
-          list.status = questions.length > 0 ? 'AVAILABLE' : 'UNAVAILABLE';
-        } catch {
-          list.questions = [];
-          list.status = 'UNAVAILABLE';
-        }
-      }
-
+      // Game questions are published separately as encrypted bundles
+      // (issue #931); the cartridge keeps only step.game metadata.
       const { response } = await handlePublish(
         admin,
         allowlisted,

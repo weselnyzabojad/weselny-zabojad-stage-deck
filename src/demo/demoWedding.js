@@ -50,28 +50,6 @@ export const HALL_ENTRANCE_SCRIPT = {
   ]
 };
 
-export const TEST_WIEDZY_GAME = {
-  has_script: true,
-  type: "GAME_QUESTIONS",
-  title: "Test Wiedzy — 14 Questions",
-  items: [
-    { id: "q01", question: { EN: "Who arrives at the airport 4 hours before the flight?", PL: "Kto przychodzi na lotnisko 4 godziny przed odlotem?", FR: "Qui arrive à l'aéroport 4 heures avant le vol ?" }, answer: "Antoine" },
-    { id: "q02", question: { EN: "Who is the boss at home?", PL: "Kto rządzi w domu?", FR: "Qui est le chef à la maison ?" }, answer: "Justyna" },
-    { id: "q03", question: { EN: "Who walks Silvio the dog?", PL: "Kto wyprowadza psa Silvio?", FR: "Qui promène Silvio le chien ?" }, answer: "Antoine" },
-    { id: "q04", question: { EN: "Who sent the first message?", PL: "Kto napisał pierwszą wiadomość?", FR: "Qui a envoyé le premier message ?" }, answer: "Antoine" },
-    { id: "q05", question: { EN: "Who is always late?", PL: "Kto zawsze się spóźnia?", FR: "Qui est toujours en retard ?" }, answer: "Justyna" },
-    { id: "q06", question: { EN: "Who is the more romantic one?", PL: "Kto jest bardziej romantyczny?", FR: "Qui est le plus romantique ?" }, answer: "Antoine" },
-    { id: "q07", question: { EN: "Who owns more shoes?", PL: "Kto ma więcej butów?", FR: "Qui a le plus de chaussures ?" }, answer: "Justyna" },
-    { id: "q08", question: { EN: "Who is the gadget person?", PL: "Kto jest gadżeciarzem?", FR: "Qui est fou de gadgets ?" }, answer: "Antoine" },
-    { id: "q09", question: { EN: "Who is the better cook?", PL: "Kto lepiej gotuje?", FR: "Qui cuisine le mieux ?" }, answer: "Justyna" },
-    { id: "q10", question: { EN: "Who is the better driver?", PL: "Kto lepiej prowadzi samochód?", FR: "Qui est le meilleur conducteur ?" }, answer: "Antoine" },
-    { id: "q11", question: { EN: "Who always knows where everything is?", PL: "Kto zawsze wie, gdzie wszystko jest?", FR: "Qui sait toujours où tout se trouve ?" }, answer: "Justyna" },
-    { id: "q12", question: { EN: "Who has the worst handwriting?", PL: "Kto ma najbrzydszy charakter pisma?", FR: "Qui a la plus mauvaise écriture ?" }, answer: "Antoine" },
-    { id: "q13", question: { EN: "Who falls asleep first?", PL: "Kto pierwszy zasypia?", FR: "Qui s'endort en premier ?" }, answer: "Justyna" },
-    { id: "q14", question: { EN: "Who is worse at maths?", PL: "Kto jest gorszy z matematyki?", FR: "Qui est le plus nul en maths ?" }, answer: "Justyna" }
-  ]
-};
-
 export const DEMO_WEDDING = {
   weddingId: "2026-08-20_jennifer_guillaume",
   date: "20.08.2026",
@@ -369,39 +347,7 @@ export const DEMO_WEDDING = {
         enabled: true,
         sourceDocId: "gdoc_test_wiedzy",
         status: "AVAILABLE",
-        questions: [
-          {
-            id: "w01",
-            level: "EASY",
-            prompt: {
-              PL: "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
-              FR: "Où Jennifer et Guillaume se sont-ils rencontrés ?",
-              EN: "Where did Jennifer and Guillaume first meet?",
-            },
-            answer: "GROOM",
-          },
-          {
-            id: "w02",
-            prompt: {
-              PL: "Kto jako pierwszy powiedział „kocham cię”?",
-              FR: "Qui a dit « je t'aime » en premier ?",
-              EN: "Who said I love you first?",
-            },
-            answer: "BRIDE",
-          },
-          {
-            id: "w03",
-            level: "HARD",
-            prompt: {
-              PL: "Jak nazywa się pies Jennifer i Guillaume?",
-              FR: "Comment s'appelle le chien du couple ?",
-              EN: "What is the couple's dog called?",
-            },
-            answer: { PL: "Silvio", FR: "Silvio", EN: "Silvio" },
-          },
-        ],
       },
-      teleprompter: TEST_WIEDZY_GAME,
     },
     {
       id: "step_11",
@@ -416,24 +362,6 @@ export const DEMO_WEDDING = {
         enabled: true,
         sourceDocId: "gdoc_test_zgodnosci",
         status: "AVAILABLE",
-        questions: [
-          {
-            id: "z01",
-            prompt: {
-              PL: "Kto chętniej planuje spontaniczny wyjazd?",
-              FR: "Qui planifie plus volontiers un voyage spontané ?",
-              EN: "Who is more likely to plan a spontaneous trip?",
-            },
-          },
-          {
-            id: "z02",
-            prompt: {
-              PL: "Kto dłużej się szykuje do wyjścia?",
-              FR: "Qui prend plus de temps pour se préparer ?",
-              EN: "Who takes longer to get ready?",
-            },
-          },
-        ],
       },
     },
     { id: "closure", time: "02:00", title: "Wedding closure", type: "HARD_ANCHOR", location: "Main Hall", mandatory: { kind: "CLOSURE", label: "Wedding closure", closureExtensionAllowed: true, closureExtensionUntil: "03:00", lastSong: "Perfect - Ed Sheeran" } }

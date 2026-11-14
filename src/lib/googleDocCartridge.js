@@ -441,7 +441,6 @@ function mapGames(source) {
         requiresPhotographer: bool(row['Requires photographer']),
         sourceDocId: docId ?? undefined,
         status: 'AVAILABLE',
-        questions: [],
       };
     }),
   };
