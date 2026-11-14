@@ -148,8 +148,9 @@ function printSummary(status) {
   console.log('  npm run dev');
 }
 
-function start({ reset = false } = {}) {
+function start({ reset = false, seed = false } = {}) {
   ensureDocker();
+  let didReset = false;
   const current = stackStatus();
   if (!current?.apiUrl) {
     createBaseline();
@@ -164,6 +165,7 @@ function start({ reset = false } = {}) {
     createBaseline();
     try {
       run('npx', ['supabase', 'db', 'reset']);
+      didReset = true;
     } finally {
       removeBaseline();
     }
@@ -175,6 +177,7 @@ function start({ reset = false } = {}) {
     process.exit(1);
   }
   writeEnv(status.apiUrl, status.anonKey, status.serviceKey);
+  if (didReset || seed) run('npm', ['run', 'local:seed']);
   printSummary(status);
 }
 
