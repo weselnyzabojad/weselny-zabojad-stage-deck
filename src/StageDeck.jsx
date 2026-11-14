@@ -36,11 +36,8 @@ import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
 import { filterEnabledSteps } from './lib/predefinedSteps';
 import { resolveMusicPolicy } from './lib/musicPolicy';
 import { buildGameClicker } from './lib/games.js';import {
-  resolveActiveSpeech,
   resolveSpeechMode,
-  resolveSpeeches,
 } from './lib/speeches';
-import { loadSpeakerScript } from './lib/speakerCache';
 import useSpeakerSpeech from './hooks/useSpeakerSpeech';
 import useSpeechBundle from './hooks/useSpeechBundle';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
@@ -93,7 +90,7 @@ export default function StageDeck({
   // Venue date/timezone drive ISO migration, clock display and day rollover.
   const EVENT_DATE_ISO = resolveEventDateISO(WEDDING);
   const VENUE_TIME_ZONE = resolveVenueTimeZone(WEDDING);
-  const speeches = useMemo(() => resolveSpeeches(WEDDING), [WEDDING]);
+  const speeches = [];
   const speechMode = resolveSpeechMode(WEDDING, speeches);
 
   // The actor role is logged in mutation entries; production uses the token role.
@@ -195,8 +192,6 @@ export default function StageDeck({
     },
     [],
   );
-  // Offline cache for the speaker script (the active id is synced separately).
-  const [cachedSpeakerSpeech] = useState(() => loadSpeakerScript(WEDDING.weddingId));
   const closeOverlay = () => setOverlay(null);
   const handleRoleChange = (next) => {
     setOverlay(null);
@@ -400,7 +395,6 @@ export default function StageDeck({
     timeline,
   });
   const cakeServiceMode = mandatorySettings.cakeServiceMode ?? 'KITCHEN_RETURN';
-  const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
   // The visible sync badge is only fully green after BOTH the cartridge and
   // the live-state catch-up have finished (issue #167).
   const online = typeof navigator === 'undefined' ? true : navigator.onLine !== false;
@@ -414,11 +408,6 @@ export default function StageDeck({
     : syncStatus;
   // If the cartridge is unavailable but the active speech id is still known,
   // show the cached copy on this speaker device instead of a blank screen.
-  const speakerSpeech =
-    activeSpeech ??
-    (cachedSpeakerSpeech && cachedSpeakerSpeech.id === liveState.active_speech_id
-      ? cachedSpeakerSpeech
-      : null);
   const currentStep = currentEntry?.step ?? null;
   const completedCount = driftReport.completedCount;
   const isComplete = !currentStep;
@@ -695,9 +684,9 @@ export default function StageDeck({
             speechMode={speechAccessSession ? 'COMPLEX' : speechMode}
             speechCount={speechAccessSession ? 1 : speeches.length}
             accessToken={sessionValid ? roleSession?.token ?? null : null}
-            activeSpeech={speechAccessSession ? null : speakerSpeech}
-            activeSpeechId={speechAccessSession ? null : liveState.active_speech_id}
-            fromCache={speechAccessSession ? speakerAccess.fromCache : !activeSpeech && Boolean(speakerSpeech)}
+            activeSpeech={null}
+            activeSpeechId={null}
+            fromCache={speechAccessSession ? speakerAccess.fromCache : false}
             speechAccess={speechAccessSession ? speakerAccess : null}
             syncStatus={displaySyncStatus}
             syncError={syncError}

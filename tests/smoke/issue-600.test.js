@@ -1,32 +1,20 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { resolveSpeeches } from '../../src/lib/speeches.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
 
 describe('issue #600 admin-managed speaker email', () => {
-  it('allows an optional speaker email in the speeches domain', () => {
+  it('allows an optional speaker email in the legacy migration schema', () => {
     const speaker =
       json('schema/domains/speeches.json').$defs.speech.properties.speaker.anyOf[1];
     expect(speaker.properties.email.type).toBe('string');
   });
 
-  it('keeps the email through normalization', () => {
-    const [speech] = resolveSpeeches({
-      speeches: [
-        {
-          id: 's1',
-          speaker: { name: 'Bartek', relationship: 'Best man', email: 'bartek@example.com' },
-        },
-      ],
-    });
-    expect(speech.speaker.email).toBe('bartek@example.com');
-    expect(resolveSpeeches({ speeches: [{ id: 's2', speaker: 'Anna' }] })[0].speaker.email).toBeNull();
-  });
-
-  it('does not cache the email on the speaker device', () => {
-    expect(read('src/lib/speakerCache.js')).not.toContain('email');
+  it('does not resolve emails from the runtime cartridge model', () => {
+    expect(read('src/lib/speeches.js')).not.toContain('resolveSpeeches');
+    expect(read('src/lib/speeches.js')).not.toContain('email');
+    expect(read('src/components/SpeakerView.jsx')).not.toContain('speaker.email');
   });
 
   it('keeps speaker contact metadata admin-only', () => {

@@ -1,21 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { resolveSpeeches } from '../../src/lib/speeches.js';
-import { saveSpeakerScript, loadSpeakerScript } from '../../src/lib/speakerCache.js';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
 import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
-
-const storage = () => {
-  const data = new Map();
-  return {
-    getItem: (key) => data.get(key) ?? null,
-    setItem: (key, value) => data.set(key, value),
-    removeItem: (key) => data.delete(key),
-  };
-};
 
 describe('issue #643 speech metadata cleanup', () => {
   it('removes the five fields from the domain and example', () => {
@@ -34,32 +23,14 @@ describe('issue #643 speech metadata cleanup', () => {
     }
   });
 
-  it('keeps speaker, order and script for legacy read compatibility', () => {
-    const [speech] = resolveSpeeches({
-      speechMode: 'COMPLEX',
-      speeches: [
-        {
-          id: 'speech_witness',
-          speaker: { name: 'Bartek', relationship: 'Best man' },
-          order: 1,
-          script: { text: 'Drodzy Państwo…' },
-        },
-      ],
-    });
-    expect(speech.speaker.name).toBeTruthy();
-    expect(speech.order).toBeTruthy();
-    expect(speech.script).toHaveProperty('text');
-    for (const field of ['durationMin', 'mic', 'cue', 'readFrom']) {
-      expect(speech).not.toHaveProperty(field);
-    }
-    expect(speech.consent).not.toHaveProperty('confirmedBy');
-
+  it('keeps only the mode helpers in the runtime speech module', () => {
     const schema = json('schema/domains/speeches.json').$defs.speech.properties;
     for (const field of ['time', 'language', 'delivery', 'mcIntro']) {
       expect(schema[field], field).toBeUndefined();
     }
     expect(schema.consent.properties.storeScript).toBeUndefined();
     expect(schema.consent.properties.confirmedAt).toBeUndefined();
+    expect(read('src/lib/speeches.js')).not.toContain('resolveSpeeches');
   });
 
   it('no longer maps embedded speech text into the cartridge', () => {
@@ -70,28 +41,11 @@ describe('issue #643 speech metadata cleanup', () => {
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.durationMin');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.mic');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.cue');
-    expect(read('src/lib/speakerCache.js')).not.toContain('speech.mic');
   });
 
-  it('keeps the speaker cache and flow working without removed metadata', () => {
-    const [speech] = resolveSpeeches({
-      speechMode: 'COMPLEX',
-      speeches: [
-        {
-          id: 'speech_witness',
-          speaker: { name: 'Bartek', relationship: 'Best man' },
-          order: 1,
-          script: { text: 'Drodzy Państwo…' },
-        },
-      ],
-    });
-    const store = storage();
-    expect(saveSpeakerScript('wedding-1', speech, store)).toBe(true);
-    const cached = loadSpeakerScript('wedding-1', store);
-    expect(cached.script.text).toBe(speech.script.text);
-    expect(cached).not.toHaveProperty('mic');
-    expect(cached).not.toHaveProperty('cue');
-    expect(cached).not.toHaveProperty('readFrom');
-    expect(cached).not.toHaveProperty('durationMin');
+  it('uses the dedicated speech cache instead of the old speaker cache', () => {
+    expect(read('src/lib/speechScriptCache.js')).toContain('speechScriptCacheKey');
+    expect(read('src/lib/speechScriptCache.js')).not.toContain('durationMin');
+    expect(read('src/components/SpeakerView.jsx')).not.toContain('speakerCache');
   });
 });

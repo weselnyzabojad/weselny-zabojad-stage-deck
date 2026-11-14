@@ -60,6 +60,7 @@ import {
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
+import { decryptSecret } from '../_shared/speechSecrets.js';
 
 const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain]);
 const driveConnector = createGoogleDriveConnector({
@@ -489,6 +490,64 @@ async function issueSpeechAccess(
   return pin;
 }
 
+function legacySpeeches(cartridge: any) {
+  return Array.isArray(cartridge?.speeches)
+    ? cartridge.speeches.filter((speech: any) => speech && typeof speech === 'object')
+    : [];
+}
+
+function legacySpeechSummary(speech: any) {
+  const sourceDoc = speech?.script?.sourceDoc;
+  const fileId = typeof sourceDoc?.fileId === 'string' ? sourceDoc.fileId.trim() : '';
+  return {
+    id: typeof speech?.id === 'string' ? speech.id : '',
+    order: Number.isInteger(speech?.order) ? speech.order : 0,
+    speaker: {
+      name: cleanProviderField(speech?.speaker?.name, 160) ?? 'Speaker',
+      relationship: cleanProviderField(speech?.speaker?.relationship, 160),
+    },
+    linked: Boolean(fileId),
+    fileId: fileId || null,
+    docUrl: typeof sourceDoc?.url === 'string' ? sourceDoc.url : null,
+    hasText: Boolean(typeof speech?.script?.text === 'string' && speech.script.text.trim()),
+    redactionCount: Array.isArray(speech?.script?.redactions)
+      ? speech.script.redactions.length
+      : 0,
+  };
+}
+
+async function mergeLegacySpeechText({
+  masterKey,
+  weddingId,
+  speechId,
+  speech,
+}: {
+  masterKey: string;
+  weddingId: string;
+  speechId: string;
+  speech: any;
+}) {
+  let text = typeof speech?.script?.text === 'string' ? speech.script.text : '';
+  const redactions = Array.isArray(speech?.script?.redactions) ? speech.script.redactions : [];
+  const secrets = new Map<string, string>();
+  for (const redaction of redactions) {
+    if (!redaction?.id || !redaction?.ciphertext || !redaction?.iv) continue;
+    try {
+      secrets.set(
+        redaction.id,
+        await decryptSecret({ masterKey, weddingId, speechId, redaction }),
+      );
+    } catch {
+      throw Object.assign(new Error('legacy_redaction_failed'), { code: 'legacy_redaction_failed' });
+    }
+  }
+  // Marker parser exists only for this one-time conversion; no runtime path
+  // reads or renders these tokens.
+  text = text.replace(/\{\{secret\}\}([\s\S]*?)\{\{\/secret\}\}/g, '$1');
+  text = text.replace(/\{\{secret:([A-Za-z0-9_-]+)\}\}/g, (_match, id) => secrets.get(id) ?? '');
+  return text.trim();
+}
+
 async function handleRequest(req: Request) {
   if (!isOriginAllowed(req)) {
     return json({ error: 'Origin not allowed.' }, 403);
@@ -643,6 +702,220 @@ async function handleRequest(req: Request) {
         docId: speechId,
       });
       return json({ speech: data });
+    }
+
+    if (action === 'preflight_speech_migration') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data: wedding } = await admin
+        .from('weddings')
+        .select('cartridge')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      const legacy = legacySpeeches(wedding.cartridge);
+      return json({
+        speechMode: wedding.cartridge.speechMode ?? (legacy.length ? 'COMPLEX' : 'OFF'),
+        speeches: legacy.map(legacySpeechSummary),
+        unlinkedCount: legacy.filter((speech: any) => !legacySpeechSummary(speech).linked).length,
+      });
+    }
+
+    if (action === 'migrate_speeches') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data: wedding } = await admin
+        .from('weddings')
+        .select('cartridge, cartridge_revision, couple, date, room_code')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      const cartridge = wedding.cartridge;
+      const legacy = legacySpeeches(cartridge);
+      if (legacy.length === 0) {
+        return json({ ok: true, migrated: 0, discarded: 0, alreadyMigrated: true });
+      }
+      const summaries = legacy.map(legacySpeechSummary);
+      const unlinked = summaries.filter((speech: any) => !speech.linked);
+      if (unlinked.length > 0 && body?.discardUnlinked !== true) {
+        return json(
+          {
+            error: 'Unlinked legacy speeches will lose their text. Confirm the discard first.',
+            requiresConfirmation: true,
+            unlinked,
+          },
+          409,
+        );
+      }
+
+      const masterKey = serverEnv('SPEECH_SECRET_MASTER_KEY');
+      const { data: latest } = await admin
+        .from('speech_revisions')
+        .select('revision')
+        .eq('wedding_id', weddingId)
+        .order('revision', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      let revision = Number(latest?.revision ?? 0);
+      let revisionCreated = false;
+      const entries: Record<string, any> = {};
+      const records: any[] = [];
+      let migrated = 0;
+      let discarded = 0;
+
+      for (let index = 0; index < legacy.length; index += 1) {
+        const legacySpeech = legacy[index];
+        const summary = summaries[index];
+        const speechId = summary.id || `speech_legacy_${index + 1}`;
+        const existing = await admin
+          .from('speech_records')
+          .select('id, live_revision')
+          .eq('wedding_id', weddingId)
+          .eq('id', speechId)
+          .maybeSingle();
+        if (existing.data?.live_revision != null) continue;
+
+        let text = '';
+        if (summary.linked) {
+          text = await mergeLegacySpeechText({
+            masterKey,
+            weddingId,
+            speechId,
+            speech: legacySpeech,
+          });
+          if (!text) {
+            const source = await driveConnector.readSource(summary.fileId!);
+            text = String(source.text ?? '').trim();
+          }
+        }
+        if (!summary.linked && legacySpeech?.script?.text) discarded += 1;
+
+        const speakerLanguage = /^[A-Za-z]{2}$/.test(legacySpeech?.language ?? '')
+          ? String(legacySpeech.language).toUpperCase()
+          : 'PL';
+        const mcLanguage = speakerLanguage === 'EN' ? 'PL' : 'EN';
+        const record: any = {
+          wedding_id: weddingId,
+          id: speechId,
+          sort_order:
+            Number.isInteger(legacySpeech?.order) && legacySpeech.order > 0
+              ? legacySpeech.order
+              : index + 1,
+          speaker_name: summary.speaker.name,
+          speaker_relationship: summary.speaker.relationship,
+          speaker_language: speakerLanguage,
+          mc_language: mcLanguage,
+          speaker_access: false,
+          status: 'DRAFT',
+          drive_doc_id: summary.fileId,
+          drive_doc_url: summary.docUrl,
+          live_revision: null,
+        };
+
+        if (summary.linked && text) {
+          if (!revisionCreated) {
+            revision = Number(latest?.revision ?? 0) + 1;
+            revisionCreated = true;
+          }
+          entries[speechId] = await encryptSpeechScript({
+            masterKey,
+            weddingId,
+            speechId,
+            revision,
+            plaintext: text,
+          });
+          record.status = 'PUBLISHED';
+          record.live_revision = revision;
+          migrated += 1;
+          await writeSpeechLog(admin, weddingId, 'speech_migration_import', {
+            actor: allowlisted.email,
+            docId: speechId,
+            docVersion: String(revision),
+          });
+        } else if (!summary.linked) {
+          await writeSpeechLog(admin, weddingId, 'speech_migration_discard', {
+            actor: allowlisted.email,
+            docId: speechId,
+          });
+        }
+        records.push(record);
+      }
+
+      if (Object.keys(entries).length > 0) {
+        const { error: revisionError } = await admin.from('speech_revisions').insert({
+          wedding_id: weddingId,
+          revision,
+          published_by: allowlisted.user_id,
+          entries,
+        });
+        if (revisionError) throw revisionError;
+      }
+      if (records.length > 0) {
+        const { error: upsertError } = await admin
+          .from('speech_records')
+          .upsert(records, { onConflict: 'wedding_id,id' });
+        if (upsertError) throw upsertError;
+      }
+
+      const speechMode =
+        ['OFF', 'LIGHT', 'COMPLEX'].includes(cartridge.speechMode)
+          ? cartridge.speechMode
+          : 'COMPLEX';
+      const stripped = { ...cartridge, speechMode };
+      delete stripped.speeches;
+      const { data: roleRows } = await admin
+        .from('wedding_roles')
+        .select('role')
+        .eq('wedding_id', weddingId);
+      const roles = (roleRows ?? []).map((row: any) => row.role);
+      const normalized = normalizePublishRequest({
+        weddingId,
+        couple: wedding.couple,
+        date: wedding.date,
+        cartridge: stripped,
+        roles,
+        expectedRevision: Number(wedding.cartridge_revision ?? 0),
+        sourceMetadata: {
+          migration: 'legacy_speeches',
+          migrated,
+          discarded,
+          revision: revision || null,
+        },
+      });
+      if (normalized.error) return json({ error: normalized.error }, normalized.status);
+      const published = await publishCartridge({
+        admin,
+        request: normalized.request,
+        actor: allowlisted,
+        validate: validateCartridge,
+      });
+      if (!published.ok) {
+        return json(
+          {
+            error: published.error,
+            currentRevision: published.currentRevision ?? null,
+            errors: published.errors ?? undefined,
+          },
+          published.status,
+        );
+      }
+      await writeAudit(admin, allowlisted, 'speech_migration', weddingId, {
+        migrated,
+        discarded,
+        revision: revision || null,
+        cartridgeRevision: published.result?.cartridgeRevision ?? null,
+      });
+      return json({
+        ok: true,
+        migrated,
+        discarded,
+        revision: revision || null,
+        cartridgeRevision: published.result?.cartridgeRevision ?? null,
+      });
     }
 
     if (action === 'rotate_speech_access') {

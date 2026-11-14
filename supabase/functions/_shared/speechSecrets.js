@@ -1,11 +1,7 @@
-// Speech secret redaction crypto (issue #602).
-//
-// Sensitive spans are replaced with `{{secret:<id>}}` tokens. Values are stored
-// only as AES-256-GCM ciphertext. Per-speech keys come from HKDF over the Edge
-// master secret; the key is never stored in the cartridge.
+// Speech key derivation plus the legacy per-redaction decryptor used only by
+// the one-time migration (issue #929). New speech content is encrypted as a
+// whole script by speechBundle.js; no marker parser or token renderer remains.
 
-const MARKER = /\{\{secret\}\}([\s\S]*?)\{\{\/secret\}\}/g;
-const TOKEN = /\{\{secret:([A-Za-z0-9_-]+)\}\}/g;
 const ALG = 'AES-256-GCM';
 const KEY_VERSION = 1;
 
@@ -62,42 +58,8 @@ function aad(weddingId, speechId, redactionId, version) {
   return new TextEncoder().encode(`${weddingId}:${speechId}:${redactionId}:${version}`);
 }
 
-export function parseSecretMarkers(text, { prefix = 'r' } = {}) {
-  const secrets = [];
-  let index = 0;
-  const output = String(text ?? '').replace(MARKER, (_match, value) => {
-    index += 1;
-    const id = `${prefix}${index}`;
-    secrets.push({ id, plaintext: value });
-    return `{{secret:${id}}}`;
-  });
-  return { text: output, secrets };
-}
-
-export async function encryptSecret({
-  masterKey,
-  weddingId,
-  speechId,
-  redactionId,
-  plaintext,
-  version = KEY_VERSION,
-}) {
-  const key = await aesKey(masterKey, weddingId, speechId, version);
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv, additionalData: aad(weddingId, speechId, redactionId, version) },
-    key,
-    new TextEncoder().encode(String(plaintext)),
-  );
-  return {
-    id: redactionId,
-    alg: ALG,
-    iv: bytesToBase64Url(iv),
-    ciphertext: bytesToBase64Url(new Uint8Array(ciphertext)),
-    keyVersion: version,
-  };
-}
-
+// Legacy migration only: decrypts an old script.redactions entry so its
+// plaintext can be merged into the new whole-script ciphertext.
 export async function decryptSecret({
   masterKey,
   weddingId,
@@ -118,8 +80,5 @@ export async function decryptSecret({
   return new TextDecoder().decode(plaintext);
 }
 
-export function listSecretTokens(text) {
-  return [...String(text ?? '').matchAll(TOKEN)].map((match) => match[1]);
-}
+export { ALG as LEGACY_SECRET_ALG };
 
-export { TOKEN as SECRET_TOKEN_PATTERN, MARKER as SECRET_MARKER_PATTERN };

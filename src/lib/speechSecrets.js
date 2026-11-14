@@ -1,22 +1,7 @@
-// Browser-side speech secret helpers (issue #602).
+// Browser-side speech key import (issues #602, #926).
 //
-// The cartridge carries only tokens and AES-256-GCM ciphertext. The speaker
-// device imports the per-speech key as a non-exportable CryptoKey.
-
-const TOKEN = /\{\{secret:([A-Za-z0-9_-]+)\}\}/g;
-
-export function splitSecretTokens(text) {
-  const source = String(text ?? '');
-  const parts = [];
-  let cursor = 0;
-  for (const match of source.matchAll(TOKEN)) {
-    if (match.index > cursor) parts.push({ type: 'text', value: source.slice(cursor, match.index) });
-    parts.push({ type: 'secret', id: match[1] });
-    cursor = match.index + match[0].length;
-  }
-  if (cursor < source.length) parts.push({ type: 'text', value: source.slice(cursor) });
-  return parts;
-}
+// The dedicated speech bundle delivers a per-speech key; the device imports it
+// as a non-exportable CryptoKey and decrypts whole scripts locally.
 
 function base64UrlToBytes(value) {
   const text = String(value ?? '').replace(/-/g, '+').replace(/_/g, '/');
@@ -36,23 +21,4 @@ export async function importSpeechKey(base64UrlKey) {
     false,
     ['decrypt'],
   );
-}
-
-function aad(weddingId, speechId, redactionId, version) {
-  return new TextEncoder().encode(`${weddingId}:${speechId}:${redactionId}:${version}`);
-}
-
-export async function decryptSpeechRedaction(key, { weddingId, speechId, redaction }) {
-  if (!key || !redaction?.ciphertext || !redaction?.iv) return null;
-  const version = Number.isInteger(redaction.keyVersion) ? redaction.keyVersion : 1;
-  const plaintext = await crypto.subtle.decrypt(
-    {
-      name: 'AES-GCM',
-      iv: base64UrlToBytes(redaction.iv),
-      additionalData: aad(weddingId, speechId, redaction.id, version),
-    },
-    key,
-    base64UrlToBytes(redaction.ciphertext),
-  );
-  return new TextDecoder().decode(plaintext);
 }
