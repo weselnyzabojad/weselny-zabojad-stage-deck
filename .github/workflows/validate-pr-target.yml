@@ -21,3 +21,20 @@ jobs:
           else
             echo "✅ Success: PR originates from development."
           fi
+
+  production-cors-origin:
+    name: Production CORS origin
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify production origin only
+        run: node scripts/check-production-origin.mjs
+
+      - name: Verify exact ALLOWED_ORIGIN secret
+        if: env.SUPABASE_ACCESS_TOKEN != ''
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: node scripts/check-production-origin.mjs --exact
