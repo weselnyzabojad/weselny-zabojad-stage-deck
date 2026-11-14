@@ -42,6 +42,7 @@ import { buildGameClicker } from './lib/games.js';import {
 } from './lib/speeches';
 import { loadSpeakerScript } from './lib/speakerCache';
 import useSpeakerSpeech from './hooks/useSpeakerSpeech';
+import useSpeechBundle from './hooks/useSpeechBundle';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { extendMusicalSet } from './lib/musicalSet';
@@ -93,6 +94,7 @@ export default function StageDeck({
   const EVENT_DATE_ISO = resolveEventDateISO(WEDDING);
   const VENUE_TIME_ZONE = resolveVenueTimeZone(WEDDING);
   const speeches = useMemo(() => resolveSpeeches(WEDDING), [WEDDING]);
+  const speechMode = resolveSpeechMode(WEDDING, speeches);
 
   // The actor role is logged in mutation entries; production uses the token role.
   const actorRole = isProduction ? roleSession?.role ?? 'mc' : role;
@@ -259,6 +261,16 @@ export default function StageDeck({
     allowedRoles: allowedViewRoles,
     baseRole,
   });
+  const mcSpeechBundleEnabled =
+    isProduction &&
+    (currentRole === 'mc' || currentRole === 'dj_mc') &&
+    speechMode !== 'OFF';
+  const mcSpeechBundle = useSpeechBundle({
+    session: isProduction ? roleSession : null,
+    weddingId: WEDDING.weddingId,
+    enabled: mcSpeechBundleEnabled,
+  });
+  const mcSpeeches = mcSpeechBundleEnabled ? mcSpeechBundle.speeches : speeches;
   const devDjPreviewId =
     import.meta.env.DEV && ['dj_mark', 'dj_szymoniak'].includes(currentRole)
       ? currentRole
@@ -376,7 +388,6 @@ export default function StageDeck({
     timeZone: VENUE_TIME_ZONE,
     timeline,
   });
-  const speechMode = resolveSpeechMode(WEDDING, speeches);
   const cakeServiceMode = mandatorySettings.cakeServiceMode ?? 'KITCHEN_RETURN';
   const activeSpeech = resolveActiveSpeech(speeches, liveState.active_speech_id);
   // The visible sync badge is only fully green after BOTH the cartridge and
@@ -733,7 +744,8 @@ export default function StageDeck({
     cakeServiceMode,
     musicPolicy,
     speechMode,
-    speeches,
+    speeches: mcSpeeches,
+    speechBundle: mcSpeechBundleEnabled ? mcSpeechBundle : null,
     setGameResults,
     sendStagePing,
     isComplete,

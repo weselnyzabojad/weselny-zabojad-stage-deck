@@ -140,7 +140,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
   };
 
   const saveMetadata = async (speech) => {
-    if (disabled || speech.id === liveSpeechId) return;
+    if (disabled) return;
     setBusy(true);
     setError('');
     try {
@@ -373,7 +373,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                 key={value}
                 type="button"
                 onClick={() => changeMode(value)}
-                disabled={busy || disabled || value === mode}
+                disabled={busy || disabled || value === mode || Boolean(liveSpeechId)}
                 className={`rounded border px-2 py-1 font-semibold ${
                   value === mode
                     ? 'border-brand-strong bg-brand/40 text-ink'
@@ -482,7 +482,6 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
 
           {speeches.map((speech) => {
             const preview = previews[speech.id];
-            const locked = speech.id === liveSpeechId;
             return (
               <div key={speech.id} className="rounded border border-line bg-card p-2">
                 <div className="flex flex-wrap items-baseline justify-between gap-1">
@@ -509,7 +508,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                         ),
                       )
                     }
-                    disabled={disabled || locked}
+                    disabled={disabled}
                     className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
                   />
                   <input
@@ -524,7 +523,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                         ),
                       )
                     }
-                    disabled={disabled || locked}
+                    disabled={disabled}
                     className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
                   />
                   <input
@@ -539,7 +538,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                         ),
                       )
                     }
-                    disabled={disabled || locked}
+                    disabled={disabled}
                     className="rounded border border-line bg-page px-2 py-1 text-[10px] text-ink"
                   />
                 </div>
@@ -547,7 +546,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                   <button
                     type="button"
                     onClick={() => saveMetadata(speech)}
-                    disabled={busy || disabled || locked}
+                    disabled={busy || disabled}
                     className="rounded border border-line-strong px-2 py-1 font-semibold text-ink disabled:opacity-40"
                   >
                     Save metadata
@@ -575,7 +574,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                       <button
                         type="button"
                         onClick={() => publish(speech)}
-                        disabled={busy || disabled || !preview?.script || locked}
+                        disabled={busy || disabled || !preview?.script || Boolean(liveSpeechId)}
                         className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-ink disabled:opacity-40"
                       >
                         Publish
@@ -583,7 +582,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                       <button
                         type="button"
                         onClick={() => restore(speech)}
-                        disabled={busy || disabled || locked}
+                        disabled={busy || disabled || Boolean(liveSpeechId)}
                         className="rounded border border-line px-2 py-1 text-muted disabled:opacity-40"
                       >
                         Restore revision
@@ -593,7 +592,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                   <button
                     type="button"
                     onClick={() => removeSpeech(speech)}
-                    disabled={busy || disabled || locked}
+                    disabled={busy || disabled || Boolean(liveSpeechId)}
                     className="rounded border border-alert/60 px-2 py-1 text-alert-soft disabled:opacity-40"
                   >
                     Delete
