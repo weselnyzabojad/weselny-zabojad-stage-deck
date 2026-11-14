@@ -13,7 +13,7 @@ import { buildOpenOnPhoneUrl, canOpenOnPhone } from '../../src/lib/openOnPhone.j
 
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
-const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
+const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];
 
 describe('issue #877 unified role catalog and join flow', () => {
   it('exposes one catalog with view, provider category and joinability', () => {

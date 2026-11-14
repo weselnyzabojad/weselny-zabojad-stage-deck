@@ -88,6 +88,18 @@ export const ROLES = {
     icon: '🗣️',
     blurb: 'Read-only script teleprompter for the assigned speech.',
   },
+  // Owner-only combined role for DJ_MC weddings: one person runs the MC
+  // controls and the DJ VIP surfaces with a single PIN (issue #880).
+  dj_mc: {
+    id: 'dj_mc',
+    view: 'dj_mc',
+    providerCategory: 'dj_mc',
+    joinable: true,
+    label: 'DJ + MC',
+    short: 'DJ+MC',
+    icon: '🎧',
+    blurb: 'Combined MC Master controls and DJ VIP features.',
+  },
 };
 
 export const MEDIA_ROLE_IDS = ['photo1', 'photo2', 'video'];

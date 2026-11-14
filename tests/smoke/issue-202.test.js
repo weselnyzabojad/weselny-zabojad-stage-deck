@@ -9,10 +9,9 @@ describe('issue #202 MC summary card cleanup and embedded cake protocol', () => 
   const dj = read('src/components/DjBoothView.jsx');
 
   it('removes standalone Cake, Music Policy and Pre-wedding Checklist cards from MC', () => {
-    expect(mc).not.toContain('<MusicPolicyCard');
     expect(mc).not.toContain('<PreWeddingChecklistCard');
     expect(mc).not.toContain('preWeddingTodos');
-    expect(mc).not.toContain('musicPolicy');
+    expect(mc).toContain('{djMc ?');
     expect(exists('src/components/PreWeddingChecklistCard.jsx')).toBe(false);
   });
 
