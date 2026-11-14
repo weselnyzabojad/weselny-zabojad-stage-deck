@@ -6475,6 +6475,14 @@ format at parse, admin and publish time. TTL/date logic uses `date` /
 a sibling, never created below the customer-visible folder. Speech and game
 filenames include `<weddingId>` for unambiguous display and safe moves.
 
+**Missing path creation.** Only `YYYY/Month/<weddingId>/` is assumed to exist;
+`YYYY/Month/secrets/` may be absent. Each create action walks the path and
+creates only missing segments idempotently: `secrets/`, `secrets/<weddingId>/`,
+`secrets/<weddingId>/speeches/`, `secrets/<weddingId>/compatibility-test-game/`
+and `<weddingId>/games/`. Existing folders are reused, never duplicated, moved
+or deleted. Folder creation always uses the month folder as the private root and
+never creates `secrets/` inside `<weddingId>/`.
+
 **View scope.**
 
 | Surface | Behaviour |
@@ -6495,6 +6503,7 @@ moved or exposed below the customer-visible wedding folder.
 | Room links | Keep `room_code` and `/deck/<room_code>/<role>` unchanged |
 | Customer folder | `YYYY/Month/<weddingId>/` with `games/Test Wiedzy - <weddingId>` |
 | Private root | `YYYY/Month/secrets/<weddingId>/`, a sibling outside the customer folder |
+| Folder creation | Create only missing segments idempotently from the month folder; reuse existing folders |
 | Speech Docs | `secrets/<weddingId>/speeches/<weddingId> - <order> - <speaker> - <relationship>` |
 | Zgodności Docs | `secrets/<weddingId>/compatibility-test-game/Test Zgodności - <weddingId>` |
 | Existing Docs | Owner-triggered, idempotent move/rename migration; never delete or rewrite content |
