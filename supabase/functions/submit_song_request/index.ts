@@ -13,6 +13,7 @@
 //   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ALLOWED_ORIGIN (optional)
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { songRequestEligible, SONG_REQUESTS_UNAVAILABLE } from '../_shared/songRequestEligibility.js';
 
 const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
 const DEVICE_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
@@ -134,7 +135,7 @@ Deno.serve(async (req) => {
 
     const { data: wedding, error: weddingError } = await admin
       .from('weddings')
-      .select('wedding_id, expires_at, archived_at')
+      .select('wedding_id, expires_at, archived_at, cartridge')
       .eq('room_code', roomCode)
       .maybeSingle();
 
@@ -147,6 +148,15 @@ Deno.serve(async (req) => {
     }
     if (wedding.expires_at && Date.parse(wedding.expires_at) < Date.now()) {
       return json({ code: 'inactive_room', error: 'This request link is no longer active.' }, 410);
+    }
+    if (!songRequestEligible(wedding.cartridge)) {
+      return json(
+        {
+          code: SONG_REQUESTS_UNAVAILABLE,
+          error: 'Song requests are not available for this wedding.',
+        },
+        403,
+      );
     }
 
     const { data: recent, error: cooldownError } = await admin

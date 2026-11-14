@@ -3,6 +3,7 @@
 // No Deno/Node-only imports: the function receives the Supabase service client
 // and the Async validator, so Vitest can exercise success, stale revisions and
 // invalid/mismatched cartridges without deploying anything.
+import { isVipDjId, isVipPackage } from './vipRules.js';
 
 export const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 export const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
@@ -150,14 +151,11 @@ async function currentRevision(admin, weddingId) {
   return Number(data?.cartridge_revision ?? 0);
 }
 
-const VIP_PACKAGES = new Set(['HOST_AND_DJ_VIP', 'DJ_MC']);
-const VIP_DJ_IDS = new Set(['dj_mark', 'dj_szymoniak']);
-
 export function vipAssignmentError(cartridge) {
   const servicePackage = cartridge?.servicePackage;
-  if (!VIP_PACKAGES.has(servicePackage)) return null;
+  if (!isVipPackage(servicePackage)) return null;
   const djIdentityId = cartridge?.djIdentityId ?? cartridge?.dj?.identityId ?? null;
-  if (!VIP_DJ_IDS.has(djIdentityId)) {
+  if (!isVipDjId(djIdentityId)) {
     return 'A VIP package requires DJ Mark or DJ Szymoniak.';
   }
   return null;

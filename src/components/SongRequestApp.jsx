@@ -51,6 +51,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
   const [record, setRecord] = useState(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const [unavailable, setUnavailable] = useState(false);
   const [connection, setConnection] = useState('checking');
   const [suggestions, setSuggestions] = useState([]);
   const [lookupState, setLookupState] = useState('idle');
@@ -228,6 +229,10 @@ export default function SongRequestApp({ roomCode, preview = false }) {
       return;
     }
 
+    if (result.code === 'song_requests_unavailable') {
+      setUnavailable(true);
+      return;
+    }
     if (result.code === 'cooldown' && result.retryAfterMinutes) {
       setError(t('songRequest.cooldown', { minutes: result.retryAfterMinutes }));
       return;
@@ -258,7 +263,7 @@ export default function SongRequestApp({ roomCode, preview = false }) {
     );
   }
 
-  if (!config.enabled) {
+  if (!config.enabled || unavailable) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-page px-4 text-ink">
         <section className="w-full max-w-md rounded-2xl border border-line bg-card p-6 shadow-2xl">
