@@ -281,6 +281,7 @@ const fr = {
   'game.title': 'Cliqueur de jeu',
   'game.questions': 'Questions du jeu',
   'game.none': 'Aucune question de jeu dans cette cartouche.',
+  'game.loading': 'Chargement des questions du jeu…',
   'game.question': 'Question {number}',
   'game.answer': 'Réponse',
   'game.reveal': 'Révéler la réponse',

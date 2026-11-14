@@ -35,11 +35,19 @@ import { resolveCakeProtocol } from './lib/cake';
 import { resolveOczepinyIndicator } from './lib/oczepinyIndicator';
 import { filterEnabledSteps } from './lib/predefinedSteps';
 import { resolveMusicPolicy } from './lib/musicPolicy';
-import { buildGameClicker } from './lib/games.js';import {
+import {
+  buildGameClicker,
+  buildGameClickerFromBundle,
+  enabledCartridgeGames,
+  resolveGameLanguages,
+  resolveGameType,
+} from './lib/games.js';
+import {
   resolveSpeechMode,
 } from './lib/speeches';
 import useSpeakerSpeech from './hooks/useSpeakerSpeech';
 import useSpeechBundle from './hooks/useSpeechBundle';
+import useGameBundles from './hooks/useGameBundles';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { extendMusicalSet } from './lib/musicalSet';
@@ -80,6 +88,8 @@ export default function StageDeck({
     () => ({ ...wedding, steps: filterEnabledSteps(wedding) }),
     [wedding],
   );
+  const enabledGameMeta = useMemo(() => enabledCartridgeGames(WEDDING), [WEDDING]);
+  const gameLanguages = useMemo(() => resolveGameLanguages(WEDDING), [WEDDING]);
   const speechAccessSession =
     isProduction && roleSession?.speechId ? roleSession : null;
   const speakerAccess = useSpeakerSpeech({
@@ -271,6 +281,16 @@ export default function StageDeck({
     weddingId: WEDDING.weddingId,
     enabled: speechBundleEnabled,
   });
+  // Issue #934: game questions preload only for the authenticated MC and live
+  // outside the wedding cartridge.
+  const mcGameRole =
+    roleSession?.role === 'mc' || roleSession?.role === 'dj_mc';
+  const gameBundleData = useGameBundles({
+    session: isProduction ? roleSession : null,
+    weddingId: WEDDING.weddingId,
+    games: enabledGameMeta,
+    enabled: isProduction && mcGameRole,
+  });
   const mcSpeeches =
     isProduction && (currentRole === 'mc' || currentRole === 'dj_mc')
       ? speechBundleData.speeches
@@ -413,11 +433,26 @@ export default function StageDeck({
   const isComplete = !currentStep;
   const stepTypeClass = currentStep ? STEP_TYPE_STYLES[currentStep.type] ?? STEP_TYPE_STYLES.FLEXIBLE : '';
   const script = currentStep?.teleprompter?.type === "SPEECH" ? currentStep.teleprompter : null;
-  const game = currentStep?.game?.id
-    ? buildGameClicker(WEDDING, currentStep.game.id)
-    : currentStep?.teleprompter?.type === "GAME_QUESTIONS"
-      ? currentStep.teleprompter
-      : null;
+  const currentGameType = resolveGameType(currentStep?.game);
+  const pendingGameMeta = enabledGameMeta.find(
+    (entry) => entry.gameType === currentGameType,
+  );
+  const game =
+    currentGameType && isProduction && mcGameRole
+      ? buildGameClickerFromBundle({
+          game:
+            gameBundleData.games[currentGameType] ??
+            (pendingGameMeta
+              ? { ...pendingGameMeta, questions: [], loading: true }
+              : null),
+          wedding: WEDDING,
+          languages: gameLanguages,
+        })
+      : currentGameType && !isProduction
+        ? buildGameClicker(WEDDING, currentStep.game.id)
+        : currentStep?.teleprompter?.type === 'GAME_QUESTIONS'
+          ? currentStep.teleprompter
+          : null;
   const stepSubtasks = currentStep?.subTasks ?? [];
 
   // P0.7: block hard anchors, warn on photographer cues.

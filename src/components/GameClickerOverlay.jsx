@@ -6,10 +6,43 @@ import {
   buildGameResultsExport,
   gameCounters,
   orderGameItems,
+  startGameResult,
   unansweredItems,
 } from '../lib/games.js';
 
 const LANGS = ['EN', 'PL', 'FR'];
+
+function PromptList({ prompts, compact = false }) {
+  if (!Array.isArray(prompts) || prompts.length === 0) return null;
+  if (compact) {
+    return (
+      <span className="flex flex-col gap-0.5 text-left text-[10px] text-muted">
+        {prompts.map((prompt) => (
+          <span key={prompt.language} className="flex items-baseline gap-1">
+            <span className="shrink-0 rounded border border-line-strong bg-raised px-1 font-mono text-[8px] font-bold text-brand-soft">
+              {prompt.language}
+            </span>
+            <span>{prompt.text}</span>
+          </span>
+        ))}
+      </span>
+    );
+  }
+  return (
+    <div className="mt-3 space-y-2">
+      {prompts.map((prompt) => (
+        <div key={prompt.language} className="flex items-start justify-center gap-2">
+          <span className="mt-1 shrink-0 rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] font-bold text-brand-soft">
+            {prompt.language}
+          </span>
+          <span className="font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
+            {prompt.text}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // One-question-at-a-time game runner for both predefined games.
 export default function GameClickerOverlay({
@@ -42,6 +75,9 @@ export default function GameClickerOverlay({
   const score = Object.values(answered).filter((result) => result?.isCompatible === true).length;
   const isCompatibility = game?.gameType === 'TEST_ZGODNOSCI';
   const complete = Boolean(current) === false && remaining.length === 0;
+  const showLanguageToggle = !items.some(
+    (item) => Array.isArray(item.prompts) && item.prompts.length > 0,
+  );
 
   const persist = useCallback((nextAnswered, { completed = false } = {}) => {
     if (!game?.id) return;
@@ -71,8 +107,19 @@ export default function GameClickerOverlay({
     setOverrideId(null);
     setRevealed(false);
     setLevelFilter('ALL');
+    setLang(game?.languages?.[0] ?? 'EN');
     // eslint-disable-next-line react-hooks/exhaustive-deps -- reset per selected game, not per persisted result
   }, [game?.id]);
+
+  // Opening a playable game marks the existing game_results session active so
+  // the backend blocks publish/restore/delete until it completes.
+  useEffect(() => {
+    if (!open || !game?.id || game.loading || game.unavailable) return;
+    if (results?.startedAt) return;
+    const started = startGameResult({ game, startedAt });
+    if (started) onResultsChange(game.id, started);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- start once per opened game/session
+  }, [open, game?.id, game?.loading, game?.unavailable, results?.startedAt, startedAt]);
 
   const advance = useCallback(() => {
     setRevealed(false);
@@ -222,34 +269,41 @@ export default function GameClickerOverlay({
           >
             {t('game.export')}
           </button>
-          <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
-            {LANGS.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setLang(option)}
-                aria-pressed={lang === option}
-                className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-brand text-on-accent' : 'text-muted hover:text-ink'}`}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+          {showLanguageToggle ? (
+            <div className="flex items-center rounded-lg border border-line-strong bg-raised p-0.5">
+              {LANGS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setLang(option)}
+                  aria-pressed={lang === option}
+                  className={`rounded px-2 py-1 font-mono text-[10px] font-bold transition ${lang === option ? 'bg-brand text-on-accent' : 'text-muted hover:text-ink'}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6">
         <div className="mx-auto flex min-h-full max-w-3xl flex-col justify-center">
-          {game?.unavailable ? (
+          {game?.loading ? (
+            <p className="rounded-xl border border-line bg-card p-4 text-center text-sm text-muted">
+              {t('game.loading')}
+            </p>
+          ) : null}
+          {!game?.loading && game?.unavailable ? (
             <p className="rounded-xl border border-amber-700 bg-amber-950/50 p-4 text-center text-sm text-amber-100">
               {t('games.unavailableHelp')}
             </p>
           ) : null}
-          {!game?.unavailable && items.length === 0 ? (
+          {!game?.unavailable && !game?.loading && items.length === 0 ? (
             <p className="text-center text-sm text-muted">{t('game.none')}</p>
           ) : null}
 
-          {!game?.unavailable && complete ? (
+          {!game?.unavailable && !game?.loading && complete ? (
             <div className="rounded-2xl border border-emerald-800 bg-emerald-950/40 p-8 text-center">
               <h3 className="font-heading text-2xl font-bold text-emerald-200">
                 {t('game.completeTitle')}
@@ -289,9 +343,12 @@ export default function GameClickerOverlay({
                   </span>
                 ) : null}
               </div>
-              <p className="mt-3 font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
-                {current.question?.[lang] ?? current.question?.EN ?? current.question ?? ''}
-              </p>
+              <PromptList prompts={current.prompts} />
+              {!current.prompts?.length ? (
+                <p className="mt-3 font-heading text-2xl font-bold leading-snug text-ink sm:text-3xl">
+                  {current.question?.[lang] ?? current.question?.EN ?? current.question ?? ''}
+                </p>
+              ) : null}
 
               <div className="mt-6 min-h-[92px]">
                 {isCompatibility ? (
@@ -375,7 +432,11 @@ export default function GameClickerOverlay({
               >
                 <span className="font-mono text-[9px]">{items.indexOf(item) + 1}.</span>{' '}
                 {item.level ? `${t(`game.level.${item.level}`)} · ` : ''}
-                {item.question?.[lang] ?? item.question?.EN ?? item.question}
+                {item.prompts?.length ? (
+                  <PromptList prompts={item.prompts} compact />
+                ) : (
+                  item.question?.[lang] ?? item.question?.EN ?? item.question
+                )}
               </button>
             </li>
           ))}

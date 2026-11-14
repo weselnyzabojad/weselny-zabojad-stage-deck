@@ -16,6 +16,7 @@ import { usePublishedCartridge } from './hooks/usePublishedCartridge';
 import { clearSpeakerAccessCache } from './lib/speechBundleClient';
 import { clearSpeechScriptsForWedding } from './lib/speechScriptCache';
 import { clearSpeechKeysForWedding } from './lib/speechKeyStore';
+import { clearGameQuestionsForWedding } from './lib/gameQuestionCache';
 import { useI18n } from './i18n/useI18n';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
@@ -185,6 +186,7 @@ export default function App() {
       onSignOut={() => {
         if (roleSession?.weddingId) {
           clearSpeechScriptsForWedding(roleSession.weddingId);
+          clearGameQuestionsForWedding(roleSession.weddingId);
           void clearSpeechKeysForWedding(roleSession.weddingId);
         }
         if (roleSession?.speechId) {
