@@ -12,7 +12,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
   const result = googleDocTemplateToCartridge(parsed);
 
   it('maps event, couple and languages', () => {
-    expect(result.cartridge.weddingId).toBe('2026-08-20_jennifer_guillaume');
+    expect(result.cartridge.weddingId).toBe('Weronika&Guillaume-UM-2027-04-002');
     expect(result.cartridge.couple).toBeUndefined();
     expect(result.cartridge.coupleProfile.bride.firstName).toBe('Jennifer');
     expect(result.cartridge.extensions.languages.supported).toEqual(['PL', 'FR', 'EN']);

@@ -36,7 +36,7 @@ import {
 import { buildSpeechDocTemplate, parseSpeechDoc, speechDocFilename } from '../_shared/speechDoc.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
-const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
+const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',

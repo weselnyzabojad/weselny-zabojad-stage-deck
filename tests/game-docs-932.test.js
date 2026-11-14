@@ -100,18 +100,18 @@ describe('issue #932 game question Doc templates and parsers', () => {
   });
 
   it('uses the required file names and Drive folders', () => {
-    expect(gameQuestionDocFileName(GAME_TYPES.TEST_ZGODNOSCI, '2026-08-20_test')).toBe(
-      'Test Zgodności - 2026-08-20_test',
+    expect(gameQuestionDocFileName(GAME_TYPES.TEST_ZGODNOSCI, 'Test&Wedding-UM-2026-08-001')).toBe(
+      'Test Zgodności - Test&Wedding-UM-2026-08-001',
     );
-    expect(gameQuestionDocFileName(GAME_TYPES.TEST_WIEDZY, '2026-08-20_test')).toBe(
-      'Test Wiedzy - 2026-08-20_test',
+    expect(gameQuestionDocFileName(GAME_TYPES.TEST_WIEDZY, 'Test&Wedding-UM-2026-08-001')).toBe(
+      'Test Wiedzy - Test&Wedding-UM-2026-08-001',
     );
-    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_ZGODNOSCI, '2026-08-20_test')).toEqual([
+    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_ZGODNOSCI, 'Test&Wedding-UM-2026-08-001')).toEqual([
       'secrets',
-      '2026-08-20_test',
+      'Test&Wedding-UM-2026-08-001',
       'compatibility-test-game',
     ]);
-    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_WIEDZY, '2026-08-20_test')).toEqual([
+    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_WIEDZY, 'Test&Wedding-UM-2026-08-001')).toEqual([
       'games',
     ]);
   });

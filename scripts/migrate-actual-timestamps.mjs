@@ -53,7 +53,7 @@ const before = live[key] && typeof live[key] === 'object' ? live[key] : {};
 const eventDateISO = resolveEventDateISO(cartridge);
 if (!eventDateISO) {
   console.error(
-    `${cartridgePath}: cannot resolve the event date. Add dateISO, a YYYY-MM-DD weddingId prefix or a DD.MM.YYYY date.`,
+    `${cartridgePath}: cannot resolve the event date. Add dateISO or a DD.MM.YYYY date.`,
   );
   process.exit(2);
 }

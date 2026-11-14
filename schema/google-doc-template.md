@@ -16,7 +16,7 @@
 
 ## EVENT
 
-Wedding ID: 2026-08-20_jennifer_guillaume
+Wedding ID: Weronika&Guillaume-UM-2027-04-002
 Date: 20.08.2026
 Date ISO: 2026-08-20
 Sync PIN: 2008

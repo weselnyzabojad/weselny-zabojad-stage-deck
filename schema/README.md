@@ -77,7 +77,7 @@ rejected; put app-specific data under `extensions`.
 ```json
 {
   "schemaVersion": "1.1",
-  "weddingId": "2026-08-20_jennifer_guillaume",
+  "weddingId": "Jennifer&Guillaume-UM-2026-08-001",
   "coupleProfile": {
     "bride": { "firstName": "Jennifer", "nationalities": ["FR"] },
     "groom": { "firstName": "Guillaume", "nationalities": ["FR"] },
@@ -100,7 +100,7 @@ rejected; put app-specific data under `extensions`.
 | Field | Required | Notes |
 | --- | --- | --- |
 | `schemaVersion` | yes | Must be `"1.1"`. |
-| `weddingId` | yes | `YYYY-MM-DD_slug`, also the room ID. |
+| `weddingId` | yes | `Name&Name-UM-YYYY-MM-NNN` (for example `Weronika&Guillaume-UM-2027-04-002`), also the room ID. The old `YYYY-MM-DD_slug` format is rejected; it existed only in development data, so there is no production migration. |
 | `coupleProfile` | yes | The only couple identity source: bride/groom first names, nationalities and common languages. |
 | `date` | yes | `DD.MM.YYYY`. |
 | `syncPin` | yes | Exactly four digits. Shared by paired devices. |

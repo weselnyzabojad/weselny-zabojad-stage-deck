@@ -51,7 +51,7 @@ export const HALL_ENTRANCE_SCRIPT = {
 };
 
 export const DEMO_WEDDING = {
-  weddingId: "2026-08-20_jennifer_guillaume",
+  weddingId: "Jennifer&Guillaume-UM-2026-08-001",
   date: "20.08.2026",
   syncPin: "2008",
   role: "MC",

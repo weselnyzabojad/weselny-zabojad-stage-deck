@@ -16,7 +16,7 @@ import {
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
-const weddingId = '2026-08-20_test';
+const weddingId = 'Test&Wedding-UM-2026-08-001';
 const masterKey = 'local-32-byte-random-value-000000';
 const wiedzyDocId = 'DriveDocWiedzy1234567890';
 const zgodnosciDocId = 'DriveDocZgodnosci1234567890';

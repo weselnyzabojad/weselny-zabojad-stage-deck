@@ -92,14 +92,14 @@ describe('issue #167 revision application', () => {
     expect(
       applyPublishedRow({
         current: null,
-        row: row({ wedding_id: '2026-08-21_other_wedding' }),
+        row: row({ wedding_id: 'Other&Wedding-UM-2026-08-002' }),
         weddingId: WEDDING_ID,
       }),
     ).toEqual({ error: 'invalid' });
     expect(
       applyPublishedRow({
         current: null,
-        row: row({ cartridge: { ...clone(fixture), weddingId: '2026-08-21_other_wedding' } }),
+        row: row({ cartridge: { ...clone(fixture), weddingId: 'Other&Wedding-UM-2026-08-002' } }),
         weddingId: WEDDING_ID,
       }),
     ).toEqual({ error: 'invalid' });

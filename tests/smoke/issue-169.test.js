@@ -112,7 +112,7 @@ describe('issue #169 Drive source listing', () => {
 
 describe('issue #169 source read and preview input', () => {
   it('reads JSON through files.get alt=media and preserves metadata', async () => {
-    const cartridgeText = JSON.stringify({ weddingId: '2026-08-20_test_wedding', steps: [] });
+    const cartridgeText = JSON.stringify({ weddingId: 'Test&Wedding-UM-2026-08-001', steps: [] });
     const drive = connector(async (url) => {
       if (url === GOOGLE_TOKEN_ENDPOINT) return tokenResponse();
       if (url.includes('?fields=')) {
@@ -129,7 +129,7 @@ describe('issue #169 source read and preview input', () => {
       file: { id: 'file-json', name: 'wedding.json', version: '7', md5Checksum: 'checksum-file-json' },
     });
     expect(source.bytes).toBeGreaterThan(0);
-    expect(JSON.parse(source.text).weddingId).toBe('2026-08-20_test_wedding');
+    expect(JSON.parse(source.text).weddingId).toBe('Test&Wedding-UM-2026-08-001');
   });
 
   it('exports a native Google Doc as text/plain for the existing parser', async () => {

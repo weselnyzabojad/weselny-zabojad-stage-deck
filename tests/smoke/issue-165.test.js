@@ -29,7 +29,7 @@ import {
 
 const ROOT = process.cwd();
 const FIXTURES = path.join(ROOT, 'schema', 'fixtures');
-const WEDDING_ID = '2026-08-20_jennifer_guillaume';
+const WEDDING_ID = 'Jennifer&Guillaume-UM-2026-08-001';
 
 const BASE_CARTRIDGE = {
   schemaVersion: '1.1',
@@ -241,7 +241,7 @@ describe('issue #165 publish request contract', () => {
     expect(
       normalizePublishRequest({
         ...request(),
-        cartridge: cartridge({ weddingId: '2026-08-21_someone_else' }),
+        cartridge: cartridge({ weddingId: 'Someone&Else-UM-2026-08-002' }),
       }).error,
     ).toMatch(/must match/);
     expect(normalizePublishRequest({ ...request(), expectedRevision: -1 }).status).toBe(400);
@@ -401,7 +401,7 @@ describe('issue #165 publishCartridge', () => {
       validate: async () => ({
         valid: true,
         errors: [],
-        cartridge: cartridge({ weddingId: '2026-08-21_other_wedding' }),
+        cartridge: cartridge({ weddingId: 'Other&Wedding-UM-2026-08-002' }),
       }),
     });
 

@@ -10,7 +10,7 @@ import {
 } from '../../supabase/functions/_shared/adminPublish.js';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
-const WEDDING_ID = '2026-08-20_test_wedding';
+const WEDDING_ID = 'Test&Wedding-UM-2026-08-001';
 
 function mockAdmin({ existing, rpcResult }) {
   const calls = [];

@@ -67,7 +67,7 @@ describe('issue #621 coupleProfile is the only identity source', () => {
 
   it('derives the admin listing couple name from the cartridge profile', () => {
     const normalized = normalizePublishRequest({
-      weddingId: '2026-08-20_jennifer_guillaume',
+      weddingId: 'Jennifer&Guillaume-UM-2026-08-001',
       couple: 'Stale display name',
       cartridge: json('schema/wedding-cartridge.example.json'),
       roles: ['mc'],

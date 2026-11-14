@@ -95,7 +95,7 @@ Use one `Key: value` pair per line. Keys are the exact English labels shown in
 the template. Values keep their original language and punctuation.
 
 ```text
-Wedding ID: 2026-08-20_jennifer_guillaume
+Wedding ID: Jennifer&Guillaume-UM-2026-08-001
 Date ISO: 2026-08-20
 Sync PIN: 2008
 ```
@@ -161,7 +161,12 @@ Rules:
 
 ### Identifiers
 
-- `weddingId`: `YYYY-MM-DD_slug`, matching `dateISO` (D7 room key).
+- `weddingId`: `Name&Name-UM-YYYY-MM-NNN`, e.g.
+  `Weronika&Guillaume-UM-2027-04-002`, matching
+  `^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$` (D7 room key). The prefix is
+  filename-safe; spaces, accents, slashes and the old `YYYY-MM-DD_slug` format
+  are rejected. `room_code` and `/deck/<room_code>/<role>` stay unchanged. The
+  old format was development-only; no production wedding needs a migration.
 - Step ID: `step_NN`, lowercase, underscores, unique.
 - Every checkable, referenceable or reorderable item has a stable ID:
   `anchorId`, `subtaskId`, `speechId`, `gameId`, `todoId`, `momentId`,

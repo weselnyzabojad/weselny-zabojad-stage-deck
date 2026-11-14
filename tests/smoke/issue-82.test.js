@@ -36,7 +36,7 @@ describe('issue #82 Google Docs-first parsing and AI-prompt cleanup', () => {
                   tableCells: [cell('Key'), cell('Value')],
                 },
                 {
-                  tableCells: [cell('weddingId'), cell('2026-08-20_test_wedding')],
+                  tableCells: [cell('weddingId'), cell('Test&Wedding-UM-2026-08-001')],
                 },
               ],
             },
@@ -51,7 +51,7 @@ describe('issue #82 Google Docs-first parsing and AI-prompt cleanup', () => {
     expect(text).toContain('## EVENT');
     expect(text).toContain('| Key | Value |');
     expect(text).toContain('| --- | --- |');
-    expect(text).toContain('| weddingId | 2026-08-20_test_wedding |');
+    expect(text).toContain('| weddingId | Test&Wedding-UM-2026-08-001 |');
     expect(text).toContain('- First bullet');
 
     const parsed = parseGoogleDocTemplate(text);
@@ -59,7 +59,7 @@ describe('issue #82 Google Docs-first parsing and AI-prompt cleanup', () => {
     expect(parsed.byMarker.EVENT.tables[0].header).toEqual(['Key', 'Value']);
     expect(parsed.byMarker.EVENT.tables[0].rows[0]).toEqual({
       Key: 'weddingId',
-      Value: '2026-08-20_test_wedding',
+      Value: 'Test&Wedding-UM-2026-08-001',
     });
   });
 

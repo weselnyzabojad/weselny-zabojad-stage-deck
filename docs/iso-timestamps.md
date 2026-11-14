@@ -53,7 +53,8 @@ Rules:
 1. ISO input is parsed and re-serialized as UTC ISO, preserving the instant and
    seconds.
 2. Legacy `HH:MM` or `HH:MM:SS` is interpreted on the event date
-   (`dateISO` → `weddingId` prefix → `date` `DD.MM.YYYY`).
+   (`dateISO` → `date` `DD.MM.YYYY`). The UM `weddingId` carries no event date
+   and is never parsed for one.
 3. A clock before **06:00** belongs to the next service day, so `00:30` on a
    20 August wedding becomes `2026-08-21T00:30` in the venue timezone. This is
    the after-midnight rule used by Oczepiny.

@@ -7,7 +7,7 @@ import {
 
 const base = {
   masterKey: 'local-32-byte-random-value-000000',
-  weddingId: '2026-08-20_test',
+  weddingId: 'Test&Wedding-UM-2026-08-001',
   speechId: 'speech_witness',
   revision: 3,
 };

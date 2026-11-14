@@ -58,7 +58,7 @@ describe('issue #465 wedding service provider registry', () => {
   it('renders the per-wedding provider panel with category and function validation', () => {
     const html = renderToStaticMarkup(
       createElement(AdminServiceProviders, {
-        wedding: { wedding_id: '2026-08-20_test' },
+        wedding: { wedding_id: 'Test&Wedding-UM-2026-08-001' },
       }),
     );
     expect(html).toContain('Service providers');

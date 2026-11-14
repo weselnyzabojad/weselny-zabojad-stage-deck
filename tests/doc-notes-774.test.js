@@ -8,7 +8,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const json = (path) => JSON.parse(read(path));
 
 const template = `## EVENT
-Wedding ID: 2026-10-10_demo
+Wedding ID: Demo&Wedding-UM-2026-10-001
 Date: 10.10.2026
 Date ISO: 2026-10-10
 Sync PIN: 1010

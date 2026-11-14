@@ -24,6 +24,7 @@ const EXPECTED_INVALID_REASONS = {
   'invalid-sync-pin.json': 'must match pattern',
   'invalid-unknown-step-ref.json': 'unknown step id',
   'invalid-unknown-top-level.json': 'must NOT have additional properties',
+  'invalid-wedding-id.json': 'must match pattern',
 };
 
 describe('schema fixture suite', () => {
