@@ -1,5 +1,6 @@
 ﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { ROLE_IDS } from '../../src/admin/adminUtils.js';
 import { MEDIA_ROLE_IDS, ROLE_ORDER, isMediaRole, normalizeRole } from '../../src/lib/roles.js';
 import { resolveBaseRole } from '../../src/lib/viewRoles.js';
 
@@ -23,7 +24,7 @@ describe('issue #231 separate media roles', () => {
   });
 
   it('updates admin roles and join allowed roles', () => {
-    expect(read('src/admin/adminUtils.js')).toContain("'photo1', 'photo2', 'video'");
+    expect(ROLE_IDS).toEqual(ROLE_ORDER);
     expect(read('supabase/functions/join_room/index.ts')).toContain("'photo1', 'photo2', 'video'");
   });
 

@@ -25,6 +25,13 @@ export function normalizeRole(value) {
   return typeof value === 'string' && ROLES[value] ? value : null;
 }
 
+// Deep-link roles keep the canonical catalog but tolerate the legacy `photo`
+// alias; unknown values stay null instead of falling back to MC (issue #877).
+function parseIntentRole(value) {
+  if (value === 'photo') return 'photo1';
+  return normalizeRole(value);
+}
+
 function normalizeExpiry(value) {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value < 1e12 ? value * 1000 : value;
@@ -115,7 +122,7 @@ export function parseDeckIntent(pathname = '', search = '', baseUrl = '/') {
 
   const roomCode =
     (params.get('room') || (joinRoute ? '' : segments[0]) || '').trim() || null;
-  const role = normalizeRole(
+  const role = parseIntentRole(
     (params.get('role') || (joinRoute ? '' : segments[1]) || '').trim(),
   );
   const requirePin = params.get('phone') === 'true';

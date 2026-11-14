@@ -18,6 +18,9 @@ export const ROLE_STORAGE_KEY = `wzsd:v${STORAGE_VERSION}:role`;
 export const ROLES = {
   mc: {
     id: 'mc',
+    view: 'mc',
+    providerCategory: 'mc',
+    joinable: true,
     label: 'MC Master',
     short: 'MC',
     icon: '🎤',
@@ -25,6 +28,9 @@ export const ROLES = {
   },
   dj: {
     id: 'dj',
+    view: 'dj',
+    providerCategory: 'dj',
+    joinable: true,
     label: 'DJ Booth',
     short: 'DJ',
     icon: '🎧',
@@ -32,6 +38,9 @@ export const ROLES = {
   },
   photo1: {
     id: 'photo1',
+    view: 'photo',
+    providerCategory: 'photo1',
+    joinable: true,
     label: 'Photographer 1',
     short: 'Photo 1',
     icon: '📷',
@@ -39,6 +48,9 @@ export const ROLES = {
   },
   photo2: {
     id: 'photo2',
+    view: 'photo',
+    providerCategory: 'photo2',
+    joinable: true,
     label: 'Photographer 2',
     short: 'Photo 2',
     icon: '📷',
@@ -46,6 +58,9 @@ export const ROLES = {
   },
   video: {
     id: 'video',
+    view: 'photo',
+    providerCategory: 'video',
+    joinable: true,
     label: 'Cameraman',
     short: 'Camera',
     icon: '🎥',
@@ -55,6 +70,9 @@ export const ROLES = {
   // not part of the canonical catalog (issue #875).
   venue_manager: {
     id: 'venue_manager',
+    view: 'venue_manager',
+    providerCategory: 'venue_manager',
+    joinable: true,
     label: 'Venue Manager',
     short: 'Venue',
     icon: '🏨',
@@ -62,6 +80,9 @@ export const ROLES = {
   },
   speaker: {
     id: 'speaker',
+    view: 'speaker',
+    providerCategory: 'speaker',
+    joinable: true,
     label: 'Speaker',
     short: 'Speaker',
     icon: '🗣️',
@@ -70,7 +91,8 @@ export const ROLES = {
 };
 
 export const MEDIA_ROLE_IDS = ['photo1', 'photo2', 'video'];
-export const ROLE_ORDER = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
+export const ROLE_ORDER = Object.keys(ROLES);
+export const JOINABLE_ROLE_IDS = ROLE_ORDER.filter((id) => ROLES[id].joinable);
 
 export function isMediaRole(value) {
   return MEDIA_ROLE_IDS.includes(value);
