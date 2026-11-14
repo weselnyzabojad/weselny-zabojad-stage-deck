@@ -306,7 +306,7 @@
             "oczepiny",
             "dj_set"
           ],
-          "description": "Predefined step shown only when the matching cartridge feature is enabled; `dj_set` marks a basic DJ set step. Wishes and games are represented by their own steps."
+          "description": "Predefined step shown only when the matching cartridge feature is enabled; `dj_set` marks the canonical Musical Set step. Wishes and games are represented by their own steps."
         },
         "grandEntranceOrder": {
           "type": "string",
