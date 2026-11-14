@@ -9,6 +9,7 @@
     "lint": "oxlint --deny-warnings",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:local": "node scripts/test-local.mjs",
     "validate:schema": "node schema/validate-cartridge.mjs",
     "validate:fixtures": "node schema/validate-fixtures.mjs",
     "validate:template": "node scripts/validate-google-doc-template.mjs",
