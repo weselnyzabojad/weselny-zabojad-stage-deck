@@ -449,9 +449,31 @@ async function handleRequest(req: Request) {
               ? row.cartridge.venueDetails.venue
               : '';
           const { cartridge: _cartridge, ...summary } = row;
+          const servicePackage =
+            typeof row.cartridge?.servicePackage === 'string' ? row.cartridge.servicePackage : null;
+          const djIdentityId =
+            row.cartridge?.djIdentityId ?? row.cartridge?.dj?.identityId ?? null;
+          const requiresVip =
+            servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC';
+          const vipDjValid =
+            !requiresVip || ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
+          const mcConfirmed = !requiresVip;
+          const vipWarning = requiresVip
+            ? [
+                !vipDjValid
+                  ? `VIP DJ invalid (${djIdentityId ?? 'missing'})`
+                  : 'VIP DJ valid',
+                mcConfirmed ? 'MC confirmed' : 'MC unconfirmed',
+              ].join(' · ')
+            : null;
           return {
             ...summary,
             venue,
+            servicePackage,
+            djIdentityId,
+            vipDjValid,
+            mcConfirmed,
+            vipWarning,
             roles: (rolesByWedding[row.wedding_id] ?? []).sort(),
           };
         }),

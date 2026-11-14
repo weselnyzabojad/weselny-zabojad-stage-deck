@@ -142,6 +142,19 @@ async function currentRevision(admin, weddingId) {
   return Number(data?.cartridge_revision ?? 0);
 }
 
+const VIP_PACKAGES = new Set(['HOST_AND_DJ_VIP', 'DJ_MC']);
+const VIP_DJ_IDS = new Set(['dj_mark', 'dj_szymoniak']);
+
+export function vipAssignmentError(cartridge) {
+  const servicePackage = cartridge?.servicePackage;
+  if (!VIP_PACKAGES.has(servicePackage)) return null;
+  const djIdentityId = cartridge?.djIdentityId ?? cartridge?.dj?.identityId ?? null;
+  if (!VIP_DJ_IDS.has(djIdentityId)) {
+    return 'A VIP package requires DJ Mark or DJ Szymoniak.';
+  }
+  return null;
+}
+
 // Publish one immutable revision.
 //
 // The pre-check gives a friendly 409 before touching the row; the SQL function
@@ -157,6 +170,15 @@ export async function publishCartridge({ admin, request, actor, validate }) {
     };
   }
   const cartridge = validation.cartridge;
+  const vipError = vipAssignmentError(cartridge);
+  if (vipError) {
+    return {
+      ok: false,
+      status: 400,
+      error: vipError,
+      code: 'vip_dj_required',
+    };
+  }
   if (cartridge.weddingId !== request.weddingId) {
     return {
       ok: false,
