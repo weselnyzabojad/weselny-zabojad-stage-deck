@@ -33,6 +33,7 @@ describe('Edge Function CORS allowlist', () => {
     expect(isOriginAllowed(request('https://deck.example'), configured)).toBe(true);
     expect(isOriginAllowed(request('https://evil.example'), configured)).toBe(false);
     expect(isOriginAllowed(request('http://localhost:5173'), 'https://deck.example')).toBe(false);
+    expect(isOriginAllowed(request('https://evil.example'), '*')).toBe(false);
   });
 
   it('echoes the matched origin and never the whole configured list', async () => {
