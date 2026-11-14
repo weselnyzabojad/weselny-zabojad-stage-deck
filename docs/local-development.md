@@ -127,6 +127,27 @@ npm run local:stop
 Use `npx supabase stop --no-backup` only when you intentionally want to delete
 the local Docker volumes.
 
+## Production isolation
+
+The local workflow is deliberately isolated from the hosted project:
+
+- `local:seed`, `test:local` and the shared guard accept only `localhost`,
+  `127.0.0.1` or `::1`. A remote `VITE_SUPABASE_URL` aborts before any write.
+- No `local:*` script runs `supabase link`, `supabase db push` or
+  `supabase config push`.
+- `.env.local` and `supabase/.env.local` are gitignored. Never copy them to a
+  hosted environment.
+- `supabase/config.toml` is the hosted-mirror config; local Docker settings stay
+  in the CLI defaults and the temporary baseline.
+- `npm run validate:env -- --require-production` rejects localhost URLs.
+
+If someone links the repository to the hosted project by mistake:
+
+1. Run `npx supabase unlink`.
+2. Delete `.supabase/` and any generated `.env.local` files.
+3. Re-run `npm run local:start`; it only starts the local Docker stack.
+4. Never run `db push` against the linked project to "fix" local drift.
+
 ## Safety rules
 
 - Never run `supabase link` against production for local work.

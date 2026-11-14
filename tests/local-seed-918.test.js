@@ -15,8 +15,8 @@ describe('issue #918 deterministic local seed', () => {
   it('refuses non-local targets and uses stable seed ids', () => {
     const seed = read('scripts/seed-local.mjs');
     expect(seed).toContain('local:seed refuses non-local Supabase targets');
-    expect(seed).toContain("host === 'localhost'");
-    expect(seed).toContain("host === '127.0.0.1'");
+    expect(seed).toContain('assertLocalSupabaseUrl');
+    expect(read('scripts/lib/local-guard.mjs')).toContain("'localhost'");
     expect(seed).toContain("ROOM_CODE = 'demo01'");
     expect(seed).toContain("ADMIN_EMAIL = 'owner@local.test'");
     expect(seed).toContain("djIdentityId: 'dj_mark'");

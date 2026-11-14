@@ -158,6 +158,11 @@ export function validateEnv(env, { allowMissing = false, requireProduction = fal
     try {
       const parsed = new URL(url);
       const localHost = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
+      if (requireProduction && localHost) {
+        errors.push(
+          'Production deployments must not use a localhost Supabase URL. Point VITE_SUPABASE_URL at the hosted project.',
+        );
+      }
       if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && localHost)) {
         errors.push('VITE_SUPABASE_URL must use https:// (http:// is only accepted for localhost).');
       }
