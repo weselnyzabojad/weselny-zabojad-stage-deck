@@ -211,7 +211,7 @@
       "date": "required",
       "syncPin": "no",
       "role": "no",
-      "hostingMode": "required",
+      "servicePackage": "required",
       "mediaTeam[].id": "no",
       "mediaTeam[].role": "required",
       "mediaTeam[].name": "required",

@@ -106,8 +106,7 @@ export default function DjBoothView({
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
   const detailTier = djDetailTier({ ...wedding, servicePackage: resolvedPackage });
   const caps = djCapabilities(detailTier);
-  const isSolo = resolvedPackage === 'HOST_AND_DJ_SOLO';
-  const tierLabel = caps.vip ? 'VIP' : isSolo ? 'SOLO' : 'STANDARD';
+  const tierLabel = caps.vip ? 'VIP' : 'STANDARD';
   const importantSongs = getImportantSongs(wedding);
   const mainSong = activeEntry
     ? importantSongs.find((song) => song.stepId === activeEntry.step.id) ?? null
@@ -274,15 +273,6 @@ export default function DjBoothView({
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="w-full space-y-4">
-          {isSolo ? (
-            <div className="rounded-xl border border-brand-strong/60 bg-brand/20 px-3 py-2 text-[11px] text-brand-tint">
-              <strong className="font-heading">{t('dj.soloTitle')}</strong> {t('dj.soloBody')}
-              device — open the MC view for scripts and drift controls. Song detail stays at the
-              Standard level.
-            </div>
-          ) : null}
-
-
           <TimelineFocusStack
             zoneScroll={false}
             entries={timeline}

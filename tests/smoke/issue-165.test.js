@@ -41,7 +41,7 @@ const BASE_CARTRIDGE = {
   },
   date: '20.08.2026',
   syncPin: '2008',
-  hostingMode: 'HOST_ONLY',
+  servicePackage: 'HOST_ONLY',
   culturalRules: {
     sto_lat: { status: 'YES' },
     gorzko: { status: 'STRICT_NO' },

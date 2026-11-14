@@ -85,7 +85,7 @@ rejected; put app-specific data under `extensions`.
   },
   "date": "20.08.2026",
   "syncPin": "2008",
-  "hostingMode": "HOST_AND_DJ",
+  "servicePackage": "HOST_AND_DJ_VIP",
   "culturalRules": {
     "sto_lat": { "status": "STRICT_NO", "note": "No Sto Lat tonight" },
     "gorzko": { "status": "STRICT_NO" },
@@ -104,7 +104,7 @@ rejected; put app-specific data under `extensions`.
 | `coupleProfile` | yes | The only couple identity source: bride/groom first names, nationalities and common languages. |
 | `date` | yes | `DD.MM.YYYY`. |
 | `syncPin` | yes | Exactly four digits. Shared by paired devices. |
-| `hostingMode` | yes | `HOST_AND_DJ` or `HOST_ONLY`. |
+| `servicePackage` | yes | `HOST_ONLY`, `DJ_MC` or `HOST_AND_DJ_VIP`. |
 | `culturalRules` | yes | All three rules required; see below. |
 | `steps` | yes | At least one step. |
 | `role` | no | Legacy display hint only; device role is local. |

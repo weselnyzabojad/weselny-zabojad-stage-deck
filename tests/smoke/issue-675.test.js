@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
 import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
@@ -12,19 +12,19 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 
 describe('issue #675 wedding-cartridge Google Doc source flags', () => {
   it('adds the third DJ_MC hosting mode', async () => {
-    expect(json('schema/wedding-schema-v1.1.json').properties.hostingMode.enum).toEqual([
-      'HOST_AND_DJ',
+    expect(json('schema/wedding-schema-v1.1.json').properties.servicePackage.enum).toEqual([
+      'HOST_AND_DJ_VIP',
       'HOST_ONLY',
       'DJ_MC',
     ]);
     expect(read('supabase/functions/_shared/wedding-schema-v1.1.json')).toBe(
       read('schema/wedding-schema-v1.1.json'),
     );
-    expect(template).toContain('Service package: HOST_AND_DJ');
+    expect(template).toContain('Service package: HOST_AND_DJ_VIP');
 
-    expect(parse().cartridge.hostingMode).toBe('HOST_AND_DJ');
-    const combined = parse(template.replace('Service package: HOST_AND_DJ', 'Service package: DJ_MC'));
-    expect(combined.cartridge.hostingMode).toBe('DJ_MC');
+    expect(parse().cartridge.servicePackage).toBe('HOST_AND_DJ_VIP');
+    const combined = parse(template.replace('Service package: HOST_AND_DJ_VIP', 'Service package: DJ_MC'));
+    expect(combined.cartridge.servicePackage).toBe('DJ_MC');
     expect(await validateCartridge(combined.cartridge)).toEqual([]);
   });
 

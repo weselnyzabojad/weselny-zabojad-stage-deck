@@ -11,8 +11,7 @@ const wedding = {
     groom: { firstName: 'Guillaume', nationalities: ['FR'] },
     commonLanguages: [],
   },
-  hostingMode: 'CLOUD',
-  servicePackage: 'HOST_AND_DJ_STANDARD',
+  servicePackage: 'HOST_ONLY',
   culturalRules: {
     sto_lat: { status: 'STRICT_NO' },
     gorzko: { status: 'YES' },
@@ -75,7 +74,7 @@ function renderDj(overrides = {}) {
 
 describe('issue #219 DJ Standard vs VIP restrictions', () => {
   it('keeps Standard free of VIP request and top-bar additions', () => {
-    const html = renderDj({ servicePackage: 'HOST_AND_DJ_STANDARD' });
+    const html = renderDj({ servicePackage: 'HOST_ONLY' });
     expect(html).toContain('Set notes');
     expect(html).not.toMatch(/Music policy/i);
     expect(html).toContain('18:05:00');
@@ -99,7 +98,7 @@ describe('issue #219 DJ Standard vs VIP restrictions', () => {
   });
 
   it('shows the shared timeline, clock and notes on both tiers', () => {
-    for (const servicePackage of ['HOST_AND_DJ_STANDARD', 'HOST_AND_DJ_VIP']) {
+    for (const servicePackage of ['HOST_ONLY', 'HOST_AND_DJ_VIP']) {
       const html = renderDj({ servicePackage });
       expect(html).toContain('timeline-focus-stack');
       expect(html).toContain('18:05:00');
@@ -109,6 +108,6 @@ describe('issue #219 DJ Standard vs VIP restrictions', () => {
 
   it('shows Music policy on VIP only', () => {
     expect(renderDj({ servicePackage: 'HOST_AND_DJ_VIP' })).toMatch(/Music policy/i);
-    expect(renderDj({ servicePackage: 'HOST_AND_DJ_STANDARD' })).not.toMatch(/Music policy/i);
+    expect(renderDj({ servicePackage: 'HOST_ONLY' })).not.toMatch(/Music policy/i);
   });
 });

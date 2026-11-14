@@ -74,7 +74,7 @@ describe('issue #468 DJ Standard capability gating', () => {
   });
 
   it('renders no VIP-only controls for DJ Standard', () => {
-    const html = render('HOST_AND_DJ_STANDARD');
+    const html = render('HOST_ONLY');
     expect(html).toContain('Set notes');
     expect(html).toContain('Projected');
     for (const forbidden of [
