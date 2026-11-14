@@ -6082,4 +6082,65 @@ partner strip are not Doc-linked.
 
 **Tracking.** [#910](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/910), [#911](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/911), [#912](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/912), [#913](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/913), [#914](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/914).
 
+### 17.70 Local Docker infrastructure completion and seed data (decision, 2026-11-14)
+
+The local Supabase scaffolding from
+[#904](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/904)
+and its runtime verification in
+[#889](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/889)
+exist (config, MFA, `docs/local-development.md`, `supabase/.env.example`) but the
+flow is still manual: it copies `schema.sql` into a temporary baseline migration,
+seeds nothing, has no repeatable scripts, no integration tier and no guard
+against a hosted target. The goal is to finish the infrastructure so the whole
+application and its backend can run locally with Docker, deterministically and
+without touching production.
+
+**Google Doc contract.** Not Doc-linked. No change to the schema, parser,
+field map, template or cartridge. The demo wedding uses the existing
+`WeddingSchema v1.1` fixtures and `src/demo/demoWedding.js`.
+
+**View scope.** No view, route or component changes. All existing surfaces
+(landing, join, role decks, song request, admin) must run locally against the
+Docker stack instead of the hosted project.
+
+| Scope | Behaviour |
+| --- | --- |
+| Existing scaffolding | Reuse `docs/local-development.md`, `supabase/.env.example` and the MFA config from #904/#889 |
+| Developer workflow | `local:start`, `local:stop`, `local:status`, `local:reset` wrap the Supabase CLI with Docker |
+| App | Vite and Vitest stay on the host and read local `.env.local` values |
+| Backend | Postgres, Auth, Storage, Realtime and every committed Edge Function run locally |
+| Seed | Deterministic demo wedding, roles/PINs, service providers and local owner admin |
+| Tests | `npm test` stays hermetic; `npm run test:local` is opt-in against the stack |
+| Production | Hosted config, secrets, Netlify and CI remain unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Predecessors | #904/#889 remain the scaffolding record; #917 closes the automation gaps instead of re-scaffolding |
+| Docker scope | Supabase local stack in Docker; app and tests on the host |
+| Baseline schema | The reset script generates and removes the temporary local baseline; no baseline migration is committed, so `db push` stays unchanged |
+| Local config | Keep `supabase/config.toml` as the hosted mirror; rely on CLI defaults for local |
+| Client env | Generated gitignored `.env.local`; `VITE_DECK_MODE=production` against the local URL |
+| Function secrets | Gitignored local function env; no hosted secret reused |
+| Seed content | Demo wedding + local owner admin + service providers/VIP assignment |
+| Seed guard | Seed and integration tests abort on any non-local Supabase target |
+| Admin MFA | First local login completes TOTP enrollment through the existing flow |
+| Test tier | `npm run test:local` covers migrations, seed, RLS and core Edge Functions |
+| CI | Unchanged; no Docker stack in the default workflow |
+| Production isolation | Guarded local scripts, env validation and documentation |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#917](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/917) | Local stack automation: temporary local baseline, one-command start/stop/reset, generated local env and updated developer docs | #904, #889 |
+| 2 | [#918](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/918) | Deterministic seed: demo wedding, roles/PINs, providers and local admin | #917 |
+| 3 | [#919](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/919) | Production isolation guards, env boundary and safety documentation | #917 |
+| 4 | [#920](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/920) | Opt-in `test:local` integration suite for migrations, RLS and Edge Functions | #917, #918 |
+
+**Open questions.** None.
+
+**Tracking.** [#917](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/917), [#918](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/918), [#919](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/919), [#920](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/920).
+
 
