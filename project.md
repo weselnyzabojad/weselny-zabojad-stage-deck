@@ -5601,3 +5601,44 @@ carry scope notes for provider provisioning and the role catalog.
 **Open questions.** None.
 
 **Tracking.** [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880).
+
+### 17.60 VIP MC confirmation is admin-only (decision, 2026-11-14)
+
+Clarifies §17.58/§17.59: a `HOST_AND_DJ_VIP` wedding keeps DJ Mark or DJ
+Szymoniak as the only VIP DJ, but its MC may be the product owner **or another
+person**. That choice is confirmed **only in the admin page** and is never read
+from the Google Doc, the schema or the cartridge.
+
+The MC is represented by a `mc` service-provider category (name, phone, email)
+or by the explicit admin choice “MC = propriétaire”. An active `mc` provider
+auto-creates the existing `mc` role and PIN; deactivating it revokes the role,
+sessions and presence. The MC uses `McMasterView`. This `mc` category is not
+owner-only and does not apply to `DJ_MC`, which remains a single person with a
+single `dj_mc` role and no `mc` role.
+
+The admin wedding list warns when a VIP package has an invalid/missing VIP DJ
+**or** an unconfirmed MC.
+
+**Google Doc contract.** The Doc provides only `Service package`. No MC
+identity field is added to the template, field map, schema or parser.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| VIP DJ | Only `dj_mark` / `dj_szymoniak` |
+| VIP MC | Owner or another person, confirmed in admin only |
+| MC provider category | `mc` (name, phone, email), not owner-only |
+| MC access | Existing `mc` role, separate PIN, `McMasterView` |
+| DJ_MC | Still one person, one `dj_mc` role, no `mc` role |
+| Admin warning | Invalid VIP DJ and/or unconfirmed MC on the wedding list |
+| Google Doc | No MC field, no parser or template change |
+
+**Task split.** [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879)
+now covers the VIP DJ rule, the admin-only MC confirmation and both warnings.
+[#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876)
+carries the `mc` provider category and provisioning.
+
+**Open questions.** None.
+
+**Tracking.** [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876).
