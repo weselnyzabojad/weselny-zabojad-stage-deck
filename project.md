@@ -5916,3 +5916,50 @@ PL and EN equivalents are listed in issue #895.
 **Open questions.** None.
 
 **Tracking.** [#895](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/895).
+
+### 17.66 Landing footer partner visibility and link cleanup (decision, 2026-11-14)
+
+The landing footer becomes a clearer, premium trust strip: both partner logos
+are enlarged, the partner card gains contrast and breathing room, and the
+technical crew link is removed so the bottom row is purely B2C. Only the
+centred copyright note remains. The `/join` route itself is unchanged and stays
+reachable by direct URL.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change. The footer markup lives in `src/components/LandingPage.jsx`
+and copy in `src/i18n/{fr,pl,en}.js`.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Larger Mark/Szymoniak logos, light premium partner card, centred copyright note, no crew link |
+| `/join` | Route and intent parsing unchanged; no longer linked from the landing footer |
+| Other routes/views | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Issue structure | New scoped UI issue #896; #895 stays copy-only |
+| Doc linkage | None |
+| Mark logo | `h-20 sm:h-24` (80/96 px) |
+| Szymoniak logo | `h-14 sm:h-16` (56/64 px) |
+| Logo row | Wider gaps and clean wrapping on mobile |
+| Partner card | Light premium card: white background, stronger gold border, more padding, soft gold shadow |
+| Bottom row | Crew link removed; copyright note centred on all breakpoints |
+| i18n key | Remove now-unused `landing.footer.crew` from FR/PL/EN |
+| `/join` route | Preserved; only the landing footer link disappears |
+| Tests | Update 805 (link absence) and 832 (card/logo classes); keep 822/834 markers passing |
+| Responsive | Verify 320–1440 px with both enlarged logos |
+
+**Task split.** One atomic issue: single view (`/`), one ownership boundary
+(footer UI) and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#896](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/896) | Enlarge partner logos, restyle the partner card, remove the crew link and unused i18n key, centre the copyright, update tests, verify responsive | - (separate from #895; both touch the footer but different elements) |
+
+**Open questions.** None.
+
+**Tracking.** [#896](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/896).
