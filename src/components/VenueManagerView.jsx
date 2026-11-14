@@ -17,6 +17,7 @@ import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
 import {
   applyMandatorySettings,
+  cascadeFlexibleSteps,
   settingsFromSteps,
 } from '../lib/mandatorySteps.js';
 
@@ -122,6 +123,7 @@ export default function VenueManagerView({
     settingsFromSteps(loadSteps(wedding, mandatoryOverride)),
   );
   const [saved, setSaved] = useState('');
+  const [rescheduleError, setRescheduleError] = useState('');
   const [previousInputs, setPreviousInputs] = useState([wedding, mandatoryOverride]);
 
   if (wedding !== previousInputs[0] || mandatoryOverride !== previousInputs[1]) {
@@ -137,16 +139,18 @@ export default function VenueManagerView({
   }
 
   const update = (patch) => {
-    setSettings((current) => {
-      const next = { ...current, ...patch };
-      const nextSteps = applyMandatorySettings(
-        { steps: loadSteps(wedding, mandatoryOverride) },
-        next,
-      );
-      saveSteps(wedding, nextSteps);
-      onUpdateMandatory?.(nextSteps);
-      return next;
-    });
+    const next = { ...settings, ...patch };
+    const previousSteps = loadSteps(wedding, mandatoryOverride);
+    const nextSteps = applyMandatorySettings({ steps: previousSteps }, next, { sort: false });
+    const rescheduled = cascadeFlexibleSteps(previousSteps, nextSteps);
+    if (rescheduled.error) {
+      setRescheduleError(t('venueManager.rescheduleBlocked'));
+      return;
+    }
+    setRescheduleError('');
+    setSettings(next);
+    saveSteps(wedding, rescheduled.steps);
+    onUpdateMandatory?.(rescheduled.steps);
     setSaved(t('venueManager.saved'));
     window.setTimeout(() => setSaved(''), 1500);
   };
@@ -280,6 +284,9 @@ export default function VenueManagerView({
         <p className="mt-2 text-[10px] text-muted">
           {t('venueManager.prestationHelper')}
           {saved ? <span className="ml-2 text-emerald-300">{saved}</span> : null}
+          {rescheduleError ? (
+            <span className="ml-2 text-alert">{rescheduleError}</span>
+          ) : null}
         </p>
       </section>
     </div>

@@ -1,5 +1,6 @@
 import { firstArrivalCeremonyNote, resolveCeremony } from './ceremony.js';
 import { addMinutesToClock } from './liveStageState.js';
+import { calculateStepDurations } from './stepDurations.js';
 
 export const KITCHEN_SERVICE_MODE_LABELS = {
   TABLE_SERVICE: 'Table service',
@@ -210,7 +211,7 @@ function makeStep({ id, time, title, type = 'HARD_ANCHOR', mandatory }) {
 
 // Venue Manager adapter: write the flat editor model back onto timeline steps.
 // The step time is the only clock value; no parallel mandatory object is kept.
-export function applyMandatorySettings(wedding, settings = {}) {
+export function applyMandatorySettings(wedding, settings = {}, { sort = true } = {}) {
   const steps = (Array.isArray(wedding?.steps) ? wedding.steps : []).map((step) => {
     const copy = { ...step };
     if (mandatoryOf(step)) copy.mandatory = { ...mandatoryOf(step) };
@@ -343,7 +344,73 @@ export function applyMandatorySettings(wedding, settings = {}) {
     }
   }
 
-  return sortStepsByClock(steps.filter(Boolean));
+  return sort ? sortStepsByClock(steps.filter(Boolean)) : steps.filter(Boolean);
+}
+
+function clockDeltaMinutes(from, to) {
+  const fromMinutes = clockMinutes(from);
+  const toMinutes = clockMinutes(to);
+  if (fromMinutes == null || toMinutes == null) return null;
+  let delta = toMinutes - fromMinutes;
+  if (delta > 12 * 60) delta -= 24 * 60;
+  if (delta < -12 * 60) delta += 24 * 60;
+  return delta;
+}
+
+// Venue Manager reschedules: move every consecutive FLEXIBLE step after an
+// edited step by the same delta, stopping at the next HARD_ANCHOR. The edit is
+// rejected if the shifted order changes or a derived duration becomes invalid.
+export function cascadeFlexibleSteps(previousSteps, nextSteps) {
+  const previous = (Array.isArray(previousSteps) ? previousSteps : []).filter(Boolean);
+  const result = (Array.isArray(nextSteps) ? nextSteps : []).filter(Boolean).map((step) => ({
+    ...step,
+  }));
+  const byId = new Map(previous.filter((step) => step?.id).map((step) => [step.id, step]));
+
+  const edits = [];
+  result.forEach((step, index) => {
+    const before = step?.id ? byId.get(step.id) : null;
+    if (!before?.time || !step?.time || before.time === step.time) return;
+    if (step.mandatory?.kind === 'FIRST_GUESTS_ARRIVAL') return;
+    if (step.mandatory?.kind === 'CLOSURE') return;
+    const delta = clockDeltaMinutes(before.time, step.time);
+    if (delta == null || delta === 0) return;
+    edits.push({ index, delta });
+  });
+
+  for (const { index, delta } of edits) {
+    for (let i = index + 1; i < result.length; i += 1) {
+      const follower = result[i];
+      if (!follower) continue;
+      if (follower.type === 'HARD_ANCHOR' || follower.mandatory?.kind === 'CLOSURE') break;
+      if (!follower.time) continue;
+      result[i] = { ...follower, time: addMinutesToClock(follower.time, delta) };
+    }
+  }
+
+  const beforeIds = previous.map((step) => step?.id).filter(Boolean);
+  const sorted = sortStepsByClock(result);
+  const afterIds = sorted.map((step) => step?.id).filter(Boolean);
+  const beforeCommon = beforeIds.filter((id) => afterIds.includes(id));
+  const afterCommon = afterIds.filter((id) => beforeIds.includes(id));
+  if (beforeCommon.join('|') !== afterCommon.join('|')) {
+    return {
+      steps: nextSteps,
+      error: 'The reschedule would cross a fixed step or the venue closure.',
+    };
+  }
+
+  const closureTime =
+    sorted.find((step) => step?.mandatory?.kind === 'CLOSURE')?.time ?? null;
+  const { errors } = calculateStepDurations(sorted, { closureTime });
+  if (errors.length > 0) {
+    return {
+      steps: nextSteps,
+      error: 'The reschedule would produce an invalid or overlapping timeline.',
+    };
+  }
+
+  return { steps: sorted, error: null };
 }
 
 function clockMinutes(value) {

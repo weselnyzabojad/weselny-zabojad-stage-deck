@@ -573,6 +573,8 @@ const pl = {
   'venueManager.cake.CUT_IN_PLACE': 'Krojenie na miejscu / goście podchodzą',
   'venueManager.prestationHelper': 'Prestacja gotowa jest wyliczana automatycznie 1 godzinę przed przyjazdem pierwszych gości.',
   'venueManager.saved': 'Zapisano',
+  'venueManager.rescheduleBlocked':
+    'Nie można przenieść: koliduje z kolejnym stałym punktem lub zamknięciem.',
 
   'openOnPhone.button': 'Otwórz na telefonie',
   'openOnPhone.buttonTitle': 'Otwórz tę rolę na telefonie',
