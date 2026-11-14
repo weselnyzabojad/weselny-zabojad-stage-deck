@@ -202,7 +202,9 @@ describe('issue #931 encrypted game question bundles', () => {
     expect(api).toContain('encryptGameBundle');
     expect(api).toContain('decryptGameBundle');
     expect(api).not.toContain('applyGameQuestionDocs');
-    expect(api).not.toContain('parseGameQuestionDoc');
+    // #935 intentionally reads and parses the linked Drive Doc only inside the
+    // owner-triggered migration action; normal publishes never parse Docs.
+    expect(api).toContain("action === 'migrate_game_questions'");
   });
 
   it('fails an invalid publish before writing a revision', () => {

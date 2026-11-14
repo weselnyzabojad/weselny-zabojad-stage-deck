@@ -3,7 +3,9 @@ import {
   createGameQuestionDoc,
   getRevisionContext,
   listGameQuestions,
+  migrateGameQuestions,
   parseGameQuestionDoc,
+  preflightGameMigration,
   publishGameQuestions,
   restoreGameQuestions,
   rewriteGameQuestionDocColumns,
@@ -408,18 +410,25 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
   const [confirm, setConfirm] = useState(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
   const [confirmError, setConfirmError] = useState('');
+  const [migrationPlan, setMigrationPlan] = useState(null);
+  const [discardUnlinked, setDiscardUnlinked] = useState(false);
 
   const disabled = readOnly || Boolean(wedding.archived_at);
   const load = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [revisionContext, gamesResult] = await Promise.all([
+      const [revisionContext, gamesResult, migration] = await Promise.all([
         getRevisionContext(wedding.wedding_id),
         listGameQuestions(wedding.wedding_id),
+        preflightGameMigration(
+          wedding.wedding_id,
+          wedding.drive_folder_id ?? wedding.driveFolderId ?? '',
+        ).catch(() => null),
       ]);
       setContext(revisionContext);
       setResult(gamesResult);
+      setMigrationPlan(migration);
       setLoaded(true);
     } catch (cause) {
       setError(cause?.message ?? 'Could not load game questions.');
@@ -427,7 +436,7 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
       setLoaded(true);
       setLoading(false);
     }
-  }, [wedding.wedding_id]);
+  }, [wedding.wedding_id, wedding.drive_folder_id, wedding.driveFolderId]);
 
   useEffect(() => {
     // eslint-disable-next-line react/set-state-in-effect -- load() sets its loading flag before the admin requests
@@ -441,7 +450,22 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
   const revisions = result?.revisions ?? EMPTY_LIST;
   const logs = result?.logs ?? EMPTY_LIST;
   const activeGameTypes = result?.activeGameTypes ?? EMPTY_LIST;
-  const migration = useMemo(() => legacyGameMigration(cartridge, docs), [cartridge, docs]);
+  const legacySummary = useMemo(() => legacyGameMigration(cartridge, docs), [cartridge, docs]);
+  const migration = migrationPlan ?? legacySummary;
+  const migrationGames = Array.isArray(migration?.games)
+    ? migration.games
+    : (migration?.lists ?? []).map((list) => ({
+        ...list,
+        enabled: list.enabled !== false,
+        embeddedQuestionCount: list.questionCount,
+        migratable: list.linked,
+        docReadable: list.linked,
+        action: list.linked ? 'migrate' : 'discard',
+      }));
+  const requiresMigrationConfirmation =
+    migration?.requiresConfirmation ??
+    ((migration?.unlinkedQuestionCount ?? 0) > 0);
+  const showMigration = Boolean(migration?.hasLegacy ?? legacySummary.hasLegacy);
 
   const docFor = (gameType) =>
     docs.find(
@@ -612,6 +636,43 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
     setConfirm({ kind: 'restore', game, revision });
   };
 
+  const runMigration = async () => {
+    if (disabled) return;
+    if (requiresMigrationConfirmation && !discardUnlinked) {
+      setError('Confirm that unlinked legacy game questions will be discarded.');
+      return;
+    }
+    if (
+      !window.confirm(
+        `Migrate legacy ${migrationGames.length} game question sets? Linked Drive Docs are read and re-encrypted. Google Docs are never deleted or modified.`,
+      )
+    ) {
+      return;
+    }
+    setBusy('migration');
+    setError('');
+    setMessage('');
+    try {
+      const result = await migrateGameQuestions({
+        weddingId: wedding.wedding_id,
+        weddingFolderId: wedding.drive_folder_id ?? wedding.driveFolderId ?? '',
+        discardUnlinked,
+      });
+      setMessage(
+        result?.alreadyMigrated
+          ? 'Legacy game questions were already migrated.'
+          : `Game migration complete: ${result.migrated ?? 0} question sets encrypted, ${result.discardedQuestions ?? result.discarded ?? 0} embedded questions discarded.`,
+      );
+      setDiscardUnlinked(false);
+      await load();
+      onChanged?.();
+    } catch (cause) {
+      setError(cause?.message ?? 'Could not migrate the legacy game questions.');
+    } finally {
+      setBusy('');
+    }
+  };
+
   const confirmAction = async () => {
     if (!confirm) return;
     const { kind, game, revision } = confirm;
@@ -686,29 +747,63 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
         </p>
       ) : null}
 
-      {migration.hasLegacy ? (
+      {showMigration ? (
         <div className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
-          <p className="font-heading text-xs font-bold">Legacy game questions detected</p>
+          <p className="font-heading text-xs font-bold">Legacy game question migration</p>
+          <p className="mt-1 font-semibold text-amber-200">Legacy game questions detected</p>
           <p className="mt-1 text-amber-200">
-            {migration.questionCount} embedded questions remain in the wedding cartridge ·{' '}
-            {migration.linkedCount} linked to a Drive Doc · {migration.unlinkedCount} without a Doc
-            link.
+            {migration.questionCount ?? legacySummary.questionCount} embedded questions remain in
+            the wedding cartridge · {migration.unlinkedQuestionCount ?? legacySummary.unlinkedQuestionCount}{' '}
+            would be discarded. Google Docs are never deleted or modified.
           </p>
           <ul className="mt-1 space-y-0.5 font-mono text-[9px]">
-            {migration.lists.map((list) => (
-              <li key={list.gameType}>
-                {list.label} · {list.questionCount} questions ·{' '}
-                {list.linked ? 'linked Doc' : 'NO Doc link'}
+            {migrationGames.map((game) => (
+              <li key={game.gameType}>
+                {game.label} · {game.enabled ? 'ENABLED' : 'DISABLED'} ·{' '}
+                {game.embeddedQuestionCount ?? game.questionCount ?? 0} embedded ·{' '}
+                {game.migratable
+                  ? 'Drive Doc readable'
+                  : game.action === 'already-migrated'
+                    ? `already encrypted v${game.bundleRevision}`
+                    : 'NO migratable Doc'}
+                {game.reason && game.action === 'discard' ? ` · ${game.reason}` : ''}
               </li>
             ))}
+            {migration.unknownLegacyQuestionCount > 0 ? (
+              <li>
+                Unsupported legacy game lists · {migration.unknownLegacyQuestionCount} embedded · no
+                migratable Doc
+              </li>
+            ) : null}
           </ul>
-          {migration.unlinkedCount > 0 ? (
-            <p className="mt-1 font-semibold text-amber-200">
-              Warning: {migration.unlinkedQuestionCount} unlinked legacy question
-              {migration.unlinkedQuestionCount === 1 ? '' : 's'} will lose their text when the
-              migration is run. Export or copy them before discarding.
-            </p>
+          {requiresMigrationConfirmation ? (
+            <label className="mt-2 flex items-start gap-1.5 text-amber-200">
+              <input
+                type="checkbox"
+                checked={discardUnlinked}
+                onChange={(event) => setDiscardUnlinked(event.target.checked)}
+                disabled={disabled || busy === 'migration'}
+              />
+              I understand {migration.unlinkedQuestionCount ?? legacySummary.unlinkedQuestionCount}{' '}
+              unlinked embedded question
+              {(migration.unlinkedQuestionCount ?? legacySummary.unlinkedQuestionCount) === 1
+                ? ''
+                : 's'}{' '}
+              will lose their text.
+            </label>
           ) : null}
+          <button
+            type="button"
+            onClick={() => void runMigration()}
+            disabled={
+              disabled ||
+              busy === 'migration' ||
+              (requiresMigrationConfirmation && !discardUnlinked)
+            }
+            className="mt-2 rounded border border-amber-600 bg-amber-900/60 px-2 py-1 font-semibold text-amber-100 disabled:opacity-40"
+          >
+            {busy === 'migration' ? 'Migrating…' : 'Migrate game questions'}
+          </button>
         </div>
       ) : null}
 
