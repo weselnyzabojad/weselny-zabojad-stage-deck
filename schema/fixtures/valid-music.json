@@ -89,5 +89,14 @@
       "end": "23:00"
     },
     "cleanVersions": true
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

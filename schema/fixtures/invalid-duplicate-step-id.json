@@ -59,5 +59,14 @@
         "label": "Wedding closure"
       }
     }
-  ]
+  ],
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
+  }
 }

@@ -63,5 +63,14 @@
         "other": true
       }
     }
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

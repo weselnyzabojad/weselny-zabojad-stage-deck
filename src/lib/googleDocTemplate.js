@@ -27,8 +27,8 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 3,
     marker: 'LANGUAGES',
     required: true,
-    schemaPath: ['languages'],
-    purpose: 'Content languages and their default.',
+    schemaPath: ['extensions', 'extensions.languages'],
+    purpose: 'Required ordered content languages and their default.',
   },
   {
     order: 4,

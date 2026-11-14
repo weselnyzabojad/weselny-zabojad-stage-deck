@@ -67,5 +67,14 @@
         }
       }
     ]
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

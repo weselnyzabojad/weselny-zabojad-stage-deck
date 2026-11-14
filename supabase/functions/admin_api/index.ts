@@ -35,6 +35,7 @@ import demographicsDomain from '../_shared/domains/demographics.json' with { typ
 import stepsDomain from '../_shared/domains/steps.json' with { type: 'json' };
 import speechesDomain from '../_shared/domains/speeches.json' with { type: 'json' };
 import witnessesDomain from '../_shared/domains/witnesses.json' with { type: 'json' };
+import languagesDomain from '../_shared/domains/languages.json' with { type: 'json' };
 import {
   authorizeAdminSession,
   decodeJwt,
@@ -62,7 +63,7 @@ import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
 import { decryptSecret } from '../_shared/speechSecrets.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, languagesDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
@@ -1318,12 +1319,18 @@ async function handleRequest(req: Request) {
           const songRequestEligible =
             (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
             activeVipIds.has(djIdentityId);
+          const supportedLanguages = row.cartridge?.extensions?.languages?.supported;
+          const languageWarning =
+            Array.isArray(supportedLanguages) && supportedLanguages.length > 0
+              ? null
+              : 'Content languages missing: set LANGUAGES → Supported before publishing.';
           return {
             ...summary,
             venue,
             servicePackage,
             djIdentityId,
             vipDjValid,
+            languageWarning,
             mcConfirmed,
             vipWarning,
             songRequestEligible,

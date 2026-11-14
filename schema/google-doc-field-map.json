@@ -30,6 +30,11 @@
       "culturalRules.bread_salt.status": "required",
       "culturalRules.bread_salt.note": "optional"
     },
+    "languages.example.json": {
+      "languages.supported": "required",
+      "languages.defaultContent": "optional",
+      "languages.notes": "optional"
+    },
     "demographics.example.json": {
       "demographics.total": "optional",
       "demographics.pl": "optional",
@@ -208,6 +213,7 @@
       "coupleProfile.groom.firstName": "required",
       "coupleProfile.groom.nationalities": "required",
       "coupleProfile.commonLanguages": "required",
+      "extensions.languages.supported": "required",
       "date": "required",
       "syncPin": "no",
       "role": "no",

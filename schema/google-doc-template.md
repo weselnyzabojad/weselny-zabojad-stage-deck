@@ -41,6 +41,10 @@ Shared languages: FR, PL, EN
 
 ## LANGUAGES
 
+`Supported` is the required ordered list of ISO 639-1 codes; its order is the
+content-column and MC display order. Any two-letter code is accepted and stored
+uppercase. Missing or empty `Supported` blocks publication.
+
 Default content: PL
 Supported: PL, FR, EN
 Notes: Couple speaks FR/PL; most guests understand EN.

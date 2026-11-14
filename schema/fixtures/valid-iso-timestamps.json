@@ -67,5 +67,14 @@
       "step_02"
     ],
     "active_speech_id": null
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

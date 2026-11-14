@@ -15,6 +15,7 @@ const closureStep = (mandatory = {}) => ({
 });
 
 const base = {
+  extensions: { languages: { supported: ['PL'] } },
   steps: [closureStep({ closureExtensionUntil: '03:00' })],
 };
 
@@ -61,7 +62,12 @@ describe('issue #448 venue extension hour', () => {
   });
 
   it('keeps old cartridges without the field valid', () => {
-    expect(collectSemanticErrors({ steps: [closureStep()] })).toEqual([]);
+    expect(
+      collectSemanticErrors({
+        extensions: { languages: { supported: ['PL'] } },
+        steps: [closureStep()],
+      }),
+    ).toEqual([]);
   });
 
   it('defines labels in every locale', () => {

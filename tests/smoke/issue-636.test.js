@@ -40,7 +40,10 @@ describe('issue #636 per-effect venue approvals', () => {
   });
 
   it('requires venue approval for fire', () => {
-    const base = { photoPlan: { specialEffects: { fire: true } } };
+    const base = {
+      extensions: { languages: { supported: ['PL'] } },
+      photoPlan: { specialEffects: { fire: true } },
+    };
     expect(
       collectSemanticErrors(base).some((error) =>
         error.message.includes('fire effects require venue approval'),
@@ -48,6 +51,7 @@ describe('issue #636 per-effect venue approvals', () => {
     ).toBe(true);
     expect(
       collectSemanticErrors({
+        extensions: { languages: { supported: ['PL'] } },
         photoPlan: { specialEffects: { fire: true, approvals: { fire: true } } },
       }),
     ).toEqual([]);

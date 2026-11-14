@@ -300,6 +300,11 @@ export const DEMO_WEDDING = {
     sparklers: true,
     photographerCue: "Front-left of the cake table"
   },
+  extensions: {
+    languages: {
+      supported: ["FR", "PL", "EN"]
+    }
+  },
   speechMode: "COMPLEX",
   speeches: [
     {

@@ -42,6 +42,7 @@ const BASE_CARTRIDGE = {
   date: '20.08.2026',
   syncPin: '2008',
   servicePackage: 'HOST_ONLY',
+  extensions: { languages: { supported: ['FR', 'PL', 'EN'] } },
   culturalRules: {
     sto_lat: { status: 'YES' },
     gorzko: { status: 'STRICT_NO' },
@@ -204,6 +205,9 @@ describe('issue #165 shared schema and semantic parity', () => {
     const venueDetailsDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'venue-details.json'), 'utf8'),
     );
+    const languagesDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'languages.json'), 'utf8'),
+    );
     const validate = makeCartridgeValidator(Ajv2020, schema, [
       oczepinyDomain,
       firstDanceDomain,
@@ -222,6 +226,7 @@ describe('issue #165 shared schema and semantic parity', () => {
       speechesDomain,
       witnessesDomain,
       venueDetailsDomain,
+      languagesDomain,
     ]);
 
     const valid = await validate(cartridge());
