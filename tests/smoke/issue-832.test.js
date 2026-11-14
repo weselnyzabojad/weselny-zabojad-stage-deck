@@ -1,0 +1,51 @@
+import { readFileSync } from 'node:fs';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { afterEach, describe, expect, it } from 'vitest';
+import LandingPage from '../../src/components/LandingPage.jsx';
+import fr from '../../src/i18n/fr.js';
+import { setLocale } from '../../src/i18n/index.js';
+
+const ROOT = new URL('../../', import.meta.url);
+const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
+
+afterEach(() => {
+  setLocale('en', { persist: false });
+});
+
+describe('issue #832 landing partner trust strip', () => {
+  it('styles the existing partner label as an uppercase tracked divider header', () => {
+    const landing = read('src/components/LandingPage.jsx');
+    const start = landing.indexOf('rounded-2xl border border-[#C5A059]/40 bg-white');
+    const end = landing.indexOf('<div className="mx-auto w-full max-w-6xl border-t', start);
+    const partnerBlock = landing.slice(start, end);
+
+    expect(partnerBlock).toContain('uppercase tracking-[0.2em]');
+    expect(partnerBlock).toContain('text-[#8A6A2F]');
+    expect(partnerBlock).toContain('bg-white');
+    expect(partnerBlock).toContain('border-[#C5A059]/40');
+    expect(partnerBlock.match(/aria-hidden="true"/g)).toHaveLength(2);
+  });
+
+  it('renders registry logos at a consistent size and non-interactive', () => {
+    const landing = read('src/components/LandingPage.jsx');
+    const start = landing.indexOf('rounded-2xl border border-[#C5A059]/40 bg-white');
+    const end = landing.indexOf('<div className="mx-auto w-full max-w-6xl border-t', start);
+    const partnerBlock = landing.slice(start, end);
+
+    expect(partnerBlock).toContain('src={partner.logoUrl}');
+    expect(partnerBlock).toContain('alt={partner.displayName}');
+    expect(partnerBlock).toContain('h-20 w-auto object-contain sm:h-24');
+    expect(partnerBlock).not.toContain('<a');
+  });
+
+  it('keeps the label copy and its order above the footer note', () => {
+    setLocale('fr', { persist: false });
+    const html = renderToStaticMarkup(createElement(LandingPage));
+
+    expect(html).toContain(fr['landing.footer.partners']);
+    expect(html.indexOf(fr['landing.footer.partners'])).toBeLessThan(
+      html.indexOf(fr['landing.footer.note']),
+    );
+  });
+});

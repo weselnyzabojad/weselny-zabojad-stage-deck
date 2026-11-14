@@ -1,10 +1,9 @@
 # Netlify configuration for the Universal Wedding Stage Deck PWA.
-# The Vite app lives in a subdirectory of this repository, so Netlify must
-# treat that directory as the build base and publish its `dist` output.
+# The Vite app lives at the repository root, so Netlify builds and publishes
+# its `dist` output there.
 
 [build]
-  base = "universal-wedding-stage-deck"
-  command = "npm run build"
+  command = "node scripts/deploy-build.mjs"
   publish = "dist"
 
 [build.environment]
@@ -20,13 +19,17 @@
 # `connect-src` names the exact production origins:
 # - the Supabase project (`https://` for Auth/REST/Edge Functions and `wss://`
 #   for Realtime), derived from `VITE_SUPABASE_URL`;
-# - the sunset lookup used by the admin Drive import.
+# - the sunset lookup used by the admin Drive import;
+# - the Sentry ingest origin from the built-in public DSN (issue #861).
 # Update the Supabase host here if the project ref changes; never widen this to
 # a wildcard or bare `https:`.
+#
+# `worker-src` also allows `blob:` because Sentry Session Replay starts its
+# compression worker from a Blob URL. Replay is error-only and fully masked.
 [[headers]]
   for = "/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org https://o4512420559716352.ingest.de.sentry.io; manifest-src 'self'; worker-src 'self' blob:; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
     X-Frame-Options = "DENY"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
     X-Content-Type-Options = "nosniff"

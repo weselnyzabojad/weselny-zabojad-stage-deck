@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pl" data-theme="night">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#070b19" />
+
+    <!-- Per-device theme (TODO 27). Runs before paint so the canvas never
+         flashes the wrong theme. Explicit toggle wins over prefers-color-scheme.
+         A plain same-origin script keeps the production CSP at
+         `script-src 'self'` without inline code or a hash. -->
+    <script src="/theme-bootstrap.js"></script>
+
+    <!-- Allow pinch zoom so the app meets WCAG 1.4.4 Resize Text. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Stage Deck — wspólny plan wesela dla Was i całej ekipy</title>
+    <meta
+      name="description"
+      content="Stage Deck to jeden wspólny, działający offline plan dnia dla pary młodej i całej ekipy weselnej: prowadzący, DJ, foto, wideo, mówca i sala. Dołączony bez dodatkowych kosztów do wesel Weselny Żabojad."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Stage Deck" />
+    <meta property="og:title" content="Stage Deck — wspólny plan wesela dla Was i całej ekipy" />
+    <meta
+      property="og:description"
+      content="Jedna timeline, widoki dla każdej roli, tryb offline i prywatny dostęp. Stage Deck prowadzi cały dzień wesela w jednym rytmie."
+    />
+    <meta property="og:url" content="https://deck.weselnyzabojad.pl/" />
+    <meta property="og:image" content="https://deck.weselnyzabojad.pl/pwa-512x512.png" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Stage Deck — wspólny plan wesela dla Was i całej ekipy" />
+    <meta
+      name="twitter:description"
+      content="Jedna timeline, widoki dla każdej roli, tryb offline i prywatny dostęp. Stage Deck prowadzi cały dzień wesela w jednym rytmie."
+    />
+    <meta name="twitter:image" content="https://deck.weselnyzabojad.pl/pwa-512x512.png" />
+
+    <!-- Google Fonts: Montserrat (Headings) & Lora (Body Text) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  </head>
+  <body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

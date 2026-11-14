@@ -1,0 +1,54 @@
+{
+  "name": "universal-wedding-stage-deck",
+  "private": true,
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint --deny-warnings",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:local": "node scripts/test-local.mjs",
+    "validate:schema": "node schema/validate-cartridge.mjs",
+    "validate:fixtures": "node schema/validate-fixtures.mjs",
+    "validate:template": "node scripts/validate-google-doc-template.mjs",
+    "validate:google-doc-map": "node scripts/validate-google-doc-field-map.mjs",
+    "validate:i18n": "node scripts/check-i18n.mjs",
+    "validate:env": "node scripts/validate-env.mjs",
+    "local:start": "node scripts/local-supabase.mjs start",
+    "local:stop": "node scripts/local-supabase.mjs stop",
+    "local:status": "node scripts/local-supabase.mjs status",
+    "local:reset": "node scripts/local-supabase.mjs reset",
+    "local:seed": "node scripts/seed-local.mjs",
+    "migrate:timestamps": "node scripts/migrate-actual-timestamps.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@sentry/react": "^11.12.0",
+    "@supabase/supabase-js": "^2.118.0",
+    "ajv": "^8.20.0",
+    "flag-icons": "^7.5.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@sentry/vite-plugin": "^11.12.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "bcryptjs": "^2.4.3",
+    "oxlint": "^1.89.0",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
+  }
+}

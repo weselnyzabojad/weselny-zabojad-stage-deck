@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_test_wedding",
+  "coupleProfile": {
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
+    "commonLanguages": []
+  },
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "servicePackage": "HOST_ONLY",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "YES"
+    },
+    "gorzko": {
+      "status": "STRICT_NO"
+    },
+    "bread_salt": {
+      "status": "TBC"
+    }
+  },
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "title": "Arrival",
+      "type": "FLEXIBLE",
+      "location": "Garden"
+    },
+    {
+      "id": "step_02",
+      "time": "17:30",
+      "title": "Ceremony",
+      "type": "FLEXIBLE",
+      "location": "Gazebo"
+    },
+    {
+      "id": "closure",
+      "time": "18:30",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure"
+      }
+    }
+  ],
+  "speechMode": "COMPLEX",
+  "speeches": [
+    {
+      "id": "speech_witness",
+      "mode": "COMPLEX",
+      "speaker": {
+        "name": "Bartek",
+        "relationship": "Best man"
+      },
+      "order": 1,
+      "script": {
+        "text": "Dobry wieczor.",
+        "format": "PLAIN",
+        "ready": true,
+        "source": "GOOGLE_DOC"
+      },
+      "visibleToRoles": [
+        "mc",
+        "speaker"
+      ]
+    },
+    {
+      "id": "speech_father",
+      "mode": "LIGHT",
+      "speaker": {
+        "name": "Pere de Guillaume"
+      },
+      "order": 2,
+      "script": {
+        "text": "",
+        "format": "PLAIN",
+        "ready": false,
+        "source": "GOOGLE_DOC"
+      }
+    }
+  ]
+}

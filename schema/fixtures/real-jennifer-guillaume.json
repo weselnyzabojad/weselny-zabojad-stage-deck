@@ -1,0 +1,645 @@
+{
+  "$schema": "../wedding-schema-v1.1.json",
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_jennifer_guillaume",
+  "coupleProfile": {
+    "bride": {
+      "firstName": "Jennifer",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "groom": {
+      "firstName": "Guillaume",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "commonLanguages": [
+      "FR",
+      "PL",
+      "EN"
+    ]
+  },
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "role": "MC",
+  "servicePackage": "HOST_AND_DJ_VIP",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "STRICT_NO"
+    },
+    "gorzko": {
+      "status": "STRICT_NO"
+    },
+    "bread_salt": {
+      "status": "YES",
+      "note": "Vodka vs water shot, break glasses"
+    }
+  },
+  "mediaTeam": [
+    {
+      "id": "photo_main",
+      "role": "PHOTO",
+      "name": "Magda & Tomek",
+      "phone": "+48 600 000 000",
+      "startTime": "14:00",
+      "endTime": "21:30",
+      "deliverables": [
+        "Ceremony",
+        "Group photos",
+        "First dance",
+        "Oczepiny"
+      ],
+      "notes": "Leaves after the winner photo."
+    },
+    {
+      "id": "video_main",
+      "role": "VIDEO",
+      "name": "Ola",
+      "phone": "+48 600 333 333",
+      "startTime": "14:30",
+      "endTime": "00:30",
+      "deliverables": [
+        "Highlight film"
+      ],
+      "notes": "Needs a clean feed from the DJ booth."
+    }
+  ],
+  "photoPlan": {
+    "sunset": {
+      "provider": "sunrise-sunset.org",
+      "latitude": 51.05,
+      "longitude": 16.19,
+      "lastFetchedAt": "2026-08-20T17:05:00.000Z",
+      "sunsetTime": "20:12",
+      "goldenHourStart": "19:32",
+      "civilTwilightEnd": "20:48",
+      "status": "LIVE"
+    },
+    "miniSession": {
+      "enabled": true,
+      "latestStartMinutesBeforeSunset": 30,
+      "location": "Garden",
+      "backupLocation": "Ballroom window"
+    },
+    "groupPhotos": {
+      "location": "OUTDOOR",
+      "groups": [
+        {
+          "id": "bride_family",
+          "label": "Bride's family"
+        },
+        {
+          "id": "groom_family",
+          "label": "Groom's family"
+        },
+        {
+          "id": "friends",
+          "label": "Friends"
+        }
+      ]
+    },
+    "specialEffects": {
+      "sparklers": true,
+      "fire": false,
+      "heavySmoke": true,
+      "other": "Cold sparks",
+      "approvals": {
+        "sparklers": true,
+        "fire": false,
+        "heavySmoke": true,
+        "other": true
+      }
+    },
+    "guestCoverage": {
+      "allGuests": false,
+      "description": "Formal photos with immediate family and witnesses only.",
+      "groups": [
+        {
+          "id": "immediate_family",
+          "label": "Immediate family"
+        },
+        {
+          "id": "witnesses",
+          "label": "Witnesses"
+        }
+      ]
+    }
+  },
+  "oczepiny": {
+    "enabled": true,
+    "order": "MIDNIGHT",
+    "toss": "VEIL",
+    "ties": "BOW_TIE",
+    "winnerPhoto": {
+      "enabled": true,
+      "photographerCue": "Winner photo with the couple, then clear the floor.",
+      "winnersOnly": true,
+      "winnersWithCouple": true,
+      "photographerAvailable": true
+    },
+    "photographerBriefed": {
+      "notes": "Cameraman confirmed the midnight window."
+    },
+    "music": {
+      "track": "Oczepiny mix",
+      "playlist": [
+        "Midnight"
+      ],
+      "enabled": true
+    },
+    "subEvents": [
+      {
+        "id": "veil_toss",
+        "title": "Veil toss"
+      },
+      {
+        "id": "bouquet_toss",
+        "title": "Bouquet toss"
+      },
+      {
+        "id": "bow_tie_game",
+        "title": "Bow-tie game"
+      },
+      {
+        "id": "cravat_toss",
+        "title": "Cravat toss"
+      },
+      {
+        "id": "winner_photo",
+        "title": "Winner photo"
+      },
+      {
+        "id": "winners_with_couple_photo",
+        "title": "Winners with couple photo"
+      }
+    ],
+    "variant": "MIDNIGHT",
+    "throwings": {
+      "veil": true,
+      "bouquet": true,
+      "bowTie": true,
+      "cravat": false
+    },
+    "game": {
+      "enabled": true
+    },
+    "countdown": {
+      "mode": "MC"
+    }
+  },
+  "steps": [
+    {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "title": "First guests arrival",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "FIRST_GUESTS_ARRIVAL",
+        "label": "First guests arrival"
+      }
+    },
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "title": "Cocktail / Vin d'honneur",
+      "type": "FLEXIBLE",
+      "location": "Garden",
+      "dj": {
+        "playlist": "Garden Aperitif",
+        "track": "La Vie en Rose — Édith Piaf"
+      }
+    },
+    {
+      "id": "step_02",
+      "time": "17:00",
+      "title": "Ceremony",
+      "type": "FLEXIBLE",
+      "location": "Garden Gazebo",
+      "dj": {
+        "playlist": "Ceremony Procession",
+        "track": "Canon in D — Pachelbel",
+        "cutoff": "18:20"
+      },
+      "ceremony": {
+        "type": "RELIGIOUS",
+        "mcSupportRequested": true,
+        "location": "St. Mary Church",
+        "notes": "Full mass; MC introduces the couple at the church door."
+      }
+    },
+    {
+      "id": "step_03",
+      "time": "18:00",
+      "planned": "18:00",
+      "realStart": "18:25",
+      "title": "Grand Entrance",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "notes": "Keep the newlyweds by the door until the MC announces them.",
+      "photographerCue": "Group photo before the toast",
+      "isMainSongRequired": true,
+      "grandEntranceOrder": "NEWLYWEDS_FIRST",
+      "subTasks": [
+        "Parents' thank-you speech + gifts (with mic)",
+        "Rosół + Tartare with Vodka shot",
+        "Speeches between starter and main course"
+      ],
+      "dj": {
+        "playlist": "Dinner Jazz",
+        "track": "Fly Me to the Moon — Frank Sinatra",
+        "cutoff": "20:15"
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "SPEECH",
+        "title": "Grand Entrance",
+        "items": [
+          {
+            "id": "welcome",
+            "heading": "Welcome the couple",
+            "lines": [
+              {
+                "lang": "PL",
+                "text": "Drodzy Państwo, prosimy o powstanie i powitanie Pary Młodej gromkimi brawami!"
+              },
+              {
+                "lang": "FR",
+                "text": "Mesdames et messieurs, veuillez vous lever et accueillir les jeunes mariés par un tonnerre d'applaudissements !"
+              },
+              {
+                "lang": "EN",
+                "text": "Ladies and gentlemen, please stand and welcome the newlyweds with a round of applause!"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "dinner",
+      "time": "18:30",
+      "title": "Dinner",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Dinner",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "title": "Wedding cake",
+      "type": "HARD_ANCHOR",
+      "location": "Terrace",
+      "isMainSongRequired": true,
+      "dj": {
+        "playlist": "Party Set",
+        "track": "Dancing Queen — ABBA",
+        "cutoff": "21:30"
+      },
+      "mandatory": {
+        "kind": "CAKE_SERVICE",
+        "label": "Wedding cake",
+        "cakeServiceMode": "KITCHEN_RETURN"
+      }
+    },
+    {
+      "id": "step_06",
+      "time": "21:00",
+      "title": "Wedding Thank-You",
+      "type": "FLEXIBLE",
+      "location": "Main Hall"
+    },
+    {
+      "id": "step_07",
+      "time": "21:15",
+      "title": "Wishes",
+      "type": "FLEXIBLE",
+      "location": "Garden"
+    },
+    {
+      "id": "supper_1",
+      "time": "21:30",
+      "title": "Supper I",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper I",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
+      "id": "step_08",
+      "time": "21:45",
+      "title": "First Dance",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "isMainSongRequired": true,
+      "firstDanceMode": "NORMAL",
+      "firstDanceStartAt": "00:12",
+      "firstDanceStopAt": "04:30",
+      "firstDanceNotes": "Key song for the DJ; fade under the applause."
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "title": "Supper II",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper II",
+        "serviceMode": "BUFFET"
+      }
+    },
+    {
+      "id": "step_09",
+      "time": "00:00",
+      "title": "Oczepiny",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "optionalFlag": "oczepiny"
+    },
+    {
+      "id": "step_10",
+      "time": "01:00",
+      "title": "Test Wiedzy",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "sourceDocId": "gdoc_test_wiedzy",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "w01",
+            "prompt": {
+              "PL": "Gdzie poznali się Jennifer i Guillaume?",
+              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              "EN": "Where did Jennifer and Guillaume first meet?"
+            },
+            "answer": {
+              "PL": "W Krakowie",
+              "FR": "À Cracovie",
+              "EN": "In Kraków"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "step_11",
+      "time": "01:30",
+      "title": "Test Zgodności",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodno?ci",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure",
+        "closureExtensionAllowed": true,
+        "lastSong": "Perfect - Ed Sheeran"
+      }
+    }
+  ],
+  "demographics": {
+    "total": 100,
+    "pl": 50,
+    "fr": 40,
+    "other": 10,
+    "notes": "10–15 kids; most guests understand English."
+  },
+  "privacy": {
+    "cloudSync": "ENCRYPTED_HOST_KEY",
+    "encryption": {
+      "alg": "AES-GCM",
+      "keyHolder": "HOST",
+      "version": 1
+    }
+  },
+  "musicPolicy": {
+    "mustPlay": [
+      {
+        "id": "grand_entrance",
+        "track": "Marry You - Bruno Mars",
+        "note": "Grand entrance cue."
+      },
+      {
+        "id": "first_dance",
+        "track": "Perfect - Ed Sheeran",
+        "note": "First dance — duet version."
+      }
+    ],
+    "doNotPlay": [
+      {
+        "track": "Macarena - Los del Río"
+      },
+      {
+        "track": "Sto lat"
+      }
+    ],
+    "requestsOpen": true,
+    "requestWindow": {
+      "start": "20:00",
+      "end": "23:00"
+    },
+    "cleanVersions": true,
+    "importantSongs": [
+      {
+        "id": "grand_entrance",
+        "moment": "GRAND_ENTRANCE",
+        "title": "Marry You",
+        "artist": "Bruno Mars",
+        "version": "Album version",
+        "stepId": "step_03",
+        "source": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/marry-you-bruno-mars.mp3",
+          "filename": "marry-you-bruno-mars.mp3",
+          "checksum": "sha256:5d41402abc4b2a76b9719d911017c592",
+          "durationSec": 230,
+          "availability": "LOCAL",
+          "notes": "Clean intro; no cold ending."
+        },
+        "backupSource": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE"
+        },
+        "note": "Wait for the MC cue before pressing play."
+      },
+      {
+        "id": "cake_cutting",
+        "moment": "CAKE",
+        "title": "Cake",
+        "artist": "The Coup",
+        "stepId": "step_05",
+        "source": {
+          "type": "YOUTUBE",
+          "url": "https://www.youtube.com/watch?v=DEMO_CAKE_CUTTING"
+        },
+        "backupSource": {
+          "type": "CUSTOMER_FILE",
+          "fileRef": "assets/audio/cake-the-coup.mp3",
+          "filename": "cake-the-coup.mp3",
+          "availability": "LOCAL"
+        }
+      },
+      {
+        "id": "first_dance",
+        "moment": "FIRST_DANCE",
+        "title": "Perfect",
+        "artist": "Ed Sheeran",
+        "version": "Duet version",
+        "source": {
+          "type": "SPOTIFY",
+          "url": "https://open.spotify.com/track/DEMO_FIRST_DANCE"
+        },
+        "backupSource": {
+          "type": "DEEZER",
+          "url": "https://www.deezer.com/track/DEMO_FIRST_DANCE"
+        },
+        "note": "Dance floor cleared; fade out after the second chorus.",
+        "stepId": "step_08"
+      }
+    ]
+  },
+  "cake": {
+    "time": "20:30",
+    "cuttingSong": "Cake - The Coup",
+    "sparklers": true,
+    "photographerCue": "Front-left of the cake table"
+  },
+  "speechMode": "COMPLEX",
+  "speeches": [
+    {
+      "id": "speech_witness",
+      "mode": "COMPLEX",
+      "speaker": {
+        "name": "Bartek",
+        "relationship": "Best man",
+        "contact": "+48 600 222 333"
+      },
+      "order": 1,
+      "script": {
+        "text": "Dobry wieczór Państwu,\n\nKiedy Jennifer i Guillaume poprosili mnie, żebym stanął tu dziś jako świadek, od razu wiedziałem, że to zaszczyt.\n\nWznieśmy toast za tę dwójkę: za śmiech, za cierpliwość i za wszystkie drogi, które jeszcze przed Wami.",
+        "format": "PLAIN",
+        "ready": true,
+        "source": "GOOGLE_DOC"
+      },
+      "visibleToRoles": [
+        "mc",
+        "speaker"
+      ]
+    },
+    {
+      "id": "speech_father",
+      "mode": "LIGHT",
+      "speaker": {
+        "name": "Père de Guillaume",
+        "relationship": "Father of the groom"
+      },
+      "order": 2,
+      "script": {
+        "text": "",
+        "format": "PLAIN",
+        "ready": false,
+        "source": "GOOGLE_DOC"
+      },
+      "visibleToRoles": [
+        "mc",
+        "speaker"
+      ]
+    }
+  ],
+  "liveSyncState": {
+    "active_step_id": "step_03",
+    "active_speech_id": "speech_witness",
+    "completed_step_ids": [
+      "step_01",
+      "step_02"
+    ],
+    "actual_timestamps": {
+      "step_01": "2026-08-20T16:31:00+02:00",
+      "step_02": "2026-08-20T17:00:00+02:00",
+      "step_03": "2026-08-20T18:25:00+02:00"
+    },
+    "checked_subtasks": {
+      "Parents' thank-you speech + gifts (with mic)": true,
+      "Rosół + Tartare with Vodka shot": false,
+      "Speeches between starter and main course": false
+    },
+    "stage_ping": null,
+    "step_order": [
+      "step_01",
+      "step_02",
+      "step_03",
+      "step_05",
+      "step_06",
+      "step_07",
+      "step_08",
+      "step_09",
+      "step_10"
+    ],
+    "mutation_log": []
+  },
+  "childrenExpected": true,
+  "hardAnchors": [
+    {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "label": "First guests arrival",
+      "kind": "FAMILY"
+    },
+    {
+      "id": "dinner",
+      "time": "18:30",
+      "label": "Dinner",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "label": "Wedding cake",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "supper_1",
+      "time": "21:30",
+      "label": "Supper I",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "label": "Supper II",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "label": "Wedding closure",
+      "kind": "VENDOR"
+    }
+  ]
+}

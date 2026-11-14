@@ -1,0 +1,176 @@
+{
+  "$schema": "./steps.json",
+  "steps": [
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "title": "Cocktail / Vin d'honneur",
+      "type": "FLEXIBLE",
+      "location": "Garden",
+      "notes": "Guests gather in the garden for the aperitif.",
+      "dj": {
+        "playlist": "Garden Aperitif",
+        "track": "La Vie en Rose — Édith Piaf"
+      }
+    },
+    {
+      "id": "step_02",
+      "time": "17:00",
+      "title": "Ceremony",
+      "type": "FLEXIBLE",
+      "location": "Garden Gazebo",
+      "dj": {
+        "playlist": "Ceremony Procession",
+        "track": "Canon in D — Pachelbel",
+        "cutoff": "18:20"
+      }
+    },
+    {
+      "id": "step_03",
+      "time": "18:00",
+      "planned": "18:00",
+      "realStart": "18:25",
+      "title": "Grand Entrance",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "photographerCue": "Group photo before the toast",
+      "isMainSongRequired": true,
+      "grandEntranceOrder": "NEWLYWEDS_FIRST",
+      "subTasks": [
+        "Parents' thank-you speech + gifts (with mic)",
+        "Rosół + Tartare with Vodka shot",
+        "Speeches between starter and main course"
+      ],
+      "dj": {
+        "playlist": "Dinner Jazz",
+        "track": "Fly Me to the Moon — Frank Sinatra",
+        "cutoff": "20:15"
+      },
+      "teleprompter": {
+        "has_script": true,
+        "type": "SPEECH",
+        "title": "Grand Entrance",
+        "items": [
+          {
+            "id": "welcome",
+            "heading": "Welcome the couple",
+            "lines": [
+              {
+                "lang": "PL",
+                "text": "Drodzy Państwo, prosimy o powstanie i powitanie Pary Młodej gromkimi brawami!"
+              },
+              {
+                "lang": "FR",
+                "text": "Mesdames et messieurs, veuillez vous lever et accueillir les jeunes mariés par un tonnerre d'applaudissements !"
+              },
+              {
+                "lang": "EN",
+                "text": "Ladies and gentlemen, please stand and welcome the newlyweds with a round of applause!"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "step_05",
+      "time": "20:30",
+      "title": "Wedding cake",
+      "type": "HARD_ANCHOR",
+      "location": "Terrace",
+      "isMainSongRequired": true,
+      "dj": {
+        "playlist": "Party Set",
+        "track": "Dancing Queen — ABBA",
+        "cutoff": "21:30"
+      }
+    },
+    {
+      "id": "step_06",
+      "time": "21:00",
+      "title": "Wedding Thank-You",
+      "type": "FLEXIBLE",
+      "location": "Main Hall"
+    },
+    {
+      "id": "step_07",
+      "time": "21:15",
+      "title": "Wishes",
+      "type": "FLEXIBLE",
+      "location": "Garden"
+    },
+    {
+      "id": "step_08",
+      "time": "21:45",
+      "title": "First Dance",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "isMainSongRequired": true
+    },
+    {
+      "id": "step_09",
+      "time": "00:00",
+      "title": "Oczepiny",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "optionalFlag": "oczepiny"
+    },
+    {
+      "id": "step_10",
+      "time": "01:00",
+      "title": "Test Wiedzy",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "gameType": "TEST_WIEDZY",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
+    },
+    {
+      "id": "step_11",
+      "time": "01:30",
+      "title": "Test Zgodności",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodności",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
+    },
+    {
+      "id": "step_12",
+      "time": "02:00",
+      "title": "Musical Set",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "optionalFlag": "dj_set",
+      "dj": {
+        "playlist": "Party Set"
+      }
+    },
+    {
+      "id": "step_speed_foto",
+      "time": "03:00",
+      "title": "Speed Foto",
+      "type": "FLEXIBLE",
+      "location": "Dancefloor",
+      "game": {
+        "id": "speed_foto",
+        "title": "Speed Foto",
+        "gameType": "OTHER",
+        "enabled": true,
+        "requiresPhotographer": true,
+        "status": "AVAILABLE",
+        "questions": []
+      }
+    }
+  ]
+}

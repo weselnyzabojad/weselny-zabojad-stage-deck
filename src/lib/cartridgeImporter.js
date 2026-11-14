@@ -1,0 +1,222 @@
+import weddingSchema from '../../schema/wedding-schema-v1.1.json';
+import oczepinyDomain from '../../schema/domains/oczepiny.json';
+import firstDanceDomain from '../../schema/domains/first-dance.json';
+import attractionsDomain from '../../schema/domains/attractions.json';
+import culturalRulesDomain from '../../schema/domains/cultural-rules.json';
+import coupleProfileDomain from '../../schema/domains/couple-profile.json';
+import photoPlanDomain from '../../schema/domains/photo-plan.json';
+import miniSessionDomain from '../../schema/domains/mini-session.json';
+import groupPhotosDomain from '../../schema/domains/group-photos.json';
+import guestCoverageDomain from '../../schema/domains/guest-coverage.json';
+import specialEffectsDomain from '../../schema/domains/special-effects.json';
+import cakeDomain from '../../schema/domains/cake.json';
+import musicPolicyDomain from '../../schema/domains/music-policy.json';
+import demographicsDomain from '../../schema/domains/demographics.json';
+import stepsDomain from '../../schema/domains/steps.json';
+import speechesDomain from '../../schema/domains/speeches.json';
+import witnessesDomain from '../../schema/domains/witnesses.json';
+import { collectSemanticErrors } from './cartridgeValidation';
+import { coupleDisplayName } from './coupleIdentity.js';
+import { applyMandatorySettings } from './mandatorySteps.js';
+
+let validatorPromise = null;
+
+// Ajv is loaded on demand so the main stage-deck bundle stays lean. The PWA
+// still precaches the chunk, so importing works offline after first load.
+async function getValidator() {
+  if (!validatorPromise) {
+    validatorPromise = import('ajv/dist/2020.js').then(({ default: Ajv2020 }) => {
+      const ajv = new Ajv2020({ allErrors: true, strict: false });
+      // Register the per-domain schemas the main schema `$ref`s.
+      ajv.addSchema(oczepinyDomain);
+      ajv.addSchema(firstDanceDomain);
+      ajv.addSchema(attractionsDomain);
+      ajv.addSchema(culturalRulesDomain);
+      ajv.addSchema(coupleProfileDomain);
+      ajv.addSchema(photoPlanDomain);
+      ajv.addSchema(miniSessionDomain);
+      ajv.addSchema(groupPhotosDomain);
+      ajv.addSchema(guestCoverageDomain);
+      ajv.addSchema(specialEffectsDomain);
+      ajv.addSchema(cakeDomain);
+      ajv.addSchema(musicPolicyDomain);
+      ajv.addSchema(demographicsDomain);
+      ajv.addSchema(stepsDomain);
+      ajv.addSchema(speechesDomain);
+      ajv.addSchema(witnessesDomain);
+      return ajv.compile(weddingSchema);
+    });
+  }
+  return validatorPromise;
+}
+
+export function parseCartridgeJson(text) {
+  if (typeof text !== 'string' || text.trim().length === 0) {
+    return { ok: false, error: 'Paste a JSON cartridge first.' };
+  }
+
+  try {
+    return { ok: true, value: JSON.parse(text) };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+}
+
+const DEPRECATED_TOP_LEVEL_FIELDS = [
+  'jokersCount',
+  'jokerGames',
+  'weatherVariants',
+  'coHosts',
+  'contentCreators',
+  'preWeddingTodos',
+];
+const DEPRECATED_STEP_FIELDS = ['deferable', 'weatherOption', 'cateringNotes', 'propsAndFx'];
+
+// Issue #75: delete, do not migrate. Old v1.1 cartridges may still contain the
+// retired fields; strip them before validation so the importer accepts the
+// cartridge and saves a clean object without those keys.
+function migrateCeremonyGamesWishes(cartridge) {
+  const steps = Array.isArray(cartridge.steps) ? cartridge.steps : [];
+
+  if (cartridge.ceremony && typeof cartridge.ceremony === 'object') {
+    const step =
+      steps.find((entry) => /ceremony/i.test(entry.title ?? '')) ??
+      steps.find((entry) => entry.ceremonyType);
+    if (step) {
+      step.ceremony = cartridge.ceremony;
+      delete step.ceremonyType;
+      delete step.ceremonyLocation;
+    }
+    delete cartridge.ceremony;
+  }
+
+  const gameLists = Array.isArray(cartridge.games?.questionLists)
+    ? cartridge.games.questionLists
+    : [];
+  for (const list of gameLists) {
+    const step =
+      steps.find((entry) => entry.gameId && entry.gameId === list.id) ??
+      steps.find(
+        (entry) =>
+          String(entry.title ?? '').trim().toLowerCase() ===
+          String(list.title ?? '').trim().toLowerCase(),
+      );
+    if (step) {
+      step.game = list;
+      delete step.gameId;
+      if (step.optionalFlag === 'games') delete step.optionalFlag;
+    }
+  }
+  delete cartridge.games;
+
+  if (cartridge.wishes) {
+    for (const step of steps) {
+      if (step.optionalFlag === 'wishes') delete step.optionalFlag;
+    }
+    delete cartridge.wishes;
+  }
+}
+
+function migrateLegacyCouple(cartridge) {
+  const legacyName = typeof cartridge.couple === 'string' ? cartridge.couple.trim() : '';
+  if (!cartridge.coupleProfile && legacyName) {
+    const [brideName, groomName] = legacyName.split(/\s*&\s*/);
+    cartridge.coupleProfile = {
+      bride: { firstName: brideName || 'Bride', nationalities: [] },
+      groom: { firstName: groomName || 'Groom', nationalities: [] },
+      commonLanguages: [],
+    };
+  }
+  delete cartridge.couple;
+}
+
+export function sanitizeCartridge(cartridge) {
+  if (!cartridge || typeof cartridge !== 'object' || Array.isArray(cartridge)) {
+    return cartridge;
+  }
+
+  const clean = JSON.parse(JSON.stringify(cartridge));
+  migrateLegacyCouple(clean);
+  delete clean.venue;
+  delete clean.venueLogistics;
+  delete clean.venueDetails;
+  migrateCeremonyGamesWishes(clean);
+  if (clean.mandatorySteps && Array.isArray(clean.steps)) {
+    clean.steps = applyMandatorySettings(
+      { steps: clean.steps },
+      clean.mandatorySteps,
+    );
+    delete clean.mandatorySteps;
+  }
+  for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
+
+  for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
+    if (!step || typeof step !== 'object') continue;
+    delete step.durationMin;
+    for (const field of DEPRECATED_STEP_FIELDS) delete step[field];
+  }
+
+  if (clean.liveSyncState && typeof clean.liveSyncState === 'object') {
+    delete clean.liveSyncState.deferred_step_ids;
+    delete clean.liveSyncState.manual_offset_minutes;
+  }
+
+  return clean;
+}
+
+export async function validateCartridge(input) {
+  const cartridge = sanitizeCartridge(input);
+  const errors = [];
+
+  try {
+    const validate = await getValidator();
+    if (!validate(cartridge)) {
+      for (const error of validate.errors ?? []) {
+        errors.push({
+          location: error.instancePath || '/',
+          message: error.message ?? 'schema validation failed',
+        });
+      }
+    }
+  } catch (error) {
+    errors.push({
+      location: '/',
+      message: `Schema validator failed to load: ${error.message}`,
+    });
+  }
+
+  errors.push(...collectSemanticErrors(cartridge));
+  return { valid: errors.length === 0, errors, cartridge };
+}
+
+export function summarizeCartridge(cartridge) {
+  const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
+  const flexibleSteps = steps.filter((step) => step?.type === 'FLEXIBLE');
+  const anchors = Array.isArray(cartridge?.hardAnchors) ? cartridge.hardAnchors : [];
+  const keySongs = Array.isArray(cartridge?.musicPolicy?.importantSongs)
+    ? cartridge.musicPolicy.importantSongs
+    : [];
+  const cake = cartridge?.cake && typeof cartridge.cake === 'object' ? cartridge.cake : null;
+  const musicPolicy =
+    cartridge?.musicPolicy && typeof cartridge.musicPolicy === 'object'
+      ? cartridge.musicPolicy
+      : null;
+
+  return {
+    couple: coupleDisplayName(cartridge),
+    date: cartridge?.date ?? '—',
+    syncPin: cartridge?.syncPin ?? '—',
+    stepCount: steps.length,
+    flexibleStepCount: flexibleSteps.length,
+    hardAnchorCount: anchors.length,
+    keySongCount: keySongs.length,
+    hasCake: Boolean(cake),
+    cakeTime: cake?.time ?? null,
+    mustPlayCount: Array.isArray(musicPolicy?.mustPlay) ? musicPolicy.mustPlay.length : 0,
+    doNotPlayCount: Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay.length : 0,
+    requestsOpen:
+      typeof musicPolicy?.requestsOpen === 'boolean' ? musicPolicy.requestsOpen : null,
+    cleanVersions:
+      typeof musicPolicy?.cleanVersions === 'boolean' ? musicPolicy.cleanVersions : null,
+  };
+}

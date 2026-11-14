@@ -1,0 +1,287 @@
+{
+  "$schema": "./wedding-schema-v1.1.json",
+  "schemaVersion": "1.1",
+  "weddingId": "2026-08-20_jennifer_guillaume",
+  "coupleProfile": {
+    "bride": {
+      "firstName": "Jennifer",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "groom": {
+      "firstName": "Guillaume",
+      "nationalities": [
+        "FR"
+      ]
+    },
+    "commonLanguages": [
+      "FR",
+      "PL",
+      "EN"
+    ]
+  },
+  "date": "20.08.2026",
+  "syncPin": "2008",
+  "role": "MC",
+  "servicePackage": "HOST_AND_DJ_VIP",
+  "mediaTeam": [
+    {
+      "id": "photo_main",
+      "role": "PHOTO",
+      "name": "Magda & Tomek",
+      "phone": "+48 600 000 000",
+      "startTime": "14:00",
+      "endTime": "21:30",
+      "deliverables": [
+        "Ceremony",
+        "Group photos",
+        "First dance",
+        "Oczepiny"
+      ],
+      "notes": "Leaves after the winner photo."
+    },
+    {
+      "id": "video_main",
+      "role": "VIDEO",
+      "name": "Ola",
+      "phone": "+48 600 333 333",
+      "startTime": "14:30",
+      "endTime": "00:30",
+      "deliverables": [
+        "Highlight film"
+      ],
+      "notes": "Needs a clean feed from the DJ booth."
+    }
+  ],
+  "steps": [
+    {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "title": "First guests arrival",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "FIRST_GUESTS_ARRIVAL",
+        "label": "First guests arrival"
+      }
+    },
+    {
+      "id": "step_01",
+      "time": "16:30",
+      "title": "Cocktail / Vin d'honneur",
+      "type": "FLEXIBLE",
+      "location": "Garden",
+      "notes": "Guests gather in the garden for the aperitif."
+    },
+    {
+      "id": "step_ceremony",
+      "time": "17:00",
+      "title": "Ceremony",
+      "type": "FLEXIBLE",
+      "location": "St. Mary Church",
+      "ceremony": {
+        "type": "RELIGIOUS",
+        "mcSupportRequested": true,
+        "location": "St. Mary Church",
+        "notes": "Full mass; MC introduces the couple at the church door."
+      }
+    },
+    {
+      "id": "dinner",
+      "time": "18:30",
+      "title": "Dinner",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Dinner",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
+      "id": "vendor_leave",
+      "time": "21:15",
+      "title": "Vendor leaves",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "MILESTONE",
+        "label": "Vendor leaves",
+        "milestoneKind": "VENDOR",
+        "alertBeforeMin": 45
+      }
+    },
+    {
+      "id": "step_wishes",
+      "time": "21:00",
+      "title": "Wishes",
+      "type": "FLEXIBLE",
+      "location": "Garden"
+    },
+    {
+      "id": "supper_1",
+      "time": "21:30",
+      "title": "Supper I",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper I",
+        "serviceMode": "TABLE_SERVICE"
+      }
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "title": "Supper II",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "KITCHEN_SERVICE",
+        "label": "Supper II",
+        "serviceMode": "BUFFET"
+      }
+    },
+    {
+      "id": "game_test_wiedzy",
+      "time": "01:00",
+      "title": "Test Wiedzy",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_wiedzy",
+        "title": "Test Wiedzy",
+        "gameType": "TEST_WIEDZY",
+        "enabled": true,
+        "sourceDocId": "gdoc_test_wiedzy",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "w01",
+            "level": "EASY",
+            "prompt": {
+              "PL": "Gdzie Jennifer i Guillaume poznali się po raz pierwszy?",
+              "FR": "Où Jennifer et Guillaume se sont-ils rencontrés ?",
+              "EN": "Where did Jennifer and Guillaume first meet?"
+            },
+            "answer": "Guillaume"
+          },
+          {
+            "id": "w02",
+            "level": "HARD",
+            "prompt": {
+              "PL": "Kto powiedział „kocham cię” pierwszy?",
+              "FR": "Qui a dit « je t’aime » en premier ?",
+              "EN": "Who said “I love you” first?"
+            },
+            "answer": "Jennifer"
+          }
+        ]
+      }
+    },
+    {
+      "id": "game_test_zgodnosci",
+      "time": "01:30",
+      "title": "Test Zgodności",
+      "type": "FLEXIBLE",
+      "location": "Main Hall",
+      "game": {
+        "id": "test_zgodnosci",
+        "title": "Test Zgodności",
+        "gameType": "TEST_ZGODNOSCI",
+        "enabled": true,
+        "sourceDocId": "gdoc_test_zgodnosci",
+        "status": "AVAILABLE",
+        "questions": [
+          {
+            "id": "z01",
+            "prompt": {
+              "PL": "Kto chętniej planuje spontaniczny wyjazd?",
+              "FR": "Qui planifie plus volontiers un voyage spontané ?",
+              "EN": "Who is more likely to plan a spontaneous trip?"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure",
+        "closureExtensionAllowed": true,
+        "closureExtensionUntil": "03:00",
+        "lastSong": "Perfect - Ed Sheeran"
+      }
+    }
+  ],
+  "privacy": {
+    "cloudSync": "ENCRYPTED_HOST_KEY",
+    "encryption": {
+      "alg": "AES-GCM",
+      "keyHolder": "HOST",
+      "version": 1
+    }
+  },
+  "liveSyncState": {
+    "active_step_id": "step_01",
+    "active_speech_id": null,
+    "completed_step_ids": [],
+    "actual_timestamps": {},
+    "checked_subtasks": {
+      "Parents' thank-you speech + gifts (with mic)": true,
+      "Rosół + Tartare with Vodka shot": false,
+      "Speeches between starter and main course": false
+    },
+    "stage_ping": null,
+    "step_order": [
+      "step_01"
+    ],
+    "mutation_log": []
+  },
+  "childrenExpected": true,
+  "hardAnchors": [
+    {
+      "id": "first_guests_arrival",
+      "time": "15:30",
+      "label": "First guests arrival",
+      "kind": "FAMILY"
+    },
+    {
+      "id": "dinner",
+      "time": "18:30",
+      "label": "Dinner",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "vendor_leave",
+      "time": "21:15",
+      "label": "Vendor leaves",
+      "alertBeforeMin": 45,
+      "kind": "VENDOR"
+    },
+    {
+      "id": "supper_1",
+      "time": "21:30",
+      "label": "Supper I",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "supper_2",
+      "time": "23:30",
+      "label": "Supper II",
+      "kind": "VENDOR"
+    },
+    {
+      "id": "closure",
+      "time": "02:00",
+      "label": "Wedding closure",
+      "kind": "VENDOR"
+    }
+  ]
+}

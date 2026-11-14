@@ -1,0 +1,546 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  checkDriveSource,
+  getRevisionContext,
+  listDriveSources,
+  previewDriveSource,
+  publishDriveRevision,
+} from './adminApi';
+import { summarizeCartridge, validateCartridge } from '../lib/cartridgeImporter';
+import {
+  parseGoogleDocTemplate,
+  validateGoogleDocTemplate,
+} from '../lib/googleDocTemplate';
+import { googleDocTemplateToCartridge } from '../lib/googleDocCartridge';
+import { applySunsetSnapshot } from '../lib/sunsetLookup';
+import { resolveVenueTimeZone } from '../lib/eventTime.js';
+import { diffCartridges } from '../lib/cartridgeDiff';
+import AdminWeddingFolders from './AdminWeddingFolders';
+import { AdminConfirmDialog } from './AdminDialogs';
+
+async function hashSourceText(text) {
+  if (typeof crypto === 'undefined' || !crypto.subtle) return null;
+  const bytes = new TextEncoder().encode(String(text ?? ''));
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+// Admin-only Google Drive browser and non-destructive preview (issue #169).
+// Nothing here is rendered on a stage-role view. A validated JSON preview may
+// be published as a new revision after diff review and fresh TOTP re-auth
+// (issue #170); the server re-reads and binds the exact Drive version.
+export default function AdminDrivePanel({
+  weddings = [],
+  onRequestMfa,
+  onPublished,
+  onNotify,
+  readOnly = false,
+}) {
+  const [query, setQuery] = useState('');
+  const [files, setFiles] = useState([]);
+  const [nextPageToken, setNextPageToken] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [targetWeddingId, setTargetWeddingId] = useState('');
+  const [context, setContext] = useState(null);
+  const [contextLoading, setContextLoading] = useState(false);
+  const [checkResult, setCheckResult] = useState(null);
+  const [publishBusy, setPublishBusy] = useState(false);
+  const [publishError, setPublishError] = useState('');
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [publishWarning, setPublishWarning] = useState('');
+
+  const loadSources = useCallback(
+    async ({ append = false } = {}) => {
+      setLoading(true);
+      setError('');
+      try {
+        const result = await listDriveSources({
+          query,
+          pageToken: append ? nextPageToken : null,
+        });
+        setFiles((current) => (append ? [...current, ...(result.files ?? [])] : result.files ?? []));
+        setNextPageToken(result.nextPageToken ?? null);
+      } catch (err) {
+        setError(err.message ?? 'Could not list Google Drive sources.');
+      } finally {
+        setLoading(false);
+      }
+    },
+    [nextPageToken, query],
+  );
+
+  useEffect(() => {
+    void loadSources();
+    // Initial admin-only listing; subsequent searches are explicit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial admin-only listing; subsequent searches are explicit
+  }, []);
+
+  const selectFile = async (file) => {
+    setSelectedId(file.id);
+    setPreview({ file, loading: true });
+    setPreviewLoading(true);
+    setContext(null);
+    setCheckResult(null);
+    setPublishError('');
+    try {
+      const source = await previewDriveSource(file.id);
+      let parsed;
+      if (source.kind === 'json') {
+        const cartridge = JSON.parse(source.text);
+        const validation = await validateCartridge(cartridge);
+        parsed = {
+          kind: 'json',
+          cartridge: validation.cartridge,
+          validation,
+          summary: validation.valid ? summarizeCartridge(validation.cartridge) : null,
+        };
+      } else {
+        const document = parseGoogleDocTemplate(source.text);
+        const structureValidation = validateGoogleDocTemplate(document);
+        const mapped = googleDocTemplateToCartridge(document);
+        const withSunset = await applySunsetSnapshot(mapped.cartridge, {
+          dateISO: mapped.cartridge.dateISO,
+          timeZone: resolveVenueTimeZone(mapped.cartridge),
+        });
+        const cartridgeValidation = await validateCartridge(withSunset);
+        const errors = [
+          ...structureValidation.errors.map((message) => ({ location: '/', message })),
+          ...mapped.errors.map((message) => ({ location: '/', message })),
+          ...cartridgeValidation.errors,
+        ];
+        const valid = errors.length === 0 && cartridgeValidation.valid;
+        parsed = {
+          kind: 'google_doc',
+          cartridge: valid ? cartridgeValidation.cartridge : null,
+          sourceTextHash: await hashSourceText(source.text),
+          validation: {
+            valid,
+            errors,
+            warnings: [...structureValidation.warnings, ...mapped.warnings],
+          },
+          summary: valid
+            ? summarizeCartridge(cartridgeValidation.cartridge)
+            : {
+                sections: document.sections.map((section) => section.marker),
+                required: document.sections.filter((section) => section.required).length,
+              },
+        };
+      }
+      setPreview({ ...source, ...parsed, loading: false });
+    } catch (err) {
+      setPreview({
+        file,
+        loading: false,
+        validation: { valid: false, errors: [{ location: '/', message: err.message }] },
+      });
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!preview?.cartridge || !targetWeddingId) {
+      setContext(null);
+      return undefined;
+    }
+    let cancelled = false;
+    setContextLoading(true);
+    setPublishError('');
+    getRevisionContext(targetWeddingId)
+      .then((data) => {
+        if (!cancelled) setContext(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setContext({ error: err.message });
+      })
+      .finally(() => {
+        if (!cancelled) setContextLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [preview?.cartridge, targetWeddingId]);
+
+  const targetWedding = weddings.find((wedding) => wedding.wedding_id === targetWeddingId) ?? null;
+  const diff = useMemo(
+    () =>
+      context?.wedding?.cartridge && preview?.cartridge
+        ? diffCartridges(context.wedding.cartridge, preview.cartridge, context.liveState)
+        : null,
+    [context, preview?.cartridge],
+  );
+
+  const handleCheckDrive = async () => {
+    if (!preview?.file?.id) return;
+    setCheckResult({ loading: true });
+    try {
+      const result = await checkDriveSource(preview.file.id, {
+        expectedVersion: preview.file.version ?? '',
+        expectedChecksum: preview.file.md5Checksum ?? '',
+      });
+      setCheckResult(result);
+    } catch (err) {
+      setCheckResult({ error: err.message });
+    }
+  };
+
+  const publishNow = async () => {
+    if (readOnly || !targetWedding || !preview?.cartridge) return false;
+    setPublishBusy(true);
+    setPublishError('');
+    try {
+      const result = await publishDriveRevision({
+        weddingId: targetWedding.wedding_id,
+        expectedRevision: Number(
+          context?.wedding?.cartridge_revision ?? targetWedding.cartridge_revision ?? 0,
+        ),
+        fileId: preview.file.id,
+        expectedVersion: preview.file.version ?? '',
+        expectedChecksum: preview.file.md5Checksum ?? '',
+        cartridge: preview.cartridge,
+        sourceTextHash: preview.sourceTextHash ?? null,
+        couple: targetWedding.couple,
+        date: targetWedding.date,
+      });
+      onNotify?.(`Published revision ${result.cartridgeRevision} from Drive.`, 'success');
+      onPublished?.(result);
+      setPreview(null);
+      setSelectedId(null);
+      setContext(null);
+      setTargetWeddingId('');
+      return true;
+    } catch (err) {
+      setPublishError(err.message ?? 'Could not publish the Drive revision.');
+      if (err.status === 409) await selectFile(preview.file);
+      return false;
+    } finally {
+      setPublishBusy(false);
+    }
+  };
+
+  const handlePublish = () => {
+    if (readOnly || !targetWedding || !diff || !preview?.validation?.valid) return;
+    const impact = [];
+    if (diff.impact.activeStepRemoved) impact.push('the current live step would disappear');
+    if (diff.impact.activeSpeechRemoved) impact.push('the active speech would disappear');
+    setPublishWarning(impact.length ? `Warning: ${impact.join(' and ')}.` : '');
+    setPublishError('');
+    setPublishConfirmOpen(true);
+  };
+
+  const confirmPublish = async () => {
+    if (onRequestMfa) {
+      setPublishConfirmOpen(false);
+      onRequestMfa(publishNow);
+      return;
+    }
+    const published = await publishNow();
+    if (published) setPublishConfirmOpen(false);
+  };
+
+  return (
+    <>
+      <AdminWeddingFolders />
+      <section className="space-y-3 rounded-xl border border-line bg-card p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h2 className="font-heading text-sm font-bold text-ink">Google Drive source</h2>
+          <p className="mt-1 text-[10px] text-muted">
+            Browse files shared with the service-account email. Preview only — publishing is a
+            separate confirmed admin action.
+          </p>
+        </div>
+        <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-brand-tint">
+          admin only
+        </span>
+      </div>
+
+      <form
+        className="flex flex-wrap items-end gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void loadSources();
+        }}
+      >
+        <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
+          Search shared sources
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="File or Doc name"
+            className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent disabled:opacity-50"
+        >
+          {loading ? 'Searching…' : 'Search Drive'}
+        </button>
+      </form>
+
+      {error ? (
+        <p role="alert" className="rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+          {error}
+        </p>
+      ) : null}
+
+      {!loading && files.length === 0 && !error ? (
+        <p className="rounded border border-dashed border-line bg-page px-3 py-4 text-center text-xs text-muted">
+          No supported shared sources found. Share cartridge JSON files or Google Docs with the
+          service-account email.
+        </p>
+      ) : null}
+
+      {files.length > 0 ? (
+        <ul className="divide-y divide-line rounded border border-line">
+          {files.map((file) => (
+            <li key={file.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
+              <button
+                type="button"
+                onClick={() => void selectFile(file)}
+                className={`min-w-0 flex-1 text-left ${selectedId === file.id ? 'text-brand-tint' : 'text-ink'}`}
+              >
+                <span className="block truncate text-xs font-semibold">{file.name ?? file.id}</span>
+                <span className="mt-0.5 block font-mono text-[9px] text-muted">
+                  {file.mimeType === 'application/vnd.google-apps.document' ? 'Google Doc' : 'JSON'}
+                  {' · '}modified {file.modifiedTime ?? '—'}
+                  {file.version ? ` · v${file.version}` : ''}
+                  {file.size ? ` · ${file.size} B` : ''}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => void selectFile(file)}
+                disabled={previewLoading && selectedId === file.id}
+                className="rounded border border-line-strong bg-raised px-2 py-1 text-[10px] font-semibold text-ink disabled:opacity-50"
+              >
+                {previewLoading && selectedId === file.id ? 'Previewing…' : 'Preview'}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {nextPageToken ? (
+        <button
+          type="button"
+          onClick={() => void loadSources({ append: true })}
+          disabled={loading}
+          className="rounded border border-line-strong bg-raised px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-50"
+        >
+          Load more
+        </button>
+      ) : null}
+
+      {preview ? (
+        <div className="space-y-3 rounded border border-line bg-page p-3">
+          <div>
+            <h3 className="text-xs font-bold text-ink">{preview.file?.name ?? 'Drive source'}</h3>
+            <p className="mt-1 font-mono text-[9px] leading-relaxed text-muted">
+              id {preview.file?.id ?? '—'} · {preview.kind ?? '—'}
+              {preview.bytes != null ? ` · ${preview.bytes} B` : ''}
+              {preview.retrievedAt ? ` · retrieved ${preview.retrievedAt}` : ''}
+            </p>
+          </div>
+
+          {preview.loading ? (
+            <p className="text-xs text-muted">Retrieving and parsing this source…</p>
+          ) : (
+            <>
+              <p
+                role="status"
+                className={`rounded border px-3 py-2 text-xs ${
+                  preview.validation?.valid
+                    ? 'border-emerald-700 bg-emerald-950/50 text-emerald-200'
+                    : 'border-alert/60 bg-alert/15 text-alert-soft'
+                }`}
+              >
+                {preview.validation?.valid
+                  ? `Source validates without errors${preview.summary?.stepCount != null ? ` · ${preview.summary.stepCount} steps` : ''}${preview.summary?.sections ? ` · ${preview.summary.sections.length} sections` : ''}.`
+                  : `Preview has ${preview.validation?.errors?.length ?? 0} validation error(s).`}
+              </p>
+
+              {preview.summary?.couple ? (
+                <dl className="grid grid-cols-2 gap-2 text-[10px] text-ink sm:grid-cols-4">
+                  <div><dt className="text-muted">Couple</dt><dd>{preview.summary.couple}</dd></div>
+                  <div><dt className="text-muted">Date</dt><dd>{preview.summary.date}</dd></div>
+                  <div><dt className="text-muted">PIN</dt><dd>{preview.summary.syncPin}</dd></div>
+                  <div><dt className="text-muted">Steps</dt><dd>{preview.summary.stepCount}</dd></div>
+                </dl>
+              ) : null}
+
+              {preview.summary?.sections?.length ? (
+                <p className="font-mono text-[9px] leading-relaxed text-muted">
+                  {preview.summary.sections.join(' · ')}
+                </p>
+              ) : null}
+
+              {preview.validation?.errors?.length ? (
+                <ul className="max-h-40 space-y-1 overflow-auto text-[10px] text-alert-soft">
+                  {preview.validation.errors.map((item, index) => (
+                    <li key={`${item.location}-${index}`}>
+                      <span className="font-mono text-muted">{item.location}</span> {item.message}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {preview.validation?.warnings?.length ? (
+                <ul className="max-h-32 space-y-1 overflow-auto text-[10px] text-amber-200">
+                  {preview.validation.warnings.map((warning, index) => (
+                    <li key={index}>{warning}</li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {preview.text ? (
+                <details className="text-[10px] text-muted">
+                  <summary className="cursor-pointer font-semibold text-ink">
+                    Source text (transient)
+                  </summary>
+                  <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded bg-card p-2 font-mono text-[9px]">
+                    {preview.text}
+                  </pre>
+                </details>
+              ) : null}
+
+              <div className="flex flex-wrap items-center gap-2 border-t border-line pt-3">
+                <button
+                  type="button"
+                  onClick={() => void handleCheckDrive()}
+                  className="rounded border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-ink"
+                >
+                  Check Drive for changes
+                </button>
+                {checkResult?.loading ? (
+                  <span className="text-[10px] text-muted">Checking metadata…</span>
+                ) : null}
+                {checkResult?.error ? (
+                  <span role="alert" className="text-[10px] text-alert-soft">{checkResult.error}</span>
+                ) : null}
+                {checkResult && !checkResult.loading && !checkResult.error ? (
+                  <span role="status" className={`text-[10px] ${checkResult.changed ? 'text-amber-200' : 'text-emerald-200'}`}>
+                    {checkResult.changed
+                      ? `Source changed (${checkResult.reason}). Preview again before publishing.`
+                      : 'Source is unchanged since preview.'}
+                  </span>
+                ) : null}
+              </div>
+
+              {preview.kind === 'json' && preview.validation?.valid ? (
+                <div className="space-y-3 border-t border-line pt-3">
+                  <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
+                    Publish as new revision to
+                    <select
+                      value={targetWeddingId}
+                      onChange={(event) => setTargetWeddingId(event.target.value)}
+                      className="mt-1 block w-full rounded border border-line bg-card px-2.5 py-2 text-xs text-ink"
+                    >
+                      <option value="">Select a wedding…</option>
+                      {weddings
+                        .filter((wedding) => !wedding.archived_at)
+                        .map((wedding) => (
+                          <option key={wedding.wedding_id} value={wedding.wedding_id}>
+                            {wedding.couple || wedding.wedding_id} · rev {Number(wedding.cartridge_revision ?? 0)}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+
+                  {contextLoading ? (
+                    <p className="text-[10px] text-muted">Loading current revision and diff…</p>
+                  ) : null}
+                  {context?.error ? (
+                    <p role="alert" className="text-[10px] text-alert-soft">{context.error}</p>
+                  ) : null}
+
+                  {diff ? (
+                    <div className="space-y-2 rounded border border-line bg-card p-3 text-[10px] text-ink">
+                      <h4 className="text-xs font-bold text-ink">Diff against current revision</h4>
+                      <p className="font-mono text-[9px] text-muted">
+                        current rev {Number(context?.wedding?.cartridge_revision ?? 0)} · identity changes:{' '}
+                        {diff.identity.length ? diff.identity.join(', ') : 'none'}
+                      </p>
+                      <p>
+                        Steps: +{diff.steps.added.length} / -{diff.steps.removed.length} / ~
+                        {diff.steps.changed.length}
+                        {diff.steps.added.length ? ` · added ${diff.steps.added.join(', ')}` : ''}
+                        {diff.steps.removed.length ? ` · removed ${diff.steps.removed.join(', ')}` : ''}
+                        {diff.steps.changed.length ? ` · changed ${diff.steps.changed.join(', ')}` : ''}
+                      </p>
+                      <p>
+                        Speeches: +{diff.speeches.added.length} / -{diff.speeches.removed.length} / ~
+                        {diff.speeches.changed.length}
+                      </p>
+                      <p>
+                        Role visibility changes:{' '}
+                        {diff.roleVisibility.length ? diff.roleVisibility.join(', ') : 'none'}
+                      </p>
+                      {diff.impact.activeStepRemoved || diff.impact.activeSpeechRemoved ? (
+                        <p className="rounded border border-amber-700 bg-amber-950/50 px-2 py-1 text-amber-200">
+                          {diff.impact.activeStepRemoved
+                            ? `Current live step "${diff.impact.activeStepId}" would be removed. `
+                            : ''}
+                          {diff.impact.activeSpeechRemoved
+                            ? `Active speech "${diff.impact.activeSpeechId}" would be removed.`
+                            : ''}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {publishError ? (
+                    <p role="alert" className="rounded border border-alert/60 bg-alert/15 px-3 py-2 text-xs text-alert-soft">
+                      {publishError}
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={handlePublish}
+                    disabled={readOnly || !targetWedding || !diff || publishBusy}
+                    className="rounded border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent disabled:opacity-50"
+                  >
+                    {publishBusy ? 'Publishing…' : 'Publish as new revision'}
+                  </button>
+                  <p className="text-[9px] text-muted">
+                    Requires fresh TOTP re-authentication. The server re-reads the Drive file and
+                    rejects it if the version/checksum changed after preview.
+                  </p>
+                </div>
+              ) : null}
+
+              {preview.kind === 'google_doc' ? (
+                <p className="border-t border-line pt-3 text-[10px] text-muted">
+                  Google Doc sources are mapped to a cartridge draft, validated against the
+                  schema and diffed before publication. Publishing also binds the exported
+                  Doc text hash so a changed source must be previewed again.
+                </p>
+              ) : null}
+            </>
+          )}
+        </div>
+      ) : null}
+      </section>
+      <AdminConfirmDialog
+        open={publishConfirmOpen}
+        title="Publish Drive revision"
+        description={`Publish a new immutable revision for ${targetWedding?.couple || targetWedding?.wedding_id || 'this wedding'}. ${publishWarning}`.trim()}
+        confirmLabel="Publish revision"
+        busy={publishBusy}
+        error={publishError}
+        onConfirm={confirmPublish}
+        onCancel={() => {
+          setPublishConfirmOpen(false);
+          setPublishError('');
+        }}
+      />
+    </>
+  );
+}
