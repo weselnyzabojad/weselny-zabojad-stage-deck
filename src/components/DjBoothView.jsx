@@ -4,6 +4,7 @@ import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
+import MusicalSetBar from './MusicalSetBar';
 import useCompact from '../hooks/useCompact';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
@@ -92,6 +93,11 @@ export default function DjBoothView({
   speeches = [],
   speechMode = 'OFF',
   authControl = null,
+  onExtendMusicalSet = null,
+  extensionAllowed = false,
+  extensionUntil = null,
+  closureTime = null,
+  extensionBlockedReason = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -180,6 +186,19 @@ export default function DjBoothView({
   // Compact (phone) read-only content: no step controls.
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
+      {caps.vip && isDjSet ? (
+        <MusicalSetBar
+          key={activeEntry?.step?.id ?? 'musical-set'}
+          wedding={wedding}
+          clock={clock}
+          activeEntry={activeEntry}
+          onExtend={onExtendMusicalSet}
+          extensionAllowed={extensionAllowed}
+          extensionUntil={extensionUntil}
+          closureTime={closureTime}
+          extensionBlockedReason={extensionBlockedReason}
+        />
+      ) : null}
       {caps.guestRequests ? (
         <DjSongRequestQueue
           enabled={caps.guestRequests}
@@ -270,6 +289,20 @@ export default function DjBoothView({
         />
       ) : null}
       </div>
+
+      {caps.vip && isDjSet ? (
+        <MusicalSetBar
+          key={activeEntry?.step?.id ?? 'musical-set'}
+          wedding={wedding}
+          clock={clock}
+          activeEntry={activeEntry}
+          onExtend={onExtendMusicalSet}
+          extensionAllowed={extensionAllowed}
+          extensionUntil={extensionUntil}
+          closureTime={closureTime}
+          extensionBlockedReason={extensionBlockedReason}
+        />
+      ) : null}
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="w-full space-y-4">
