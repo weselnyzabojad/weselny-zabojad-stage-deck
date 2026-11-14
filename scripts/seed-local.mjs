@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import { DEFAULT_WEDDING } from '../src/demo/demoWedding.js';
+import { assertLocalSupabaseUrl } from './lib/local-guard.mjs';
 
 const ROOT = process.cwd();
 const CLIENT_ENV = `${ROOT}/.env.local`;
@@ -36,8 +37,8 @@ function parseEnv(file) {
 
 function localOnly(url) {
   try {
-    const host = new URL(url).hostname;
-    return host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '[::1]';
+    assertLocalSupabaseUrl(url);
+    return true;
   } catch {
     return false;
   }

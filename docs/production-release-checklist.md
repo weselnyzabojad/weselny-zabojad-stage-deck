@@ -124,7 +124,18 @@ Verify names only; never paste values into GitHub.
 - [ ] No `.map` files are served from production.
 - [ ] PWA offline reload works after the first successful load.
 
-## 7. Rollback
+## 7. Production isolation
+
+- Never run `npm run local:*` against the hosted project; the scripts refuse
+  non-local targets.
+- Never run `supabase link`, `supabase db push` or `supabase config push` from a
+  local working tree unless the owner explicitly approves a production change.
+- Production validation: `npm run validate:env -- --require-production` rejects
+  localhost URLs and local/demo mode.
+- Recovery after an accidental link: `npx supabase unlink`, delete `.supabase/`,
+  then restart the local stack.
+
+## 8. Rollback
 
 - **Netlify:** roll back to the previous successful production deploy.
 - **Supabase functions:** redeploy the previous known-good commit.
@@ -132,7 +143,7 @@ Verify names only; never paste values into GitHub.
 - **Release PR:** revert the production merge if the app must return to the previous commit.
 - Record the rollback reason and the restored deploy/commit.
 
-## 8. Sign-off
+## 9. Sign-off
 
 | Item | Value |
 | --- | --- |

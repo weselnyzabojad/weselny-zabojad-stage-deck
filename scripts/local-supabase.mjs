@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { generateKeyPairSync, randomBytes } from 'node:crypto';
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { assertLocalSupabaseUrl } from './lib/local-guard.mjs';
 
 const ROOT = process.cwd();
 const BASELINE = path.join(ROOT, 'supabase', 'migrations', '00000000000000_base_schema.sql');
@@ -174,6 +175,12 @@ function start({ reset = false, seed = false } = {}) {
   const status = stackStatus();
   if (!status?.anonKey || !status?.serviceKey) {
     console.error('Supabase is running but its local keys could not be read. Run `npx supabase status`.');
+    process.exit(1);
+  }
+  try {
+    assertLocalSupabaseUrl(status.apiUrl, 'Local Supabase API URL');
+  } catch (error) {
+    console.error(error.message);
     process.exit(1);
   }
   writeEnv(status.apiUrl, status.anonKey, status.serviceKey);
