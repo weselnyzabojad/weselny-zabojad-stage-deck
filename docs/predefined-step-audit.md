@@ -15,6 +15,7 @@ and application features.
 | First Dance | demo `step_08`, `FIRST_DANCE` important song/deliverable | Yes | Mandatory for now |
 | Oczepiny | demo `step_09`, `oczepiny` object, `ocsepiny` hard anchor, cultural indicator | Yes | Optional (`oczepiny.enabled`) |
 | Games | demo `step_10`, games content and test-game teleprompter | Yes | Optional (`games.enabled`) |
+| Musical Set | demo/schema/Doc TIMELINE row with `optionalFlag: dj_set`, DJ VIP countdown | Yes | Authored `dj_set` row; no auto-insertion |
 | Buffets Open & Dance Floor | former `step_04` | No | Deleted |
 
 ## Notes

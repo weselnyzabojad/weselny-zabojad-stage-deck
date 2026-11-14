@@ -99,7 +99,7 @@ the final step); it is never authored or stored.
 
 Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
 Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
-Test Wiedzy, Test Zgodności, Oczepiny, Last Dance) — see
+Test Wiedzy, Test Zgodności, Oczepiny, Musical Set, Last Dance) — see
 `docs/google-doc-template-conventions.md` §6. Detection reads the flags, never
 the localized title. `Optional Flag` accepts only `oczepiny` or `dj_set`; leave
 it blank for ordinary steps.
@@ -117,7 +117,7 @@ it blank for ordinary steps.
 | step_10 | 01:00 | Test Wiedzy | FLEXIBLE | Main Hall |  | false |  |  |
 | step_speed_foto | 01:30 | Speed Foto | FLEXIBLE | Dancefloor |  | false |  | Guests run in, pose, clear. |
 | step_11 | 01:45 | Test Zgodności | FLEXIBLE | Main Hall |  | false |  |  |
-| step_12 | 02:00 | DJ Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
+| step_12 | 02:00 | Musical Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
 
 ## DJ CUES
 
