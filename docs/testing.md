@@ -36,6 +36,24 @@ least one file in each category. It prints the first rejection reason for every
 invalid fixture, so a fixture that fails for the wrong reason is easy to spot.
 `tests/schema-fixtures.test.js` additionally pins the intended error text.
 
+## Test tiers
+
+| Tier | Command | Requirements | Runs in CI |
+| --- | --- | --- | --- |
+| Hermetic unit/component | `npm test` | Node only | Yes, unchanged |
+| Schema/fixture | `npm run validate:schema`, `validate:fixtures` | Node only | Yes |
+| Local integration | `npm run test:local` | Docker + local Supabase + seeded stack | No, opt-in |
+
+`npm run test:local` refuses any Supabase URL that is not localhost/127.0.0.1/::1.
+It starts the local stack if needed and runs `tests/local/**` through
+`vitest.local.config.js`. The default `npm test` explicitly excludes that folder,
+so Docker is never required for the normal suite.
+
+The local suite covers migrations/seed shape, RLS isolation, `join_room`
+success/failure, the song request submit/status lifecycle and unauthenticated
+speech-key denial. Broken migrations or policies should fail it; a missing
+Docker/stack shows an actionable message instead of timing out.
+
 ## Current coverage
 
 Valid edge cases:
