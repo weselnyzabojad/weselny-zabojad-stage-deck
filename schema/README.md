@@ -112,10 +112,9 @@ rejected; put app-specific data under `extensions`.
 | `hardAnchors` | no | Derived from `HARD_ANCHOR` steps; never authored in the Doc. |
 | `demographics` | no | Guest counts and notes. |
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
-| `speeches` | no | Speech records + verbatim script text, consent and speaker visibility. |
 | `witnesses` | no | Key persons with language, admin-only contacts and speech ids. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
-| `extensions` | no | Forward-compatible namespace. |
+| `extensions` | publish | `extensions.languages.supported` is required for publication: ordered ISO 639-1 codes; other extension keys remain forward-compatible. |
 
 ## Steps
 

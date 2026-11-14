@@ -65,5 +65,14 @@
       "step_01",
       "step_02"
     ]
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

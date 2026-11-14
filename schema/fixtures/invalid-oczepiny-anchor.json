@@ -58,5 +58,14 @@
     "order": "MIDNIGHT",
     "toss": "VEIL",
     "ties": "BOW_TIE"
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

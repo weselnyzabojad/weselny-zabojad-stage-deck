@@ -15,6 +15,7 @@ import demographicsDomain from '../../schema/domains/demographics.json';
 import stepsDomain from '../../schema/domains/steps.json';
 import speechesDomain from '../../schema/domains/speeches.json';
 import witnessesDomain from '../../schema/domains/witnesses.json';
+import languagesDomain from '../../schema/domains/languages.json';
 import { collectSemanticErrors } from './cartridgeValidation';
 import { coupleDisplayName } from './coupleIdentity.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
@@ -44,6 +45,7 @@ async function getValidator() {
       ajv.addSchema(stepsDomain);
       ajv.addSchema(speechesDomain);
       ajv.addSchema(witnessesDomain);
+      ajv.addSchema(languagesDomain);
       return ajv.compile(weddingSchema);
     });
   }

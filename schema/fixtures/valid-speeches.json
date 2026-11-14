@@ -53,5 +53,14 @@
       }
     }
   ],
-  "speechMode": "COMPLEX"
+  "speechMode": "COMPLEX",
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
+  }
 }

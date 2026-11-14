@@ -84,5 +84,14 @@
       "step_02",
       "step_03"
     ]
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

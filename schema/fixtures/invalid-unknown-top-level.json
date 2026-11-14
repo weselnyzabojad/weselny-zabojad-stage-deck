@@ -53,5 +53,14 @@
       }
     }
   ],
-  "surpriseField": true
+  "surpriseField": true,
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
+  }
 }

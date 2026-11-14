@@ -599,5 +599,14 @@
       "label": "Wedding closure",
       "kind": "VENDOR"
     }
-  ]
+  ],
+  "extensions": {
+    "languages": {
+      "supported": [
+        "FR",
+        "PL",
+        "EN"
+      ]
+    }
+  }
 }

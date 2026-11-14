@@ -53,6 +53,10 @@ function list(value) {
     .filter(Boolean);
 }
 
+function languageCodes(value) {
+  return [...new Set(list(value).map((code) => code.toUpperCase()))];
+}
+
 function slug(value, fallback = 'item') {
   return (
     text(value)
@@ -956,6 +960,15 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     }
   }
   const languagesSource = section(parsed, 'LANGUAGES');
+  if (!languagesSource) errors.push('Missing LANGUAGES section');
+  const supportedLanguages = languageCodes(kv(languagesSource, 'Supported'));
+  if (languagesSource && supportedLanguages.length === 0) {
+    errors.push('LANGUAGES: Supported must list at least one ISO 639-1 code');
+  }
+  const invalidLanguages = supportedLanguages.filter((code) => !/^[A-Z]{2}$/.test(code));
+  if (invalidLanguages.length > 0) {
+    errors.push('LANGUAGES: Supported must contain two-letter ISO 639-1 codes');
+  }
   const kitchenSource = section(parsed, 'KITCHEN');
   const extensionSource = section(parsed, 'EXTENSIONS');
   const extensionJson = parseJsonBlock(extensionSource);
@@ -963,15 +976,15 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     ...(extensionJson && typeof extensionJson === 'object' ? extensionJson : {}),
     stepAnchorIds: anchorIds,
     dateISO,
-    ...(languagesSource
-      ? {
-          languages: {
-            defaultContent: text(kv(languagesSource, 'Default content')),
-            supported: list(kv(languagesSource, 'Supported')),
-            notes: text(kv(languagesSource, 'Notes')),
-          },
-        }
-      : {}),
+    languages: {
+      supported: supportedLanguages.filter((code) => /^[A-Z]{2}$/.test(code)),
+      ...(languagesSource && text(kv(languagesSource, 'Default content'))
+        ? { defaultContent: text(kv(languagesSource, 'Default content')) }
+        : {}),
+      ...(languagesSource && text(kv(languagesSource, 'Notes'))
+        ? { notes: text(kv(languagesSource, 'Notes')) }
+        : {}),
+    },
     ...(kitchenSource ? { kitchen: mapKitchen(kitchenSource) } : {}),
     ...(guestRequests
       ? { guestRequestRules: text(kv(guestRequests, 'Rules')) }

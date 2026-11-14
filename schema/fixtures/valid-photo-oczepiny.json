@@ -141,5 +141,14 @@
         "title": "Veil toss"
       }
     ]
+  },
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
   }
 }

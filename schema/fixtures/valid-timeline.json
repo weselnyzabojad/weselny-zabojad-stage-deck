@@ -68,5 +68,14 @@
       "kind": "VENDOR",
       "alertBeforeMin": 30
     }
-  ]
+  ],
+  "extensions": {
+    "languages": {
+      "supported": [
+        "PL",
+        "EN",
+        "FR"
+      ]
+    }
+  }
 }

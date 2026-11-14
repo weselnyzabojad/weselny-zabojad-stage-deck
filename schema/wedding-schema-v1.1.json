@@ -114,6 +114,11 @@
     "extensions": {
       "type": "object",
       "additionalProperties": true,
+      "properties": {
+        "languages": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/languages.json#/properties/languages"
+        }
+      },
       "description": "Forward-compatible namespace for app-specific data. Unknown top-level fields are rejected."
     }
   },

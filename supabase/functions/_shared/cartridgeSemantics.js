@@ -240,6 +240,18 @@ export function sanitizeCartridge(cartridge) {
     delete clean.liveSyncState.manual_offset_minutes;
   }
 
+  const supported = clean.extensions?.languages?.supported;
+  if (Array.isArray(supported)) {
+    clean.extensions.languages.supported = [
+      ...new Set(
+        supported
+          .filter((code) => typeof code === 'string')
+          .map((code) => code.trim().toUpperCase())
+          .filter(Boolean),
+      ),
+    ];
+  }
+
   return clean;
 }
 
@@ -309,6 +321,23 @@ export function collectSemanticErrors(cartridge) {
   const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
   const ids = new Set();
   const stepIds = [];
+
+  const supportedLanguages = cartridge?.extensions?.languages?.supported;
+  if (!Array.isArray(supportedLanguages) || supportedLanguages.length === 0) {
+    pushError(
+      '/extensions/languages/supported',
+      'extensions.languages.supported must list at least one language',
+    );
+  } else {
+    for (const [index, code] of supportedLanguages.entries()) {
+      if (typeof code !== 'string' || !/^[A-Za-z]{2}$/.test(code)) {
+        pushError(
+          `/extensions/languages/supported/${index}`,
+          'language codes must be two-letter ISO 639-1 values',
+        );
+      }
+    }
+  }
 
   for (const [index, step] of steps.entries()) {
     if (!step || typeof step !== 'object') continue;
