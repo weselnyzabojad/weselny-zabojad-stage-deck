@@ -5734,3 +5734,58 @@ or cartridge change.
 **Open questions.** None.
 
 **Tracking.** [#891](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/891), [#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892).
+
+### 17.63 Landing copy refresh for future newlyweds (decision, 2026-11-14)
+
+The landing copy is recentred on emotion, trust and serenity for future
+newlyweds. It drops technical jargon and negative framing (a venue network that
+fails, "incomprehensible questionnaires", conditions attached to song requests).
+Four sections change: the intro pitch, the hero lead, the shared contact CTA and
+the hero "Demandes de chansons" mock caption. FR, PL and EN ship together.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change. Copy stays in `src/i18n/{fr,pl,en}.js`; `LandingPage.jsx`
+only renders the keys.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Intro, hero lead, hero + footer CTA and hero songs mock caption use the new copy in FR, PL and EN |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Copy (FR source of truth).**
+
+| Key | New value |
+| --- | --- |
+| `landing.intro.p1` | `Parce qu’un mariage mérite mieux que de longs questionnaires impersonnels, Weselny Żabojad imagine chaque célébration main dans la main avec vous, dans une écoute absolue.` |
+| `landing.intro.p1.highlight` | `une écoute absolue` |
+| `landing.intro.p2` | `De cette exigence est né le Stage Deck : un espace collaboratif unique qui relie tous vos prestataires en temps réel le jour J, vous laissant l’esprit entièrement libre pour savourer chaque instant.` |
+| `landing.intro.p2.highlight` | `Stage Deck` (unchanged) |
+| `landing.hero.lead` | `Le maître de cérémonie, le DJ, le photographe, le vidéaste et la salle partagent le même planning en direct — parfaitement synchronisé et fluide en toutes circonstances.` |
+| `landing.hero.cta` | `Discutons de votre projet` |
+| `landing.mock.songs.caption` | `Les invités partagent leurs requêtes musicales en un flash depuis leur smartphone, sans application à télécharger.` |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | None |
+| Locales | FR + PL + EN translated together |
+| CTA key | Shared `landing.hero.cta`, so hero and footer both read `Discutons de votre projet` |
+| Songs card | Hero mock caption only (`landing.mock.songs.caption`); feature card #7 keeps its package-dependent body |
+| Intro highlight | `une écoute absolue` in p1; `Stage Deck` unchanged in p2 |
+| Apostrophes | Typographic `’`, matching the existing dictionaries |
+| Tone | Emotion, serenity, clarity; no network-failure or "conditions" wording |
+| Responsive | Verify 320–1440 px; only minimal scoped class changes if a string overflows |
+
+**Task split.** One atomic issue: the change has a single ownership boundary
+(landing copy), one view (`/`) and one validation set.
+
+| Order | Issue | Scope |
+| --- | --- | --- |
+| 1 | [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894) | Update FR/PL/EN landing keys, shared CTA, intro highlight and hero songs caption; refresh legacy smoke tests; verify responsive rendering |
+
+**Open questions.** None.
+
+**Tracking.** [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894).
