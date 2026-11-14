@@ -51,4 +51,20 @@ describe('issue #876 admin role management backend', () => {
     expect(api).toContain('songRequestUrl');
     expect(api).toContain('/request/${row.room_code}');
   });
+
+  it('renders the per-wedding roles panel with all actions', () => {
+    const app = read('src/admin/AdminApp.jsx');
+    const panel = read('src/admin/AdminWeddingRoles.jsx');
+    expect(app).toContain('<AdminWeddingRoles');
+    for (const action of ['listWeddingRoles', 'setWeddingRole', 'removeWeddingRole', 'confirmWeddingMc']) {
+      expect(panel).toContain(action);
+    }
+    expect(panel).toContain('provider-managed');
+    expect(panel).toContain('Deactivate the provider first.');
+    expect(panel).toContain('MC = owner');
+    expect(panel).toContain('MC = provider');
+    expect(panel).toContain('Open Song Requestor');
+    expect(panel).toContain('<AdminQrCards');
+    expect(panel).toContain('ROLES[role]?.view');
+  });
 });

@@ -437,6 +437,22 @@ export async function rotatePins(weddingId, roles, pins = null) {
   return callAdmin('rotate_pins', { weddingId, roles, ...(pins ? { pins } : {}) });
 }
 
+export async function listWeddingRoles(weddingId) {
+  return callAdmin('list_roles', { weddingId });
+}
+
+export async function setWeddingRole(weddingId, role, pins = null) {
+  return callAdmin('set_role', { weddingId, role, ...(pins ? { pins } : {}) });
+}
+
+export async function removeWeddingRole(weddingId, role) {
+  return callAdmin('remove_role', { weddingId, role });
+}
+
+export async function confirmWeddingMc(weddingId, mode) {
+  return callAdmin('confirm_mc', { weddingId, mode });
+}
+
 export async function listProviders(weddingId) {
   if (ADMIN_DEMO) return { providers: [] };
   return callAdmin('list_providers', { weddingId });
