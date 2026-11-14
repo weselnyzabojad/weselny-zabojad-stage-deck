@@ -151,6 +151,7 @@ export function resolvePhotoPlan(wedding) {
     ? {
         stepId: text(plan.groupPhotos.stepId),
         location: text(plan.groupPhotos.location),
+        description: text(plan.groupPhotos.description),
         groups: Array.isArray(plan.groupPhotos.groups)
           ? plan.groupPhotos.groups
               .filter((group) => group && typeof group === 'object')
@@ -177,23 +178,10 @@ export function resolvePhotoPlan(wedding) {
       }
     : null;
 
-  const guestCoverage = plan.guestCoverage && typeof plan.guestCoverage === 'object'
-    ? {
-        allGuests: plan.guestCoverage.allGuests === true,
-        description: text(plan.guestCoverage.description),
-        groups: Array.isArray(plan.guestCoverage.groups)
-          ? plan.guestCoverage.groups
-              .filter((group) => group && typeof group.id === 'string' && typeof group.label === 'string')
-              .map((group) => ({ id: group.id, label: group.label }))
-          : [],
-      }
-    : null;
-
   return {
     miniSession: resolveMiniSession(wedding),
     groupPhotos,
     specialEffects,
-    guestCoverage,
   };
 }
 
@@ -329,7 +317,6 @@ const PHOTO_PLAN_MATCHERS = {
   miniSession: /mini|session|golden/i,
   groupPhotos: /group|family|portrait/i,
   specialEffects: /cake|sparkler|fire|smoke|effect/i,
-  guestCoverage: /guest|dinner|reception/i,
 };
 
 export function resolveGroupPhotoStepId(plan, steps = []) {

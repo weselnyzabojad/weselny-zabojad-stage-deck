@@ -33,6 +33,7 @@ export default function GroupPhotoChecklist({
   checked = {},
   onToggle,
   location,
+  description,
   mediaTeam = [],
 }) {
   const items = useMemo(() => buildGroupPhotoItems(groups), [groups]);
@@ -59,6 +60,9 @@ export default function GroupPhotoChecklist({
         {location ? <span>Location: {location}</span> : null}
         {media.length ? <span>Media: {media.join(', ')}</span> : null}
       </div>
+      {description ? (
+        <p className="mt-1 text-[10px] leading-snug text-muted">{description}</p>
+      ) : null}
       <div className="mt-2 space-y-1.5">
         {items.map((item) => (
           <ChecklistRow

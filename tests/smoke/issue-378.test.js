@@ -45,6 +45,7 @@ describe('issue #378 group-photo data alignment', () => {
     expect(resolved.groupPhotos).toEqual({
       stepId: 'step_07',
       location: 'Garden',
+      description: null,
       groups: [{ id: 'parents', label: 'Parents' }],
     });
   });

@@ -166,6 +166,7 @@ export default function McMasterView({ model }) {
       <GroupPhotoChecklist
         groups={photoPlan.groupPhotos.groups}
         location={photoPlan.groupPhotos.location}
+        description={photoPlan.groupPhotos.description}
         mediaTeam={WEDDING?.mediaTeam}
         checked={liveState.checked_subtasks}
         onToggle={toggleSubtask}
