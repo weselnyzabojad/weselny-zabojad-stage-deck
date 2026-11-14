@@ -123,7 +123,6 @@ rejected; put app-specific data under `extensions`.
 {
   "id": "step_01",
   "time": "16:30",
-  "durationMin": 30,
   "title": "Cocktail / Vin d'honneur",
   "type": "FLEXIBLE",
   "location": "Garden",
@@ -139,6 +138,9 @@ rejected; put app-specific data under `extensions`.
 Notes:
 
 - `time` is the planned start. Optional `planned` overrides it for drift math.
+- Step durations are derived at runtime from the next step time. The final step
+  uses the mandatory `CLOSURE` time; there is no authored `durationMin` and no
+  fallback. Legacy cartridges carrying it are sanitized on import.
 - `realStart` is only a demo/test seed; live actual starts are logged on transitions.
 - `BUFFER` and `ELASTIC` are removed; legacy cartridges must migrate to
   `FLEXIBLE` or `HARD_ANCHOR`.
@@ -251,7 +253,6 @@ with `type: "HARD_ANCHOR"` become the derived `hardAnchors` array.
 {
   "id": "vendor_leave",
   "time": "20:30",
-  "durationMin": 1,
   "title": "Vendor leaves",
   "type": "HARD_ANCHOR",
   "location": "Terrace",

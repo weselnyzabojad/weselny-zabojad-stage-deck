@@ -223,7 +223,6 @@
       "required": [
         "id",
         "time",
-        "durationMin",
         "title",
         "type",
         "location"
@@ -244,12 +243,6 @@
         "realStart": {
           "$ref": "#/$defs/clock",
           "description": "Optional seeded actual start, mainly for demos/tests."
-        },
-        "durationMin": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 720,
-          "description": "Zero-duration steps are exact-time milestones; normal steps take at least one minute."
         },
         "title": {
           "type": "string",

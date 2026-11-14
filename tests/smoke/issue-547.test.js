@@ -33,12 +33,17 @@ Supported: FR, PL, EN
 | gorzko | IF_GUESTS_START | During cake only. |
 | breadSalt | YES | Vodka vs water shot. |
 
+## MANDATORY STEPS
+| Field | Time |
+| --- | --- |
+| Wedding closure | 02:00 |
+
 ## TIMELINE
-| Step ID | Time | Duration (min) | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:00 | 15 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Guest order: guests first, newlyweds after. |
-| step_02 | 20:30 | 30 | Wedding Cake | HARD_ANCHOR | Terrace | cake_anchor | true |  |  |
-| step_03 | 00:00 | 60 | Oczepiny | FLEXIBLE | Main Hall |  | false | oczepiny |  |
+| Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| step_01 | 16:00 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Guest order: guests first, newlyweds after. |
+| step_02 | 20:30 | Wedding Cake | HARD_ANCHOR | Terrace | cake_anchor | true |  |  |
+| step_03 | 00:00 | Oczepiny | FLEXIBLE | Main Hall |  | false | oczepiny |  |
 
 ## DJ CUES
 | Step ID | Playlist | Track | Cutoff | Note |
@@ -106,6 +111,7 @@ describe('issue #547 canonical step vocabulary & Plan-of-the-day mapping', () =>
       'Grand Entrance',
       'Wedding Cake',
       'Oczepiny',
+      'Wedding closure',
     ]);
 
     const entrance = steps[0];

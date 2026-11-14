@@ -114,9 +114,9 @@ Every table uses the GitHub pipe format with a header row, a separator row, and
 one row per item. Header names are fixed and case-sensitive.
 
 ```text
-| Step ID | Time | Duration (min) | Title | Type | Location |
-| --- | --- | --- | --- | --- | --- |
-| step_03 | 18:00 | 90 | Hall Entrance | FLEXIBLE | Main Hall |
+| Step ID | Time | Title | Type | Location |
+| --- | --- | --- | --- | --- |
+| step_03 | 18:00 | Hall Entrance | FLEXIBLE | Main Hall |
 ```
 
 Rules:

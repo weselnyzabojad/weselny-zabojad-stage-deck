@@ -201,7 +201,6 @@ function makeStep({ id, time, title, type = 'HARD_ANCHOR', mandatory }) {
   return {
     id,
     time,
-    durationMin: 1,
     title: title || id,
     type,
     location: '',

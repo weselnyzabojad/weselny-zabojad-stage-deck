@@ -106,7 +106,10 @@ describe('top-bar control colours', () => {
 });
 
 describe('next-step countdown in the drift report', () => {
-  const steps = [{ id: 'step_1', type: 'FLEXIBLE', planned: '15:00', durationMin: 30 }];
+  const steps = [
+    { id: 'step_1', type: 'FLEXIBLE', planned: '15:00' },
+    { id: 'closure', type: 'HARD_ANCHOR', planned: '15:30', mandatory: { kind: 'CLOSURE' } },
+  ];
   const context = { eventDateISO: '2026-11-07', timeZone: 'UTC' };
 
   it('counts down to the first step before the event starts', () => {

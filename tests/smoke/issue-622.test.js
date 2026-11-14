@@ -40,7 +40,7 @@ describe('issue #622 mandatory data lives on timeline steps', () => {
       'CLOSURE',
       'MILESTONE',
     ]);
-    expect(steps.$defs.step.properties.durationMin.minimum).toBe(0);
+    expect(steps.$defs.step.properties.durationMin).toBeUndefined();
   });
 
   it('migrates a legacy mandatorySteps block on the client and server', async () => {
@@ -81,6 +81,7 @@ describe('issue #622 mandatory data lives on timeline steps', () => {
 
     for (const clean of [sanitizeCartridge(legacy), sanitizeServerCartridge(legacy)]) {
       expect(clean).not.toHaveProperty('mandatorySteps');
+      expect(clean.steps.every((step) => !('durationMin' in step))).toBe(true);
       expect(clean.steps.find((step) => step.mandatory?.kind === 'FIRST_GUESTS_ARRIVAL')).toBeTruthy();
       expect(clean.steps.find((step) => step.mandatory?.kind === 'KITCHEN_SERVICE')).toBeTruthy();
       expect(clean.steps.find((step) => step.mandatory?.kind === 'CLOSURE')).toBeTruthy();

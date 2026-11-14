@@ -2,8 +2,14 @@
   "schemaVersion": "1.1",
   "weddingId": "2026-08-20_test_wedding",
   "coupleProfile": {
-    "bride": { "firstName": "Test", "nationalities": [] },
-    "groom": { "firstName": "Couple", "nationalities": [] },
+    "bride": {
+      "firstName": "Test",
+      "nationalities": []
+    },
+    "groom": {
+      "firstName": "Couple",
+      "nationalities": []
+    },
     "commonLanguages": []
   },
   "date": "20.08.2026",
@@ -24,7 +30,6 @@
     {
       "id": "step_01",
       "time": "16:30",
-      "durationMin": 30,
       "title": "Arrival",
       "type": "FLEXIBLE",
       "location": "Garden"
@@ -32,10 +37,20 @@
     {
       "id": "step_02",
       "time": "17:30",
-      "durationMin": 60,
       "title": "Ceremony",
       "type": "FLEXIBLE",
       "location": "Gazebo"
+    },
+    {
+      "id": "closure",
+      "time": "18:30",
+      "title": "Wedding closure",
+      "type": "HARD_ANCHOR",
+      "location": "",
+      "mandatory": {
+        "kind": "CLOSURE",
+        "label": "Wedding closure"
+      }
     }
   ],
   "surpriseField": true

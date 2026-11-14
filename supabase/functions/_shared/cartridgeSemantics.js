@@ -68,7 +68,7 @@ function migrateMandatorySteps(cartridge) {
   if (!legacy || typeof legacy !== 'object' || !Array.isArray(cartridge.steps)) return;
   const steps = cartridge.steps;
   const findKind = (kind) => steps.find((step) => step?.mandatory?.kind === kind);
-  const pushStep = (step) => steps.push({ durationMin: 1, location: '', ...step });
+  const pushStep = (step) => steps.push({ location: '', ...step });
 
   if (legacy.firstGuestsArrival) {
     const step = findKind('FIRST_GUESTS_ARRIVAL');
@@ -230,6 +230,7 @@ export function sanitizeCartridge(cartridge) {
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {
     if (!step || typeof step !== 'object') continue;
+    delete step.durationMin;
     for (const field of DEPRECATED_STEP_FIELDS) delete step[field];
   }
 
@@ -267,7 +268,10 @@ function stepDurationErrors(steps, closureTime) {
     while (nextIndex < steps.length && isZeroDurationStep(steps[nextIndex])) nextIndex += 1;
 
     if (nextIndex >= steps.length) {
-      if (!closureTime) return;
+      if (!closureTime) {
+        errors.push(`step ${label}: closureTime is required for the final step`);
+        return;
+      }
       const to = clockMinutes(closureTime);
       if (to == null) {
         errors.push(`step ${label}: invalid closureTime ${closureTime}`);

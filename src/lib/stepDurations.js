@@ -1,7 +1,6 @@
 import { clockToMinutes } from './clockMath.js';
 
 const MINUTES_PER_DAY = 24 * 60;
-const DEFAULT_FINAL_DURATION_MIN = 15;
 const DEFAULT_MAX_DURATION_MIN = 720;
 
 function stepClock(step) {
@@ -21,11 +20,11 @@ function durationBetween(fromClock, toClock) {
   return raw < 0 ? raw + MINUTES_PER_DAY : raw;
 }
 
-// Step durations come from the next step's Google Doc time. The final step runs
-// to the closure time when provided, otherwise the configured final duration.
+// Step durations are derived at runtime from the next step's Google Doc time.
+// The final step runs to the mandatory closure time; there is no fallback.
 export function calculateStepDurations(
   steps,
-  { finalDurationMin = DEFAULT_FINAL_DURATION_MIN, closureTime = null, maxDurationMin = DEFAULT_MAX_DURATION_MIN } = {},
+  { closureTime = null, maxDurationMin = DEFAULT_MAX_DURATION_MIN } = {},
 ) {
   const list = Array.isArray(steps) ? steps : [];
   const durations = [];
@@ -51,7 +50,8 @@ export function calculateStepDurations(
     const isFinal = nextIndex >= list.length;
     if (isFinal) {
       if (!closureTime) {
-        durations[index] = finalDurationMin;
+        errors.push(`step ${label}: closureTime is required for the final step`);
+        durations[index] = null;
         return;
       }
       const finalDuration = durationBetween(current, closureTime);
@@ -91,15 +91,4 @@ export function calculateStepDurations(
   });
 
   return { durations, errors };
-}
-
-export function applyCalculatedDurations(steps, options) {
-  const result = calculateStepDurations(steps, options);
-  if (result.errors.length > 0) return result;
-  const list = Array.isArray(steps) ? steps : [];
-  const withDurations = list.map((step, index) => ({
-    ...step,
-    durationMin: result.durations[index],
-  }));
-  return { ...result, steps: withDurations };
 }
