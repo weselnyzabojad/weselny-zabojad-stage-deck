@@ -6321,4 +6321,116 @@ is stripped from the wedding cartridge.
 
 **Tracking.** [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245), [#923](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/923), [#924](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/924), [#925](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/925), [#926](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/926), [#927](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/927), [#928](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/928), [#929](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/929).
 
+### 17.73 Game question Docs: Test Zgodnosci and Test Wiedzy (decision, 2026-11-14)
+
+Both wedding games move their question sets out of the wedding cartridge into
+one encrypted bundle per game, using the same owner-driven Drive template and
+publication discipline as speech. The cartridge keeps only the game step and
+its enabled flag. The MC is the only role that can read the questions.
+
+**Google Doc contract.** Doc-linked, two separate question Docs:
+
+| Game | Source folder | File name | Columns |
+| --- | --- | --- | --- |
+| Test Zgodnosci | `secrets/<wedding>/compatibility-test-game/` | `Test Zgodnosci - <weddingId>` | `Question ID`, one `Question <code>` per supported language |
+| Test Wiedzy | `<wedding folder>/games/` | `Test Wiedzy - <weddingId>` | `Question ID`, one `Question <code>` per supported language, `Level`, `Answer` |
+
+- The owner creates each template from its game panel; one action per game.
+- Schemas: new `schema/domains/test-zgodnosci-questions.json` and
+  `schema/domains/test-wiedzy-questions.json`, mirrored for Edge validation.
+- The existing `src/lib/gameQuestions.js` parser is extended for arbitrary
+  language columns and wired into the admin parse/publish path.
+- `Level` is `EASY | MEDIUM | HARD`. `Answer` is `BRIDE | GROOM`; names resolve
+  from `coupleProfile`.
+- Question text stays verbatim; no automated translation.
+
+**Language contract.** Reuse `extensions.languages.supported`; do not add a
+`contentLanguages` field.
+
+- The list is required for every published wedding and must be non-empty.
+- Any ISO 639-1 code is allowed, normalized to uppercase.
+- List order is the Doc column order and the MC display order.
+- Existing cartridges without the list stay readable but cannot publish until
+  the owner sets it; admin shows an urgent warning.
+- When the list changes while a question Doc exists, the app rewrites the Doc
+  columns and requires the owner to review and re-parse that file.
+
+**Storage and security.**
+
+- One immutable encrypted bundle per wedding and game type.
+- Whole question set encrypted with AES-256-GCM; per-game keys.
+- Only MC sessions may fetch bundles and keys. Admin preview is plaintext after
+  AAL2. DJ, Photographer, Venue Manager, Speaker and anonymous callers never
+  receive questions or keys.
+- The wedding cartridge keeps `steps[].game` metadata only: id, title,
+  gameType, enabled, requiresPhotographer, sourceDocId, status. No question
+  text, and no `games.questionLists`.
+- Enablement reads `steps[].game.enabled` first, with legacy `games.enabled` /
+  `games.questionLists` as fallback. Admin adds no independent toggle.
+
+**Publish and live guard.**
+
+- Separate bundle revision per game; valid games publish independently.
+- Invalid content deletes its draft, logs the error and preserves the previous
+  revision. It never blocks the other game or the wedding cartridge.
+- Full immutable history per game. Restore is allowed before and after the
+  wedding, blocked while that game has an active results session.
+- Active means a `liveSyncState.game_results` entry with `startedAt` and no
+  `completedAt`. Publish, rollback and deletion are blocked while active.
+- Bundle and history follow the 30-day wedding TTL. Admin logs are kept 90 days.
+  Google Docs are never deleted or modified.
+
+**MC display.** Every question shows all language versions in
+`extensions.languages.supported` order, each with a short ISO label. Both
+enabled game bundles are downloaded and decrypted on MC join so the clickers
+work offline; the cache clears on logout, revocation or expiry. Wiedzy keeps
+level ordering and BRIDE/GROOM answer resolution. Zgodnosci keeps Doc order and
+Match / No match scoring. Game results, reset, undo and export are unchanged.
+
+**Admin UI.** Both game panels are always visible per wedding. A game disabled
+by the cartridge shows the decision and no create/parse/publish actions. Missing
+languages show an urgent warning. Enabled games offer create Doc, open/copy link,
+Doc-ready checkbox, parse with progress and 90-day logs, full plaintext preview,
+independent publish, history/restore and the legacy migration warning. Admin
+copy stays English.
+
+**Legacy migration.** Owner-triggered per wedding. Only games with a real Drive
+question Doc migrate. Embedded-only questions are discarded only after an
+explicit warning and confirmation and are logged. `steps[].game.questions` and
+`games.questionLists` are stripped on the next publication; game metadata,
+enabled flags and existing game results stay.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Storage | One encrypted bundle per game |
+| Doc sources | Zgodnosci in secrets compatibility folder; Wiedzy in wedding `games/` |
+| Templates | Owner creates one per game from a schema-derived template |
+| Languages | Reuse `extensions.languages.supported`; required globally; any ISO code |
+| Language changes | Rewrite Doc columns, then owner review and re-parse |
+| Enablement | Per-step `game.enabled`, legacy fallback; no admin toggle |
+| Encryption | Whole question set; MC-only keys; admin plaintext preview |
+| Publication | Separate revision per game; valid-only; full history |
+| Live guard | Block publish/rollback/delete while that game is active |
+| MC display | All languages stacked; offline preload |
+| Other roles | No game questions |
+| Retention | Bundle 30 days; logs 90 days; Drive untouched |
+| Legacy | Linked only; unlinked discarded with warning |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#930](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/930) | Required `extensions.languages` contract, parser and admin warning | - |
+| 2 | [#931](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/931) | Encrypted game question bundles, publication, history and MC projection | #930, #923 |
+| 3 | [#932](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/932) | Game question Doc templates, folder creation and parsers | #930, #931, #924 |
+| 4 | [#933](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/933) | Admin panels for both games | #931, #932 |
+| 5 | [#934](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/934) | MC multilingual clicker and offline preload | #931 |
+| 6 | [#935](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/935) | Legacy game question migration and cartridge strip | #931, #932, #933 |
+
+**Open questions.** None.
+
+**Tracking.** [#930](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/930), [#931](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/931), [#932](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/932), [#933](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/933), [#934](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/934), [#935](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/935).
+
 
