@@ -19,6 +19,7 @@
     "local:stop": "node scripts/local-supabase.mjs stop",
     "local:status": "node scripts/local-supabase.mjs status",
     "local:reset": "node scripts/local-supabase.mjs reset",
+    "local:seed": "node scripts/seed-local.mjs",
     "migrate:timestamps": "node scripts/migrate-actual-timestamps.mjs",
     "preview": "vite preview"
   },
@@ -38,6 +39,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "bcryptjs": "^2.4.3",
     "oxlint": "^1.89.0",
     "postcss": "^8.5.32",
     "tailwindcss": "^4.3.3",

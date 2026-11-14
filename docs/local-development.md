@@ -85,15 +85,30 @@ npm run dev
 
 ## Local admin and demo wedding
 
-1. Open Studio at `http://127.0.0.1:54323`.
-2. Authentication → Users → Add user: create the local owner account.
-3. Insert that user id into `public.app_admins` with the SQL editor.
-4. Sign in at `http://localhost:5173/admin`, complete TOTP enrollment, then
-   create/duplicate a wedding and generate role PINs from the admin panel.
-5. Join a role with its PIN at `http://localhost:5173/<roomCode>/<role>`.
+`npm run local:reset` (and the first `local:start`) runs `npm run local:seed`.
+The seed is local-only, deterministic and safe to rerun. It creates the owner
+auth user, inserts the `public.app_admins` allowlist row, and seeds the demo
+wedding:
 
-There is no committed seed with real credentials; the admin panel is the seed
-source so PINs, sessions and revisions follow the real flow.
+| Item | Value |
+| --- | --- |
+| Admin | `owner@local.test` / `local-owner-123` |
+| Wedding | `2026-08-20_jennifer_guillaume` |
+| Room code | `demo01` |
+| MC / DJ / photo1 / photo2 / video / venue / speaker PINs | `111111` … `777777` |
+
+The seed refuses any Supabase URL that is not localhost, 127.0.0.1 or ::1.
+TOTP enrollment happens on the first admin sign-in; the seeded password and PINs
+are disposable local credentials and must never be reused remotely.
+
+1. Open Studio at `http://127.0.0.1:54323`.
+2. Sign in at `http://localhost:5173/admin` with the seeded owner account and
+   complete TOTP enrollment.
+3. Join a role with its PIN at `http://localhost:5173/<roomCode>/<role>`.
+4. The Song Requestor link is available from the VIP admin/role surface.
+
+There is no committed production seed; the admin panel remains the production
+provisioning source.
 
 ## Smoke check
 
