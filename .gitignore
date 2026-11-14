@@ -17,6 +17,9 @@ dist-ssr
 .env.*
 !.env.example
 
+# Temporary local Supabase baseline (generated only for `npm run local:reset`)
+supabase/migrations/00000000000000_base_schema.sql
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

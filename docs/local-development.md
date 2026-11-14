@@ -11,30 +11,45 @@ Nothing in this guide points at the production project.
 
 ## Start the stack
 
-The repository keeps the base schema in `supabase/schema.sql` (not in the
-migrations folder), so local startup needs a temporary baseline migration
-before the versioned migrations can run. Do **not** commit this file:
+One command starts Docker-backed Supabase, applies the base schema and every
+versioned migration, writes the local env files and prints the next commands:
 
 ```bash
-cp supabase/schema.sql supabase/migrations/00000000000000_base_schema.sql
-npx supabase start -x studio,imgproxy,storage-api,logflare,vector,supavisor
-npx supabase db reset
-npx supabase status
+npm run local:start
 ```
 
-`-x` skips optional services to keep the local stack light; add them back if a
-specific task needs Studio, Storage or analytics. `db reset` applies the
-baseline first, then `supabase/migrations` in order. Remove the temporary
-baseline file after the stack is up.
+`local:start` is idempotent: if the stack is already running it only refreshes
+the env summary. The temporary `00000000000000_base_schema.sql` is created for
+the local reset and removed in a `finally` path; it is gitignored and never
+committed.
+
+Manage the stack:
+
+```bash
+npm run local:status   # show local endpoints and keys
+npm run local:stop     # stop Docker services
+npm run local:reset    # recreate the database deterministically
+```
+
+The generated files are:
+
+- `.env.local` — browser-safe Vite values (`VITE_SUPABASE_URL`,
+  `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=local`).
+- `supabase/.env.local` — local-only Edge Function values, including a freshly
+  generated ES256 key pair and speech master key. Existing generated secrets are
+  reused so function sessions stay stable across restarts.
+
+Both files are gitignored. Docker must be running; the script exits with a
+clear message when it is not.
 
 The local auth config enables TOTP enrollment/verification (`[auth.mfa.totp]`)
 so the owner admin flow can be exercised with a real authenticator.
 
 ## Serve the Edge Functions
 
+`local:start` already writes `supabase/.env.local`. Serve with it:
+
 ```bash
-cp supabase/.env.example supabase/.env.local
-# fill the local values from `npx supabase status`
 npx supabase functions serve --env-file supabase/.env.local
 ```
 
@@ -54,15 +69,11 @@ Do not put production secrets in `supabase/.env.local`.
 
 ## Point Vite at the local stack
 
-```bash
-cp .env.example .env.local
-```
-
-Set only local values:
+`local:start` writes `.env.local` already. It contains only local values:
 
 ```bash
 VITE_SUPABASE_URL=http://127.0.0.1:54321
-VITE_SUPABASE_ANON_KEY=<local anon key from supabase status>
+VITE_SUPABASE_ANON_KEY=<local anon key>
 VITE_DECK_MODE=local
 ```
 
@@ -95,8 +106,11 @@ source so PINs, sessions and revisions follow the real flow.
 ## Stop
 
 ```bash
-npx supabase stop
+npm run local:stop
 ```
+
+Use `npx supabase stop --no-backup` only when you intentionally want to delete
+the local Docker volumes.
 
 ## Safety rules
 
