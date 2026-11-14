@@ -850,7 +850,7 @@ async function handleRequest(req: Request) {
         await Promise.all([
           admin
             .from('weddings')
-            .select('cartridge, mc_confirmed_by')
+            .select('cartridge, mc_confirmed_by, room_code')
             .eq('wedding_id', weddingId)
             .maybeSingle(),
           admin
@@ -881,6 +881,9 @@ async function handleRequest(req: Request) {
         servicePackage,
         mcConfirmedBy: wedding.mc_confirmed_by ?? null,
         songRequestEligible: vipEligible,
+        songRequestUrl: vipEligible
+          ? `${serverEnv('PUBLIC_DECK_URL', 'https://deck.weselnyzabojad.pl').replace(/\/+$/, '')}/request/${wedding.room_code ?? ''}`
+          : null,
         roles: (roles ?? []).map((row: any) => ({
           role: row.role,
           enabled: true,
