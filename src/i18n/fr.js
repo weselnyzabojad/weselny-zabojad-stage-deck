@@ -575,6 +575,8 @@ const fr = {
   'venueManager.cake.CUT_IN_PLACE': 'Découpe sur place / les invités viennent',
   'venueManager.prestationHelper': 'La prestation prête est calculée automatiquement 1 heure avant l’arrivée des premiers invités.',
   'venueManager.saved': 'Enregistré',
+  'venueManager.rescheduleBlocked':
+    'Déplacement impossible : cela croiserait l’étape fixe suivante ou la fermeture.',
 
   'openOnPhone.button': 'Ouvrir sur téléphone',
   'openOnPhone.buttonTitle': 'Ouvrir ce rôle sur votre téléphone',

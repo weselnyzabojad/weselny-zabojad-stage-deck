@@ -571,6 +571,8 @@ const en = {
   'venueManager.cake.CUT_IN_PLACE': 'Cut in place / guests come',
   'venueManager.prestationHelper': 'Prestation ready is derived automatically 1 hour before first guests arrival.',
   'venueManager.saved': 'Saved',
+  'venueManager.rescheduleBlocked':
+    'Cannot move: it would cross the next fixed step or venue closure.',
 
   'openOnPhone.button': 'Open on phone',
   'openOnPhone.buttonTitle': 'Open this role on your phone',
