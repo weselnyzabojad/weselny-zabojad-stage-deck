@@ -55,3 +55,26 @@ export async function deleteSpeechKey(id) {
     tx.onerror = () => resolve(false);
   });
 }
+
+// Keys are stored as `${weddingId}:${speechId}:v${version}`.
+export async function clearSpeechKeysForWedding(weddingId) {
+  const db = await openDb();
+  if (!db || !weddingId) return 0;
+  return new Promise((resolve) => {
+    let removed = 0;
+    const tx = db.transaction(STORE, 'readwrite');
+    const store = tx.objectStore(STORE);
+    const request = store.openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      if (typeof cursor.key === 'string' && cursor.key.startsWith(`${weddingId}:`)) {
+        cursor.delete();
+        removed += 1;
+      }
+      cursor.continue();
+    };
+    tx.oncomplete = () => resolve(removed);
+    tx.onerror = () => resolve(removed);
+  });
+}

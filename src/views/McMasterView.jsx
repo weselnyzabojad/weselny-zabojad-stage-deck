@@ -121,6 +121,7 @@ export default function McMasterView({ model }) {
   cakeServiceMode = 'KITCHEN_RETURN',
   speechMode,
   speeches,
+  speechBundle = null,
   setGameResults,
   isComplete,
   controlNotice,
@@ -510,8 +511,8 @@ export default function McMasterView({ model }) {
             polished
           />
 
-          {speeches?.length > 0 ? (
-            <SpeechesCard mode={speechMode} speeches={speeches} />
+          {speechMode !== 'OFF' && speeches?.length > 0 ? (
+            <SpeechesCard mode={speechMode} speeches={speeches} speechBundle={speechBundle} />
           ) : null}
 
           {djMc ? (

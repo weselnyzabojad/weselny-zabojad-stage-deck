@@ -13,6 +13,6 @@ describe('issue #214 full-width MC Speeches card', () => {
   });
 
   it('keeps the empty-speeches guard', () => {
-    expect(mc).toContain('{speeches?.length > 0 ? (');
+    expect(mc).toContain("{speechMode !== 'OFF' && speeches?.length > 0 ? (");
   });
 });

@@ -138,6 +138,58 @@ export async function fetchSpeakerSpeech({ accessToken, weddingId, speechId }) {
   };
 }
 
+// MC list: every non-deleted speech with metadata and, when published, the
+// encrypted script envelope. Nothing is decrypted until the MC opens a speech.
+export async function fetchSpeechList({ accessToken }) {
+  return callSpeechBundle({ action: 'list' }, accessToken);
+}
+
+export async function fetchSpeechScript({ accessToken, weddingId, speechId, speech }) {
+  const cached = loadSpeakerSpeech(weddingId, speechId);
+  if (cached) return cached;
+  if (!speech?.script) throw Object.assign(new Error('The speech is unavailable.'), { status: 404 });
+  const revision = speech.revision;
+  if (!Number.isInteger(revision)) {
+    throw Object.assign(new Error('The speech is unavailable.'), { status: 404 });
+  }
+  const keyData = await callSpeechBundle(
+    { action: 'key', speechId, keyVersion: speech.script.keyVersion ?? 1 },
+    accessToken,
+  );
+  const key = await importSpeechKey(keyData.key);
+  await saveSpeechKey(
+    speechKeyId({ weddingId, speechId, keyVersion: speech.script.keyVersion ?? 1 }),
+    key,
+  );
+  const plaintext = await decryptSpeechEntry({
+    entry: speech.script,
+    key,
+    weddingId,
+    speechId,
+    revision,
+  });
+  const decoded = {
+    id: speechId,
+    order: speech.order,
+    speaker: speech.speaker,
+    speakerLanguage: speech.speakerLanguage,
+    mcLanguage: speech.mcLanguage,
+    revision,
+    pairs: parseBilingualScript(plaintext),
+    script: plaintext,
+  };
+  saveSpeakerSpeech({ weddingId, speechId, speech: decoded, expiresAt: null });
+  return decoded;
+}
+
+export async function startLiveSpeech({ accessToken, speechId }) {
+  return callSpeechBundle({ action: 'start', speechId }, accessToken);
+}
+
+export async function endLiveSpeech({ accessToken }) {
+  return callSpeechBundle({ action: 'end' }, accessToken);
+}
+
 export async function clearSpeakerAccessCache({ weddingId, speechId }) {
   if (!weddingId || !speechId) return;
   clearSpeakerSpeech(weddingId, speechId);

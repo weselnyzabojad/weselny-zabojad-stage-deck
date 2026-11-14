@@ -76,3 +76,26 @@ export function clearSpeakerSpeech(weddingId, speechId, storage) {
     return false;
   }
 }
+
+// Logout clears every decrypted speech cached for this wedding, including the
+// MC copies that are not tied to one speech session.
+export function clearSpeechScriptsForWedding(weddingId, storage) {
+  const store = getStorage(storage);
+  if (!store || !weddingId) return 0;
+  const prefix = `${KEY_PREFIX}${weddingId}:`;
+  let removed = 0;
+  try {
+    const keys = [];
+    for (let index = 0; index < store.length; index += 1) {
+      const key = store.key(index);
+      if (typeof key === 'string' && key.startsWith(prefix)) keys.push(key);
+    }
+    for (const key of keys) {
+      store.removeItem(key);
+      removed += 1;
+    }
+  } catch {
+    return removed;
+  }
+  return removed;
+}

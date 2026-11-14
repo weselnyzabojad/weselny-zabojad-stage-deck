@@ -619,12 +619,6 @@ async function handleRequest(req: Request) {
       if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId || !speakerName || !Number.isInteger(order)) {
         return json({ error: 'weddingId, speechId, speakerName and order are required.' }, 400);
       }
-      const { data: live } = await admin
-        .from('speech_live')
-        .select('speech_id')
-        .eq('wedding_id', weddingId)
-        .maybeSingle();
-      if (live?.speech_id) return json({ error: 'Metadata cannot change while a speech is live.' }, 409);
       const { data, error } = await admin
         .from('speech_records')
         .upsert(
