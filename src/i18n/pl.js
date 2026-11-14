@@ -266,6 +266,8 @@ const pl = {
   'speeches.read': 'Czytaj pełny ekran',
   'speeches.startSpeech': 'Rozpocznij przemowę',
   'speeches.endSpeech': 'Zakończ przemowę',
+  'speeches.summaryTitle': 'Mówcy',
+  'speeches.summaryEmpty': 'Brak jeszcze nazwisk mówców.',
   'speeches.actionError': 'Nie udało się wykonać akcji na żywo. Spróbuj ponownie.',
   'speeches.bundleUnavailable': 'Pakiet mów jest niedostępny. Nie można otworzyć skryptów.',
   'speeches.readerLabel': 'Czytnik MC',

@@ -13,6 +13,7 @@ import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
+import SpeechSummaryChip from './SpeechSummaryChip';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
 import {
@@ -115,6 +116,8 @@ export default function VenueManagerView({
   theme = 'night',
   onToggleTheme,
   pin = null,
+  speechMode = 'OFF',
+  speeches = [],
   onUpdateMandatory,
   mandatoryOverride = null,
 }) {
@@ -309,6 +312,11 @@ export default function VenueManagerView({
         onToggleTheme={onToggleTheme}
         theme={theme}
       >
+        {speechMode !== 'OFF' ? (
+          <div className="mb-2">
+            <SpeechSummaryChip mode={speechMode} speeches={speeches} compact />
+          </div>
+        ) : null}
         {body}
       </RoleShell>
     );
@@ -332,7 +340,10 @@ export default function VenueManagerView({
       <SecondaryControlBar
         left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
         center={(
-          <ChildrenExpectedBadge wedding={wedding} inline />
+          <>
+            <ChildrenExpectedBadge wedding={wedding} inline />
+            <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
+          </>
         )}
         right={(
           <>

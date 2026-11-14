@@ -64,9 +64,12 @@ describe('issue #753 top bar action grid and co-brand sizing', () => {
       const source = read(path);
       expect(source, path).toContain('grid');
       expect(source, path).toContain('dense');
-      expect(source, path).toContain('<SpeechesChip');
+      const chip = source.includes('<SpeechSummaryChip')
+        ? '<SpeechSummaryChip'
+        : '<SpeechesChip';
+      expect(source, path).toContain(chip);
       expect(source.indexOf('<CulturalRulesBar')).toBeLessThan(
-        source.indexOf('<SpeechesChip'),
+        source.indexOf(chip),
       );
     }
   });
@@ -75,7 +78,7 @@ describe('issue #753 top bar action grid and co-brand sizing', () => {
     const shell = read('src/components/RoleShell.jsx');
     expect(shell).toContain('compact');
     expect(shell).toContain('<CulturalRulesBar');
-    expect(shell).toContain('<SpeechesChip');
+    expect(shell).toContain('<SpeechSummaryChip');
     expect(shell).not.toContain('grid');
   });
 

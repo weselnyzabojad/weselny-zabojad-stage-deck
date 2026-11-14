@@ -8,7 +8,7 @@ import { useI18n } from '../i18n/useI18n';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
-import SpeechesChip from './SpeechesChip';
+import SpeechSummaryChip from './SpeechSummaryChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
@@ -443,7 +443,7 @@ export default function PhotographerView({
               grid
               dense
             >
-              <SpeechesChip mode={speechMode} speeches={speeches} dense />
+              <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
             </CulturalRulesBar>
           </>
         )}

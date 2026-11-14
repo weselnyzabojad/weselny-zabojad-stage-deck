@@ -7,7 +7,7 @@ import LanguageToggle from './LanguageToggle';
 import UtilityControlGroup from './UtilityControlGroup';
 import BottomNav from './BottomNav';
 import CulturalRulesBar from './CulturalRulesBar';
-import SpeechesChip from './SpeechesChip';
+import SpeechSummaryChip from './SpeechSummaryChip';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 
 /**
@@ -94,7 +94,7 @@ export default function RoleShell({
               showRules={Boolean(culturalRules)}
             >
               {speechMode != null ? (
-                <SpeechesChip
+                <SpeechSummaryChip
                   mode={speechMode}
                   speeches={speeches ?? []}
                   compact

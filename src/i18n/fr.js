@@ -268,6 +268,8 @@ const fr = {
   'speeches.read': 'Lire en plein écran',
   'speeches.startSpeech': 'Commencer le discours',
   'speeches.endSpeech': 'Terminer le discours',
+  'speeches.summaryTitle': 'Orateurs',
+  'speeches.summaryEmpty': 'Aucun nom d’orateur disponible pour le moment.',
   'speeches.actionError': 'L’action en direct a échoué. Réessayez.',
   'speeches.bundleUnavailable': 'Le paquet de discours est indisponible. Aucun script ne peut être ouvert.',
   'speeches.readerLabel': 'Lecteur MC',
