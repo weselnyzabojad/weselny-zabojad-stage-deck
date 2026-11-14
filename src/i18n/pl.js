@@ -42,6 +42,7 @@ const pl = {
   'roles.menuAria': 'Zmień rolę urządzenia',
   'roles.role': 'Rola: {short}',
   'roles.fixed': 'Rola jest stała na tym urządzeniu',
+  'roles.photoShort': 'Foto',
 
   'children.expectedBadge': 'Dzieci będą obecne',
   'children.notExpectedBadge': 'Dzieci nie będą obecne',

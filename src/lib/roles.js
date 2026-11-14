@@ -51,14 +51,8 @@ export const ROLES = {
     icon: '🎥',
     blurb: 'Media step timeline, shot plan and light windows.',
   },
-  // Legacy single-photographer role, kept for old stored values and tokens.
-  photo: {
-    id: 'photo',
-    label: 'Photographer',
-    short: 'Photo',
-    icon: '📷',
-    blurb: 'Media step timeline, shot plan and light windows.',
-  },
+  // Legacy `photo` device values normalize to photo1 at read time; `photo` is
+  // not part of the canonical catalog (issue #875).
   venue_manager: {
     id: 'venue_manager',
     label: 'Venue Manager',
@@ -106,7 +100,6 @@ export function roleBlurb(id) {
 }
 
 // HOST_ONLY weddings have no DJ booth: hide that role from the switcher.
-// `photo` is a separate device role (D2) and is never hidden by the package.
 export function availableRoleIds(hostingMode) {
   if (hostingMode === 'HOST_ONLY') return ROLE_ORDER.filter((id) => id !== 'dj');
   return ROLE_ORDER;

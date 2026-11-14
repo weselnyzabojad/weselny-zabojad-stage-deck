@@ -8,11 +8,12 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #466 provider role provisioning', () => {
   it('expands role constraints and stage RLS without widening anon access', () => {
-    const migration = read('supabase/migrations/202611090003_stage_roles_expand.sql');
+    const migration = read('supabase/migrations/202611140001_remove_legacy_photo_role.sql');
     const schema = read('supabase/schema.sql');
-    const roles = "'mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'";
+    const roles = "'mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'";
     for (const sql of [migration, schema]) {
       expect(sql).toContain(roles);
+      expect(sql).not.toContain("'photo', 'photo1'");
     }
     expect(migration).toContain('wedding_roles_role_check');
     expect(migration).toContain('role_sessions_role_check');
@@ -43,11 +44,12 @@ describe('issue #466 provider role provisioning', () => {
     expect(api).toContain('return json({ provider: data, roleAccess });');
   });
 
-  it('lets join_room accept every new role while keeping the legacy photo alias', () => {
+  it('lets join_room accept every canonical role without the legacy photo alias', () => {
     const join = read('supabase/functions/join_room/index.ts');
-    for (const role of ['mc', 'dj', 'photo', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker']) {
+    for (const role of ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker']) {
       expect(join).toContain(`'${role}'`);
     }
+    expect(join).not.toContain("'photo'");
   });
 
   it('shows role status, one-time PIN and revoke state in admin', () => {

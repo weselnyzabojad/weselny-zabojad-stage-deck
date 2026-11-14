@@ -6,7 +6,7 @@
 
 export const WEDDING_ID_PATTERN = /^\d{4}-\d{2}-\d{2}_[a-z0-9_]+$/;
 export const ROOM_CODE_PATTERN = /^[a-z0-9]{6,12}$/;
-export const ALLOWED_ROLES = ['mc', 'dj', 'photo', 'speaker'];
+export const ALLOWED_ROLES = ['mc', 'dj', 'speaker'];
 export const DEFAULT_ROLES = ['mc', 'dj'];
 const ROOM_CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789';
 

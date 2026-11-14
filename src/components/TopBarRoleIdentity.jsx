@@ -1,4 +1,4 @@
-import { roleShort } from '../lib/roles.js';
+import { normalizeRole, roleShort } from '../lib/roles.js';
 import { useI18n } from '../i18n/useI18n';
 
 // Static, non-clickable role element for companion views. The role is fixed by
@@ -7,13 +7,17 @@ export default function TopBarRoleIdentity({ role = 'mc', tier = null, className
   const { t } = useI18n();
   // Photographer 1 and 2 keep distinct ids internally but share a number-free
   // top-bar label; auth, join cards, PINs and pocket badges keep the real ids.
-  const topBarRole = role === 'photo1' || role === 'photo2' ? 'photo' : role;
+  // Legacy `photo` values normalize to photo1 first.
+  const resolvedRole = normalizeRole(role);
+  const isPhotographer = resolvedRole === 'photo1' || resolvedRole === 'photo2';
   const short =
-    role === 'dj'
+    resolvedRole === 'dj'
       ? String(tier).toUpperCase() === 'VIP'
         ? 'DJ VIP'
         : 'DJ'
-      : roleShort(topBarRole);
+      : isPhotographer
+        ? t('roles.photoShort')
+        : roleShort(resolvedRole);
 
   return (
     <span

@@ -42,6 +42,7 @@ const en = {
   'roles.menuAria': 'Switch device role',
   'roles.role': 'Role: {short}',
   'roles.fixed': 'Role is fixed on this device',
+  'roles.photoShort': 'Photo',
 
   'children.expectedBadge': 'Children expected',
   'children.notExpectedBadge': 'Children not expected',
