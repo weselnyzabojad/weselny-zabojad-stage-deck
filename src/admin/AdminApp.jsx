@@ -38,6 +38,7 @@ import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminDrivePanel from './AdminDrivePanel';
 import AdminServiceProviders from './AdminServiceProviders';
+import AdminGamesPanel from './AdminGamesPanel';
 import AdminWeddingRoles from './AdminWeddingRoles';
 import AdminSpeechesPanel from './AdminSpeechesPanel';
 import { AdminPublishRevisionDialog } from './AdminDialogs';
@@ -1142,6 +1143,11 @@ function AdminAppContent() {
                     onChanged={load}
                   />
                   <AdminSpeechesPanel
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onChanged={load}
+                  />
+                  <AdminGamesPanel
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
                     onChanged={load}

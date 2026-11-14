@@ -60,6 +60,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { decryptGameBundle, encryptGameBundle } from '../_shared/gameBundle.js';
 import {
+  defaultGameId,
   isGameActive,
   normalizeGameType,
   validateGameQuestionPayload,
@@ -1205,7 +1206,7 @@ async function handleRequest(req: Request) {
     if (action === 'list_game_questions') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
-      const [bundles, revisions, logs] = await Promise.all([
+      const [bundles, revisions, logs, docs] = await Promise.all([
         admin
           .from('game_question_bundles')
           .select('*')
@@ -1222,15 +1223,31 @@ async function handleRequest(req: Request) {
           .eq('wedding_id', weddingId)
           .order('created_at', { ascending: false })
           .limit(100),
+        admin
+          .from('game_question_docs')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('game_type', { ascending: true }),
       ]);
       if (bundles.error) throw bundles.error;
+      if (docs.error) throw docs.error;
       const liveState = await liveGameState(admin, weddingId);
       const revisionRows = revisions.data ?? [];
+      const bundleRows = bundles.data ?? [];
       const byRevision = new Map(
         revisionRows.map((row: any) => [`${row.game_type}:${row.revision}`, row]),
       );
+      const gameIdByType = new Map(
+        bundleRows.map((row: any) => [normalizeGameType(row.game_type), row.game_id]),
+      );
+      const activeGameTypes = ['TEST_WIEDZY', 'TEST_ZGODNOSCI'].filter((gameType) =>
+        isGameActive(liveState, {
+          gameId: gameIdByType.get(gameType) ?? defaultGameId(gameType),
+          gameType,
+        }),
+      );
       const games = [];
-      for (const bundle of bundles.data ?? []) {
+      for (const bundle of bundleRows) {
         const revision = bundle.live_revision
           ? byRevision.get(`${bundle.game_type}:${bundle.live_revision}`)
           : null;
@@ -1259,6 +1276,8 @@ async function handleRequest(req: Request) {
       }
       return json({
         games,
+        docs: docs.data ?? [],
+        activeGameTypes,
         revisions: revisionRows.map((row: any) => ({
           gameType: row.game_type,
           revision: row.revision,

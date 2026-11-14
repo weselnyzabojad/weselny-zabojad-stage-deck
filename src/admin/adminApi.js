@@ -334,6 +334,8 @@ async function callAdminDrive(action, payload = {}) {
     const error = new Error(data?.error || 'Google Drive request failed.');
     error.status = response.status;
     error.code = data?.code ?? null;
+    error.errors = Array.isArray(data?.errors) ? data.errors : [];
+    error.progress = Array.isArray(data?.progress) ? data.progress : [];
     throw error;
   }
   return data;
@@ -400,6 +402,40 @@ export async function rewriteGameQuestionDocColumns(payload) {
 export async function parseGameQuestionDoc(payload) {
   if (ADMIN_DEMO) throw new Error('Game question Doc parsing is unavailable in demo mode.');
   return callAdminDrive('parse_game_question_doc', payload);
+}
+
+export async function listGameQuestions(weddingId) {
+  if (ADMIN_DEMO) {
+    return { games: [], docs: [], revisions: [], logs: [], activeGameTypes: [] };
+  }
+  return callAdmin('list_game_questions', { weddingId });
+}
+
+export async function publishGameQuestions(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('game_questions_publish');
+    return { ok: true, gameType: payload?.gameType, revision: 1 };
+  }
+  return callAdmin('publish_game_questions', payload);
+}
+
+export async function restoreGameQuestions(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('game_questions_restore');
+    return { ok: true, gameType: payload?.gameType, revision: payload?.revision };
+  }
+  return callAdmin('restore_game_questions', payload);
+}
+
+export async function deleteGameQuestions(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('game_questions_delete');
+    return { ok: true };
+  }
+  return callAdmin('delete_game_questions', payload);
 }
 
 export async function publishSpeech(payload) {

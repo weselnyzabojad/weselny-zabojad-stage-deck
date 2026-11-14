@@ -112,6 +112,26 @@ async function upsertGameQuestionDoc(admin: any, record: Record<string, unknown>
   if (error) throw error;
 }
 
+// The admin wedding summary does not carry the Drive folder id. When the panel
+// omits it, resolve the wedding folder from the cartridge source file parent.
+async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {
+  const provided = typeof explicit === 'string' ? explicit.trim() : '';
+  if (provided) return provided;
+  const { data } = await admin
+    .from('weddings')
+    .select('cartridge_source_metadata')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  const sourceFileId = data?.cartridge_source_metadata?.driveFileId;
+  if (typeof sourceFileId !== 'string' || !sourceFileId.trim()) return '';
+  try {
+    const source = await connector.getFileMetadata(sourceFileId.trim());
+    return Array.isArray(source?.parents) ? source.parents[0] ?? '' : '';
+  } catch {
+    return '';
+  }
+}
+
 function expectedGameQuestionFolder(source: any, folderId: string | null) {
   if (!folderId) return false;
   return Array.isArray(source?.file?.parents) && source.file.parents.includes(folderId);
@@ -374,10 +394,22 @@ async function handleRequest(req: Request) {
 
     if (action === 'create_game_question_doc') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-      const weddingFolderId =
-        typeof body?.weddingFolderId === 'string' ? body.weddingFolderId.trim() : '';
-      if (!WEDDING_ID_PATTERN.test(weddingId) || !weddingFolderId) {
-        return json({ error: 'weddingId and weddingFolderId are required.' }, 400);
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'weddingId is required.' }, 400);
+      }
+      const weddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        body?.weddingFolderId,
+      );
+      if (!weddingFolderId) {
+        return json(
+          {
+            error: 'The wedding Drive folder could not be resolved.',
+            code: 'missing_wedding_folder',
+          },
+          409,
+        );
       }
       const preflight = gameQuestionDocCreatePreflight({
         gameType: body?.gameType,
