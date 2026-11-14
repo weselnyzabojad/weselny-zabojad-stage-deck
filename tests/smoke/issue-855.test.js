@@ -21,9 +21,13 @@ describe('issue #855 CORS fail-closed', () => {
     expect(sources.length).toBeGreaterThanOrEqual(7);
     for (const source of sources) {
       expect(source).not.toContain("Deno.env.get('ALLOWED_ORIGIN') ?? '*'");
-      expect(source).toContain('function originAllowed(req: Request)');
-      expect(source).toContain("return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);");
-      expect(source).toContain("Origin not allowed.");
+      if (source.includes("from '../_shared/cors.js'")) {
+        expect(source).toContain('isOriginAllowed(req)');
+      } else {
+        expect(source).toContain('function originAllowed(req: Request)');
+        expect(source).toContain("return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);");
+      }
+      expect(source).toContain('Origin not allowed.');
     }
   });
 });
