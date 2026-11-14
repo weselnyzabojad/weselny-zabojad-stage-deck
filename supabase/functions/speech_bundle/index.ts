@@ -49,13 +49,38 @@ async function verifyRoleToken(token: string) {
 
 async function activeSession(admin: any, payload: any) {
   if (typeof payload?.jti !== 'string' || !payload.jti) return false;
+  const table = payload?.app_role === 'speaker' ? 'speech_sessions' : 'role_sessions';
   const { data } = await admin
-    .from('role_sessions')
+    .from(table)
     .select('revoked_at, expires_at')
     .eq('jti', payload.jti)
     .maybeSingle();
   if (!data || data.revoked_at) return false;
   return !data.expires_at || Date.parse(data.expires_at) > Date.now();
+}
+
+async function speakerAccessAllowed(admin: any, weddingId: string, speechId: string) {
+  if (!speechId) return false;
+  const [{ data: access }, { data: speech }] = await Promise.all([
+    admin
+      .from('speech_access')
+      .select('enabled, revoked_at')
+      .eq('wedding_id', weddingId)
+      .eq('speech_id', speechId)
+      .maybeSingle(),
+    admin
+      .from('speech_records')
+      .select('status, speaker_access')
+      .eq('wedding_id', weddingId)
+      .eq('id', speechId)
+      .maybeSingle(),
+  ]);
+  return Boolean(
+    speech?.status === 'PUBLISHED' &&
+      speech?.speaker_access &&
+      access?.enabled &&
+      !access?.revoked_at,
+  );
 }
 
 function metadata(record: any) {
@@ -103,6 +128,15 @@ Deno.serve(async (req) => {
     const appRole = typeof payload.app_role === 'string' ? payload.app_role : '';
     if (!weddingId) return json({ error: 'Invalid role session.' }, 401);
 
+    const speakerSpeechId =
+      typeof payload.speech_id === 'string' ? payload.speech_id.trim() : '';
+    if (SPEAKER_ROLES.has(appRole)) {
+      if (!speakerSpeechId) return json({ error: 'Invalid speech session.' }, 401);
+      if (!(await speakerAccessAllowed(admin, weddingId, speakerSpeechId))) {
+        return json({ error: 'Speech access is revoked.' }, 403);
+      }
+    }
+
     const { data: liveRow } = await admin
       .from('speech_live')
       .select('speech_id, started_at')
@@ -123,7 +157,10 @@ Deno.serve(async (req) => {
 
       const allowed =
         SPEAKER_ROLES.has(appRole)
-          ? (records ?? []).filter((record: any) => record.id === payload.speech_id)
+          ? (records ?? []).filter(
+              (record: any) =>
+                record.id === speakerSpeechId && record.status === 'PUBLISHED',
+            )
           : records ?? [];
       const revisions = allowed.filter((record: any) => record.live_revision != null);
       const { data: revisionRows } = revisions.length
@@ -139,7 +176,7 @@ Deno.serve(async (req) => {
 
       return json({
         mode: null,
-        liveSpeechId: liveRow?.speech_id ?? null,
+        liveSpeechId: SPEAKER_ROLES.has(appRole) ? null : liveRow?.speech_id ?? null,
         speeches: allowed.map((record: any) => {
           const revision = record.live_revision
             ? byRevision.get(record.live_revision)
@@ -168,26 +205,22 @@ Deno.serve(async (req) => {
       const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
       if (!speechId) return json({ error: 'A speechId is required.' }, 400);
       if (!MC_ROLES.has(appRole)) {
-        if (!SPEAKER_ROLES.has(appRole) || payload.speech_id !== speechId) {
+        if (!SPEAKER_ROLES.has(appRole) || speakerSpeechId !== speechId) {
           return json({ error: 'Only the assigned speaker may unlock this speech.' }, 403);
         }
-        const { data: access } = await admin
-          .from('speech_access')
-          .select('enabled, revoked_at')
-          .eq('wedding_id', weddingId)
-          .eq('speech_id', speechId)
-          .maybeSingle();
-        if (!access?.enabled || access.revoked_at) {
+        if (!(await speakerAccessAllowed(admin, weddingId, speechId))) {
           return json({ error: 'Speech access is revoked.' }, 403);
         }
       }
       const { data: record } = await admin
         .from('speech_records')
-        .select('id')
+        .select('id, status')
         .eq('wedding_id', weddingId)
         .eq('id', speechId)
         .maybeSingle();
-      if (!record) return json({ error: 'Speech not found.' }, 404);
+      if (!record || record.status === 'DELETED') {
+        return json({ error: 'Speech not found.' }, 404);
+      }
       const version = Number.isInteger(body?.keyVersion) ? body.keyVersion : 1;
       const key = await deriveSpeechKeyBytes(
         serverEnv('SPEECH_SECRET_MASTER_KEY'),

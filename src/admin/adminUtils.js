@@ -97,6 +97,14 @@ export function buildRoleLink(baseUrl, roomCode, role) {
   return `${base}/${String(roomCode ?? '').trim()}/${role}`;
 }
 
+// COMPLEX speakers use the speaker shell plus an explicit speech id (issue #926).
+export function buildSpeechLink(baseUrl, roomCode, speechId) {
+  const base = String(baseUrl ?? '').replace(/\/+$/, '');
+  return `${base}/${String(roomCode ?? '').trim()}/speaker?speech=${encodeURIComponent(
+    String(speechId ?? '').trim(),
+  )}`;
+}
+
 // QR cards carry the deep link, role, room code and event identity. The PIN is
 // intentionally never part of this payload.
 export function buildQrCards({ baseUrl, roomCode, wedding = {}, roles = [], labels = {} }) {

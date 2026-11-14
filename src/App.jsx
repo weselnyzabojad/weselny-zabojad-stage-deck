@@ -13,6 +13,7 @@ import {
   saveRoleSession,
 } from './lib/sync/roleSession';
 import { usePublishedCartridge } from './hooks/usePublishedCartridge';
+import { clearSpeakerAccessCache } from './lib/speechBundleClient';
 import { useI18n } from './i18n/useI18n';
 import { usePairing } from './hooks/usePairing';
 import { useRole } from './hooks/useRole';
@@ -180,6 +181,12 @@ export default function App() {
       isProduction={IS_PRODUCTION}
       deckIntent={DECK_INTENT}
       onSignOut={() => {
+        if (roleSession?.speechId) {
+          void clearSpeakerAccessCache({
+            weddingId: roleSession.weddingId,
+            speechId: roleSession.speechId,
+          });
+        }
         clearRoleSession();
         setRoleSession(null);
       }}

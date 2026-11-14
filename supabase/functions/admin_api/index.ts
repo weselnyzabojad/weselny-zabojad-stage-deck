@@ -422,6 +422,73 @@ async function writeSpeechLog(
   });
 }
 
+async function revokeSpeechSessions(admin: any, weddingId: string, speechId: string) {
+  const revokedAt = new Date().toISOString();
+  const { data: sessions } = await admin
+    .from('speech_sessions')
+    .select('jti')
+    .eq('wedding_id', weddingId)
+    .eq('speech_id', speechId)
+    .is('revoked_at', null);
+  const jtis = (sessions ?? []).map((row: any) => row.jti);
+  if (jtis.length === 0) return;
+  await admin.from('speech_sessions').update({ revoked_at: revokedAt }).in('jti', jtis);
+  // Speaker tokens also hold a role_sessions row so the standard cartridge RLS
+  // can validate them; revoke both records together.
+  await admin.from('role_sessions').update({ revoked_at: revokedAt }).in('jti', jtis);
+}
+
+async function revokeSpeechAccess(
+  admin: any,
+  weddingId: string,
+  speechId: string,
+  { actor = null, action = 'speech_access_revoke' }: { actor?: string | null; action?: string } = {},
+) {
+  const revokedAt = new Date().toISOString();
+  await admin
+    .from('speech_access')
+    .update({ enabled: false, revoked_at: revokedAt })
+    .eq('wedding_id', weddingId)
+    .eq('speech_id', speechId);
+  await admin
+    .from('speech_records')
+    .update({ speaker_access: false })
+    .eq('wedding_id', weddingId)
+    .eq('id', speechId);
+  await revokeSpeechSessions(admin, weddingId, speechId);
+  await writeSpeechLog(admin, weddingId, action, { actor, docId: speechId });
+}
+
+async function issueSpeechAccess(
+  admin: any,
+  weddingId: string,
+  speechId: string,
+  { actor = null, action = 'speech_access_issue' }: { actor?: string | null; action?: string } = {},
+) {
+  const pin = randomPin();
+  const now = new Date().toISOString();
+  const { error } = await admin.from('speech_access').upsert(
+    {
+      wedding_id: weddingId,
+      speech_id: speechId,
+      pin_hash: bcrypt.hashSync(pin, 10),
+      enabled: true,
+      rotated_at: now,
+      revoked_at: null,
+    },
+    { onConflict: 'wedding_id,speech_id' },
+  );
+  if (error) throw error;
+  await admin
+    .from('speech_records')
+    .update({ speaker_access: true })
+    .eq('wedding_id', weddingId)
+    .eq('id', speechId);
+  await revokeSpeechSessions(admin, weddingId, speechId);
+  await writeSpeechLog(admin, weddingId, action, { actor, docId: speechId });
+  return pin;
+}
+
 async function handleRequest(req: Request) {
   if (!isOriginAllowed(req)) {
     return json({ error: 'Origin not allowed.' }, 403);
@@ -584,6 +651,38 @@ async function handleRequest(req: Request) {
       return json({ speech: data });
     }
 
+    if (action === 'rotate_speech_access') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId) {
+        return json({ error: 'weddingId and speechId are required.' }, 400);
+      }
+      const { data: record } = await admin
+        .from('speech_records')
+        .select('id, status')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle();
+      if (!record || record.status === 'DELETED') {
+        return json({ error: 'Speech not found.' }, 404);
+      }
+      const pin = await issueSpeechAccess(admin, weddingId, speechId, {
+        actor: allowlisted.email,
+        action: 'speech_access_rotate',
+      });
+      return json({ speechId, pin });
+    }
+
+    if (action === 'revoke_speech_access') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId) {
+        return json({ error: 'weddingId and speechId are required.' }, 400);
+      }
+      await revokeSpeechAccess(admin, weddingId, speechId, { actor: allowlisted.email });
+      return json({ speechId, enabled: false });
+    }
+
     if (action === 'publish_speech') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
@@ -659,12 +758,37 @@ async function handleRequest(req: Request) {
         .from('speech_records')
         .upsert(record, { onConflict: 'wedding_id,id' });
       if (upsertError) throw upsertError;
+
+      let access: { enabled: boolean; pin: string | null } = { enabled: false, pin: null };
+      if (speech.speakerAccess) {
+        const { data: existingAccess } = await admin
+          .from('speech_access')
+          .select('enabled, revoked_at')
+          .eq('wedding_id', weddingId)
+          .eq('speech_id', speech.id)
+          .maybeSingle();
+        if (existingAccess?.enabled && !existingAccess.revoked_at) {
+          access = { enabled: true, pin: null };
+        } else {
+          const pin = await issueSpeechAccess(admin, weddingId, speech.id, {
+            actor: allowlisted.email,
+            action: 'speech_access_issue',
+          });
+          access = { enabled: true, pin };
+        }
+      } else {
+        await revokeSpeechAccess(admin, weddingId, speech.id, {
+          actor: allowlisted.email,
+          action: 'speech_access_revoke',
+        });
+      }
+
       await writeSpeechLog(admin, weddingId, 'speech_publish', {
         actor: allowlisted.email,
         docId: speech.id,
         docVersion: String(revision),
       });
-      return json({ speechId: speech.id, revision });
+      return json({ speechId: speech.id, revision, access });
     }
 
     if (action === 'restore_speech') {
@@ -719,6 +843,10 @@ async function handleRequest(req: Request) {
         .eq('wedding_id', weddingId)
         .eq('id', speechId);
       if (error) throw error;
+      await revokeSpeechAccess(admin, weddingId, speechId, {
+        actor: allowlisted.email,
+        action: 'speech_delete_access_revoke',
+      });
       await writeSpeechLog(admin, weddingId, 'speech_delete', {
         actor: allowlisted.email,
         docId: speechId,
@@ -753,6 +881,18 @@ async function handleRequest(req: Request) {
         .update({ cartridge })
         .eq('wedding_id', weddingId);
       if (error) throw error;
+      if (mode !== 'COMPLEX') {
+        const { data: accessRows } = await admin
+          .from('speech_access')
+          .select('speech_id')
+          .eq('wedding_id', weddingId);
+        for (const row of accessRows ?? []) {
+          await revokeSpeechAccess(admin, weddingId, row.speech_id, {
+            actor: allowlisted.email,
+            action: 'speech_mode_access_revoke',
+          });
+        }
+      }
       await writeSpeechLog(admin, weddingId, 'speech_mode', {
         actor: allowlisted.email,
         message: mode,

@@ -152,6 +152,7 @@ export default function SpeakerView({
   pin = null,
   roomCode = null,
   accessToken = null,
+  speechAccess = null,
 }) {
   const { t } = useI18n();
 
@@ -173,6 +174,80 @@ export default function SpeakerView({
   }, [speechSnapshot, activeSpeechId, fromCache, wedding.weddingId]);
 
   const isCompact = useCompact();
+
+  const speechAccessBody = speechAccess ? (
+    speechAccess.status === 'revoked' ? (
+      <section className="rounded-2xl border border-line bg-card p-6 text-center">
+        <div className="text-4xl" aria-hidden="true">🔒</div>
+        <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.revokedTitle')}</h1>
+        <p className="mt-1 text-sm text-muted">{t('speaker.revokedBody')}</p>
+      </section>
+    ) : speechAccess.status === 'error' ? (
+      <section className="rounded-2xl border border-line bg-card p-6 text-center">
+        <div className="text-4xl" aria-hidden="true">⚠️</div>
+        <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.accessErrorTitle')}</h1>
+        <p className="mt-1 text-sm text-muted">{t('speaker.accessErrorBody')}</p>
+      </section>
+    ) : !speechAccess.speech ? (
+      <section className="rounded-2xl border border-line bg-card p-6 text-center">
+        <div className="text-4xl" aria-hidden="true">⏳</div>
+        <h1 className="mt-2 font-heading text-xl font-bold text-ink">{t('speaker.loadingTitle')}</h1>
+        <p className="mt-1 text-sm text-muted">{t('speaker.loadingBody')}</p>
+      </section>
+    ) : (
+      <div className="space-y-5">
+        <section
+          aria-label={t('speaker.nowSpeaking')}
+          className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-1 px-1"
+        >
+          <h1 className="break-words font-heading text-xl font-bold text-ink">
+            {speechAccess.speech.speaker?.name}
+          </h1>
+          {speechAccess.speech.speaker?.relationship ? (
+            <span className="break-words text-base text-muted">
+              {speechAccess.speech.speaker.relationship}
+            </span>
+          ) : null}
+          {speechAccess.fromCache ? (
+            <span className="font-mono text-[10px] text-amber-300">
+              {t('speaker.offlineNotice')}
+            </span>
+          ) : null}
+        </section>
+
+        {speechAccess.speech.pairs?.length ? (
+          <div className="max-w-prose space-y-6">
+            {speechAccess.speech.pairs.map((pair, index) => (
+              <section key={index} className="space-y-2">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                  {t('speaker.sourceLabel')} · {speechAccess.speech.speakerLanguage}
+                </p>
+                <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
+                  {pair.speaker}
+                </div>
+                {pair.translation ? (
+                  <>
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                      {t('speaker.translationLabel')} · {speechAccess.speech.mcLanguage}
+                    </p>
+                    <div className="whitespace-pre-wrap break-words font-body text-sm leading-relaxed text-muted sm:text-base">
+                      {pair.translation}
+                    </div>
+                  </>
+                ) : null}
+              </section>
+            ))}
+          </div>
+        ) : (
+          <section className="max-w-prose">
+            <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
+              {speechAccess.speech.script}
+            </div>
+          </section>
+        )}
+      </div>
+    )
+  ) : null;
 
   const speakerBody = (
     <>
@@ -274,6 +349,8 @@ export default function SpeakerView({
     </>
   );
 
+  const visibleBody = speechAccess ? speechAccessBody : speakerBody;
+
   if (isCompact) {
     return (
       <RoleShell
@@ -292,7 +369,7 @@ export default function SpeakerView({
       >
         <div id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl">
           <SkipLink />
-          {speakerBody}
+          {visibleBody}
         </div>
       </RoleShell>
     );
@@ -347,7 +424,7 @@ export default function SpeakerView({
       />
 
       <main id="main-content" tabIndex={-1} className="mx-auto w-full max-w-3xl flex-1 overflow-y-auto px-4 py-5">
-        {speakerBody}
+        {visibleBody}
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[10px] text-muted">

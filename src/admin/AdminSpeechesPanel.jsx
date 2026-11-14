@@ -8,9 +8,15 @@ import {
   publishSpeech,
   renameSpeechDoc,
   restoreSpeech,
+  revokeSpeechAccess,
+  rotateSpeechAccess,
   setSpeechMode,
   upsertSpeechMetadata,
 } from './adminApi';
+import AdminQrCards from './AdminQrCards';
+import { buildSpeechLink } from './adminUtils';
+
+const DECK_BASE_URL = 'https://deck.weselnyzabojad.pl';
 
 const EMPTY_FORM = {
   speakerName: '',
@@ -35,6 +41,8 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
   const [form, setForm] = useState(EMPTY_FORM);
   const [previews, setPreviews] = useState({});
   const [progress, setProgress] = useState({});
+  const [accessPins, setAccessPins] = useState({});
+  const [qrCard, setQrCard] = useState(null);
 
   const disabled = readOnly || Boolean(wedding.archived_at);
   const liveSpeechId = live?.speech_id ?? null;
@@ -213,7 +221,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     setBusy(true);
     setError('');
     try {
-      await publishSpeech({
+      const result = await publishSpeech({
         weddingId: wedding.wedding_id,
         speech: {
           id: speech.id,
@@ -228,12 +236,19 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
           script: preview.script,
         },
       });
+      if (result?.access?.pin) {
+        setAccessPins((current) => ({ ...current, [speech.id]: result.access.pin }));
+      }
       setPreviews((current) => {
         const next = { ...current };
         delete next[speech.id];
         return next;
       });
-      setMessage('Speech published. Previous revisions stay available.');
+      setMessage(
+        result?.access?.pin
+          ? `Speech published. Speaker PIN: ${result.access.pin}`
+          : 'Speech published. Previous revisions stay available.',
+      );
       await load();
       onChanged?.();
     } catch (err) {
@@ -241,6 +256,74 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     } finally {
       setBusy(false);
     }
+  };
+
+  const rotateAccess = async (speech) => {
+    if (disabled) return;
+    setBusy(true);
+    setError('');
+    try {
+      const result = await rotateSpeechAccess({
+        weddingId: wedding.wedding_id,
+        speechId: speech.id,
+      });
+      setAccessPins((current) => ({ ...current, [speech.id]: result.pin }));
+      setMessage(`New speaker PIN: ${result.pin}`);
+      await load();
+      onChanged?.();
+    } catch (err) {
+      setError(err.message ?? 'Could not rotate the speaker PIN.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const revokeAccess = async (speech) => {
+    if (disabled) return;
+    if (!window.confirm('Revoke speaker access? Existing speaker sessions are signed out.')) return;
+    setBusy(true);
+    setError('');
+    try {
+      await revokeSpeechAccess({
+        weddingId: wedding.wedding_id,
+        speechId: speech.id,
+      });
+      setAccessPins((current) => {
+        const next = { ...current };
+        delete next[speech.id];
+        return next;
+      });
+      setMessage('Speaker access revoked.');
+      await load();
+      onChanged?.();
+    } catch (err) {
+      setError(err.message ?? 'Could not revoke speaker access.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const copyAccessLink = async (speech) => {
+    try {
+      await navigator.clipboard.writeText(
+        buildSpeechLink(DECK_BASE_URL, wedding.room_code, speech.id),
+      );
+      setMessage(`Speaker link for ${speech.id} copied.`);
+    } catch {
+      setError('Could not copy the speaker link.');
+    }
+  };
+
+  const showAccessQr = (speech) => {
+    setQrCard({
+      role: 'speaker',
+      label: `Speaker · ${speech.speaker_name}`,
+      url: buildSpeechLink(DECK_BASE_URL, wedding.room_code, speech.id),
+      roomCode: wedding.room_code,
+      weddingId: wedding.wedding_id,
+      couple: wedding.couple,
+      date: wedding.date,
+    });
   };
 
   const restore = async (speech) => {
@@ -521,6 +604,63 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
                     </span>
                   ) : null}
                 </div>
+                {mode === 'COMPLEX' && speech.status === 'PUBLISHED' ? (
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5 rounded border border-line bg-page/60 px-2 py-1 text-[10px]">
+                    <span className="font-mono uppercase tracking-wider text-muted">
+                      Speaker access · {speech.speaker_access ? 'enabled' : 'disabled'}
+                    </span>
+                    {speech.speaker_access ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => copyAccessLink(speech)}
+                          disabled={busy || disabled}
+                          className="rounded border border-line px-2 py-1 text-brand-soft disabled:opacity-40"
+                        >
+                          Copy speaker link
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => showAccessQr(speech)}
+                          disabled={busy || disabled}
+                          className="rounded border border-line px-2 py-1 text-muted disabled:opacity-40"
+                        >
+                          QR
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => rotateAccess(speech)}
+                          disabled={busy || disabled}
+                          className="rounded border border-line px-2 py-1 text-muted disabled:opacity-40"
+                        >
+                          Rotate PIN
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => revokeAccess(speech)}
+                          disabled={busy || disabled}
+                          className="rounded border border-alert/60 px-2 py-1 text-alert-soft disabled:opacity-40"
+                        >
+                          Revoke access
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => rotateAccess(speech)}
+                        disabled={busy || disabled}
+                        className="rounded border border-brand-strong bg-brand/30 px-2 py-1 font-semibold text-brand-tint disabled:opacity-40"
+                      >
+                        Enable speaker PIN
+                      </button>
+                    )}
+                    {accessPins[speech.id] ? (
+                      <span className="rounded border border-emerald-700 bg-emerald-950/40 px-2 py-1 font-mono text-emerald-200">
+                        PIN {accessPins[speech.id]}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
                 {preview?.script ? (
                   <div className="mt-1 grid gap-1 lg:grid-cols-2">
                     <pre className="max-h-36 overflow-auto whitespace-pre-wrap rounded bg-page p-2 font-mono text-[10px] text-muted">
@@ -551,6 +691,24 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
               ))}
             </ul>
           </details>
+
+          {qrCard ? (
+            <div className="rounded border border-line bg-card p-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-muted">
+                  Speaker QR
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQrCard(null)}
+                  className="rounded border border-line px-2 py-1 text-[10px] text-muted"
+                >
+                  Close
+                </button>
+              </div>
+              <AdminQrCards cards={[qrCard]} />
+            </div>
+          ) : null}
 
           {message ? <p className="text-[10px] text-emerald-300">{message}</p> : null}
           {error ? (

@@ -44,3 +44,14 @@ export async function loadSpeechKey(id) {
     request.onerror = () => resolve(null);
   });
 }
+
+export async function deleteSpeechKey(id) {
+  const db = await openDb();
+  if (!db) return false;
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = () => resolve(true);
+    tx.onerror = () => resolve(false);
+  });
+}
