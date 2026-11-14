@@ -411,6 +411,31 @@ export async function listGameQuestions(weddingId) {
   return callAdmin('list_game_questions', { weddingId });
 }
 
+export async function preflightGameMigration(weddingId, weddingFolderId = '') {
+  if (ADMIN_DEMO) {
+    return {
+      games: [],
+      hasLegacy: false,
+      requiresConfirmation: false,
+      questionCount: 0,
+      unlinkedQuestionCount: 0,
+    };
+  }
+  return callAdmin('preflight_game_migration', {
+    weddingId,
+    ...(weddingFolderId ? { weddingFolderId } : {}),
+  });
+}
+
+export async function migrateGameQuestions(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('game_migration');
+    return { ok: true, migrated: 0, discarded: 0, alreadyMigrated: true };
+  }
+  return callAdmin('migrate_game_questions', payload);
+}
+
 export async function publishGameQuestions(payload) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');

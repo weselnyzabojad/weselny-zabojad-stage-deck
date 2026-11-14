@@ -55,16 +55,25 @@ import {
 } from '../_shared/adminPublish.js';
 import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
 import {
+  DRIVE_DOC_MIME_TYPE,
   createGoogleDriveConnector,
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
 import { decryptGameBundle, encryptGameBundle } from '../_shared/gameBundle.js';
 import {
   defaultGameId,
+  gameQuestionDocFolderSegments,
   isGameActive,
+  normalizeGameLanguages,
   normalizeGameType,
+  parseGameQuestionDoc,
   validateGameQuestionPayload,
 } from '../_shared/gameQuestions.js';
+import {
+  collectLegacyGameEntries,
+  planGameMigration,
+  stripLegacyGameQuestions,
+} from '../_shared/gameMigration.js';
 import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
 import { decryptSecret } from '../_shared/speechSecrets.js';
@@ -457,6 +466,262 @@ async function liveGameState(admin: any, weddingId: string) {
     .eq('wedding_id', `wzsd:${weddingId}`)
     .maybeSingle();
   return data?.state ?? null;
+}
+
+async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {
+  const provided = typeof explicit === 'string' ? explicit.trim() : '';
+  if (provided) return provided;
+  const { data } = await admin
+    .from('weddings')
+    .select('cartridge_source_metadata')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  const sourceFileId = data?.cartridge_source_metadata?.driveFileId;
+  if (typeof sourceFileId !== 'string' || !sourceFileId.trim()) return '';
+  try {
+    const source = await driveConnector.getFileMetadata(sourceFileId.trim());
+    return Array.isArray(source?.parents) ? source.parents[0] ?? '' : '';
+  } catch {
+    return '';
+  }
+}
+
+// Walk existing folders only. Migration must never create or move Drive data.
+async function findExistingFolderPath(weddingFolderId: string, segments: string[]) {
+  let parent = weddingFolderId;
+  for (const segment of segments) {
+    if (!parent) return null;
+    const { files } = await driveConnector.listChildren({
+      parentId: parent,
+      name: segment,
+    });
+    if (!files[0]?.id) return null;
+    parent = files[0].id;
+  }
+  return parent || null;
+}
+
+async function inspectGameQuestionDoc({
+  weddingId,
+  gameType,
+  entry,
+  doc,
+  weddingFolderId,
+  languages,
+}: {
+  weddingId: string;
+  gameType: string;
+  entry: any;
+  doc: any;
+  weddingFolderId: string;
+  languages: string[] | null;
+}) {
+  const sourceDocId =
+    (typeof doc?.drive_doc_id === 'string' && doc.drive_doc_id.trim()) ||
+    (typeof entry?.sourceDocId === 'string' && entry.sourceDocId.trim()) ||
+    '';
+  if (!sourceDocId) return { readable: false, reason: 'no_drive_doc', code: 'no_drive_doc' };
+  if (!languages || languages.length === 0) {
+    return {
+      readable: false,
+      reason: 'missing_languages',
+      code: 'missing_languages',
+      sourceDocId,
+    };
+  }
+
+  let file: any;
+  try {
+    file = await driveConnector.getFileMetadata(sourceDocId);
+  } catch (error: any) {
+    return {
+      readable: false,
+      reason: 'unreadable_doc',
+      code: typeof error?.code === 'string' ? error.code : 'unreadable_doc',
+      sourceDocId,
+    };
+  }
+  if (file?.mimeType !== DRIVE_DOC_MIME_TYPE) {
+    return {
+      readable: false,
+      reason: 'not_a_google_doc',
+      code: 'not_a_google_doc',
+      sourceDocId,
+      file,
+    };
+  }
+
+  let expectedFolderId =
+    typeof doc?.drive_folder_id === 'string' && doc.drive_folder_id.trim()
+      ? doc.drive_folder_id.trim()
+      : '';
+  if (!expectedFolderId && weddingFolderId) {
+    try {
+      expectedFolderId =
+        (await findExistingFolderPath(
+          weddingFolderId,
+          gameQuestionDocFolderSegments(gameType, weddingId),
+        )) ?? '';
+    } catch {
+      expectedFolderId = '';
+    }
+  }
+  if (!expectedFolderId) {
+    return {
+      readable: false,
+      reason: 'missing_expected_folder',
+      code: 'missing_expected_folder',
+      sourceDocId,
+      file,
+    };
+  }
+  if (!Array.isArray(file.parents) || !file.parents.includes(expectedFolderId)) {
+    return {
+      readable: false,
+      reason: 'wrong_folder',
+      code: 'wrong_folder',
+      sourceDocId,
+      file,
+    };
+  }
+
+  let source: any;
+  try {
+    source = await driveConnector.readSource(sourceDocId);
+  } catch (error: any) {
+    return {
+      readable: false,
+      reason: 'unreadable_doc',
+      code: typeof error?.code === 'string' ? error.code : 'unreadable_doc',
+      sourceDocId,
+      file,
+    };
+  }
+
+  const parsed = parseGameQuestionDoc(source.text, gameType, { languages });
+  if (parsed.errors.length > 0) {
+    return {
+      readable: true,
+      migratable: false,
+      reason: 'invalid_doc',
+      code: parsed.errors[0]?.code ?? 'invalid_doc',
+      errors: parsed.errors,
+      sourceDocId,
+      file: source.file ?? file,
+    };
+  }
+  const validated = validateGameQuestionPayload({
+    gameType,
+    gameId: entry?.gameId ?? defaultGameId(gameType),
+    title: entry?.title ?? parsed.languages.join(' / '),
+    sourceDocId,
+    questions: parsed.questions,
+  });
+  if (validated.error) {
+    return {
+      readable: true,
+      migratable: false,
+      reason: 'invalid_doc',
+      code: 'invalid_game_questions',
+      errors: [{ code: 'invalid_game_questions', message: validated.error }],
+      sourceDocId,
+      file: source.file ?? file,
+    };
+  }
+
+  return {
+    readable: true,
+    migratable: true,
+    reason: null,
+    code: null,
+    errors: [],
+    sourceDocId,
+    file: source.file ?? file,
+    questions: validated.value.questions,
+  };
+}
+
+function publicMigrationPlan(plan: any) {
+  return {
+    ...plan,
+    games: plan.games.map(({ questions: _questions, ...game }: any) => game),
+  };
+}
+
+function activeGameTypesForBundles(bundles: any[], liveState: any) {
+  return ['TEST_WIEDZY', 'TEST_ZGODNOSCI'].filter((gameType) => {
+    const bundle = bundles.find(
+      (row) => normalizeGameType(row?.game_type) === gameType,
+    );
+    return isGameActive(liveState, {
+      gameId: bundle?.game_id ?? defaultGameId(gameType),
+      gameType,
+    });
+  });
+}
+
+async function gameMigrationContext(admin: any, weddingId: string) {
+  const [docsResult, bundlesResult] = await Promise.all([
+    admin
+      .from('game_question_docs')
+      .select('*')
+      .eq('wedding_id', weddingId)
+      .order('game_type', { ascending: true }),
+    admin
+      .from('game_question_bundles')
+      .select('game_type, game_id, title, status, live_revision, question_count')
+      .eq('wedding_id', weddingId)
+      .order('game_type', { ascending: true }),
+  ]);
+  if (docsResult.error) throw docsResult.error;
+  if (bundlesResult.error) throw bundlesResult.error;
+  return {
+    docs: docsResult.data ?? [],
+    bundles: bundlesResult.data ?? [],
+  };
+}
+
+async function migrationChecks({
+  weddingId,
+  cartridge,
+  docs,
+  bundles,
+  weddingFolderId,
+}: {
+  weddingId: string;
+  cartridge: any;
+  docs: any[];
+  bundles: any[];
+  weddingFolderId: string;
+}) {
+  const languages = normalizeGameLanguages(cartridge?.extensions?.languages?.supported);
+  const entries = collectLegacyGameEntries(cartridge);
+  const bundled = new Set(
+    bundles
+      .filter((bundle) => Number.isInteger(bundle?.live_revision))
+      .map((bundle) => normalizeGameType(bundle.game_type))
+      .filter(Boolean),
+  );
+  const checks: Record<string, any> = {};
+  await Promise.all(
+    entries
+      .filter((entry) => !bundled.has(entry.gameType))
+      .map(async (entry) => {
+        const doc =
+          docs.find(
+            (row) => normalizeGameType(row?.game_type) === entry.gameType,
+          ) ?? null;
+        checks[entry.gameType] = await inspectGameQuestionDoc({
+          weddingId,
+          gameType: entry.gameType,
+          entry,
+          doc,
+          weddingFolderId,
+          languages,
+        });
+      }),
+  );
+  return checks;
 }
 
 async function revokeSpeechSessions(admin: any, weddingId: string, speechId: string) {
@@ -1201,6 +1466,263 @@ async function handleRequest(req: Request) {
         message: mode,
       });
       return json({ mode });
+    }
+
+    if (action === 'preflight_game_migration') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const { data: wedding } = await admin
+        .from('weddings')
+        .select('cartridge, cartridge_source_metadata')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+
+      const weddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        body?.weddingFolderId,
+      );
+      const { docs, bundles } = await gameMigrationContext(admin, weddingId);
+      const checks = await migrationChecks({
+        weddingId,
+        cartridge: wedding.cartridge,
+        docs,
+        bundles,
+        weddingFolderId,
+      });
+      const liveState = await liveGameState(admin, weddingId);
+      const plan = planGameMigration({
+        cartridge: wedding.cartridge,
+        docs,
+        bundles,
+        checks,
+        activeGameTypes: activeGameTypesForBundles(bundles, liveState),
+      });
+      return json({
+        ...publicMigrationPlan(plan),
+        languages: normalizeGameLanguages(wedding.cartridge?.extensions?.languages?.supported) ?? [],
+        weddingFolderId: weddingFolderId || null,
+      });
+    }
+
+    if (action === 'migrate_game_questions') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const { data: wedding } = await admin
+        .from('weddings')
+        .select('cartridge, cartridge_revision, couple, date, room_code, cartridge_source_metadata')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      const cartridge = wedding.cartridge;
+
+      const weddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        body?.weddingFolderId,
+      );
+      const { docs, bundles } = await gameMigrationContext(admin, weddingId);
+      const checks = await migrationChecks({
+        weddingId,
+        cartridge,
+        docs,
+        bundles,
+        weddingFolderId,
+      });
+      const liveState = await liveGameState(admin, weddingId);
+      const plan = planGameMigration({
+        cartridge,
+        docs,
+        bundles,
+        checks,
+        activeGameTypes: activeGameTypesForBundles(bundles, liveState),
+      });
+      const summary = publicMigrationPlan(plan);
+
+      if (plan.blockedByActive.length > 0) {
+        return json(
+          {
+            error: 'Game questions cannot be migrated while a results session is active.',
+            blockedByActive: plan.blockedByActive,
+            games: summary.games,
+          },
+          409,
+        );
+      }
+      if (plan.requiresConfirmation && body?.discardUnlinked !== true) {
+        return json(
+          {
+            error: 'Unlinked legacy game questions will lose their text. Confirm the discard first.',
+            requiresConfirmation: true,
+            games: summary.games,
+            unlinkedQuestionCount: plan.unlinkedQuestionCount,
+          },
+          409,
+        );
+      }
+      if (!plan.hasLegacy) {
+        return json({
+          ok: true,
+          alreadyMigrated: true,
+          migrated: 0,
+          discarded: 0,
+          cartridgeRevision: Number(wedding.cartridge_revision ?? 0),
+          games: summary.games,
+        });
+      }
+
+      const masterKey = serverEnv('SPEECH_SECRET_MASTER_KEY');
+      const languageOrder =
+        normalizeGameLanguages(cartridge?.extensions?.languages?.supported) ?? [];
+      let migrated = 0;
+      let discarded = 0;
+
+      for (const game of plan.games) {
+        if (game.action === 'migrate') {
+          const { data: latest } = await admin
+            .from('game_question_revisions')
+            .select('revision')
+            .eq('wedding_id', weddingId)
+            .eq('game_type', game.gameType)
+            .order('revision', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const revision = Number(latest?.revision ?? 0) + 1;
+          const entry = await encryptGameBundle({
+            masterKey,
+            weddingId,
+            gameType: game.gameType,
+            revision,
+            questions: game.questions,
+          });
+          const { error: revisionError } = await admin
+            .from('game_question_revisions')
+            .insert({
+              wedding_id: weddingId,
+              game_type: game.gameType,
+              revision,
+              published_by: allowlisted.user_id,
+              source_doc_id: game.docCheck?.sourceDocId ?? game.sourceDocId ?? null,
+              question_count: game.questions.length,
+              entry,
+            });
+          if (revisionError) throw revisionError;
+          const { error: upsertError } = await admin
+            .from('game_question_bundles')
+            .upsert(
+              {
+                wedding_id: weddingId,
+                game_type: game.gameType,
+                game_id: game.gameId,
+                title: game.title,
+                source_doc_id: game.docCheck?.sourceDocId ?? game.sourceDocId ?? null,
+                status: 'PUBLISHED',
+                live_revision: revision,
+                question_count: game.questions.length,
+              },
+              { onConflict: 'wedding_id,game_type' },
+            );
+          if (upsertError) throw upsertError;
+          migrated += 1;
+          await writeGameQuestionLog(
+            admin,
+            weddingId,
+            game.gameType,
+            'game_question_migration_import',
+            {
+              actor: allowlisted.email,
+              code: null,
+              message: `Revision ${revision} · ${game.questions.length} questions · ${
+                languageOrder.join(', ') || 'no language order'
+              }`,
+            },
+          );
+        } else if (game.action === 'discard' && game.embeddedQuestionCount > 0) {
+          discarded += game.embeddedQuestionCount;
+          await writeGameQuestionLog(
+            admin,
+            weddingId,
+            game.gameType,
+            'game_question_migration_discard',
+            {
+              actor: allowlisted.email,
+              code: game.reason ?? 'unlinked',
+              message: `Discarded ${game.embeddedQuestionCount} embedded question${
+                game.embeddedQuestionCount === 1 ? '' : 's'
+              } after owner confirmation.`,
+            },
+          );
+        }
+      }
+
+      if (plan.unknownLegacyQuestionCount > 0) {
+        discarded += plan.unknownLegacyQuestionCount;
+        await writeGameQuestionLog(
+          admin,
+          weddingId,
+          null,
+          'game_question_migration_discard',
+          {
+            actor: allowlisted.email,
+            code: 'unsupported_game_type',
+            message: `Discarded ${plan.unknownLegacyQuestionCount} embedded question${
+              plan.unknownLegacyQuestionCount === 1 ? '' : 's'
+            } from unsupported legacy game lists after owner confirmation.`,
+          },
+        );
+      }
+
+      const stripped = stripLegacyGameQuestions(cartridge);
+      const { data: roleRows } = await admin
+        .from('wedding_roles')
+        .select('role')
+        .eq('wedding_id', weddingId);
+      const roles = (roleRows ?? []).map((row: any) => row.role);
+      const normalized = normalizePublishRequest({
+        weddingId,
+        couple: wedding.couple,
+        date: wedding.date,
+        cartridge: stripped,
+        roles,
+        expectedRevision: Number(wedding.cartridge_revision ?? 0),
+        sourceMetadata: {
+          migration: 'legacy_game_questions',
+          migrated,
+          discarded,
+        },
+      });
+      if (normalized.error) return json({ error: normalized.error }, normalized.status);
+      const published = await publishCartridge({
+        admin,
+        request: normalized.request,
+        actor: allowlisted,
+        validate: validateCartridge,
+      });
+      if (!published.ok) {
+        return json(
+          {
+            error: published.error,
+            currentRevision: published.currentRevision ?? null,
+            errors: published.errors ?? undefined,
+          },
+          published.status,
+        );
+      }
+      await writeAudit(admin, allowlisted, 'game_migration', weddingId, {
+        migrated,
+        discarded,
+        cartridgeRevision: published.result?.cartridgeRevision ?? null,
+      });
+      return json({
+        ok: true,
+        migrated,
+        discarded,
+        discardedQuestions: discarded,
+        alreadyMigrated: false,
+        cartridgeRevision: published.result?.cartridgeRevision ?? null,
+        games: publicMigrationPlan(plan).games,
+      });
     }
 
     if (action === 'list_game_questions') {
