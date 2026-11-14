@@ -11,7 +11,12 @@ afterEach(() => {
   setLocale('en', { persist: false });
 });
 
-const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';
+function contactHref(prefill) {
+  const url = new URL('https://www.weselnyzabojad.pl/');
+  url.searchParams.set('prefill', prefill);
+  url.hash = 'kontakt';
+  return url.toString();
+}
 
 describe('issue #818 landing intro and contact CTA copy', () => {
   it('ships the new intro copy in every locale', () => {
@@ -62,7 +67,7 @@ describe('issue #818 landing intro and contact CTA copy', () => {
   it('keeps both CTA buttons on the contact form URL', () => {
     setLocale('fr', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));
-    const hrefs = html.split(`href="${CONTACT_URL}"`).length - 1;
+    const hrefs = html.split(`href="${contactHref(fr['landing.contact.prefill'])}"`).length - 1;
 
     expect(hrefs).toBe(2);
     expect(html).toContain('rel="noopener noreferrer"');

@@ -8,7 +8,12 @@ import { setLocale } from '../../src/i18n/index.js';
 
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
-const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';
+function contactHref(prefill) {
+  const url = new URL('https://www.weselnyzabojad.pl/');
+  url.searchParams.set('prefill', prefill);
+  url.hash = 'kontakt';
+  return url.toString();
+}
 
 afterEach(() => {
   setLocale('en', { persist: false });
@@ -48,7 +53,7 @@ describe('issue #831 landing luxury contact CTA', () => {
     const html = renderToStaticMarkup(createElement(LandingPage));
 
     expect(html.split(fr['landing.hero.cta'])).toHaveLength(3);
-    expect(html.split(`href="${CONTACT_URL}"`)).toHaveLength(3);
+    expect(html.split(`href="${contactHref(fr['landing.contact.prefill'])}"`)).toHaveLength(3);
     expect(html).toContain('rel="noopener noreferrer"');
   });
 });

@@ -3,18 +3,26 @@
 // Presents the Stage Deck product to future newlyweds and their wedding
 // vendors. The deck is included with a booked Weselny Żabojad wedding; the
 // page contains no commercial offers, no tracking and no external assets.
+import { useMemo } from 'react';
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import logo from '../assets/img/logo.png';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
 
-const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';
+const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';
 
-function ContactCta({ label, className = '' }) {
+function buildContactHref(prefill) {
+  const url = new URL(CONTACT_BASE);
+  url.searchParams.set('prefill', prefill);
+  url.hash = 'kontakt';
+  return url.toString();
+}
+
+function ContactCta({ label, href, className = '' }) {
   return (
     <a
-      href={CONTACT_URL}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       className={`group inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#D4AF37]/60 bg-[#C5A059] px-7 py-3.5 text-sm font-bold text-[#1A1A1A] shadow-lg shadow-[#C5A059]/20 transition-all duration-300 hover:bg-[#D4AF37] hover:shadow-xl hover:shadow-[#C5A059]/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8A6A2F] active:translate-y-0 active:shadow-lg motion-safe:hover:-translate-y-0.5 motion-reduce:transition-none ${className}`}
@@ -170,7 +178,11 @@ function FeatureIcon({ index }) {
 }
 
 export default function LandingPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const contactHref = useMemo(
+    () => buildContactHref(t('landing.contact.prefill')),
+    [locale, t],
+  );
   const features = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
     index,
     title: t(`landing.features.${index}.title`),
@@ -278,7 +290,7 @@ export default function LandingPage() {
             {t('landing.hero.lead')}
           </p>
           <div className="mt-7 flex flex-col items-center gap-3">
-            <ContactCta label={t('landing.hero.cta')} />
+            <ContactCta label={t('landing.hero.cta')} href={contactHref} />
             <p className="mt-1 max-w-5xl rounded-xl border border-[#C5A059]/35 bg-[#C5A059]/10 px-4 py-3 text-center text-sm font-semibold leading-relaxed text-[#1A1A1A] sm:whitespace-nowrap sm:text-base">
               {t('landing.hero.included')}
             </p>
@@ -373,7 +385,7 @@ export default function LandingPage() {
               <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#CBD5E1] sm:text-base">
                 {t('landing.footer.ctaBody')}
               </p>
-              <ContactCta label={t('landing.hero.cta')} className="mt-8" />
+              <ContactCta label={t('landing.hero.cta')} href={contactHref} className="mt-8" />
             </div>
           </div>
         </section>

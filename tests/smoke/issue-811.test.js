@@ -11,7 +11,12 @@ import { setLocale } from '../../src/i18n/index.js';
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 
-const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';
+function contactHref(prefill) {
+  const url = new URL('https://www.weselnyzabojad.pl/');
+  url.searchParams.set('prefill', prefill);
+  url.hash = 'kontakt';
+  return url.toString();
+}
 
 afterEach(() => {
   setLocale('en', { persist: false });
@@ -45,7 +50,7 @@ describe('issue #811 deck-focused landing', () => {
     expect(html).toContain('Prośby o piosenki');
     expect(html).toContain('Jeden wspólny plan');
     expect(html).toContain('Widok dla każdej roli');
-    expect(html).toContain(`href="${CONTACT_URL}"`);
+    expect(html).toContain(`href="${contactHref(pl['landing.contact.prefill'])}"`);
     expect(html).toContain('rel="noopener noreferrer"');
   });
 
@@ -84,6 +89,7 @@ describe('issue #811 deck-focused landing', () => {
     expect(landing).not.toContain('supabase');
     expect(landing).not.toMatch(/coupleProfile|bride|groom|Jennifer|Guillaume/);
     expect(landing).not.toMatch(/gtag|analytics|pixel|facebook\.net|hotjar/i);
-    expect((landing.match(/https:\/\/www\.weselnyzabojad\.pl\/#kontakt/g) ?? []).length).toBe(1);
+    expect(landing).toContain("const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';");
+    expect((landing.match(/https:\/\/www\.weselnyzabojad\.pl\//g) ?? []).length).toBe(1);
   });
 });
