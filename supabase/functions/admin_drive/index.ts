@@ -187,6 +187,7 @@ async function handleRequest(req: Request) {
           speaker_relationship: relationship || null,
           speaker_language: speakerLanguage,
           mc_language: mcLanguage,
+          speaker_access: body?.speakerAccess !== false,
           drive_doc_id: file.id,
           drive_doc_url: file.webViewLink ?? null,
           drive_doc_name: file.name,

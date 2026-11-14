@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/logo.png';
 import { JOINABLE_ROLE_IDS, ROLES, roleShort } from '../lib/roles';
-import { joinRoom } from '../lib/sync/joinRoom';
+import { joinRoom, joinSpeech } from '../lib/sync/joinRoom';
 import { useI18n } from '../i18n/useI18n';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 
+// Speaker is no longer a shared wedding role: COMPLEX speakers use their own
+// speech link and PIN (issue #926). The catalog still owns joinability.
 const JOIN_ROLES = JOINABLE_ROLE_IDS;
 
 // Production `/deck/` gate: per-role PIN validated server-side by the
@@ -13,9 +15,10 @@ const JOIN_ROLES = JOINABLE_ROLE_IDS;
 // before the server returns a role token.
 export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onToggleTheme }) {
   const { t } = useI18n();
+  const speechId = intent?.speechId ?? null;
   const [roomCode, setRoomCode] = useState(intent?.roomCode ?? '');
   const [role, setRole] = useState(
-    intent?.role && JOIN_ROLES.includes(intent.role) ? intent.role : 'mc',
+    speechId ? 'speaker' : intent?.role && JOIN_ROLES.includes(intent.role) ? intent.role : 'mc',
   );
   const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
@@ -26,9 +29,9 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
   const pinRef = useRef(null);
 
   useEffect(() => {
-    if (intent?.roomCode && intent?.role) pinRef.current?.focus();
+    if (intent?.roomCode && (intent?.role || speechId)) pinRef.current?.focus();
     else roomRef.current?.focus();
-  }, [intent?.roomCode, intent?.role]);
+  }, [intent?.roomCode, intent?.role, speechId]);
 
   const submit = async (event) => {
     event?.preventDefault();
@@ -46,7 +49,9 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
 
     setBusy(true);
     setError(null);
-    const result = await joinRoom({ roomCode: cleanRoom, role, pin });
+    const result = speechId
+      ? await joinSpeech({ roomCode: cleanRoom, speechId, pin })
+      : await joinRoom({ roomCode: cleanRoom, role, pin });
     setBusy(false);
 
     if (!result.ok) {
@@ -83,8 +88,12 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           <span className="font-heading text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-soft">
             {t('join.production')}
           </span>
-          <h1 className="mt-2 font-heading text-2xl font-bold text-ink">{t('join.title')}</h1>
-          <p className="mt-1 font-mono text-xs text-muted">{t('join.subtitle')}</p>
+          <h1 className="mt-2 font-heading text-2xl font-bold text-ink">
+            {speechId ? t('join.speechTitle') : t('join.title')}
+          </h1>
+          <p className="mt-1 font-mono text-xs text-muted">
+            {speechId ? t('join.speechSubtitle') : t('join.subtitle')}
+          </p>
         </div>
 
         <div className="mt-5">
@@ -114,37 +123,43 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
             {t('join.role')}
           </span>
-          <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('join.deviceRole')}>
-            {JOIN_ROLES.map((id) => {
-              const meta = ROLES[id];
-              const active = role === id;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => {
-                    setRole(id);
-                    setPin('');
-                    setError(null);
-                  }}
-                  className={`rounded-lg border px-2 py-2.5 text-center transition ${
-                    active
-                      ? 'border-brand-strong bg-brand/40 text-ink'
-                      : 'border-line bg-raised text-ink hover:border-line-strong'
-                  }`}
-                >
-                  <span aria-hidden="true" className="block text-lg leading-none">
-                    {meta.icon}
-                  </span>
-                  <span className="mt-1 block font-heading text-[10px] font-bold uppercase tracking-wide">
-                    {roleShort(id)}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+          {speechId ? (
+            <p className="mt-1.5 rounded-lg border border-line bg-raised px-3 py-2.5 text-center font-heading text-xs font-semibold text-ink">
+              {roleShort('speaker')}
+            </p>
+          ) : (
+            <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('join.deviceRole')}>
+              {JOIN_ROLES.filter((id) => id !== 'speaker').map((id) => {
+                const meta = ROLES[id];
+                const active = role === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="radio"
+                    aria-checked={active}
+                    onClick={() => {
+                      setRole(id);
+                      setPin('');
+                      setError(null);
+                    }}
+                    className={`rounded-lg border px-2 py-2.5 text-center transition ${
+                      active
+                        ? 'border-brand-strong bg-brand/40 text-ink'
+                        : 'border-line bg-raised text-ink hover:border-line-strong'
+                    }`}
+                  >
+                    <span aria-hidden="true" className="block text-lg leading-none">
+                      {meta.icon}
+                    </span>
+                    <span className="mt-1 block font-heading text-[10px] font-bold uppercase tracking-wide">
+                      {roleShort(id)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="mt-4">

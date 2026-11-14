@@ -414,6 +414,14 @@ export async function restoreSpeech(payload) {
   return callAdmin('restore_speech', payload);
 }
 
+export async function rotateSpeechAccess(payload) {
+  return callAdmin('rotate_speech_access', payload);
+}
+
+export async function revokeSpeechAccess(payload) {
+  return callAdmin('revoke_speech_access', payload);
+}
+
 export async function deleteSpeech(payload) {
   return callAdmin('delete_speech', payload);
 }

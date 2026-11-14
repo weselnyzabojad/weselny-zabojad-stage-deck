@@ -50,6 +50,8 @@ export function normalizeRoleSession(raw) {
   const weddingId = typeof raw.weddingId === 'string' && raw.weddingId.trim() ? raw.weddingId.trim() : null;
   const role = normalizeRole(raw.role);
   const expiresAt = normalizeExpiry(raw.expiresAt);
+  const speechId =
+    typeof raw.speechId === 'string' && raw.speechId.trim() ? raw.speechId.trim() : null;
   const roomId =
     typeof raw.roomId === 'string' && raw.roomId.trim()
       ? raw.roomId.trim()
@@ -59,7 +61,7 @@ export function normalizeRoleSession(raw) {
 
   if (!token || !weddingId || !role || !roomId || !expiresAt) return null;
 
-  return { token, weddingId, role, roomId, expiresAt };
+  return { token, weddingId, role, roomId, expiresAt, ...(speechId ? { speechId } : {}) };
 }
 
 export function isRoleSessionValid(session, now = Date.now()) {
@@ -125,9 +127,10 @@ export function parseDeckIntent(pathname = '', search = '', baseUrl = '/') {
   const role = parseIntentRole(
     (params.get('role') || (joinRoute ? '' : segments[1]) || '').trim(),
   );
+  const speechId = (params.get('speech') || '').trim() || null;
   const requirePin = params.get('phone') === 'true';
 
-  return { roomCode, role, requirePin };
+  return { roomCode, role, ...(speechId ? { speechId } : {}), requirePin };
 }
 
 export { DEFAULT_TTL_MS };

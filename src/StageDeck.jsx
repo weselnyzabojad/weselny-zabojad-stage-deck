@@ -41,6 +41,7 @@ import { buildGameClicker } from './lib/games.js';import {
   resolveSpeeches,
 } from './lib/speeches';
 import { loadSpeakerScript } from './lib/speakerCache';
+import useSpeakerSpeech from './hooks/useSpeakerSpeech';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
 import { extendMusicalSet } from './lib/musicalSet';
@@ -81,6 +82,12 @@ export default function StageDeck({
     () => ({ ...wedding, steps: filterEnabledSteps(wedding) }),
     [wedding],
   );
+  const speechAccessSession =
+    isProduction && roleSession?.speechId ? roleSession : null;
+  const speakerAccess = useSpeakerSpeech({
+    session: speechAccessSession,
+    weddingId: WEDDING.weddingId,
+  });
 
   // Venue date/timezone drive ISO migration, clock display and day rollover.
   const EVENT_DATE_ISO = resolveEventDateISO(WEDDING);
@@ -661,12 +668,13 @@ export default function StageDeck({
           <SpeakerView
             wedding={WEDDING}
             clock={driftReport.clock}
-            speechMode={speechMode}
-            speechCount={speeches.length}
+            speechMode={speechAccessSession ? 'COMPLEX' : speechMode}
+            speechCount={speechAccessSession ? 1 : speeches.length}
             accessToken={sessionValid ? roleSession?.token ?? null : null}
-            activeSpeech={speakerSpeech}
-            activeSpeechId={liveState.active_speech_id}
-            fromCache={!activeSpeech && Boolean(speakerSpeech)}
+            activeSpeech={speechAccessSession ? null : speakerSpeech}
+            activeSpeechId={speechAccessSession ? null : liveState.active_speech_id}
+            fromCache={speechAccessSession ? speakerAccess.fromCache : !activeSpeech && Boolean(speakerSpeech)}
+            speechAccess={speechAccessSession ? speakerAccess : null}
             syncStatus={displaySyncStatus}
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}

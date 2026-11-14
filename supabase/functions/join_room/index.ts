@@ -78,6 +78,8 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => null);
     const roomCode = typeof body?.roomCode === 'string' ? body.roomCode.trim() : '';
     const role = typeof body?.role === 'string' ? body.role.trim() : '';
+    const speechId =
+      typeof body?.speechId === 'string' ? body.speechId.trim().slice(0, 160) : '';
     const pin = typeof body?.pin === 'string' ? body.pin.trim() : '';
     const deviceId =
       typeof body?.deviceId === 'string' && body.deviceId.trim()
@@ -88,8 +90,16 @@ Deno.serve(async (req) => {
         ? body.deviceLabel.trim().slice(0, 120)
         : deviceId;
 
-    if (!roomCode || !ALLOWED_ROLES.has(role) || !/^\d{6}$/.test(pin)) {
+    if (
+      !roomCode ||
+      !ALLOWED_ROLES.has(role) ||
+      !/^\d{6}$/.test(pin) ||
+      (speechId !== '' && role !== 'speaker')
+    ) {
       return json({ error: 'Enter the room code and the 6-digit PIN for this role.' }, 400);
+    }
+    if (role === 'speaker' && !speechId) {
+      return json({ error: 'Use the speech link shared by the couple.' }, 403);
     }
 
     const admin = createClient(serverEnv('SUPABASE_URL'), serverEnv('SUPABASE_SERVICE_ROLE_KEY'), {
@@ -98,12 +108,15 @@ Deno.serve(async (req) => {
 
     const ipHash = await sha256Hex(clientIp(req));
     const since = new Date(Date.now() - WINDOW_MS).toISOString();
+    // Per-speech access gets its own failure bucket; a shared speaker-role bucket
+    // would let one speech lock every other speaker.
+    const rateRole = speechId ? `speaker:${speechId}` : role;
 
     const { count, error: rateError } = await admin
       .from('join_attempts')
       .select('id', { count: 'exact', head: true })
       .eq('room_code', roomCode)
-      .eq('role', role)
+      .eq('role', rateRole)
       .eq('ip_hash', ipHash)
       .eq('success', false)
       .gte('attempted_at', since);
@@ -130,25 +143,53 @@ Deno.serve(async (req) => {
       return json({ error: 'This room has ended. Ask the MC for a new share link.' }, 410);
     }
 
-    const { data: roleRow, error: roleError } = await admin
-      .from('wedding_roles')
-      .select('pin_hash')
-      .eq('wedding_id', wedding.wedding_id)
-      .eq('role', role)
-      .maybeSingle();
+    let accessRow: any = null;
+    let validPin = false;
 
-    if (roleError) throw roleError;
+    if (speechId) {
+      // COMPLEX speeches have their own PIN, independent of wedding_roles.
+      const [{ data: speech }, { data: access }] = await Promise.all([
+        admin
+          .from('speech_records')
+          .select('id, status, speaker_access')
+          .eq('wedding_id', wedding.wedding_id)
+          .eq('id', speechId)
+          .maybeSingle(),
+        admin
+          .from('speech_access')
+          .select('pin_hash, enabled, revoked_at')
+          .eq('wedding_id', wedding.wedding_id)
+          .eq('speech_id', speechId)
+          .maybeSingle(),
+      ]);
+      accessRow = access ?? null;
+      validPin =
+        Boolean(speech && speech.status === 'PUBLISHED' && speech.speaker_access) &&
+        Boolean(accessRow?.enabled && !accessRow.revoked_at && accessRow.pin_hash) &&
+        bcrypt.compareSync(pin, accessRow.pin_hash);
+    } else {
+      const { data: roleRow, error: roleError } = await admin
+        .from('wedding_roles')
+        .select('pin_hash')
+        .eq('wedding_id', wedding.wedding_id)
+        .eq('role', role)
+        .maybeSingle();
 
-    const validPin = Boolean(roleRow?.pin_hash) && bcrypt.compareSync(pin, roleRow.pin_hash);
+      if (roleError) throw roleError;
+      validPin = Boolean(roleRow?.pin_hash) && bcrypt.compareSync(pin, roleRow.pin_hash);
+    }
 
     if (!validPin) {
       await admin.from('join_attempts').insert({
         room_code: roomCode,
-        role,
+        role: rateRole,
         ip_hash: ipHash,
         success: false,
       });
-      return json({ error: 'Incorrect PIN for this role.' }, 401);
+      return json(
+        { error: speechId ? 'Incorrect PIN for this speech.' : 'Incorrect PIN for this role.' },
+        401,
+      );
     }
 
     // Successful join clears the failure window for this device/role.
@@ -156,7 +197,7 @@ Deno.serve(async (req) => {
       .from('join_attempts')
       .delete()
       .eq('room_code', roomCode)
-      .eq('role', role)
+      .eq('role', rateRole)
       .eq('ip_hash', ipHash)
       .eq('success', false);
 
@@ -178,20 +219,38 @@ Deno.serve(async (req) => {
     });
     if (sessionError) throw sessionError;
 
-    await admin.from('role_presence').upsert(
-      {
+    if (speechId) {
+      const { error: speechSessionError } = await admin.from('speech_sessions').insert({
+        jti: sessionId,
         wedding_id: wedding.wedding_id,
-        role,
+        speech_id: speechId,
+        role: 'speaker',
         device_id: deviceId,
-        session_jti: sessionId,
-        device_label: deviceLabel,
-        status: 'online',
-        current_view: role,
-        last_seen: new Date().toISOString(),
-        token_expires_at: expiresAt,
-      },
-      { onConflict: 'wedding_id,role,device_id' },
-    );
+        issued_at: new Date().toISOString(),
+        expires_at: expiresAt,
+      });
+      if (speechSessionError) throw speechSessionError;
+      await admin
+        .from('speech_access')
+        .update({ last_used_at: new Date().toISOString() })
+        .eq('wedding_id', wedding.wedding_id)
+        .eq('speech_id', speechId);
+    } else {
+      await admin.from('role_presence').upsert(
+        {
+          wedding_id: wedding.wedding_id,
+          role,
+          device_id: deviceId,
+          session_jti: sessionId,
+          device_label: deviceLabel,
+          status: 'online',
+          current_view: role,
+          last_seen: new Date().toISOString(),
+          token_expires_at: expiresAt,
+        },
+        { onConflict: 'wedding_id,role,device_id' },
+      );
+    }
 
     // ES256 is the only accepted signing path; the HS256 shared secret was
     // removed after the rotation window (#853). Fail closed when the key is
@@ -210,6 +269,7 @@ Deno.serve(async (req) => {
       wedding_id: wedding.wedding_id,
       room_id: roomId,
       app_role: role,
+      ...(speechId ? { speech_id: speechId } : {}),
     })
       .setProtectedHeader({
         alg: signingAlg,
@@ -232,6 +292,7 @@ Deno.serve(async (req) => {
       role,
       deviceId,
       expiresAt,
+      ...(speechId ? { speechId } : {}),
     });
   } catch (error) {
     console.error('join_room failed', error);

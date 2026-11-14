@@ -22,6 +22,16 @@ const STATUS_MESSAGES = {
 };
 
 export async function joinRoom({ roomCode, role, pin }) {
+  return postJoin({ roomCode, role, pin });
+}
+
+// Per-speech speaker access (issue #926). The speech id selects its own PIN and
+// yields a token scoped to that wedding + speech.
+export async function joinSpeech({ roomCode, speechId, pin }) {
+  return postJoin({ roomCode, role: 'speaker', pin, speechId });
+}
+
+async function postJoin({ roomCode, role, pin, speechId = null }) {
   const config = getSyncConfig();
   if (!config.enabled) {
     return {
@@ -45,6 +55,7 @@ export async function joinRoom({ roomCode, role, pin }) {
         roomCode,
         role,
         pin,
+        ...(speechId ? { speechId } : {}),
         deviceId: getDeviceId(),
         deviceLabel: deviceLabel(),
       }),
