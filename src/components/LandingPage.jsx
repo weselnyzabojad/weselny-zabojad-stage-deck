@@ -3,7 +3,6 @@
 // Presents the Stage Deck product to future newlyweds and their wedding
 // vendors. The deck is included with a booked Weselny Żabojad wedding; the
 // page contains no commercial offers, no tracking and no external assets.
-import { useMemo } from 'react';
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import logo from '../assets/img/logo.png';
@@ -178,11 +177,8 @@ function FeatureIcon({ index }) {
 }
 
 export default function LandingPage() {
-  const { t, locale } = useI18n();
-  const contactHref = useMemo(
-    () => buildContactHref(t('landing.contact.prefill')),
-    [locale, t],
-  );
+  const { t } = useI18n();
+  const contactHref = buildContactHref(t('landing.contact.prefill'));
   const features = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
     index,
     title: t(`landing.features.${index}.title`),
