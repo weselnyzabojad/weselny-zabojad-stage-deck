@@ -5,8 +5,10 @@ Nothing in this guide points at the production project.
 
 ## Prerequisites
 
+- Node.js 22 (matching CI and Netlify). Run `nvm use` or `fnm use`; the repo
+  ships `.nvmrc` and `package.json` declares `engines.node: ">=22 <23"`.
 - Docker Desktop (or another Docker engine) running.
-- Node.js 22 and the repository dependencies (`npm ci`).
+- The repository dependencies (`npm ci`).
 - Supabase CLI available as `npx supabase` (or install it globally).
 
 ## Start the stack

@@ -21,6 +21,9 @@ low-light stage conditions.
 
 ## Quick start
 
+Node 22 is required (matches CI and Netlify). Use `nvm use` or `fnm use` to read
+`.nvmrc`; `package.json` also declares `engines.node: ">=22 <23"`.
+
 ```sh
 npm install
 npm run dev
