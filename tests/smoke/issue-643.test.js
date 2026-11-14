@@ -34,8 +34,18 @@ describe('issue #643 speech metadata cleanup', () => {
     }
   });
 
-  it('keeps speaker, order and script after the metadata review', () => {
-    const [speech] = resolveSpeeches(json('schema/fixtures/real-jennifer-guillaume.json'));
+  it('keeps speaker, order and script for legacy read compatibility', () => {
+    const [speech] = resolveSpeeches({
+      speechMode: 'COMPLEX',
+      speeches: [
+        {
+          id: 'speech_witness',
+          speaker: { name: 'Bartek', relationship: 'Best man' },
+          order: 1,
+          script: { text: 'Drodzy Państwo…' },
+        },
+      ],
+    });
     expect(speech.speaker.name).toBeTruthy();
     expect(speech.order).toBeTruthy();
     expect(speech.script).toHaveProperty('text');
@@ -52,15 +62,11 @@ describe('issue #643 speech metadata cleanup', () => {
     expect(schema.consent.properties.confirmedAt).toBeUndefined();
   });
 
-  it('no longer maps or renders the removed fields', () => {
+  it('no longer maps embedded speech text into the cartridge', () => {
     const result = googleDocTemplateToCartridge(
       parseGoogleDocTemplate(read('schema/google-doc-template.md')),
     );
-    const [speech] = result.cartridge.speeches;
-    expect(speech).not.toHaveProperty('durationMin');
-    expect(speech).not.toHaveProperty('mic');
-    expect(speech).not.toHaveProperty('cue');
-    expect(speech).not.toHaveProperty('readFrom');
+    expect(result.cartridge).not.toHaveProperty('speeches');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.durationMin');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.mic');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.cue');
@@ -68,7 +74,17 @@ describe('issue #643 speech metadata cleanup', () => {
   });
 
   it('keeps the speaker cache and flow working without removed metadata', () => {
-    const [speech] = resolveSpeeches(json('schema/fixtures/real-jennifer-guillaume.json'));
+    const [speech] = resolveSpeeches({
+      speechMode: 'COMPLEX',
+      speeches: [
+        {
+          id: 'speech_witness',
+          speaker: { name: 'Bartek', relationship: 'Best man' },
+          order: 1,
+          script: { text: 'Drodzy Państwo…' },
+        },
+      ],
+    });
     const store = storage();
     expect(saveSpeakerScript('wedding-1', speech, store)).toBe(true);
     const cached = loadSpeakerScript('wedding-1', store);

@@ -18,16 +18,18 @@ describe('issue #671 speeches Google Doc source flags', () => {
     expect(schema.consent.properties.storeScript).toBeUndefined();
     expect(schema.consent.properties.confirmedAt).toBeUndefined();
 
-    for (const path of [
-      'schema/domains/speeches.example.json',
-      'schema/fixtures/real-jennifer-guillaume.json',
-      'schema/fixtures/valid-speeches.json',
-    ]) {
+    for (const path of ['schema/domains/speeches.example.json']) {
       for (const speech of json(path).speeches) {
         for (const field of ['time', 'language', 'delivery', 'mcIntro', 'consent']) {
           expect(speech, `${path} ${field}`).not.toHaveProperty(field);
         }
       }
+    }
+    for (const path of [
+      'schema/fixtures/real-jennifer-guillaume.json',
+      'schema/fixtures/valid-speeches.json',
+    ]) {
+      expect(json(path)).not.toHaveProperty('speeches');
     }
     expect(read('src/demo/demoWedding.js')).not.toContain('mcIntro');
   });
@@ -44,28 +46,15 @@ describe('issue #671 speeches Google Doc source flags', () => {
     expect(speeches).toContain('### Speech Script speech_witness');
   });
 
-  it('maps the required values and the separate script text', async () => {
+  it('keeps SPEECHES out of the published cartridge', async () => {
     const { cartridge, warnings } = parse();
-    const [speech] = cartridge.speeches;
 
-    expect(speech).toMatchObject({
-      id: 'speech_witness',
-      speaker: { name: 'Bartek', relationship: 'Best man' },
-      order: 1,
-      script: { format: 'PLAIN', ready: true, source: 'GOOGLE_DOC' },
-    });
-    expect(speech.script.text).toContain('Drodzy');
-    expect(speech).not.toHaveProperty('time');
-    expect(speech).not.toHaveProperty('language');
-    expect(speech).not.toHaveProperty('delivery');
-    expect(speech).not.toHaveProperty('consent');
-    expect(speech).not.toHaveProperty('visibleToRoles');
-    expect(speech).not.toHaveProperty('mcIntro');
+    expect(cartridge).not.toHaveProperty('speeches');
     expect(warnings).toEqual([]);
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('warns and skips a row missing a required Doc value', () => {
+  it('does not reintroduce speech rows or warnings into the cartridge', () => {
     const result = parse(
       template.replace(
         '| speech_witness | 1 | Bartek | Best man |',
@@ -73,7 +62,7 @@ describe('issue #671 speeches Google Doc source flags', () => {
       ),
     );
 
-    expect(result.warnings).toContain('SPEECHES row skipped: missing Speaker');
-    expect(result.cartridge.speeches).toEqual([]);
+    expect(result.warnings).not.toContain('SPEECHES row skipped: missing Speaker');
+    expect(result.cartridge).not.toHaveProperty('speeches');
   });
 });

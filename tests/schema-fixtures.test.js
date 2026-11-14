@@ -20,7 +20,6 @@ const EXPECTED_INVALID_REASONS = {
   'invalid-music-window.json': 'requestWindow.end must be after start',
   'invalid-oczepiny-anchor.json': 'MIDNIGHT Oczepiny requires an anchorId or an oczepiny step',
   'invalid-song-step-ref.json': 'unknown step id',
-  'invalid-speech-order.json': 'duplicate speech order',
   'invalid-sync-pin.json': 'must match pattern',
   'invalid-unknown-step-ref.json': 'unknown step id',
   'invalid-unknown-top-level.json': 'must NOT have additional properties',
