@@ -66,6 +66,6 @@ describe('issue #805 public landing route', () => {
     expect(landing).not.toContain('supabase');
     expect(landing).not.toContain('roleSession');
     expect(landing).not.toContain('cartridge');
-    expect(landing).toContain('href="/join"');
+    expect(landing).not.toContain('href="/join"');
   });
 });
