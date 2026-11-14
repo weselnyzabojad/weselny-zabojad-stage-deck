@@ -89,7 +89,7 @@ describe('issue #327 mandatory update popup role visibility', () => {
   });
 
   it('never exposes restricted data to other roles', () => {
-    for (const role of ['dj_standard', 'photo1', 'photo2', 'video', 'speaker', 'venue_manager']) {
+    for (const role of ['photo1', 'photo2', 'video', 'speaker', 'venue_manager']) {
       expect(render(role)).toBe('');
     }
   });

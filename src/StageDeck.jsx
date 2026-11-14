@@ -511,7 +511,7 @@ export default function StageDeck({
     );
   }
 
-  if (currentRole === "dj" || currentRole === "dj_standard" || devDjPreviewId) {
+  if (currentRole === 'dj' || devDjPreviewId) {
     return (
       <>
         <AppErrorBoundary
@@ -531,9 +531,7 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
-            servicePackage={
-              currentRole === 'dj_standard' ? 'HOST_AND_DJ_STANDARD' : djViewWedding.servicePackage
-            }
+            servicePackage={djViewWedding.servicePackage}
             role="dj"
             theme={theme}
             onToggleTheme={toggleTheme}

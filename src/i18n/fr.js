@@ -42,6 +42,7 @@ const fr = {
   'roles.menuAria': "Changer le rôle de l'appareil",
   'roles.role': 'Rôle : {short}',
   'roles.fixed': 'Rôle fixé sur cet appareil',
+  'roles.photoShort': 'Photo',
 
   'children.expectedBadge': 'Enfants attendus',
   'children.notExpectedBadge': 'Enfants non attendus',

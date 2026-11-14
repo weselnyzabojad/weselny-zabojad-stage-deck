@@ -8,7 +8,6 @@ import { DEV_VIEW_ROLES } from '../lib/viewRoles';
 const LABELS = {
   mc: 'MC',
   dj: 'DJ',
-  dj_standard: 'DJ Std',
   dj_mark: 'DJ Mark',
   dj_szymoniak: 'DJ Szymoniak',
   photo1: 'Photo 1',
