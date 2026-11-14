@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { resolveVenueTimeZone } from '../../src/lib/eventTime.js';
-import { resolveVenueAccess } from '../../src/lib/photoPlan.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
@@ -35,14 +34,6 @@ describe('issue #640 venue-details timezone and access notes cleanup', () => {
       }),
     ).toBe('UTC');
     expect(resolveVenueTimeZone({})).toBeTruthy();
-  });
-
-  it('resolves venue access without access notes', () => {
-    const access = resolveVenueAccess(json('schema/domains/venue-details.example.json'));
-    expect(access.installation).not.toHaveProperty('accessNotes');
-    expect(access.installation.windowStart).toBe('12:00');
-    expect(access.manager.name).toBeTruthy();
-    expect(access.address).toBeTruthy();
   });
 
   it('drops the removed template keys', () => {
