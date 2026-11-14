@@ -3388,7 +3388,6 @@ to extract into dedicated domain schemas.
 | Domain | Schema file | Cartridge path | Issue |
 | --- | --- | --- | --- |
 | steps | `schema/domains/steps.json` | `steps` | [#590](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/590) |
-| speeches | `schema/domains/speeches.json` | `speeches` | [#591](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/591) |
 | speechMode | `schema/domains/speeches.json` (shared file) | `speechMode` | [#593](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/593) |
 
 Notes:
@@ -3396,12 +3395,11 @@ Notes:
 - `steps` is required (`minItems: 1`). The full step catalogue moves to
   `schema/domains/steps.example.json`; `wedding-cartridge.example.json` keeps
   only a minimal valid steps sample so it still passes `validate:schema`.
-- `speeches` is optional and is removed from the cartridge example. Each
-  speech may also carry `script.sourceDoc` (link + Drive metadata); see §17.6.
-  Each speaker may carry an admin-managed `email`; see §17.7.
-- `speechMode` stays a top-level cartridge field (sibling of `speeches`); only
-  schema ownership moves into the speeches domain. [#593](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/593)
-  is blocked by #591.
+- The published cartridge carries only `speechMode`. Speech records, scripts,
+  Docs and access live in the dedicated encrypted bundle; see §17.72.
+- The legacy `$defs/speech` definitions remain only as the owner-triggered
+  migration input shape. Runtime code no longer resolves cartridge speeches, and
+  the admin migration strips them before reviving the cartridge.
 - Both domain schemas are self-contained and registered with the browser, Node
   and Edge validators, with the byte-identical Edge schema copy mirrored.
 
@@ -3491,35 +3489,21 @@ The schema field lives in the speeches domain. Shipped in
 the admin speeches panel edits the address, normalization keeps it, and the
 speaker cache omits it.
 
-### 17.8 Encrypted speech redactions (decision, 2026-11-09)
+### 17.8 Encrypted speech redactions (superseded 2026-11-14)
 
-Speech text can contain personal data. The chosen model is **tokenized selective
-encryption with a speaker-only unlock**:
+The original tokenized redaction model (`{{secret}}` markers, `script.redactions[]`,
+`parse_speech` and the speaker unlock/reveal UI) was replaced by the dedicated
+whole-script speech bundle in §17.72. The old marker parser, token renderer,
+runtime resolver, speaker cache and redaction schema fields were removed in
+[#929](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/929).
+Existing redaction ciphertext is decrypted only during the owner-triggered
+migration and merged into the new encrypted plaintext.
 
-- Doc authors mark sensitive spans with `{{secret}}...{{/secret}}`.
-- The server import replaces each span with `{{secret:<id>}}` and stores the value
-  only as AES-256-GCM ciphertext in `script.redactions[]`.
-- Per-speech keys are derived with HKDF-SHA256 from a
-  `SPEECH_SECRET_MASTER_KEY` Edge secret. The key never ships in the cartridge.
-- A role-authorized Edge function returns the key only to a valid `speaker` role
-  JWT for the matching wedding. The browser imports it as a non-exportable
-  `CryptoKey` and caches it in IndexedDB, so reveal and offline decryption work
-  after one online unlock.
-- `SpeakerView` renders tokens as masked chips with Unlock / Reveal / Hide. MC
-  and other roles always see masked tokens and never receive keys.
-- The published cartridge, logs and speaker cache contain no plaintext secrets
-  or key material.
+`SPEECH_SECRET_MASTER_KEY` remains the master secret for HKDF-derived
+per-speech AES-256-GCM keys. `reveal_speech_key` is retained only for older
+deployments; the current speaker path uses `speech_bundle` and per-speech
+sessions.
 
-This is not zero-knowledge: the Edge Function and admin owner (AAL2) are trusted.
-A passphrase-based zero-knowledge variant can be added later on the same
-redaction schema without changing the cartridge shape.
-
-Shipped in
-[#602](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/602):
-`parse_speech` runs in `admin_drive`, `reveal_speech_key` returns a per-speech
-key only to a valid speaker role session, and `SpeakerView` decrypts locally with
-a non-exportable `CryptoKey` cached in IndexedDB. Set the
-`SPEECH_SECRET_MASTER_KEY` Edge secret and deploy `reveal_speech_key`.
 
 ### 17.9 DJ VIP DJ-set countdown (decision, 2026-11-09)
 
@@ -6199,13 +6183,19 @@ or cartridge change. Copy lives in `src/i18n/{pl,en,fr}.js` under
 
 **Tracking.** [#921](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/921).
 
-### 17.72 Dedicated speech cartridge and bilingual MC support (decision, 2026-11-14)
+### 17.72 Dedicated speech cartridge and bilingual MC support (implemented, 2026-11-14)
 
 Speech scripts leave the wedding cartridge. A wedding keeps only `speechMode`;
 all speech records, metadata, scripts and access move into a dedicated encrypted
 speech bundle per wedding, managed by the owner from admin. The driver is
 privacy: Speaker sees only its own speech, MC sees all speeches, and DJ,
 Photographer and Venue Manager see names and relationships but never text.
+
+**Status.** Implemented through
+[#923](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/923)–[#929](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/929).
+Published cartridges carry only `speechMode`; legacy speeches are migrated or
+explicitly discarded by the owner; the old redaction, resolver and speaker-cache
+paths are gone.
 
 **Google Doc contract.** One Google Doc per COMPLEX speech, created by the app
 in `secrets/<wedding>/speeches/` when the speech record is added. The Doc is

@@ -277,9 +277,10 @@ and a must-play entry.
 
 ### SPEECHES
 
-The table maps to `speeches[]`. Each `### Speech Script <speech_id>` block maps
-the fenced text to `speeches[].script.text` with `source: "GOOGLE_DOC"`. Missing
-scripts are allowed unless `speechMode` requires them.
+The main wedding Doc no longer maps a `speeches[]` array. Speech records and
+scripts live in the dedicated encrypted bundle and are created from separate
+per-speech Docs (`SPEAKER [xx]` / `MC [yy]` labels). The wedding Doc supplies only
+the wedding-level `speechMode` when present.
 
 ### CAKE / GAMES / KITCHEN
 
