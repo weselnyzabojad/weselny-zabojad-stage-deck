@@ -25,7 +25,7 @@ describe('issue #466 provider role provisioning', () => {
 
   it('maps provider categories to stage roles and keeps other contact-only', () => {
     const api = read('supabase/functions/admin_api/index.ts');
-    expect(api).toContain("const PROVIDER_ROLE_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager'])");
+    expect(api).toContain("const PROVIDER_ROLE_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc'])");
     expect(api).toContain('function providerRole(category: string)');
     expect(api).toContain('async function ensureProviderRole');
     expect(api).toContain("return PROVIDER_ROLE_CATEGORIES.has(category) ? category : null");

@@ -14,6 +14,8 @@ const CATEGORIES = [
   ['photo2', 'Photographer 2'],
   ['video', 'Cameraman'],
   ['venue_manager', 'Venue manager'],
+  ['mc', 'MC'],
+  ['dj_mc', 'DJ + MC'],
   ['other', 'Other'],
 ];
 
@@ -153,6 +155,8 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
     photo2: 'photo2',
     video: 'video',
     venue_manager: 'venue_manager',
+    mc: 'mc',
+    dj_mc: 'dj_mc',
   };
 
   return (

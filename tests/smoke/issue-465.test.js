@@ -13,11 +13,14 @@ describe('issue #465 wedding service provider registry', () => {
     const schema = read('supabase/schema.sql');
     for (const sql of [migration, schema]) {
       expect(sql).toContain('create table if not exists public.wedding_service_providers');
-      expect(sql).toContain("category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'other')");
       expect(sql).toContain('wedding_service_providers_role_unique_idx');
       expect(sql).toContain('wedding_service_providers_other_function');
       expect(sql).toContain('revoke all on public.wedding_service_providers from anon, authenticated');
     }
+    expect(schema).toContain("category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other')");
+    expect(read('supabase/migrations/202611140003_admin_role_provisioning.sql')).toContain(
+      "'venue_manager', 'mc', 'dj_mc'",
+    );
   });
 
   it('implements validated, audited admin_api provider actions', () => {
@@ -65,7 +68,7 @@ describe('issue #465 wedding service provider registry', () => {
     expect(source).toContain('Deactivate');
     expect(source).toContain('Delete');
     expect(source).toContain('readOnly');
-    for (const category of ['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'other']) {
+    for (const category of ['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other']) {
       expect(source).toContain(`['${category}',`);
     }
   });
