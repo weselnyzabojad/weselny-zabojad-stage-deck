@@ -48,7 +48,7 @@ export function diffCartridges(current, next, liveState = null) {
     'coupleProfile',
     'date',
     'syncPin',
-    'hostingMode',
+    'servicePackage',
     'servicePackage',
   ]);
   const steps = compareLists(currentCartridge.steps, nextCartridge.steps);

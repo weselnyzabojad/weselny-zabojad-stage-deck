@@ -5963,3 +5963,26 @@ and copy in `src/i18n/{fr,pl,en}.js`.
 **Open questions.** None.
 
 **Tracking.** [#896](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/896).
+
+### 17.67 Service-package contract implemented in v1.1 (decision, 2026-11-14)
+
+Resolve #881 without creating a half-frozen v1.2: the canonical field is
+`servicePackage` in `schema/wedding-schema-v1.1.json`, renamed in place because
+production has zero weddings and `#77` (v1.2 freeze) is closed. The field
+accepts only `HOST_ONLY`, `DJ_MC` and `HOST_AND_DJ_VIP`; legacy variants are
+rejected by validation and never collapsed into another package. The parser
+writes the single top-level value, the duplicate
+`extensions.servicePackage` is removed, and the template, field map, fixtures,
+schema copy and Edge schema copy are aligned.
+
+**Compatibility.** A read-only legacy fallback in `resolveServicePackage` still
+understands `hostingMode` for older cached/local cartridges; it is not part of
+the schema or parser output.
+
+**Out of scope.** The DJ Standard visibility fix (#882) and the `dj_mc`
+role/view (#880).
+
+**Open questions.** None.
+
+**Tracking.** [#881](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/881).
+

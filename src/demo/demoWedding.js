@@ -78,7 +78,7 @@ export const DEMO_WEDDING = {
   date: "20.08.2026",
   syncPin: "2008",
   role: "MC",
-  hostingMode: "HOST_AND_DJ",
+  servicePackage: "HOST_AND_DJ_VIP",
   driftMinutes: 25,
   coupleProfile: {
     bride: { firstName: "Jennifer", nationalities: ["FR"] },

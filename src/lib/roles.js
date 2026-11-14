@@ -122,8 +122,8 @@ export function roleBlurb(id) {
 }
 
 // HOST_ONLY weddings have no DJ booth: hide that role from the switcher.
-export function availableRoleIds(hostingMode) {
-  if (hostingMode === 'HOST_ONLY') return ROLE_ORDER.filter((id) => id !== 'dj');
+export function availableRoleIds(servicePackage) {
+  if (servicePackage === 'HOST_ONLY') return ROLE_ORDER.filter((id) => id !== 'dj');
   return ROLE_ORDER;
 }
 

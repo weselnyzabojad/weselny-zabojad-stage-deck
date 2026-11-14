@@ -25,7 +25,7 @@ describe('issue #467 hardcoded VIP DJ registry', () => {
 
   it('defaults the VIP/MC+DJ package to DJ Mark only', () => {
     expect(defaultVipDjId('HOST_AND_DJ_VIP')).toBe('dj_mark');
-    expect(defaultVipDjId('MC_DJ')).toBe('dj_mark');
+    expect(defaultVipDjId('MC_DJ')).toBe(null);
     expect(defaultVipDjId('HOST_AND_DJ_STANDARD')).toBe(null);
     expect(defaultVipDjId('HOST_ONLY')).toBe(null);
   });

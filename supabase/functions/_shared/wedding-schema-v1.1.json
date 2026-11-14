@@ -11,7 +11,7 @@
     "coupleProfile",
     "date",
     "syncPin",
-    "hostingMode",
+    "servicePackage",
     "steps"
   ],
   "properties": {
@@ -43,14 +43,14 @@
       ],
       "description": "Optional legacy display hint. Device role is normally a per-device UI choice, not cartridge data."
     },
-    "hostingMode": {
+    "servicePackage": {
       "type": "string",
       "enum": [
-        "HOST_AND_DJ",
+        "HOST_AND_DJ_VIP",
         "HOST_ONLY",
         "DJ_MC"
       ],
-      "description": "HOST_AND_DJ is the DJ VIP package with DJ cues, stage pings and the DJ Booth role; HOST_ONLY is DJ Standard and hides them; DJ_MC combines the DJ and MC roles in one person."
+      "description": "HOST_AND_DJ_VIP is the DJ VIP package with DJ cues, stage pings and the DJ Booth role; HOST_ONLY is DJ Standard and hides them; DJ_MC combines the DJ and MC roles in one person."
     },
     "driftMinutes": {
       "type": "integer",

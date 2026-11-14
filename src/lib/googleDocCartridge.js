@@ -62,11 +62,12 @@ function slug(value, fallback = 'item') {
   );
 }
 
-function normalizeHostingMode(value) {
+const SERVICE_PACKAGES = new Set(['HOST_ONLY', 'DJ_MC', 'HOST_AND_DJ_VIP']);
+
+function normalizeServicePackage(value) {
   const clean = text(value)?.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  if (clean === 'HOST_ONLY') return 'HOST_ONLY';
-  if (clean === 'DJ_MC' || clean === 'DJMC') return 'DJ_MC';
-  return 'HOST_AND_DJ';
+  if (clean === 'DJMC') return 'DJ_MC';
+  return SERVICE_PACKAGES.has(clean) ? clean : null;
 }
 
 function stripUndefined(value) {
@@ -843,7 +844,13 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const date = text(kv(event, 'Date'));
   const dateISO = text(kv(event, 'Date ISO'));
   const syncPin = text(kv(event, 'Sync PIN'));
-  const hostingMode = text(kv(event, 'Service package')) ?? 'HOST_ONLY';
+  const servicePackageSource = text(kv(event, 'Service package'));
+  const servicePackage = normalizeServicePackage(servicePackageSource);
+  if (!servicePackage) {
+    errors.push(
+      'EVENT: Service package must be one of HOST_ONLY, DJ_MC or HOST_AND_DJ_VIP',
+    );
+  }
   if (!weddingId) errors.push('EVENT: Wedding ID is required');
   if (!brideFirstName) errors.push('COUPLE IDENTITY: Bride first name is required');
   if (!groomFirstName) errors.push('COUPLE IDENTITY: Groom first name is required');
@@ -997,7 +1004,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     ...(extensionJson && typeof extensionJson === 'object' ? extensionJson : {}),
     stepAnchorIds: anchorIds,
     dateISO,
-    servicePackage: text(kv(event, 'Service package')),
     ...(languagesSource
       ? {
           languages: {
@@ -1043,7 +1049,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     },
     date,
     syncPin,
-    hostingMode: normalizeHostingMode(hostingMode),
+    servicePackage,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),

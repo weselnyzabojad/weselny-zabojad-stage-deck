@@ -7,7 +7,7 @@ export const VIP_DJS = [
     phone: 'TODO_OWNER_PHONE',
     instagram: 'TODO_OWNER_INSTAGRAM',
     tier: 'VIP',
-    defaultForPackage: 'MC_DJ',
+    defaultForPackage: 'HOST_AND_DJ_VIP',
   },
   {
     id: 'dj_szymoniak',
@@ -32,5 +32,5 @@ export function vipDjById(id) {
 // Only the VIP/MC+DJ package defaults to DJ Mark. A Standard package stays
 // Standard unless the admin explicitly assigns a VIP DJ.
 export function defaultVipDjId(servicePackage) {
-  return ['HOST_AND_DJ_VIP', 'MC_DJ'].includes(servicePackage) ? 'dj_mark' : null;
+  return servicePackage === 'HOST_AND_DJ_VIP' ? 'dj_mark' : null;
 }
