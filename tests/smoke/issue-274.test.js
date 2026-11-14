@@ -1,13 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ROLES } from '../../src/lib/roles.js';
+import { ROLE_IDS } from '../../src/admin/adminUtils.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #274 Venue Manager role', () => {
   it('registers the role in roles, admin and join', () => {
     expect(ROLES.venue_manager).toBeTruthy();
-    expect(read('src/admin/adminUtils.js')).toContain("'venue_manager'");
+    expect(ROLE_IDS).toContain('venue_manager');
     expect(read('supabase/functions/join_room/index.ts')).toContain("'venue_manager'");
   });
 

@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/logo.png';
-import { ROLES, roleShort } from '../lib/roles';
+import { JOINABLE_ROLE_IDS, ROLES, roleShort } from '../lib/roles';
 import { joinRoom } from '../lib/sync/joinRoom';
 import { useI18n } from '../i18n/useI18n';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 
-const JOIN_ROLES = ['mc', 'dj', 'photo1', 'speaker'];
+const JOIN_ROLES = JOINABLE_ROLE_IDS;
 
 // Production `/deck/` gate: per-role PIN validated server-side by the
 // `join_room` Edge Function. No couple names or cartridge data are rendered

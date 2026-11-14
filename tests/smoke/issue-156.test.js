@@ -36,7 +36,7 @@ describe('issue #156 Open on phone QR popup', () => {
         roomCode: null,
         role: 'photo',
       }),
-    ).toBe('https://www.weselnyzabojad.pl/deck/?role=photo&phone=true');
+    ).toBe('https://www.weselnyzabojad.pl/deck/?role=photo1&phone=true');
   });
 
   it('renders no button for DJ Standard or pocket', () => {

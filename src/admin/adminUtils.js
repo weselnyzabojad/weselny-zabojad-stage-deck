@@ -1,5 +1,6 @@
 // Pure helpers for the owner admin panel (issue #76). Keeping these free of
 // React/Supabase makes the session, presence and QR rules testable offline.
+import { ROLE_ORDER } from '../lib/roles.js';
 
 export const ADMIN_PATH = '/admin';
 export const LEGACY_ADMIN_PATH = '/deck/admin';
@@ -9,7 +10,7 @@ export const ADMIN_ABSOLUTE_MS = 8 * 60 * 60 * 1000;
 export const ADMIN_WARNING_MS = 5 * 60 * 1000;
 export const MFA_REAUTH_WINDOW_MS = 5 * 60 * 1000;
 
-export const ROLE_IDS = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker'];
+export const ROLE_IDS = [...ROLE_ORDER];
 
 export function isAdminPath(pathname = '') {
   const normalized = String(pathname).replace(/\/+$/, '') || '/';

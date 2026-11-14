@@ -23,7 +23,7 @@ describe('issue #875 canonical role catalog', () => {
 
   it('removes photo from every runtime join/publish list', () => {
     expect(read('src/components/RoleJoinScreen.jsx')).toContain(
-      "const JOIN_ROLES = ['mc', 'dj', 'photo1', 'speaker'];",
+      'const JOIN_ROLES = JOINABLE_ROLE_IDS;',
     );
     expect(read('supabase/functions/_shared/adminPublish.js')).toContain(
       "export const ALLOWED_ROLES = ['mc', 'dj', 'speaker'];",
