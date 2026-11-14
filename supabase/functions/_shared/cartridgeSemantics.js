@@ -226,6 +226,7 @@ export function sanitizeCartridge(cartridge) {
   delete clean.venueDetails;
   migrateCeremonyGamesWishes(clean);
   migrateMandatorySteps(clean);
+  delete clean.speeches;
   for (const field of DEPRECATED_TOP_LEVEL_FIELDS) delete clean[field];
 
   for (const step of Array.isArray(clean.steps) ? clean.steps : []) {

@@ -141,6 +141,7 @@ export function sanitizeCartridge(cartridge) {
   delete clean.venueLogistics;
   delete clean.venueDetails;
   migrateCeremonyGamesWishes(clean);
+  delete clean.speeches;
   if (clean.mandatorySteps && Array.isArray(clean.steps)) {
     clean.steps = applyMandatorySettings(
       { steps: clean.steps },

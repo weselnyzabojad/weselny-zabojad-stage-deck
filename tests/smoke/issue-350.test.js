@@ -62,9 +62,8 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(result.cartridge.musicPolicy.doNotPlay.length).toBe(1);
   });
 
-  it('maps speeches, media, photo and todos', () => {
-    expect(result.cartridge.speeches[0].id).toBe('speech_witness');
-    expect(result.cartridge.speeches[0].script.text).toContain('Drodzy');
+  it('drops embedded speeches and maps media, photo and todos', () => {
+    expect(result.cartridge).not.toHaveProperty('speeches');
     expect(result.cartridge.mediaTeam).toHaveLength(2);
     expect(result.cartridge.photoPlan.groupPhotos.groups.map((group) => group.id)).toEqual([
       'bride_family',

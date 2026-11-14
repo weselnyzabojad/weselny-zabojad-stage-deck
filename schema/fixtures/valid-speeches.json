@@ -53,40 +53,5 @@
       }
     }
   ],
-  "speechMode": "COMPLEX",
-  "speeches": [
-    {
-      "id": "speech_witness",
-      "mode": "COMPLEX",
-      "speaker": {
-        "name": "Bartek",
-        "relationship": "Best man"
-      },
-      "order": 1,
-      "script": {
-        "text": "Dobry wieczor.",
-        "format": "PLAIN",
-        "ready": true,
-        "source": "GOOGLE_DOC"
-      },
-      "visibleToRoles": [
-        "mc",
-        "speaker"
-      ]
-    },
-    {
-      "id": "speech_father",
-      "mode": "LIGHT",
-      "speaker": {
-        "name": "Pere de Guillaume"
-      },
-      "order": 2,
-      "script": {
-        "text": "",
-        "format": "PLAIN",
-        "ready": false,
-        "source": "GOOGLE_DOC"
-      }
-    }
-  ]
+  "speechMode": "COMPLEX"
 }

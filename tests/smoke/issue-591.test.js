@@ -11,10 +11,11 @@ describe('issue #591 speeches domain schema', () => {
     expect(ajv.compile(json('schema/domains/speeches.json'))(json('schema/domains/speeches.example.json'))).toBe(true);
   });
 
-  it('references the domain and removes the inline speech def', () => {
+  it('keeps speechMode and removes embedded speeches from the cartridge schema', () => {
     const schema = json('schema/wedding-schema-v1.1.json');
-    expect(schema.properties.speeches.$ref).toBe(
-      'https://weselnyzabojad.example/schemas/domains/speeches.json#/properties/speeches',
+    expect(schema.properties.speeches).toBeUndefined();
+    expect(schema.properties.speechMode.$ref).toBe(
+      'https://weselnyzabojad.example/schemas/domains/speeches.json#/properties/speechMode',
     );
     expect(schema.$defs.speech).toBeUndefined();
   });
