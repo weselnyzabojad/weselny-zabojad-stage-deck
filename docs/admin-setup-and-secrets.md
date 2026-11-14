@@ -183,7 +183,11 @@ Repeat for `admin_drive`. A `404` means the function is not deployed.
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
 5. Share the wedding root folder with the service-account email.
-6. Root folder:
+6. Grant only the Drive scope needed to create/rename speech Docs: the
+   `https://www.googleapis.com/auth/drive.file` scope for files the service
+   account creates or opens, plus read access to the wedding tree. Do not grant
+   full `drive` scope unless an existing deployment already requires it.
+7. Root folder:
 
 ```text
 1Q7IVT0GNiLztKQE8l4eCDCRw-px1qheh

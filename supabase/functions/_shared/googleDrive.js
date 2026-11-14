@@ -420,6 +420,91 @@ export function createGoogleDriveConnector({
     };
   }
 
+  async function createFolder({ parentId, name }) {
+    const parent = typeof parentId === 'string' ? parentId.trim() : '';
+    const folderName = typeof name === 'string' ? name.trim() : '';
+    if (!parent) throw createDriveError('drive_invalid_request', 'A parent folder id is required.');
+    if (!folderName) throw createDriveError('drive_invalid_request', 'A folder name is required.');
+    const existing = await listChildren({ parentId: parent, name: folderName });
+    if (existing.files[0]) return existing.files[0];
+    const response = await authorizedRequest(`${filesEndpoint}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: folderName,
+        mimeType: DRIVE_FOLDER_MIME_TYPE,
+        parents: [parent],
+      }),
+    });
+    return sanitizedMetadata(await readJson(response));
+  }
+
+  async function ensureSpeechFolder({ weddingFolderId, segments = ['secrets', 'speeches'] }) {
+    let parent = typeof weddingFolderId === 'string' ? weddingFolderId.trim() : '';
+    if (!parent) throw createDriveError('drive_invalid_request', 'A wedding folder id is required.');
+    const created = [];
+    for (const segment of segments) {
+      const folder = await createFolder({ parentId: parent, name: segment });
+      created.push(folder);
+      parent = folder.id;
+    }
+    return { folder: created[created.length - 1], folders: created };
+  }
+
+  async function createGoogleDoc({ parentId, name, text }) {
+    const parent = typeof parentId === 'string' ? parentId.trim() : '';
+    const fileName = typeof name === 'string' ? name.trim() : '';
+    if (!parent) throw createDriveError('drive_invalid_request', 'A parent folder id is required.');
+    if (!fileName) throw createDriveError('drive_invalid_request', 'A file name is required.');
+    const boundary = `stage-deck-${crypto.randomUUID()}`;
+    const metadata = JSON.stringify({
+      name: fileName,
+      mimeType: DRIVE_DOC_MIME_TYPE,
+      parents: [parent],
+    });
+    const body = [
+      `--${boundary}`,
+      'Content-Type: application/json; charset=UTF-8',
+      '',
+      metadata,
+      `--${boundary}`,
+      'Content-Type: text/plain; charset=UTF-8',
+      '',
+      String(text ?? ''),
+      `--${boundary}--`,
+      '',
+    ].join('\r\n');
+    const endpoint = filesEndpoint.replace(
+      'https://www.googleapis.com/drive/v3/files',
+      'https://www.googleapis.com/upload/drive/v3/files',
+    );
+    const response = await authorizedRequest(
+      `${endpoint}?uploadType=multipart&fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body,
+      },
+    );
+    return sanitizedMetadata(await readJson(response));
+  }
+
+  async function renameFile({ fileId, name }) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    const fileName = typeof name === 'string' ? name.trim() : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    if (!fileName) throw createDriveError('drive_invalid_request', 'A file name is required.');
+    const response = await authorizedRequest(
+      `${filesEndpoint}/${encodeURIComponent(id)}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: fileName }),
+      },
+    );
+    return sanitizedMetadata(await readJson(response));
+  }
+
   async function readSource(fileId, { maxBytes = MAX_SOURCE_BYTES } = {}) {
     const file = await getFileMetadata(fileId);
     const limit = Math.max(1, Number(maxBytes) || MAX_SOURCE_BYTES);
@@ -495,6 +580,10 @@ export function createGoogleDriveConnector({
     getFileMetadata,
     listFiles,
     listChildren,
+    createFolder,
+    ensureSpeechFolder,
+    createGoogleDoc,
+    renameFile,
     readSource,
     isConfigured: Boolean(clientEmail && privateKey),
   };
