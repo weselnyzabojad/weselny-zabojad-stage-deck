@@ -6199,4 +6199,126 @@ or cartridge change. Copy lives in `src/i18n/{pl,en,fr}.js` under
 
 **Tracking.** [#921](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/921).
 
+### 17.72 Dedicated speech cartridge and bilingual MC support (decision, 2026-11-14)
+
+Speech scripts leave the wedding cartridge. A wedding keeps only `speechMode`;
+all speech records, metadata, scripts and access move into a dedicated encrypted
+speech bundle per wedding, managed by the owner from admin. The driver is
+privacy: Speaker sees only its own speech, MC sees all speeches, and DJ,
+Photographer and Venue Manager see names and relationships but never text.
+
+**Google Doc contract.** One Google Doc per COMPLEX speech, created by the app
+in `secrets/<wedding>/speeches/` when the speech record is added. The Doc is
+private and lives in a folder the owner can access, so the owner shares it
+manually. File name: `<order> - <speaker name> - <relationship>`, auto-renamed
+when order, name or relationship changes. Labels are language-neutral:
+`SPEAKER [xx]` and `MC [yy]`. COMPLEX alternates speaker paragraph and manually
+written MC translation; translation is never automated. LIGHT creates no Docs
+and no speaker role. No schema/parser path reads scripts from the main wedding
+Doc.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Wedding cartridge / schema | Only `speechMode`; no speech names, count, order, text or redactions |
+| Admin | Mode-aware speech manager: add/edit/reorder/delete, create/share Doc, parse progress and logs, plaintext and role previews, publish, history/restore, legacy migration |
+| Speaker | Own speech only, per-speech link/PIN/QR, bilingual with source primary and translation secondary, auto-preload offline |
+| MC | All speeches, list plus full-screen reader, translation primary and source secondary, Start/End and edit lock |
+| DJ / Photographer / Venue Manager | Mode chip plus expandable names and relationships; no text, no live badge |
+| OFF / LIGHT | OFF hides and revokes; LIGHT keeps metadata only, no Docs, no scripts, no speaker role |
+
+**Mode contract.**
+
+| Mode | Records | Google Docs | Speaker access | Script |
+| --- | --- | --- | --- | --- |
+| `OFF` | hidden | no access | none, links revoked | none |
+| `LIGHT` | metadata only | none | none | none; MC sees names and improvises |
+| `COMPLEX` | full | one per speech | per-speech link/PIN/QR | bilingual, encrypted |
+
+**Speech workflow.**
+
+1. Owner adds a COMPLEX speech: name, relationship, order, speaker language,
+   MC language and speaker-access switch (default on). Languages are required
+   upfront and locked once the Doc exists. Same-language pairs are rejected.
+2. The app creates the record and the Doc together in
+   `secrets/<wedding>/speeches/`.
+3. Owner shares the Doc manually; the MC fills alternating source/translation
+   paragraphs.
+4. Owner ticks "Doc ready" and parses. Progress covers fetch, parse, validate
+   and encrypt; logs stay admin-only.
+5. Empty text, missing speaker details, missing translation pairs, invalid or
+   duplicate order, same-language pairs and mode/record mismatches block that
+   speech. The invalid draft is deleted, the previous revision stays live and
+   the error is logged.
+6. Valid speeches publish after an explicit preview. Invalid speeches never
+   block the valid ones.
+7. Full revision history supports restore before the event and after it ends,
+   but never while a speech is live.
+
+**Live contract.** Only the MC starts and ends a speech. One speech can be live
+at a time; starting another auto-ends the previous. Start locks the script until
+End; metadata stays editable. Publish, rollback, delete and speech-mode changes
+are blocked while live. Live state is shown only on the MC card.
+
+**Security and retention.**
+
+- Whole script is encrypted at rest with AES-256-GCM; per-speech keys are
+  derived with HKDF-SHA256 from `SPEECH_SECRET_MASTER_KEY`. `{{secret}}` markers
+  are dropped.
+- Speaker may fetch only its own speech key; MC may fetch keys for every speech
+  on demand; other roles never receive keys.
+- Auto-unlock after a valid join. Speaker auto-preloads its script and key.
+  MC decrypts on demand and may cache until logout.
+- Admin preview shows full plaintext after AAL2.
+- Revoked or deleted access clears the device cache on reconnect.
+- Bundle and history follow the wedding TTL (default 30 days). Admin logs are
+  kept 90 days. Google Docs are never deleted or modified by the app.
+- No speech text in logs, toasts or error messages.
+
+**Legacy migration.** Owner-triggered per wedding. Only speeches with a usable
+`sourceDoc` link migrate. Existing redaction ciphertext is decrypted and merged
+into the new whole-script plaintext before re-encryption. Unlinked text is
+discarded only after an explicit warning and confirmation, then all speech text
+is stripped from the wedding cartridge.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Driver | Keep scripts off non-authorized devices |
+| Split | Only `speechMode` in the wedding cartridge; one encrypted speech bundle per wedding |
+| Doc source | One Doc per speech in `secrets/<wedding>/speeches/` |
+| Metadata | Admin only: name, relationship, order, languages, access switch |
+| Labels | `SPEAKER [xx]` / `MC [yy]`, language-neutral |
+| Languages | Any language; locked at Doc creation; speaker and MC must differ in COMPLEX |
+| Speaker binding | Per-speech link, 6-digit PIN and QR; several devices allowed |
+| Speaker scope | Own speech only |
+| MC scope | All speeches, on demand |
+| Other roles | Mode plus names and relationships, no text |
+| Live | MC Start/End; one live; script locked until End; metadata editable |
+| Encryption | Whole script AES-256-GCM; per-speech keys; markers removed |
+| Offline | Speaker auto-preload; MC cache until logout; clear on revoke |
+| Publish | Preview then explicit publish; valid-only; full history |
+| Rollback | Before and after the event, never live |
+| Retention | Bundle 30 days; logs 90 days; Drive untouched |
+| Legacy | Owner-triggered; linked only; unlinked discarded with warning |
+| Access | Owner only; planner role deferred |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#923](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/923) | Speech bundle backend, encryption, revisions, live lock, role projections and cartridge schema | - |
+| 2 | [#924](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/924) | Drive speech Doc lifecycle and bilingual parser | #923 |
+| 3 | [#925](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/925) | Admin speech lifecycle management UI | #923, #924 |
+| 4 | [#926](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/926) | Per-speech speaker access and bilingual speaker view | #923 |
+| 5 | [#927](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/927) | MC speech list, live controls and bilingual reader | #923, #926 |
+| 6 | [#928](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/928) | Speech summary for DJ, photographer and venue roles | #923 |
+| 7 | [#929](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/929) | Legacy speech migration and cartridge strip | #923, #924, #925 |
+
+**Open questions.** None.
+
+**Tracking.** [#245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/245), [#923](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/923), [#924](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/924), [#925](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/925), [#926](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/926), [#927](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/927), [#928](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/928), [#929](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/929).
+
 
