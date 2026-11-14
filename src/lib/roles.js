@@ -121,9 +121,10 @@ export function roleBlurb(id) {
   return t(`role.${key}.blurb`);
 }
 
-// HOST_ONLY weddings have no DJ booth: hide that role from the switcher.
-export function availableRoleIds(servicePackage) {
-  if (servicePackage === 'HOST_ONLY') return ROLE_ORDER.filter((id) => id !== 'dj');
+// Every package keeps the same role catalog, including the DJ role. A
+// HOST_ONLY wedding uses the DJ Standard capabilities instead of hiding the
+// role (issue #882); Song Requestor remains a VIP-only view, not a role.
+export function availableRoleIds() {
   return ROLE_ORDER;
 }
 
