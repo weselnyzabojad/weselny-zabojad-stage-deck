@@ -496,6 +496,11 @@ async function handleRequest(req: Request) {
           .order('created_at', { ascending: false })
           .limit(100),
       ]);
+      const { data: historyRows } = await admin
+        .from('speech_revisions')
+        .select('revision, published_at, entries')
+        .eq('wedding_id', weddingId)
+        .order('revision', { ascending: false });
       if (records.error) throw records.error;
       const revisions = (records.data ?? []).filter((row: any) => row.live_revision != null);
       const { data: revisionRows } = revisions.length
@@ -528,9 +533,55 @@ async function handleRequest(req: Request) {
       }
       return json({
         speeches,
+        revisions: (historyRows ?? []).map((row: any) => ({
+          revision: row.revision,
+          publishedAt: row.published_at,
+          speechIds: Object.keys(row.entries ?? {}),
+        })),
         live: live.data ?? null,
         logs: logs.data ?? [],
       });
+    }
+
+    if (action === 'upsert_speech_metadata') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speakerName = cleanProviderField(body?.speakerName, 160);
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      const relationship = cleanProviderField(body?.relationship, 160);
+      const order = Number(body?.order);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId || !speakerName || !Number.isInteger(order)) {
+        return json({ error: 'weddingId, speechId, speakerName and order are required.' }, 400);
+      }
+      const { data: live } = await admin
+        .from('speech_live')
+        .select('speech_id')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (live?.speech_id) return json({ error: 'Metadata cannot change while a speech is live.' }, 409);
+      const { data, error } = await admin
+        .from('speech_records')
+        .upsert(
+          {
+            wedding_id: weddingId,
+            id: speechId,
+            sort_order: order,
+            speaker_name: speakerName,
+            speaker_relationship: relationship ?? null,
+            speaker_language: 'PL',
+            mc_language: 'EN',
+            speaker_access: false,
+            status: 'DRAFT',
+          },
+          { onConflict: 'wedding_id,id' },
+        )
+        .select('*')
+        .single();
+      if (error) throw error;
+      await writeSpeechLog(admin, weddingId, 'speech_metadata_upsert', {
+        actor: allowlisted.email,
+        docId: speechId,
+      });
+      return json({ speech: data });
     }
 
     if (action === 'publish_speech') {

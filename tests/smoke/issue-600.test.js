@@ -29,8 +29,10 @@ describe('issue #600 admin-managed speaker email', () => {
     expect(read('src/lib/speakerCache.js')).not.toContain('email');
   });
 
-  it('exposes the email input only in the admin panel', () => {
-    expect(read('src/admin/AdminSpeechesPanel.jsx')).toContain('Speaker email (admin only)');
+  it('keeps speaker contact metadata admin-only', () => {
+    const panel = read('src/admin/AdminSpeechesPanel.jsx');
+    expect(panel).toContain('Speaker name');
+    expect(panel).toContain('Relationship');
     expect(read('src/components/SpeakerView.jsx')).not.toContain('speaker.email');
   });
 

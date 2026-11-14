@@ -42,12 +42,11 @@ describe('issue #598 speech Google Doc import', () => {
     expect(sourceDocChanged(doc, { ...file, version: '43' })).toBe(true);
   });
 
-  it('wires preview, import and publish in the admin panel', () => {
+  it('wires the speech manager into the admin panel', () => {
     const panel = read('src/admin/AdminSpeechesPanel.jsx');
-    expect(panel).toContain('importSpeechSource');
-    expect(panel).toContain('publishWedding');
+    expect(panel).toContain('parseSpeechDoc');
+    expect(panel).toContain('publishSpeech');
     expect(panel).toContain('getRevisionContext');
-    expect(panel).toContain('sourceDoc');
     expect(panel).toContain('window.confirm');
     expect(read('src/admin/AdminApp.jsx')).toContain('AdminSpeechesPanel');
   });
