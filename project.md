@@ -5986,3 +5986,29 @@ role/view (#880).
 
 **Tracking.** [#881](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/881).
 
+### 17.68 Unblocking the role, VIP, Song Requestor and local-stack chain (decision, 2026-11-14)
+
+The admin/VIP/DJ_MC issues formed a dependency cycle, and the local Supabase
+issue required tooling absent from the agent environment. The work is re-sliced
+so each slice is independently implementable and closable, with the admin
+aggregation landing last.
+
+**Implementation order.**
+
+| Order | Issue | Slice | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880) | `dj_mc` catalog, constraints, combined view, join/QR; provider provisioning deferred | #881, #875, #877 |
+| 2 | [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879) | VIP DJ identity validation + admin warnings; MC provider moved | #881 |
+| 3 | [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886) | Song Requestor eligibility + public/server enforcement; admin QR moved | #879, #877 |
+| 4 | [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876) | Admin aggregation: role panel, `mc`/`dj_mc` providers, MC confirmation, Song Requestor admin | #880, #879, #886 |
+| 5 | [#904](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/904) | Local Supabase scaffolding, docs, seed strategy and static tests | - |
+| 6 | [#889](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/889) | Runtime local-stack verification with Docker/Supabase CLI | #904 |
+
+The issue comments carry the precise acceptance amendments; the original
+bodies remain as history. No schema or runtime change is made by this decision.
+
+**Open questions.** None.
+
+**Tracking.** [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880), [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886), [#889](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/889), [#904](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/904).
+
+
