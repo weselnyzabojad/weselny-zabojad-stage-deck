@@ -241,6 +241,8 @@ supabase functions deploy admin_drive
 # reveal_speech_key verifies the role JWT itself; platform JWT verification
 # rejects the legacy HS256 role token with UNAUTHORIZED_LEGACY_JWT.
 supabase functions deploy reveal_speech_key --no-verify-jwt
+# game_bundle verifies the MC role JWT itself, like reveal_speech_key.
+supabase functions deploy game_bundle --no-verify-jwt
 supabase functions deploy join_room
 supabase functions deploy submit_song_request
 supabase functions deploy get_song_request_status
@@ -262,9 +264,10 @@ supabase secrets set \
 ```
 
 `SPEECH_SECRET_MASTER_KEY` is a 32-byte random value used to derive per-speech
-AES-256-GCM keys for the dedicated whole-script speech bundle. Rotating it
-requires republishing affected speeches; the bundle keeps `keyVersion` on each
-encrypted entry so staged rotation remains possible.
+AES-256-GCM keys for the dedicated whole-script speech bundle and per-game keys
+for the encrypted game question bundles. Rotating it requires republishing
+affected speeches and games; each bundle keeps `keyVersion` on its encrypted
+entry so staged rotation remains possible.
 
 For production, `ALLOWED_ORIGIN` must be the deployed admin origin, not only
 localhost. Verify CORS `OPTIONS` responses and the `admin_drive` `status` action.

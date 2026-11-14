@@ -233,6 +233,8 @@ export function sanitizeCartridge(cartridge) {
     if (!step || typeof step !== 'object') continue;
     delete step.durationMin;
     for (const field of DEPRECATED_STEP_FIELDS) delete step[field];
+    // Issue #931: question text lives only in the encrypted game bundle.
+    if (step.game && typeof step.game === 'object') delete step.game.questions;
   }
 
   if (clean.liveSyncState && typeof clean.liveSyncState === 'object') {

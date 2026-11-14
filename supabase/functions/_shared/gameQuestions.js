@@ -7,6 +7,129 @@ export const GAME_TYPES = Object.freeze({
 });
 
 export const WIEDZY_LEVELS = ['EASY', 'MEDIUM', 'HARD'];
+export const GAME_QUESTION_LANGUAGES = ['PL', 'FR', 'EN'];
+
+export function normalizeGameType(value) {
+  const type = typeof value === 'string' ? value.trim().toUpperCase() : '';
+  return GAME_TYPES[type] ?? null;
+}
+
+function cleanQuestionPrompt(value) {
+  if (typeof value === 'string') {
+    const prompt = value.trim();
+    return prompt ? { PL: prompt } : null;
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const prompt = {};
+  for (const language of GAME_QUESTION_LANGUAGES) {
+    const text = typeof value[language] === 'string' ? value[language].trim() : '';
+    if (text) prompt[language] = text;
+  }
+  return Object.keys(prompt).length > 0 ? prompt : null;
+}
+
+function cleanQuestionAnswer(value) {
+  if (typeof value !== 'string') return null;
+  const answer = value.trim();
+  if (!answer) return null;
+  return answer.toUpperCase() === 'BRIDE' || answer.toUpperCase() === 'GROOM'
+    ? answer.toUpperCase()
+    : answer;
+}
+
+// Validates the parser-owned question array before it is encrypted. Answer
+// names stay as BRIDE/GROOM tokens; the display layer resolves them from
+// coupleProfile, so the bundle never stores a resolved person's name.
+export function validateGameQuestionPayload(payload) {
+  const gameType = normalizeGameType(payload?.gameType);
+  if (!gameType) {
+    return { error: 'gameType must be TEST_WIEDZY or TEST_ZGODNOSCI.' };
+  }
+
+  const gameId = typeof payload?.gameId === 'string' ? payload.gameId.trim() : '';
+  if (!gameId || gameId.length > 120) {
+    return { error: 'gameId must be a non-empty string of at most 120 characters.' };
+  }
+
+  const title = typeof payload?.title === 'string' ? payload.title.trim() : '';
+  if (!title || title.length > 200) {
+    return { error: 'title must be a non-empty string of at most 200 characters.' };
+  }
+
+  const sourceDocId =
+    typeof payload?.sourceDocId === 'string' ? payload.sourceDocId.trim() : '';
+  if (sourceDocId.length > 500) {
+    return { error: 'sourceDocId is too long.' };
+  }
+
+  const rawQuestions = Array.isArray(payload?.questions) ? payload.questions : null;
+  if (!rawQuestions || rawQuestions.length === 0) {
+    return { error: 'At least one valid question is required.' };
+  }
+  if (rawQuestions.length > 2000) {
+    return { error: 'A game bundle cannot contain more than 2000 questions.' };
+  }
+
+  const questions = [];
+  const ids = new Set();
+  for (const raw of rawQuestions) {
+    const id = typeof raw?.id === 'string' ? raw.id.trim() : '';
+    if (!id || id.length > 120) {
+      return { error: 'Every question needs an id of at most 120 characters.' };
+    }
+    if (ids.has(id)) return { error: `Duplicate question id: ${id}.` };
+    ids.add(id);
+
+    const prompt = cleanQuestionPrompt(raw?.prompt);
+    if (!prompt) {
+      return { error: `Question ${id} needs a PL, FR or EN prompt.` };
+    }
+
+    const question = { id, prompt };
+    if (raw?.level != null) {
+      const level = typeof raw.level === 'string' ? raw.level.trim().toUpperCase() : '';
+      if (!WIEDZY_LEVELS.includes(level)) {
+        return { error: `Question ${id} has an invalid level.` };
+      }
+      question.level = level;
+    }
+    const answer = cleanQuestionAnswer(raw?.answer);
+    if (answer) question.answer = answer;
+    questions.push(question);
+  }
+
+  return {
+    value: {
+      gameType,
+      gameId,
+      title,
+      sourceDocId: sourceDocId || null,
+      questions,
+    },
+  };
+}
+
+// Active means a liveSyncState.game_results entry that started but has not
+// completed. Accept the keyed game id, the entry's gameId or its gameType so a
+// legacy/short key cannot bypass the guard.
+export function isGameActive(liveState, { gameId, gameType } = {}) {
+  const results = liveState?.game_results;
+  if (!results || typeof results !== 'object' || Array.isArray(results)) return false;
+  const expectedType = normalizeGameType(gameType);
+  const ids = new Set([gameId, gameType].filter((value) => typeof value === 'string' && value));
+
+  for (const [key, entry] of Object.entries(results)) {
+    if (!entry || typeof entry !== 'object') continue;
+    const entryGameId = typeof entry.gameId === 'string' ? entry.gameId : key;
+    const entryType = normalizeGameType(entry.gameType);
+    const matches =
+      ids.has(key) ||
+      ids.has(entryGameId) ||
+      (expectedType != null && entryType === expectedType);
+    if (matches && entry.startedAt && !entry.completedAt) return true;
+  }
+  return false;
+}
 
 function cells(line) {
   return line

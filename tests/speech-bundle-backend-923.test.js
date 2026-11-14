@@ -23,10 +23,13 @@ describe('issue #923 speech bundle backend', () => {
 
   it('encrypts whole scripts with AES-256-GCM and drops markers', () => {
     const crypto = read('supabase/functions/_shared/speechBundle.js');
-    expect(crypto).toContain('AES-256-GCM');
-    expect(crypto).toContain('deriveSpeechKeyBytes');
+    expect(crypto).toContain('encryptScopedBundle');
+    expect(crypto).toContain('decryptScopedBundle');
+    expect(crypto).toContain('bundleCrypto.js');
     expect(crypto).toContain('stripSecretMarkers');
-    expect(crypto).toContain('additionalData');
+    const shared = read('supabase/functions/_shared/bundleCrypto.js');
+    expect(shared).toContain('AES-256-GCM');
+    expect(shared).toContain('additionalData');
   });
 
   it('ships role projections and live start/end in the bundle endpoint', () => {

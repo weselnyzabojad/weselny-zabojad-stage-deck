@@ -452,7 +452,7 @@
         "id",
         "title"
       ],
-      "description": "One configured game and its question list, owned by the game timeline step.",
+      "description": "One configured game and its metadata; question text lives in a separate encrypted bundle.",
       "properties": {
         "id": {
           "$ref": "#/$defs/id"
@@ -486,48 +486,6 @@
             "MISSING",
             "UNAVAILABLE"
           ]
-        },
-        "questions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "id"
-            ],
-            "properties": {
-              "id": {
-                "type": "string",
-                "minLength": 1
-              },
-              "prompt": {
-                "type": [
-                  "string",
-                  "object"
-                ],
-                "additionalProperties": {
-                  "type": "string"
-                }
-              },
-              "level": {
-                "type": "string",
-                "enum": [
-                  "EASY",
-                  "MEDIUM",
-                  "HARD"
-                ]
-              },
-              "answer": {
-                "type": [
-                  "string",
-                  "object"
-                ],
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            }
-          }
         }
       }
     }

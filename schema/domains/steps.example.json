@@ -126,8 +126,7 @@
         "title": "Test Wiedzy",
         "gameType": "TEST_WIEDZY",
         "enabled": true,
-        "status": "AVAILABLE",
-        "questions": []
+        "status": "AVAILABLE"
       }
     },
     {
@@ -141,8 +140,7 @@
         "title": "Test Zgodności",
         "gameType": "TEST_ZGODNOSCI",
         "enabled": true,
-        "status": "AVAILABLE",
-        "questions": []
+        "status": "AVAILABLE"
       }
     },
     {
@@ -168,8 +166,7 @@
         "gameType": "OTHER",
         "enabled": true,
         "requiresPhotographer": true,
-        "status": "AVAILABLE",
-        "questions": []
+        "status": "AVAILABLE"
       }
     }
   ]
