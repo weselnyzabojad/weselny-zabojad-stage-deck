@@ -41,7 +41,9 @@ describe('issue #834 landing navy conversion banner', () => {
 
     expect(banner).toContain("t('landing.footer.ctaTitle')");
     expect(banner).toContain("t('landing.footer.ctaBody')");
-    expect(banner).toContain('<ContactCta label={t(\'landing.hero.cta\')} className="mt-8" />');
+    expect(banner).toContain(
+      "<ContactCta label={t('landing.hero.cta')} href={contactHref} className=\"mt-8\" />",
+    );
   });
 
   it('renders unchanged copy and keeps the partner strip after the banner', () => {

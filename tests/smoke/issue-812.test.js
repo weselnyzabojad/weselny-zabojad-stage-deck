@@ -24,7 +24,9 @@ describe('issue #812 deck landing metadata and release docs', () => {
   });
 
   it('keeps the single contact CTA and no tracking', () => {
-    expect(landing).toContain("const CONTACT_URL = 'https://www.weselnyzabojad.pl/#kontakt';");
+    expect(landing).toContain("url.searchParams.set('prefill'");
+    expect(landing).toContain("url.hash = 'kontakt'");
+    expect(landing).not.toContain('https://www.weselnyzabojad.pl/#kontakt');
     expect(landing).toContain('rel="noopener noreferrer"');
     expect(landing).not.toMatch(/tel:|wa\.me|mailto:|calendly|cal\.com/i);
     expect(landing).not.toMatch(/gtag|analytics|pixel|facebook\.net|hotjar/i);

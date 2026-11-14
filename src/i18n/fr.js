@@ -694,6 +694,7 @@ const fr = {
   'landing.faq.5.q': 'Comment obtenir Stage Deck ?',
   'landing.faq.5.a': 'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad et/ou avec ses partenaires privilégiés.',
   'landing.footer.partners': 'En partenariat avec :',
+  'landing.contact.prefill': 'Je vous contacte depuis la page d’accueil Stage Deck (weselnyzabojad.pl).',
   'landing.footer.ctaTitle': 'Faisons équipe le jour J',
   'landing.footer.ctaBody': 'Contactez-nous : découvrez comment l’accompagnement de Weselny Żabojad couplé au Stage Deck garantit une coordination parfaite et une réussite éclatante.',
   'landing.footer.crew': 'Connexion de l’équipe mariage',
