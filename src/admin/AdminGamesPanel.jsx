@@ -19,6 +19,7 @@ import {
   resolveGameAnswer,
 } from './adminGames';
 import { formatAdminTime } from './adminUtils';
+import { gameQuestionDocFolderPath } from '../lib/gameQuestions';
 
 const EMPTY_LIST = [];
 const PRIMARY_BUTTON =
@@ -129,6 +130,7 @@ function QuestionPreview({ questions, game, cartridge, published = false }) {
 
 function GamePanel({
   game,
+  weddingId,
   cartridge,
   doc,
   revisions,
@@ -153,6 +155,11 @@ function GamePanel({
   onRestore,
 }) {
   const review = gameDocLanguageReview(doc, game.languages);
+  const drivePath = gameQuestionDocFolderPath(game.gameType, weddingId);
+  const driveVisibility =
+    drivePath.scope === 'private'
+      ? 'private · never shared with the couple'
+      : 'customer-visible wedding folder';
   const parseBlocked =
     disabled ||
     !doc ||
@@ -177,6 +184,10 @@ function GamePanel({
         </div>
         <span className="font-mono text-[9px] text-muted">{game.gameType}</span>
       </div>
+
+      <p className="mt-1 font-mono text-[9px] text-muted" title={driveVisibility}>
+        Drive · {drivePath.segments.join('/')} · {driveVisibility}
+      </p>
 
       {!game.enabled ? (
         <p className="mt-2 rounded border border-line bg-page/60 p-2 text-[10px] text-muted">
@@ -820,6 +831,7 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
             <GamePanel
               key={game.gameType}
               game={game}
+              weddingId={wedding.wedding_id}
               cartridge={cartridge}
               doc={docFor(game.gameType)}
               revisions={gameRevisions}

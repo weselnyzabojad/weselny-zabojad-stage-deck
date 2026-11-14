@@ -473,6 +473,13 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
             </div>
           ) : null}
 
+          {mode === 'COMPLEX' ? (
+            <p className="rounded border border-line bg-card p-2 font-mono text-[9px] text-muted">
+              Private Drive · secrets/{wedding.wedding_id}/speeches/ · never inside the
+              customer-visible wedding folder
+            </p>
+          ) : null}
+
           {mode === 'OFF' ? (
             <p className="rounded border border-line bg-card p-2 text-[10px] text-muted">
               Speech management is disabled for this wedding. Choose LIGHT or COMPLEX to enable it.
