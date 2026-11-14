@@ -5789,3 +5789,72 @@ only renders the keys.
 **Open questions.** None.
 
 **Tracking.** [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894).
+
+### 17.64 Landing full-page copy harmonisation (decision, 2026-11-14)
+
+The copy refresh from 17.63 is expanded from the hero block to the entire
+public landing: the 7-card "Ce que Stage Deck vous apporte" grid and the
+3-step "Comment ça se passe" section now receive validated copy too. The goal
+is a single fluid, emotional and premium read: no technical or logistical
+jargon, no network-failure or "conditions" friction, and a consistent promise of
+serenity and simplicity. This section supersedes the section-1-only scope of
+17.63; the section-1 copy itself is unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change. Copy stays in `src/i18n/{fr,pl,en}.js`; `LandingPage.jsx`
+only renders the keys.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Intro, hero lead, hero + footer CTA, hero songs mock, 7 feature bodies and 3 step titles/bodies use the new copy in FR, PL and EN |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Copy (FR source of truth, sections 2–3).**
+
+| Key | New value |
+| --- | --- |
+| `landing.features.1.body` | `Un planning unique et partagé en temps réel, pour que toute l’équipe avance sur la même longueur d’onde, sans zone d’ombre.` |
+| `landing.features.2.body` | `Toujours accessible, même sans réseau : le planning reste parfaitement fluide et disponible en toutes circonstances, au cœur de la salle.` |
+| `landing.features.3.body` | `Un imprévu ? Décalez la première danse ou ajustez le rythme en un clin d’œil : la modification s’actualise instantanément sur tous les écrans.` |
+| `landing.features.4.body` | `Sur-mesure pour chaque intervenant : chacun accède uniquement à ce qui le concerne, pour un travail ultra-précis et sans confusion.` |
+| `landing.features.5.body` | `100 % sécurisé et confidentiel : vos informations personnelles et le déroulé de votre journée restent strictement privés, protégés par un accès sur-mesure.` |
+| `landing.features.6.body` | `Aussi simple qu’une application : Stage Deck s’installe en un geste sur smartphone ou tablette, sans rien à télécharger.` |
+| `landing.features.7.body` | `Ambiance sur-mesure : selon la formule choisie, vos invités glissent leurs envies musicales préférées directement depuis leur smartphone.` |
+| `landing.how.1.title` | `On façonne votre journée` |
+| `landing.how.1.body` | `Votre maître de cérémonie structure le déroulé, les temps forts et les rôles de chacun dans un espace dédié.` |
+| `landing.how.2.title` | `Toute l’équipe se synchronise` |
+| `landing.how.2.body` | `Le jour J, chaque prestataire se connecte simplement pour retrouver son propre fil conducteur.` |
+| `landing.how.3.title` | `Vous profitez pleinement` |
+| `landing.how.3.body` | `Les professionnels gèrent le tempo en coulisses ; vous n’avez plus qu’à vivre votre grand jour les yeux fermés.` |
+
+Section 1 copy (intro, hero lead, CTA, hero songs caption) is unchanged from
+17.63. PL and EN equivalents are listed in issue #894.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Issue structure | Expand open #894 to the full page instead of creating a duplicate section-1 issue |
+| Doc linkage | None |
+| Locales | FR + PL + EN translated together |
+| Intro layout | Keep two paragraphs and the nested highlight card; p1 ends at `dans une écoute absolue.` |
+| Intro highlight | `une écoute absolue` in p1; `Stage Deck` unchanged in p2 |
+| CTA key | Shared `landing.hero.cta`, so hero and footer both read `Discutons de votre projet` |
+| Songs cards | Hero mock caption and feature card 7 each receive their own validated copy |
+| Feature titles | Unchanged (bodies only); section headings unchanged |
+| Tone | Emotion, serenity, clarity; `même sans réseau` is kept only as an availability promise |
+| Tests | Update the legacy copy smoke tests (811, 816, 818, 820, 826) to the new strings |
+| Responsive | Verify 320–1440 px; only minimal scoped class changes if a string overflows |
+
+**Task split.** Still one atomic issue: single view (`/`), single ownership
+boundary (landing copy) and one validation set.
+
+| Order | Issue | Scope |
+| --- | --- | --- |
+| 1 | [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894) | Full-page FR/PL/EN copy, shared CTA, highlights, 7 feature bodies, 3 steps, smoke-test refresh and responsive verification |
+
+**Open questions.** None.
+
+**Tracking.** [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894).
