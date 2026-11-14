@@ -1059,6 +1059,14 @@ function AdminAppContent() {
                           </span>
                         ))}
                       </div>
+                      {wedding.vipWarning ? (
+                        <p
+                          role="status"
+                          className="mt-2 rounded border border-amber-700 bg-amber-950/40 px-2 py-1 text-[10px] font-semibold text-amber-200"
+                        >
+                          {`VIP package ${wedding.servicePackage}: ${wedding.vipWarning}`}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="flex flex-wrap gap-1.5 text-[10px]">
                       <button
