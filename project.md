@@ -6447,7 +6447,7 @@ Customer-visible Drive content and private wedding material are separated by
 folder, not by ACL changes inside a shared tree. Google Drive inherits parent
 folder access, so `secrets/` cannot safely live under a folder shared with the
 newlyweds. The customer folder contains `games/Test Wiedzy - <weddingId>`;
-private Docs live in a sibling `secrets/` root outside that folder.
+private Docs live in `secrets/<weddingId>/`, a sibling root outside that folder.
 
 **Google Doc contract.** `## EVENT` → `Wedding ID` must match
 `^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$`; the prefix is filename-safe, with no
@@ -6463,16 +6463,17 @@ format at parse, admin and publish time. TTL/date logic uses `date` /
 │   └── games/
 │       └── Test Wiedzy - Weronika&Guillaume-UM-2027-04-002
 └── secrets/
-    ├── speeches/
-    │   └── Weronika&Guillaume-UM-2027-04-002 - 1 - Bartek - Best man
-    └── compatibility-test-game/
-        └── Test Zgodności - Weronika&Guillaume-UM-2027-04-002
+    └── Weronika&Guillaume-UM-2027-04-002/
+        ├── speeches/
+        │   └── Weronika&Guillaume-UM-2027-04-002 - 1 - Bartek - Best man
+        └── compatibility-test-game/
+            └── Test Zgodności - Weronika&Guillaume-UM-2027-04-002
 ```
 
-`secrets/` contains exactly `speeches/` and `compatibility-test-game/`. It is
-resolved from the wedding folder's parent as a sibling, never created below the
-customer-visible folder. Speech and game filenames include `<weddingId>` because
-the month-level private folders are shared across weddings.
+`secrets/<weddingId>/` contains exactly `speeches/` and
+`compatibility-test-game/`. It is resolved from the wedding folder's parent as
+a sibling, never created below the customer-visible folder. Speech and game
+filenames include `<weddingId>` for unambiguous display and safe moves.
 
 **View scope.**
 
@@ -6493,9 +6494,9 @@ moved or exposed below the customer-visible wedding folder.
 | Doc source | `## EVENT` → `Wedding ID` |
 | Room links | Keep `room_code` and `/deck/<room_code>/<role>` unchanged |
 | Customer folder | `YYYY/Month/<weddingId>/` with `games/Test Wiedzy - <weddingId>` |
-| Private root | `YYYY/Month/secrets/`, a sibling outside the customer folder |
-| Speech Docs | `secrets/speeches/<weddingId> - <order> - <speaker> - <relationship>` |
-| Zgodności Docs | `secrets/compatibility-test-game/Test Zgodności - <weddingId>` |
+| Private root | `YYYY/Month/secrets/<weddingId>/`, a sibling outside the customer folder |
+| Speech Docs | `secrets/<weddingId>/speeches/<weddingId> - <order> - <speaker> - <relationship>` |
+| Zgodności Docs | `secrets/<weddingId>/compatibility-test-game/Test Zgodności - <weddingId>` |
 | Existing Docs | Owner-triggered, idempotent move/rename migration; never delete or rewrite content |
 | Old IDs | Development-only; no production migration |
 
