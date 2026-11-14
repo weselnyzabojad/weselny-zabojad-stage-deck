@@ -71,9 +71,9 @@ describe('issue #811 deck-focused landing', () => {
     expect(pl['landing.features.7.body']).toMatch(/formuły/i);
     expect(en['landing.features.7.body']).toMatch(/package/i);
     expect(fr['landing.features.7.body']).toMatch(/formule/i);
-    expect(pl['landing.faq.2.a']).toMatch(/gdy/i);
-    expect(en['landing.faq.2.a']).toMatch(/when/i);
-    expect(fr['landing.faq.2.a']).toMatch(/lorsque/i);
+    expect(pl['landing.faq.2.a']).toMatch(/konto nie jest wymagane/i);
+    expect(en['landing.faq.2.a']).toMatch(/No account is required/i);
+    expect(fr['landing.faq.2.a']).toMatch(/aucun compte n’est requis/i);
   });
 
   it('keeps the Stage Deck brand and attribution', () => {

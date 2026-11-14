@@ -13,13 +13,12 @@ afterEach(() => {
 
 describe('issue #821 FAQ partner copy', () => {
   it('states that Stage Deck is included through Weselny Żabojad and its partners', () => {
-    expect(fr['landing.faq.5.a']).toBe(
-      'Stage Deck est inclus sans frais supplémentaires avec les mariages animés par Weselny Żabojad et/ou avec ses partenaires privilégiés.',
-    );
+    expect(fr['landing.faq.5.a']).toContain('sans le moindre frais supplémentaire');
+    expect(fr['landing.faq.5.a']).toContain('partenaires privilégiés');
     expect(fr['landing.faq.5.a']).not.toContain('formulaire de contact');
 
-    expect(pl['landing.faq.5.a']).toContain('partnerami premium');
-    expect(en['landing.faq.5.a']).toContain('its privileged partners');
+    expect(pl['landing.faq.5.a']).toContain('sprawdzonych partnerów');
+    expect(en['landing.faq.5.a']).toContain('trusted partners');
   });
 
   it('renders the updated FAQ answer', () => {
