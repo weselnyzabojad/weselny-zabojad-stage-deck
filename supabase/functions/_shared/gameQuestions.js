@@ -77,13 +77,15 @@ export function gameQuestionDocFileName(gameType, weddingId) {
   return `${gameTypeLabel(gameType)} - ${id}`.replace(/[\\/:*?"<>|]/g, ' ').slice(0, 180);
 }
 
-export function gameQuestionDocFolderSegments(gameType, weddingId = '') {
+// Drive path relative to the month root. Wiedzy lives in the customer-visible
+// wedding `games/` folder; Zgodności lives under the sibling private root.
+export function gameQuestionDocFolderPath(gameType, weddingId = '') {
   if (normalizeGameType(gameType) === GAME_TYPES.TEST_ZGODNOSCI) {
     const id = String(weddingId ?? '').trim();
     if (!id) throw new Error('A wedding id is required for the Test Zgodności folder.');
-    return ['secrets', id, 'compatibility-test-game'];
+    return { scope: 'private', segments: ['secrets', id, 'compatibility-test-game'] };
   }
-  return ['games'];
+  return { scope: 'wedding', segments: ['games'] };
 }
 
 export function buildGameQuestionDocTemplate({ gameType, languages } = {}) {

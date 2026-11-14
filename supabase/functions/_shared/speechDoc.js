@@ -3,13 +3,15 @@
 
 const LABEL = /^\s*(SPEAKER|MC)\s*\[\s*([A-Za-z]{2})\s*\]\s*$/;
 
-export function speechDocFilename({ order, speakerName, relationship }) {
+export function speechDocFilename({ weddingId, order, speakerName, relationship }) {
   const clean = (value) =>
     String(value ?? '')
       .replace(/[\\/:*?"<>|]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-  const parts = [order, clean(speakerName), clean(relationship)].filter(
+  const id = clean(weddingId);
+  if (!id) throw new Error('A wedding id is required.');
+  const parts = [id, order, clean(speakerName), clean(relationship)].filter(
     (part) => part != null && String(part).trim() !== '',
   );
   return parts.join(' - ').slice(0, 180);

@@ -199,11 +199,15 @@ The expected hierarchy is:
 root/
   2026/
     January/
-      UM-2026-01-001/
-      secrets/
+      UM-2026-01-001/                              # customer-visible
+        games/
+          Test Wiedzy - UM-2026-01-001
+      secrets/                                     # private root
         UM-2026-01-001/
-          speech Doc
-          Test zgodności questions Doc
+          speeches/
+            UM-2026-01-001 - 1 - Bartek - Best man
+          compatibility-test-game/
+            Test Zgodności - UM-2026-01-001
   2027/
     September/
       UM-2027-09-001/
@@ -211,8 +215,17 @@ root/
         UM-2027-09-001/
 ```
 
-Only share the minimum required folder. The app never receives the service
-account credentials.
+Only `YYYY/Month/<weddingId>/` is guaranteed to exist. The app creates any
+missing `secrets/`, `secrets/<weddingId>/`, `speeches/`, `compatibility-test-game/`
+or `games/` folder when it creates a Doc. Existing folders are reused; nothing is
+moved, renamed or deleted.
+
+**Permission boundary.** Share only `YYYY/Month/<weddingId>/` with the couple.
+`secrets/` is its sibling, not a child, so Drive permission inheritance never
+grants them speech scripts or Test Zgodności questions. The service account needs
+write access to the month folder so it can create `secrets/` when absent.
+
+The app never receives the service account credentials.
 
 ---
 

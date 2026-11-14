@@ -61,7 +61,7 @@ import {
 import { decryptGameBundle, encryptGameBundle } from '../_shared/gameBundle.js';
 import {
   defaultGameId,
-  gameQuestionDocFolderSegments,
+  gameQuestionDocFolderPath,
   isGameActive,
   normalizeGameLanguages,
   normalizeGameType,
@@ -486,9 +486,16 @@ async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: u
 }
 
 // Walk existing folders only. Migration must never create or move Drive data.
-async function findExistingFolderPath(weddingFolderId: string, segments: string[]) {
+async function findExistingFolderPath(weddingFolderId: string, path: any) {
   let parent = weddingFolderId;
-  for (const segment of segments) {
+  if (path?.scope === 'private') {
+    try {
+      parent = await driveConnector.resolveMonthFolderId(weddingFolderId);
+    } catch {
+      return null;
+    }
+  }
+  for (const segment of Array.isArray(path?.segments) ? path.segments : []) {
     if (!parent) return null;
     const { files } = await driveConnector.listChildren({
       parentId: parent,
@@ -559,7 +566,7 @@ async function inspectGameQuestionDoc({
       expectedFolderId =
         (await findExistingFolderPath(
           weddingFolderId,
-          gameQuestionDocFolderSegments(gameType, weddingId),
+          gameQuestionDocFolderPath(gameType, weddingId),
         )) ?? '';
     } catch {
       expectedFolderId = '';

@@ -27,13 +27,17 @@ import {
   defaultGameTitle,
   gameQuestionDocCreatePreflight,
   gameQuestionDocFileName,
-  gameQuestionDocFolderSegments,
+  gameQuestionDocFolderPath,
   normalizeGameLanguages,
   normalizeGameType,
   parseGameQuestionDoc,
   rebuildGameQuestionDocColumns,
 } from '../_shared/gameQuestions.js';
-import { buildSpeechDocTemplate, parseSpeechDoc, speechDocFilename } from '../_shared/speechDoc.js';
+import {
+  buildSpeechDocTemplate,
+  parseSpeechDoc,
+  speechDocFilename,
+} from '../_shared/speechDoc.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
 const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
@@ -263,8 +267,8 @@ async function handleRequest(req: Request) {
       if (speakerLanguage === mcLanguage) {
         return json({ error: 'Speaker and MC languages must differ.' }, 400);
       }
-      const folder = await connector.ensureSpeechFolder({ weddingFolderId });
-      const name = speechDocFilename({ order, speakerName, relationship });
+      const folder = await connector.ensureSpeechFolder({ weddingFolderId, weddingId });
+      const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const text = buildSpeechDocTemplate({
         speakerName,
         relationship,
@@ -312,7 +316,7 @@ async function handleRequest(req: Request) {
       if (!weddingId || !speechId || !fileIdValue || !Number.isInteger(order) || !speakerName) {
         return json({ error: 'Complete rename metadata is required.' }, 400);
       }
-      const name = speechDocFilename({ order, speakerName, relationship });
+      const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const file = await connector.renameFile({ fileId: fileIdValue, name });
       await admin
         .from('speech_records')
@@ -431,8 +435,12 @@ async function handleRequest(req: Request) {
         typeof body?.title === 'string' && body.title.trim()
           ? body.title.trim()
           : defaultGameTitle(gameType);
-      const segments = gameQuestionDocFolderSegments(gameType, weddingId);
-      const folder = await connector.ensureFolderPath({ weddingFolderId, segments });
+      const path = gameQuestionDocFolderPath(gameType, weddingId);
+      const folder = await connector.ensureFolderPath({
+        weddingFolderId,
+        segments: path.segments,
+        scope: path.scope,
+      });
       const name = gameQuestionDocFileName(gameType, weddingId);
       const existing = await connector.listChildren({
         parentId: folder.folder.id,

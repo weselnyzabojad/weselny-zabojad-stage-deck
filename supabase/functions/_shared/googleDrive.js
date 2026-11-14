@@ -18,6 +18,7 @@ export const DRIVE_METADATA_FIELDS =
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
 export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
+export const DRIVE_SECRETS_FOLDER_NAME = 'secrets';
 export const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
 
 const DEFAULT_TIMEOUT_MS = 8000;
@@ -448,19 +449,73 @@ export function createGoogleDriveConnector({
     return sanitizedMetadata(await readJson(response));
   }
 
-  async function ensureFolderPath({ weddingFolderId, segments = [] }) {
-    let parent = typeof weddingFolderId === 'string' ? weddingFolderId.trim() : '';
-    if (!parent) throw createDriveError('drive_invalid_request', 'A wedding folder id is required.');
-    const path = Array.isArray(segments) ? segments : [];
-    if (path.length === 0) {
-      throw createDriveError('drive_invalid_request', 'At least one folder name is required.');
+  // The month folder is the customer-visible wedding folder's parent. The
+  // private `secrets/` root is its sibling, never a child of the wedding folder,
+  // so Drive permission inheritance cannot leak private Docs to the couple.
+  async function resolveMonthFolderId(weddingFolderId) {
+    const weddingFolder = await getFileMetadata(weddingFolderId);
+    if (weddingFolder.mimeType !== DRIVE_FOLDER_MIME_TYPE) {
+      throw createDriveError(
+        'drive_invalid_request',
+        'The wedding folder id must point to a Drive folder.',
+        400,
+      );
     }
+    const monthFolderId = Array.isArray(weddingFolder.parents) ? weddingFolder.parents[0] : '';
+    if (!monthFolderId) {
+      throw createDriveError(
+        'drive_invalid_request',
+        'The wedding folder has no parent month folder.',
+        400,
+      );
+    }
+    return monthFolderId;
+  }
+
+  // Create only missing path segments. Existing folders with the same name and
+  // parent are reused; nothing is moved, renamed or deleted. `wedding` paths are
+  // rooted at the wedding folder, `private` paths at its parent month folder and
+  // must start with `secrets/`.
+  async function ensureFolderPath({ weddingFolderId, segments = [], scope = null }) {
+    const weddingFolder = typeof weddingFolderId === 'string' ? weddingFolderId.trim() : '';
+    if (!weddingFolder) {
+      throw createDriveError('drive_invalid_request', 'A wedding folder id is required.');
+    }
+    const path = (Array.isArray(segments) ? segments : []).map((segment) =>
+      typeof segment === 'string' ? segment.trim() : '',
+    );
+    if (path.length === 0 || path.some((segment) => !segment)) {
+      throw createDriveError(
+        'drive_invalid_request',
+        'Every folder path needs at least one non-empty name.',
+      );
+    }
+    // Omitting the scope is allowed for the canonical `secrets/...` path; that
+    // prefix always resolves from the month folder, never the wedding folder.
+    const resolvedScope = scope ?? (path[0] === DRIVE_SECRETS_FOLDER_NAME ? 'private' : 'wedding');
+    if (resolvedScope !== 'wedding' && resolvedScope !== 'private') {
+      throw createDriveError('drive_invalid_request', 'Folder scope must be wedding or private.');
+    }
+    if (resolvedScope === 'private' && path[0] !== DRIVE_SECRETS_FOLDER_NAME) {
+      throw createDriveError(
+        'drive_invalid_request',
+        `Private Drive paths must start with ${DRIVE_SECRETS_FOLDER_NAME}/.`,
+      );
+    }
+    if (
+      resolvedScope === 'wedding' &&
+      path.some((segment) => segment.toLowerCase() === DRIVE_SECRETS_FOLDER_NAME)
+    ) {
+      throw createDriveError(
+        'drive_invalid_request',
+        `${DRIVE_SECRETS_FOLDER_NAME}/ cannot be created inside the wedding folder.`,
+      );
+    }
+
+    let parent =
+      resolvedScope === 'private' ? await resolveMonthFolderId(weddingFolder) : weddingFolder;
     const created = [];
-    for (const segment of path) {
-      const folderName = typeof segment === 'string' ? segment.trim() : '';
-      if (!folderName) {
-        throw createDriveError('drive_invalid_request', 'Folder names cannot be empty.');
-      }
+    for (const folderName of path) {
       const folder = await createFolder({ parentId: parent, name: folderName });
       created.push(folder);
       parent = folder.id;
@@ -468,8 +523,19 @@ export function createGoogleDriveConnector({
     return { folder: created[created.length - 1], folders: created };
   }
 
-  async function ensureSpeechFolder({ weddingFolderId, segments = ['secrets', 'speeches'] }) {
-    return ensureFolderPath({ weddingFolderId, segments });
+  async function ensureSpeechFolder({ weddingFolderId, weddingId, segments = ['speeches'] }) {
+    const id = typeof weddingId === 'string' ? weddingId.trim() : '';
+    if (!id) {
+      throw createDriveError(
+        'drive_invalid_request',
+        'A wedding id is required for the private speech folder.',
+      );
+    }
+    return ensureFolderPath({
+      weddingFolderId,
+      segments: [DRIVE_SECRETS_FOLDER_NAME, id, ...segments],
+      scope: 'private',
+    });
   }
 
   async function createGoogleDoc({ parentId, name, text }) {
@@ -621,6 +687,7 @@ export function createGoogleDriveConnector({
   return {
     getAccessToken,
     getFileMetadata,
+    resolveMonthFolderId,
     listFiles,
     listChildren,
     createFolder,

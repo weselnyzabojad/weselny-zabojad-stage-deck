@@ -7,7 +7,7 @@ import {
   gameQuestionDocColumns,
   gameQuestionDocCreatePreflight,
   gameQuestionDocFileName,
-  gameQuestionDocFolderSegments,
+  gameQuestionDocFolderPath,
   normalizeGameLanguages,
   parseGameQuestionDoc,
   rebuildGameQuestionDocColumns,
@@ -106,14 +106,14 @@ describe('issue #932 game question Doc templates and parsers', () => {
     expect(gameQuestionDocFileName(GAME_TYPES.TEST_WIEDZY, 'Test&Wedding-UM-2026-08-001')).toBe(
       'Test Wiedzy - Test&Wedding-UM-2026-08-001',
     );
-    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_ZGODNOSCI, 'Test&Wedding-UM-2026-08-001')).toEqual([
-      'secrets',
-      'Test&Wedding-UM-2026-08-001',
-      'compatibility-test-game',
-    ]);
-    expect(gameQuestionDocFolderSegments(GAME_TYPES.TEST_WIEDZY, 'Test&Wedding-UM-2026-08-001')).toEqual([
-      'games',
-    ]);
+    expect(gameQuestionDocFolderPath(GAME_TYPES.TEST_ZGODNOSCI, 'Test&Wedding-UM-2026-08-001')).toEqual({
+      scope: 'private',
+      segments: ['secrets', 'Test&Wedding-UM-2026-08-001', 'compatibility-test-game'],
+    });
+    expect(gameQuestionDocFolderPath(GAME_TYPES.TEST_WIEDZY, 'Test&Wedding-UM-2026-08-001')).toEqual({
+      scope: 'wedding',
+      segments: ['games'],
+    });
   });
 
   it('blocks Doc creation while disabled or without languages', () => {

@@ -75,16 +75,29 @@ describe('issue #924 bilingual speech Doc parser', () => {
       }),
     ).toThrow(/must differ/);
     expect(
-      speechDocFilename({ order: 2, speakerName: 'Bartek', relationship: 'Best man' }),
-    ).toBe('2 - Bartek - Best man');
+      speechDocFilename({
+        weddingId: 'Weronika&Guillaume-UM-2027-04-002',
+        order: 2,
+        speakerName: 'Bartek',
+        relationship: 'Best man',
+      }),
+    ).toBe('Weronika&Guillaume-UM-2027-04-002 - 2 - Bartek - Best man');
     expect(
-      speechDocFilename({ order: 1, speakerName: 'A/B', relationship: 'Witness?' }),
-    ).toBe('1 - A B - Witness');
+      speechDocFilename({
+        weddingId: 'Weronika&Guillaume-UM-2027-04-002',
+        order: 1,
+        speakerName: 'A/B',
+        relationship: 'Witness?',
+      }),
+    ).toBe('Weronika&Guillaume-UM-2027-04-002 - 1 - A B - Witness');
+    expect(() => speechDocFilename({ order: 1, speakerName: 'Bartek' })).toThrow(
+      /wedding id/,
+    );
   });
 
   it('exposes the Drive create/rename/parse lifecycle', () => {
     const drive = read('supabase/functions/_shared/googleDrive.js');
-    for (const method of ['createFolder', 'ensureSpeechFolder', 'createGoogleDoc', 'renameFile']) {
+    for (const method of ['createFolder', 'ensureFolderPath', 'ensureSpeechFolder', 'createGoogleDoc', 'renameFile']) {
       expect(drive).toContain(method);
     }
     const api = read('supabase/functions/admin_drive/index.ts');
