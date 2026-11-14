@@ -87,7 +87,6 @@ function resolveMiniSession(wedding) {
 
   return {
     enabled: true,
-    stepId: text(raw.stepId),
     latestStartMinutesBeforeSunset: Number.isFinite(raw.latestStartMinutesBeforeSunset)
       ? raw.latestStartMinutesBeforeSunset
       : null,
@@ -165,7 +164,6 @@ export function resolvePhotoPlan(wedding) {
 
   const specialEffects = plan.specialEffects && typeof plan.specialEffects === 'object'
     ? {
-        stepId: text(plan.specialEffects.stepId),
         sparklers: plan.specialEffects.sparklers === true,
         fire: plan.specialEffects.fire === true,
         heavySmoke: plan.specialEffects.heavySmoke === true,
@@ -181,7 +179,6 @@ export function resolvePhotoPlan(wedding) {
 
   const guestCoverage = plan.guestCoverage && typeof plan.guestCoverage === 'object'
     ? {
-        stepId: text(plan.guestCoverage.stepId),
         allGuests: plan.guestCoverage.allGuests === true,
         description: text(plan.guestCoverage.description),
         groups: Array.isArray(plan.guestCoverage.groups)
@@ -325,9 +322,9 @@ export function sunsetFreshnessLabel(sunset) {
   return Number.isFinite(date.getTime()) ? date.toISOString() : null;
 }
 
-// Map photo-plan items to timeline steps. Explicit `stepId` wins; otherwise a
-// deterministic title/keyword match is used so a cartridge without ids still
-// shows details in a sensible step card.
+// Map photo-plan items to timeline steps. Only `groupPhotos` supports an
+// explicit `stepId`; every other item uses the deterministic title/keyword
+// match so a cartridge without ids still shows details in a sensible step card.
 const PHOTO_PLAN_MATCHERS = {
   miniSession: /mini|session|golden/i,
   groupPhotos: /group|family|portrait/i,

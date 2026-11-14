@@ -11,13 +11,11 @@ const timeline = [
 ];
 
 describe('issue #228 photo plan details in step cards', () => {
-  it('maps plan elements by explicit stepId first', () => {
+  it('maps group photos by their explicit stepId first', () => {
     const map = mapPhotoPlanToSteps({
       groupPhotos: { stepId: 's3', location: 'Garden' },
-      miniSession: { stepId: 's1', location: 'Garden' },
     }, timeline);
     expect(map.s3[0].type).toBe('groupPhotos');
-    expect(map.s1[0].type).toBe('miniSession');
   });
 
   it('falls back to deterministic title keywords', () => {

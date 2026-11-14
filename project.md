@@ -657,9 +657,13 @@ implemented in #378 and #379.
 
 **Photo plan into steps.** Delete the standalone Photo plan card and render each
 plan element inside its mapped step card: mini session, group photos, speed
-foto, special effects and guest coverage. Use an explicit `stepId` association
-when available; otherwise use a documented deterministic title/keyword mapping.
-([#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228))
+foto, special effects and guest coverage. Only `photoPlan.groupPhotos.stepId`
+is an explicit step binding; guest coverage and special effects use the
+documented deterministic title/keyword mapping. The mini session is placed by
+the photographer-chosen hour through `resolveMiniSessionTwinStepId()`, not by a
+`stepId`. Dead `stepId` reads for these blocks were removed in #944.
+([#228](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/228),
+[#944](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/944))
 
 **Sunset & Golden Hour.** Keep the card in its current location. It disappears
 automatically once the mini session is done. The photographer can overwrite the
