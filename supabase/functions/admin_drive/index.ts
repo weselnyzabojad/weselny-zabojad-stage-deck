@@ -21,29 +21,18 @@ import {
   driveErrorHttpStatus,
 } from '../_shared/googleDrive.js';
 import { encryptSecret, parseSecretMarkers } from '../_shared/speechSecrets.js';
+import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
-
-function originAllowed(req: Request) {
-  const origin = req.headers.get('origin') ?? '';
-  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
-}
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
 });
 
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
-}
-
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: corsHeaders() });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 function serverEnv(name: string) {
@@ -52,11 +41,11 @@ function serverEnv(name: string) {
   return value;
 }
 
-Deno.serve(async (req) => {
-  if (!originAllowed(req)) {
+async function handleRequest(req: Request) {
+  if (!isOriginAllowed(req)) {
     return json({ error: 'Origin not allowed.' }, 403);
   }
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
+  if (req.method === 'OPTIONS') return new Response('ok');
   if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
   try {
@@ -249,4 +238,6 @@ Deno.serve(async (req) => {
     // Never echo raw upstream/private data.
     return json({ error: 'Drive request failed.' }, 500);
   }
-});
+}
+
+Deno.serve(async (req) => withCors(req, await handleRequest(req)));

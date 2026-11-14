@@ -40,6 +40,7 @@ import {
   decodeJwt,
   mfaFresh,
 } from '../_shared/adminAuth.js';
+import { isOriginAllowed, withCors } from '../_shared/cors.js';
 import {
   WEDDING_ID_PATTERN,
   buildDriveSourceMetadata,
@@ -80,24 +81,11 @@ const DESTRUCTIVE_ACTIONS = new Set([
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
-const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN')?.trim() ?? '';
-
-function originAllowed(req: Request) {
-  const origin = req.headers.get('origin') ?? '';
-  return !origin || (ALLOWED_ORIGIN !== '' && origin === ALLOWED_ORIGIN);
-}
-
-function corsHeaders() {
-  return {
-    'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
-}
-
 function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: corsHeaders() });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 function serverEnv(name: string, fallback = '') {
@@ -367,11 +355,11 @@ async function handlePublish(admin: any, allowlisted: any, body: any, { source =
   return { response: json(publishResponse(result, pins)) };
 }
 
-Deno.serve(async (req) => {
-  if (!originAllowed(req)) {
+async function handleRequest(req: Request) {
+  if (!isOriginAllowed(req)) {
     return json({ error: 'Origin not allowed.' }, 403);
   }
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders() });
+  if (req.method === 'OPTIONS') return new Response('ok');
   if (req.method !== 'POST') return json({ error: 'Method not allowed.' }, 405);
 
   try {
@@ -985,4 +973,6 @@ Deno.serve(async (req) => {
     console.error('admin_api failed', error);
     return json({ error: 'Admin request failed. Try again shortly.' }, 500);
   }
-});
+}
+
+Deno.serve(async (req) => withCors(req, await handleRequest(req)));
