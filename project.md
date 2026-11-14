@@ -6011,4 +6011,75 @@ bodies remain as history. No schema or runtime change is made by this decision.
 
 **Tracking.** [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#879](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/879), [#880](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/880), [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886), [#889](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/889), [#904](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/904).
 
+### 17.69 Musical Set, computed durations and editable VIP registry (decision, 2026-11-14)
+
+Formalize the existing `dj_set` timeline block as the canonical **Musical Set**
+step, shown in every role timeline. On the DJ VIP and DJ + MC surfaces, a new
+top bar shows how long the set should last, warns as the end approaches, offers
+a local PLAY/STOP timer, and lets the operator extend the set by 60 minutes
+inside the Venue Manager's authorized window. In parallel, step durations stop
+being authored or stored: every duration is derived at runtime. The hardcoded
+VIP DJ registry becomes admin-managed, with the landing partner strip reflecting
+active VIP DJs.
+
+**Google Doc contract.** Musical Set is Doc-linked. It is the existing
+`TIMELINE` row with `Optional Flag = dj_set`, renamed canonically to "Musical
+Set"; the flag, not the localized title, drives recognition. No new optional
+flag and no auto-insertion. The same TIMELINE contract removes the
+`Duration (min)` column: `durationMin` is removed from
+`schema/domains/steps.json`, the Edge schema copy, the parser, importer,
+fixtures and published cartridge. Legacy cartridges may still carry
+`durationMin`; it is ignored and stripped. The final step requires the venue
+closure time, with no 15-minute fallback. The admin VIP registry and landing
+partner strip are not Doc-linked.
+
+**View scope.**
+
+| View | Behaviour |
+| --- | --- |
+| MC Master | Timeline shows the Musical Set; no countdown. |
+| DJ Standard | Timeline shows the Musical Set; no countdown or extension. |
+| DJ VIP | Timeline plus top bar countdown, end-of-set warnings, local PLAY/STOP, and 60-minute extension. |
+| DJ + MC | Same VIP bar and extension as DJ VIP. |
+| Photographer 1/2, Cameraman | Timeline shows the Musical Set. |
+| Venue Manager | Timeline shows the Musical Set; existing time edits cascade consecutive flexible steps. |
+| Speaker, Song Request | Unchanged; no timeline and no Musical Set surface. |
+| Admin `/admin` | Add, edit and deactivate VIP DJs; no public contact data. |
+| Landing `/` | Partner strip reflects active VIP DJs with public names and logos. |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Musical Set source | Reuse `dj_set`; present only when the Doc has the row; no auto-insertion |
+| Canonical label | "Musical Set" in the template and predefined-step audit; recognition by flag |
+| Duration storage | Remove `durationMin` from the Doc, schema, parser, importer and cartridge; derive at runtime |
+| Legacy duration | Accept, ignore and strip `durationMin` from existing cartridges |
+| Final step | Ends at the venue closure time; missing closure is an error, no default |
+| Countdown scope | DJ VIP and DJ + MC only, and only when the active step is `dj_set` |
+| Warning states | Amber at 15 minutes or less; urgent at 5 minutes or less; reduced-motion safe |
+| PLAY/STOP | Local timer only; never completes the step or mutates shared live state |
+| Venue Manager reschedule | Shift consecutive following `FLEXIBLE` steps by the same delta; later hard anchors stay fixed |
+| Reschedule guard | Block a cascade that would cross a later hard anchor or the closure time |
+| Extension | +60 minutes; moves the immediate next step (typically the dishes hard anchor) and consecutive flexible steps, stopping at the next later hard anchor |
+| Extension authority | Only allowed when `closureExtensionAllowed` is true, inside `closureExtensionUntil`/`closureTime`, re-checked against latest synced state |
+| VIP registry | Database-backed full record; logical deactivation; deactivation blocked while assigned or default |
+| VIP security | Mutations only through authenticated `admin_api`; anon/authenticated have no table access |
+| Landing data | Public projection only: id, display name, logo URL, order; existing two DJs as fallback |
+| UI approval | Approved scoped UI only: VIP top bar, admin VIP form, landing partner strip; no timeline redesign |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#910](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/910) | Remove authored/stored `durationMin`; compute every step duration at runtime; closure mandatory | - |
+| 2 | [#911](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/911) | Formalize `dj_set` as the Musical Set step in every role timeline | - |
+| 3 | [#912](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/912) | Venue Manager reschedule cascade and synced propagation | #910, #911 |
+| 4 | [#914](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/914) | Admin-managed VIP DJ registry and landing partner strip | - (must land before #913 for newly added VIP identities) |
+| 5 | [#913](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/913) | DJ VIP and DJ + MC Musical Set bar, warnings, local PLAY/STOP and guarded extension | #910, #911, #912, #914 |
+
+**Open questions.** None.
+
+**Tracking.** [#910](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/910), [#911](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/911), [#912](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/912), [#913](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/913), [#914](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/914).
+
 
