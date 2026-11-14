@@ -16,35 +16,25 @@ afterEach(() => {
 });
 
 describe('issue #820 landing feature copy and centered features', () => {
-  it('ships the new hero lead in every locale', () => {
-    expect(fr['landing.hero.lead']).toBe(
-      'Le maître de cérémonie, le DJ, le photographe, le vidéaste, le manager de la salle et tout autre prestataire voient la même timeline en direct — même quand le réseau de la salle tombe.',
-    );
-    expect(pl['landing.hero.lead']).toContain('każdy inny usługodawca');
-    expect(en['landing.hero.lead']).toContain('and any other vendor');
+  it('ships the harmonised hero lead in every locale', () => {
+    expect(fr['landing.hero.lead']).toContain('partagent le même planning en direct');
+    expect(pl['landing.hero.lead']).toContain('dzielą ten sam plan na żywo');
+    expect(en['landing.hero.lead']).toContain('share the same live schedule');
   });
 
-  it('ships the four rewritten feature bodies', () => {
-    expect(fr['landing.features.1.body']).toBe(
-      'Chaque prestataire opère autour du même plan, sans partage de versions ni appels « et ensuite ? ».',
-    );
-    expect(fr['landing.features.3.body']).toBe(
-      'Décaler la première danse ou étendre un bloc musical car la cuisine a besoin de temps supplémentaire ? L’information arrive immédiatement sur chaque appareil de chacun des prestataires.',
-    );
-    expect(fr['landing.features.4.body']).toBe(
-      'Chaque prestataire voit uniquement les informations dont il a besoin, sans informations inutiles.',
-    );
-    expect(fr['landing.features.7.body']).toBe(
-      'En fonction de l’offre choisie dans le cadre des services Weselny Żabojad, les invités peuvent envoyer des idées de chansons depuis leur téléphone.',
-    );
+  it('ships the rewritten feature bodies', () => {
+    expect(fr['landing.features.1.body']).toContain('planning unique et partagé');
+    expect(fr['landing.features.3.body']).toContain('Décalez la première danse');
+    expect(fr['landing.features.4.body']).toContain('Sur-mesure pour chaque intervenant');
+    expect(fr['landing.features.7.body']).toContain('selon la formule choisie');
 
-    expect(pl['landing.features.3.body']).toContain('kuchnia potrzebuje dodatkowego czasu');
-    expect(en['landing.features.7.body']).toContain('Depending on the package');
+    expect(pl['landing.features.3.body']).toContain('zmień tempo');
+    expect(pl['landing.features.3.body']).not.toContain('kuchnia potrzebuje');
+    expect(en['landing.features.7.body']).toContain('depending on the package');
   });
 
   it('keeps the included note on one desktop line and centers the features section', () => {
     const landing = read('src/components/LandingPage.jsx');
-
     expect(landing).toContain('max-w-5xl');
     expect(landing).toContain('sm:whitespace-nowrap');
     expect(landing).toContain('id="landing-features" className="text-center"');
