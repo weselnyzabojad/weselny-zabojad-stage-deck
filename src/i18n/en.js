@@ -279,6 +279,7 @@ const en = {
   'game.title': 'Game Clicker',
   'game.questions': 'Game questions',
   'game.none': 'No game questions attached to this cartridge.',
+  'game.loading': 'Loading game questions…',
   'game.question': 'Question {number}',
   'game.answer': 'Answer',
   'game.reveal': 'Reveal answer',

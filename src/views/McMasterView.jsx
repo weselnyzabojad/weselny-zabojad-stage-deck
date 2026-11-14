@@ -376,7 +376,17 @@ export default function McMasterView({ model }) {
                 📖 {t('mc.step.openTeleprompter')}
               </button>
             )}
-            {isGameStep && game && (
+            {isGameStep && game?.loading && (
+              <span className="rounded-xl border border-line bg-card px-3.5 py-2 font-heading text-xs font-semibold text-muted">
+                {t('game.loading')}
+              </span>
+            )}
+            {isGameStep && game?.unavailable && (
+              <span className="rounded-xl border border-amber-700 bg-amber-950/50 px-3.5 py-2 font-heading text-xs font-semibold text-amber-100">
+                {t('games.unavailableHelp')}
+              </span>
+            )}
+            {isGameStep && game && !game.loading && !game.unavailable && (
               <button
                 type="button"
                 onClick={() => setOverlay('game')}
@@ -581,12 +591,12 @@ export default function McMasterView({ model }) {
       {overlay === "teleprompter" && (
         <TeleprompterOverlay open step={currentStep} onClose={closeOverlay} />
       )}
-      {overlay === "game" && isGameStep && (
+      {overlay === "game" && isGameStep && game && !game.unavailable && !game.loading && (
         <GameClickerOverlay
           open
           game={game}
           weddingId={WEDDING.weddingId}
-          results={currentStep?.game?.id ? liveState?.game_results?.[currentStep.game.id] ?? null : null}
+          results={game?.id ? liveState?.game_results?.[game.id] ?? null : null}
           onResultsChange={setGameResults}
           onClose={closeOverlay}
         />

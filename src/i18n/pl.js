@@ -279,6 +279,7 @@ const pl = {
   'game.title': 'Kliker gier',
   'game.questions': 'Pytania gry',
   'game.none': 'Brak pytań gry w tej kasecie.',
+  'game.loading': 'Wczytywanie pytań gry…',
   'game.question': 'Pytanie {number}',
   'game.answer': 'Odpowiedź',
   'game.reveal': 'Pokaż odpowiedź',

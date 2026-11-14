@@ -8,8 +8,10 @@ describe('issue #398 Game Clicker only on the games step', () => {
   it('gates the button and overlay on the games step', () => {
     const mc = read('src/views/McMasterView.jsx');
     expect(mc).toContain('const isGameStep = Boolean(');
-    expect(mc).toContain('{isGameStep && game && (');
-    expect(mc).toContain('{overlay === "game" && isGameStep && (');
+    expect(mc).toContain('{isGameStep && game && !game.loading && !game.unavailable && (');
+    expect(mc).toContain(
+      '{overlay === "game" && isGameStep && game && !game.unavailable && !game.loading && (',
+    );
   });
 
   it('removes the game payload from the wedding cake step', () => {
