@@ -59,6 +59,7 @@ import {
 } from '../_shared/googleDrive.js';
 import { parseGameQuestionDoc } from '../_shared/gameQuestions.js';
 import { checkPasswordBreach } from '../_shared/passwordBreach.js';
+import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
 
 const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, guestCoverageDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain]);
 const driveConnector = createGoogleDriveConnector({
@@ -370,6 +371,57 @@ async function handlePublish(admin: any, allowlisted: any, body: any, { source =
   return { response: json(publishResponse(result, pins)) };
 }
 
+function validateSpeechPayload(speech: any) {
+  const id = typeof speech?.id === 'string' ? speech.id.trim() : '';
+  const speakerName = cleanProviderField(speech?.speaker?.name, 160);
+  const speakerRelationship = cleanProviderField(speech?.speaker?.relationship, 160);
+  const speakerLanguage =
+    typeof speech?.speakerLanguage === 'string' ? speech.speakerLanguage.trim().toUpperCase() : '';
+  const mcLanguage =
+    typeof speech?.mcLanguage === 'string' ? speech.mcLanguage.trim().toUpperCase() : '';
+  const script = typeof speech?.script === 'string' ? speech.script : '';
+  const order = Number.isInteger(speech?.order) ? speech.order : null;
+  if (!id) return { error: 'A speech id is required.' };
+  if (!speakerName) return { error: 'Speaker name is required.' };
+  if (!/^[A-Z]{2}$/.test(speakerLanguage) || !/^[A-Z]{2}$/.test(mcLanguage)) {
+    return { error: 'Speaker and MC languages must be ISO 639-1 codes.' };
+  }
+  if (speakerLanguage === mcLanguage) {
+    return { error: 'Speaker and MC languages must differ.' };
+  }
+  if (order == null || order < 1) return { error: 'A positive speech order is required.' };
+  if (!script.trim()) return { error: 'The speech script is empty.' };
+  return {
+    value: {
+      id,
+      order,
+      speakerName,
+      speakerRelationship: speakerRelationship ?? null,
+      speakerLanguage,
+      mcLanguage,
+      speakerAccess: speech?.speakerAccess !== false,
+      script,
+    },
+  };
+}
+
+async function writeSpeechLog(
+  admin: any,
+  weddingId: string,
+  action: string,
+  detail: { actor?: string; docId?: string; docVersion?: string; code?: string; message?: string } = {},
+) {
+  await admin.from('speech_logs').insert({
+    wedding_id: weddingId,
+    actor: detail.actor ?? null,
+    action,
+    doc_id: detail.docId ?? null,
+    doc_version: detail.docVersion ?? null,
+    error_code: detail.code ?? null,
+    message: detail.message ?? null,
+  });
+}
+
 async function handleRequest(req: Request) {
   if (!isOriginAllowed(req)) {
     return json({ error: 'Origin not allowed.' }, 403);
@@ -424,6 +476,237 @@ async function handleRequest(req: Request) {
         { error: 'Re-authenticate with your TOTP code before this action.', requiresMfaReauth: true },
         403,
       );
+    }
+
+    if (action === 'list_speeches') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const [records, live, logs] = await Promise.all([
+        admin
+          .from('speech_records')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .neq('status', 'DELETED')
+          .order('sort_order', { ascending: true }),
+        admin.from('speech_live').select('*').eq('wedding_id', weddingId).maybeSingle(),
+        admin
+          .from('speech_logs')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: false })
+          .limit(100),
+      ]);
+      if (records.error) throw records.error;
+      const revisions = (records.data ?? []).filter((row: any) => row.live_revision != null);
+      const { data: revisionRows } = revisions.length
+        ? await admin
+            .from('speech_revisions')
+            .select('revision, entries')
+            .eq('wedding_id', weddingId)
+            .in('revision', revisions.map((row: any) => row.live_revision))
+        : { data: [] };
+      const byRevision = new Map((revisionRows ?? []).map((row: any) => [row.revision, row]));
+      const speeches = [];
+      for (const record of records.data ?? []) {
+        const revision = record.live_revision ? byRevision.get(record.live_revision) : null;
+        const entry = revision?.entries?.[record.id] ?? null;
+        let preview = null;
+        if (entry) {
+          try {
+            preview = await decryptSpeechScript({
+              masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
+              weddingId,
+              speechId: record.id,
+              revision: record.live_revision,
+              entry,
+            });
+          } catch {
+            preview = null;
+          }
+        }
+        speeches.push({ ...record, preview });
+      }
+      return json({
+        speeches,
+        live: live.data ?? null,
+        logs: logs.data ?? [],
+      });
+    }
+
+    if (action === 'publish_speech') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const validated = validateSpeechPayload(body?.speech);
+      if (validated.error) {
+        await writeSpeechLog(admin, weddingId, 'speech_publish_invalid', {
+          code: 'invalid_speech',
+          message: validated.error,
+        });
+        return json({ error: validated.error }, 400);
+      }
+      const speech = validated.value;
+      const { data: live } = await admin
+        .from('speech_live')
+        .select('speech_id')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (live?.speech_id) {
+        return json({ error: 'Publishing is blocked while a speech is live.' }, 409);
+      }
+
+      const { data: records, error: recordsError } = await admin
+        .from('speech_records')
+        .select('*')
+        .eq('wedding_id', weddingId);
+      if (recordsError) throw recordsError;
+      const { data: latest } = await admin
+        .from('speech_revisions')
+        .select('revision')
+        .eq('wedding_id', weddingId)
+        .order('revision', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const revision = Number(latest?.revision ?? 0) + 1;
+      const entries: Record<string, any> = {};
+      for (const record of records ?? []) {
+        if (record.id === speech.id || record.live_revision == null) continue;
+        const { data: old } = await admin
+          .from('speech_revisions')
+          .select('entries')
+          .eq('wedding_id', weddingId)
+          .eq('revision', record.live_revision)
+          .maybeSingle();
+        if (old?.entries?.[record.id]) entries[record.id] = old.entries[record.id];
+      }
+      entries[speech.id] = await encryptSpeechScript({
+        masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
+        weddingId,
+        speechId: speech.id,
+        revision,
+        plaintext: speech.script,
+      });
+      const { error: revisionError } = await admin.from('speech_revisions').insert({
+        wedding_id: weddingId,
+        revision,
+        published_by: allowlisted.user_id,
+        entries,
+      });
+      if (revisionError) throw revisionError;
+      const record = {
+        wedding_id: weddingId,
+        id: speech.id,
+        sort_order: speech.order,
+        speaker_name: speech.speakerName,
+        speaker_relationship: speech.speakerRelationship,
+        speaker_language: speech.speakerLanguage,
+        mc_language: speech.mcLanguage,
+        speaker_access: speech.speakerAccess,
+        status: 'PUBLISHED',
+        live_revision: revision,
+      };
+      const { error: upsertError } = await admin
+        .from('speech_records')
+        .upsert(record, { onConflict: 'wedding_id,id' });
+      if (upsertError) throw upsertError;
+      await writeSpeechLog(admin, weddingId, 'speech_publish', {
+        actor: allowlisted.email,
+        docId: speech.id,
+        docVersion: String(revision),
+      });
+      return json({ speechId: speech.id, revision });
+    }
+
+    if (action === 'restore_speech') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      const revision = Number(body?.revision);
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId || !Number.isInteger(revision)) {
+        return json({ error: 'weddingId, speechId and revision are required.' }, 400);
+      }
+      const { data: live } = await admin
+        .from('speech_live')
+        .select('speech_id')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (live?.speech_id) return json({ error: 'Restore is blocked while a speech is live.' }, 409);
+      const { data: target } = await admin
+        .from('speech_revisions')
+        .select('revision, entries')
+        .eq('wedding_id', weddingId)
+        .eq('revision', revision)
+        .maybeSingle();
+      if (!target?.entries?.[speechId]) return json({ error: 'Revision not found.' }, 404);
+      const { error } = await admin
+        .from('speech_records')
+        .update({ live_revision: revision, status: 'PUBLISHED' })
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId);
+      if (error) throw error;
+      await writeSpeechLog(admin, weddingId, 'speech_restore', {
+        actor: allowlisted.email,
+        docId: speechId,
+        docVersion: String(revision),
+      });
+      return json({ speechId, revision });
+    }
+
+    if (action === 'delete_speech') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !speechId) {
+        return json({ error: 'weddingId and speechId are required.' }, 400);
+      }
+      const { data: live } = await admin
+        .from('speech_live')
+        .select('speech_id')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (live?.speech_id) return json({ error: 'Delete is blocked while a speech is live.' }, 409);
+      const { error } = await admin
+        .from('speech_records')
+        .update({ status: 'DELETED' })
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId);
+      if (error) throw error;
+      await writeSpeechLog(admin, weddingId, 'speech_delete', {
+        actor: allowlisted.email,
+        docId: speechId,
+      });
+      return json({ ok: true });
+    }
+
+    if (action === 'set_speech_mode') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const mode = typeof body?.mode === 'string' ? body.mode.trim().toUpperCase() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !['OFF', 'LIGHT', 'COMPLEX'].includes(mode)) {
+        return json({ error: 'A valid weddingId and speech mode are required.' }, 400);
+      }
+      const { data: live } = await admin
+        .from('speech_live')
+        .select('speech_id')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (live?.speech_id) {
+        return json({ error: 'Speech mode cannot change while a speech is live.' }, 409);
+      }
+      const { data: wedding } = await admin
+        .from('weddings')
+        .select('cartridge')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      const cartridge = { ...wedding.cartridge, speechMode: mode };
+      delete cartridge.speeches;
+      const { error } = await admin
+        .from('weddings')
+        .update({ cartridge })
+        .eq('wedding_id', weddingId);
+      if (error) throw error;
+      await writeSpeechLog(admin, weddingId, 'speech_mode', {
+        actor: allowlisted.email,
+        message: mode,
+      });
+      return json({ mode });
     }
 
     if (action === 'list_vip_djs') {
