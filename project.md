@@ -5689,3 +5689,48 @@ be managed independently from the admin page.
 **Open questions.** None.
 
 **Tracking.** [#876](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/876), [#877](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/877), [#886](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/886).
+
+### 17.62 Landing contact prefill and WordPress handoff (decision, 2026-11-14)
+
+The public landing's contact button must tell the team that the client came from
+the Stage Deck landing, without asking the client to type it. Both `/` CTAs
+carry a localized `prefill` query parameter to the existing WordPress contact
+form. The visible pre-fill and its safety rules live on `weselnyzabojad.pl` and
+are handed off to the webmaster: the field is filled only when empty, stays
+editable and is never submitted automatically.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | Hero and footer CTAs append `?prefill=<localized sentence>` and keep `#kontakt` |
+| `weselnyzabojad.pl/#kontakt` | Enfold form fills `Dodatkowe info` (`avia_6_1`) only when empty |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Transport | `?prefill=` carries the encoded localized sentence; single copy source in `src/i18n` |
+| Copy FR | `Je vous contacte depuis la page d’accueil Stage Deck (weselnyzabojad.pl).` |
+| Copy PL | `Kontaktuję się ze strony głównej Stage Deck (weselnyzabojad.pl).` |
+| Copy EN | `I'm contacting you from the Stage Deck landing page (weselnyzabojad.pl).` |
+| Target | Enfold/Avia form field `avia_6_1`, label `Dodatkowe info`, required |
+| Overwrite | Never replace non-empty client input; no-op when the parameter is absent |
+| Safety | Value assignment only, 280-char cap, no HTML, no auto-submit, no storage or tracking |
+| Fragment | `#kontakt` stays last so the form still scrolls into view |
+| Owner | Stage Deck for the link; webmaster for the WordPress snippet |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#891](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/891) | Landing CTA URL contract, FR/PL/EN copy and smoke-test updates | - |
+| 2 | [#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892) | WordPress/Enfold prefill snippet and manual validation (webmaster) | #891 for end-to-end |
+
+**Open questions.** None.
+
+**Tracking.** [#891](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/891), [#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892).
