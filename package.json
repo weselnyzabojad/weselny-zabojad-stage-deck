@@ -15,6 +15,10 @@
     "validate:google-doc-map": "node scripts/validate-google-doc-field-map.mjs",
     "validate:i18n": "node scripts/check-i18n.mjs",
     "validate:env": "node scripts/validate-env.mjs",
+    "local:start": "node scripts/local-supabase.mjs start",
+    "local:stop": "node scripts/local-supabase.mjs stop",
+    "local:status": "node scripts/local-supabase.mjs status",
+    "local:reset": "node scripts/local-supabase.mjs reset",
     "migrate:timestamps": "node scripts/migrate-actual-timestamps.mjs",
     "preview": "vite preview"
   },

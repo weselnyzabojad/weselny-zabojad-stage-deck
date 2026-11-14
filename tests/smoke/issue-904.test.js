@@ -11,11 +11,11 @@ describe('issue #904 local Supabase scaffolding', () => {
 
   it('documents the local start, reset, serve and stop path', () => {
     for (const command of [
-      'npx supabase start',
-      'npx supabase db reset',
-      'npx supabase status',
+      'npm run local:start',
+      'npm run local:reset',
+      'npm run local:status',
       'npx supabase functions serve',
-      'npx supabase stop',
+      'npm run local:stop',
     ]) {
       expect(docs).toContain(command);
     }
