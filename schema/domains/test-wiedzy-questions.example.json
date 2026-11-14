@@ -1,0 +1,23 @@
+{
+  "gameType": "TEST_WIEDZY",
+  "questions": [
+    {
+      "id": "w01",
+      "prompt": {
+        "PL": "Gdzie się poznali?",
+        "EN": "Where did they meet?"
+      },
+      "level": "EASY",
+      "answer": "BRIDE"
+    },
+    {
+      "id": "w02",
+      "prompt": {
+        "PL": "Kto wybrał miejsce wesela?",
+        "EN": "Who chose the wedding venue?"
+      },
+      "level": "MEDIUM",
+      "answer": "GROOM"
+    }
+  ]
+}

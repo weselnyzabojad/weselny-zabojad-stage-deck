@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   createGoogleDriveConnector,
   DRIVE_METADATA_FIELDS,
-  DRIVE_READONLY_SCOPE,
+  DRIVE_REQUEST_SCOPES,
   driveErrorHttpStatus,
   GOOGLE_DRIVE_FILES_ENDPOINT,
   GOOGLE_TOKEN_ENDPOINT,
@@ -109,13 +109,15 @@ describe('issue #168 Google Drive connector', () => {
       version: '42',
       md5Checksum: 'abc123',
       size: '2048',
+      parents: null,
+      webViewLink: null,
     });
     assertNoSecrets(first);
     assertNoSecrets(assertions);
     expect(assertions[0].header).toMatchObject({ alg: 'RS256', typ: 'JWT' });
     expect(assertions[0].claims).toMatchObject({
       iss: 'service@example.iam.gserviceaccount.com',
-      scope: DRIVE_READONLY_SCOPE,
+      scope: DRIVE_REQUEST_SCOPES,
       aud: GOOGLE_TOKEN_ENDPOINT,
     });
 

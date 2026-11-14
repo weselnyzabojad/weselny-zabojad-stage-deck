@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/test-zgodnosci-questions.json",
+  "title": "Test Zgodności question set",
+  "description": "Parsed Test Zgodności question set. Question prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.supported. This set is encrypted as one game bundle and is never stored in the wedding cartridge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "gameType",
+    "questions"
+  ],
+  "properties": {
+    "gameType": {
+      "const": "TEST_ZGODNOSCI"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/question"
+      }
+    }
+  },
+  "$defs": {
+    "localizedPrompt": {
+      "type": "object",
+      "description": "One prompt per supported language. Keys are ISO 639-1 codes; values are copied verbatim from the Doc.",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[A-Z]{2}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "prompt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "prompt": {
+          "$ref": "#/$defs/localizedPrompt"
+        }
+      }
+    }
+  }
+}

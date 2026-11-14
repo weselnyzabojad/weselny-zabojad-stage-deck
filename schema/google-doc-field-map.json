@@ -204,6 +204,21 @@
       "witnesses[].speechIds": "no",
       "witnesses[].notes": "no"
     },
+    "test-zgodnosci-questions.example.json": {
+      "gameType": "separate",
+      "questions[].id": "separate",
+      "questions[].prompt": "separate",
+      "questions[].prompt.PL": "separate"
+    },
+    "test-wiedzy-questions.example.json": {
+      "gameType": "separate",
+      "questions[].id": "separate",
+      "questions[].prompt": "separate",
+      "questions[].prompt.PL": "separate",
+      "questions[].prompt.EN": "separate",
+      "questions[].level": "separate",
+      "questions[].answer": "separate"
+    },
     "wedding-cartridge.example.json": {
       "schemaVersion": "no",
       "weddingId": "no",

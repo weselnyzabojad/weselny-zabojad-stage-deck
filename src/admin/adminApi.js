@@ -387,6 +387,21 @@ export async function parseSpeechDoc(payload) {
   return callAdminDrive('parse_speech_doc', payload);
 }
 
+export async function createGameQuestionDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Game question Doc creation is unavailable in demo mode.');
+  return callAdminDrive('create_game_question_doc', payload);
+}
+
+export async function rewriteGameQuestionDocColumns(payload) {
+  if (ADMIN_DEMO) throw new Error('Game question Doc rewriting is unavailable in demo mode.');
+  return callAdminDrive('rewrite_game_question_doc_columns', payload);
+}
+
+export async function parseGameQuestionDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Game question Doc parsing is unavailable in demo mode.');
+  return callAdminDrive('parse_game_question_doc', payload);
+}
+
 export async function publishSpeech(payload) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');

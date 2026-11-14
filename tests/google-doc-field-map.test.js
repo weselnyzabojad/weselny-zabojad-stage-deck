@@ -7,7 +7,7 @@ describe('Google Doc field map', () => {
 
     expect(result.errors).toEqual([]);
     expect(result.ok).toBe(true);
-    expect(result.summary.files).toBe(19);
+    expect(result.summary.files).toBe(21);
     expect(result.summary.fields).toBeGreaterThan(200);
   });
 });
