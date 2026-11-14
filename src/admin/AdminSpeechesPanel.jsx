@@ -4,7 +4,9 @@ import {
   deleteSpeech,
   getRevisionContext,
   listSpeeches,
+  migrateSpeeches,
   parseSpeechDoc,
+  preflightSpeechMigration,
   publishSpeech,
   renameSpeechDoc,
   restoreSpeech,
@@ -43,6 +45,8 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
   const [progress, setProgress] = useState({});
   const [accessPins, setAccessPins] = useState({});
   const [qrCard, setQrCard] = useState(null);
+  const [migration, setMigration] = useState(null);
+  const [discardUnlinked, setDiscardUnlinked] = useState(false);
 
   const disabled = readOnly || Boolean(wedding.archived_at);
   const liveSpeechId = live?.speech_id ?? null;
@@ -55,15 +59,17 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     setLoading(true);
     setError('');
     try {
-      const [context, result] = await Promise.all([
+      const [context, result, legacy] = await Promise.all([
         getRevisionContext(wedding.wedding_id),
         listSpeeches(wedding.wedding_id),
+        preflightSpeechMigration(wedding.wedding_id).catch(() => ({ speeches: [] })),
       ]);
       setMode(context?.wedding?.cartridge?.speechMode ?? 'OFF');
       setSpeeches(result?.speeches ?? []);
       setRevisions(result?.revisions ?? []);
       setLogs(result?.logs ?? []);
       setLive(result?.live ?? null);
+      setMigration(legacy ?? { speeches: [] });
     } catch (err) {
       setError(err.message ?? 'Could not load speeches.');
     } finally {
@@ -91,6 +97,39 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
       onChanged?.();
     } catch (err) {
       setError(err.message ?? 'Could not change the speech mode.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const runMigration = async () => {
+    const unlinked = migration?.unlinkedCount ?? 0;
+    if (unlinked > 0 && !discardUnlinked) {
+      setError('Confirm that unlinked legacy speech text will be discarded.');
+      return;
+    }
+    if (
+      !window.confirm(
+        `Migrate ${migration?.speeches?.length ?? 0} legacy speeches? Google Docs are left untouched.`,
+      )
+    ) {
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      const result = await migrateSpeeches({
+        weddingId: wedding.wedding_id,
+        discardUnlinked,
+      });
+      setMessage(
+        `Legacy migration complete: ${result.migrated ?? 0} imported, ${result.discarded ?? 0} discarded.`,
+      );
+      setDiscardUnlinked(false);
+      await load();
+      onChanged?.();
+    } catch (err) {
+      setError(err.message ?? 'Could not migrate the legacy speeches.');
     } finally {
       setBusy(false);
     }
@@ -389,6 +428,50 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
               </span>
             ) : null}
           </div>
+
+          {migration?.speeches?.length ? (
+            <div className="rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
+              <p className="font-heading text-xs font-bold">Legacy speech migration</p>
+              <p className="mt-1 text-amber-200">
+                {migration.speeches.length} speeches still live in the wedding cartridge.
+                Google Docs are never deleted or modified.
+              </p>
+              <ul className="mt-1 space-y-0.5 font-mono text-[9px]">
+                {migration.speeches.map((speech) => (
+                  <li key={speech.id || speech.order}>
+                    {speech.order || '—'} · {speech.speaker.name}
+                    {speech.speaker.relationship ? ` · ${speech.speaker.relationship}` : ''} ·{' '}
+                    {speech.linked ? 'linked Doc' : 'NO Doc link'}
+                    {speech.redactionCount ? ` · ${speech.redactionCount} redactions` : ''}
+                  </li>
+                ))}
+              </ul>
+              {(migration.unlinkedCount ?? 0) > 0 ? (
+                <label className="mt-2 flex items-start gap-1.5 text-amber-200">
+                  <input
+                    type="checkbox"
+                    checked={discardUnlinked}
+                    onChange={(event) => setDiscardUnlinked(event.target.checked)}
+                    disabled={disabled || busy}
+                  />
+                  I understand {migration.unlinkedCount} unlinked speech
+                  {migration.unlinkedCount === 1 ? '' : 'es'} will lose their text.
+                </label>
+              ) : null}
+              <button
+                type="button"
+                onClick={runMigration}
+                disabled={
+                  busy ||
+                  disabled ||
+                  ((migration.unlinkedCount ?? 0) > 0 && !discardUnlinked)
+                }
+                className="mt-2 rounded border border-amber-600 bg-amber-900/60 px-2 py-1 font-semibold text-amber-100 disabled:opacity-40"
+              >
+                Migrate legacy speeches
+              </button>
+            </div>
+          ) : null}
 
           {mode === 'OFF' ? (
             <p className="rounded border border-line bg-card p-2 text-[10px] text-muted">

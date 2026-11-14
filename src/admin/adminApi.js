@@ -368,11 +368,6 @@ export async function previewDriveSource(fileId) {
   return callAdminDrive('preview', { fileId });
 }
 
-export async function importSpeechSource(fileId, { weddingId, speechId } = {}) {
-  if (ADMIN_DEMO) throw new Error('Google Drive import is unavailable in demo mode.');
-  return callAdminDrive('parse_speech', { fileId, weddingId, speechId });
-}
-
 export async function listSpeeches(weddingId) {
   return callAdmin('list_speeches', { weddingId });
 }
@@ -428,6 +423,19 @@ export async function deleteSpeech(payload) {
 
 export async function setSpeechMode(payload) {
   return callAdmin('set_speech_mode', payload);
+}
+
+export async function preflightSpeechMigration(weddingId) {
+  return callAdmin('preflight_speech_migration', { weddingId });
+}
+
+export async function migrateSpeeches(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('speech_migration');
+    return { ok: true, migrated: 0, discarded: 0 };
+  }
+  return callAdmin('migrate_speeches', payload);
 }
 
 export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
