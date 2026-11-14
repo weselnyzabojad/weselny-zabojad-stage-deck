@@ -5858,3 +5858,61 @@ boundary (landing copy) and one validation set.
 **Open questions.** None.
 
 **Tracking.** [#894](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/894).
+
+### 17.65 Landing FAQ and final CTA copy (decision, 2026-11-14)
+
+The last landing slice modernises the FAQ answers and the "Faisons équipe le
+jour J" banner. It removes restrictive or technical wording (`dépend du rôle et
+de la session`, `ils peuvent seulement`, `réussite éclatante`) and replaces it
+with a fluid, reassuring, warm and premium tone. FAQ questions, section/CTA
+titles and all other footer elements stay unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change. Copy stays in `src/i18n/{fr,pl,en}.js`; `LandingPage.jsx`
+only renders the keys.
+
+**View scope.**
+
+| Route | Behaviour |
+| --- | --- |
+| `/` | 5 FAQ answers, final CTA body and shared CTA label use the new copy in FR, PL and EN; native `<details>` accordions are verified, not reworked |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+
+**Copy (FR source of truth).**
+
+| Key | New value |
+| --- | --- |
+| `landing.faq.1.a` | `Non, aucune obligation ! Votre équipe peut l’utiliser directement depuis son navigateur web, ou l’installer en un clin d’œil sur smartphone ou tablette pour un confort optimal.` |
+| `landing.faq.2.a` | `Non, aucun compte n’est requis. Vos invités profitent simplement d’un accès ultra-simple pour glisser leurs envies musicales, sans jamais perturber le déroulé de votre journée.` |
+| `landing.faq.3.a` | `Rien ne s’arrête ! Le planning reste entièrement accessible hors ligne en toutes circonstances. Dès que le réseau revient, tout se synchronise automatiquement en arrière-plan.` |
+| `landing.faq.4.a` | `Absolument pas. Votre espace mariage est 100 % privé et sécurisé. Chaque intervenant accède uniquement à ce qui le concerne grâce à un accès sur-mesure.` |
+| `landing.faq.5.a` | `Stage Deck est inclus sans le moindre frais supplémentaire pour tous les mariages accompagnés par Weselny Żabojad et ses partenaires privilégiés.` |
+| `landing.footer.ctaBody` | `Envie d’un mariage élégant, fluide et parfaitement orchestré ? Échangeons sur vos envies et découvrez comment notre accompagnement sur-mesure fait toute la différence.` |
+| `landing.hero.cta` | `Discutons de votre projet` (same shared value as #894) |
+
+PL and EN equivalents are listed in issue #895.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Issue structure | New scoped issue #895; #894 explicitly excludes FAQ/footer |
+| Doc linkage | None |
+| Locales | FR + PL + EN translated together |
+| FAQ questions | Unchanged; Q3 keeps its network-failure title |
+| Accordions | Native `<details>` kept; verify mouse/touch/keyboard and layout only |
+| CTA key | Shared `landing.hero.cta`; same value as #894, so no conflict |
+| Footer | CTA title, partners, note and crew link unchanged |
+| Tests | Update 811 (FAQ 2 regex), 818 (footer body), 821 (FAQ 5 and partner wording) |
+| Responsive | Verify 320–1440 px; only minimal scoped class changes if a string overflows |
+
+**Task split.** One atomic issue: single view (`/`), one ownership boundary
+(FAQ + final CTA copy) and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#895](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/895) | 5 FAQ answers, final CTA body and shared CTA label in FR/PL/EN; smoke-test refresh; accordion and responsive verification | - (shares the `landing.hero.cta` value with #894, same value, no ordering constraint) |
+
+**Open questions.** None.
+
+**Tracking.** [#895](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/895).
