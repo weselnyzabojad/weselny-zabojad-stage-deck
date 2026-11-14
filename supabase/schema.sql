@@ -24,6 +24,7 @@ create table if not exists public.weddings (
   couple     text,
   date       text,
   cartridge  jsonb,
+  mc_confirmed_by text check (mc_confirmed_by in ('OWNER', 'PROVIDER')),
   expires_at timestamptz not null default (now() + interval '30 days'),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -32,6 +33,8 @@ create table if not exists public.weddings (
 -- TTL for existing deployments.
 alter table public.weddings
   add column if not exists expires_at timestamptz not null default (now() + interval '30 days');
+alter table public.weddings
+  add column if not exists mc_confirmed_by text check (mc_confirmed_by in ('OWNER', 'PROVIDER'));
 
 create index if not exists weddings_expires_idx on public.weddings (expires_at);
 
@@ -157,7 +160,7 @@ create trigger touch_song_requests
 create table if not exists public.wedding_service_providers (
   id             uuid primary key default gen_random_uuid(),
   wedding_id     text not null references public.weddings(wedding_id) on delete cascade,
-  category       text not null check (category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'other')),
+  category       text not null check (category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other')),
   function_label text,
   vip_dj_id      text,
   first_name     text not null check (char_length(first_name) between 1 and 120),
@@ -172,12 +175,12 @@ create table if not exists public.wedding_service_providers (
   constraint wedding_service_providers_other_function
     check (category <> 'other' or (function_label is not null and char_length(function_label) between 1 and 120)),
   constraint wedding_service_providers_vip_dj_check
-    check (vip_dj_id is null or (category = 'dj' and vip_dj_id in ('dj_mark', 'dj_szymoniak')))
+    check (vip_dj_id is null or (category in ('dj', 'dj_mc') and vip_dj_id in ('dj_mark', 'dj_szymoniak')))
 );
 
 create unique index if not exists wedding_service_providers_role_unique_idx
   on public.wedding_service_providers (wedding_id, category)
-  where category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager');
+  where category in ('dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc');
 
 create index if not exists wedding_service_providers_wedding_idx
   on public.wedding_service_providers (wedding_id, category, created_at);

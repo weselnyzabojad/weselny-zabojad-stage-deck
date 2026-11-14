@@ -42,6 +42,7 @@ import {
 } from '../_shared/adminAuth.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 import {
+  ALLOWED_ROLES,
   WEDDING_ID_PATTERN,
   buildDriveSourceMetadata,
   buildPublishAuditDetail,
@@ -100,8 +101,8 @@ function randomPin() {
   return String(100000 + value);
 }
 
-const PROVIDER_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'other']);
-const PROVIDER_ROLE_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager']);
+const PROVIDER_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other']);
+const PROVIDER_ROLE_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc']);
 
 function cleanProviderField(value: unknown, max = 200) {
   if (value == null) return null;
@@ -132,7 +133,10 @@ function normalizeProviderPayload(body: any) {
   if (requestedVipDjId && !['dj_mark', 'dj_szymoniak'].includes(requestedVipDjId)) {
     return { error: 'Choose a known VIP DJ.' };
   }
-  const vipDjId = category === 'dj' ? requestedVipDjId : null;
+  if (category === 'dj_mc' && !requestedVipDjId) {
+    return { error: 'DJ_MC providers require DJ Mark or DJ Szymoniak.' };
+  }
+  const vipDjId = category === 'dj' || category === 'dj_mc' ? requestedVipDjId : null;
 
   return {
     provider: {
@@ -181,6 +185,19 @@ async function assertProviderCategoryFree(admin: any, weddingId: string, categor
 // Provider categories map 1:1 to stage roles; `other` grants no access.
 function providerRole(category: string) {
   return PROVIDER_ROLE_CATEGORIES.has(category) ? category : null;
+}
+
+async function activeProviderForRole(admin: any, weddingId: string, role: string) {
+  if (!PROVIDER_ROLE_CATEGORIES.has(role)) return null;
+  const { data, error } = await admin
+    .from('wedding_service_providers')
+    .select('id, category, active')
+    .eq('wedding_id', weddingId)
+    .eq('category', role)
+    .eq('active', true)
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
 }
 
 async function ensureProviderRole(admin: any, weddingId: string, role: string) {
@@ -417,7 +434,7 @@ async function handleRequest(req: Request) {
         admin
           .from('weddings')
           .select(
-            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at',
+            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by',
           )
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
@@ -458,7 +475,7 @@ async function handleRequest(req: Request) {
             servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC';
           const vipDjValid =
             !requiresVip || ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
-          const mcConfirmed = !requiresVip;
+          const mcConfirmed = !requiresVip || Boolean(row.mc_confirmed_by);
           const vipWarning = requiresVip
             ? [
                 !vipDjValid
@@ -467,6 +484,9 @@ async function handleRequest(req: Request) {
                 mcConfirmed ? 'MC confirmed' : 'MC unconfirmed',
               ].join(' · ')
             : null;
+          const songRequestEligible =
+            (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
+            ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
           return {
             ...summary,
             venue,
@@ -475,6 +495,10 @@ async function handleRequest(req: Request) {
             vipDjValid,
             mcConfirmed,
             vipWarning,
+            songRequestEligible,
+            songRequestUrl: songRequestEligible
+              ? `${serverEnv('PUBLIC_DECK_URL', 'https://deck.weselnyzabojad.pl').replace(/\/+$/, '')}/request/${row.room_code}`
+              : null,
             roles: (rolesByWedding[row.wedding_id] ?? []).sort(),
           };
         }),
@@ -819,6 +843,128 @@ async function handleRequest(req: Request) {
       return json({ ok: true });
     }
 
+    if (action === 'list_roles') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const [{ data: wedding, error: weddingError }, { data: roles, error: rolesError }] =
+        await Promise.all([
+          admin
+            .from('weddings')
+            .select('cartridge, mc_confirmed_by')
+            .eq('wedding_id', weddingId)
+            .maybeSingle(),
+          admin
+            .from('wedding_roles')
+            .select('role, updated_at')
+            .eq('wedding_id', weddingId)
+            .order('role'),
+        ]);
+      if (weddingError) throw weddingError;
+      if (rolesError) throw rolesError;
+      if (!wedding) return json({ error: 'Wedding not found.' }, 404);
+
+      const { data: providers } = await admin
+        .from('wedding_service_providers')
+        .select('category, active')
+        .eq('wedding_id', weddingId)
+        .eq('active', true);
+      const managed = new Set((providers ?? []).map((row: any) => row.category));
+      const servicePackage = wedding.cartridge?.servicePackage ?? null;
+      const djIdentityId =
+        wedding.cartridge?.djIdentityId ?? wedding.cartridge?.dj?.identityId ?? null;
+      const vipEligible =
+        (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
+        ['dj_mark', 'dj_szymoniak'].includes(djIdentityId);
+
+      return json({
+        weddingId,
+        servicePackage,
+        mcConfirmedBy: wedding.mc_confirmed_by ?? null,
+        songRequestEligible: vipEligible,
+        roles: (roles ?? []).map((row: any) => ({
+          role: row.role,
+          enabled: true,
+          providerManaged: managed.has(row.role),
+          updatedAt: row.updated_at,
+        })),
+        availableRoles: ALLOWED_ROLES,
+      });
+    }
+
+    if (action === 'confirm_mc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const mode = typeof body?.mode === 'string' ? body.mode.trim().toUpperCase() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!['OWNER', 'PROVIDER'].includes(mode)) {
+        return json({ error: 'MC confirmation must be OWNER or PROVIDER.' }, 400);
+      }
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      if (mode === 'PROVIDER' && !(await activeProviderForRole(admin, weddingId, 'mc'))) {
+        return json({ error: 'Add an active MC provider first.' }, 409);
+      }
+      const { error } = await admin
+        .from('weddings')
+        .update({ mc_confirmed_by: mode })
+        .eq('wedding_id', weddingId);
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'mc_confirm', weddingId, { mode });
+      return json({ weddingId, mcConfirmedBy: mode });
+    }
+
+    if (action === 'set_role') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const role = typeof body?.role === 'string' ? body.role.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!ALLOWED_ROLES.includes(role)) return json({ error: 'Unknown role.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+
+      const { data: wedding, error: weddingError } = await admin
+        .from('weddings')
+        .select('cartridge')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (weddingError) throw weddingError;
+      const servicePackage = wedding?.cartridge?.servicePackage ?? null;
+      if (servicePackage === 'DJ_MC' && role !== 'dj_mc') {
+        return json({ error: 'DJ_MC weddings use only the dj_mc role.' }, 409);
+      }
+      if (servicePackage !== 'DJ_MC' && role === 'dj_mc') {
+        return json({ error: 'dj_mc is only available for DJ_MC weddings.' }, 409);
+      }
+      const managed = await activeProviderForRole(admin, weddingId, role);
+      if (managed) return json({ error: 'This role is managed by an active provider.' }, 409);
+
+      const requestedPin = pinFor(role, body?.pins ?? null);
+      const { error } = await admin.from('wedding_roles').upsert(
+        { wedding_id: weddingId, role, pin_hash: bcrypt.hashSync(requestedPin, 10) },
+        { onConflict: 'wedding_id,role' },
+      );
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'role_enable', weddingId, { role });
+      return json({ weddingId, role, pin: requestedPin });
+    }
+
+    if (action === 'remove_role') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const role = typeof body?.role === 'string' ? body.role.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!ALLOWED_ROLES.includes(role)) return json({ error: 'Unknown role.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const managed = await activeProviderForRole(admin, weddingId, role);
+      if (managed) {
+        return json(
+          { error: 'Deactivate the provider before removing this role.' },
+          409,
+        );
+      }
+      await revokeProviderRole(admin, weddingId, role);
+      await writeAudit(admin, allowlisted, 'role_disable', weddingId, { role });
+      return json({ weddingId, role, removed: true });
+    }
+
     if (action === 'list_providers') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
@@ -885,6 +1031,12 @@ async function handleRequest(req: Request) {
           roleAccess = { role, pin: null, revoked: true };
         }
       }
+      if (data.category === 'mc') {
+        await admin
+          .from('weddings')
+          .update({ mc_confirmed_by: data.active ? 'PROVIDER' : null })
+          .eq('wedding_id', weddingId);
+      }
 
       await writeAudit(admin, allowlisted, 'provider_upsert', weddingId, {
         providerId: data.id,
@@ -921,6 +1073,12 @@ async function handleRequest(req: Request) {
       if (!data) return json({ error: 'Provider not found.' }, 404);
       const role = providerRole(data.category);
       if (role) await revokeProviderRole(admin, weddingId, role);
+      if (data.category === 'mc') {
+        await admin
+          .from('weddings')
+          .update({ mc_confirmed_by: null })
+          .eq('wedding_id', weddingId);
+      }
       await writeAudit(admin, allowlisted, 'provider_deactivate', weddingId, {
         providerId: id,
         before,
@@ -947,6 +1105,12 @@ async function handleRequest(req: Request) {
       if (!before) return json({ error: 'Provider not found.' }, 404);
       const role = providerRole(before.category);
       if (role) await revokeProviderRole(admin, weddingId, role);
+      if (before.category === 'mc') {
+        await admin
+          .from('weddings')
+          .update({ mc_confirmed_by: null })
+          .eq('wedding_id', weddingId);
+      }
       const { error } = await admin
         .from('wedding_service_providers')
         .delete()
