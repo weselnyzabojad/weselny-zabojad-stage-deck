@@ -43,6 +43,7 @@ import { buildGameClicker } from './lib/games.js';import {
 import { loadSpeakerScript } from './lib/speakerCache';
 import { swapBlockReason, swapNeedsWarning } from './lib/stepGuards';
 import { resolveEventDateISO, resolveVenueTimeZone } from './lib/eventTime';
+import { extendMusicalSet } from './lib/musicalSet';
 import { clearReloadState, loadReloadState } from './lib/reloadState';
 import { resolvePwaReloadBlock } from './lib/pwaUpdate';
 import { setPwaReloadContext } from './lib/pwaUpdateState';
@@ -330,6 +331,24 @@ export default function StageDeck({
   const currentEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
   const nextEntry =
     activeIndex >= 0 ? timeline[activeIndex + 1] ?? null : timeline.find((entry) => !entry.isDone) ?? null;
+
+  const handleExtendMusicalSet = () => {
+    const result = extendMusicalSet(steps, liveState.active_step_id, {
+      extensionAllowed: mandatorySettings.closureExtensionAllowed === true,
+      extensionUntil: mandatorySettings.closureExtensionUntil ?? null,
+      closureTime: mandatorySettings.closureTime ?? null,
+    });
+    if (result.canExtend) setMediaOverride('steps', result.steps);
+    return result;
+  };
+  const musicalSetExtension = extendMusicalSet(steps, liveState.active_step_id, {
+    extensionAllowed: mandatorySettings.closureExtensionAllowed === true,
+    extensionUntil: mandatorySettings.closureExtensionUntil ?? null,
+    closureTime: mandatorySettings.closureTime ?? null,
+  });
+  const extensionBlockedReason = musicalSetExtension.canExtend
+    ? null
+    : musicalSetExtension.reason;
   const djOczepinyStatus = resolveOczepinyIndicator({
     wedding: { ...WEDDING, hardAnchors },
     now: driftReport.clock?.now ?? null,
@@ -544,6 +563,11 @@ export default function StageDeck({
             speeches={speeches}
             speechMode={speechMode}
             authControl={authControl}
+            onExtendMusicalSet={handleExtendMusicalSet}
+            extensionAllowed={mandatorySettings.closureExtensionAllowed === true}
+            extensionUntil={mandatorySettings.closureExtensionUntil ?? null}
+            closureTime={mandatorySettings.closureTime ?? null}
+            extensionBlockedReason={extensionBlockedReason}
             {...roleProps}
           />
         </AppErrorBoundary>
@@ -671,6 +695,11 @@ export default function StageDeck({
     djMc: currentRole === 'dj_mc',
     djMcAccessToken: sessionValid ? roleSession?.token ?? null : null,
     djMcRoomCode: deckIntent.roomCode,
+    onExtendMusicalSet: handleExtendMusicalSet,
+    extensionAllowed: mandatorySettings.closureExtensionAllowed === true,
+    extensionUntil: mandatorySettings.closureExtensionUntil ?? null,
+    closureTime: mandatorySettings.closureTime ?? null,
+    extensionBlockedReason,
     handleRoleChange,
     viewSwitch: currentRole === 'mc' ? viewSwitch : null,
     roomCode: deckIntent.roomCode,

@@ -83,6 +83,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
+import MusicalSetBar from '../components/MusicalSetBar';
 
 export default function McMasterView({ model }) {
   const {
@@ -132,6 +133,11 @@ export default function McMasterView({ model }) {
   closeOverlay,
   undoToast,
   setUndoToast,
+  onExtendMusicalSet = null,
+  extensionAllowed = false,
+  extensionUntil = null,
+  closureTime = null,
+  extensionBlockedReason = null,
 } = model;
 
   const { t } = useI18n();
@@ -169,6 +175,8 @@ export default function McMasterView({ model }) {
 
   const railEntries = driftReport.entries ?? [];
   const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
+  const activeMusicalSetEntry =
+    railEntries.find((entry) => entry.isActive && entry.step?.optionalFlag === 'dj_set') ?? null;
 
   // Compact (phone) content: the same shared focus stack as the desktop rail,
   // plus the MC-only advance/undo controls inside the current card.
@@ -444,6 +452,20 @@ export default function McMasterView({ model }) {
         )}
       />
 
+      {djMc && activeMusicalSetEntry ? (
+        <MusicalSetBar
+          key={activeMusicalSetEntry?.step?.id ?? 'musical-set'}
+          wedding={WEDDING}
+          clock={driftReport.clock}
+          activeEntry={activeMusicalSetEntry}
+          onExtend={onExtendMusicalSet}
+          extensionAllowed={extensionAllowed}
+          extensionUntil={extensionUntil}
+          closureTime={closureTime}
+          extensionBlockedReason={extensionBlockedReason}
+        />
+      ) : null}
+
       <SecondaryControlBar
         left={(
           <>
@@ -601,6 +623,19 @@ export default function McMasterView({ model }) {
       speechMode={speechMode}
       viewSwitch={viewSwitch}
     >
+      {djMc && activeMusicalSetEntry ? (
+        <MusicalSetBar
+          key={activeMusicalSetEntry?.step?.id ?? 'musical-set'}
+          wedding={WEDDING}
+          clock={driftReport.clock}
+          activeEntry={activeMusicalSetEntry}
+          onExtend={onExtendMusicalSet}
+          extensionAllowed={extensionAllowed}
+          extensionUntil={extensionUntil}
+          closureTime={closureTime}
+          extensionBlockedReason={extensionBlockedReason}
+        />
+      ) : null}
       {compactContent}
     </RoleShell>
   );
