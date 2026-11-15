@@ -10,7 +10,7 @@ import {
 export const SECRETS_FOLDER_NAME = 'secrets';
 export const SHARE_ROLE = 'reader';
 export const MAX_SHARE_MESSAGE_LENGTH = 200;
-export const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
+export const WEDDING_ID_PATTERN = /^(?:[A-Za-z0-9&]+-)?UM-\d{4}-\d{2}-\d{3}$/;
 
 export function normalizeShareEmail(value) {
   const email = typeof value === 'string' ? value.trim().toLowerCase() : '';

@@ -26,6 +26,9 @@ import { pathToFileURL } from 'node:url';
 
 export const MOCK_ROOT_FOLDER_ID = '1Q7IVT0GNiLztKQE8l4eCDCRw-px1qheh';
 export const MOCK_WEDDING_ID = 'Jennifer&Guillaume-UM-2026-08-001';
+// Customer-visible and secrets folders use the shorter UM identifier, matching
+// the documented Drive layout; the cartridge inside keeps the full wedding id.
+export const MOCK_WEDDING_FOLDER = 'UM-2026-08-001';
 export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
@@ -204,10 +207,10 @@ export function createMockDrive({ cartridge = '' } = {}) {
   });
   const year = folder(root.id, '2026');
   const month = folder(year.id, 'August');
-  const wedding = folder(month.id, MOCK_WEDDING_ID);
+  const wedding = folder(month.id, MOCK_WEDDING_FOLDER);
   folder(wedding.id, 'games');
   const secrets = folder(month.id, 'secrets');
-  const privateWedding = folder(secrets.id, MOCK_WEDDING_ID);
+  const privateWedding = folder(secrets.id, MOCK_WEDDING_FOLDER);
   const speeches = folder(privateWedding.id, 'speeches');
   folder(privateWedding.id, 'compatibility-test-game');
   insert({
