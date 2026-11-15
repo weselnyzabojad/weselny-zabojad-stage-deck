@@ -170,7 +170,7 @@ export function useLiveStageState({
   const lastPublishedRef = useRef(null);
   const lastAdoptedRef = useRef(null);
   const latestRemoteAtRef = useRef(0);
-  const serialized = JSON.stringify(liveState);
+  const serialized = useMemo(() => JSON.stringify(liveState), [liveState]);
   const latestSerializedRef = useRef(serialized);
   const publishingRef = useRef(false);
   const [publishTick, setPublishTick] = useState(0);
@@ -575,8 +575,10 @@ export function useLiveStageState({
           };
           return appendMutation(next, actor, 'media_override', {
             key,
-            previous,
-            value,
+            previous: Array.isArray(previous)
+              ? { kind: 'array', length: previous.length }
+              : previous,
+            value: Array.isArray(value) ? { kind: 'array', length: value.length } : value,
           });
         },
         { op: 'media_override', label: 'Media override changed' },
