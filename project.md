@@ -6619,4 +6619,76 @@ Doc-sourced authorization below.
 
 **Tracking.** [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972), [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973), [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974).
 
+### 17.76 Focused QR card carousel (decision, 2026-11-15)
+
+The admin "QR cards" surface currently renders every role card in a dense
+two-column grid. Replace it with a focused, one-card-at-a-time carousel so crew
+can scan their role in fast-paced, low-light conditions without hunting through
+the grid. The shared `AdminQrCards` component owns the change; the three call
+sites keep their existing containers and data contract.
+
+**Google Doc contract.** Not Doc-linked. Cards are derived at runtime by
+`buildQrCards()` (`src/admin/adminUtils.js`) from the wedding row (roles, room
+code, couple, date, venue) and the public deck URL. No schema, field-map,
+parser, template or fixture change.
+
+**Screen behaviour.**
+
+- Exactly one role card is visible, centred in its container and scaled up
+  (larger QR and room code) while keeping the white "Mariage Chic" card with
+  crisp dark text.
+- Left/right chevron buttons cycle roles with wrap-around. Touch-swipe moves
+  one card at a time using a horizontal threshold that ignores vertical scroll.
+- Pagination dots show how many roles exist and the current position.
+- A horizontal, scrollable pill menu above the card jumps directly to a role.
+- Keyboard Left/Right and Home/End work while the carousel controls have focus;
+  controls expose labels, inactive slides are `aria-hidden`/`inert`, and a
+  polite live region announces the role and position (`<label>, N of M`).
+- `prefers-reduced-motion` removes the slide transition.
+- A single-card surface hides arrows, dots, pills and swipe; the card is still
+  scaled and scannable. An empty list keeps the existing "No roles to print."
+  message.
+
+**Print.** `window.print()` and the "Print cards" button must still emit every
+role card in the existing two-column grid, independent of the active slide. The
+print stylesheet resets the carousel transform and overflow and lays every
+slide out as a grid; the PIN list stays hidden and no duplicate screen markup
+is rendered. The QR payload remains the room deep link only; the PIN is never
+encoded.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin → wedding → QR cards (`PinResult` modal) | Carousel inside the existing modal; print unchanged |
+| Admin → Wedding roles panel (`AdminWeddingRoles`) | Carousel inline in the existing panel |
+| Admin → Speeches → speaker QR (`AdminSpeechesPanel`) | Single card, no navigation affordances |
+| All role stage views, join, song request | No change |
+| Print output | Every role card in a two-column grid; PINs never printed |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Data source | Runtime `buildQrCards`; not Doc-linked |
+| Presentation | In-place single card; no new modal overlay |
+| Navigation | Wrap-around chevrons, swipe, dots, keyboard |
+| Quick jump | Horizontal scrollable role pills above the card |
+| Print | Print-only grid reset keeps every card; active slide is irrelevant |
+| Single role | Navigation affordances hidden |
+| Motion | Tailwind transition; removed under `prefers-reduced-motion` |
+| Localization | English admin strings, matching the existing component |
+| Scope | Shared component only; no role-view, schema or backend change |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1017](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1017) | Single-card carousel: active card scale, chevrons, swipe, dots, keyboard/ARIA, single-card mode, print parity across the three surfaces | - |
+| 2 | [#1018](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1018) | Quick-jump role pill menu above the active card | #1017 |
+
+**Open questions.** None.
+
+**Tracking.** [#1017](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1017), [#1018](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1018).
+
 
