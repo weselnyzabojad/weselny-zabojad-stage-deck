@@ -18,7 +18,7 @@ const timeline = (length, activeAt) =>
   Array.from({ length }, (_, index) => entry(index, activeAt));
 
 describe('issue #716 pocket focus-stack chronological order', () => {
-  it('renders completed before current before upcoming in compact DOM order', () => {
+  it('pins current first and collapses completed/upcoming in compact DOM order', () => {
     const html = renderToStaticMarkup(
       createElement(TimelineFocusStack, {
         compact: true,
@@ -27,15 +27,11 @@ describe('issue #716 pocket focus-stack chronological order', () => {
       }),
     );
 
-    const history = html.indexOf('data-focus-zone="history"');
     const current = html.indexOf('data-focus-zone="current"');
-    const future = html.indexOf('data-focus-zone="future"');
-
-    expect(history).toBeGreaterThan(-1);
     expect(current).toBeGreaterThan(-1);
-    expect(future).toBeGreaterThan(-1);
-    expect(history).toBeLessThan(current);
-    expect(current).toBeLessThan(future);
+    expect(current).toBeLessThan(html.indexOf('role="tablist"'));
+    expect(html).not.toContain('data-focus-zone="history"');
+    expect(html).not.toContain('data-focus-zone="future"');
   });
 
   it('keeps the desktop column structure and order attributes unchanged', () => {
