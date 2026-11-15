@@ -17,9 +17,9 @@ export default function SpeechesCard({ mode, speeches, speechBundle = null }) {
   const [busySpeechId, setBusySpeechId] = useState(null);
   const [actionError, setActionError] = useState('');
 
-  // No speeches means no below-timeline card at all; the MC top-bar chip still
-  // communicates the OFF/no-speech state.
-  if (!speeches?.length) return null;
+  // A bundle failure is visible even when no metadata was returned.
+  const bundleError = speechBundle?.status === 'error';
+  if (!speeches?.length && !bundleError) return null;
 
   const liveSpeechId = speechBundle?.liveSpeechId ?? null;
 
@@ -86,9 +86,18 @@ export default function SpeechesCard({ mode, speeches, speechBundle = null }) {
       ) : null}
 
       {speechBundle?.status === 'error' ? (
-        <p className="mt-2 rounded border border-amber-800 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-200">
-          {t('speeches.bundleUnavailable')}
-        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded border border-amber-800 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-200">
+          <span>{t('speeches.bundleUnavailable')}</span>
+          {speechBundle.retry ? (
+            <button
+              type="button"
+              onClick={() => speechBundle.retry()}
+              className="rounded border border-amber-700 px-2 py-0.5 font-semibold text-amber-100"
+            >
+              {t('speeches.retry')}
+            </button>
+          ) : null}
+        </div>
       ) : null}
 
       <ol className="mt-2 space-y-2">

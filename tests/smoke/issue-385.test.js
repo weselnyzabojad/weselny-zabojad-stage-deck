@@ -32,9 +32,10 @@ describe('issue #385 shared secondary control bar', () => {
     expect(bar).toContain('<DriftPill');
     expect(bar).toContain('{pinControl}');
     expect(bar).toContain('{syncControl}');
-    expect(bar).toContain('<ChildrenExpectedBadge');
+    expect(bar).not.toContain('<ChildrenExpectedBadge');
     expect(bar).toContain('<OpenOnPhoneButton');
-    expect(bar).toContain('utilityGroup');
+    expect(bar).not.toContain('utilityGroup');
+    expect(mc).toContain('<StatusMenu');
   });
 
   it('removes the moved controls from the MC top bar', () => {
@@ -59,13 +60,13 @@ describe('issue #385 shared secondary control bar', () => {
     }
   });
 
-  it('places the photographer children badge in the bar and not in the pocket header', () => {
+  it('places the photographer children badge in the status menu and not in the pocket header', () => {
     const photo = read('src/components/PhotographerView.jsx');
     expect(photo).toContain('<ChildrenExpectedBadge');
     expect(photo).toContain('inline');
     expect(photo).not.toContain('fixed bottom-3 right-3');
-    const bar = photo.slice(photo.indexOf('<SecondaryControlBar'), photo.indexOf('<main'));
-    expect(bar).toContain('<ChildrenExpectedBadge');
+    const menu = photo.slice(photo.indexOf('<StatusMenu'), photo.indexOf('</StatusMenu>'));
+    expect(menu).toContain('<ChildrenExpectedBadge');
     expect(read('src/components/RoleShell.jsx')).not.toContain('<ChildrenExpectedBadge');
   });
 

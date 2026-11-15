@@ -12,7 +12,7 @@ describe('issue #215 DJ top bar rework', () => {
 
   it('removes the duplicate headphone/DJ VIP role label', () => {
     expect(dj).not.toContain('TopBarRoleLabel');
-    expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} />');
+    expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} wedding={wedding} />');
   });
 
   it('adds cultural, Speeches and auth controls only for VIP', () => {

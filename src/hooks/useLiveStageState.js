@@ -17,6 +17,7 @@ import { previewStepState } from '../lib/devPreview';
 import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
+import { isSyncAuthError } from '../lib/sync/syncErrors.js';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
 import {
   clearOutbox as clearStoredOutbox,
@@ -169,7 +170,7 @@ export function useLiveStageState({
   const lastPublishedRef = useRef(null);
   const lastAdoptedRef = useRef(null);
   const latestRemoteAtRef = useRef(0);
-  const serialized = JSON.stringify(liveState);
+  const serialized = useMemo(() => JSON.stringify(liveState), [liveState]);
   const latestSerializedRef = useRef(serialized);
   const publishingRef = useRef(false);
   const [publishTick, setPublishTick] = useState(0);
@@ -336,14 +337,20 @@ export function useLiveStageState({
         })
         .catch((error) => {
           if (cancelled) return;
-          // Stay usable offline; the local mirror keeps the show running.
-          setSyncError(error.message);
+          // Auth failures are not ordinary offline failures: keep them visible
+          // while local mirroring continues.
+          const authFailure = isSyncAuthError(error);
+          setSyncError(
+            authFailure ? `Session error: ${error.message}` : error.message,
+          );
           setHydration({ client, room: roomKey });
           setLiveCaughtUp(false);
           setSyncStatus(
-            typeof navigator !== 'undefined' && navigator.onLine === false
-              ? 'offline'
-              : 'error',
+            authFailure
+              ? 'error'
+              : typeof navigator !== 'undefined' && navigator.onLine === false
+                ? 'offline'
+                : 'error',
           );
         });
 
@@ -568,8 +575,10 @@ export function useLiveStageState({
           };
           return appendMutation(next, actor, 'media_override', {
             key,
-            previous,
-            value,
+            previous: Array.isArray(previous)
+              ? { kind: 'array', length: previous.length }
+              : previous,
+            value: Array.isArray(value) ? { kind: 'array', length: value.length } : value,
           });
         },
         { op: 'media_override', label: 'Media override changed' },

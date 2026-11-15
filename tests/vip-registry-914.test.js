@@ -42,7 +42,7 @@ describe('issue #914 admin-managed VIP DJ registry', () => {
     const landing = read('src/components/LandingPage.jsx');
     expect(landing).toContain('FALLBACK_PARTNERS');
     expect(landing).toContain('public_vip_djs');
-    expect(landing).toContain('setPartners(active)');
+    expect(landing).toContain('setPartners(mergePartners(rows))');
     expect(landing).toContain('src={partner.logoUrl}');
     expect(landing).toContain('alt={partner.displayName}');
   });

@@ -5,6 +5,8 @@ export const HEALTH_PROVIDER_ORDER = [
   { id: 'sentry', name: 'Sentry' },
   { id: 'drive', name: 'Google Drive' },
   { id: 'sunset', name: 'sunrise-sunset.org' },
+  { id: 'deck', name: 'Production deck' },
+  { id: 'netlify', name: 'Netlify' },
 ];
 
 export const HEALTH_STATUSES = ['checking', 'ok', 'degraded', 'down'];

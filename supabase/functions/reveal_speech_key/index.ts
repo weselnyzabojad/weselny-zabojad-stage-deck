@@ -1,8 +1,8 @@
 // Supabase Edge Function: reveal_speech_key (issue #602, ownerless role endpoint)
 //
 // Returns a per-speech AES key only to a valid `speaker` role JWT for the
-// matching wedding. The ciphertext stays in the cartridge; the browser imports
-// the key as a non-exportable CryptoKey and decrypts locally.
+// matching wedding. The ciphertext stays in the published speech record; the
+// browser imports the key as a non-exportable CryptoKey and decrypts locally.
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { createRemoteJWKSet, decodeProtectedHeader, jwtVerify } from 'npm:jose@5';
@@ -67,8 +67,13 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => null);
     const weddingId = typeof payload.wedding_id === 'string' ? payload.wedding_id : '';
+    const tokenSpeechId =
+      typeof payload.speech_id === 'string' ? payload.speech_id.trim() : '';
     const speechId = typeof body?.speechId === 'string' ? body.speechId.trim() : '';
     if (!weddingId || !speechId) return json({ error: 'A speechId is required.' }, 400);
+    if (!tokenSpeechId || tokenSpeechId !== speechId) {
+      return json({ error: 'This session is not valid for that speech.' }, 403);
+    }
 
     const admin = createClient(
       serverEnv('SUPABASE_URL'),
@@ -90,18 +95,30 @@ Deno.serve(async (req) => {
       }
     }
 
-    const { data: wedding } = await admin
-      .from('weddings')
-      .select('cartridge')
-      .eq('wedding_id', weddingId)
-      .maybeSingle();
-    const speech = (Array.isArray(wedding?.cartridge?.speeches) ? wedding.cartridge.speeches : [])
-      .find((entry: { id?: string }) => entry?.id === speechId);
-    if (!speech) return json({ error: 'Speech not found in the published cartridge.' }, 404);
-
-    const visible = Array.isArray(speech.visibleToRoles) ? speech.visibleToRoles : [];
-    if (visible.length > 0 && !visible.includes('speaker')) {
-      return json({ error: 'This speech is not visible to the speaker role.' }, 403);
+    // The per-speech access row is authoritative; never fall back to legacy
+    // embedded speech visibility.
+    const [{ data: speech }, { data: access }] = await Promise.all([
+      admin
+        .from('speech_records')
+        .select('id, status, speaker_access')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle(),
+      admin
+        .from('speech_access')
+        .select('pin_hash, enabled, revoked_at')
+        .eq('wedding_id', weddingId)
+        .eq('speech_id', speechId)
+        .maybeSingle(),
+    ]);
+    if (
+      !speech ||
+      speech.status !== 'PUBLISHED' ||
+      speech.speaker_access !== true ||
+      !access?.enabled ||
+      access.revoked_at
+    ) {
+      return json({ error: 'This speech access is not available.' }, 403);
     }
 
     const version = Number.isInteger(body?.keyVersion) ? body.keyVersion : 1;

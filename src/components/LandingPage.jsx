@@ -10,13 +10,45 @@ import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import logo from '../assets/img/logo.png';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
+import logoZaremba from '../assets/img/dj-vip/logo_zaremba.png';
 
 const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';
 
+const BUILTIN_PARTNER_LOGOS = {
+  dj_mark: logoMark,
+  dj_szymoniak: logoSzymoniak,
+  dj_zaremba: logoZaremba,
+};
+
 const FALLBACK_PARTNERS = [
-  { id: 'dj_mark', displayName: 'DJ Mark', logoUrl: logoMark },
-  { id: 'dj_szymoniak', displayName: 'DJ Szymoniak', logoUrl: logoSzymoniak },
+  { id: 'dj_mark', displayName: 'DJ Mark', logoUrl: BUILTIN_PARTNER_LOGOS.dj_mark },
+  { id: 'dj_szymoniak', displayName: 'DJ Szymoniak', logoUrl: BUILTIN_PARTNER_LOGOS.dj_szymoniak },
+  { id: 'dj_zaremba', displayName: 'DJ Zaremba', logoUrl: BUILTIN_PARTNER_LOGOS.dj_zaremba },
 ];
+
+// Built-in partners always use the bundler's hashed asset; API rows may only
+// update their display name. Unknown partners keep their server logo URL.
+function mergePartners(rows) {
+  const byId = new Map(
+    (Array.isArray(rows) ? rows : [])
+      .filter((row) => row?.id)
+      .map((row) => [row.id, row]),
+  );
+  const builtIn = FALLBACK_PARTNERS.map((partner) => {
+    const row = byId.get(partner.id);
+    byId.delete(partner.id);
+    return {
+      ...partner,
+      displayName: typeof row?.displayName === 'string' && row.displayName.trim()
+        ? row.displayName
+        : partner.displayName,
+    };
+  });
+  const unknown = [...byId.values()].filter(
+    (row) => typeof row.displayName === 'string' && typeof row.logoUrl === 'string',
+  );
+  return [...builtIn, ...unknown];
+}
 
 function buildContactHref(prefill) {
   const url = new URL(CONTACT_BASE);
@@ -196,8 +228,9 @@ export default function LandingPage() {
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         const rows = Array.isArray(data?.partners) ? data.partners : [];
-        const active = rows.filter((row) => row?.id && row?.displayName && row?.logoUrl);
-        if (active.length > 0) setPartners(active);
+        // Built-in logos are bundled; API rows cannot replace them with an
+        // unhashed path. Unknown active partners keep their server URL.
+        if (rows.length > 0) setPartners(mergePartners(rows));
       })
       .catch(() => {});
     return () => controller.abort();
@@ -217,10 +250,16 @@ export default function LandingPage() {
     q: t(`landing.faq.${index}.q`),
     a: t(`landing.faq.${index}.a`),
   }));
-  const securityTopics = ['transport', 'access', 'admin', 'secrets', 'data'].map((topic) => ({
-    q: t(`landing.security.${topic}.q`),
-    a: t(`landing.security.${topic}.a`),
-  }));
+  const securityTechnical = [
+    'tls',
+    'headers',
+    'tokens',
+    'pins',
+    'admin',
+    'rls',
+    'secrets',
+    'monitoring',
+  ].map((key) => t(`landing.security.technical.${key}`));
 
   return (
     <div
@@ -288,6 +327,9 @@ export default function LandingPage() {
                     phrase={t('landing.intro.p2.highlight')}
                     className="font-semibold text-[#8A6A2F]"
                   />
+                </p>
+                <p className="mt-4 border-t border-[#C5A059]/25 pt-3 text-xs font-semibold leading-relaxed text-[#8A6A2F] sm:text-sm">
+                  {t('landing.intro.trust')}
                 </p>
               </div>
             </div>
@@ -391,17 +433,24 @@ export default function LandingPage() {
             <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">
               {t('landing.security.lead')}
             </p>
-            <div className="mt-6 space-y-3">
-              {securityTopics.map((topic) => (
-                <details key={topic.q} className="rounded-xl border border-line bg-card px-4 py-3">
-                  <summary className="cursor-pointer break-words font-heading text-sm font-semibold text-ink">
-                    {topic.q}
-                  </summary>
-                  <p className="mt-2 break-words text-sm leading-relaxed text-muted">{topic.a}</p>
-                </details>
-              ))}
-            </div>
-            <p className="mt-6 text-sm leading-relaxed text-muted">{t('landing.security.closing')}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+              {t('landing.security.assurance')}
+            </p>
+            <details className="mt-6 rounded-xl border border-line bg-card px-4 py-3">
+              <summary className="cursor-pointer break-words font-heading text-sm font-semibold text-ink">
+                {t('landing.security.technical.title')}
+              </summary>
+              <ul className="mt-3 grid gap-1.5 text-sm leading-relaxed text-muted sm:grid-cols-2">
+                {securityTechnical.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span aria-hidden="true" className="text-brand-strong">
+                      •
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
         </section>
 
@@ -452,13 +501,13 @@ export default function LandingPage() {
                 className="h-px min-w-6 flex-1 bg-gradient-to-l from-transparent to-[#C5A059]/50"
               />
             </div>
-            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-16">
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 sm:gap-x-16">
               {partners.map((partner) => (
                 <img
                   key={partner.id}
                   src={partner.logoUrl}
                   alt={partner.displayName}
-                  className="h-20 w-auto object-contain sm:h-24"
+                  className="max-h-[60px] w-auto object-contain sm:max-h-20"
                 />
               ))}
             </div>

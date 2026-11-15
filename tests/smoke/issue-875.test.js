@@ -5,7 +5,7 @@ import { ROLE_IDS, validateRoles } from '../../src/admin/adminUtils.js';
 
 const ROOT = new URL('../../', import.meta.url);
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
-const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc'];
+const CANONICAL = ['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'musician', 'dj_mc'];
 
 describe('issue #875 canonical role catalog', () => {
   it('has exactly the seven canonical roles and no photo role', () => {

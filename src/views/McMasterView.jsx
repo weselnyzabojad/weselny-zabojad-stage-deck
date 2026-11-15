@@ -23,6 +23,7 @@ import OczepinyCueCard from '../components/OczepinyCueCard';
 import RoleShell from '../components/RoleShell';
 import RoleSignOutControl from '../components/RoleSignOutControl';
 import SecondaryControlBar from '../components/SecondaryControlBar';
+import StatusMenu from '../components/StatusMenu';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
@@ -451,15 +452,19 @@ export default function McMasterView({ model }) {
         center={<TopBarCenterIdentity wedding={WEDDING} />}
         right={(
           <>
-            <CulturalRulesBar
-              rules={WEDDING.culturalRules}
-              oczepinyStatus={oczepinyStatus}
-              grid
-              dense
-            >
-              <SpeechesChip mode={speechMode} speeches={speeches} dense />
-            </CulturalRulesBar>
             {viewSwitch}
+            <StatusMenu active={Boolean(WEDDING.culturalRules) || speechMode !== 'OFF'}>
+              <CulturalRulesBar
+                rules={WEDDING.culturalRules}
+                oczepinyStatus={oczepinyStatus}
+                grid
+                dense
+              >
+                <SpeechesChip mode={speechMode} speeches={speeches} dense />
+              </CulturalRulesBar>
+              <ChildrenExpectedBadge wedding={WEDDING} inline />
+              {utilityGroup}
+            </StatusMenu>
           </>
         )}
       />
@@ -490,19 +495,24 @@ export default function McMasterView({ model }) {
             )}
           </>
         )}
-        center={(
-          <ChildrenExpectedBadge
-            wedding={WEDDING}
-            inline
-          />
-        )}
+        center={null}
         right={(
           <>
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
-            {hasAnchorWarning ? null : utilityGroup}
           </>
         )}
       />
+
+      {djMc ? (
+        <DjSongRequestQueue
+          enabled
+          role="dj_mc"
+          accessToken={djMcAccessToken}
+          roomCode={djMcRoomCode}
+          variant="bar"
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+        />
+      ) : null}
 
       {hasAnchorWarning ? (
         <HardAnchorAlertBanner
@@ -528,14 +538,6 @@ export default function McMasterView({ model }) {
 
           {djMc ? (
             <section aria-label="DJ VIP" className="space-y-4">
-              <DjSongRequestQueue
-                enabled
-                role="dj"
-                accessToken={djMcAccessToken}
-                roomCode={djMcRoomCode}
-                variant="card"
-                discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
-              />
               <MusicPolicyCard policy={musicPolicy} />
             </section>
           ) : null}
@@ -635,6 +637,16 @@ export default function McMasterView({ model }) {
       speechMode={speechMode}
       viewSwitch={viewSwitch}
     >
+      {djMc ? (
+        <DjSongRequestQueue
+          enabled
+          role="dj_mc"
+          accessToken={djMcAccessToken}
+          roomCode={djMcRoomCode}
+          variant="bar"
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+        />
+      ) : null}
       {djMc && activeMusicalSetEntry ? (
         <MusicalSetBar
           key={activeMusicalSetEntry?.step?.id ?? 'musical-set'}

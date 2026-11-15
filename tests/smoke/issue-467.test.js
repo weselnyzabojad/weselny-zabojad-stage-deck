@@ -15,7 +15,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 
 describe('issue #467 hardcoded VIP DJ registry', () => {
   it('ships the two stable ids with placeholder contacts', () => {
-    expect(VIP_DJS.map((dj) => dj.id)).toEqual(['dj_mark', 'dj_szymoniak']);
+    expect(VIP_DJS.map((dj) => dj.id)).toEqual(['dj_mark', 'dj_szymoniak', 'dj_zaremba']);
     expect(VIP_DJS.every((dj) => dj.tier === 'VIP')).toBe(true);
     expect(VIP_DJS.every((dj) => dj.phone === 'TODO_OWNER_PHONE')).toBe(true);
     expect(VIP_DJS.every((dj) => dj.instagram === 'TODO_OWNER_INSTAGRAM')).toBe(true);
