@@ -455,7 +455,6 @@ export default function McMasterView({ model }) {
                 <SpeechesChip mode={speechMode} speeches={speeches} dense />
               </CulturalRulesBar>
               <ChildrenExpectedBadge wedding={WEDDING} inline />
-              {utilityGroup}
             </StatusMenu>
           </>
         )}
@@ -478,18 +477,15 @@ export default function McMasterView({ model }) {
       <SecondaryControlBar
         left={(
           <>
+            {syncControl}
+            {pinControl}
             <DriftPill drift={driftReport.drift} />
-            {hasAnchorWarning ? null : (
-              <>
-                {pinControl}
-                {syncControl}
-              </>
-            )}
           </>
         )}
         center={null}
         right={(
           <>
+            {utilityGroup}
             <OpenOnPhoneButton role={currentRole} roomCode={roomCode} />
           </>
         )}

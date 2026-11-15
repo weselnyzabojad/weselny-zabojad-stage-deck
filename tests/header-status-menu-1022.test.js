@@ -17,7 +17,7 @@ describe('issue #1022 shared header status menu', () => {
 
   it('groups secondary controls in every shared header', () => {
     const expectations = [
-      ['src/views/McMasterView.jsx', ['CulturalRulesBar', 'SpeechesChip', 'ChildrenExpectedBadge', 'utilityGroup']],
+      ['src/views/McMasterView.jsx', ['CulturalRulesBar', 'SpeechesChip', 'ChildrenExpectedBadge']],
       ['src/components/DjBoothView.jsx', ['CulturalRulesBar', 'SpeechSummaryChip', 'ChildrenExpectedBadge', 'UtilityControlGroup']],
       ['src/components/PhotographerView.jsx', ['CulturalRulesBar', 'SpeechSummaryChip', 'ChildrenExpectedBadge', 'UtilityControlGroup']],
       ['src/components/VenueManagerView.jsx', ['ChildrenExpectedBadge', 'SpeechSummaryChip', 'UtilityControlGroup']],

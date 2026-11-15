@@ -33,8 +33,16 @@ describe('issue #385 shared secondary control bar', () => {
     expect(bar).toContain('{pinControl}');
     expect(bar).toContain('{syncControl}');
     expect(bar).not.toContain('<ChildrenExpectedBadge');
-    expect(bar).toContain('<OpenOnPhoneButton');
-    expect(bar).not.toContain('utilityGroup');
+    const sync = bar.indexOf('{syncControl}');
+    const pin = bar.indexOf('{pinControl}');
+    const drift = bar.indexOf('<DriftPill');
+    const utilities = bar.indexOf('{utilityGroup}');
+    const phone = bar.indexOf('<OpenOnPhoneButton');
+    expect(sync).toBeGreaterThan(-1);
+    expect(sync).toBeLessThan(pin);
+    expect(pin).toBeLessThan(drift);
+    expect(utilities).toBeGreaterThan(-1);
+    expect(utilities).toBeLessThan(phone);
     expect(mc).toContain('<StatusMenu');
   });
 
