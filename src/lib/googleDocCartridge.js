@@ -1,6 +1,7 @@
 import { calculateStepDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
+import { normalizeSpeechMode } from './speeches.js';
 import { normalizeLiveSyncState, normalizePrivacy } from '../config/index.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
@@ -459,6 +460,25 @@ function mapGames(source, warnings = []) {
       };
     }),
   };
+}
+
+// `## SPEECHES` -> `Speech mode: OFF | LIGHT | COMPLEX`. The Doc is the only
+// source for the wedding-level mode, so a missing or invalid value must warn
+// and leave `speechMode` unset instead of inferring OFF. The section's speech
+// table stays documentation only; speech records live in the encrypted bundle.
+function mapSpeechMode(source, warnings = []) {
+  if (!source) return undefined;
+  const raw = text(kv(source, 'Speech mode'));
+  const mode = raw ? normalizeSpeechMode(raw.toUpperCase()) : null;
+  if (!mode) {
+    warnings.push(
+      raw
+        ? `SPEECHES: invalid Speech mode "${raw}" (expected OFF, LIGHT or COMPLEX)`
+        : 'SPEECHES: missing Speech mode (expected OFF, LIGHT or COMPLEX)',
+    );
+    return undefined;
+  }
+  return mode;
 }
 
 function mapPhotoPlan(source, warnings = []) {
@@ -926,6 +946,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const gamesSource = section(parsed, 'GAMES');
   const games = gamesSource ? mapGames(gamesSource, warnings) : undefined;
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
+  const speechMode = mapSpeechMode(section(parsed, 'SPEECHES'), warnings);
 
   const privacySource = section(parsed, 'PRIVACY');
   const privacy = privacySource
@@ -1064,6 +1085,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     privacy,
     musicPolicy,
     attractions,
+    ...(speechMode ? { speechMode } : {}),
     extensions,
     ...(liveSyncState ? { liveSyncState } : {}),
     demographics: { notes: text(kv(privacySource, 'Demographics notes')) ?? undefined },
