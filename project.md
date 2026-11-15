@@ -7424,3 +7424,68 @@ not cartridge content.
 **Open questions.** None.
 
 **Tracking.** [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979), [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980), [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981), [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982).
+
+### 17.89 MC Master secondary bar alignment and hard-anchor banner simplification (decision, 2026-11-15)
+
+Align the MC Master secondary action bar with the DJ Booth reference and reduce
+the red hard-anchor banner to a single informational block. The bar becomes the
+single home for Sync, PIN, language and theme; the banner stops duplicating
+controls and only states the collision/compression.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The bar reads
+existing runtime sync/pairing state plus the current locale and theme; the
+banner reads the existing hard-anchor radar warning.
+
+**Feature scope.**
+
+- **F1 — Secondary action bar alignment.** Left zone order: `SyncStatusBadge`,
+  `RoleSignOutControl` (PIN locally / ROLE sign-out in production), then
+  `DriftPill`. Right zone order: desktop `LanguageToggle`, desktop
+  `ThemeToggle`, then `OpenOnPhoneButton` as the rightmost control. The MC
+  utility group is removed from the `STATUS` menu. PIN and Sync stay visible
+  during an active hard-anchor warning.
+- **F2 — Hard-anchor banner simplification.** Remove the `actions` prop, the
+  right-hand projected-end line and every interactive element. Keep only the
+  left block: alarm icon, uppercase title, `{label} · {time}` and the
+  overrun/slack value. Preserve `role="alert"`, assertive live region, atomic
+  announcement and both collision/compression tones. The shared banner is
+  simplified for both wide and compact MC.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master, wide | New bar order and right zone; no banner actions |
+| MC Master, compact | No secondary bar; shared banner simplified |
+| DJ Booth | Unchanged reference layout |
+| Other role views | No visual or menu change |
+| MC `STATUS` menu | Utility controls removed; cultural chips and children badge stay |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; UI-only change |
+| `DriftPill` | Kept in the left zone after PIN |
+| Utility controls | Removed from MC `STATUS`; live only in the secondary bar |
+| Right-zone order | Language, theme, then `Otwórz na telefonie` |
+| Pocket scope | Desktop bar only; banner simplification applies everywhere |
+| Warning state | PIN and Sync remain in the bar, never in the banner |
+| Banner content | Icon, title, label/time and overrun only |
+| Banner right text | Projected-end line removed |
+| Banner actions | Removed entirely, including the `actions` prop |
+| `anchor.ends` | Delete the now-unused key from `en`, `fr` and `pl` |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1082](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1082) | MC wide secondary bar order, right-zone utilities, `STATUS` cleanup, warning-state visibility | - |
+| 2 | [#1081](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1081) | Simplify `HardAnchorAlertBanner`, remove MC `bannerActions`, drop `anchor.ends` | - |
+
+Both tasks touch `src/views/McMasterView.jsx`; implement them in order and rebase
+the second branch on the first.
+
+**Open questions.** None.
