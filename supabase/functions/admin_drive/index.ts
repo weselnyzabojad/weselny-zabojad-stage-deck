@@ -154,8 +154,7 @@ async function loadWeddingCartridge(admin: any, weddingId: string) {
 
 // The admin wedding summary does not carry the Drive folder id. When the panel
 // omits it, resolve the wedding folder from the cartridge source file parent.
-async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {
-  const provided = typeof explicit === 'string' ? explicit.trim() : '';
+async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {  const provided = typeof explicit === 'string' ? explicit.trim() : '';
   if (provided) return provided;
   const { data } = await admin
     .from('weddings')
@@ -170,6 +169,18 @@ async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: u
   } catch {
     return '';
   }
+}
+
+async function requireWritableWedding(admin: any, weddingId: string) {
+  const { data, error } = await admin
+    .from('weddings')
+    .select('wedding_id, archived_at')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { error: 'Wedding not found.', status: 404 };
+  if (data.archived_at) return { error: 'Archived weddings are read-only.', status: 409 };
+  return { wedding: data };
 }
 
 function expectedGameQuestionFolder(source: any, folderId: string | null) {
@@ -238,6 +249,28 @@ async function handleRequest(req: Request) {
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
+    }
+
+    if (
+      [
+        'create_speech_doc',
+        'rename_speech_doc',
+        'parse_speech_doc',
+        'create_game_question_doc',
+        'rewrite_game_question_doc_columns',
+        'parse_game_question_doc',
+      ].includes(action)
+    ) {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (weddingId) {
+        const writable = await requireWritableWedding(admin, weddingId);
+        if (writable.error) {
+          return json(
+            { error: writable.error, code: 'wedding_archived' },
+            writable.status,
+          );
+        }
+      }
     }
 
     if (action === 'children') {

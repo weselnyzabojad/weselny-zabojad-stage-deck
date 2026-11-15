@@ -112,6 +112,42 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'change_password',
   'migrate_docs',
 ]);
+
+// Issue #1046: archived weddings are read-only. Listing and explicit
+// archive/delete/revoke remain available; every content or access mutation is
+// blocked centrally before the action handler can write anything.
+const ARCHIVED_BLOCKED_ACTIONS = new Set([
+  'publish',
+  'publish_drive',
+  'restore_revision',
+  'rotate_pins',
+  'confirm_mc',
+  'upsert_speech_metadata',
+  'publish_speech',
+  'restore_speech',
+  'delete_speech',
+  'rotate_speech_access',
+  'revoke_speech_access',
+  'preflight_doc_migration',
+  'migrate_docs',
+  'preflight_speech_migration',
+  'migrate_speeches',
+  'preflight_game_migration',
+  'migrate_game_questions',
+  'publish_game_questions',
+  'restore_game_questions',
+  'delete_game_questions',
+  'upsert_provider',
+  'deactivate_provider',
+  'delete_provider',
+  'upsert_vip_dj',
+  'deactivate_vip_dj',
+  'upsert_musician',
+  'deactivate_musician',
+  'delete_musician',
+  'set_role',
+  'remove_role',
+]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
 function json(body: unknown, status = 200) {
@@ -1103,6 +1139,19 @@ async function handleRequest(req: Request) {
         { error: 'Re-authenticate with your TOTP code before this action.', requiresMfaReauth: true },
         403,
       );
+    }
+
+    if (ARCHIVED_BLOCKED_ACTIONS.has(action)) {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (weddingId) {
+        const writable = await requireWritableWedding(admin, weddingId);
+        if (writable.error) {
+          await writeAudit(admin, allowlisted, 'archived_write_blocked', weddingId, {
+            action,
+          });
+          return json({ error: writable.error, code: 'wedding_archived' }, writable.status);
+        }
+      }
     }
 
     if (action === 'list_speeches') {
@@ -2632,6 +2681,23 @@ async function handleRequest(req: Request) {
         .update({ archived_at: new Date().toISOString() })
         .eq('wedding_id', weddingId);
       if (error) throw error;
+      const archivedAt = new Date().toISOString();
+      await Promise.all([
+        admin
+          .from('role_sessions')
+          .update({ revoked_at: archivedAt })
+          .eq('wedding_id', weddingId)
+          .is('revoked_at', null),
+        admin
+          .from('speech_sessions')
+          .update({ revoked_at: archivedAt })
+          .eq('wedding_id', weddingId)
+          .is('revoked_at', null),
+        admin
+          .from('role_presence')
+          .update({ status: 'offline', session_jti: null, last_seen: archivedAt })
+          .eq('wedding_id', weddingId),
+      ]);
       await writeAudit(admin, allowlisted, 'archive', weddingId, null);
       return json({ ok: true });
     }
