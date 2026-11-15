@@ -457,8 +457,9 @@ const fr = {
   'dj.endHours.count': '{count} départs',
   'dj.endHours.hint': 'Heures de départ connues du plan de mariage.',
   'dj.endHours.leavesAt': 'Part à',
-  'dj.endHourLane.title': 'Voie des heures de fin',
-  'dj.endHourLane.hint': 'Départs hors timeline',
+  'dj.vendorPresence.title': 'Présence prestataires',
+  'dj.vendorPresence.active': 'Sur place',
+  'dj.vendorPresence.upcoming': 'À venir',
   'photo.lightWindows': 'Fenêtres de lumière',
   'photo.sunsetGolden': 'Coucher du soleil et heure dorée',
   'photo.sunset': 'Coucher du soleil',
@@ -782,4 +783,5 @@ const fr = {
 };
 
 export default fr;
+
 

@@ -2,7 +2,6 @@ import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/e
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
-import DjEndHourLane from './DjEndHourLane';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -24,6 +23,7 @@ import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import UtilityControlGroup from './UtilityControlGroup';
+import VendorPresenceBars from './VendorPresenceBars';
 import VipDjLogo from './VipDjLogo';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
@@ -127,6 +127,9 @@ export default function DjBoothView({
     { role: 'dj', isVipDj: caps.vip },
   );
   const mandatoryItems = activeEntry?.step?.id ? mandatoryByStep[activeEntry.step.id] ?? [] : [];
+  const vendorPresence = caps.vip ? (
+    <VendorPresenceBars wedding={wedding} nowClock={clock?.nowClock} />
+  ) : null;
 
   // Extra current-card detail for the shared focus stack. The stack owns the
   // card hierarchy and visibility counts; this body only adds DJ-specific
@@ -215,14 +218,13 @@ export default function DjBoothView({
       ) : null}
 
 
-      {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
-
       <TimelineFocusStack
         compact
         zoneScroll={false}
         entries={timeline}
         activeIndex={activeIndex}
         currentBody={djCurrentBody}
+        currentFooter={vendorPresence}
       />
 
       {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
@@ -316,13 +318,12 @@ export default function DjBoothView({
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="w-full space-y-4">
-          {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
-
           <TimelineFocusStack
             zoneScroll={false}
             entries={timeline}
             activeIndex={activeIndex}
             currentBody={djCurrentBody}
+            currentFooter={vendorPresence}
           />
 
           {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}

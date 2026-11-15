@@ -1,4 +1,5 @@
 import { clockToMinutes } from './clockMath.js';
+import { SERVICE_DAY_ROLLOVER_HOUR } from './eventTime.js';
 
 // Read-only end-hour awareness for the Standard DJ (issue #991). This is a
 // presentation helper only: it never changes timeline durations or anchors.
@@ -73,9 +74,24 @@ export function formatEndHour(row) {
   return formatWindow(row.startTime, row.endTime);
 }
 
-// VIP lane position by end clock; presentation only, never timeline data.
-export function lanePositionPercent(sortValue) {
-  if (!Number.isFinite(sortValue)) return 0;
-  const minuteOfDay = ((sortValue % 1440) + 1440) % 1440;
-  return Math.min(100, Math.max(0, (minuteOfDay / 1440) * 100));
+// Presence rows for the DJ notebook: both start and end are required, and a
+// row disappears as soon as the live event clock passes its end. The service
+// day rolls over in the early morning so a 00:30 end still belongs to the
+// previous evening rather than becoming "upcoming" after a normal 21:30 end.
+export function buildVendorPresence(wedding = {}, nowClock = null) {
+  const now = clockToMinutes(nowClock);
+  if (now == null) return [];
+
+  const serviceNow = now < SERVICE_DAY_ROLLOVER_HOUR * 60 ? now + 24 * 60 : now;
+
+  return buildEndHours(wedding)
+    .filter((row) => row.startTime && row.endTime)
+    .filter((row) => row.sortValue >= serviceNow)
+    .map((row) => {
+      const start = clockToMinutes(row.startTime);
+      return {
+        ...row,
+        state: start != null && serviceNow >= start ? 'active' : 'upcoming',
+      };
+    });
 }

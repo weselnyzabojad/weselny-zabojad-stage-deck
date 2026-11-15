@@ -137,6 +137,7 @@ export default function TimelineFocusStack({
   activeIndex,
   compact = false,
   currentBody = null,
+  currentFooter = null,
   labels = {},
   className = '',
   zoneScroll = true,
@@ -222,6 +223,7 @@ export default function TimelineFocusStack({
               </p>
             )}
           </section>
+          {currentFooter ? <div className="mt-2 min-w-0">{currentFooter}</div> : null}
         </div>
 
         <div className="order-2 min-w-0 space-y-2">
@@ -372,6 +374,7 @@ export default function TimelineFocusStack({
             </p>
           )}
         </section>
+        {currentFooter ? <div className="mt-2 min-w-0">{currentFooter}</div> : null}
       </div>
 
       <div className="order-3 min-w-0">
