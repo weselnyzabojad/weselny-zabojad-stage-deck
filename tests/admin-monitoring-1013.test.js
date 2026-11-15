@@ -39,7 +39,7 @@ describe('issue #1013 admin monitoring top bar', () => {
     expect(bar).toContain('provider.latencyMs');
     expect(bar).toContain('formatCheckedAt(provider.checkedAt)');
     expect(bar).toContain('provider.detail');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-4');
+    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
     expect(bar).toContain('Retry all');
     expect(bar).not.toContain('role="dialog"');
   });

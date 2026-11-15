@@ -115,6 +115,7 @@ describe('issue #979 service health probes', () => {
         },
       },
       sunset: { url: `${mock.url}/sunset?status=500` },
+      deck: { url: `${mock.url}/deck?status=503` },
     });
 
     expect(result.ok).toBe(false);
@@ -123,10 +124,45 @@ describe('issue #979 service health probes', () => {
       'sentry',
       'drive',
       'sunset',
+      'deck',
     ]);
     expect(result.providers.find((provider) => provider.id === 'supabase').status).toBe('ok');
     expect(JSON.stringify(result)).not.toContain(token);
     expect(JSON.stringify(result)).not.toContain('service-key');
+  });
+
+  it('probes the production deck URL and maps the Netlify login redirect', async () => {
+    const ok = await health.probeDeck({ url: `${mock.url}/deck` });
+    expect(ok).toMatchObject({ id: 'deck', status: 'ok', httpStatus: 200 });
+    expect(ok.detail).toBeNull();
+
+    const redirect = createServiceHealth({
+      fetchImpl: async () => new Response('', { status: 401 }),
+    });
+    const degraded = await redirect.probeDeck({ url: 'https://deck.example' });
+    expect(degraded).toMatchObject({ status: 'degraded', httpStatus: 401 });
+    expect(degraded.detail).toContain('Netlify login redirect');
+
+    const failed = await health.probeDeck({ url: `${mock.url}/deck?status=503` });
+    expect(failed.status).toBe('down');
+    expect(failed.httpStatus).toBe(503);
+  });
+
+  it('falls back from HEAD to GET and requires the deck URL', async () => {
+    const calls = [];
+    const mockHealth = createServiceHealth({
+      fetchImpl: async (_url, options) => {
+        calls.push(options.method);
+        return new Response('', { status: options.method === 'HEAD' ? 405 : 200 });
+      },
+    });
+    const result = await mockHealth.probeDeck({ url: 'https://deck.example' });
+    expect(calls).toEqual(['HEAD', 'GET']);
+    expect(result.status).toBe('ok');
+
+    const missing = await mockHealth.probeDeck({ url: '' });
+    expect(missing.status).toBe('down');
+    expect(missing.detail).toContain('not configured');
   });
 
   it('wires authorization, deployment and local mocks', () => {

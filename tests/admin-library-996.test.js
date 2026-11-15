@@ -9,7 +9,7 @@ describe('issue #996 admin library layout', () => {
     expect(bar).toContain('Service monitoring');
     expect(bar).toContain('All systems healthy');
     expect(bar).toContain('Retry all');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-4');
+    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
     expect(bar).not.toContain('System status');
     expect(bar).not.toContain('aria-expanded={open}');
   });

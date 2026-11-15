@@ -129,7 +129,7 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
         </p>
       ) : null}
 
-      <ul className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-4">
+      <ul className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
         {providers.map((provider) => {
           const providerStatus = checking ? 'checking' : provider.status;
           return (

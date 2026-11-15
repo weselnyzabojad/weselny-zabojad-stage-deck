@@ -53,8 +53,18 @@ export function createServiceMock() {
       sendJson(res, 200, { slug: 'stage-deck', status: 'active' });
       return;
     }
-    if (req.method === 'GET' && path === '/sunset') {
+    if ((req.method === 'GET' || req.method === 'HEAD') && path === '/deck') {
       const status = overrideStatus(url, 200);
+      if (req.method === 'HEAD') {
+        res.writeHead(status, { 'Content-Type': 'text/html' });
+        res.end();
+        return;
+      }
+      res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(status === 200 ? '<!doctype html><title>Stage Deck</title>' : 'Deck failure');
+      return;
+    }
+    if (req.method === 'GET' && path === '/sunset') {      const status = overrideStatus(url, 200);
       if (status !== 200) {
         sendJson(res, status, { status: 'ERROR' });
         return;
