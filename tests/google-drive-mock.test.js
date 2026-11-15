@@ -8,6 +8,7 @@ import {
 import {
   DRIVE_FOLDER_MIME_TYPE,
   MOCK_ROOT_FOLDER_ID,
+  MOCK_WEDDING_FOLDER,
   MOCK_WEDDING_ID,
   startMockDrive,
 } from '../tools/google-drive-mock/server.mjs';
@@ -50,10 +51,10 @@ describe('dockerized Google Drive mock', () => {
 
     const siblings = await connector.listChildren({ parentId: month.id });
     const names = siblings.files.map((file) => file.name);
-    expect(names).toContain(MOCK_WEDDING_ID);
+    expect(names).toContain(MOCK_WEDDING_FOLDER);
     expect(names).toContain('secrets');
 
-    const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_ID);
+    const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_FOLDER);
     expect(await connector.resolveMonthFolderId(wedding.id)).toBe(month.id);
     expect(await connector.ensureSpeechFolder({ weddingFolderId: wedding.id, weddingId: MOCK_WEDDING_ID }))
       .toMatchObject({ folder: { name: 'speeches', mimeType: DRIVE_FOLDER_MIME_TYPE } });
@@ -74,7 +75,7 @@ describe('dockerized Google Drive mock', () => {
     const months = await connector.listChildren({ parentId: years.files[0].id });
     const month = months.files.find((file) => file.name === 'August');
     const siblings = await connector.listChildren({ parentId: month.id });
-    const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_ID);
+    const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_FOLDER);
 
     const { folder } = await connector.ensureFolderPath({
       weddingFolderId: wedding.id,
