@@ -7863,3 +7863,63 @@ controls keep their existing cultural, speech, children, locale and theme state.
 **Supersedes.** [#1095](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1095) (closed as not planned).
 
 **Open questions.** None.
+
+### 17.96 Venue Manager mandatory-change confirmation (decision, 2026-11-16)
+
+Require an old-value → new-value confirmation before the Venue Manager persists
+one of the five mandatory values. The write, flexible-step cascade, local save
+and MC/DJ informational update run only after Confirm; Cancel leaves everything
+unchanged.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The flow uses
+the existing Venue Manager settings and mandatory-step persistence.
+
+**Feature scope.**
+
+- **Five confirmed fields:** course time, course service mode, cake service
+  mode, closure time and extension limit.
+- **Dialog:** field label, old value → new value, Cancel and Confirm, built on
+  the shared `ModalShell`.
+- **Confirmation rule:** only when the old value is non-empty and the new value
+  differs. Empty old values apply immediately.
+- **Confirm:** exactly one `update()` pipeline run (reschedule, save,
+  `onUpdateMandatory`).
+- **Cancel/Escape/backdrop:** no settings change, no save, no notification.
+- **Notification:** MC and DJ VIP receive the informational popup only after
+  Confirm for these fields.
+- **Unchanged:** add/remove meal and extension-allowed checkbox remain immediate;
+  the Venue Manager is the sole decision-maker.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Venue Manager desktop | Confirmation dialog for the five fields |
+| Venue Manager compact | Same flow |
+| MC Master | Existing informational popup after Confirm only |
+| DJ VIP | Existing informational popup after Confirm only |
+| Other roles | No change |
+| Schema/parser/data | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Confirmed fields | Five named fields only |
+| Empty old value | Apply immediately |
+| Cancel | No write, reschedule or notification |
+| Notification audience | MC + DJ VIP, after Confirm |
+| Add/remove/checkbox | Immediate; Venue Manager decides |
+| Dialog primitive | Shared `ModalShell` |
+| Layouts | Desktop and compact |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1097](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1097) | Confirmation dialog, old/new flow, cancel, delayed notification, tests | - |
+
+**Open questions.** None.
