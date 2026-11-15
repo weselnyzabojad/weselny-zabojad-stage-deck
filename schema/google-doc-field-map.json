@@ -176,6 +176,7 @@
       "steps[].game.title": "required",
       "steps[].game.gameType": "required",
       "steps[].game.enabled": "required",
+      "steps[].game.requested": "required",
       "steps[].game.status": "no",
       "steps[].game.requiresPhotographer": "required"
     },
@@ -258,6 +259,7 @@
       "steps[].game.title": "required",
       "steps[].game.gameType": "required",
       "steps[].game.enabled": "required",
+      "steps[].game.requested": "required",
       "steps[].game.sourceDocId": "no",
       "steps[].game.status": "no",
       "privacy.cloudSync": "no",

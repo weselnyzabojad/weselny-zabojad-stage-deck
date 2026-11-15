@@ -126,6 +126,7 @@
         "title": "Test Wiedzy",
         "gameType": "TEST_WIEDZY",
         "enabled": true,
+        "requested": "YES",
         "status": "AVAILABLE"
       }
     },
@@ -140,6 +141,7 @@
         "title": "Test Zgodności",
         "gameType": "TEST_ZGODNOSCI",
         "enabled": true,
+        "requested": "UNDECIDED",
         "status": "AVAILABLE"
       }
     },
@@ -165,6 +167,7 @@
         "title": "Speed Foto",
         "gameType": "OTHER",
         "enabled": true,
+        "requested": "YES",
         "requiresPhotographer": true,
         "status": "AVAILABLE"
       }

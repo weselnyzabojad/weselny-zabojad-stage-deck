@@ -1,10 +1,10 @@
 # Optional Games: Test Wiedzy & Test Zgodności
 
-> **Status: prepared content only (TODO 16).** The `YES` / `NO` / `UNDECIDED`
-> capture, question banks, scoring, MC scripts and fallbacks are ready. The
-> final `games` schema, validation, MC UI and Google Doc parser mapping are
-> **deferred until the schema is approved**. Do **not** add `games` to the
-> Google Doc template or the importer yet.
+> **Status: Doc contract implemented (issue #972).** The `## GAMES` `Requested`
+> value is mapped to the matching `steps[].game.requested` as `YES`, `NO` or
+> `UNDECIDED`. Only `YES` authorizes a later Doc/folder creation for that game
+> step; this issue performs no Drive reads, folder creation or Doc creation.
+> Creation gating lands separately.
 
 The two games are independent and both optional:
 
@@ -37,9 +37,12 @@ Add this stable section to the Google Doc template. One row per game, with an
 
 Allowed `Requested` values:
 
-- `YES` — the couple wants the game; run the preparation checklist below.
-- `NO` — do not prepare or schedule it.
-- `UNDECIDED` — follow up before the event; do not assume either way.
+- `YES` — the couple wants the game; it is the only value that authorizes
+  creating that game's question Doc and folder later. Run the preparation
+  checklist below.
+- `NO` — do not prepare or schedule it; never authorizes creation.
+- `UNDECIDED` — follow up before the event; do not assume either way and never
+  authorizes creation.
 
 Capture rules:
 
@@ -53,6 +56,27 @@ Capture rules:
 7. A standalone Test Zgodności must be linked to the `oczepiny` anchor or a
    `steps[]` block — never duplicate the same time in both places.
 8. Record a paper/offline fallback for every `YES` game.
+
+## Cartridge contract
+
+- Each row maps to the matching predefined game step as
+  `steps[].game.requested`, normalized to uppercase `YES`, `NO` or `UNDECIDED`.
+- Test Wiedzy and Test Zgodności are independent predefined steps
+  (`test_wiedzy`, `test_zgodnosci`). Each has its own `requested` value, step,
+  folder, Doc and later Create action. A `YES` on one never authorizes the other.
+- Only that step's `YES` authorizes a later Doc/folder creation. `NO` and
+  `UNDECIDED` never do.
+- No wedding-level `games.requested`, `games.enabled`, `games.questionLists` or
+  other shared flag authorizes creation. The legacy `games` object stays
+  readable for compatibility only.
+- Missing or invalid `Requested` values produce a parser warning and leave
+  `requested` unset. Consent is never inferred from another mention.
+- `steps[].game.enabled` keeps its runtime/display meaning: `YES` and
+  `UNDECIDED` are enabled, `NO` is disabled. It is not creation authorization.
+- Cartridges without `requested` remain readable and publishable. Their games
+  cannot create a Doc until the Doc is corrected and republished.
+- `sourceDocId` from the Notes column and all other game metadata are unchanged,
+  and no question text is added to the wedding cartridge.
 
 Preparation checklist when `YES`:
 
@@ -109,14 +133,12 @@ schedule the same moment twice. The prepared package sets
 
 ---
 
-## Open decisions (before schema approval)
+## Open decisions
 
 - Is Test Wiedzy always MC-led, or can a guest host it?
-- Are the two games fully independent, or does one replace the other?
 - Do questions live in the cartridge, a fixture, or an encrypted private block?
 - Device screens, printed cards, or both?
-- Final `games` shape and validation; Google Doc parser mapping; MC UI.
-- Wire the prepared banks into the cartridge/importer only after approval.
+- MC UI for the prepared banks.
 
 ## Approval checklist
 
@@ -127,4 +149,4 @@ schedule the same moment twice. The prepared package sets
 - [ ] MC script reviewed and translated.
 - [ ] Paper fallback printed and tested.
 - [ ] Compatibility game linked to Oczepini or a timeline step.
-- [ ] Schema approved, then add `games` to the schema, parser and importer.
+- [x] `## GAMES` `Requested` mapped to each game step's `requested` (issue #972).

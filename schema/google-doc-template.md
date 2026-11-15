@@ -276,6 +276,14 @@ Photographer cue: Front-left of the cake table
 | Test Zgodności | UNDECIDED |  | PL, FR, EN | No | no | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
 | Speed Foto | YES |  |  | No | yes | Guests run in, pose, clear. |
 
+Only `YES` authorizes creating that game's question Doc and folder. `NO` and
+`UNDECIDED` never do. Each row maps its `Requested` value to its own predefined
+timeline step, so `YES` for Test Wiedzy never authorizes Test Zgodności (and
+vice versa). Missing or invalid values warn and leave the step's `requested`
+unset; consent is never inferred from another mention. `enabled` keeps its
+display/runtime meaning (`YES` and `UNDECIDED` enabled, `NO` disabled) and is
+not creation authorization.
+
 ## KITCHEN
 
 ### Courses
