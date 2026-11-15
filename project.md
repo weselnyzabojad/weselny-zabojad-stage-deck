@@ -7002,99 +7002,6 @@ default for Zaremba, other landing sections, other routes and global theme.
 
 **Tracking.** [#1056](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1056), [#1057](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1057).
 
-### 17.81 Admin service health monitoring and private Drive sharing (decision, 2026-11-15)
-
-**Goal.**
-
-Give the owner an at-a-glance health bar on the admin page covering every
-external dependency the app actually uses ÔÇö Supabase, Sentry, Google Drive and
-sunrise-sunset.org ÔÇö with green/red badges, the HTTP status and a drill-down for
-failures. The same admin surface gains controlled sharing of private files under
-`secrets/<weddingId>/` with additional readers, following Drive v3 permission
-rules without widening the customer/private boundary.
-
-**Google Doc contract.**
-
-Not Doc-linked. No schema, parser, template or field-map change. Health data is
-runtime configuration/telemetry; Drive sharing is a Drive permission operation,
-not cartridge content.
-
-**Health contract.**
-
-- Providers: `supabase` (Auth/REST reachability through `SUPABASE_URL`),
-  `sentry` (server-side Sentry API probe), `drive` (metadata read through the
-  existing connector and `GOOGLE_DRIVE_API_BASE`), `sunset`
-  (`api.sunrise-sunset.org` or a configured equivalent).
-- A new admin-only Edge Function `service_health` requires the allowlisted owner
-  with aal2, applies bounded timeouts, and returns
-  `{ ok, checkedAt, providers[] }` with `{ id, name, status, httpStatus,
-  latencyMs, checkedAt, detail }`. One failing probe never hides the others.
-- Sentry is probed through the Sentry API with `SENTRY_API_TOKEN`,
-  `SENTRY_ORG_SLUG` and `SENTRY_PROJECT_SLUG` held only as Edge Function
-  secrets. The browser never receives the token or raw Sentry payloads.
-- The admin health bar lives in the authenticated admin header and checks on
-  page load plus manual Retry/Refresh. A provider that transitions to failing is
-  reported once to Sentry via `src/lib/sentry.js` with identifiers only.
-- Local development uses local Supabase, the existing Drive mock and a local
-  mock for the Sentry and sunset probes. No hosted Sentry API call is made and
-  no Sentry event is emitted; the existing production-only `isSentryEnabled`
-  gate stays in force.
-
-**Private Drive sharing contract.**
-
-- The owner may share one file under `secrets/<weddingId>/` at a time as a
-  Google Drive `reader`. Folder-wide, public-link, writer, commenter and
-  ownership-transfer sharing are not offered.
-- Only files the service account created or opened are shareable, matching the
-  existing `drive.file` scope. Customer-visible files under
-  `YYYY/Month/<weddingId>/` are never shareable.
-- `admin_drive` gains `list_permissions`, `share_file` and
-  `revoke_permission`, backed by Drive v3 `/files/{fileId}/permissions`
-  create/list/delete. Re-sharing an existing email is idempotent; the owner
-  permission cannot be removed.
-- Successful share/revoke operations are written to `public.admin_audit_log`.
-  Errors are sanitized with the existing `drive_*` mapping.
-- The local Drive mock implements permission list/create/delete so the flow is
-  exercisable without Google; notification email is sent by the service account
-  unless the admin opts out.
-
-**View scope.**
-
-| Surface | Behaviour |
-| --- | --- |
-| Admin header | Health badges for the four providers, green/red, details and retry |
-| Admin wedding folders / Drive panel | Share dialog for files under `secrets/` only; list/add/remove readers |
-| Edge Functions | `service_health` probes; `admin_drive` permission actions and audit |
-| MC / DJ / Photographer / Speaker / Venue / Song Request / landing | No visual or behavioural change |
-| Admin read-only mode | Health bar stays informational with retry; sharing actions are disabled |
-
-**Decisions.**
-
-| Topic | Decision |
-| --- | --- |
-| Doc linkage | Not Doc-linked; no schema/parser/template change |
-| Providers | Supabase, Sentry, Google Drive, sunrise-sunset.org |
-| Sentry probe | Server-side Edge Function with token; never in the browser |
-| Local monitoring | Local Supabase + Drive mock + Sentry/sunset mock; no Sentry events |
-| Check cadence | Admin load + manual retry; one Sentry event per failing transition |
-| Sharing granularity | Per file, never per folder |
-| Sharing role | `reader` only |
-| Shareable files | App-created/opened files under `secrets/` only (`drive.file`) |
-| Audit | `admin_audit_log` on successful share/revoke |
-| Other views | No change |
-
-**Task split.**
-
-| Order | Issue | Scope | Depends on |
-| --- | --- | --- | --- |
-| 1 | [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979) | `service_health` Edge Function with provider adapters, timeouts, Sentry API proxy and local Sentry/sunset mocks | - |
-| 2 | [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980) | Admin top-bar health badges, failure details and one-shot Sentry reporting | #979 |
-| 3 | [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982) | `admin_drive` permission actions, Drive rules, audit and mock permission support | - |
-| 4 | [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981) | Admin secrets-file sharing dialog (list/add/remove readers) | #982 |
-
-**Open questions.** None.
-
-**Tracking.** [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979), [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980), [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981), [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982).
 
 ### 17.82 Remove admin Google Drive source panel (decision, 2026-11-15)
 
@@ -7423,3 +7330,97 @@ change.
 **Open questions.** None.
 
 **Tracking.** [#1013](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1013).
+
+### 17.88 Admin service health monitoring and private Drive sharing (decision, 2026-11-15)
+
+**Goal.**
+
+Give the owner an at-a-glance health bar on the admin page covering every
+external dependency the app actually uses ÔÇö Supabase, Sentry, Google Drive and
+sunrise-sunset.org ÔÇö with green/red badges, the HTTP status and a drill-down for
+failures. The same admin surface gains controlled sharing of private files under
+`secrets/<weddingId>/` with additional readers, following Drive v3 permission
+rules without widening the customer/private boundary.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. Health data is
+runtime configuration/telemetry; Drive sharing is a Drive permission operation,
+not cartridge content.
+
+**Health contract.**
+
+- Providers: `supabase` (Auth/REST reachability through `SUPABASE_URL`),
+  `sentry` (server-side Sentry API probe), `drive` (metadata read through the
+  existing connector and `GOOGLE_DRIVE_API_BASE`), `sunset`
+  (`api.sunrise-sunset.org` or a configured equivalent).
+- A new admin-only Edge Function `service_health` requires the allowlisted owner
+  with aal2, applies bounded timeouts, and returns
+  `{ ok, checkedAt, providers[] }` with `{ id, name, status, httpStatus,
+  latencyMs, checkedAt, detail }`. One failing probe never hides the others.
+- Sentry is probed through the Sentry API with `SENTRY_API_TOKEN`,
+  `SENTRY_ORG_SLUG` and `SENTRY_PROJECT_SLUG` held only as Edge Function
+  secrets. The browser never receives the token or raw Sentry payloads.
+- The admin health bar lives in the authenticated admin header and checks on
+  page load plus manual Retry/Refresh. A provider that transitions to failing is
+  reported once to Sentry via `src/lib/sentry.js` with identifiers only.
+- Local development uses local Supabase, the existing Drive mock and a local
+  mock for the Sentry and sunset probes. No hosted Sentry API call is made and
+  no Sentry event is emitted; the existing production-only `isSentryEnabled`
+  gate stays in force.
+
+**Private Drive sharing contract.**
+
+- The owner may share one file under `secrets/<weddingId>/` at a time as a
+  Google Drive `reader`. Folder-wide, public-link, writer, commenter and
+  ownership-transfer sharing are not offered.
+- Only files the service account created or opened are shareable, matching the
+  existing `drive.file` scope. Customer-visible files under
+  `YYYY/Month/<weddingId>/` are never shareable.
+- `admin_drive` gains `list_permissions`, `share_file` and
+  `revoke_permission`, backed by Drive v3 `/files/{fileId}/permissions`
+  create/list/delete. Re-sharing an existing email is idempotent; the owner
+  permission cannot be removed.
+- Successful share/revoke operations are written to `public.admin_audit_log`.
+  Errors are sanitized with the existing `drive_*` mapping.
+- The local Drive mock implements permission list/create/delete so the flow is
+  exercisable without Google; notification email is sent by the service account
+  unless the admin opts out.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin header | Health badges for the four providers, green/red, details and retry |
+| Admin wedding folders / Drive panel | Share dialog for files under `secrets/` only; list/add/remove readers |
+| Edge Functions | `service_health` probes; `admin_drive` permission actions and audit |
+| MC / DJ / Photographer / Speaker / Venue / Song Request / landing | No visual or behavioural change |
+| Admin read-only mode | Health bar stays informational with retry; sharing actions are disabled |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; no schema/parser/template change |
+| Providers | Supabase, Sentry, Google Drive, sunrise-sunset.org |
+| Sentry probe | Server-side Edge Function with token; never in the browser |
+| Local monitoring | Local Supabase + Drive mock + Sentry/sunset mock; no Sentry events |
+| Check cadence | Admin load + manual retry; one Sentry event per failing transition |
+| Sharing granularity | Per file, never per folder |
+| Sharing role | `reader` only |
+| Shareable files | App-created/opened files under `secrets/` only (`drive.file`) |
+| Audit | `admin_audit_log` on successful share/revoke |
+| Other views | No change |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979) | `service_health` Edge Function with provider adapters, timeouts, Sentry API proxy and local Sentry/sunset mocks | - |
+| 2 | [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980) | Admin top-bar health badges, failure details and one-shot Sentry reporting | #979 |
+| 3 | [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982) | `admin_drive` permission actions, Drive rules, audit and mock permission support | - |
+| 4 | [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981) | Admin secrets-file sharing dialog (list/add/remove readers) | #982 |
+
+**Open questions.** None.
+
+**Tracking.** [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979), [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980), [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981), [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982).
