@@ -4,15 +4,14 @@ import { describe, expect, it } from 'vitest';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 describe('issue #996 admin library layout', () => {
-  it('collapses health into one System Status control with details', () => {
+  it('renders the monitoring strip above the admin tabs', () => {
     const bar = read('src/admin/AdminHealthBar.jsx');
-    expect(bar).toContain('System status');
-    expect(bar).toContain('aria-expanded={open}');
-    expect(bar).toContain('id="system-status-details"');
-    expect(bar).toContain('role="dialog"');
-    expect(bar).toContain('Retry');
-    expect(bar).not.toContain('Service health</span>');
-    expect(bar).not.toContain('providers.map((provider) => {\n          const status');
+    expect(bar).toContain('Service monitoring');
+    expect(bar).toContain('All systems healthy');
+    expect(bar).toContain('Retry all');
+    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
+    expect(bar).not.toContain('System status');
+    expect(bar).not.toContain('aria-expanded={open}');
   });
 
   it('keeps search, status and role filters on one inline row', () => {

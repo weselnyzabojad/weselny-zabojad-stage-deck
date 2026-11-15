@@ -95,6 +95,7 @@ export function AdminConfirmDialog({
 
 export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description, onVerified, onCancel }) {
   const [code, setCode] = useState('');
+  const titleId = useId();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [wasOpen, setWasOpen] = useState(open);
@@ -122,8 +123,9 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title={title}
         description={description ?? 'Enter the 6-digit code from your authenticator app.'}
       >
@@ -164,6 +166,7 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
 
 export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
   const [password, setPassword] = useState('');
+  const titleId = useId();
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -200,8 +203,9 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Change password"
         description="The new password is checked against HaveIBeenPwned before it is saved. Only a SHA-1 prefix is sent."
       >
@@ -250,6 +254,7 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
 
 export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = false, error = '' }) {
   const [pins, setPins] = useState({});
+  const titleId = useId();
   const [wasOpen, setWasOpen] = useState(open);
 
   if (open !== wasOpen) {
@@ -262,8 +267,9 @@ export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = fa
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Rotate role PINs"
         description="Leave a field blank to auto-generate that role's PIN. All PINs are shown once, then stored as hashes."
       >
@@ -313,6 +319,7 @@ export function AdminPublishRevisionDialog({
   error = '',
 }) {
   const [cartridgeJson, setCartridgeJson] = useState('');
+  const titleId = useId();
   const [parseError, setParseError] = useState('');
   const [resetKey, setResetKey] = useState([open, wedding]);
 
@@ -337,8 +344,9 @@ export function AdminPublishRevisionDialog({
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Replace published cartridge"
         description={`Publishes a new immutable revision for ${wedding?.wedding_id ?? 'this wedding'}. The room code, PINs, sessions and live progress are preserved.`}
       >

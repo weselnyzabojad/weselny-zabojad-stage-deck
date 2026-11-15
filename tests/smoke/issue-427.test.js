@@ -43,8 +43,12 @@ describe('issue #427 show full timeline expander', () => {
         }),
       );
       expect(html).toContain(`data-viewport="${compact ? 'compact' : 'wide'}"`);
-      expect(html).toContain('data-focus-expander="history"');
-      expect(html).toContain('data-focus-expander="future"');
+      if (compact) {
+        expect(html).toContain('role="tablist"');
+      } else {
+        expect(html).toContain('data-focus-expander="history"');
+        expect(html).toContain('data-focus-expander="future"');
+      }
     }
   });
 

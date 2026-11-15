@@ -20,7 +20,7 @@ function getStorage(storage) {
   }
 }
 
-export function saveSpeakerSpeech({ weddingId, speechId, speech, expiresAt = null }, storage) {
+export function saveSpeakerSpeech({ weddingId, speechId, speech, revision = null, keyVersion = null, expiresAt = null }, storage) {
   const store = getStorage(storage);
   if (!store || !weddingId || !speechId || !speech || typeof speech !== 'object') return false;
   try {
@@ -29,6 +29,8 @@ export function saveSpeakerSpeech({ weddingId, speechId, speech, expiresAt = nul
       JSON.stringify({
         weddingId,
         speechId,
+        revision,
+        keyVersion,
         speech,
         expiresAt,
         savedAt: new Date().toISOString(),
@@ -40,7 +42,11 @@ export function saveSpeakerSpeech({ weddingId, speechId, speech, expiresAt = nul
   }
 }
 
-export function loadSpeakerSpeech(weddingId, speechId, { storage, now = Date.now() } = {}) {
+export function loadSpeakerSpeech(
+  weddingId,
+  speechId,
+  { storage, now = Date.now(), revision = null, keyVersion = null } = {},
+) {
   const store = getStorage(storage);
   if (!store || !weddingId || !speechId) return null;
   try {
@@ -54,6 +60,15 @@ export function loadSpeakerSpeech(weddingId, speechId, { storage, now = Date.now
       !parsed.speech ||
       typeof parsed.speech !== 'object'
     ) {
+      return null;
+    }
+    // A newer revision or key must never reopen stale plaintext.
+    if (revision != null && parsed.revision != null && parsed.revision !== revision) {
+      store.removeItem(speechScriptCacheKey(weddingId, speechId));
+      return null;
+    }
+    if (keyVersion != null && parsed.keyVersion != null && parsed.keyVersion !== keyVersion) {
+      store.removeItem(speechScriptCacheKey(weddingId, speechId));
       return null;
     }
     if (parsed.expiresAt && Date.parse(parsed.expiresAt) <= now) {

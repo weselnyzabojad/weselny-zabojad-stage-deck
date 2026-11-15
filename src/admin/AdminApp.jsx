@@ -40,6 +40,7 @@ import AdminHealthBar from './AdminHealthBar';
 import { ADMIN_BUTTON } from './adminUi';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
+import AdminMusicians from './AdminMusicians';
 import AdminGamesPanel from './AdminGamesPanel';
 import AdminDocMigrationPanel from './AdminDocMigrationPanel';
 import AdminWeddingRoles from './AdminWeddingRoles';
@@ -1169,6 +1170,11 @@ function AdminAppContent() {
                     onChanged={load}
                   />
                   <AdminServiceProviders
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onChanged={load}
+                  />
+                  <AdminMusicians
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
                     onChanged={load}

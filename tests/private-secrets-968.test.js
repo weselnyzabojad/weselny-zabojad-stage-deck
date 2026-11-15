@@ -321,7 +321,7 @@ describe('issue #968 private Drive secrets layout', () => {
       new URL('../supabase/functions/admin_drive/index.ts', import.meta.url),
       'utf8',
     );
-    expect(api).toContain('ensureSpeechFolder({ weddingFolderId, weddingId })');
+    expect(api).toContain('weddingFolderId: resolvedWeddingFolderId,');
     expect(api).toContain('speechDocFilename({ weddingId, order, speakerName, relationship })');
     expect(api).toContain('gameQuestionDocFolderPath(gameType, weddingId)');
     expect(api).toContain('scope: path.scope');

@@ -55,7 +55,7 @@ export default function AdminWeddingRoles({ wedding, readOnly = false, onChanged
   const djMcWedding = data?.servicePackage === 'DJ_MC';
   const visibleRoles = djMcWedding
     ? ROLE_ORDER.filter((role) => role === 'dj_mc')
-    : ROLE_ORDER.filter((role) => role !== 'dj_mc');
+    : ROLE_ORDER.filter((role) => role !== 'dj_mc' && role !== 'musician');
   const vipWedding =
     data?.servicePackage === 'HOST_AND_DJ_VIP' || data?.servicePackage === 'DJ_MC';
 

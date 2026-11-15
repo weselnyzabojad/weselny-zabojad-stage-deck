@@ -151,8 +151,8 @@ describe('TimelineFocusStack rendering', () => {
     );
 
     expect(wide.match(/data-focus-card/g)).toHaveLength(5);
-    expect(compact.match(/data-focus-card/g)).toHaveLength(5);
-    expect(wide).toContain('data-viewport="wide"');
+    expect(compact.match(/data-focus-card/g)).toHaveLength(1);
+    expect(compact).toContain('role="tablist"');
     expect(compact).toContain('data-viewport="compact"');
   });
 });

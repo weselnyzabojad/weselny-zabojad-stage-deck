@@ -2,7 +2,6 @@
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
 import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
@@ -14,6 +13,7 @@ import { initSentry } from './lib/sentry.js'
 initSentry()
 
 // `/admin` is the owner-only surface. The legacy `/deck/admin` path redirects.
+const App = lazy(() => import('./App.jsx'))
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 const SongRequestApp = lazy(() => import('./components/SongRequestApp.jsx'))
 // Public marketing landing; kept in its own chunk so the deck entry stays lean.
@@ -83,9 +83,17 @@ createRoot(document.getElementById('root')).render(
           <AdminApp />
         </Suspense>
       ) : (
-        <App />
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
+              Loading stage deck…
+            </div>
+          }
+        >
+          <App />
+        </Suspense>
       )}
     </AppErrorBoundary>
-    <PwaUpdatePrompt />
+    {IS_LANDING ? null : <PwaUpdatePrompt />}
   </StrictMode>,
 )

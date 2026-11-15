@@ -24,7 +24,7 @@ describe('issue #332 dev and secondary mobile density', () => {
     expect(venue).toContain('clock={clock}');
     expect(venue).toContain('pin={pin}');
     expect(venue).toContain('space-y-3 sm:space-y-4');
-    expect(venue).toContain('p-3 shadow-lg sm:p-4');
+    expect(venue).toContain('p-4 shadow-lg sm:p-5');
   });
 
   it('does not add mobile admin affordances', () => {

@@ -34,6 +34,7 @@ export default function useSpeechBundle({ session, weddingId, enabled = true }) 
     liveSpeechId: null,
     error: null,
   });
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!enabled || !accessToken || !weddingId) return undefined;
@@ -63,7 +64,7 @@ export default function useSpeechBundle({ session, weddingId, enabled = true }) 
     return () => {
       active = false;
     };
-  }, [accessToken, enabled, weddingId]);
+  }, [accessToken, enabled, weddingId, refreshKey]);
 
   const openSpeech = (speech) =>
     fetchSpeechScript({
@@ -71,6 +72,7 @@ export default function useSpeechBundle({ session, weddingId, enabled = true }) 
       weddingId,
       speechId: speech.id,
       speech,
+      expiresAt: session?.expiresAt ?? null,
     });
 
   const startSpeech = async (speech) => {
@@ -92,5 +94,6 @@ export default function useSpeechBundle({ session, weddingId, enabled = true }) 
     openSpeech,
     startSpeech,
     endSpeech,
+    retry: () => setRefreshKey((value) => value + 1),
   };
 }

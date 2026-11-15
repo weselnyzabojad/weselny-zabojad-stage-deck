@@ -1,16 +1,14 @@
 import { ROLES, roleLabel } from '../lib/roles.js';
+import { resolveDjIdentityId } from '../lib/importantSongs.js';
+import { vipDjById } from '../lib/vipDjs.js';
 
 // Static role label for the top-left. It never changes the role; MC uses the
-// separate RoleSwitcher. DJ labels carry the service tier decided in the top-bar
-// matrix.
-export default function TopBarRoleLabel({ role = 'mc', tier = null, className = '' }) {
+// separate RoleSwitcher. DJ labels use the assigned provider identity, never a
+// generic VIP label in production.
+export default function TopBarRoleLabel({ role = 'mc', _tier = null, wedding = null, className = '' }) {
   const icon = ROLES[role]?.icon ?? ROLES.mc.icon;
-  const label =
-    role === 'dj'
-      ? String(tier).toUpperCase() === 'VIP'
-        ? 'DJ VIP'
-        : 'DJ'
-      : roleLabel(role);
+  const provider = role === 'dj' ? vipDjById(resolveDjIdentityId(wedding)) : null;
+  const label = role === 'dj' ? provider?.displayName ?? 'DJ' : roleLabel(role);
 
   return (
     <span

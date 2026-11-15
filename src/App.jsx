@@ -85,6 +85,30 @@ export default function App() {
     ? { ...activeCartridgeStateBase, wedding: null, status: 'loading' }
     : activeCartridgeStateBase;
 
+  // Issue #1040: an open deck must leave the stage when its role session
+  // expires, clearing role-scoped caches exactly like an explicit sign-out.
+  useEffect(() => {
+    if (!sessionValid || !roleSession?.expiresAt) return undefined;
+    const expire = () => {
+      if (roleSession?.weddingId) {
+        clearSpeechScriptsForWedding(roleSession.weddingId);
+        clearGameQuestionsForWedding(roleSession.weddingId);
+        void clearSpeechKeysForWedding(roleSession.weddingId);
+      }
+      if (roleSession?.speechId) {
+        void clearSpeakerAccessCache({
+          weddingId: roleSession.weddingId,
+          speechId: roleSession.speechId,
+        });
+      }
+      clearRoleSession();
+      setRoleSession(null);
+    };
+    const delay = Math.max(0, roleSession.expiresAt - Date.now());
+    const timer = window.setTimeout(expire, Math.min(delay, 2_147_483_600));
+    return () => window.clearTimeout(timer);
+  }, [sessionValid, roleSession]);
+
   if (IS_PRODUCTION && !sessionValid) {
     return (
       <AppErrorBoundary
