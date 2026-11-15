@@ -37,6 +37,7 @@ import {
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
+import { ADMIN_BUTTON } from './adminUi';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
 import AdminGamesPanel from './AdminGamesPanel';
@@ -870,7 +871,7 @@ function AdminAppContent() {
             <button
               type="button"
               onClick={() => setPasswordOpen(true)}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink"
+              className={ADMIN_BUTTON.secondary}
             >
               Password
             </button>
@@ -881,14 +882,14 @@ function AdminAppContent() {
                 load();
               }}
               disabled={loading}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink disabled:opacity-50"
+              className={ADMIN_BUTTON.primary}
             >
               Refresh
             </button>
             <button
               type="button"
               onClick={signOut}
-              className="rounded border border-line px-2.5 py-1 text-muted"
+              className={ADMIN_BUTTON.ghost}
             >
               Sign out
             </button>
@@ -1084,14 +1085,14 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleRotate(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         Rotate PINs
                       </button>
                       <button
                         type="button"
                         onClick={() => showQr(wedding)}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         QR cards
                       </button>
@@ -1099,7 +1100,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handlePublishRevision(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-ink disabled:opacity-40"
+                        className={ADMIN_BUTTON.primary}
                       >
                         Replace cartridge
                       </button>
@@ -1107,7 +1108,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleRestorePrevious(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         Restore previous
                       </button>
@@ -1115,7 +1116,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleArchive(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-amber-800 bg-amber-950/60 px-2 py-1 font-semibold text-amber-200 disabled:opacity-40"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         Archive
                       </button>
@@ -1123,7 +1124,7 @@ function AdminAppContent() {
                         type="button"
                         onClick={() => handleDelete(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-alert/60 bg-alert/20 px-2 py-1 font-semibold text-alert-soft disabled:opacity-40"
+                        className={ADMIN_BUTTON.danger}
                       >
                         Delete
                       </button>

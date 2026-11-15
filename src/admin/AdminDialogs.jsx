@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import ModalShell from '../components/ModalShell';
 import { challengeExistingFactor } from './adminApi';
 import { roleShort } from '../lib/roles';
+import { ADMIN_BUTTON } from './adminUi';
 
 function DialogBody({ title, description, titleId = undefined, descriptionId = undefined, children }) {
   return (
@@ -75,7 +76,7 @@ export function AdminConfirmDialog({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink"
+          className={ADMIN_BUTTON.ghost}
         >
           Cancel
         </button>
@@ -83,11 +84,7 @@ export function AdminConfirmDialog({
           type="button"
           onClick={onConfirm}
           disabled={blocked || busy}
-          className={`rounded border px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50 ${
-            tone === 'danger'
-              ? 'border-alert/60 bg-alert/40 hover:bg-alert/60'
-              : 'border-brand-strong bg-brand hover:bg-brand-hover'
-          }`}
+          className={tone === 'danger' ? ADMIN_BUTTON.danger : ADMIN_BUTTON.primary}
         >
           {busy ? 'Working…' : confirmLabel}
         </button>
