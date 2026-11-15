@@ -501,6 +501,30 @@ export async function setSpeechMode(payload) {
   return callAdmin('set_speech_mode', payload);
 }
 
+export async function preflightDocMigration(weddingId, weddingFolderId = '') {
+  if (ADMIN_DEMO) {
+    return {
+      weddingId,
+      weddingIdValid: true,
+      entries: [],
+      counts: { total: 0, ready: 0, alreadyMigrated: 0, conflicts: 0 },
+    };
+  }
+  return callAdmin('preflight_doc_migration', {
+    weddingId,
+    ...(weddingFolderId ? { weddingFolderId } : {}),
+  });
+}
+
+export async function migrateDocs(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('doc_migration');
+    return { ok: true, alreadyMigrated: true, summary: { migrated: 0 } };
+  }
+  return callAdmin('migrate_docs', payload);
+}
+
 export async function preflightSpeechMigration(weddingId) {
   return callAdmin('preflight_speech_migration', { weddingId });
 }

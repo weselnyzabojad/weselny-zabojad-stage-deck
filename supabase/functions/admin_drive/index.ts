@@ -296,6 +296,7 @@ async function handleRequest(req: Request) {
           drive_doc_version: file.version ?? null,
           drive_doc_modified_at: file.modifiedTime ?? null,
           drive_doc_retrieved_at: new Date().toISOString(),
+          drive_folder_id: folder.folder.id,
           status: 'DRAFT',
         },
         { onConflict: 'wedding_id,id' },

@@ -598,6 +598,40 @@ export function createGoogleDriveConnector({
     return sanitizedMetadata(await readJson(response));
   }
 
+  // Issue #969: move a Doc between folders without touching its content. The
+  // file id, version history and sharing stay intact; only parents change.
+  async function moveFile({ fileId, parentId, removeParents = null }) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    const parent = typeof parentId === 'string' ? parentId.trim() : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    if (!parent) throw createDriveError('drive_invalid_request', 'A target folder id is required.');
+
+    let removal = Array.isArray(removeParents)
+      ? removeParents.filter((value) => typeof value === 'string' && value && value !== parent)
+      : null;
+    if (!removal) {
+      const current = await getFileMetadata(id);
+      removal = (Array.isArray(current.parents) ? current.parents : []).filter(
+        (value) => value !== parent,
+      );
+    }
+
+    const params = new URLSearchParams({
+      addParents: parent,
+      fields: DRIVE_METADATA_FIELDS,
+    });
+    if (removal.length > 0) params.set('removeParents', removal.join(','));
+    const response = await authorizedRequest(
+      `${filesEndpoint}/${encodeURIComponent(id)}?${params.toString()}`,
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      },
+    );
+    return sanitizedMetadata(await readJson(response));
+  }
+
   async function renameFile({ fileId, name }) {
     const id = typeof fileId === 'string' ? fileId.trim() : '';
     const fileName = typeof name === 'string' ? name.trim() : '';
@@ -695,6 +729,7 @@ export function createGoogleDriveConnector({
     ensureSpeechFolder,
     createGoogleDoc,
     updateGoogleDocText,
+    moveFile,
     renameFile,
     readSource,
     isConfigured: Boolean(clientEmail && privateKey),

@@ -183,7 +183,7 @@ Repeat for `admin_drive`. A `404` means the function is not deployed.
    - `GOOGLE_SERVICE_ACCOUNT_EMAIL`
    - `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
 5. Share the wedding root folder with the service-account email.
-6. Grant only the Drive scope needed to create/rename speech Docs: the
+6. Grant only the Drive scope needed to create, move or rename Docs: the
    `https://www.googleapis.com/auth/drive.file` scope for files the service
    account creates or opens, plus read access to the wedding tree. Do not grant
    full `drive` scope unless an existing deployment already requires it.
@@ -218,7 +218,16 @@ root/
 Only `YYYY/Month/<weddingId>/` is guaranteed to exist. The app creates any
 missing `secrets/`, `secrets/<weddingId>/`, `speeches/`, `compatibility-test-game/`
 or `games/` folder when it creates a Doc. Existing folders are reused; nothing is
-moved, renamed or deleted.
+deleted.
+
+**Doc migration (#969).** The owner panel's *Drive Doc migration · UM paths*
+section preflights every existing speech, Test Wiedzy and Test Zgodności Doc,
+shows its current and target path, and moves/renames it only after explicit
+confirmation. Docs are moved by id, so content, sharing and version history are
+preserved. The service account therefore also needs `drive.file` access to move
+Docs it created. Missing files, Docs outside the wedding tree, conflicts and
+non-UM wedding ids are reported and left untouched. Reruns skip Docs already at
+their target path.
 
 **Permission boundary.** Share only `YYYY/Month/<weddingId>/` with the couple.
 `secrets/` is its sibling, not a child, so Drive permission inheritance never

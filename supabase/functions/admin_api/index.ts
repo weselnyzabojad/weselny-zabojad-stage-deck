@@ -76,6 +76,10 @@ import {
 import { checkPasswordBreach } from '../_shared/passwordBreach.js';
 import { decryptSpeechScript, encryptSpeechScript } from '../_shared/speechBundle.js';
 import { decryptSecret } from '../_shared/speechSecrets.js';
+import {
+  buildDocMigrationPlan,
+  executeDocMigration,
+} from '../_shared/docMigration.js';
 
 const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, languagesDomain]);
 const driveConnector = createGoogleDriveConnector({
@@ -100,6 +104,7 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'restore_game_questions',
   'delete_game_questions',
   'change_password',
+  'migrate_docs',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
@@ -730,6 +735,131 @@ async function migrationChecks({
   return checks;
 }
 
+async function docMigrationContext(admin: any, weddingId: string) {
+  const [speechResult, docsResult] = await Promise.all([
+    admin
+      .from('speech_records')
+      .select('*')
+      .eq('wedding_id', weddingId)
+      .neq('status', 'DELETED')
+      .order('sort_order', { ascending: true }),
+    admin
+      .from('game_question_docs')
+      .select('*')
+      .eq('wedding_id', weddingId)
+      .order('game_type', { ascending: true }),
+  ]);
+  if (speechResult.error) throw speechResult.error;
+  if (docsResult.error) throw docsResult.error;
+  return {
+    speeches: speechResult.data ?? [],
+    gameDocs: docsResult.data ?? [],
+  };
+}
+
+function docMigrationPlanResponse(plan: any, extra: Record<string, unknown> = {}) {
+  return {
+    weddingId: plan.weddingId,
+    weddingIdValid: plan.weddingIdValid,
+    weddingFolderId: plan.weddingFolderId,
+    rootPath: plan.monthPath ?? [],
+    counts: plan.counts,
+    entries: plan.entries.map((entry: any) => ({
+      kind: entry.kind,
+      id: entry.id,
+      gameType: entry.gameType,
+      fileId: entry.fileId,
+      status: entry.status,
+      feasible: entry.feasible,
+      weddingIdValid: plan.weddingIdValid,
+      alreadyMigrated: entry.status === 'already-migrated',
+      code: entry.code ?? null,
+      current: entry.current ?? null,
+      target: entry.target
+        ? {
+            name: entry.target.name,
+            scope: entry.target.scope,
+            displayPath: entry.target.displayPath,
+            folderPath: [...(plan.monthPath ?? []), ...entry.target.displayPath].join(' / '),
+          }
+        : null,
+      targetFolderId: entry.targetFolderId ?? null,
+    })),
+    ...extra,
+  };
+}
+
+async function applyDocMigrationResults(
+  admin: any,
+  allowlisted: any,
+  weddingId: string,
+  execution: any,
+) {
+  const now = new Date().toISOString();
+  for (const result of execution.results) {
+    const upToDate =
+      result.status === 'migrated' ||
+      (result.status === 'already-migrated' && result.file && result.folderId);
+    if (!upToDate) {
+      const code = result.code ?? result.status;
+      if (result.kind === 'speech') {
+        await writeSpeechLog(admin, weddingId, 'speech_doc_migration', {
+          actor: allowlisted.email,
+          docId: result.fileId || null,
+          code,
+        });
+      } else {
+        await writeGameQuestionLog(admin, weddingId, result.gameType, 'game_question_doc_migration', {
+          actor: allowlisted.email,
+          code,
+          message: result.fileId || null,
+        });
+      }
+      continue;
+    }
+
+    const record = {
+      drive_doc_id: result.file?.id ?? result.fileId,
+      drive_doc_url:
+        result.file?.webViewLink ??
+        (result.file?.id
+          ? `https://docs.google.com/document/d/${result.file.id}/edit`
+          : null),
+      drive_doc_name: result.file?.name ?? result.target?.name ?? null,
+      drive_doc_version: result.file?.version ?? null,
+      drive_doc_modified_at: result.file?.modifiedTime ?? null,
+      drive_doc_retrieved_at: now,
+      drive_folder_id: result.folderId ?? null,
+    };
+    if (result.kind === 'speech') {
+      const { error } = await admin
+        .from('speech_records')
+        .update(record)
+        .eq('wedding_id', weddingId)
+        .eq('id', result.id);
+      if (error) throw error;
+      await writeSpeechLog(admin, weddingId, 'speech_doc_migration', {
+        actor: allowlisted.email,
+        docId: record.drive_doc_id,
+        docVersion: record.drive_doc_version,
+        code: null,
+      });
+    } else {
+      const { error } = await admin
+        .from('game_question_docs')
+        .update(record)
+        .eq('wedding_id', weddingId)
+        .eq('game_type', result.gameType);
+      if (error) throw error;
+      await writeGameQuestionLog(admin, weddingId, result.gameType, 'game_question_doc_migration', {
+        actor: allowlisted.email,
+        code: 'migrated',
+        message: record.drive_doc_id,
+      });
+    }
+  }
+}
+
 async function revokeSpeechSessions(admin: any, weddingId: string, speechId: string) {
   const revokedAt = new Date().toISOString();
   const { data: sessions } = await admin
@@ -1009,6 +1139,113 @@ async function handleRequest(req: Request) {
         docId: speechId,
       });
       return json({ speech: data });
+    }
+
+    if (action === 'preflight_doc_migration') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!weddingId) return json({ error: 'weddingId is required.' }, 400);
+      const weddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        body?.weddingFolderId,
+      );
+      const { speeches, gameDocs } = await docMigrationContext(admin, weddingId);
+      const plan = await buildDocMigrationPlan({
+        weddingId,
+        weddingFolderId,
+        speeches,
+        gameDocs,
+        connector: driveConnector,
+      });
+      return json({
+        ok: true,
+        action,
+        ...docMigrationPlanResponse(plan),
+      });
+    }
+
+    if (action === 'migrate_docs') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!weddingId) return json({ error: 'weddingId is required.' }, 400);
+      const weddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        body?.weddingFolderId,
+      );
+      const { speeches, gameDocs } = await docMigrationContext(admin, weddingId);
+      const plan = await buildDocMigrationPlan({
+        weddingId,
+        weddingFolderId,
+        speeches,
+        gameDocs,
+        connector: driveConnector,
+      });
+      if (!plan.weddingIdValid) {
+        return json(
+          {
+            error: 'The wedding id is not in the UM format. Correct it before migrating Docs.',
+            code: 'invalid_wedding_id',
+            ...docMigrationPlanResponse(plan),
+          },
+          409,
+        );
+      }
+      if (body?.confirmed !== true) {
+        return json(
+          {
+            error: 'Review the preflight and confirm the Drive move/rename.',
+            code: 'confirmation_required',
+            ...docMigrationPlanResponse(plan),
+          },
+          409,
+        );
+      }
+      if (plan.counts.ready === 0 && plan.counts.alreadyMigrated === 0) {
+        return json({
+          ok: true,
+          action,
+          alreadyMigrated: false,
+          ...docMigrationPlanResponse(plan),
+          summary: { migrated: 0, renamed: 0, moved: 0, skipped: 0, conflicts: plan.counts.conflicts, failed: 0 },
+        });
+      }
+
+      const execution = await executeDocMigration({ plan, connector: driveConnector });
+      await applyDocMigrationResults(admin, allowlisted, weddingId, execution);
+      await writeAudit(admin, allowlisted, 'doc_migration', weddingId, {
+        fileIds: execution.results.map((result: any) => result.fileId).filter(Boolean),
+        statuses: execution.results.map((result: any) => ({
+          fileId: result.fileId ?? null,
+          status: result.status,
+          targetFolderId: result.folderId ?? null,
+        })),
+        ...execution.summary,
+      });
+      return json({
+        ok: true,
+        action,
+        alreadyMigrated: execution.summary.migrated === 0 && plan.counts.alreadyMigrated > 0,
+        ...docMigrationPlanResponse(
+          {
+            ...plan,
+            entries: plan.entries.map((entry: any) => {
+              const result = execution.results.find(
+                (candidate: any) =>
+                  candidate.kind === entry.kind && candidate.id === entry.id,
+              );
+              return result
+                ? {
+                    ...entry,
+                    status: result.status,
+                    code: result.code ?? null,
+                    targetFolderId: result.folderId ?? entry.targetFolderId,
+                  }
+                : entry;
+            }),
+          },
+          { summary: execution.summary },
+        ),
+      });
     }
 
     if (action === 'preflight_speech_migration') {
