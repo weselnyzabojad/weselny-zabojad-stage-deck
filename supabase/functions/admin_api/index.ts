@@ -3061,11 +3061,20 @@ async function handleRequest(req: Request) {
           .eq('wedding_id', weddingId);
       }
 
+      // Never persist the one-time plaintext PIN in the audit log; the owner
+      // still receives it in the HTTP response below.
+      const roleAccessAudit = roleAccess
+        ? {
+            role: roleAccess.role ?? role ?? null,
+            created: Boolean(roleAccess.pin),
+            revoked: roleAccess.revoked === true,
+          }
+        : null;
       await writeAudit(admin, allowlisted, 'provider_upsert', weddingId, {
         providerId: data.id,
         before,
         after: data,
-        roleAccess,
+        roleAccess: roleAccessAudit,
       });
       return json({ provider: data, roleAccess });
     }
