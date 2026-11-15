@@ -289,6 +289,7 @@ const pl = {
   'speeches.bundleUnavailable': 'Pakiet mów jest niedostępny. Nie można otworzyć skryptów.',
   'speeches.readerLabel': 'Czytnik MC',
   'speeches.decrypting': 'Odszyfrowywanie przemowy…',
+  'speeches.retry': 'Ponów',
   'speeches.readerUnavailable': 'Nie udało się otworzyć tej przemowy. Sprawdź pakiet i spróbuj ponownie.',
   'speeches.translationLabel': 'Tłumaczenie MC',
   'speeches.sourceLabel': 'Źródło mówcy',

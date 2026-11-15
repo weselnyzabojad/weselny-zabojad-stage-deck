@@ -291,6 +291,7 @@ const fr = {
   'speeches.bundleUnavailable': 'Le paquet de discours est indisponible. Aucun script ne peut être ouvert.',
   'speeches.readerLabel': 'Lecteur MC',
   'speeches.decrypting': 'Déchiffrement du discours…',
+  'speeches.retry': 'Réessayer',
   'speeches.readerUnavailable': 'Ce discours n’a pas pu être ouvert. Vérifiez le paquet et réessayez.',
   'speeches.translationLabel': 'Traduction MC',
   'speeches.sourceLabel': 'Source orateur',
