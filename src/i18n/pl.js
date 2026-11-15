@@ -52,6 +52,8 @@ const pl = {
   'musician.notes': 'Notatki',
   'musician.accessUnavailable': 'Ten dostep muzyka nie jest juz aktywny. Popros pare o nowy link.',
   'musician.readOnly': 'Widok muzyka tylko do odczytu — timeline, dostepnosc i godziny zakonczenia',
+  'statusMenu.label': 'Status',
+  'statusMenu.activeAlert': 'Aktywny alert',
   'roles.role': 'Rola: {short}',
   'roles.fixed': 'Rola jest stała na tym urządzeniu',
   'roles.photoShort': 'Foto',

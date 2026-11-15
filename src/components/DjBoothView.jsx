@@ -12,6 +12,7 @@ import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import StepMandatoryNotes from './StepMandatoryNotes';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import SpeechSummaryChip from './SpeechSummaryChip';
@@ -245,19 +246,26 @@ export default function DjBoothView({
         right={(
           <>
             {viewSwitch}
-            {(caps.culturalChips && culturalRules) || caps.speeches ? (
-              <CulturalRulesBar
-                rules={culturalRules ?? {}}
-                oczepinyStatus={oczepinyStatus}
-                showRules={Boolean(caps.culturalChips && culturalRules)}
-                grid
-                dense
-              >
-                {caps.speeches ? (
-                  <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-                ) : null}
-              </CulturalRulesBar>
-            ) : null}
+            <StatusMenu active={Boolean(culturalRules) || speechMode !== 'OFF'}>
+              {(caps.culturalChips && culturalRules) || caps.speeches ? (
+                <CulturalRulesBar
+                  rules={culturalRules ?? {}}
+                  oczepinyStatus={oczepinyStatus}
+                  showRules={Boolean(caps.culturalChips && culturalRules)}
+                  grid
+                  dense
+                >
+                  {caps.speeches ? (
+                    <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
+                  ) : null}
+                </CulturalRulesBar>
+              ) : null}
+              <ChildrenExpectedBadge wedding={wedding} inline />
+              <UtilityControlGroup>
+                <LanguageToggle variant="desktop" />
+                <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+              </UtilityControlGroup>
+            </StatusMenu>
           </>
         )}
         brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}
@@ -270,16 +278,10 @@ export default function DjBoothView({
             {caps.vipAuth && authControl ? authControl : null}
           </>
         )}
-        center={(
-          <ChildrenExpectedBadge wedding={wedding} inline />
-        )}
+        center={null}
         right={(
           <>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </UtilityControlGroup>
           </>
         )}
       />

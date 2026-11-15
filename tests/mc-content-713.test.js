@@ -104,7 +104,7 @@ describe('issue #713 MC Master content polish', () => {
     expect(actions).toContain('{pinControl}');
     expect(actions).toContain('{syncControl}');
     expect(actions).toContain('{utilityGroup}');
-    expect(mc).toContain('{hasAnchorWarning ? null : utilityGroup}');
+    expect(mc).toContain('<StatusMenu');
   });
 
   it('passes the polished variant to both MC focus stacks', () => {

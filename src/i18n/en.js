@@ -48,6 +48,8 @@ const en = {
   'musician.notes': 'Notes',
   'musician.accessUnavailable': 'This musician access is no longer available. Ask the couple for a new link.',
   'musician.readOnly': 'Read-only musician view — timeline, availability and end hours',
+  'statusMenu.label': 'Status',
+  'statusMenu.activeAlert': 'An alert is active',
   'roles.title': 'This device',
   'roles.switchAria': 'Device role: {role}. Switch role',
   'roles.switchTitle': "Switch this device's role",

@@ -9,10 +9,10 @@ describe('issue #297 centered children reminder', () => {
     expect(banner).not.toContain('childrenExpected');
   });
 
-  it('keeps the centered reminder in the secondary bar', () => {
+  it('keeps the centered reminder in the shared status menu', () => {
     const mc = read('src/views/McMasterView.jsx');
-    const bar = mc.slice(mc.indexOf('<SecondaryControlBar'), mc.lastIndexOf('<HardAnchorAlertBanner'));
-    expect(bar).toContain('<ChildrenExpectedBadge');
-    expect(bar).toContain('inline');
+    expect(mc).toContain('<StatusMenu');
+    expect(mc).toContain('<ChildrenExpectedBadge');
+    expect(mc).toContain('inline');
   });
 });

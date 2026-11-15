@@ -1,6 +1,7 @@
 import { useI18n } from '../i18n/useI18n';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import SyncStatusBadge from './SyncStatusBadge';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
@@ -243,7 +244,14 @@ export default function SpeakerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
-        right={null}
+        right={(
+          <StatusMenu>
+            <UtilityControlGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </UtilityControlGroup>
+          </StatusMenu>
+        )}
       />
 
       <SecondaryControlBar
@@ -271,10 +279,6 @@ export default function SpeakerView({
         right={(
           <>
             <OpenOnPhoneButton role="speaker" roomCode={roomCode} />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </UtilityControlGroup>
           </>
         )}
       />
