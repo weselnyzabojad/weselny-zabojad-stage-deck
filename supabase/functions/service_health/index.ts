@@ -110,6 +110,11 @@ async function handleRequest(req: Request) {
       deck: {
         url: envOr('PUBLIC_DECK_URL', 'https://deck.weselnyzabojad.pl/'),
       },
+      netlify: {
+        apiBase: envOr('NETLIFY_API_BASE', 'https://api.netlify.com/api/v1'),
+        siteId: Deno.env.get('NETLIFY_SITE_ID') ?? '',
+        token: Deno.env.get('NETLIFY_API_TOKEN') ?? '',
+      },
     });
 
     return json(result);

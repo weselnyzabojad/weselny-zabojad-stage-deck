@@ -116,6 +116,11 @@ describe('issue #979 service health probes', () => {
       },
       sunset: { url: `${mock.url}/sunset?status=500` },
       deck: { url: `${mock.url}/deck?status=503` },
+      netlify: {
+        apiBase: `${mock.url}/netlify/api/v1`,
+        siteId: 'stage-deck',
+        token: 'netlify-token',
+      },
     });
 
     expect(result.ok).toBe(false);
@@ -125,6 +130,7 @@ describe('issue #979 service health probes', () => {
       'drive',
       'sunset',
       'deck',
+      'netlify',
     ]);
     expect(result.providers.find((provider) => provider.id === 'supabase').status).toBe('ok');
     expect(JSON.stringify(result)).not.toContain(token);
@@ -165,6 +171,37 @@ describe('issue #979 service health probes', () => {
     expect(missing.detail).toContain('not configured');
   });
 
+  it('probes the Netlify site and requires a ready published deploy', async () => {
+    const token = 'netlify-secret-token';
+    const base = {
+      apiBase: `${mock.url}/netlify/api/v1`,
+      siteId: 'stage-deck',
+      token,
+    };
+    const ok = await health.probeNetlify(base);
+    expect(ok).toMatchObject({ id: 'netlify', status: 'ok', httpStatus: 200 });
+    expect(JSON.stringify(ok)).not.toContain(token);
+
+    const queued = await health.probeNetlify({
+      ...base,
+      apiBase: `${mock.url}/netlify/api/v1`,
+      siteId: 'stage-deck',
+    });
+    expect(queued.status).toBe('ok');
+
+    const notReady = createServiceHealth({
+      fetchImpl: async () =>
+        new Response(JSON.stringify({ published_deploy: { state: 'building' } }), { status: 200 }),
+    });
+    const degraded = await notReady.probeNetlify(base);
+    expect(degraded.status).toBe('degraded');
+    expect(degraded.detail).toContain('building');
+
+    const missing = await health.probeNetlify({ ...base, token: '' });
+    expect(missing.status).toBe('down');
+    expect(missing.detail).toContain('not configured');
+  });
+
   it('wires authorization, deployment and local mocks', () => {
     const fn = read('supabase/functions/service_health/index.ts');
     expect(fn).toContain('authorizeAdminSession');
@@ -184,5 +221,7 @@ describe('issue #979 service health probes', () => {
     const envExample = read('supabase/.env.example');
     expect(envExample).toContain('SENTRY_API_TOKEN=');
     expect(envExample).toContain('SUNSET_HEALTH_URL=');
+    expect(envExample).toContain('NETLIFY_API_TOKEN=');
+    expect(envExample).toContain('NETLIFY_SITE_ID=');
   });
 });

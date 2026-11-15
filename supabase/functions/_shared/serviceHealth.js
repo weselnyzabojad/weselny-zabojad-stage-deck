@@ -4,7 +4,7 @@
 // timeouts and sanitized errors with mocked fetch calls. It never returns
 // provider tokens, API keys or raw provider payloads.
 
-export const HEALTH_PROVIDERS = ['supabase', 'sentry', 'drive', 'sunset', 'deck'];
+export const HEALTH_PROVIDERS = ['supabase', 'sentry', 'drive', 'sunset', 'deck', 'netlify'];
 export const DEFAULT_HEALTH_TIMEOUT_MS = 4000;
 export const DEFAULT_DRIVE_HEALTH_FILE_ID = '1Q7IVT0GNiLztKQE8l4eCDCRw-px1qheh';
 
@@ -204,7 +204,46 @@ export function createServiceHealth({
     });
   }
 
-  return { probeSupabase, probeSentry, probeDrive, probeSunset, probeDeck, worstStatus };
+  async function probeNetlify({ apiBase, siteId, token }) {
+    return probe({
+      id: 'netlify',
+      name: 'Netlify',
+      run: async () => {
+        if (!apiBase || !siteId || !token) {
+          return { status: 'down', detail: 'Netlify monitoring is not configured.' };
+        }
+        const endpoint = `${apiBase.replace(/\/+$/, '')}/sites/${encodeURIComponent(siteId)}`;
+        const response = await fetchWithTimeout(endpoint, {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        });
+        const status = healthStatusFor(response.status);
+        if (status !== 'ok') {
+          return {
+            status,
+            httpStatus: response.status,
+            detail:
+              response.status === 401 || response.status === 403
+                ? 'Netlify rejected the API token.'
+                : `Netlify API returned ${response.status}.`,
+          };
+        }
+        const site = await response.json().catch(() => null);
+        const deployState = site?.published_deploy?.state ?? null;
+        if (deployState === 'ready') {
+          return { status: 'ok', httpStatus: response.status, detail: null };
+        }
+        return {
+          status: 'degraded',
+          httpStatus: response.status,
+          detail: deployState
+            ? `Published deploy state: ${deployState}.`
+            : 'No published deploy found.',
+        };
+      },
+    });
+  }
+
+  return { probeSupabase, probeSentry, probeDrive, probeSunset, probeDeck, probeNetlify, worstStatus };
 }
 
 export async function runServiceHealth({
@@ -214,6 +253,7 @@ export async function runServiceHealth({
   drive = {},
   sunset = {},
   deck = {},
+  netlify = {},
   now = () => Date.now(),
 } = {}) {
   const providers = await Promise.all([
@@ -222,6 +262,7 @@ export async function runServiceHealth({
     health.probeDrive(drive),
     health.probeSunset(sunset),
     health.probeDeck(deck),
+    health.probeNetlify(netlify),
   ]);
   return {
     ok: providers.every((provider) => provider.status === 'ok'),
