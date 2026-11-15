@@ -504,6 +504,17 @@ export default function McMasterView({ model }) {
         )}
       />
 
+      {djMc ? (
+        <DjSongRequestQueue
+          enabled
+          role="dj_mc"
+          accessToken={djMcAccessToken}
+          roomCode={djMcRoomCode}
+          variant="bar"
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+        />
+      ) : null}
+
       {hasAnchorWarning ? (
         <HardAnchorAlertBanner
           radar={driftReport.hardAnchorRadar}
@@ -528,14 +539,6 @@ export default function McMasterView({ model }) {
 
           {djMc ? (
             <section aria-label="DJ VIP" className="space-y-4">
-              <DjSongRequestQueue
-                enabled
-                role="dj"
-                accessToken={djMcAccessToken}
-                roomCode={djMcRoomCode}
-                variant="card"
-                discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
-              />
               <MusicPolicyCard policy={musicPolicy} />
             </section>
           ) : null}
@@ -635,6 +638,16 @@ export default function McMasterView({ model }) {
       speechMode={speechMode}
       viewSwitch={viewSwitch}
     >
+      {djMc ? (
+        <DjSongRequestQueue
+          enabled
+          role="dj_mc"
+          accessToken={djMcAccessToken}
+          roomCode={djMcRoomCode}
+          variant="bar"
+          discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+        />
+      ) : null}
       {djMc && activeMusicalSetEntry ? (
         <MusicalSetBar
           key={activeMusicalSetEntry?.step?.id ?? 'musical-set'}
