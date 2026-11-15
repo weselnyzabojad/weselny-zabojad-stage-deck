@@ -7,15 +7,14 @@ import fr from '../../src/i18n/fr.js';
 import pl from '../../src/i18n/pl.js';
 import { setLocale } from '../../src/i18n/index.js';
 
-const TOPICS = ['transport', 'access', 'admin', 'secrets', 'data'];
+const TECHNICAL = ['tls', 'headers', 'tokens', 'pins', 'admin', 'rls', 'secrets', 'monitoring'];
 const SECURITY_KEYS = [
   'landing.security.title',
   'landing.security.lead',
-  ...TOPICS.flatMap((topic) => [
-    `landing.security.${topic}.q`,
-    `landing.security.${topic}.a`,
-  ]),
-  'landing.security.closing',
+  'landing.security.assurance',
+  'landing.security.standards',
+  'landing.security.technical.title',
+  ...TECHNICAL.map((key) => `landing.security.technical.${key}`),
 ];
 
 afterEach(() => {
@@ -39,7 +38,7 @@ describe('issue #921 landing security disclosure', () => {
     expect(contactIndex).toBeGreaterThan(securityIndex);
   });
 
-  it('renders one lead and five collapsed native disclosures', () => {
+  it('renders one lead, one assurance and one collapsed technical disclosure', () => {
     setLocale('pl', { persist: false });
     const html = renderToStaticMarkup(createElement(LandingPage));
 
@@ -48,16 +47,17 @@ describe('issue #921 landing security disclosure', () => {
     const section = html.slice(sectionStart, sectionEnd);
 
     const details = section.match(/<details\b[^>]*>/g) ?? [];
-    expect(details).toHaveLength(5);
-    for (const tag of details) {
-      expect(tag).not.toMatch(/\bopen\b/);
-    }
-    expect((section.match(/<summary\b/g) ?? [])).toHaveLength(5);
+    expect(details).toHaveLength(1);
+    expect(details[0]).not.toMatch(/\bopen\b/);
+    expect((section.match(/<summary\b/g) ?? [])).toHaveLength(1);
+
     expect(section).toContain(pl['landing.security.lead']);
-    expect(section).toContain(pl['landing.security.closing']);
-    for (const topic of TOPICS) {
-      expect(section).toContain(pl[`landing.security.${topic}.q`]);
-      expect(section).toContain(pl[`landing.security.${topic}.a`]);
+    expect(section).toContain(pl['landing.security.assurance']);
+    expect(section).toContain(pl['landing.security.standards']);
+    expect(section).toContain(pl['landing.security.technical.title']);
+    expect(pl['landing.security.closing']).toBeUndefined();
+    for (const key of TECHNICAL) {
+      expect(section).toContain(pl[`landing.security.technical.${key}`]);
     }
   });
 
@@ -71,20 +71,16 @@ describe('issue #921 landing security disclosure', () => {
   });
 
   it('names the approved standards and tools in every locale', () => {
-    const requiredTerms = {
-      transport: ['TLS', 'HSTS', 'CSP', 'X-Frame-Options', 'Permissions-Policy'],
-      access: ['bcrypt', 'ES256', 'Postgres', 'RLS'],
-      admin: ['TOTP', 'AAL2', 'allowlist'],
-      secrets: ['ES256', 'JWKS', 'HS256', 'AES-256-GCM', 'HKDF'],
-      data: ['TTL', 'Sentry', 'PII'],
-    };
+    const requiredTerms = ['TLS', 'HSTS', 'CSP', 'ES256', 'bcrypt', 'TOTP', 'AAL2', 'RLS', 'AES-256-GCM', 'HKDF', 'PII'];
 
     for (const dictionary of [pl, en, fr]) {
-      for (const [topic, terms] of Object.entries(requiredTerms)) {
-        for (const term of terms) {
-          expect(dictionary[`landing.security.${topic}.a`], `${topic}: ${term}`).toContain(term);
-        }
+      const technicalText = TECHNICAL.map(
+        (key) => dictionary[`landing.security.technical.${key}`],
+      ).join(' ');
+      for (const term of requiredTerms) {
+        expect(technicalText, term).toContain(term);
       }
+      expect(dictionary['landing.security.standards']).toContain('Weselny Żabojad');
     }
   });
 });

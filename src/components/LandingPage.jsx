@@ -217,10 +217,16 @@ export default function LandingPage() {
     q: t(`landing.faq.${index}.q`),
     a: t(`landing.faq.${index}.a`),
   }));
-  const securityTopics = ['transport', 'access', 'admin', 'secrets', 'data'].map((topic) => ({
-    q: t(`landing.security.${topic}.q`),
-    a: t(`landing.security.${topic}.a`),
-  }));
+  const securityTechnical = [
+    'tls',
+    'headers',
+    'tokens',
+    'pins',
+    'admin',
+    'rls',
+    'secrets',
+    'monitoring',
+  ].map((key) => t(`landing.security.technical.${key}`));
 
   return (
     <div
@@ -391,17 +397,27 @@ export default function LandingPage() {
             <p className="mt-4 text-sm leading-relaxed text-muted sm:text-base">
               {t('landing.security.lead')}
             </p>
-            <div className="mt-6 space-y-3">
-              {securityTopics.map((topic) => (
-                <details key={topic.q} className="rounded-xl border border-line bg-card px-4 py-3">
-                  <summary className="cursor-pointer break-words font-heading text-sm font-semibold text-ink">
-                    {topic.q}
-                  </summary>
-                  <p className="mt-2 break-words text-sm leading-relaxed text-muted">{topic.a}</p>
-                </details>
-              ))}
-            </div>
-            <p className="mt-6 text-sm leading-relaxed text-muted">{t('landing.security.closing')}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+              {t('landing.security.assurance')}
+            </p>
+            <details className="mt-6 rounded-xl border border-line bg-card px-4 py-3">
+              <summary className="cursor-pointer break-words font-heading text-sm font-semibold text-ink">
+                {t('landing.security.technical.title')}
+              </summary>
+              <ul className="mt-3 grid gap-1.5 text-sm leading-relaxed text-muted sm:grid-cols-2">
+                {securityTechnical.map((item) => (
+                  <li key={item} className="flex gap-2">
+                    <span aria-hidden="true" className="text-brand-strong">
+                      •
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+            <p className="mt-6 text-sm font-semibold leading-relaxed text-ink">
+              {t('landing.security.standards')}
+            </p>
           </div>
         </section>
 
