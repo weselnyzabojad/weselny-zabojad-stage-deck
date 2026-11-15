@@ -17,6 +17,7 @@ import { previewStepState } from '../lib/devPreview';
 import { getDeviceId } from '../lib/deviceId';
 import { sendStagePing as sendStagePingState } from '../lib/stagePings';
 import { getSyncConfig, syncRoomKey } from '../lib/sync/syncConfig';
+import { isSyncAuthError } from '../lib/sync/syncErrors.js';
 import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient';
 import {
   clearOutbox as clearStoredOutbox,
@@ -336,14 +337,20 @@ export function useLiveStageState({
         })
         .catch((error) => {
           if (cancelled) return;
-          // Stay usable offline; the local mirror keeps the show running.
-          setSyncError(error.message);
+          // Auth failures are not ordinary offline failures: keep them visible
+          // while local mirroring continues.
+          const authFailure = isSyncAuthError(error);
+          setSyncError(
+            authFailure ? `Session error: ${error.message}` : error.message,
+          );
           setHydration({ client, room: roomKey });
           setLiveCaughtUp(false);
           setSyncStatus(
-            typeof navigator !== 'undefined' && navigator.onLine === false
-              ? 'offline'
-              : 'error',
+            authFailure
+              ? 'error'
+              : typeof navigator !== 'undefined' && navigator.onLine === false
+                ? 'offline'
+                : 'error',
           );
         });
 

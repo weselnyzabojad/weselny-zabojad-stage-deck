@@ -2694,6 +2694,14 @@ async function handleRequest(req: Request) {
         .eq('jti', jti);
       if (error) throw error;
 
+      // A speaker device has both a role session and a speech session; revoke
+      // both so an already-open speech is blocked immediately (issue #1040).
+      const { error: speechSessionError } = await admin
+        .from('speech_sessions')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('jti', jti);
+      if (speechSessionError) throw speechSessionError;
+
       await admin
         .from('role_presence')
         .update({ status: 'offline', session_jti: null, last_seen: new Date().toISOString() })
