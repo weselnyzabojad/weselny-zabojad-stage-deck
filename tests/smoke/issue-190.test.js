@@ -19,8 +19,8 @@ const radar = {
   },
 };
 
-describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
-  it('renders right-side actions inside the banner', () => {
+describe('issue #190 hard-anchor banner information only', () => {
+  it('renders the warning block without right-side actions', () => {
     const html = renderToStaticMarkup(
       createElement(HardAnchorAlertBanner, {
         radar,
@@ -31,8 +31,8 @@ describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
     expect(html).toContain('Photo / Video leaves');
     expect(html).toContain('20:30');
     expect(html).toContain('5m slack');
-    expect(html).toContain('banner-actions');
-    expect(html).toContain('PIN + Sync');
+    expect(html).not.toContain('banner-actions');
+    expect(html).not.toContain('PIN + Sync');
   });
 
   it('renders the banner detail with the on-accent token', () => {
@@ -56,20 +56,15 @@ describe('issue #190 PIN and Sync in the hard-anchor banner', () => {
     expect(topBar).not.toContain('{syncControl}');
   });
 
-  it('hosts PIN/Sync/language/theme actions inside the warning banner', () => {
+  it('keeps PIN/Sync/language/theme out of the warning banner', () => {
     const mc = read('src/views/McMasterView.jsx');
     const banner = mc.slice(
       mc.lastIndexOf('<HardAnchorAlertBanner'),
       mc.indexOf('/>', mc.lastIndexOf('<HardAnchorAlertBanner')),
     );
-    const actions = mc.slice(
-      mc.indexOf('const bannerActions = ('),
-      mc.indexOf('const wideContent'),
-    );
 
-    expect(banner).toContain('actions={bannerActions}');
-    expect(actions).toContain('{pinControl}');
-    expect(actions).toContain('{syncControl}');
-    expect(actions).toContain('{utilityGroup}');
+    expect(banner).not.toContain('actions=');
+    expect(mc).not.toContain('const bannerActions = (');
+    expect(mc).not.toContain('actions={bannerActions}');
   });
 });

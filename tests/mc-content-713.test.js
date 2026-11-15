@@ -79,7 +79,7 @@ describe('issue #713 MC Master content polish', () => {
     expect(base).toContain('rounded-lg border-line-strong bg-raised');
   });
 
-  it('hosts PIN/Sync/language/theme in the banner while it is visible', () => {
+  it('keeps the warning banner informational only', () => {
     const radar = {
       primary: {
         status: 'compression',
@@ -95,16 +95,14 @@ describe('issue #713 MC Master content polish', () => {
         actions: createElement('span', null, 'PIN Sync Language Theme'),
       }),
     );
-    expect(html).toContain('PIN Sync Language Theme');
+    expect(html).not.toContain('PIN Sync Language Theme');
+    expect(html).not.toContain('ends 20:30');
     expect(html).toContain('backdrop-blur-md');
     expect(html).toContain('text-on-accent');
 
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('actions={bannerActions}');
-    const actions = mc.slice(mc.indexOf('const bannerActions = ('), mc.indexOf('const wideContent'));
-    expect(actions).toContain('{pinControl}');
-    expect(actions).toContain('{syncControl}');
-    expect(actions).toContain('{utilityGroup}');
+    expect(mc).not.toContain('actions={bannerActions}');
+    expect(mc).not.toContain('const bannerActions = (');
     expect(mc).toContain('<StatusMenu');
   });
 

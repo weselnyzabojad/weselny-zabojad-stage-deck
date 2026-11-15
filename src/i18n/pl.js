@@ -112,7 +112,6 @@ const pl = {
   'anchor.compression': 'Kompresja przy twardym punkcie',
   'anchor.overBy': 'przekroczenie o {minutes} min',
   'anchor.slack': 'zapas {minutes} min',
-  'anchor.ends': '{title} kończy się o {time}.',
 
   'join.production': 'Produkcyjny deck sceniczny',
   'join.title': 'Dołącz do tego pokoju',
@@ -781,3 +780,4 @@ const pl = {
 };
 
 export default pl;
+

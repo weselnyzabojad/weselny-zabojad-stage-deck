@@ -112,7 +112,6 @@ const en = {
   'anchor.compression': 'Hard anchor compression',
   'anchor.overBy': '{minutes}m over',
   'anchor.slack': '{minutes}m slack',
-  'anchor.ends': '{title} ends {time}.',
 
   'join.production': 'Production stage deck',
   'join.title': 'Join this room',
@@ -779,3 +778,4 @@ const en = {
 };
 
 export default en;
+
