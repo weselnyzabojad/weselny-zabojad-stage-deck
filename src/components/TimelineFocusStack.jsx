@@ -83,7 +83,7 @@ function FocusZone({
                   data-focus-depth={tier?.depth ?? position + 1}
                   data-focus-opacity={tier?.opacity ?? 1}
                   data-focus-scale={tier?.scale ?? 1}
-                  style={{ opacity: tier?.opacity ?? 1, zIndex: tier?.zIndex ?? 1 }}
+                  style={{ opacity: zone === 'current' ? 1 : Math.min(tier?.opacity ?? 0.7, 0.7), zIndex: tier?.zIndex ?? 1 }}
                 >
                   <StageStepCard
                     entry={entry}
@@ -142,7 +142,7 @@ export default function TimelineFocusStack({
   zoneScroll = true,
   entryBodies = null,
   photographerAvailable = null,
-  polished = false,
+  polished = true,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });

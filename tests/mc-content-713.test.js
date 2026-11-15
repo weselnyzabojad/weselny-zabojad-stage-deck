@@ -49,12 +49,12 @@ describe('issue #713 MC Master content polish', () => {
     expect(upcoming).toContain('border-tone-warning-border');
 
     const current = render(createElement(StageStepCard, { entry: entry(3), variant: 'current', polished: true }));
-    expect(current).toContain('shadow-lg');
+    expect(current).toContain('shadow-2xl');
     expect(current).toContain('border-brand-strong');
 
-    const base = render(createElement(StageStepCard, { entry: entry(4), variant: 'done' }));
+    const base = render(createElement(StageStepCard, { entry: entry(4), variant: 'done', polished: false }));
     expect(base).toContain('rounded-xl border p-3');
-    expect(base).not.toContain('shadow-lg');
+    expect(base).not.toContain('shadow-2xl');
   });
 
   it('uses the soft secondary-button styling for Show N more', () => {
@@ -73,6 +73,7 @@ describe('issue #713 MC Master content polish', () => {
       createElement(TimelineFocusStack, {
         entries: timeline(7, 3),
         activeIndex: 3,
+        polished: false,
       }),
     );
     expect(base).toContain('rounded-lg border-line-strong bg-raised');
