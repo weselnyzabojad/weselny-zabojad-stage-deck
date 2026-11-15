@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { listDriveChildren, previewDriveSource } from './adminApi';
+import AdminShareFileDialog from './AdminShareFileDialog';
+import { isShareableSecretFile } from './adminSharing';
 import {
   DRIVE_ROOT_FOLDER_ID,
   DRIVE_DOC_MIME_TYPE,
@@ -20,7 +22,7 @@ function sortMonths(months) {
   );
 }
 
-export default function AdminWeddingFolders() {
+export default function AdminWeddingFolders({ readOnly = false }) {
   const [years, setYears] = useState([]);
   const [selectedYearId, setSelectedYearId] = useState('');
   const [months, setMonths] = useState([]);
@@ -29,9 +31,12 @@ export default function AdminWeddingFolders() {
   const [error, setError] = useState('');
   const [lastLoaded, setLastLoaded] = useState(null);
   const [secretsByWedding, setSecretsByWedding] = useState({});
+  const [secretFilesByWedding, setSecretFilesByWedding] = useState({});
   const [secretLoadingId, setSecretLoadingId] = useState('');
   const [scanState, setScanState] = useState('');
+  const [shareTarget, setShareTarget] = useState(null);
   const yearCacheRef = useRef(new Map());
+  const shareButtonRefs = useRef({});
 
   const loadYears = useCallback(async () => {
     setLoading(true);
@@ -117,18 +122,30 @@ export default function AdminWeddingFolders() {
     setSecretLoadingId(wedding.id);
     setError('');
     try {
-      const result = await listDriveChildren({
-        parentId: wedding.secretFolder.id,
-        mimeType: DRIVE_DOC_MIME_TYPE,
-        pageSize: 100,
-      });
+      const files = [];
+      async function collect(parentId, depth) {
+        const result = await listDriveChildren({ parentId, pageSize: 200 });
+        for (const entry of result.files ?? []) {
+          if (isShareableSecretFile(entry)) {
+            files.push(entry);
+          } else if (
+            entry.mimeType === 'application/vnd.google-apps.folder' &&
+            depth < 2
+          ) {
+            await collect(entry.id, depth + 1);
+          }
+        }
+      }
+      await collect(wedding.secretFolder.id, 0);
+
       const docs = [];
-      for (const file of result.files ?? []) {
+      for (const file of files.filter((entry) => entry.mimeType === DRIVE_DOC_MIME_TYPE)) {
         const source = await previewDriveSource(file.id);
         docs.push({ name: file.name, text: source.text ?? '' });
       }
       const summary = summarizeSecretDocs(docs);
       setSecretsByWedding((current) => ({ ...current, [wedding.id]: summary }));
+      setSecretFilesByWedding((current) => ({ ...current, [wedding.id]: files }));
     } catch (err) {
       setError(err.message ?? 'Could not load the wedding secrets.');
     } finally {
@@ -249,6 +266,37 @@ export default function AdminWeddingFolders() {
                                 : `${secretsByWedding[wedding.id].speechCount} speeches · ${secretsByWedding[wedding.id].questionCount} questions`}
                             </span>
                           ) : null}
+                          {secretFilesByWedding[wedding.id] ? (
+                            <ul className="mt-1 w-full space-y-1">
+                              {secretFilesByWedding[wedding.id].length === 0 ? (
+                                <li className="text-[9px] text-muted">
+                                  No shareable private Docs or JSON files.
+                                </li>
+                              ) : (
+                                secretFilesByWedding[wedding.id].map((file) => (
+                                  <li
+                                    key={file.id}
+                                    className="flex flex-wrap items-center justify-between gap-2 rounded border border-line/60 bg-page/40 px-2 py-1"
+                                  >
+                                    <span className="break-all font-mono text-[9px] text-ink">
+                                      {file.name}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      ref={(node) => {
+                                        shareButtonRefs.current[file.id] = node;
+                                      }}
+                                      onClick={() => setShareTarget({ file, wedding })}
+                                      disabled={readOnly}
+                                      className="rounded border border-line-strong bg-raised px-2 py-0.5 text-[9px] font-semibold text-ink disabled:opacity-50"
+                                    >
+                                      Share
+                                    </button>
+                                  </li>
+                                ))
+                              )}
+                            </ul>
+                          ) : null}
                         </div>
                       ) : (
                         <p className="mt-1 text-[9px] text-muted">No secrets folder for this wedding.</p>
@@ -261,6 +309,17 @@ export default function AdminWeddingFolders() {
           ))}
         </div>
       )}
+      {shareTarget ? (
+        <AdminShareFileDialog
+          file={shareTarget.file}
+          readOnly={readOnly}
+          onClose={() => {
+            const fileId = shareTarget.file.id;
+            setShareTarget(null);
+            setTimeout(() => shareButtonRefs.current[fileId]?.focus(), 0);
+          }}
+        />
+      ) : null}
     </section>
   );
 }
