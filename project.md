@@ -6619,7 +6619,7 @@ Doc-sourced authorization below.
 
 **Tracking.** [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972), [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973), [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974).
 
-### 17.76 Remove admin Google Drive source panel (decision, 2026-11-15)
+### 17.77 Remove admin Google Drive source panel (decision, 2026-11-15)
 
 **Goal.**
 
@@ -6659,9 +6659,9 @@ games/speeches panels.
 
 **Open questions.** None.
 
-**Tracking.** [#989](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/989). Blocks §17.77 and §17.78.
+**Tracking.** [#989](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/989). Blocks §17.78 and §17.79.
 
-### 17.77 Musician role and end-hour awareness (decision, 2026-11-15)
+### 17.78 Musician role and end-hour awareness (decision, 2026-11-15)
 
 **Goal.**
 
@@ -6728,7 +6728,7 @@ paste-in placeholder for deep analysis.
 
 **Tracking.** [#990](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/990), [#991](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/991), [#992](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/992), [#993](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/993), [#995](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/995).
 
-### 17.78 Admin UI/UX audit (decision, 2026-11-15)
+### 17.79 Admin UI/UX audit (decision, 2026-11-15)
 
 **Goal.**
 
