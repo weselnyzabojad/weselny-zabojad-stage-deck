@@ -303,24 +303,37 @@ input[type="checkbox"] {
   top: 1rem;
 }
 
-/* Admin QR cards (issue #76): print only the cards, never the PIN list. */
+/* Admin QR cards (issue #76, carousel #1017): print only the cards, never the
+   PIN list. The same slides reset from a horizontal carousel into a grid. */
 @media print {
   body * {
     visibility: hidden;
   }
 
-  .admin-print-grid,
-  .admin-print-grid * {
+  .admin-print-track,
+  .admin-print-track * {
     visibility: visible;
   }
 
-  .admin-print-grid {
+  .admin-print-track {
     position: absolute;
     inset: 0 auto auto 0;
-    display: grid;
     width: 100%;
+    overflow: visible;
+  }
+
+  .admin-print-rail {
+    display: grid !important;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .admin-print-slide {
+    width: auto !important;
+    flex: none !important;
+    padding: 0 !important;
   }
 
   .admin-qr-card {
