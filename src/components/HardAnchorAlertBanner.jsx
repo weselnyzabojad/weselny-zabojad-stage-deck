@@ -3,7 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 // Full-width collision / compression banner for the MC dashboard. It only
 // renders for real warnings (collision or compression), not for the earlier
 // "approaching" notice shown in the radar card.
-export default function HardAnchorAlertBanner({ radar, actions = null }) {
+export default function HardAnchorAlertBanner({ radar }) {
   const { t } = useI18n();
   const warning = radar?.primary;
   if (!warning) return null;
@@ -19,7 +19,7 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-      className={`flex flex-wrap items-center justify-between gap-3 border-y-2 px-4 py-2.5 shadow-lg backdrop-blur-md ${tone}`}
+      className={`flex flex-wrap items-center gap-3 border-y-2 px-4 py-2.5 shadow-lg backdrop-blur-md ${tone}`}
     >
       <div className="flex min-w-0 items-center gap-3">
         <span aria-hidden="true" className="text-2xl leading-none">
@@ -40,23 +40,6 @@ export default function HardAnchorAlertBanner({ radar, actions = null }) {
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-wrap items-center justify-end gap-3">
-        <div className="min-w-0 text-xs text-on-accent">
-          {warning.workEntry ? (
-            <>
-              {t('anchor.ends', {
-                title: warning.workEntry.step.title,
-                time: warning.workEntry.projectedEnd,
-              })}{' '}
-            </>
-          ) : null}
-        </div>
-        {actions ? (
-          <div className="flex flex-wrap items-center justify-end gap-2 rounded-xl bg-black/10 p-1">
-            {actions}
-          </div>
-        ) : null}
-      </div>
     </section>
   );
 }

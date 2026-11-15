@@ -112,7 +112,6 @@ const fr = {
   'anchor.compression': 'Compression contre un repère fixe',
   'anchor.overBy': '{minutes} min de dépassement',
   'anchor.slack': '{minutes} min de marge',
-  'anchor.ends': '{title} se termine à {time}.',
 
   'join.production': 'Deck de scène de production',
   'join.title': 'Rejoindre cette salle',
@@ -783,3 +782,4 @@ const fr = {
 };
 
 export default fr;
+

@@ -237,7 +237,7 @@ export default function McMasterView({ model }) {
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       {driftReport.hardAnchorRadar.hasWarning ? (
-        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} childrenExpected={childrenExpected} />
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
 
       <DriftPill drift={driftReport.drift} compact />
@@ -426,14 +426,6 @@ export default function McMasterView({ model }) {
       <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
     </UtilityControlGroup>
   );
-  const bannerActions = (
-    <>
-      {pinControl}
-      {syncControl}
-      {utilityGroup}
-    </>
-  );
-
   const wideContent = (
     <>
       <SkipLink />
@@ -515,10 +507,7 @@ export default function McMasterView({ model }) {
       ) : null}
 
       {hasAnchorWarning ? (
-        <HardAnchorAlertBanner
-          radar={driftReport.hardAnchorRadar}
-          actions={bannerActions}
-        />
+        <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
 
       {/* ================= STAGE RAIL + DETAILS ================= */}
