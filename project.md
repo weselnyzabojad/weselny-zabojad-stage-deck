@@ -7798,3 +7798,68 @@ use the existing locale context and theme provider.
 | 1 | [#1095](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1095) | Move language + theme to the secondary bar on four role views, add Venue Open on phone, update tests | - |
 
 **Open questions.** None.
+
+### 17.95 Remove STATUS menu and centre chips in the secondary bar (decision, 2026-11-16)
+
+Remove the top-right `STATUS` popover from every role view. Cultural chips
+(`Sto Lat`, `Gorzko`, `Oczepiny`) and the speech chip move to the centre of the
+secondary bar; `Dzieci będą obecne` stays as a standalone top-right indicator
+where STATUS used to be; language/theme move to the secondary right zone before
+`Otwórz na telefonie`. This supersedes #1095.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The moved
+controls keep their existing cultural, speech, children, locale and theme state.
+
+**Feature scope.**
+
+- **MC Master** — remove `StatusMenu`; centre `CulturalRulesBar` with
+  `SpeechesChip`; move the children badge to the top-right zone.
+- **DJ Booth** — same, with `SpeechSummaryChip`; move language/theme to the
+  secondary right.
+- **Photographer** — same as DJ.
+- **Speaker** — remove the now-redundant `StatusMenu`; move language/theme to
+  the secondary right.
+- **Venue Manager** — remove `StatusMenu`; drop its speech chip; move the
+  children badge to the top-right; move language/theme and add
+  `OpenOnPhoneButton` in the secondary right.
+- **Cleanup** — delete `StatusMenu`, its imports and `statusMenu.*` keys.
+- **Desktop only** — compact/pocket keeps its current header.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master | Cultural + speeches centred; children top-right; utilities right |
+| DJ Booth (all VIP identities) | Same order |
+| Photographer | Same order; children top-right |
+| Speaker | STATUS removed; utilities before Open on phone |
+| Venue Manager | Speech chip removed; children top-right; adds Open on phone |
+| Musician / Admin / Couple / Song Request / landing | No change |
+| Compact / pocket | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Views | MC, DJ, Photographer, Speaker, Venue Manager |
+| STATUS | Removed entirely; component and i18n deleted |
+| Chips | Cultural + speeches centred in the secondary bar |
+| Venue speeches chip | Removed from the STATUS area |
+| Children badge | Standalone top-right where STATUS was |
+| Language + theme | Secondary right, before Open on phone |
+| Venue Open on phone | Added as part of the superseded #1095 scope |
+| Compact | Unchanged |
+| #1095 | Closed as superseded by this feature |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1096](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1096) | Remove STATUS, centre cultural/speech chips, relocate children and utilities, delete component/i18n, update tests | - |
+
+**Supersedes.** [#1095](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1095) (closed as not planned).
+
+**Open questions.** None.
