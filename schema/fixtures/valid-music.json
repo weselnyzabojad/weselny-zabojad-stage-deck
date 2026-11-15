@@ -87,8 +87,7 @@
     "requestWindow": {
       "start": "20:00",
       "end": "23:00"
-    },
-    "cleanVersions": true
+    }
   },
   "extensions": {
     "languages": {

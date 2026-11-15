@@ -412,9 +412,6 @@ const en = {
   'dj.setNotes.cutoffs': 'Red cutoffs are hard stops - fade before the stated time.',
   'dj.setNotes.private': 'This view never exposes MC scripts or family alerts.',
   'dj.footer': 'Read-only DJ view · no step controls · syncs with the host over the room PIN',
-  'music.clean.missing': 'Clean versions —',
-  'music.clean.on': 'Clean versions ON',
-  'music.clean.off': 'Clean versions OFF',
   'music.keySong.tooltip': 'Linked to the DJ Key Songs card by id',
   'music.keySong.label': 'Key song',
   'music.keySong.conflict': 'mustPlay track differs from the Key Songs entry — showing the Key Songs title.',
@@ -779,5 +776,6 @@ const en = {
 };
 
 export default en;
+
 
 

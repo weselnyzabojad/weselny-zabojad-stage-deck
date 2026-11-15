@@ -9,7 +9,6 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const policy = {
   hasData: true,
   requestStatus: null,
-  cleanVersions: true,
   discoPoloPolicy: 'NO',
   mainSongs: [
     { id: 'main_1', stepId: 'step_08', stepTitle: 'First Dance', title: 'Perfect', artist: 'Ed Sheeran' },
@@ -74,3 +73,4 @@ describe('issue #742 DJ VIP music pills and Set notes placement', () => {
     expect(main).not.toContain('lg:grid-cols-3');
   });
 });
+

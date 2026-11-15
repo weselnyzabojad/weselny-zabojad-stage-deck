@@ -203,7 +203,6 @@ export const DEMO_WEDDING = {
     ],
     requestsOpen: true,
     requestWindow: { start: "20:00", end: "23:00" },
-    cleanVersions: true,
     importantSongs: [
       {
         id: "grand_entrance",
@@ -409,3 +408,4 @@ export const DEFAULT_WEDDING = {
     step.id === "step_03" ? { ...step, subTasks: SUBTASKS } : step
   )
 };
+

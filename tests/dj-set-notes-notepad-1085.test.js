@@ -11,7 +11,6 @@ const render = (element) => renderToStaticMarkup(element);
 const policy = {
   hasData: true,
   requestStatus: null,
-  cleanVersions: true,
   discoPoloPolicy: 'ON_REQUEST',
   mainSongs: [
     { id: 'main_1', stepId: 'step_08', stepTitle: 'First Dance', title: 'Perfect', artist: 'Ed Sheeran' },
@@ -72,3 +71,4 @@ describe('issue #1085 DJ set-notes notepad', () => {
     expect(read('src/index.css')).toContain('--font-handwriting: "Caveat"');
   });
 });
+

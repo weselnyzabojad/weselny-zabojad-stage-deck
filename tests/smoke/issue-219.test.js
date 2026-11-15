@@ -54,7 +54,6 @@ const baseProps = {
     mustPlay: [],
     doNotPlay: [],
     requestStatus: null,
-    cleanVersions: null,
   },
   syncStatus: 'connected',
   syncError: null,
@@ -111,3 +110,4 @@ describe('issue #219 DJ Standard vs VIP restrictions', () => {
     expect(renderDj({ servicePackage: 'HOST_ONLY' })).not.toMatch(/Music policy/i);
   });
 });
+

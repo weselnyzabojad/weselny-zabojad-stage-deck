@@ -414,9 +414,6 @@ const fr = {
   'dj.setNotes.cutoffs': 'Les coupures rouges sont des arrêts fermes — fondez avant l’heure indiquée.',
   'dj.setNotes.private': 'Cette vue ne révèle jamais les scripts MC ni les alertes familiales.',
   'dj.footer': 'Vue DJ en lecture seule · aucun contrôle des étapes · synchronisée avec l’hôte via le PIN de salle',
-  'music.clean.missing': 'Versions propres —',
-  'music.clean.on': 'Versions propres ON',
-  'music.clean.off': 'Versions propres OFF',
   'music.keySong.tooltip': 'Lié à la carte Chansons clés du DJ par id',
   'music.keySong.label': 'Chanson clé',
   'music.keySong.conflict': 'Le morceau à jouer diffère de l’entrée Chansons clés — affichage du titre Chansons clés.',
@@ -783,5 +780,6 @@ const fr = {
 };
 
 export default fr;
+
 
 

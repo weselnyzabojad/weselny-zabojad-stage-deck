@@ -15,9 +15,6 @@ describe('issue #445 DJ music policy and set notes i18n', () => {
       'music.doNotPlay.title',
       'music.doNotPlay.count',
       'music.mainSongMissing',
-      'music.clean.missing',
-      'music.clean.on',
-      'music.clean.off',
       'music.keySong.tooltip',
       'music.keySong.label',
       'music.keySong.conflict',
@@ -60,9 +57,6 @@ describe('issue #445 DJ music policy and set notes i18n', () => {
       'music.doNotPlay.title',
       'music.doNotPlay.count',
       'music.mainSongMissing',
-      'music.clean.missing',
-      'music.clean.on',
-      'music.clean.off',
       'music.keySong.tooltip',
       'music.keySong.label',
       'music.keySong.conflict',
@@ -90,3 +84,4 @@ describe('issue #445 DJ music policy and set notes i18n', () => {
     }
   });
 });
+

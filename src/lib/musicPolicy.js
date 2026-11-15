@@ -155,8 +155,6 @@ export function resolveMusicPolicy(
 
   const requestsOpen =
     typeof policy?.requestsOpen === 'boolean' ? policy.requestsOpen : null;
-  const cleanVersions =
-    typeof policy?.cleanVersions === 'boolean' ? policy.cleanVersions : null;
   const discoPoloPolicy = ['NO', 'YES', 'ON_REQUEST'].includes(policy?.discoPoloPolicy)
     ? policy.discoPoloPolicy
     : 'NO';
@@ -174,8 +172,7 @@ export function resolveMusicPolicy(
       (mustPlay.length ||
         doNotPlay.length ||
         requestWindow ||
-        requestsOpen !== null ||
-        cleanVersions !== null),
+        requestsOpen !== null),
   ) || mainSongs.length > 0;
 
   return {
@@ -186,7 +183,6 @@ export function resolveMusicPolicy(
     requestsOpen,
     requestWindow,
     requestStatus,
-    cleanVersions,
     discoPoloPolicy,
   };
 }

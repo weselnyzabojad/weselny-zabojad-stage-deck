@@ -90,31 +90,6 @@ function StatusChip({ status, compact, t, paper = false }) {
   );
 }
 
-function CleanChip({ cleanVersions, t, paper = false }) {
-  if (cleanVersions === null) {
-    return (
-      <span className={`rounded border px-1.5 py-0.5 ${paper ? 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]' : 'border-line-strong bg-raised text-muted'}`}>
-        ✨ {t('music.clean.missing')}
-      </span>
-    );
-  }
-  return cleanVersions ? (
-    <span
-      className={`rounded border px-1.5 py-0.5 font-semibold ${
-        paper
-          ? 'border-emerald-700 bg-emerald-100 text-emerald-900'
-          : 'border-emerald-800 bg-emerald-950/60 text-emerald-300'
-      }`}
-    >
-      ✨ {t('music.clean.on')}
-    </span>
-  ) : (
-    <span className={`rounded border px-1.5 py-0.5 ${paper ? 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]' : 'border-line-strong bg-raised text-muted'}`}>
-      ✨ {t('music.clean.off')}
-    </span>
-  );
-}
-
 const PILL_TONES = {
   main: 'border-brand-strong/40 bg-brand/10 text-brand-tint',
   must: 'border-line bg-page/70 text-ink',
@@ -224,7 +199,7 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
   const { t } = useI18n();
   if (!policy?.hasData) return null;
 
-  const { mustPlay, doNotPlay, mainSongs = [], requestStatus, cleanVersions, discoPoloPolicy } = policy;
+  const { mustPlay, doNotPlay, mainSongs = [], requestStatus, discoPoloPolicy } = policy;
 
   if (compact) {
     return (
@@ -250,7 +225,6 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
           <span className="rounded border border-alert/50 bg-alert/15 px-1.5 py-0.5 text-alert-tint">
             🚫 {t('music.doNotPlay.count', { count: doNotPlay.length })}
           </span>
-          <CleanChip cleanVersions={cleanVersions} t={t} />
         </div>
 
         {mainSongs.length > 0 ? (
@@ -337,10 +311,6 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
           </div>
         </div>
       ) : null}
-
-      <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
-        <CleanChip cleanVersions={cleanVersions} t={t} paper={paper} />
-      </div>
     </section>
   );
 }
