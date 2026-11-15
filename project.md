@@ -6950,4 +6950,56 @@ against `HEALTH_PROVIDER_ORDER` in `src/admin/adminHealth.js`.
 
 **Tracking.** [#1028](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1028), [#1029](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1029).
 
+### 17.81 Landing partner strip and Zaremba VIP partner (decision, 2026-11-15)
+
+The public landing partner strip becomes a three-logo row: DJ Mark, DJ Szymoniak
+and DJ Zaremba. Logos share one common max-height, stay vertically centered on
+the same baseline and wrap cleanly on mobile. Zaremba is also registered as an
+active VIP DJ so the registry and the landing fallback agree.
+
+**Feature blocks.**
+
+| Feature | Behaviour |
+| --- | --- |
+| F1 — Zaremba VIP registry | Add `dj_zaremba` / `DJ Zaremba`, sort order 3, active, bundled `logo_zaremba.png`, `VIP_DJ_IDS` and `VipDjLogo` support |
+| F2 — Landing partner strip | Three-logo fallback, bundled-asset mapping, flex centering/wrapping and common max-height |
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge changes.
+
+**View scope.**
+
+| View | Behaviour |
+| --- | --- |
+| `/` landing | Partner strip only: three logos, common max-height, centered, wrapped |
+| `/join`, `/<room>/<role>`, `/admin`, `/request/:code` | Unchanged |
+| VIP DJ surfaces | `VipDjLogo` gains `dj_zaremba`; no other deck layout change |
+
+**Out of scope.** Partner label copy/i18n, admin VIP UI redesign, VIP package
+default for Zaremba, other landing sections, other routes and global theme.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Zaremba identity | `dj_zaremba` / `DJ Zaremba` |
+| Registry | Active VIP DJ, sort order 3, `package_default: null` |
+| Visual balancing | Common max-height, not per-logo optical scaling |
+| Logo source | Built-in ids use bundled hashed imports; unknown ids may use server `logoUrl` |
+| Layout | Flex, `items-center`, `justify-center`, wrap, 3–4rem horizontal gap |
+| Image sizing | `max-height` 60 px mobile / 80 px desktop, `width: auto`, `object-contain`, no hardcoded width |
+| Order | Mark, DJ Szymoniak, DJ Zaremba |
+| Interaction | Logos remain non-interactive with existing alt text |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1056](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1056) | Zaremba VIP registry row, `VIP_DJ_IDS`, bundled asset mapping and `VipDjLogo` | - |
+| 2 | [#1057](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1057) | Landing partner strip layout, three-logo fallback, bundled asset use and responsive wrapping | #1056 |
+
+**Open questions.** None.
+
+**Tracking.** [#1056](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1056), [#1057](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1057).
+
 
