@@ -419,6 +419,23 @@ async function handleRequest(req: Request) {
       if (!weddingId || !speechId || !fileIdValue || !Number.isInteger(order) || !speakerName) {
         return json({ error: 'Complete rename metadata is required.' }, 400);
       }
+      const { data: speechRecord } = await admin
+        .from('speech_records')
+        .select('drive_doc_id, drive_folder_id')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle();
+      if (!speechRecord || speechRecord.drive_doc_id !== fileIdValue) {
+        return json({ error: 'The speech Doc id does not match this wedding.', code: 'file_mismatch' }, 409);
+      }
+      const source = await connector.getFileMetadata(fileIdValue);
+      if (
+        !speechRecord.drive_folder_id ||
+        !Array.isArray(source?.parents) ||
+        !source.parents.includes(speechRecord.drive_folder_id)
+      ) {
+        return json({ error: 'The speech Doc is outside the expected folder.', code: 'wrong_folder' }, 422);
+      }
       const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const file = await connector.renameFile({ fileId: fileIdValue, name });
       await admin
@@ -449,8 +466,24 @@ async function handleRequest(req: Request) {
       if (!weddingId || !speechId || !fileIdValue) {
         return json({ error: 'weddingId, speechId and fileId are required.' }, 400);
       }
+      const { data: speechRecord } = await admin
+        .from('speech_records')
+        .select('drive_doc_id, drive_folder_id')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle();
+      if (!speechRecord || speechRecord.drive_doc_id !== fileIdValue) {
+        return json({ error: 'The speech Doc id does not match this wedding.', code: 'file_mismatch' }, 409);
+      }
       const progress = ['fetch', 'parse', 'validate'];
       const source = await connector.readSource(fileIdValue);
+      if (
+        !speechRecord.drive_folder_id ||
+        !Array.isArray(source?.file?.parents) ||
+        !source.file.parents.includes(speechRecord.drive_folder_id)
+      ) {
+        return json({ error: 'The speech Doc is outside the expected folder.', code: 'wrong_folder' }, 422);
+      }
       const parsed = parseSpeechDoc(source.text, {
         speakerLanguage,
         mcLanguage,
@@ -645,18 +678,32 @@ async function handleRequest(req: Request) {
         .eq('wedding_id', weddingId)
         .eq('game_type', gameType)
         .maybeSingle();
-      const fileIdValue =
-        typeof body?.fileId === 'string' && body.fileId.trim()
-          ? body.fileId.trim()
-          : current?.drive_doc_id ?? '';
-      if (!fileIdValue) {
-        return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
+      if (!current?.drive_doc_id) {
+        return json({ error: 'A stored question Doc is required.', code: 'missing_file_id' }, 409);
       }
+      if (
+        typeof body?.fileId === 'string' &&
+        body.fileId.trim() &&
+        body.fileId.trim() !== current.drive_doc_id
+      ) {
+        return json(
+          { error: 'The question Doc id does not match this wedding.', code: 'file_mismatch' },
+          409,
+        );
+      }
+      if (
+        typeof body?.folderId === 'string' &&
+        body.folderId.trim() &&
+        body.folderId.trim() !== current.drive_folder_id
+      ) {
+        return json(
+          { error: 'The question Doc folder does not match the stored folder.', code: 'folder_mismatch' },
+          409,
+        );
+      }
+      const fileIdValue = current.drive_doc_id;
       const source = await connector.readSource(fileIdValue);
-      const folderId =
-        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
-        current?.drive_folder_id ||
-        null;
+      const folderId = current.drive_folder_id || null;
       if (folderId && !expectedGameQuestionFolder(source, folderId)) {
         await admin.from('game_question_logs').insert({
           wedding_id: weddingId,
@@ -749,17 +796,34 @@ async function handleRequest(req: Request) {
         .eq('wedding_id', weddingId)
         .eq('game_type', gameType)
         .maybeSingle();
-      const fileIdValue =
-        typeof body?.fileId === 'string' && body.fileId.trim()
-          ? body.fileId.trim()
-          : current?.drive_doc_id ?? '';
+      if (!current?.drive_doc_id) {
+        return json({ error: 'A stored question Doc is required.', code: 'missing_file_id' }, 409);
+      }
+      if (
+        typeof body?.fileId === 'string' &&
+        body.fileId.trim() &&
+        body.fileId.trim() !== current.drive_doc_id
+      ) {
+        return json(
+          { error: 'The question Doc id does not match this wedding.', code: 'file_mismatch' },
+          409,
+        );
+      }
+      if (
+        typeof body?.folderId === 'string' &&
+        body.folderId.trim() &&
+        body.folderId.trim() !== current.drive_folder_id
+      ) {
+        return json(
+          { error: 'The question Doc folder does not match the stored folder.', code: 'folder_mismatch' },
+          409,
+        );
+      }
+      const fileIdValue = current.drive_doc_id;
+      const folderId = current.drive_folder_id || null;
       if (!fileIdValue) {
         return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
       }
-      const folderId =
-        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
-        current?.drive_folder_id ||
-        null;
       if (!folderId) {
         return json(
           {
@@ -951,6 +1015,16 @@ async function handleRequest(req: Request) {
         const permissions = await connector.listPermissions(fileId);
         const existing = findPermissionByEmail(permissions, email);
         if (existing) {
+          if (existing.role !== 'reader') {
+            return json(
+              {
+                error: 'This email already has a non-reader permission. Lower it in Drive first.',
+                code: 'existing_permission_not_reader',
+                permission: existing,
+              },
+              409,
+            );
+          }
           return json({
             ok: true,
             action,

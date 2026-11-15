@@ -83,6 +83,31 @@ export async function resolveSecretsWeddingId({
           error: 'Only files under secrets/<weddingId>/ can be shared.',
         };
       }
+      // Anchor `secrets` to a month-level ancestor so a same-named folder
+      // elsewhere in Drive cannot satisfy the boundary.
+      const monthId = Array.isArray(parent.parents) ? parent.parents[0] : '';
+      if (!monthId) {
+        return {
+          ok: false,
+          status: 403,
+          code: 'drive_share_outside_secrets',
+          error: 'The secrets folder is not under the wedding tree.',
+        };
+      }
+      let month;
+      try {
+        month = await getFileMetadata(monthId);
+      } catch {
+        month = null;
+      }
+      if (!month?.id || !isFolder(month)) {
+        return {
+          ok: false,
+          status: 403,
+          code: 'drive_share_outside_secrets',
+          error: 'The secrets folder is not under the wedding tree.',
+        };
+      }
       return { ok: true, weddingId: child.name, file };
     }
     child = parent;
