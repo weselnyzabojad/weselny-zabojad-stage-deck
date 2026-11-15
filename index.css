@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@layer components {
+  .admin-btn {
+    @apply inline-flex items-center justify-center gap-1 rounded border px-2.5 py-1 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .admin-btn-primary {
+    @apply border-brand-strong bg-brand text-on-accent hover:bg-brand-hover;
+  }
+  .admin-btn-secondary {
+    @apply border-line-strong bg-raised text-ink hover:bg-line;
+  }
+  .admin-btn-ghost {
+    @apply border-transparent bg-transparent text-muted hover:text-ink;
+  }
+  .admin-btn-danger {
+    @apply border-red-700 bg-red-950/50 text-red-200 hover:bg-red-900/60;
+  }
+  .admin-card {
+    @apply rounded-xl border border-line bg-card p-4 shadow-sm;
+  }
+  .admin-card-muted {
+    @apply bg-page/60;
+  }
+}

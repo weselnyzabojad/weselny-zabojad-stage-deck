@@ -9,6 +9,7 @@ import {
   upsertVipDj,
 } from './adminApi.js';
 import { AdminConfirmDialog } from './AdminDialogs';
+import { ADMIN_BUTTON } from './adminUi';
 
 const CATEGORIES = [
   ['dj', 'DJ'],
@@ -391,7 +392,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
                       type="button"
                       onClick={() => edit(provider)}
                       disabled={readOnly}
-                      className="rounded border border-line px-1.5 py-0.5 text-[9px] text-ink disabled:opacity-40"
+                      className={`${ADMIN_BUTTON.ghost} px-1.5 py-0.5 text-[9px]`}
                     >
                       Edit
                     </button>
@@ -400,7 +401,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
                         type="button"
                         onClick={() => deactivate(provider)}
                         disabled={readOnly}
-                        className="rounded border border-amber-800 px-1.5 py-0.5 text-[9px] text-amber-200 disabled:opacity-40"
+                        className={`${ADMIN_BUTTON.secondary} px-1.5 py-0.5 text-[9px]`}
                       >
                         Deactivate
                       </button>
@@ -409,7 +410,7 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
                       type="button"
                       onClick={() => remove(provider)}
                       disabled={readOnly}
-                      className="rounded border border-alert/60 px-1.5 py-0.5 text-[9px] text-alert-soft disabled:opacity-40"
+                      className={`${ADMIN_BUTTON.danger} px-1.5 py-0.5 text-[9px]`}
                     >
                       Delete
                     </button>
