@@ -27,7 +27,7 @@ describe('issue #188 static role element', () => {
   });
 
   it('adds the non-clickable role element to every companion role', () => {
-    expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} />');
+    expect(dj).toContain('<TopBarRoleIdentity role={role} tier={tierLabel} wedding={wedding} />');
     expect(photo).toContain('<TopBarRoleIdentity role={role} />');
     expect(speaker).toContain('<TopBarRoleIdentity role="speaker" />');
   });
@@ -42,12 +42,30 @@ describe('issue #188 static role element', () => {
     expect(html).toContain('Role is fixed on this device');
   });
 
-  it('keeps the DJ service tier in the static element', () => {
+  it('uses the assigned provider identity for the DJ role', () => {
     expect(
       renderToStaticMarkup(
         createElement(TopBarRoleIdentity, { role: 'dj', tier: 'VIP' }),
       ),
-    ).toContain('Role: DJ VIP');
+    ).toContain('Role: DJ');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleIdentity, {
+          role: 'dj',
+          tier: 'VIP',
+          wedding: { djIdentityId: 'dj_szymoniak' },
+        }),
+      ),
+    ).toContain('Role: DJ Szymoniak');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleIdentity, {
+          role: 'dj',
+          tier: 'VIP',
+          wedding: { djIdentityId: 'dj_szymoniak' },
+        }),
+      ),
+    ).not.toContain('DJ VIP');
     expect(
       renderToStaticMarkup(
         createElement(TopBarRoleIdentity, { role: 'dj', tier: 'STANDARD' }),

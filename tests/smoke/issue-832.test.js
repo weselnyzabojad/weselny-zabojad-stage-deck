@@ -35,7 +35,7 @@ describe('issue #832 landing partner trust strip', () => {
 
     expect(partnerBlock).toContain('src={partner.logoUrl}');
     expect(partnerBlock).toContain('alt={partner.displayName}');
-    expect(partnerBlock).toContain('h-20 w-auto object-contain sm:h-24');
+    expect(partnerBlock).toContain('max-h-[60px] w-auto object-contain sm:max-h-20');
     expect(partnerBlock).not.toContain('<a');
   });
 

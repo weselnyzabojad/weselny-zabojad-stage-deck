@@ -19,7 +19,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import bcrypt from 'npm:bcryptjs@2.4.3';
 import { SignJWT, importJWK } from 'npm:jose@5';
 
-const ALLOWED_ROLES = new Set(['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc']);
+const ALLOWED_ROLES = new Set(['mc', 'dj', 'photo1', 'photo2', 'video', 'venue_manager', 'speaker', 'dj_mc', 'musician']);
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_FAILURES = 5;
 const TOKEN_TTL_SECONDS = 24 * 60 * 60;
@@ -80,6 +80,8 @@ Deno.serve(async (req) => {
     const role = typeof body?.role === 'string' ? body.role.trim() : '';
     const speechId =
       typeof body?.speechId === 'string' ? body.speechId.trim().slice(0, 160) : '';
+    const musicianId =
+      typeof body?.musicianId === 'string' ? body.musicianId.trim().slice(0, 160) : '';
     const pin = typeof body?.pin === 'string' ? body.pin.trim() : '';
     const deviceId =
       typeof body?.deviceId === 'string' && body.deviceId.trim()
@@ -94,12 +96,16 @@ Deno.serve(async (req) => {
       !roomCode ||
       !ALLOWED_ROLES.has(role) ||
       !/^\d{6}$/.test(pin) ||
-      (speechId !== '' && role !== 'speaker')
+      (speechId !== '' && role !== 'speaker') ||
+      (musicianId !== '' && role !== 'musician')
     ) {
       return json({ error: 'Enter the room code and the 6-digit PIN for this role.' }, 400);
     }
     if (role === 'speaker' && !speechId) {
       return json({ error: 'Use the speech link shared by the couple.' }, 403);
+    }
+    if (role === 'musician' && !musicianId) {
+      return json({ error: 'Use the musician link shared by the couple.' }, 403);
     }
 
     const admin = createClient(serverEnv('SUPABASE_URL'), serverEnv('SUPABASE_SERVICE_ROLE_KEY'), {
@@ -110,7 +116,11 @@ Deno.serve(async (req) => {
     const since = new Date(Date.now() - WINDOW_MS).toISOString();
     // Per-speech access gets its own failure bucket; a shared speaker-role bucket
     // would let one speech lock every other speaker.
-    const rateRole = speechId ? `speaker:${speechId}` : role;
+    const rateRole = speechId
+      ? `speaker:${speechId}`
+      : musicianId
+        ? `musician:${musicianId}`
+        : role;
 
     const { count, error: rateError } = await admin
       .from('join_attempts')
@@ -167,6 +177,27 @@ Deno.serve(async (req) => {
         Boolean(speech && speech.status === 'PUBLISHED' && speech.speaker_access) &&
         Boolean(accessRow?.enabled && !accessRow.revoked_at && accessRow.pin_hash) &&
         bcrypt.compareSync(pin, accessRow.pin_hash);
+    } else if (musicianId) {
+      // Each active musician has its own access row; inactive/removed musicians
+      // are rejected without revealing any cartridge data.
+      const [{ data: musician }, { data: access }] = await Promise.all([
+        admin
+          .from('wedding_musicians')
+          .select('id, active')
+          .eq('wedding_id', wedding.wedding_id)
+          .eq('id', musicianId)
+          .maybeSingle(),
+        admin
+          .from('wedding_musician_access')
+          .select('pin_hash')
+          .eq('wedding_id', wedding.wedding_id)
+          .eq('musician_id', musicianId)
+          .maybeSingle(),
+      ]);
+      accessRow = access ?? null;
+      validPin =
+        Boolean(musician?.active && accessRow?.pin_hash) &&
+        bcrypt.compareSync(pin, accessRow.pin_hash);
     } else {
       const { data: roleRow, error: roleError } = await admin
         .from('wedding_roles')
@@ -212,6 +243,7 @@ Deno.serve(async (req) => {
       jti: sessionId,
       wedding_id: wedding.wedding_id,
       role,
+      musician_id: musicianId || null,
       device_id: deviceId,
       device_label: deviceLabel,
       issued_at: new Date().toISOString(),
@@ -240,6 +272,7 @@ Deno.serve(async (req) => {
         {
           wedding_id: wedding.wedding_id,
           role,
+          musician_id: musicianId || null,
           device_id: deviceId,
           session_jti: sessionId,
           device_label: deviceLabel,
@@ -270,6 +303,7 @@ Deno.serve(async (req) => {
       room_id: roomId,
       app_role: role,
       ...(speechId ? { speech_id: speechId } : {}),
+      ...(musicianId ? { musician_id: musicianId } : {}),
     })
       .setProtectedHeader({
         alg: signingAlg,
@@ -293,6 +327,7 @@ Deno.serve(async (req) => {
       deviceId,
       expiresAt,
       ...(speechId ? { speechId } : {}),
+      ...(musicianId ? { musicianId } : {}),
     });
   } catch (error) {
     console.error('join_room failed', error);

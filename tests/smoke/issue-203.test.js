@@ -41,7 +41,8 @@ describe('issue #203 hide the MC Speeches card when empty', () => {
     const card = read('src/components/SpeechesCard.jsx');
     const mc = read('src/views/McMasterView.jsx');
     expect(card).not.toContain('No speeches captured');
-    expect(card).toContain('if (!speeches?.length) return null;');
+    expect(card).toContain("const bundleError = speechBundle?.status === 'error';");
+    expect(card).toContain('if (!speeches?.length && !bundleError) return null;');
     expect(mc).toContain("{speechMode !== 'OFF' && speeches?.length > 0 ? (");
   });
 });

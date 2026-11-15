@@ -4,12 +4,14 @@ import { vipDjById } from '../lib/vipDjs';
 import BrandFrame from './BrandFrame';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
+import logoZaremba from '../assets/img/dj-vip/logo_zaremba.png';
 
 // Explicit imports let Vite fingerprint and emit both partner PNGs. The
 // registry stays limited to the two known VIP DJ identities.
 const LOGO_BY_ID = {
   dj_mark: logoMark,
   dj_szymoniak: logoSzymoniak,
+  dj_zaremba: logoZaremba,
 };
 
 export default function VipDjLogo({ wedding, vip = false, dj = null, className = '' }) {

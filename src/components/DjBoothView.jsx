@@ -2,6 +2,8 @@ import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/e
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
+import DjEndHourLane from './DjEndHourLane';
+import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import MusicalSetBar from './MusicalSetBar';
@@ -10,6 +12,7 @@ import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import StepMandatoryNotes from './StepMandatoryNotes';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import SpeechSummaryChip from './SpeechSummaryChip';
@@ -211,6 +214,8 @@ export default function DjBoothView({
       ) : null}
 
 
+      {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
+
       <TimelineFocusStack
         compact
         zoneScroll={false}
@@ -218,6 +223,8 @@ export default function DjBoothView({
         activeIndex={activeIndex}
         currentBody={djCurrentBody}
       />
+
+      {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
 
       {caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}
     </div>
@@ -232,26 +239,33 @@ export default function DjBoothView({
           <>
             <TopBarLogo />
             <TopBarClock clock={clock} />
-            <TopBarRoleIdentity role={role} tier={tierLabel} />
+            <TopBarRoleIdentity role={role} tier={tierLabel} wedding={wedding} />
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={caps.coupleLanguages} />}
         right={(
           <>
             {viewSwitch}
-            {(caps.culturalChips && culturalRules) || caps.speeches ? (
-              <CulturalRulesBar
-                rules={culturalRules ?? {}}
-                oczepinyStatus={oczepinyStatus}
-                showRules={Boolean(caps.culturalChips && culturalRules)}
-                grid
-                dense
-              >
-                {caps.speeches ? (
-                  <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-                ) : null}
-              </CulturalRulesBar>
-            ) : null}
+            <StatusMenu active={Boolean(culturalRules) || speechMode !== 'OFF'}>
+              {(caps.culturalChips && culturalRules) || caps.speeches ? (
+                <CulturalRulesBar
+                  rules={culturalRules ?? {}}
+                  oczepinyStatus={oczepinyStatus}
+                  showRules={Boolean(caps.culturalChips && culturalRules)}
+                  grid
+                  dense
+                >
+                  {caps.speeches ? (
+                    <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
+                  ) : null}
+                </CulturalRulesBar>
+              ) : null}
+              <ChildrenExpectedBadge wedding={wedding} inline />
+              <UtilityControlGroup>
+                <LanguageToggle variant="desktop" />
+                <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+              </UtilityControlGroup>
+            </StatusMenu>
           </>
         )}
         brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}
@@ -264,16 +278,10 @@ export default function DjBoothView({
             {caps.vipAuth && authControl ? authControl : null}
           </>
         )}
-        center={(
-          <ChildrenExpectedBadge wedding={wedding} inline />
-        )}
+        center={null}
         right={(
           <>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </UtilityControlGroup>
           </>
         )}
       />
@@ -306,12 +314,16 @@ export default function DjBoothView({
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="w-full space-y-4">
+          {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
+
           <TimelineFocusStack
             zoneScroll={false}
             entries={timeline}
             activeIndex={activeIndex}
             currentBody={djCurrentBody}
           />
+
+          {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
 
           <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
             <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">

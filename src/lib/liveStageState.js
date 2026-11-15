@@ -66,6 +66,9 @@ export function activeSteps(steps = [], state = {}) {
 
 // Union two append-only logs by entry id so adopting remote state never drops
 // entries written on this device.
+// Keep the audit log bounded; the show state itself is authoritative.
+export const MAX_MUTATION_LOG = 200;
+
 export function mergeMutationLogs(left = [], right = []) {
   const seen = new Set();
   const merged = [];
@@ -77,7 +80,7 @@ export function mergeMutationLogs(left = [], right = []) {
     seen.add(id);
     merged.push(entry);
   }
-  return merged;
+  return merged.slice(-MAX_MUTATION_LOG);
 }
 
 // Append-only audit entry (`device_id`, `role`, `op`, `timestamp`, payload).
@@ -92,7 +95,10 @@ export function appendMutation(state, actor = {}, op, payload = null, now = new 
     timestamp,
     payload: payload ?? null,
   };
-  return { ...state, mutation_log: [...(state.mutation_log ?? []), entry] };
+  return {
+    ...state,
+    mutation_log: [...(state.mutation_log ?? []), entry].slice(-MAX_MUTATION_LOG),
+  };
 }
 
 // Undo one snapshot while keeping the append-only audit log intact.
@@ -240,7 +246,8 @@ export function normalizeLiveState(raw, steps, context = {}) {
       op: typeof entry.op === 'string' ? entry.op : 'unknown',
       timestamp: typeof entry.timestamp === 'string' ? entry.timestamp : '',
       payload: entry.payload ?? null,
-    }));
+    }))
+    .slice(-MAX_MUTATION_LOG);
 
   return {
     active_step_id: active ?? null,

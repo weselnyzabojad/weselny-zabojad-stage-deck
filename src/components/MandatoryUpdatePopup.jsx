@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { resolveMandatoryConstraints } from '../lib/mandatorySteps.js';
+import { acknowledgeUpdate, isUpdateAcknowledged } from '../lib/mandatoryAck.js';
 import { useI18n } from '../i18n/useI18n.js';
-
-function ackKey(weddingId) {
-  return `wzsd:mandatory-ack:${weddingId}`;
-}
 
 export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false, update }) {
   const { t } = useI18n();
-  const [acknowledged, setAcknowledged] = useState(() => {
-    if (typeof window === 'undefined' || !update?.updatedAt) return false;
-    try {
-      return window.localStorage.getItem(ackKey(weddingId)) === update.updatedAt;
-    } catch {
-      return false;
-    }
+  const [acknowledgedRevision, setAcknowledgedRevision] = useState(() => {
+    if (typeof window === 'undefined') return null;
+    return isUpdateAcknowledged(window.localStorage, {
+      weddingId,
+      role,
+      updatedAt: update?.updatedAt,
+    })
+      ? update?.updatedAt ?? null
+      : null;
   });
+  const acknowledged =
+    Boolean(update?.updatedAt) && acknowledgedRevision === update.updatedAt;
 
   if (!update?.value || role === 'venue_manager' || acknowledged) return null;
 
@@ -70,12 +71,14 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
   if (rows.length === 0) return null;
 
   const acknowledge = () => {
-    try {
-      window.localStorage.setItem(ackKey(weddingId), update.updatedAt ?? '');
-    } catch {
-      // best effort
+    if (typeof window !== 'undefined') {
+      acknowledgeUpdate(window.localStorage, {
+        weddingId,
+        role,
+        updatedAt: update.updatedAt,
+      });
     }
-    setAcknowledged(true);
+    setAcknowledgedRevision(update.updatedAt ?? null);
   };
 
   return (

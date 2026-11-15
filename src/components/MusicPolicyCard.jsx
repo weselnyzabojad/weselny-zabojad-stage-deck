@@ -96,7 +96,7 @@ function SongPill({ tone, title, children }) {
   return (
     <li
       title={title}
-      className={`inline-flex max-w-full flex-wrap items-center gap-x-1 gap-y-0.5 rounded-full border px-2 py-0.5 text-[10px] ${PILL_TONES[tone]}`}
+      className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-2.5 py-2 text-[11px] ${PILL_TONES[tone]}`}
     >
       {children}
     </li>
@@ -106,7 +106,7 @@ function SongPill({ tone, title, children }) {
 function MainSongPills({ items, t }) {
   if (items.length === 0) return null;
   return (
-    <ul className="flex flex-wrap gap-1.5">
+    <ul className="grid gap-1.5">
       {items.map((item) => {
         const label = item.title ?? item.artist ?? t('music.missing');
         return (
@@ -140,7 +140,7 @@ function MainSongPills({ items, t }) {
 function MustPlayPills({ items, t }) {
   if (items.length === 0) return null;
   return (
-    <ul className="flex flex-wrap gap-1.5">
+    <ul className="grid gap-1.5">
       {items.map((item) => (
         <SongPill key={item.id} tone="must" title={item.track}>
           <span className="break-words font-heading font-semibold text-ink">
@@ -167,7 +167,7 @@ function MustPlayPills({ items, t }) {
 function DoNotPlayPills({ items }) {
   if (items.length === 0) return null;
   return (
-    <ul className="flex flex-wrap gap-1.5">
+    <ul className="grid gap-1.5">
       {items.map((item) => (
         <SongPill key={item.key} tone="dont" title={item.track}>
           <span className="break-words font-heading font-semibold text-alert-tint">
@@ -190,7 +190,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
     return (
       <section
         aria-label={t('music.title')}
-        className="rounded-xl border border-line bg-card p-3 shadow-lg"
+        className="rounded-xl border border-line bg-card p-4 shadow-lg"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
@@ -237,7 +237,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
   return (
     <section
       aria-labelledby="music-policy-title"
-      className="rounded-xl border border-line bg-card/95 p-4 shadow-lg"
+      className="rounded-xl border border-line bg-card/95 p-5 shadow-lg"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
@@ -266,7 +266,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       </div>
 
       {mainSongs.length > 0 ? (
-        <div className="mt-3">
+        <div className="mt-4">
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
             ⭐ {t('music.mainSongs.title', { count: mainSongs.length })}
           </h3>
@@ -277,7 +277,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       ) : null}
 
       {mustPlay.length > 0 ? (
-        <div className="mt-3">
+        <div className="mt-4">
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
             ✅ {t('music.mustPlay.title', { count: mustPlay.length })}
           </h3>
@@ -288,7 +288,7 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       ) : null}
 
       {doNotPlay.length > 0 ? (
-        <div className="mt-3">
+        <div className="mt-4">
           <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
             🚫 {t('music.doNotPlay.title', { count: doNotPlay.length })}
           </h3>

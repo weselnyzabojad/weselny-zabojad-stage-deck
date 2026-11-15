@@ -6,11 +6,12 @@ import {
   DRIVE_FOLDER_MIME_TYPE,
   DRIVE_JSON_MIME_TYPE,
 } from './googleDrive.js';
+import { WEDDING_ID_PATTERN } from './adminPublish.js';
 
 export const SECRETS_FOLDER_NAME = 'secrets';
 export const SHARE_ROLE = 'reader';
 export const MAX_SHARE_MESSAGE_LENGTH = 200;
-export const WEDDING_ID_PATTERN = /^(?:[A-Za-z0-9&]+-)?UM-\d{4}-\d{2}-\d{3}$/;
+export { WEDDING_ID_PATTERN };
 
 export function normalizeShareEmail(value) {
   const email = typeof value === 'string' ? value.trim().toLowerCase() : '';
@@ -81,6 +82,31 @@ export async function resolveSecretsWeddingId({
           status: 403,
           code: 'drive_share_outside_secrets',
           error: 'Only files under secrets/<weddingId>/ can be shared.',
+        };
+      }
+      // Anchor `secrets` to a month-level ancestor so a same-named folder
+      // elsewhere in Drive cannot satisfy the boundary.
+      const monthId = Array.isArray(parent.parents) ? parent.parents[0] : '';
+      if (!monthId) {
+        return {
+          ok: false,
+          status: 403,
+          code: 'drive_share_outside_secrets',
+          error: 'The secrets folder is not under the wedding tree.',
+        };
+      }
+      let month;
+      try {
+        month = await getFileMetadata(monthId);
+      } catch {
+        month = null;
+      }
+      if (!month?.id || !isFolder(month)) {
+        return {
+          ok: false,
+          status: 403,
+          code: 'drive_share_outside_secrets',
+          error: 'The secrets folder is not under the wedding tree.',
         };
       }
       return { ok: true, weddingId: child.name, file };

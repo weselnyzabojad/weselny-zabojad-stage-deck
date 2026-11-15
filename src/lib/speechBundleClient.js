@@ -81,6 +81,7 @@ async function callSpeechBundle(body, accessToken) {
     throw Object.assign(new Error('The speech is unavailable.'), {
       status: response.status,
       code: data?.error ?? null,
+      authFailure: response.status === 401 || response.status === 403,
     });
   }
   return data;
@@ -144,42 +145,75 @@ export async function fetchSpeechList({ accessToken }) {
   return callSpeechBundle({ action: 'list' }, accessToken);
 }
 
-export async function fetchSpeechScript({ accessToken, weddingId, speechId, speech }) {
-  const cached = loadSpeakerSpeech(weddingId, speechId);
-  if (cached) return cached;
+export async function fetchSpeechScript({ accessToken, weddingId, speechId, speech, expiresAt = null }) {
+  const revision = speech?.revision;
+  const keyVersion = speech?.script?.keyVersion ?? 1;
+  const cached = loadSpeakerSpeech(weddingId, speechId, { revision, keyVersion });
+  if (cached) {
+    // Revalidate the revision/access online before reopening plaintext. A
+    // network failure may still use the cache; 401/403 clears it.
+    try {
+      const data = await callSpeechBundle({ action: 'list' }, accessToken);
+      const current = (data.speeches ?? []).find((row) => row.id === speechId);
+      if (current?.revision === revision) return cached;
+      clearSpeakerSpeech(weddingId, speechId);
+    } catch (error) {
+      if (error?.authFailure) {
+        clearSpeakerSpeech(weddingId, speechId);
+        await deleteSpeechKey(speechKeyId({ weddingId, speechId, keyVersion }));
+        throw error;
+      }
+      // Offline: keep the valid cached copy.
+      return cached;
+    }
+  }
   if (!speech?.script) throw Object.assign(new Error('The speech is unavailable.'), { status: 404 });
-  const revision = speech.revision;
   if (!Number.isInteger(revision)) {
     throw Object.assign(new Error('The speech is unavailable.'), { status: 404 });
   }
-  const keyData = await callSpeechBundle(
-    { action: 'key', speechId, keyVersion: speech.script.keyVersion ?? 1 },
-    accessToken,
-  );
-  const key = await importSpeechKey(keyData.key);
-  await saveSpeechKey(
-    speechKeyId({ weddingId, speechId, keyVersion: speech.script.keyVersion ?? 1 }),
-    key,
-  );
-  const plaintext = await decryptSpeechEntry({
-    entry: speech.script,
-    key,
-    weddingId,
-    speechId,
-    revision,
-  });
-  const decoded = {
-    id: speechId,
-    order: speech.order,
-    speaker: speech.speaker,
-    speakerLanguage: speech.speakerLanguage,
-    mcLanguage: speech.mcLanguage,
-    revision,
-    pairs: parseBilingualScript(plaintext),
-    script: plaintext,
-  };
-  saveSpeakerSpeech({ weddingId, speechId, speech: decoded, expiresAt: null });
-  return decoded;
+  try {
+    const keyData = await callSpeechBundle(
+      { action: 'key', speechId, keyVersion },
+      accessToken,
+    );
+    const key = await importSpeechKey(keyData.key);
+    await saveSpeechKey(
+      speechKeyId({ weddingId, speechId, keyVersion }),
+      key,
+    );
+    const plaintext = await decryptSpeechEntry({
+      entry: speech.script,
+      key,
+      weddingId,
+      speechId,
+      revision,
+    });
+    const decoded = {
+      id: speechId,
+      order: speech.order,
+      speaker: speech.speaker,
+      speakerLanguage: speech.speakerLanguage,
+      mcLanguage: speech.mcLanguage,
+      revision,
+      pairs: parseBilingualScript(plaintext),
+      script: plaintext,
+    };
+    saveSpeakerSpeech({
+      weddingId,
+      speechId,
+      speech: decoded,
+      revision,
+      keyVersion,
+      expiresAt,
+    });
+    return decoded;
+  } catch (error) {
+    if (error?.authFailure) {
+      clearSpeakerSpeech(weddingId, speechId);
+      await deleteSpeechKey(speechKeyId({ weddingId, speechId, keyVersion }));
+    }
+    throw error;
+  }
 }
 
 export async function startLiveSpeech({ accessToken, speechId }) {

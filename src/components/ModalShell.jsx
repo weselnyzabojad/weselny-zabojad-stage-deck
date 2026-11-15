@@ -74,7 +74,15 @@ export default function ModalShell({ open, onClose, labelledBy, describedBy, siz
     };
 
     document.addEventListener('keydown', handleKeyDown);
-    const focusTimer = window.setTimeout(() => closeRef.current?.focus(), 0);
+    const focusTimer = window.setTimeout(() => {
+      const dialog = dialogRef.current;
+      // Preserve an autoFocus target (e.g. MFA code input); otherwise start on
+      // the close button.
+      if (dialog && document.activeElement instanceof HTMLElement && dialog.contains(document.activeElement)) {
+        return;
+      }
+      closeRef.current?.focus();
+    }, 0);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
