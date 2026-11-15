@@ -289,6 +289,7 @@ const en = {
   'speeches.bundleUnavailable': 'The speech bundle is unavailable. No scripts can be opened.',
   'speeches.readerLabel': 'MC reader',
   'speeches.decrypting': 'Decrypting the speech…',
+  'speeches.retry': 'Retry',
   'speeches.readerUnavailable': 'This speech could not be opened. Check the bundle and try again.',
   'speeches.translationLabel': 'MC translation',
   'speeches.sourceLabel': 'Speaker source',
