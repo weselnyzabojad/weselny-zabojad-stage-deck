@@ -51,25 +51,53 @@ describe('issue #462 DJ VIP Disco Polo policy display', () => {
     );
   });
 
-  it('shows the policy in the disconnected DJ VIP request bar', () => {
-    const html = render(
+  it('hides the policy in the DJ request bar and keeps it for MC consumers', () => {
+    const hidden = render(
       createElement(DjSongRequestQueue, {
         enabled: true,
         variant: 'bar',
         role: 'dj',
         roomCode: 'abc123',
         discoPoloPolicy: 'YES',
+        showDiscoPoloBadge: false,
       }),
     );
-    expect(html).toContain('Disco Polo: Allowed');
-    expect(html).toContain('Song&#x27;s request QR');
+    expect(hidden).not.toContain('Disco Polo: Allowed');
+    expect(hidden).toContain('Song&#x27;s request QR');
+
+    const hiddenCard = render(
+      createElement(DjSongRequestQueue, {
+        enabled: true,
+        variant: 'card',
+        role: 'dj',
+        roomCode: 'abc123',
+        discoPoloPolicy: 'YES',
+        showDiscoPoloBadge: false,
+      }),
+    );
+    expect(hiddenCard).not.toContain('Disco Polo: Allowed');
+
+    const visible = render(
+      createElement(DjSongRequestQueue, {
+        enabled: true,
+        variant: 'bar',
+        role: 'dj_mc',
+        roomCode: 'abc123',
+        discoPoloPolicy: 'YES',
+      }),
+    );
+    expect(visible).toContain('Disco Polo: Allowed');
   });
 
   it('passes the cartridge value only to the DJ VIP surfaces', () => {
     const dj = read('src/components/DjBoothView.jsx');
     expect((dj.match(/discoPoloPolicy=\{musicPolicy\?\.discoPoloPolicy \?\? 'NO'\}/g) ?? []).length).toBe(2);
+    expect((dj.match(/showDiscoPoloBadge=\{false\}/g) ?? []).length).toBe(2);
     expect(dj).toContain('{caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}');
     expect(dj).toContain('{caps.guestRequests ? (');
+
+    const mc = read('src/views/McMasterView.jsx');
+    expect(mc).not.toContain('showDiscoPoloBadge={false}');
   });
 
   it('localizes all states, descriptions and the one-song rule', () => {

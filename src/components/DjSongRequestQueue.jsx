@@ -37,6 +37,7 @@ export function SongRequestQueueList({
   onPlayed = () => {},
   onRefresh = () => {},
   discoPoloPolicy = 'NO',
+  showDiscoPoloBadge = true,
 }) {
   const { t, locale } = useI18n();
   const { pending, accepted } = partitionSongRequests(requests);
@@ -53,7 +54,7 @@ export function SongRequestQueueList({
             {t('dj.requests.pendingCount', { count: pending.length })}
           </p>
           <div className="mt-1">
-            <DiscoPoloBadge value={discoPoloPolicy} compact />
+            {showDiscoPoloBadge ? <DiscoPoloBadge value={discoPoloPolicy} compact /> : null}
           </div>
         </div>
         <div className="flex items-center gap-1.5">
@@ -201,6 +202,7 @@ export default function DjSongRequestQueue({
   roomCode = null,
   variant = 'card',
   discoPoloPolicy = 'NO',
+  showDiscoPoloBadge = true,
 }) {
   const config = useMemo(() => getSyncConfig(), []);
   const { t } = useI18n();
@@ -378,7 +380,7 @@ export default function DjSongRequestQueue({
           <span>💬 {t('dj.requests.title')} ·{' '}
             {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
           </span>
-          <DiscoPoloBadge value={discoPoloPolicy} compact />
+          {showDiscoPoloBadge ? <DiscoPoloBadge value={discoPoloPolicy} compact /> : null}
           {qrButton}
           {qrDialog}
         </section>
@@ -397,7 +399,7 @@ export default function DjSongRequestQueue({
           <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[10px] text-ink">
             {t('dj.requests.pendingCount', { count: pending.length })}
           </span>
-          <DiscoPoloBadge value={discoPoloPolicy} compact />
+          {showDiscoPoloBadge ? <DiscoPoloBadge value={discoPoloPolicy} compact /> : null}
 
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
             {pending.length === 0 ? (
@@ -507,7 +509,7 @@ export default function DjSongRequestQueue({
           💬 {t('dj.requests.title')}
         </h2>
         <div className="mt-1">
-          <DiscoPoloBadge value={discoPoloPolicy} compact />
+          {showDiscoPoloBadge ? <DiscoPoloBadge value={discoPoloPolicy} compact /> : null}
         </div>
         <p className="mt-1 text-[10px] leading-snug text-muted">
           {!config.enabled ? t('dj.requests.notConfigured') : t('dj.requests.offline')}
@@ -531,6 +533,7 @@ export default function DjSongRequestQueue({
       onPlayed={markPlayed}
       onRefresh={load}
       discoPoloPolicy={discoPoloPolicy}
+      showDiscoPoloBadge={showDiscoPoloBadge}
     />
   );
 }

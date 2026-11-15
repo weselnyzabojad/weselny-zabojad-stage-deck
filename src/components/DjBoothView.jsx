@@ -210,6 +210,7 @@ export default function DjBoothView({
           accessToken={songRequestAccessToken}
           roomCode={songRequestRoomCode}
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+          showDiscoPoloBadge={false}
         />
       ) : null}
 
@@ -294,6 +295,7 @@ export default function DjBoothView({
           accessToken={songRequestAccessToken}
           roomCode={songRequestRoomCode}
           discoPoloPolicy={musicPolicy?.discoPoloPolicy ?? 'NO'}
+          showDiscoPoloBadge={false}
         />
       ) : null}
       </div>
