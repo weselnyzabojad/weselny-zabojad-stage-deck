@@ -100,7 +100,7 @@ describe('issue #982 private Drive sharing', () => {
     const nodes = {
       doc: { id: 'doc', name: 'speech', mimeType: 'application/vnd.google-apps.document', parents: ['speeches'] },
       speeches: { id: 'speeches', name: 'speeches', mimeType: 'application/vnd.google-apps.folder', parents: ['wedding'] },
-      wedding: { id: 'wedding', name: 'UM-2026-08-001', mimeType: 'application/vnd.google-apps.folder', parents: ['secrets'] },
+      wedding: { id: 'wedding', name: 'A&B-UM-2026-08-001', mimeType: 'application/vnd.google-apps.folder', parents: ['secrets'] },
       secrets: { id: 'secrets', name: 'secrets', mimeType: 'application/vnd.google-apps.folder', parents: ['month'] },
       month: { id: 'month', name: 'August', mimeType: 'application/vnd.google-apps.folder', parents: [] },
       customerDoc: { id: 'customer-doc', name: 'cartridge', mimeType: 'application/json', parents: ['games'] },
@@ -110,7 +110,7 @@ describe('issue #982 private Drive sharing', () => {
     const getFileMetadata = async (id) => nodes[id];
 
     const privateResult = await resolveSecretsWeddingId({ fileId: 'doc', getFileMetadata });
-    expect(privateResult).toMatchObject({ ok: true, weddingId: 'UM-2026-08-001' });
+    expect(privateResult).toMatchObject({ ok: true, weddingId: 'A&B-UM-2026-08-001' });
 
     const folderResult = await resolveSecretsWeddingId({
       fileId: 'month',

@@ -6,11 +6,12 @@ import {
   DRIVE_FOLDER_MIME_TYPE,
   DRIVE_JSON_MIME_TYPE,
 } from './googleDrive.js';
+import { WEDDING_ID_PATTERN } from './adminPublish.js';
 
 export const SECRETS_FOLDER_NAME = 'secrets';
 export const SHARE_ROLE = 'reader';
 export const MAX_SHARE_MESSAGE_LENGTH = 200;
-export const WEDDING_ID_PATTERN = /^(?:[A-Za-z0-9&]+-)?UM-\d{4}-\d{2}-\d{3}$/;
+export { WEDDING_ID_PATTERN };
 
 export function normalizeShareEmail(value) {
   const email = typeof value === 'string' ? value.trim().toLowerCase() : '';
