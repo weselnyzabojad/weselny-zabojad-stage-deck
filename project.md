@@ -6544,8 +6544,14 @@ Doc-sourced authorization below.
 **Google Doc contract.**
 
 - `## GAMES` → `Requested` maps to `steps[].game.requested` with exactly
-  `YES`, `NO` or `UNDECIDED`. Only `YES` authorizes creation; `NO` and
-  `UNDECIDED` block it. Missing or invalid values warn and never infer consent.
+  `YES`, `NO` or `UNDECIDED`. Test Wiedzy and Test Zgodności are independent
+  predefined game steps with separate values, Create actions, folders and Docs;
+  `YES` for one never authorizes the other. Only that game's `YES` authorizes
+  its creation; `NO` and `UNDECIDED` block it. Missing or invalid values warn
+  and never infer consent.
+- No wedding-level `games.requested`, `games.enabled` or `games.questionLists`
+  flag authorizes creation. The legacy `games` object stays readable only for
+  compatibility, and the creation gate never falls back to it.
 - `## SPEECHES` gains `Speech mode: OFF | LIGHT | COMPLEX` and maps to the
   existing `speechMode`. The Doc is authoritative; the admin control becomes
   read-only. Only `COMPLEX` authorizes speech Doc creation. Missing or invalid
@@ -6559,9 +6565,12 @@ Doc-sourced authorization below.
 
 **Creation boundary.**
 
-- `create_game_question_doc` loads the stored cartridge and requires
-  `steps[].game.requested === 'YES'` before resolving a folder or creating a
-  Doc; the payload `enabled` flag is ignored for authorization.
+- `create_game_question_doc` loads the stored cartridge and requires the step
+  whose `game.gameType` matches the requested game type with
+  `requested === 'YES'` before resolving a folder or creating a Doc. The payload
+  `enabled` flag is ignored for authorization. The check is per game: a missing,
+  duplicated or non-predefined step blocks only that game, and there is no
+  fallback to another step or to the legacy `games` object.
 - `create_speech_doc` loads the stored cartridge and requires
   `speechMode === 'COMPLEX'` before resolving a folder or creating a Doc.
 - Rejected requests return before any Drive call and create no folder or file.
@@ -6587,7 +6596,8 @@ Doc-sourced authorization below.
 | Topic | Decision |
 | --- | --- |
 | Trigger | Doc value mapped into the cartridge; admin action performs the side effect |
-| Games | `Requested` enum; only `YES` authorizes creation |
+| Games | Per-step `Requested` enum; only that game's `YES` authorizes its creation |
+| Game independence | Test Wiedzy and Test Zgodności are separate steps; one `YES` never authorizes the other |
 | Speeches | `Speech mode` enum; only `COMPLEX` authorizes creation |
 | Authority | Doc wins; admin speech mode is read-only |
 | Missing values | Warn and block; never infer consent or default silently |
@@ -6601,7 +6611,7 @@ Doc-sourced authorization below.
 
 | Order | Issue | Scope | Depends on |
 | --- | --- | --- | --- |
-| 1 | [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972) | Map `## GAMES` `Requested` to `steps[].game.requested`; schema, parser, template, field map and fixtures | - |
+| 1 | [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972) | Map `## GAMES` `Requested` per predefined game step to `steps[].game.requested`; schema, parser, template, field map and fixtures | - |
 | 2 | [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973) | Add `Speech mode` to `## SPEECHES` and map it to `speechMode`; template, field map and fixtures | - |
 | 3 | [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974) | Server-side authorization and admin gating for games and speeches; no Drive side effect before the Doc check | #972, #973, #968 |
 
