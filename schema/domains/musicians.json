@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/musicians.json",
+  "title": "Musicians domain",
+  "description": "Whether a musician is expected (Doc boolean) plus the admin-managed musician roster snapshotted into the cartridge at publish time.",
+  "type": "object",
+  "properties": {
+    "musicians": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected"
+      ],
+      "properties": {
+        "expected": {
+          "type": "boolean",
+          "description": "From ## MUSICIANS: Musician expected. Details are never read from the Doc."
+        },
+        "items": {
+          "type": "array",
+          "description": "Admin-sourced musicians included at publish time.",
+          "items": {
+            "$ref": "#/$defs/musician"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "musicians"
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"
+    },
+    "clock": {
+      "type": "string",
+      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+    },
+    "musician": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "instrument": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "startTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "endTime": {
+          "$ref": "#/$defs/clock"
+        },
+        "ceremonyRequired": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

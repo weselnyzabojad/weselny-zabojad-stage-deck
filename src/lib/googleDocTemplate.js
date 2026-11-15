@@ -94,6 +94,13 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Photo, video and drone crew with start/end windows (D2).',
   },
   {
+    order: 13.5,
+    marker: 'MUSICIANS',
+    required: false,
+    schemaPath: ['musicians'],
+    purpose: 'Whether a musician is expected; details live in the admin registry.',
+  },
+  {
     order: 14,
     marker: 'PHOTO PLAN',
     required: false,

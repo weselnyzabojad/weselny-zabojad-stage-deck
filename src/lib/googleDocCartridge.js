@@ -481,6 +481,19 @@ function mapSpeechMode(source, warnings = []) {
   return mode;
 }
 
+function mapMusicians(source, warnings = []) {
+  const raw = text(kv(source, 'Musician expected'));
+  const expected = bool(raw, null);
+  if (expected === null) {
+    warnings.push(
+      raw
+        ? `MUSICIANS: invalid Musician expected "${raw}" (expected true or false)`
+        : 'MUSICIANS: missing Musician expected (expected true or false)',
+    );
+  }
+  return { expected: expected ?? false, items: [] };
+}
+
 function mapPhotoPlan(source, warnings = []) {
   const groups = subTable(source, 'Group Photos', ['Group ID', 'Label']).reduce((items, row) => {
     const id = text(row['Group ID']);
@@ -1078,6 +1091,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       deliverables: list(row.Deliverables),
       notes: text(row.Notes),
     })),
+    musicians: mapMusicians(section(parsed, 'MUSICIANS'), warnings),
     photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN'), warnings),
     oczepiny: mapOczepiny(section(parsed, 'OCZEPINY'), warnings),
     witnesses: mapWitnesses(section(parsed, 'WITNESSES'), warnings),

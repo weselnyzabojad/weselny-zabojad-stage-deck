@@ -34,6 +34,7 @@ import demographicsDomain from '../_shared/domains/demographics.json' with { typ
 import stepsDomain from '../_shared/domains/steps.json' with { type: 'json' };
 import speechesDomain from '../_shared/domains/speeches.json' with { type: 'json' };
 import witnessesDomain from '../_shared/domains/witnesses.json' with { type: 'json' };
+import musiciansDomain from '../_shared/domains/musicians.json' with { type: 'json' };
 import languagesDomain from '../_shared/domains/languages.json' with { type: 'json' };
 import {
   authorizeAdminSession,
@@ -81,7 +82,7 @@ import {
   executeDocMigration,
 } from '../_shared/docMigration.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, languagesDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, musiciansDomain, languagesDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
