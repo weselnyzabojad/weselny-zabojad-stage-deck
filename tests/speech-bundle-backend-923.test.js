@@ -50,13 +50,12 @@ describe('issue #923 speech bundle backend', () => {
       'publish_speech',
       'restore_speech',
       'delete_speech',
-      'set_speech_mode',
     ]) {
       expect(api).toContain(`action === '${action}'`);
     }
     expect(api).toContain('Publishing is blocked while a speech is live');
     expect(api).toContain('Restore is blocked while a speech is live');
-    expect(api).toContain('Speech mode cannot change while a speech is live');
+    expect(api).not.toContain("action === 'set_speech_mode'");
     expect(api).toContain('speech_logs');
   });
 });

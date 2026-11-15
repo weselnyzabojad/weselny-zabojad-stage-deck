@@ -33,6 +33,7 @@ const cartridge = (overrides = {}) => ({
         title: 'Test Wiedzy',
         gameType: GAME_TYPES.TEST_WIEDZY,
         enabled: true,
+        requested: 'YES',
         questions: [{ id: 'w1', prompt: { PL: 'Pytanie', FR: 'Question' } }],
       },
     },
@@ -44,6 +45,7 @@ const cartridge = (overrides = {}) => ({
         title: 'Test Zgodności',
         gameType: GAME_TYPES.TEST_ZGODNOSCI,
         enabled: false,
+        requested: 'NO',
       },
     },
   ],
@@ -104,9 +106,9 @@ describe('issue #933 admin game panels', () => {
     expect(markup).toContain('Test Zgodności');
     expect(markup).toContain('Content languages missing');
     expect(markup).toContain('disabled');
-    expect(read('src/admin/AdminGamesPanel.jsx')).toContain(
-      'disabled={disabled || Boolean(busy) || game.languagesMissing}',
-    );
+    const panel = read('src/admin/AdminGamesPanel.jsx');
+    expect(panel).toContain('game.languagesMissing ||');
+    expect(panel).toContain('!creation.allowed');
   });
 
   it('renders disabled panels with no create, parse or publish actions', () => {
@@ -123,6 +125,7 @@ describe('issue #933 admin game panels', () => {
                 title: 'Test Wiedzy',
                 gameType: GAME_TYPES.TEST_WIEDZY,
                 enabled: false,
+                requested: 'NO',
               },
             },
           ],
@@ -130,7 +133,9 @@ describe('issue #933 admin game panels', () => {
       }),
     );
     expect(markup).toContain('Disabled by the wedding cartridge');
-    expect(markup).not.toContain('Create question Doc');
+    expect(markup).toContain('DOC REQUESTED NO');
+    expect(markup).toContain('Create blocked by the wedding Doc.');
+    expect(markup).toMatch(/<button[^>]*disabled[^>]*>Create question Doc<\/button>/);
     expect(markup).not.toContain('Parse Doc');
     expect(markup).not.toContain('Publish');
   });

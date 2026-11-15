@@ -5,6 +5,7 @@ import {
   GAME_TYPES,
   defaultGameId,
   defaultGameTitle,
+  gameQuestionDocCreationAuthorization,
   gameTypeLabel,
   normalizeGameLanguages,
   normalizeGameType,
@@ -68,11 +69,14 @@ export function resolveAdminGame(cartridge, gameType) {
   }
 
   const languages = cartridgeGameLanguages(cartridge);
+  const creation = gameQuestionDocCreationAuthorization(cartridge, type);
   return {
     gameType: type,
     label: gameTypeLabel(type),
     enabled,
     enablement,
+    requested: creation.requested,
+    creation,
     gameId: game?.id ?? defaultGameId(type),
     title: game?.title ?? defaultGameTitle(type),
     sourceDocId: game?.sourceDocId ?? null,

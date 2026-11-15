@@ -497,10 +497,6 @@ export async function deleteSpeech(payload) {
   return callAdmin('delete_speech', payload);
 }
 
-export async function setSpeechMode(payload) {
-  return callAdmin('set_speech_mode', payload);
-}
-
 export async function preflightDocMigration(weddingId, weddingFolderId = '') {
   if (ADMIN_DEMO) {
     return {
