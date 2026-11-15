@@ -414,7 +414,9 @@ function mapWitnesses(source, warnings = []) {
   }, []);
 }
 
-function mapGames(source) {
+const GAME_REQUESTS = new Set(['YES', 'NO', 'UNDECIDED']);
+
+function mapGames(source, warnings = []) {
   const rows = table(source, [
     'Game',
     'Requested',
@@ -436,11 +438,21 @@ function mapGames(source) {
         : /zgodn/.test(normalizedTitle)
           ? 'TEST_ZGODNOSCI'
           : 'OTHER';
+      const requestedRaw = text(row.Requested);
+      const requested = requestedRaw?.toUpperCase();
+      if (!requested) {
+        warnings.push(`GAMES: ${title}: missing Requested`);
+      } else if (!GAME_REQUESTS.has(requested)) {
+        warnings.push(
+          `GAMES: ${title}: invalid Requested "${requestedRaw}" (expected YES, NO or UNDECIDED)`,
+        );
+      }
       return {
         id: slug(title),
         title,
         gameType,
-        enabled: !/^no$/i.test(text(row.Requested) ?? ''),
+        ...(GAME_REQUESTS.has(requested) ? { requested } : {}),
+        enabled: requested !== 'NO',
         requiresPhotographer: bool(row['Requires photographer']),
         sourceDocId: docId ?? undefined,
         status: 'AVAILABLE',
@@ -912,7 +924,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     : undefined;
 
   const gamesSource = section(parsed, 'GAMES');
-  const games = gamesSource ? mapGames(gamesSource) : undefined;
+  const games = gamesSource ? mapGames(gamesSource, warnings) : undefined;
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
 
   const privacySource = section(parsed, 'PRIVACY');

@@ -472,6 +472,15 @@
         "enabled": {
           "type": "boolean"
         },
+        "requested": {
+          "type": "string",
+          "enum": [
+            "YES",
+            "NO",
+            "UNDECIDED"
+          ],
+          "description": "Explicit per-game answer from the `## GAMES` Requested column, normalized to uppercase. Only YES authorizes a later Doc or folder creation for this game step; NO and UNDECIDED never do. Missing when the Doc value is absent or invalid."
+        },
         "requiresPhotographer": {
           "type": "boolean",
           "description": "The game needs a photographer on the floor (for example Speed Foto)."

@@ -154,6 +154,7 @@
         "title": "Test Wiedzy",
         "gameType": "TEST_WIEDZY",
         "enabled": true,
+        "requested": "YES",
         "sourceDocId": "gdoc_test_wiedzy",
         "status": "AVAILABLE"
       }
@@ -169,6 +170,7 @@
         "title": "Test Zgodności",
         "gameType": "TEST_ZGODNOSCI",
         "enabled": true,
+        "requested": "UNDECIDED",
         "sourceDocId": "gdoc_test_zgodnosci",
         "status": "AVAILABLE"
       }
