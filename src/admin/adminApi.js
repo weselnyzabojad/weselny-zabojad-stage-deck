@@ -396,6 +396,21 @@ export async function previewDriveSource(fileId) {
   return callAdminDrive('preview', { fileId });
 }
 
+export async function listDrivePermissions(fileId) {
+  if (ADMIN_DEMO) return { permissions: [] };
+  return callAdminDrive('list_permissions', { fileId });
+}
+
+export async function shareDriveFile(payload) {
+  if (ADMIN_DEMO) throw new Error('File sharing is unavailable in demo mode.');
+  return callAdminDrive('share_file', payload);
+}
+
+export async function revokeDrivePermission(payload) {
+  if (ADMIN_DEMO) throw new Error('File sharing is unavailable in demo mode.');
+  return callAdminDrive('revoke_permission', payload);
+}
+
 export async function listSpeeches(weddingId) {
   return callAdmin('list_speeches', { weddingId });
 }
