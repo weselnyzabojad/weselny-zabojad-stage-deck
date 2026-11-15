@@ -2,6 +2,7 @@ import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/e
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
+import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
 import MusicalSetBar from './MusicalSetBar';
@@ -219,6 +220,8 @@ export default function DjBoothView({
         currentBody={djCurrentBody}
       />
 
+      {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
+
       {caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}
     </div>
   );
@@ -312,6 +315,8 @@ export default function DjBoothView({
             activeIndex={activeIndex}
             currentBody={djCurrentBody}
           />
+
+          {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
 
           <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
             <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
