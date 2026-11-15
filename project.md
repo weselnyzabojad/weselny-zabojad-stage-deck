@@ -6619,4 +6619,74 @@ Doc-sourced authorization below.
 
 **Tracking.** [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972), [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973), [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974).
 
+### 17.80 Landing Security copy and technical disclosure (decision, 2026-11-15)
+
+**Goal.**
+
+Replace the long landing Security Q&A with one short assurance paragraph for a
+non-technical audience, one optional concise technical disclosure, and a
+prominent statement that the deck follows Weselny Żabojad standards and was
+shaped with experienced wedding-sector service providers. Every published claim
+must be verifiable in shipped code.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, template or field-map
+change.
+
+**Content contract.**
+
+- Required lead copy:
+  “We treat your data the way we would want ours treated: only the right people
+  get access, and anything no longer needed disappears on a set schedule. Below,
+  in plain language, is how that works and which standards sit behind it.”
+- One assurance sentence: wedding data is not publicly exposed; only authorised
+  people get access; unneeded data is removed on a schedule.
+- Remove all five current Q&As (`transport`, `access`, `admin`, `secrets`,
+  `data`) and the old closing line.
+- One collapsed “Technical details” disclosure with concise chips only:
+  HTTPS (TLS), HSTS, CSP/security headers, ES256 (ECDSA P-256) JWT, bcrypt PIN
+  hashes, TOTP/AAL2 admin, Postgres RLS, AES-256-GCM + HKDF speech secrets,
+  Sentry PII-off/error-only replay.
+- Provenance line inside Security: designed to **Weselny Żabojad** standards and
+  in consultation with experienced wedding-sector service providers.
+- No vendor deep-dive, certification, GDPR/RODO-compliance or absolute-security
+  claim.
+
+**Claim verification.** A separate audit maps every published claim to code or
+configuration (`netlify.toml`, auth/join functions, speech/secret modules,
+migrations/RLS/TTL, Sentry config). Unsupported claims are softened or removed;
+planned-but-unmerged features never appear on the landing page. The mapping is
+recorded in `docs/security-claims.md`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Landing Security | Short lead + assurance + collapsed technical disclosure + provenance |
+| Landing other sections | No change |
+| EN / PL / FR | Same meaning and claim set |
+| Admin / stage roles | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Audience | Non-technical first; technical detail optional |
+| Existing Q&As | Remove all five |
+| Technical depth | Concise feature chips, no vendor names |
+| Proof | Every claim backed by shipped code/config |
+| Certification | None claimed |
+| Provenance | Weselny Żabojad standards + wedding-sector provider consultation, inside Security |
+| Locales | EN, PL, FR |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1007](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1007) | Landing Security claim-to-code audit and `docs/security-claims.md` | - |
+| 2 | [#1006](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1006) | Security UI/copy rewrite, technical disclosure, provenance, EN/PL/FR | #1007 |
+
+**Open questions.** None.
+
+**Tracking.** [#1006](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1006), [#1007](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1007).
+
 
