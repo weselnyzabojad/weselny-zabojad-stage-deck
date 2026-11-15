@@ -59,7 +59,7 @@ describe('issue #981 private sharing UI', () => {
     expect(folders).toContain('AdminShareFileDialog');
     expect(folders).toContain('disabled={readOnly}');
     expect(folders).toContain('Share');
-    expect(read('src/admin/AdminDrivePanel.jsx')).toContain(
+    expect(read('src/admin/AdminApp.jsx')).toContain(
       '<AdminWeddingFolders readOnly={readOnly} />',
     );
   });

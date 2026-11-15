@@ -1,5 +1,5 @@
 import { generateKeyPairSync } from 'node:crypto';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   createGoogleDriveConnector,
@@ -211,21 +211,19 @@ describe('issue #169 source read and preview input', () => {
 });
 
 describe('issue #169 admin-only UI wiring', () => {
-  it('keeps Drive browse/preview on the admin surface only', () => {
+  it('keeps shared Drive preview on the admin surface only', () => {
     const api = read('src/admin/adminApi.js');
     expect(api).toContain("config.functionsUrl}/admin_drive");
-    expect(api).toContain('export async function listDriveSources');
     expect(api).toContain('export async function previewDriveSource');
+    expect(api).not.toContain('export async function listDriveSources');
 
     const admin = read('src/admin/AdminApp.jsx');
-    expect(admin).toContain('AdminDrivePanel');
+    expect(admin).toContain('AdminWeddingFolders');
+    expect(admin).not.toContain('AdminDrivePanel');
+    expect(existsSync(new URL('../../src/admin/AdminDrivePanel.jsx', import.meta.url))).toBe(false);
 
-    const panel = read('src/admin/AdminDrivePanel.jsx');
-    expect(panel).toContain('listDriveSources');
-    expect(panel).toContain('previewDriveSource');
-    expect(panel).toContain('parseGoogleDocTemplate');
-    expect(panel).toContain('validateCartridge');
-    expect(panel).not.toContain('publishWedding');
+    const folders = read('src/admin/AdminWeddingFolders.jsx');
+    expect(folders).toContain('previewDriveSource');
 
     const roleFiles = [];
     const walk = (directory) => {

@@ -250,20 +250,19 @@ describe('issue #170 migration and admin wiring contract', () => {
     expect(api).toContain('cartridge_revisions');
   });
 
-  it('exposes diff, exact-source publish, check and restore in the admin UI', () => {
-    const panel = read('src/admin/AdminDrivePanel.jsx');
-    expect(panel).toContain('diffCartridges');
-    expect(panel).toContain('getRevisionContext');
-    expect(panel).toContain('publishDriveRevision');
-    expect(panel).toContain('checkDriveSource');
-    expect(panel).toContain('onRequestMfa');
-    expect(panel).toContain('expectedVersion');
-    expect(panel).toContain('expectedChecksum');
-    expect(panel).not.toContain('setInterval');
-
+  it('keeps exact-source publish and restore on the server while the admin UI drops the Drive panel', () => {
     const app = read('src/admin/AdminApp.jsx');
     expect(app).toContain('restorePreviousRevision');
     expect(app).toContain('Restore previous');
+    expect(app).toContain('AdminWeddingFolders');
+    expect(app).not.toContain('AdminDrivePanel');
+    expect(app).not.toContain('publishDriveRevision');
+    expect(app).not.toContain('checkDriveSource');
+
+    const api = read('src/admin/adminApi.js');
+    expect(api).not.toContain('publishDriveRevision');
+    expect(api).not.toContain('checkDriveSource');
+    expect(api).toContain('getRevisionContext');
 
     const drive = read('supabase/functions/admin_drive/index.ts');
     expect(drive).toContain("'check'");

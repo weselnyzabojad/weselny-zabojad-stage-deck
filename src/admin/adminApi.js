@@ -367,11 +367,6 @@ async function callAdminDrive(action, payload = {}) {
   return data;
 }
 
-export async function listDriveSources({ query = '', pageToken = null, pageSize = 20 } = {}) {
-  if (ADMIN_DEMO) return { files: [], nextPageToken: null };
-  return callAdminDrive('list', { query, pageToken, pageSize });
-}
-
 export async function listDriveChildren({
   parentId,
   name = '',
@@ -575,24 +570,11 @@ export async function migrateSpeeches(payload) {
   return callAdmin('migrate_speeches', payload);
 }
 
-export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
-  if (ADMIN_DEMO) return { changed: false, reason: 'unchanged', file: null };
-  return callAdminDrive('check', { fileId, expectedVersion, expectedChecksum });
-}
-
 export async function getRevisionContext(weddingId) {
   if (ADMIN_DEMO) {
     return { wedding: null, liveState: null, history: [] };
   }
   return callAdmin('revision_context', { weddingId });
-}
-
-export async function publishDriveRevision(payload) {
-  if (ADMIN_DEMO) {
-    const { demoMutate } = await import('./adminDemoApi.js');
-    demoMutate('publish');
-  }
-  return callAdmin('publish_drive', payload);
 }
 
 export async function restorePreviousRevision(weddingId, expectedRevision, revision = null) {
