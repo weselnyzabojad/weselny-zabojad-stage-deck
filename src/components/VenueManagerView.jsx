@@ -7,6 +7,7 @@ import UtilityControlGroup from './UtilityControlGroup';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
+import ModalShell from './ModalShell';
 import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
@@ -22,6 +23,7 @@ import {
   cascadeFlexibleSteps,
   settingsFromSteps,
 } from '../lib/mandatorySteps.js';
+import { venueChangeDecision } from '../lib/venueChangeConfirmation.js';
 
 const STORAGE_PREFIX = 'wzsd:venue-manager:steps:';
 
@@ -128,6 +130,7 @@ export default function VenueManagerView({
   );
   const [saved, setSaved] = useState('');
   const [rescheduleError, setRescheduleError] = useState('');
+  const [pendingChange, setPendingChange] = useState(null);
   const [previousInputs, setPreviousInputs] = useState([wedding, mandatoryOverride]);
 
   if (wedding !== previousInputs[0] || mandatoryOverride !== previousInputs[1]) {
@@ -142,7 +145,7 @@ export default function VenueManagerView({
     });
   }
 
-  const update = (patch) => {
+  const applyUpdate = (patch) => {
     const next = { ...settings, ...patch };
     const previousSteps = loadSteps(wedding, mandatoryOverride);
     const nextSteps = applyMandatorySettings({ steps: previousSteps }, next, { sort: false });
@@ -164,9 +167,32 @@ export default function VenueManagerView({
     : DEFAULT_KITCHEN_COURSES;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
 
-  const updateCourse = (index, patch) => {
-    const next = courses.map((course, i) => (i === index ? { ...course, ...patch } : course));
-    update({ ...settings, kitchenServices: next });
+  const requestConfirmedChange = (patch, change) => {
+    const decision = venueChangeDecision(change.oldValue, change.newValue);
+    if (decision === 'noop') return;
+    if (decision === 'apply') {
+      applyUpdate(patch);
+      return;
+    }
+    setPendingChange({ patch, ...change });
+  };
+
+  const requestCourseChange = (index, field, value) => {
+    const course = courses[index];
+    if (!course) return;
+    const next = courses.map((item, i) => (i === index ? { ...item, [field]: value } : item));
+    const time = field === 'time';
+    const current = time ? course.time : course.serviceMode ?? 'TABLE_SERVICE';
+    requestConfirmedChange(
+      { ...settings, kitchenServices: next },
+      {
+        label: `${courseLabel(course, t)} · ${t(time ? 'venueManager.time' : 'venueManager.serviceModeLabel')}`,
+        oldValue: current,
+        newValue: value,
+        oldDisplay: time ? current : t(`mandatory.serviceMode.${current}`),
+        newDisplay: time ? value : t(`mandatory.serviceMode.${value}`),
+      },
+    );
   };
 
   const addCourse = () => {
@@ -180,13 +206,73 @@ export default function VenueManagerView({
         isHardAnchor: true,
       },
     ];
-    update({ ...settings, kitchenServices: next });
+    applyUpdate({ ...settings, kitchenServices: next });
   };
 
   const removeCourse = (index) => {
     const next = courses.filter((_, i) => i !== index);
-    update({ ...settings, kitchenServices: next });
+    applyUpdate({ ...settings, kitchenServices: next });
   };
+
+  const confirmationDialog = (
+    <ModalShell
+      open={Boolean(pendingChange)}
+      onClose={() => setPendingChange(null)}
+      labelledBy="venue-change-title"
+      describedBy="venue-change-description"
+    >
+      <div className="p-5 pt-14">
+        <h2 id="venue-change-title" className="font-heading text-lg font-bold text-ink">
+          {t('venueManager.confirm.title')}
+        </h2>
+        <p id="venue-change-description" className="mt-1 text-xs text-muted">
+          {t('venueManager.confirm.description')}
+        </p>
+
+        <div className="mt-3 rounded-lg border border-line bg-page/70 p-3">
+          <div className="font-heading text-[10px] font-bold uppercase tracking-widest text-muted">
+            {pendingChange?.label}
+          </div>
+          <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-center gap-2 font-mono text-xs text-ink">
+            <div>
+              <div className="text-[9px] uppercase tracking-wider text-muted">
+                {t('venueManager.confirm.old')}
+              </div>
+              <div className="mt-0.5 break-words">{pendingChange?.oldDisplay || '—'}</div>
+            </div>
+            <span aria-hidden="true" className="text-muted">→</span>
+            <div>
+              <div className="text-[9px] uppercase tracking-wider text-muted">
+                {t('venueManager.confirm.new')}
+              </div>
+              <div className="mt-0.5 break-words">{pendingChange?.newDisplay || '—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => setPendingChange(null)}
+            className="rounded-lg border border-line-strong bg-raised px-4 py-2 text-xs font-semibold text-ink transition hover:bg-line"
+          >
+            {t('venueManager.confirm.cancel')}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const change = pendingChange;
+              setPendingChange(null);
+              if (change) applyUpdate(change.patch);
+            }}
+            className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
+          >
+            {t('venueManager.confirm.confirm')}
+          </button>
+        </div>
+      </div>
+    </ModalShell>
+  );
 
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
@@ -204,8 +290,8 @@ export default function VenueManagerView({
                 label={courseLabel(course, t)}
                 value={course.time}
                 mode={course.serviceMode}
-                onTime={(time) => updateCourse(index, { time })}
-                onMode={(mode) => updateCourse(index, { serviceMode: mode })}
+                onTime={(time) => requestCourseChange(index, 'time', time)}
+                onMode={(mode) => requestCourseChange(index, 'serviceMode', mode)}
               />
               <button
                 type="button"
@@ -235,9 +321,20 @@ export default function VenueManagerView({
               {t('venueManager.cakeService')}
               <select
                 value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
-                onChange={(event) =>
-                  update({ ...settings, cakeServiceMode: event.target.value })
-                }
+                onChange={(event) => {
+                  const value = event.target.value;
+                  const oldValue = settings.cakeServiceMode ?? 'KITCHEN_RETURN';
+                  requestConfirmedChange(
+                    { ...settings, cakeServiceMode: value },
+                    {
+                      label: t('venueManager.cakeService'),
+                      oldValue,
+                      newValue: value,
+                      oldDisplay: t(`venueManager.cake.${oldValue}`),
+                      newDisplay: t(`venueManager.cake.${value}`),
+                    },
+                  );
+                }}
                 className="rounded-lg border border-line/70 bg-card px-2.5 py-2 text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20"
               >
                 <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
@@ -253,7 +350,18 @@ export default function VenueManagerView({
             <TimeField
               label={t('venueManager.time')}
               value={settings.closureTime}
-              onChange={(time) => update({ ...settings, closureTime: time })}
+              onChange={(time) =>
+                requestConfirmedChange(
+                  { ...settings, closureTime: time },
+                  {
+                    label: `${t('venueManager.closure')} · ${t('venueManager.time')}`,
+                    oldValue: settings.closureTime,
+                    newValue: time,
+                    oldDisplay: settings.closureTime,
+                    newDisplay: time,
+                  },
+                )
+              }
             />
             <label className="flex min-h-11 items-center gap-2 rounded border border-line bg-card px-2 py-1 text-[10px] uppercase tracking-wider text-muted">
               <input
@@ -262,7 +370,7 @@ export default function VenueManagerView({
                 checked={settings.closureExtensionAllowed === true}
                 onChange={(event) => {
                   const allowed = event.target.checked;
-                  update({
+                  applyUpdate({
                     ...settings,
                     closureExtensionAllowed: allowed,
                     closureExtensionUntil: allowed
@@ -278,7 +386,16 @@ export default function VenueManagerView({
                 label={t('venueManager.extensionUntil')}
                 value={settings.closureExtensionUntil}
                 onChange={(time) =>
-                  update({ ...settings, closureExtensionUntil: time })
+                  requestConfirmedChange(
+                    { ...settings, closureExtensionUntil: time },
+                    {
+                      label: t('venueManager.extensionUntil'),
+                      oldValue: settings.closureExtensionUntil,
+                      newValue: time,
+                      oldDisplay: settings.closureExtensionUntil,
+                      newDisplay: time,
+                    },
+                  )
                 }
               />
             ) : null}
@@ -293,6 +410,7 @@ export default function VenueManagerView({
           ) : null}
         </p>
       </section>
+      {confirmationDialog}
     </div>
   );
 

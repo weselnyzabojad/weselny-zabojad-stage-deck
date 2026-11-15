@@ -635,6 +635,12 @@ const pl = {
   'venueManager.cake.CUT_IN_PLACE': 'Krojenie na miejscu / goście podchodzą',
   'venueManager.prestationHelper': 'Prestacja gotowa jest wyliczana automatycznie 1 godzinę przed przyjazdem pierwszych gości.',
   'venueManager.saved': 'Zapisano',
+  'venueManager.confirm.title': 'Potwierdź zmianę',
+  'venueManager.confirm.description': 'Sprawdź starą i nową wartość przed zapisaniem.',
+  'venueManager.confirm.old': 'Przed',
+  'venueManager.confirm.new': 'Po',
+  'venueManager.confirm.cancel': 'Anuluj',
+  'venueManager.confirm.confirm': 'Potwierdź',
   'venueManager.rescheduleBlocked':
     'Nie można przenieść: koliduje z kolejnym stałym punktem lub zamknięciem.',
 
@@ -776,6 +782,7 @@ const pl = {
 };
 
 export default pl;
+
 
 
 
