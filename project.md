@@ -7313,3 +7313,56 @@ recorded in `docs/security-claims.md`.
 **Open questions.** None.
 
 **Tracking.** [#1006](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1006), [#1007](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1007).
+
+### 17.86 Landing trust statement placement (decision, 2026-11-15)
+
+**Goal.**
+
+Turn the Weselny ┼╗abojad standards / wedding-professional consultation statement
+into a visible trust signal under the landing intro instead of a Security
+footnote. The copy targets couples and vendors, stays honest, and avoids
+invented social proof.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, template or field-map
+change.
+
+**Content and placement.**
+
+- Add one compact trust line directly below the intro story, before the features
+  section. EN draft: ÔÇťBuilt to Weselny ┼╗abojad standards, with the insight of
+  experienced wedding professionals who run real weddings every week.ÔÇŁ
+- Translate naturally into PL and FR with the same meaning.
+- Remove `landing.security.standards` and its paragraph from Security; Security
+  keeps only the assurance and technical disclosure.
+- Style it as part of the intro card with the existing champagne/gold accents;
+  compact, not a new full-width section, and not competing with the CTA.
+- No awards, certifications, client counts or other invented proof.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Landing intro/hero | New trust line below the intro story |
+| Landing Security | Provenance paragraph removed |
+| EN / PL / FR | Same meaning |
+| Admin / stage roles / other sections | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Placement | Trust line under the intro |
+| Wording | Consumer-friendly rewrite |
+| Security | Remove provenance line and key |
+| Task size | Single issue |
+| Proof | Weselny ┼╗abojad standards + wedding-sector consultation only |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1011](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1011) | Landing trust line placement, EN/PL/FR copy, remove Security provenance, tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1011](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1011).
