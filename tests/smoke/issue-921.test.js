@@ -12,7 +12,6 @@ const SECURITY_KEYS = [
   'landing.security.title',
   'landing.security.lead',
   'landing.security.assurance',
-  'landing.security.standards',
   'landing.security.technical.title',
   ...TECHNICAL.map((key) => `landing.security.technical.${key}`),
 ];
@@ -53,7 +52,8 @@ describe('issue #921 landing security disclosure', () => {
 
     expect(section).toContain(pl['landing.security.lead']);
     expect(section).toContain(pl['landing.security.assurance']);
-    expect(section).toContain(pl['landing.security.standards']);
+    expect(section).not.toContain('Designed to Weselny');
+    expect(pl['landing.security.standards']).toBeUndefined();
     expect(section).toContain(pl['landing.security.technical.title']);
     expect(pl['landing.security.closing']).toBeUndefined();
     for (const key of TECHNICAL) {
@@ -80,7 +80,21 @@ describe('issue #921 landing security disclosure', () => {
       for (const term of requiredTerms) {
         expect(technicalText, term).toContain(term);
       }
-      expect(dictionary['landing.security.standards']).toContain('Weselny Żabojad');
+      expect(dictionary['landing.intro.trust']).toContain('Weselny Żabojad');
     }
+  });
+
+  it('renders the trust line in the intro, not in Security', () => {
+    setLocale('en', { persist: false });
+    const html = renderToStaticMarkup(createElement(LandingPage));
+    const introIndex = html.indexOf(en['landing.intro.p2']);
+    const trustIndex = html.indexOf(en['landing.intro.trust']);
+    const featuresIndex = html.indexOf('id="landing-features"');
+    expect(trustIndex).toBeGreaterThan(introIndex);
+    expect(trustIndex).toBeLessThan(featuresIndex);
+    expect(html.indexOf('id="landing-security"')).toBeGreaterThan(featuresIndex);
+    expect(html.slice(html.indexOf('id="landing-security"'))).not.toContain(
+      en['landing.intro.trust'],
+    );
   });
 });

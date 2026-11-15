@@ -295,6 +295,9 @@ export default function LandingPage() {
                     className="font-semibold text-[#8A6A2F]"
                   />
                 </p>
+                <p className="mt-4 border-t border-[#C5A059]/25 pt-3 text-xs font-semibold leading-relaxed text-[#8A6A2F] sm:text-sm">
+                  {t('landing.intro.trust')}
+                </p>
               </div>
             </div>
           </div>
@@ -415,9 +418,6 @@ export default function LandingPage() {
                 ))}
               </ul>
             </details>
-            <p className="mt-6 text-sm font-semibold leading-relaxed text-ink">
-              {t('landing.security.standards')}
-            </p>
           </div>
         </section>
 
