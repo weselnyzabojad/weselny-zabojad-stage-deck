@@ -251,6 +251,14 @@ Rules: One request per guest; the DJ decides the order.
 
 ## SPEECHES
 
+Speech mode: COMPLEX
+
+`Speech mode` is the wedding-level authorization for speech Doc creation and
+accepts exactly `OFF`, `LIGHT` or `COMPLEX`. Only `COMPLEX` authorizes creating
+speech Docs and folders. A missing or invalid value warns and leaves the mode
+unset; there is no silent `OFF` default. The rows below are documentation only;
+speech records and scripts live in the encrypted speech bundle.
+
 | Speech ID | Order | Speaker | Relationship |
 | --- | --- | --- | --- |
 | speech_witness | 1 | Bartek | Best man |

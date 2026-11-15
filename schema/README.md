@@ -111,7 +111,7 @@ rejected; put app-specific data under `extensions`.
 | `driftMinutes` | no | Demo seed only; live drift is computed. |
 | `hardAnchors` | no | Derived from `HARD_ANCHOR` steps; never authored in the Doc. |
 | `demographics` | no | Guest counts and notes. |
-| `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`. |
+| `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`, from `## SPEECHES` → `Speech mode`; the Doc section is optional. |
 | `witnesses` | no | Key persons with language, admin-only contacts and speech ids. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
 | `extensions` | publish | `extensions.languages.supported` is required for publication: ordered ISO 639-1 codes; other extension keys remain forward-compatible. |
@@ -210,8 +210,10 @@ Each rule accepts an optional `note`.
 
 ## Speeches
 
-`speechMode` is `OFF`, `LIGHT` or `COMPLEX`. Each speech may override
-`LIGHT` / `COMPLEX`:
+`speechMode` is `OFF`, `LIGHT` or `COMPLEX`. It comes from `## SPEECHES` →
+`Speech mode` in the wedding Google Doc; the Doc value is authoritative and the
+parser warns when the section exists without a valid value. Each speech may
+override `LIGHT` / `COMPLEX`:
 
 ```json
 "speeches": [

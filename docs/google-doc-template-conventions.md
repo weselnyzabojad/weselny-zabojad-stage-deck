@@ -70,7 +70,7 @@ Canonical order and mapping:
 | 15 | `## IMPORTANT SONGS` | no | `musicPolicy.importantSongs` |
 | 16 | `## MUSIC POLICY` | no | `musicPolicy` |
 | 17 | `## GUEST REQUESTS` | no | `musicPolicy.requestWindow`, `requestsOpen` |
-| 18 | `## SPEECHES` | no | `speeches` |
+| 18 | `## SPEECHES` | no | `speechMode` |
 | 19 | `## CAKE` | no | `cake` |
 | 20 | `## GAMES` | no | `steps[].game` |
 | 21 | `## KITCHEN` | no | `kitchen` |
@@ -201,7 +201,7 @@ Rules:
 - Enum values are uppercase ASCII and come from the v1.2 proposal:
   `FLEXIBLE`, `HARD_ANCHOR`; `DEFAULT`, `RAIN`, `HEATWAVE`;
   `YES`, `NO`, `UNDECIDED`; `PHOTO`, `VIDEO`, `DRONE`; `MIDNIGHT`,
-  `AFTER_CAKE`, `CUSTOM`.
+  `AFTER_CAKE`, `CUSTOM`; `OFF`, `LIGHT`, `COMPLEX`.
 - Never write Polish labels in enum cells; put the display text in the title or
   notes column.
 
@@ -282,10 +282,20 @@ and a must-play entry.
 
 ### SPEECHES
 
-The main wedding Doc no longer maps a `speeches[]` array. Speech records and
-scripts live in the dedicated encrypted bundle and are created from separate
-per-speech Docs (`SPEAKER [xx]` / `MC [yy]` labels). The wedding Doc supplies only
-the wedding-level `speechMode` when present.
+`Speech mode` maps to the wedding-level `speechMode` and accepts exactly `OFF`,
+`LIGHT` or `COMPLEX`. The parser normalizes case to uppercase and rejects any
+other value. When present, the Doc value is authoritative; the admin mode is a
+read-only display, so changing it requires editing the Doc and re-parsing. Only
+`COMPLEX` authorizes creating speech Docs and folders. When the section exists
+but the value is missing or invalid, the parser warns and leaves `speechMode`
+unset; an older Doc without the field follows the same rule. There is no silent
+`OFF` default and no inference from another value.
+
+The main wedding Doc no longer maps a `speeches[]` array. Table rows under
+`## SPEECHES` stay documentation only. Speech records and scripts live in the
+dedicated encrypted bundle and are created from separate per-speech Docs
+(`SPEAKER [xx]` / `MC [yy]` labels). Parsing produces no Drive reads, folder
+creation or Doc creation.
 
 ### CAKE / GAMES / KITCHEN
 

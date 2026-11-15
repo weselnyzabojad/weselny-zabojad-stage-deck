@@ -134,7 +134,7 @@
       "specialEffects.approvals.other": "no"
     },
     "speeches.example.json": {
-      "speechMode": "no",
+      "speechMode": "required",
       "speeches[].id": "no",
       "speeches[].mode": "no",
       "speeches[].speaker.name": "required",
