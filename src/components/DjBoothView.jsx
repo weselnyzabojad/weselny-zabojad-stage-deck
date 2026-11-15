@@ -238,7 +238,7 @@ export default function DjBoothView({
           <>
             <TopBarLogo />
             <TopBarClock clock={clock} />
-            <TopBarRoleIdentity role={role} tier={tierLabel} />
+            <TopBarRoleIdentity role={role} tier={tierLabel} wedding={wedding} />
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} showCoupleLanguages={caps.coupleLanguages} />}
