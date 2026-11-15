@@ -25,7 +25,7 @@ const render = (compact = false) =>
   renderToStaticMarkup(createElement(MusicPolicyCard, { policy, compact }));
 
 describe('issue #742 DJ VIP music pills and Set notes placement', () => {
-  it('renders every song list as compact wrapping pills on the laptop card', () => {
+  it('renders every song list as structured readable rows on the laptop card', () => {
     const html = render();
     for (const value of [
       'First Dance',
@@ -38,13 +38,13 @@ describe('issue #742 DJ VIP music pills and Set notes placement', () => {
     ]) {
       expect(html, value).toContain(value);
     }
-    expect(html).toContain('flex flex-wrap gap-1.5');
-    expect(html).toContain('rounded-full');
-    expect(html).toContain('max-w-full');
+    expect(html).toContain('grid gap-1.5');
+    expect(html).toContain('rounded-lg');
+    expect(html).toContain('min-w-0');
     expect(html).not.toContain('space-y-1.5');
   });
 
-  it('uses the same pills on the pocket card and keeps the counts', () => {
+  it('uses the same rows on the pocket card and keeps the counts', () => {
     const html = render(true);
     expect(html).toContain('2 main songs');
     expect(html).toContain('1 must play');
@@ -52,7 +52,7 @@ describe('issue #742 DJ VIP music pills and Set notes placement', () => {
     for (const value of ['Perfect', 'Wedding cake', 'Dancing Queen', 'Sto lat']) {
       expect(html, value).toContain(value);
     }
-    expect(html).toContain('rounded-full');
+    expect(html).toContain('rounded-lg');
   });
 
   it('keeps key-song, conflict, missing and do-not-play meaning', () => {
