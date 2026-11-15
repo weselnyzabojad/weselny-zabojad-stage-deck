@@ -7489,3 +7489,59 @@ Both tasks touch `src/views/McMasterView.jsx`; implement them in order and rebas
 the second branch on the first.
 
 **Open questions.** None.
+
+### 17.90 Hide Disco Polo pill from DJ guest-request surfaces (decision, 2026-11-15)
+
+Remove the Disco Polo policy pill from the guest-request bar shown in every DJ
+Booth identity, while keeping the request status and QR action aligned. The pill
+remains available in the DJ Music Policy card and for MC, DJ + MC and all other
+roles.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. Visibility is
+derived from the active view; the policy value still comes from
+`musicPolicy.discoPoloPolicy`.
+
+**Feature scope.**
+
+- **DJ Booth** — DJ Mark, generic DJ VIP, DJ Szymoniak and DJ Karol Zaremba hide
+  the pill in the disconnected request bar, the connected request bar and the
+  card variant.
+- **`DjSongRequestQueue`** — gains a default-on pill visibility switch so the DJ
+  view can suppress it without changing MC or DJ + MC behaviour.
+- **Layout** — the remaining status text and QR button keep the existing
+  `flex flex-wrap items-center gap-2`; no empty slot is reserved.
+- **Music Policy card** — keeps rendering the Disco Polo policy.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ Booth (all four VIP identities) | Pill hidden in every queue state |
+| DJ Booth Music Policy card | Pill retained |
+| MC Master | Pill retained |
+| DJ + MC | Pill retained |
+| Other roles (Couple, Admin, media, Speaker, Venue, Musician, Song Request) | No change |
+| `DiscoPoloBadge` / i18n | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; view-driven visibility |
+| DJ Zaremba | Included with the other VIP identities |
+| Queue states | Disconnected bar, connected bar and card |
+| DJ + MC | Unchanged; keeps the pill |
+| MC Master | Unchanged; keeps the pill |
+| Music Policy card | Unchanged; keeps the policy |
+| Implementation | Default-on switch on `DjSongRequestQueue`, disabled from `DjBoothView` |
+| Tests | Update the obsolete disconnected-bar assertion in `tests/smoke/issue-462.test.js` and add DJ/MC coverage |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1083](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1083) | Hide the pill on all DJ Booth queue surfaces, preserve MC/DJ + MC and Music Policy | - |
+
+**Open questions.** None.
