@@ -6691,4 +6691,189 @@ encoded.
 
 **Tracking.** [#1017](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1017), [#1018](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1018).
 
+### 17.77 DJ Mark and DJ Szymoniak provider views (decision, 2026-11-15)
+
+The DJ booth gets one provider view template. "DJ VIP" is the development
+template, not a production identity: in production the assigned provider
+(`dj_mark` or `dj_szymoniak`) supplies the visible name and the top-right logo,
+and everything else is the same view. The guest-request bar is part of that
+template and must render for both provider views and for DJ + MC.
+
+**Google Doc contract.** Not Doc-linked. The provider identity comes from the
+existing VIP registry and admin assignment (`src/lib/vipDjs.js`,
+`resolveDjIdentityId`, `admin`/`admin_api`). No schema, parser, field-map,
+template or fixture change.
+
+**Current gaps.**
+
+- `StageDeck` spreads `roleProps` after `role="dj"`, so provider previews pass
+  `role="dj_mark"`/`"dj_szymoniak"` to `DjSongRequestQueue`. Its
+  `canModerateSongRequests` accepts only `mc` and `dj`, so the bar disappears.
+- `TopBarRoleIdentity` normalises the provider ids through `normalizeRole`,
+  which falls back to `mc`; the provider previews therefore show an MC badge.
+- Every VIP tier renders the generic "DJ VIP" label even when a provider is
+  assigned, and branding currently falls back to DJ Mark for an unassigned VIP
+  package.
+
+**Behaviour.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Dev template `dj` | Full VIP template, guest-request bar, no partner logo, no "DJ VIP" production identity; kept only as the development template |
+| Dev `dj_mark` / `dj_szymoniak` | Exactly the template view plus the assigned provider name and logo |
+| Production `dj` with DJ Mark/Szymoniak assigned | Same template; provider name in the role badge and provider logo top-right; no "DJ VIP" label |
+| Production `dj` without an assigned provider | No partner logo and no implied DJ Mark; neutral "DJ" label, existing admin VIP warning, no branding fallback |
+| `dj_mc` | VIP surfaces plus the same compact guest-request bar under the header; remove the duplicate queue card from the MC page body |
+| DJ Standard | No guest-request bar, no cultural/speeches VIP additions; unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Template | One DJ booth view; "DJ VIP" is a dev-only template name |
+| Production identity | Assigned provider name + logo; never a generic DJ VIP identity |
+| Missing assignment | No fallback to DJ Mark; neutral DJ label and admin warning |
+| Dev previews | Keep `dj` as the template, plus Mark and Szymoniak previews |
+| Guest requests | All VIP provider views and DJ + MC; never DJ Standard |
+| Role permission | Provider preview must not lose DJ moderation rights because of its preview id |
+| DJ + MC queue | Top bar only; remove the duplicate body card |
+| Providers | Only the existing two VIP identities; no new provider or login model |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1020](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1020) | Provider identity/branding: canonical DJ role for previews, provider name in the badge, logo top-right, no generic DJ VIP label, remove DJ Mark fallback | - |
+| 2 | [#1019](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1019) | Guest-request bar parity for VIP provider previews and the dev template | #1020 |
+| 3 | [#1021](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1021) | DJ + MC guest-request bar under the header and removal of the body duplicate | #1019 |
+
+**Open questions.** None.
+
+**Tracking.** [#1020](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1020), [#1019](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1019), [#1021](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1021).
+
+### 17.78 Dashboard hierarchy: shared header and timeline (decision, 2026-11-15)
+
+Reduce the information density of the shared stage dashboard while keeping the
+"Mariage Chic" palette. The header keeps the clock and role lock prominent on the
+left, the couple and flags centred, and moves secondary controls and alerts into
+one unified status menu. The timeline makes the current step the only focal
+card, mutes completed/upcoming entries, and collapses them behind tabs on small
+screens. The Music Policy tags become readable rows/grids with more whitespace.
+
+**Google Doc contract.** Not Doc-linked. UI-only change on data already present
+in the cartridge and live state. No schema, parser, field-map, template or
+fixture change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master / DJ + MC | Shared header and timeline hierarchy; DJ + MC keeps its extra VIP surfaces |
+| DJ Standard, DJ VIP template, DJ Mark, DJ Szymoniak | Same shared header and timeline hierarchy |
+| Photographer 1/2, Cameraman | Same shared header and timeline hierarchy |
+| Venue Manager | Same shared header and timeline hierarchy |
+| Speaker | Inherits the shared header/status-menu shell; no timeline change because it has no timeline |
+| Song Request, Landing, Admin | No change |
+
+**Header contract.**
+
+- Left: primary logo, clock and role lock stay highly visible.
+- Centre: couple names, flags and event date.
+- Right: primary actions plus one unified status menu. Language, theme, children
+  expected, speeches and cultural alerts (Sto Lat / Gorzko / Oczepiny) move
+  inside. Sync, PIN/role lock, drift and Open on phone stay visible.
+- The menu is keyboard accessible, labelled, closes on Escape/outside click and
+  never hides an active alert without an indicator on the trigger.
+- Cultural alerts are grouped even when empty; they are not rendered as a row of
+  disjointed pills in the header.
+
+**Timeline contract.**
+
+- Exactly one current card is fully opaque, with a stronger shadow, accent
+  border/glow and heavier step title. The `polished` treatment becomes the
+  shared treatment for every in-scope role, not MC-only.
+- Completed and upcoming entries get a muted surface and roughly 65-70% visual
+  weight; they recede behind the current card.
+- Desktop/tablet landscape keeps the three-zone layout (completed, current,
+  upcoming) with the existing 2 + 1 + 2 visibility limits.
+- At compact widths the current card comes first, then two tabs ("Completed",
+  "Upcoming") collapsed by default. The tab state is keyboard accessible and
+  announces the active panel.
+- Motion stays reduced-motion safe and uses the existing Tailwind tokens.
+
+**Music Policy contract.**
+
+- Main songs, Must Play and Do Not Play become labelled rows or a structured
+  grid with clear separation and breathing room; tags no longer wrap into a
+  dense block.
+- The same treatment applies to the full DJ card and the compact MC/DJ card.
+- Content, ordering and gating are unchanged.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Header grouping | One secondary status menu; clock/role left, couple/flags centre, primary actions right |
+| Menu contents | Language, theme, children expected, speeches, cultural alerts |
+| Visible controls | Sync, PIN/role lock, drift and Open on phone stay outside the menu |
+| Current card | Shared focal treatment on every in-scope view |
+| Muted zones | Reduced opacity and muted surface for completed/upcoming |
+| Compact layout | Current first, Completed/Upcoming behind tabs |
+| Music Policy | Structured rows/grid with increased padding, full and compact |
+| Scope | Shared components only; no data, permissions or backend change |
+| Accessibility | Menus/tabs keyboard operable, labelled and reduced-motion safe |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1022](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1022) | Unified header status menu across MC, DJ, Photo, Venue and Speaker shell | - |
+| 2 | [#1023](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1023) | Desktop timeline hierarchy: focal current card and muted completed/upcoming for every view | - |
+| 3 | [#1025](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1025) | Compact timeline: current first + Completed/Upcoming tabs | #1023 |
+| 4 | [#1024](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1024) | Music Policy whitespace and structured rows/grid, full and compact | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1022](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1022), [#1023](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1023), [#1025](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1025), [#1024](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1024).
+
+### 17.79 Photo and Venue lower sections (decision, 2026-11-15)
+
+Bring the role-specific lower sections in line with the refactored timeline.
+The Photographer light-window cards get more internal whitespace and the Mini
+Session override becomes a clean white card with refined borders. The Venue
+Manager mandatory cards get clearer label/input spacing and softened borders
+that darken on focus. No behaviour, validation or rescheduling logic changes.
+
+**Google Doc contract.** Not Doc-linked. Existing cartridge and local Venue
+edits only. No schema, parser, field-map or template change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Photographer 1/2, Cameraman (wide and compact) | Sunset, Golden Hour, Civil Twilight and Mini Session cards get more padding; Chosen Mini-Session Hour becomes a white card with refined borders |
+| Venue Manager (wide and compact) | Dinner/Supper cards and Cake/Closure cards get more label/input spacing and soft borders with a clear focus state |
+| MC, DJ, Speaker, Admin, Song Request | No change beyond the shared dashboard work in 17.78 |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Photo section | Styling only; timing/countdown and override behaviour unchanged |
+| Mini Session input | White card, refined border, same save action and shared override |
+| Venue section | Styling only; mandatory values, cascade and persistence unchanged |
+| Inputs | Soft light-grey border, darker border/ring on focus |
+| Scope | Role-specific lower sections only; header/timeline owned by 17.78 |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1026](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1026) | Photo light-window card padding and Mini Session override card | - |
+| 2 | [#1027](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1027) | Venue mandatory-step spacing and soft input borders | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1026](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1026), [#1027](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1027).
+
 
