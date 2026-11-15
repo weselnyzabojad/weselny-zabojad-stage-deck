@@ -19,9 +19,29 @@ describe('issue #454 DJ Standard role label', () => {
     }
   });
 
-  it('keeps DJ VIP for the VIP tier', () => {
-    expect(render(TopBarRoleIdentity, { role: 'dj', tier: 'VIP' })).toContain('Role: DJ VIP');
-    expect(render(TopBarRoleLabel, { role: 'dj', tier: 'VIP' })).toContain('DJ VIP');
+  it('uses the assigned provider name for VIP, never a generic DJ VIP label', () => {
+    expect(render(TopBarRoleIdentity, { role: 'dj', tier: 'VIP' })).toContain('Role: DJ');
+    expect(
+      render(TopBarRoleIdentity, {
+        role: 'dj',
+        tier: 'VIP',
+        wedding: { djIdentityId: 'dj_mark' },
+      }),
+    ).toContain('Role: DJ Mark');
+    expect(
+      render(TopBarRoleLabel, {
+        role: 'dj',
+        tier: 'VIP',
+        wedding: { djIdentityId: 'dj_mark' },
+      }),
+    ).toContain('DJ Mark');
+    expect(
+      render(TopBarRoleLabel, {
+        role: 'dj',
+        tier: 'VIP',
+        wedding: { djIdentityId: 'dj_mark' },
+      }),
+    ).not.toContain('DJ VIP');
   });
 
   it('applies the same rule to the static role label', () => {
