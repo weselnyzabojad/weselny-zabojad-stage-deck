@@ -89,7 +89,8 @@ describe('issue #1084 DJ vendor presence bars', () => {
   it('wires the presence stack and removes the old lane', () => {
     const view = read('src/components/DjBoothView.jsx');
     expect(view).toContain("import VendorPresenceBars from './VendorPresenceBars'");
-    expect(view.match(/currentFooter=\{vendorPresence\}/g) ?? []).toHaveLength(2);
+    expect(view).toContain('currentFooter={vendorPresence}');
+    expect(view).toContain('currentFooter={currentColumnFooter}');
     expect(view).not.toContain('DjEndHourLane');
     expect(view).not.toContain('dj-end-hour-lane');
   });

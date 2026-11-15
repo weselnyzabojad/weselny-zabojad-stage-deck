@@ -55,7 +55,7 @@ export default function DjSetNotesNotepad({ policy }) {
           className="my-5 border-t-2 border-dashed border-[#8b6f47]/55"
         />
 
-        <MusicPolicyCard policy={policy} paper />
+        <MusicPolicyCard policy={policy} paper showLists={false} />
       </div>
     </section>
   );

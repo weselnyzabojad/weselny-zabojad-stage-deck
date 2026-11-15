@@ -138,6 +138,8 @@ export default function TimelineFocusStack({
   compact = false,
   currentBody = null,
   currentFooter = null,
+  historyFooter = null,
+  futureFooter = null,
   labels = {},
   className = '',
   zoneScroll = true,
@@ -336,6 +338,7 @@ export default function TimelineFocusStack({
           showLessLabel={t('mc.rail.showLess')}
           polished={polished}
         />
+        {historyFooter ? <div className="mt-2 min-w-0">{historyFooter}</div> : null}
       </div>
 
       <div
@@ -398,6 +401,7 @@ export default function TimelineFocusStack({
           showLessLabel={t('mc.rail.showLess')}
           polished={polished}
         />
+        {futureFooter ? <div className="mt-2 min-w-0">{futureFooter}</div> : null}
       </div>
     </section>
   );
