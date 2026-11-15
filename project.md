@@ -7608,3 +7608,64 @@ through `buildEndHours`.
 | 1 | [#1084](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1084) | Remove the old lane, add the footer slot, build the presence stack and live filtering, update tests/i18n | - |
 
 **Open questions.** None.
+
+### 17.92 DJ set-notes notepad and Music Policy consolidation (decision, 2026-11-15)
+
+Redesign the wide DJ `NOTATKI SETU` section as a physical spiral-bound ruled
+notepad and move the complete `POLITYKA MUZYCZNA` content inside it. The user
+sees one continuous DJ notebook: general gig notes on top, a divider, then the
+Disco Polo, main-song, must-play and do-not-play information as paper stickers.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The notebook
+uses the existing `musicPolicy` object and existing `dj.setNotes.*` / `music.*`
+translations.
+
+**Feature scope.**
+
+- **F1 — Notepad shell.** Warm paper surface, repeating ruled lines (~24px),
+  soft shadow, decorative top binding holes (`aria-hidden`), clean bold
+  `NOTATKI SETU` header, handwritten body text and a divider before Music Policy.
+- **F2 — Music Policy inside the notepad.** Remove the standalone wide DJ card
+  and render the full policy below the divider through an opt-in paper variant.
+  Keep every section, status chip and semantic color; restyle pills as light
+  paper stickers.
+- **Typography.** Add Caveat to the existing Google Fonts link and expose a
+  `--font-handwriting` token with a cursive fallback.
+- **Theme.** Paper stays warm and light in night and day themes with dark,
+  contrast-safe ink.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ VIP wide (Mark, generic VIP, Szymoniak, Zaremba) | One notepad with notes and full Music Policy |
+| DJ VIP compact | Unchanged compact Music Policy card |
+| DJ Standard | Unchanged |
+| MC Master / DJ + MC | Unchanged default Music Policy card |
+| Other roles | No change |
+| Data / i18n | No content change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; existing data only |
+| View scope | DJ VIP wide only |
+| Compact | Unchanged |
+| MC / DJ + MC | Unchanged default card |
+| Font | Caveat via the existing Google Fonts link, cursive fallback |
+| Paper | Always warm/light, including night theme |
+| Music Policy | Opt-in paper variant rendered inside the notepad |
+| Pills | Semantic colors retained as paper stickers |
+| Binding | Decorative only, hidden from assistive technology |
+| Task split | One atomic change; F2 depends on the F1 container |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1085](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1085) | Notepad shell, handwriting font, Music Policy relocation and paper variant, tests/i18n cleanup | - |
+
+**Open questions.** None.
