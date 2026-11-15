@@ -269,6 +269,32 @@ export async function challengeExistingFactor(code) {
   return verifyTotp(factor.id, code);
 }
 
+export async function checkServiceHealth() {
+  const config = getAdminConfig();
+  if (!config.configured) throw new Error('Supabase is not configured for this build.');
+
+  const session = await getAdminSession();
+  if (!session?.access_token) throw new Error('Admin session expired. Sign in again.');
+
+  const response = await fetchAdminEndpoint(`${config.functionsUrl}/service_health`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: config.anonKey,
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: '{}',
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data?.error || 'Health check failed.');
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
 export async function callAdmin(action, payload = {}) {
   const config = getAdminConfig();
   if (!config.configured) throw new Error('Supabase is not configured for this build.');
