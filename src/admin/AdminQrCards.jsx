@@ -50,6 +50,13 @@ export default function AdminQrCards({ cards = [] }) {
   const [images, setImages] = useState({});
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStart = useRef(null);
+  const pillRefs = useRef([]);
+  const lastIndex = Math.max(0, cards.length - 1);
+  const currentIndex = Math.min(activeIndex, lastIndex);
+
+  useEffect(() => {
+    pillRefs.current[currentIndex]?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }, [currentIndex]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,8 +85,6 @@ export default function AdminQrCards({ cards = [] }) {
     return <p className="text-xs text-muted">No roles to print.</p>;
   }
 
-  const lastIndex = cards.length - 1;
-  const currentIndex = Math.min(activeIndex, lastIndex);
   const go = (direction) => {
     setActiveIndex((current) => (current + direction + cards.length) % cards.length);
   };
@@ -120,6 +125,33 @@ export default function AdminQrCards({ cards = [] }) {
 
   return (
     <div className="space-y-3">
+      {cards.length > 1 ? (
+        <div
+          className="flex gap-1.5 overflow-x-auto pb-1"
+          aria-label="Jump to a role card"
+        >
+          {cards.map((card, index) => (
+            <button
+              key={`pill-${card.role}`}
+              ref={(node) => {
+                pillRefs.current[index] = node;
+              }}
+              type="button"
+              aria-pressed={index === currentIndex}
+              aria-current={index === currentIndex ? 'true' : undefined}
+              onClick={() => jump(index)}
+              className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold transition ${
+                index === currentIndex
+                  ? 'border-brand-strong bg-brand/30 text-ink'
+                  : 'border-line bg-raised text-muted hover:border-line-strong hover:text-ink'
+              }`}
+            >
+              {card.label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <section
         aria-label="QR role cards"
         aria-roledescription="carousel"
