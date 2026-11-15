@@ -48,8 +48,6 @@ const fr = {
   'musician.notes': 'Notes',
   'musician.accessUnavailable': 'Cet acces musicien n est plus disponible. Demandez un nouveau lien aux maries.',
   'musician.readOnly': 'Vue musicien en lecture seule — timeline, disponibilite et heures de fin',
-  'statusMenu.label': 'Statut',
-  'statusMenu.activeAlert': 'Une alerte est active',
   'roles.title': 'Cet appareil',
   'roles.switchAria': "Rôle de l'appareil : {role}. Changer de rôle",
   'roles.switchTitle': "Changer le rôle de cet appareil",
@@ -780,6 +778,7 @@ const fr = {
 };
 
 export default fr;
+
 
 
 

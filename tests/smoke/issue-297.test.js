@@ -9,9 +9,9 @@ describe('issue #297 centered children reminder', () => {
     expect(banner).not.toContain('childrenExpected');
   });
 
-  it('keeps the centered reminder in the shared status menu', () => {
+  it('keeps the centered reminder as a top-right standalone badge', () => {
     const mc = read('src/views/McMasterView.jsx');
-    expect(mc).toContain('<StatusMenu');
+    expect(mc).not.toContain('<StatusMenu');
     expect(mc).toContain('<ChildrenExpectedBadge');
     expect(mc).toContain('inline');
   });

@@ -35,10 +35,12 @@ describe('issue #1082 MC secondary bar alignment', () => {
     expect(bar).toContain('{pinControl}');
   });
 
-  it('removes the utility controls from the MC status menu', () => {
-    const menu = mc.slice(mc.indexOf('<StatusMenu'), mc.indexOf('</StatusMenu>'));
-    expect(menu).toContain('<CulturalRulesBar');
-    expect(menu).toContain('<ChildrenExpectedBadge');
-    expect(menu).not.toContain('{utilityGroup}');
+  it('centres the cultural chips and keeps utilities before Open on phone', () => {
+    expect(mc).not.toContain('<StatusMenu');
+    const secondary = mc.slice(mc.indexOf('<SecondaryControlBar'));
+    const center = secondary.slice(secondary.indexOf('center={'), secondary.indexOf('right={('));
+    expect(center).toContain('<CulturalRulesBar');
+    expect(center).toContain('<SpeechesChip');
+    expect(center).not.toContain('{utilityGroup}');
   });
 });

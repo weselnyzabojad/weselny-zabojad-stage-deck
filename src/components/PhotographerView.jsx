@@ -8,7 +8,6 @@ import { useI18n } from '../i18n/useI18n';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
-import StatusMenu from './StatusMenu';
 import SpeechSummaryChip from './SpeechSummaryChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
@@ -418,24 +417,7 @@ export default function PhotographerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
-        right={(
-          <StatusMenu active={Boolean(culturalRules) || speechMode !== 'OFF'}>
-            <CulturalRulesBar
-              rules={culturalRules ?? {}}
-              oczepinyStatus={oczepinyStatus}
-              showRules={Boolean(culturalRules)}
-              grid
-              dense
-            >
-              <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-            </CulturalRulesBar>
-            <ChildrenExpectedBadge wedding={wedding} inline />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </UtilityControlGroup>
-          </StatusMenu>
-        )}
+        right={<ChildrenExpectedBadge wedding={wedding} inline />}
       />
 
       <SecondaryControlBar
@@ -445,9 +427,25 @@ export default function PhotographerView({
             {authControl}
           </>
         )}
-        center={null}
+        center={
+          culturalRules || speechMode !== 'OFF' ? (
+            <CulturalRulesBar
+              rules={culturalRules ?? {}}
+              oczepinyStatus={oczepinyStatus}
+              showRules={Boolean(culturalRules)}
+              grid
+              dense
+            >
+              <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
+            </CulturalRulesBar>
+          ) : null
+        }
         right={(
           <>
+            <UtilityControlGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </UtilityControlGroup>
             <OpenOnPhoneButton role={role} roomCode={roomCode} />
           </>
         )}
