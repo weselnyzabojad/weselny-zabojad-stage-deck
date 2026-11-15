@@ -50,7 +50,7 @@ describe('issue #363 Drive folder hierarchy', () => {
     expect(ui).toContain('setSelectedYearId');
     expect(ui).toContain('month.weddings');
     expect(ui).toContain('cartridgeName');
-    expect(read('src/admin/AdminDrivePanel.jsx')).toContain(
+    expect(read('src/admin/AdminApp.jsx')).toContain(
       '<AdminWeddingFolders readOnly={readOnly} />',
     );
   });

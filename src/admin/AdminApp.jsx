@@ -37,7 +37,7 @@ import {
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
-import AdminDrivePanel from './AdminDrivePanel';
+import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
 import AdminGamesPanel from './AdminGamesPanel';
 import AdminDocMigrationPanel from './AdminDocMigrationPanel';
@@ -1020,13 +1020,7 @@ function AdminAppContent() {
               </label>
             </div>
 
-            <AdminDrivePanel
-              weddings={data?.weddings ?? []}
-              onRequestMfa={askMfa}
-              onPublished={() => load()}
-              onNotify={pushToast}
-              readOnly={readOnly}
-            />
+            <AdminWeddingFolders readOnly={readOnly} />
 
             <div className="space-y-3">
               {filteredWeddings.length === 0 ? (

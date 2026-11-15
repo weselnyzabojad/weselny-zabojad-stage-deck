@@ -24,7 +24,7 @@ describe('issue #370 Drive-only admin wedding library', () => {
   it('keeps publish-revision, archive, PIN and Drive flows', () => {
     expect(admin).toContain('publishWedding');
     expect(admin).toContain('AdminPublishRevisionDialog');
-    expect(admin).toContain('AdminDrivePanel');
+    expect(admin).toContain('AdminWeddingFolders');
     expect(admin).toContain('rotatePins');
     expect(admin).toContain('archiveWedding');
   });
