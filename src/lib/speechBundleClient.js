@@ -81,6 +81,7 @@ async function callSpeechBundle(body, accessToken) {
     throw Object.assign(new Error('The speech is unavailable.'), {
       status: response.status,
       code: data?.error ?? null,
+      authFailure: response.status === 401 || response.status === 403,
     });
   }
   return data;
