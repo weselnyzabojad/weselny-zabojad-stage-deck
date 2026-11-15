@@ -7740,3 +7740,61 @@ and normalizer.
 | 2 | [#1092](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1092) | Add column footer slots, move notepad/list panels, preserve non-DJ paths | #1091 |
 
 **Open questions.** None.
+
+### 17.94 Language and theme controls in the secondary bar (decision, 2026-11-15)
+
+Move the desktop language and theme controls out of the top-right `STATUS` menu
+and into the secondary control bar, immediately left of `Otwórz na telefonie`,
+on every role view that currently keeps them in `STATUS`. Venue Manager gains
+the missing Open-on-phone button so all four role bars share the same order.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The controls
+use the existing locale context and theme provider.
+
+**Feature scope.**
+
+- **DJ Booth** — remove `UtilityControlGroup` from `StatusMenu`; add it to the
+  secondary bar right zone before `OpenOnPhoneButton`.
+- **Photographer** — same move; cultural, speeches and children content stay in
+  `STATUS`.
+- **Speaker** — move the utility group; remove the now-empty `StatusMenu` trigger
+  and import.
+- **Venue Manager** — move the utility group and add `OpenOnPhoneButton` before
+  it in the right zone.
+- **MC Master** — already correct; verify only.
+- **Desktop only** — compact/pocket headers keep their current controls.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ Booth (all VIP identities) | Language + theme before Open on phone |
+| Photographer | Same order; STATUS keeps cultural/speeches/children |
+| Speaker | Same order; empty STATUS removed |
+| Venue Manager | Adds Open on phone; language + theme before it |
+| MC Master | Unchanged, already correct |
+| Musician / Admin / Couple / Song Request / landing | No change |
+| Compact / pocket | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Views | DJ, Photographer, Speaker, Venue Manager |
+| Controls moved | Language + theme group |
+| Placement | Secondary bar right zone, before Open on phone |
+| Venue Manager | Add Open on phone, then place the group before it |
+| Speaker | Remove the empty STATUS trigger |
+| Compact | Unchanged |
+| MC | Verify only |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1095](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1095) | Move language + theme to the secondary bar on four role views, add Venue Open on phone, update tests | - |
+
+**Open questions.** None.
