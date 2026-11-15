@@ -2,7 +2,7 @@
 // VIP tier; VIP packages are the DJ VIP package and DJ_MC.
 export const VIP_PACKAGES = new Set(['HOST_AND_DJ_VIP', 'DJ_MC']);
 // Seed fallback; the database registry is authoritative for admin mutations.
-export const VIP_DJ_IDS = new Set(['dj_mark', 'dj_szymoniak']);
+export const VIP_DJ_IDS = new Set(['dj_mark', 'dj_szymoniak', 'dj_zaremba']);
 
 export function isVipPackage(servicePackage) {
   return VIP_PACKAGES.has(servicePackage);

@@ -66,8 +66,25 @@ Local function values:
 | `PUBLIC_DECK_URL` | `http://localhost:5173` |
 | `SPEECH_SECRET_MASTER_KEY` | any 32-byte random local value |
 | Google Drive values | optional; use a test service account only |
+| `SENTRY_*`, `SUNSET_HEALTH_URL` | local mock values written by `local:start`; never production |
 
 Do not put production secrets in `supabase/.env.local`.
+
+### Local provider mocks
+
+`local:start` starts `docker-compose.local.yml` on the Supabase CLI network:
+
+- `google-drive-mock` (`http://google-drive-mock:8080`, host `127.0.0.1:8099`)
+  stands in for Drive; `GOOGLE_DRIVE_API_BASE` points the functions at it.
+- `service-mock` (`http://service-mock:8080`, host `127.0.0.1:8098`) serves the
+  Sentry API shape (`/sentry/api/0/projects/local/stage-deck/`), the
+  sunrise-sunset payload (`/sunset`) and local Supabase health shapes.
+
+`local:start` writes `SENTRY_API_BASE`, `SENTRY_ORG_SLUG`,
+`SENTRY_PROJECT_SLUG`, `SENTRY_API_TOKEN` and `SUNSET_HEALTH_URL` pointing at the
+mock, so a local `service_health` never calls the hosted Sentry API and emits no
+Sentry events. Add `?status=500` to the Sentry or sunset mock route to simulate a
+failure. Both containers are removed by `npm run local:stop`.
 
 ## Point Vite at the local stack
 

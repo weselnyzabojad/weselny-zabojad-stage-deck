@@ -34,6 +34,7 @@ import demographicsDomain from '../_shared/domains/demographics.json' with { typ
 import stepsDomain from '../_shared/domains/steps.json' with { type: 'json' };
 import speechesDomain from '../_shared/domains/speeches.json' with { type: 'json' };
 import witnessesDomain from '../_shared/domains/witnesses.json' with { type: 'json' };
+import musiciansDomain from '../_shared/domains/musicians.json' with { type: 'json' };
 import languagesDomain from '../_shared/domains/languages.json' with { type: 'json' };
 import {
   authorizeAdminSession,
@@ -53,6 +54,10 @@ import {
   publishCartridge,
 } from '../_shared/adminPublish.js';
 import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
+import {
+  normalizeMusicianPayload,
+  withMusicianSnapshot,
+} from '../_shared/musicians.js';
 import {
   DRIVE_DOC_MIME_TYPE,
   createGoogleDriveConnector,
@@ -81,10 +86,11 @@ import {
   executeDocMigration,
 } from '../_shared/docMigration.js';
 
-const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, languagesDomain]);
+const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepinyDomain, firstDanceDomain, attractionsDomain, culturalRulesDomain, coupleProfileDomain, photoPlanDomain, miniSessionDomain, groupPhotosDomain, specialEffectsDomain, cakeDomain, musicPolicyDomain, demographicsDomain, stepsDomain, speechesDomain, witnessesDomain, musiciansDomain, languagesDomain]);
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
+  apiBase: Deno.env.get('GOOGLE_DRIVE_API_BASE') ?? '',
 });
 
 async function sha256Text(value: string) {
@@ -105,6 +111,42 @@ const DESTRUCTIVE_ACTIONS = new Set([
   'delete_game_questions',
   'change_password',
   'migrate_docs',
+]);
+
+// Issue #1046: archived weddings are read-only. Listing and explicit
+// archive/delete/revoke remain available; every content or access mutation is
+// blocked centrally before the action handler can write anything.
+const ARCHIVED_BLOCKED_ACTIONS = new Set([
+  'publish',
+  'publish_drive',
+  'restore_revision',
+  'rotate_pins',
+  'confirm_mc',
+  'upsert_speech_metadata',
+  'publish_speech',
+  'restore_speech',
+  'delete_speech',
+  'rotate_speech_access',
+  'revoke_speech_access',
+  'preflight_doc_migration',
+  'migrate_docs',
+  'preflight_speech_migration',
+  'migrate_speeches',
+  'preflight_game_migration',
+  'migrate_game_questions',
+  'publish_game_questions',
+  'restore_game_questions',
+  'delete_game_questions',
+  'upsert_provider',
+  'deactivate_provider',
+  'delete_provider',
+  'upsert_vip_dj',
+  'deactivate_vip_dj',
+  'upsert_musician',
+  'deactivate_musician',
+  'delete_musician',
+  'set_role',
+  'remove_role',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
@@ -281,6 +323,51 @@ async function writeAudit(admin: any, actor: any, action: string, target: string
   });
 }
 
+// Issue #992: musician access is per musician, never a shared wedding role.
+async function revokeMusicianAccess(admin: any, weddingId: string, musicianId: string) {
+  const now = new Date().toISOString();
+  const { error: accessError } = await admin
+    .from('wedding_musician_access')
+    .delete()
+    .eq('wedding_id', weddingId)
+    .eq('musician_id', musicianId);
+  if (accessError) throw accessError;
+  const { error: sessionError } = await admin
+    .from('role_sessions')
+    .update({ revoked_at: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', 'musician')
+    .eq('musician_id', musicianId)
+    .is('revoked_at', null);
+  if (sessionError) throw sessionError;
+  const { error: presenceError } = await admin
+    .from('role_presence')
+    .update({ status: 'offline', session_jti: null, last_seen: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', 'musician')
+    .eq('musician_id', musicianId);
+  if (presenceError) throw presenceError;
+}
+
+async function ensureMusicianAccess(admin: any, weddingId: string, musicianId: string) {
+  const { data: existing, error } = await admin
+    .from('wedding_musician_access')
+    .select('musician_id')
+    .eq('wedding_id', weddingId)
+    .eq('musician_id', musicianId)
+    .maybeSingle();
+  if (error) throw error;
+  if (existing) return null;
+  const pin = randomPin();
+  const { error: insertError } = await admin.from('wedding_musician_access').insert({
+    musician_id: musicianId,
+    wedding_id: weddingId,
+    pin_hash: bcrypt.hashSync(pin, 10),
+  });
+  if (insertError) throw insertError;
+  return pin;
+}
+
 // Create the role PINs and the initial live state for a brand-new wedding.
 // Content-only republications never reach this function, so existing PINs,
 // sessions and live progress are preserved.
@@ -344,6 +431,19 @@ async function weddingExists(admin: any, weddingId: string) {
 
 async function handlePublish(admin: any, allowlisted: any, body: any, { source = 'admin_json' } = {}) {  const normalized = normalizePublishRequest(body, { source });
   if (normalized.error) return { response: json({ error: normalized.error }, normalized.status) };
+
+  // Issue #990: the admin-managed roster is persisted separately from the Doc
+  // and snapshotted into every publication. The Doc keeps only `expected`.
+  const { data: musicianRows, error: musicianError } = await admin
+    .from('wedding_musicians')
+    .select('*')
+    .eq('wedding_id', normalized.request.weddingId)
+    .order('created_at', { ascending: true });
+  if (musicianError) throw musicianError;
+  normalized.request.cartridge = withMusicianSnapshot(
+    normalized.request.cartridge,
+    musicianRows ?? [],
+  );
 
   const published = await publishCartridge({
     admin,
@@ -1041,6 +1141,19 @@ async function handleRequest(req: Request) {
       );
     }
 
+    if (ARCHIVED_BLOCKED_ACTIONS.has(action)) {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (weddingId) {
+        const writable = await requireWritableWedding(admin, weddingId);
+        if (writable.error) {
+          await writeAudit(admin, allowlisted, 'archived_write_blocked', weddingId, {
+            action,
+          });
+          return json({ error: writable.error, code: 'wedding_archived' }, writable.status);
+        }
+      }
+    }
+
     if (action === 'list_speeches') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
@@ -1297,14 +1410,7 @@ async function handleRequest(req: Request) {
       }
 
       const masterKey = serverEnv('SPEECH_SECRET_MASTER_KEY');
-      const { data: latest } = await admin
-        .from('speech_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      let revision = Number(latest?.revision ?? 0);
+      let revision = 0;
       let revisionCreated = false;
       const entries: Record<string, any> = {};
       const records: any[] = [];
@@ -1362,7 +1468,15 @@ async function handleRequest(req: Request) {
 
         if (summary.linked && text) {
           if (!revisionCreated) {
-            revision = Number(latest?.revision ?? 0) + 1;
+            const { data: allocated, error: allocationError } = await admin.rpc(
+              'stage_deck_next_speech_revision',
+              { p_wedding_id: weddingId },
+            );
+            if (allocationError) throw allocationError;
+            revision = Number(allocated ?? 0);
+            if (!Number.isInteger(revision) || revision < 1) {
+              return json({ error: 'Could not allocate a speech revision.' }, 409);
+            }
             revisionCreated = true;
           }
           entries[speechId] = await encryptSpeechScript({
@@ -1396,7 +1510,12 @@ async function handleRequest(req: Request) {
           published_by: allowlisted.user_id,
           entries,
         });
-        if (revisionError) throw revisionError;
+        if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
       }
       if (records.length > 0) {
         const { error: upsertError } = await admin
@@ -1520,14 +1639,15 @@ async function handleRequest(req: Request) {
         .select('*')
         .eq('wedding_id', weddingId);
       if (recordsError) throw recordsError;
-      const { data: latest } = await admin
-        .from('speech_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const revision = Number(latest?.revision ?? 0) + 1;
+      const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+        'stage_deck_next_speech_revision',
+        { p_wedding_id: weddingId },
+      );
+      if (allocationError) throw allocationError;
+      const revision = Number(allocatedRevision ?? 0);
+      if (!Number.isInteger(revision) || revision < 1) {
+        return json({ error: 'Could not allocate a speech revision.' }, 409);
+      }
       const entries: Record<string, any> = {};
       for (const record of records ?? []) {
         if (record.id === speech.id || record.live_revision == null) continue;
@@ -1552,7 +1672,12 @@ async function handleRequest(req: Request) {
         published_by: allowlisted.user_id,
         entries,
       });
-      if (revisionError) throw revisionError;
+      if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
       const record = {
         wedding_id: weddingId,
         id: speech.id,
@@ -1777,15 +1902,15 @@ async function handleRequest(req: Request) {
 
       for (const game of plan.games) {
         if (game.action === 'migrate') {
-          const { data: latest } = await admin
-            .from('game_question_revisions')
-            .select('revision')
-            .eq('wedding_id', weddingId)
-            .eq('game_type', game.gameType)
-            .order('revision', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          const revision = Number(latest?.revision ?? 0) + 1;
+          const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+            'stage_deck_next_game_revision',
+            { p_wedding_id: weddingId, p_game_type: game.gameType },
+          );
+          if (allocationError) throw allocationError;
+          const revision = Number(allocatedRevision ?? 0);
+          if (!Number.isInteger(revision) || revision < 1) {
+            return json({ error: 'Could not allocate a game revision.' }, 409);
+          }
           const entry = await encryptGameBundle({
             masterKey,
             weddingId,
@@ -1804,7 +1929,12 @@ async function handleRequest(req: Request) {
               question_count: game.questions.length,
               entry,
             });
-          if (revisionError) throw revisionError;
+          if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
           const { error: upsertError } = await admin
             .from('game_question_bundles')
             .upsert(
@@ -2028,15 +2158,15 @@ async function handleRequest(req: Request) {
         return json({ error: 'Publishing is blocked while the game is active.' }, 409);
       }
 
-      const { data: latest } = await admin
-        .from('game_question_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .eq('game_type', gameType)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const revision = Number(latest?.revision ?? 0) + 1;
+      const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+        'stage_deck_next_game_revision',
+        { p_wedding_id: weddingId, p_game_type: gameType },
+      );
+      if (allocationError) throw allocationError;
+      const revision = Number(allocatedRevision ?? 0);
+      if (!Number.isInteger(revision) || revision < 1) {
+        return json({ error: 'Could not allocate a game revision.' }, 409);
+      }
       const entry = await encryptGameBundle({
         masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
         weddingId,
@@ -2053,7 +2183,12 @@ async function handleRequest(req: Request) {
         question_count: questions.length,
         entry,
       });
-      if (revisionError) throw revisionError;
+      if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
 
       const { error: upsertError } = await admin.from('game_question_bundles').upsert(
         {
@@ -2568,6 +2703,23 @@ async function handleRequest(req: Request) {
         .update({ archived_at: new Date().toISOString() })
         .eq('wedding_id', weddingId);
       if (error) throw error;
+      const archivedAt = new Date().toISOString();
+      await Promise.all([
+        admin
+          .from('role_sessions')
+          .update({ revoked_at: archivedAt })
+          .eq('wedding_id', weddingId)
+          .is('revoked_at', null),
+        admin
+          .from('speech_sessions')
+          .update({ revoked_at: archivedAt })
+          .eq('wedding_id', weddingId)
+          .is('revoked_at', null),
+        admin
+          .from('role_presence')
+          .update({ status: 'offline', session_jti: null, last_seen: archivedAt })
+          .eq('wedding_id', weddingId),
+      ]);
       await writeAudit(admin, allowlisted, 'archive', weddingId, null);
       return json({ ok: true });
     }
@@ -2629,6 +2781,14 @@ async function handleRequest(req: Request) {
         .update({ revoked_at: new Date().toISOString(), revoked_by: allowlisted.user_id })
         .eq('jti', jti);
       if (error) throw error;
+
+      // A speaker device has both a role session and a speech session; revoke
+      // both so an already-open speech is blocked immediately (issue #1040).
+      const { error: speechSessionError } = await admin
+        .from('speech_sessions')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('jti', jti);
+      if (speechSessionError) throw speechSessionError;
 
       await admin
         .from('role_presence')
@@ -2775,6 +2935,137 @@ async function handleRequest(req: Request) {
       return json({ weddingId, role, removed: true });
     }
 
+    if (action === 'list_musicians') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const [{ data, error }, { data: wedding, error: weddingError }] = await Promise.all([
+        admin
+          .from('wedding_musicians')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: true }),
+        admin.from('weddings').select('cartridge').eq('wedding_id', weddingId).maybeSingle(),
+      ]);
+      if (error) throw error;
+      if (weddingError) throw weddingError;
+      return json({
+        musicians: data ?? [],
+        expected: wedding?.cartridge?.musicians?.expected === true,
+      });
+    }
+
+    if (action === 'upsert_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+
+      const normalized = normalizeMusicianPayload(body);
+      if (normalized.error) return json({ error: normalized.error }, 400);
+
+      const id = typeof body?.id === 'string' && body.id.trim() ? body.id.trim() : null;
+      let before = null;
+      if (id) {
+        const { data, error } = await admin
+          .from('wedding_musicians')
+          .select('*')
+          .eq('id', id)
+          .eq('wedding_id', weddingId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) return json({ error: 'Musician not found.' }, 404);
+        before = data;
+      }
+
+      const query = id
+        ? admin
+            .from('wedding_musicians')
+            .update(normalized.musician)
+            .eq('id', id)
+            .eq('wedding_id', weddingId)
+        : admin
+            .from('wedding_musicians')
+            .insert({ wedding_id: weddingId, ...normalized.musician });
+      const { data, error } = await query.select('*').single();
+      if (error) throw error;
+
+      let pin = null;
+      if (data.active !== false) {
+        pin = await ensureMusicianAccess(admin, weddingId, data.id);
+      } else {
+        await revokeMusicianAccess(admin, weddingId, data.id);
+      }
+
+      await writeAudit(admin, allowlisted, 'musician_upsert', weddingId, {
+        musicianId: data.id,
+        before,
+        after: data,
+        pinIssued: Boolean(pin),
+      });
+      return json({ musician: data, pin });
+    }
+
+    if (action === 'deactivate_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Musician id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_musicians')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Musician not found.' }, 404);
+      const { data, error } = await admin
+        .from('wedding_musicians')
+        .update({ active: false })
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+      await revokeMusicianAccess(admin, weddingId, id);
+      await writeAudit(admin, allowlisted, 'musician_deactivate', weddingId, {
+        musicianId: id,
+        before,
+        after: data,
+      });
+      return json({ musician: data });
+    }
+
+    if (action === 'delete_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Musician id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_musicians')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Musician not found.' }, 404);
+      await revokeMusicianAccess(admin, weddingId, id);
+      const { error } = await admin
+        .from('wedding_musicians')
+        .delete()
+        .eq('id', id)
+        .eq('wedding_id', weddingId);
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'musician_delete', weddingId, {
+        musicianId: id,
+        before,
+      });
+      return json({ removed: true });
+    }
+
     if (action === 'list_providers') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
@@ -2858,11 +3149,20 @@ async function handleRequest(req: Request) {
           .eq('wedding_id', weddingId);
       }
 
+      // Never persist the one-time plaintext PIN in the audit log; the owner
+      // still receives it in the HTTP response below.
+      const roleAccessAudit = roleAccess
+        ? {
+            role: roleAccess.role ?? role ?? null,
+            created: Boolean(roleAccess.pin),
+            revoked: roleAccess.revoked === true,
+          }
+        : null;
       await writeAudit(admin, allowlisted, 'provider_upsert', weddingId, {
         providerId: data.id,
         before,
         after: data,
-        roleAccess,
+        roleAccess: roleAccessAudit,
       });
       return json({ provider: data, roleAccess });
     }

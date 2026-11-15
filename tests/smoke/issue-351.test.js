@@ -6,15 +6,6 @@ import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.j
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #351 admin Drive Google Doc publication', () => {
-  it('maps and summarizes a Google Doc in the admin preview', () => {
-    const panel = read('src/admin/AdminDrivePanel.jsx');
-    expect(panel).toContain('googleDocTemplateToCartridge');
-    expect(panel).toContain('hashSourceText');
-    expect(panel).toContain('sourceTextHash');
-    expect(panel).toContain('cartridge: preview.cartridge');
-    expect(panel).not.toContain('Google Doc preview is read-only');
-  });
-
   it('publishes a Google Doc cartridge with source-hash binding', () => {
     const api = read('supabase/functions/admin_api/index.ts');
     expect(api).toContain("source.kind === 'json'");

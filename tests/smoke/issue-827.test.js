@@ -19,7 +19,7 @@ describe('issue #827 footer DJ Mark logo', () => {
     expect(landing).toContain('{partners.map((partner) => (');
     expect(landing).toContain('src={partner.logoUrl}');
     expect(landing).toContain('alt={partner.displayName}');
-    expect(landing).toContain('h-20 w-auto object-contain sm:h-24');
+    expect(landing).toContain('max-h-[60px] w-auto object-contain sm:max-h-20');
     expect(landing).toContain("displayName: 'DJ Mark'");
     expect(landing).toContain("displayName: 'DJ Szymoniak'");
   });

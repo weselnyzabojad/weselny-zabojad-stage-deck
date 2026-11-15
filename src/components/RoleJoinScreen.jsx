@@ -20,6 +20,7 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
   const [role, setRole] = useState(
     speechId ? 'speaker' : intent?.role && JOIN_ROLES.includes(intent.role) ? intent.role : 'mc',
   );
+  const [musicianId, setMusicianId] = useState(intent?.musicianId ?? '');
   const [pin, setPin] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
@@ -46,12 +47,16 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
       setError({ key: 'join.errors.pinRequired' });
       return;
     }
+    if (role === 'musician' && !musicianId.trim()) {
+      setError({ key: 'join.errors.musicianRequired' });
+      return;
+    }
 
     setBusy(true);
     setError(null);
     const result = speechId
       ? await joinSpeech({ roomCode: cleanRoom, speechId, pin })
-      : await joinRoom({ roomCode: cleanRoom, role, pin });
+      : await joinRoom({ roomCode: cleanRoom, role, pin, musicianId: musicianId.trim() || null });
     setBusy(false);
 
     if (!result.ok) {
@@ -129,7 +134,9 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
             </p>
           ) : (
             <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-3" role="radiogroup" aria-label={t('join.deviceRole')}>
-              {JOIN_ROLES.filter((id) => id !== 'speaker').map((id) => {
+              {JOIN_ROLES.filter(
+                (id) => id !== 'speaker' && (id !== 'musician' || role === 'musician'),
+              ).map((id) => {
                 const meta = ROLES[id];
                 const active = role === id;
                 return (
@@ -160,6 +167,22 @@ export default function RoleJoinScreen({ intent, onJoined, theme = 'night', onTo
               })}
             </div>
           )}
+          {!speechId && role === 'musician' ? (
+            <label className="mt-2 block font-heading text-[10px] font-semibold uppercase tracking-widest text-muted">
+              {t('join.musicianId')}
+              <input
+                value={musicianId}
+                onChange={(event) => {
+                  setMusicianId(event.target.value.trim());
+                  setError(null);
+                }}
+                autoComplete="off"
+                spellCheck={false}
+                placeholder={t('join.musicianPlaceholder')}
+                className="mt-1.5 w-full rounded-lg border border-line bg-page px-3 py-2 font-mono text-xs text-ink outline-none transition focus:border-brand-strong"
+              />
+            </label>
+          ) : null}
         </div>
 
         <div className="mt-4">

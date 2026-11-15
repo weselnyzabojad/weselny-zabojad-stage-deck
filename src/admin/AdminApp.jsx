@@ -36,8 +36,11 @@ import {
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
-import AdminDrivePanel from './AdminDrivePanel';
+import AdminHealthBar from './AdminHealthBar';
+import { ADMIN_BUTTON } from './adminUi';
+import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
+import AdminMusicians from './AdminMusicians';
 import AdminGamesPanel from './AdminGamesPanel';
 import AdminDocMigrationPanel from './AdminDocMigrationPanel';
 import AdminWeddingRoles from './AdminWeddingRoles';
@@ -427,6 +430,7 @@ function AdminAppContent() {
   const loadingRef = useRef(false);
   const [backendHealth, setBackendHealth] = useState(null);
   const [backendChecking, setBackendChecking] = useState(true);
+  const [healthRefresh, setHealthRefresh] = useState(0);
 
   const readOnly = backendHealth?.readOnly === true;
 
@@ -868,27 +872,31 @@ function AdminAppContent() {
             <button
               type="button"
               onClick={() => setPasswordOpen(true)}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink"
+              className={ADMIN_BUTTON.secondary}
             >
               Password
             </button>
             <button
               type="button"
-              onClick={() => load()}
+              onClick={() => {
+                setHealthRefresh((value) => value + 1);
+                load();
+              }}
               disabled={loading}
-              className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink disabled:opacity-50"
+              className={ADMIN_BUTTON.primary}
             >
               Refresh
             </button>
             <button
               type="button"
               onClick={signOut}
-              className="rounded border border-line px-2.5 py-1 text-muted"
+              className={ADMIN_BUTTON.ghost}
             >
               Sign out
             </button>
           </div>
         </div>
+        <AdminHealthBar refreshKey={healthRefresh} />
         <nav className="mx-auto mt-3 flex max-w-6xl gap-2 text-xs">
           {[
             ['weddings', 'Weddings'],
@@ -977,8 +985,8 @@ function AdminAppContent() {
               </h2>
             </div>
 
-            <div className="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-card p-3">
-              <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
+            <div className="flex flex-nowrap items-end gap-2 overflow-x-auto rounded-xl border border-line bg-card p-3">
+              <label className="min-w-[14rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Search
                 <input
                   value={query}
@@ -987,24 +995,24 @@ function AdminAppContent() {
                   className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 />
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              <label className="w-36 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Status
                 <select
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+                  className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="active">Active</option>
                   <option value="archived">Archived</option>
                   <option value="all">All</option>
                 </select>
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              <label className="w-40 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Role
                 <select
                   value={roleFilter}
                   onChange={(event) => setRoleFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+                  className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="">All roles</option>
                   {ROLE_IDS.map((role) => (
@@ -1014,13 +1022,7 @@ function AdminAppContent() {
               </label>
             </div>
 
-            <AdminDrivePanel
-              weddings={data?.weddings ?? []}
-              onRequestMfa={askMfa}
-              onPublished={() => load()}
-              onNotify={pushToast}
-              readOnly={readOnly}
-            />
+            <AdminWeddingFolders readOnly={readOnly} />
 
             <div className="space-y-3">
               {filteredWeddings.length === 0 ? (
@@ -1056,11 +1058,26 @@ function AdminAppContent() {
                         </button>
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
-                        {(wedding.roles ?? []).map((role) => (
-                          <span key={role} className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-brand-tint">
-                            {roleShort(role)}
-                          </span>
-                        ))}
+                        {ROLE_IDS.map((role) => {
+                          const filled = (wedding.roles ?? []).includes(role);
+                          return (
+                            <span
+                              key={role}
+                              aria-label={`${roleShort(role)}: ${filled ? 'filled' : 'missing'}`}
+                              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[9px] ${
+                                filled
+                                  ? 'border-emerald-800 bg-emerald-950/40 text-emerald-200'
+                                  : 'border-line bg-raised text-muted'
+                              }`}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={`h-1.5 w-1.5 rounded-full ${filled ? 'bg-emerald-400' : 'bg-line-strong'}`}
+                              />
+                              {roleShort(role)}
+                            </span>
+                          );
+                        })}
                       </div>
                       {wedding.vipWarning ? (
                         <p
@@ -1079,54 +1096,68 @@ function AdminAppContent() {
                         </p>
                       ) : null}
                     </div>
-                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                    <div className="flex flex-wrap items-start gap-1.5 text-[10px]">
                       <button
                         type="button"
                         onClick={() => handleRotate(wedding)}
                         disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         Rotate PINs
                       </button>
                       <button
                         type="button"
                         onClick={() => showQr(wedding)}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink"
+                        className={ADMIN_BUTTON.secondary}
                       >
                         QR cards
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePublishRevision(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 font-semibold text-ink disabled:opacity-40"
-                      >
-                        Replace cartridge
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRestorePrevious(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40"
-                      >
-                        Restore previous
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleArchive(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-amber-800 bg-amber-950/60 px-2 py-1 font-semibold text-amber-200 disabled:opacity-40"
-                      >
-                        Archive
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(wedding)}
-                        disabled={readOnly}
-                        className="rounded border border-alert/60 bg-alert/20 px-2 py-1 font-semibold text-alert-soft disabled:opacity-40"
-                      >
-                        Delete
-                      </button>
+                      <details className="relative">
+                        <summary className={`${ADMIN_BUTTON.secondary} cursor-pointer list-none`}>
+                          More actions
+                        </summary>
+                        <div
+                          role="menu"
+                          className="absolute right-0 z-banner mt-1 w-44 space-y-1 rounded-lg border border-line bg-card p-1.5 shadow-xl"
+                        >
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handlePublishRevision(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Replace cartridge
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleRestorePrevious(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Restore previous
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleArchive(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Archive
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleDelete(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.danger} w-full`}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </details>
                     </div>
                   </div>
                   <div className="mt-2 font-mono text-[9px] text-muted">
@@ -1139,6 +1170,11 @@ function AdminAppContent() {
                     onChanged={load}
                   />
                   <AdminServiceProviders
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onChanged={load}
+                  />
+                  <AdminMusicians
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
                     onChanged={load}

@@ -199,6 +199,9 @@ describe('issue #165 shared schema and semantic parity', () => {
     const witnessesDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'witnesses.json'), 'utf8'),
     );
+    const musiciansDomain = JSON.parse(
+      await readFile(path.join(ROOT, 'schema', 'domains', 'musicians.json'), 'utf8'),
+    );
     const venueDetailsDomain = JSON.parse(
       await readFile(path.join(ROOT, 'schema', 'domains', 'venue-details.json'), 'utf8'),
     );
@@ -221,6 +224,7 @@ describe('issue #165 shared schema and semantic parity', () => {
       stepsDomain,
       speechesDomain,
       witnessesDomain,
+      musiciansDomain,
       venueDetailsDomain,
       languagesDomain,
     ]);

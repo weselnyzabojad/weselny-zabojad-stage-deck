@@ -269,6 +269,32 @@ export async function challengeExistingFactor(code) {
   return verifyTotp(factor.id, code);
 }
 
+export async function checkServiceHealth() {
+  const config = getAdminConfig();
+  if (!config.configured) throw new Error('Supabase is not configured for this build.');
+
+  const session = await getAdminSession();
+  if (!session?.access_token) throw new Error('Admin session expired. Sign in again.');
+
+  const response = await fetchAdminEndpoint(`${config.functionsUrl}/service_health`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: config.anonKey,
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: '{}',
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data?.error || 'Health check failed.');
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
 export async function callAdmin(action, payload = {}) {
   const config = getAdminConfig();
   if (!config.configured) throw new Error('Supabase is not configured for this build.');
@@ -341,11 +367,6 @@ async function callAdminDrive(action, payload = {}) {
   return data;
 }
 
-export async function listDriveSources({ query = '', pageToken = null, pageSize = 20 } = {}) {
-  if (ADMIN_DEMO) return { files: [], nextPageToken: null };
-  return callAdminDrive('list', { query, pageToken, pageSize });
-}
-
 export async function listDriveChildren({
   parentId,
   name = '',
@@ -368,6 +389,21 @@ export async function listDriveChildren({
 export async function previewDriveSource(fileId) {
   if (ADMIN_DEMO) throw new Error('Google Drive preview is unavailable in demo mode.');
   return callAdminDrive('preview', { fileId });
+}
+
+export async function listDrivePermissions(fileId) {
+  if (ADMIN_DEMO) return { permissions: [] };
+  return callAdminDrive('list_permissions', { fileId });
+}
+
+export async function shareDriveFile(payload) {
+  if (ADMIN_DEMO) throw new Error('File sharing is unavailable in demo mode.');
+  return callAdminDrive('share_file', payload);
+}
+
+export async function revokeDrivePermission(payload) {
+  if (ADMIN_DEMO) throw new Error('File sharing is unavailable in demo mode.');
+  return callAdminDrive('revoke_permission', payload);
 }
 
 export async function listSpeeches(weddingId) {
@@ -534,24 +570,11 @@ export async function migrateSpeeches(payload) {
   return callAdmin('migrate_speeches', payload);
 }
 
-export async function checkDriveSource(fileId, { expectedVersion = '', expectedChecksum = '' } = {}) {
-  if (ADMIN_DEMO) return { changed: false, reason: 'unchanged', file: null };
-  return callAdminDrive('check', { fileId, expectedVersion, expectedChecksum });
-}
-
 export async function getRevisionContext(weddingId) {
   if (ADMIN_DEMO) {
     return { wedding: null, liveState: null, history: [] };
   }
   return callAdmin('revision_context', { weddingId });
-}
-
-export async function publishDriveRevision(payload) {
-  if (ADMIN_DEMO) {
-    const { demoMutate } = await import('./adminDemoApi.js');
-    demoMutate('publish');
-  }
-  return callAdmin('publish_drive', payload);
 }
 
 export async function restorePreviousRevision(weddingId, expectedRevision, revision = null) {
@@ -614,6 +637,54 @@ export async function confirmWeddingMc(weddingId, mode) {
   return callAdmin('confirm_mc', { weddingId, mode });
 }
 
+export async function listMusicians(weddingId) {
+  if (ADMIN_DEMO) {
+    return {
+      expected: true,
+      musicians: [
+        {
+          id: 'demo-musician-1',
+          name: 'Anna',
+          instrument: 'violin',
+          start_time: '15:00',
+          end_time: '21:00',
+          ceremony_required: true,
+          notes: 'Ceremony and dinner.',
+          active: true,
+        },
+      ],
+    };
+  }
+  return callAdmin('list_musicians', { weddingId });
+}
+
+export async function upsertMusician(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_upsert');
+    return { musician: { id: payload.id ?? 'demo-musician-1', ...payload } };
+  }
+  return callAdmin('upsert_musician', payload);
+}
+
+export async function deactivateMusician(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_deactivate');
+    return { musician: { id, active: false } };
+  }
+  return callAdmin('deactivate_musician', { weddingId, id });
+}
+
+export async function deleteMusician(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_delete');
+    return { removed: true };
+  }
+  return callAdmin('delete_musician', { weddingId, id });
+}
+
 export async function listProviders(weddingId) {
   if (ADMIN_DEMO) return { providers: [] };
   return callAdmin('list_providers', { weddingId });
@@ -652,6 +723,7 @@ export async function listVipDjs() {
       vipDjs: [
         { id: 'dj_mark', display_name: 'DJ Mark', active: true, package_default: 'HOST_AND_DJ_VIP' },
         { id: 'dj_szymoniak', display_name: 'DJ Szymoniak', active: true, package_default: null },
+        { id: 'dj_zaremba', display_name: 'DJ Zaremba', active: true, package_default: null },
       ],
     };
   }

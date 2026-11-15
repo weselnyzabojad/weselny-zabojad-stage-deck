@@ -39,6 +39,13 @@ import {
   speechDocCreationAuthorization,
   speechDocFilename,
 } from '../_shared/speechDoc.js';
+import {
+  findPermissionByEmail,
+  isOwnerPermission,
+  normalizeShareEmail,
+  resolveSecretsWeddingId,
+  sanitizeShareMessage,
+} from '../_shared/driveSharing.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
 const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
@@ -46,12 +53,29 @@ const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
+  apiBase: Deno.env.get('GOOGLE_DRIVE_API_BASE') ?? '',
 });
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+async function writeShareAudit(
+  admin: any,
+  allowlisted: any,
+  action: string,
+  fileId: string,
+  detail: Record<string, unknown>,
+) {
+  await admin.from('admin_audit_log').insert({
+    actor_id: allowlisted.user_id,
+    actor_email: allowlisted.email,
+    action,
+    target: fileId,
+    detail,
   });
 }
 
@@ -130,8 +154,7 @@ async function loadWeddingCartridge(admin: any, weddingId: string) {
 
 // The admin wedding summary does not carry the Drive folder id. When the panel
 // omits it, resolve the wedding folder from the cartridge source file parent.
-async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {
-  const provided = typeof explicit === 'string' ? explicit.trim() : '';
+async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: unknown) {  const provided = typeof explicit === 'string' ? explicit.trim() : '';
   if (provided) return provided;
   const { data } = await admin
     .from('weddings')
@@ -146,6 +169,18 @@ async function resolveWeddingFolderId(admin: any, weddingId: string, explicit: u
   } catch {
     return '';
   }
+}
+
+async function requireWritableWedding(admin: any, weddingId: string) {
+  const { data, error } = await admin
+    .from('weddings')
+    .select('wedding_id, archived_at')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return { error: 'Wedding not found.', status: 404 };
+  if (data.archived_at) return { error: 'Archived weddings are read-only.', status: 409 };
+  return { wedding: data };
 }
 
 function expectedGameQuestionFolder(source: any, folderId: string | null) {
@@ -208,9 +243,34 @@ async function handleRequest(req: Request) {
         'create_game_question_doc',
         'rewrite_game_question_doc_columns',
         'parse_game_question_doc',
+        'list_permissions',
+        'share_file',
+        'revoke_permission',
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
+    }
+
+    if (
+      [
+        'create_speech_doc',
+        'rename_speech_doc',
+        'parse_speech_doc',
+        'create_game_question_doc',
+        'rewrite_game_question_doc_columns',
+        'parse_game_question_doc',
+      ].includes(action)
+    ) {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (weddingId) {
+        const writable = await requireWritableWedding(admin, weddingId);
+        if (writable.error) {
+          return json(
+            { error: writable.error, code: 'wedding_archived' },
+            writable.status,
+          );
+        }
+      }
     }
 
     if (action === 'children') {
@@ -266,7 +326,6 @@ async function handleRequest(req: Request) {
       const order = Number(body?.order);
       if (
         !weddingId ||
-        !weddingFolderId ||
         !speechId ||
         !speakerName ||
         !Number.isInteger(order) ||
@@ -293,7 +352,24 @@ async function handleRequest(req: Request) {
       if (!authorization.allowed) {
         return json({ error: authorization.error, code: authorization.code }, 409);
       }
-      const folder = await connector.ensureSpeechFolder({ weddingFolderId, weddingId });
+      const resolvedWeddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        weddingFolderId,
+      );
+      if (!resolvedWeddingFolderId) {
+        return json(
+          {
+            error: 'The wedding Drive folder could not be resolved.',
+            code: 'missing_wedding_folder',
+          },
+          409,
+        );
+      }
+      const folder = await connector.ensureSpeechFolder({
+        weddingFolderId: resolvedWeddingFolderId,
+        weddingId,
+      });
       const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const text = buildSpeechDocTemplate({
         speakerName,
@@ -343,6 +419,23 @@ async function handleRequest(req: Request) {
       if (!weddingId || !speechId || !fileIdValue || !Number.isInteger(order) || !speakerName) {
         return json({ error: 'Complete rename metadata is required.' }, 400);
       }
+      const { data: speechRecord } = await admin
+        .from('speech_records')
+        .select('drive_doc_id, drive_folder_id')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle();
+      if (!speechRecord || speechRecord.drive_doc_id !== fileIdValue) {
+        return json({ error: 'The speech Doc id does not match this wedding.', code: 'file_mismatch' }, 409);
+      }
+      const source = await connector.getFileMetadata(fileIdValue);
+      if (
+        !speechRecord.drive_folder_id ||
+        !Array.isArray(source?.parents) ||
+        !source.parents.includes(speechRecord.drive_folder_id)
+      ) {
+        return json({ error: 'The speech Doc is outside the expected folder.', code: 'wrong_folder' }, 422);
+      }
       const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const file = await connector.renameFile({ fileId: fileIdValue, name });
       await admin
@@ -373,8 +466,24 @@ async function handleRequest(req: Request) {
       if (!weddingId || !speechId || !fileIdValue) {
         return json({ error: 'weddingId, speechId and fileId are required.' }, 400);
       }
+      const { data: speechRecord } = await admin
+        .from('speech_records')
+        .select('drive_doc_id, drive_folder_id')
+        .eq('wedding_id', weddingId)
+        .eq('id', speechId)
+        .maybeSingle();
+      if (!speechRecord || speechRecord.drive_doc_id !== fileIdValue) {
+        return json({ error: 'The speech Doc id does not match this wedding.', code: 'file_mismatch' }, 409);
+      }
       const progress = ['fetch', 'parse', 'validate'];
       const source = await connector.readSource(fileIdValue);
+      if (
+        !speechRecord.drive_folder_id ||
+        !Array.isArray(source?.file?.parents) ||
+        !source.file.parents.includes(speechRecord.drive_folder_id)
+      ) {
+        return json({ error: 'The speech Doc is outside the expected folder.', code: 'wrong_folder' }, 422);
+      }
       const parsed = parseSpeechDoc(source.text, {
         speakerLanguage,
         mcLanguage,
@@ -569,18 +678,32 @@ async function handleRequest(req: Request) {
         .eq('wedding_id', weddingId)
         .eq('game_type', gameType)
         .maybeSingle();
-      const fileIdValue =
-        typeof body?.fileId === 'string' && body.fileId.trim()
-          ? body.fileId.trim()
-          : current?.drive_doc_id ?? '';
-      if (!fileIdValue) {
-        return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
+      if (!current?.drive_doc_id) {
+        return json({ error: 'A stored question Doc is required.', code: 'missing_file_id' }, 409);
       }
+      if (
+        typeof body?.fileId === 'string' &&
+        body.fileId.trim() &&
+        body.fileId.trim() !== current.drive_doc_id
+      ) {
+        return json(
+          { error: 'The question Doc id does not match this wedding.', code: 'file_mismatch' },
+          409,
+        );
+      }
+      if (
+        typeof body?.folderId === 'string' &&
+        body.folderId.trim() &&
+        body.folderId.trim() !== current.drive_folder_id
+      ) {
+        return json(
+          { error: 'The question Doc folder does not match the stored folder.', code: 'folder_mismatch' },
+          409,
+        );
+      }
+      const fileIdValue = current.drive_doc_id;
       const source = await connector.readSource(fileIdValue);
-      const folderId =
-        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
-        current?.drive_folder_id ||
-        null;
+      const folderId = current.drive_folder_id || null;
       if (folderId && !expectedGameQuestionFolder(source, folderId)) {
         await admin.from('game_question_logs').insert({
           wedding_id: weddingId,
@@ -673,17 +796,34 @@ async function handleRequest(req: Request) {
         .eq('wedding_id', weddingId)
         .eq('game_type', gameType)
         .maybeSingle();
-      const fileIdValue =
-        typeof body?.fileId === 'string' && body.fileId.trim()
-          ? body.fileId.trim()
-          : current?.drive_doc_id ?? '';
+      if (!current?.drive_doc_id) {
+        return json({ error: 'A stored question Doc is required.', code: 'missing_file_id' }, 409);
+      }
+      if (
+        typeof body?.fileId === 'string' &&
+        body.fileId.trim() &&
+        body.fileId.trim() !== current.drive_doc_id
+      ) {
+        return json(
+          { error: 'The question Doc id does not match this wedding.', code: 'file_mismatch' },
+          409,
+        );
+      }
+      if (
+        typeof body?.folderId === 'string' &&
+        body.folderId.trim() &&
+        body.folderId.trim() !== current.drive_folder_id
+      ) {
+        return json(
+          { error: 'The question Doc folder does not match the stored folder.', code: 'folder_mismatch' },
+          409,
+        );
+      }
+      const fileIdValue = current.drive_doc_id;
+      const folderId = current.drive_folder_id || null;
       if (!fileIdValue) {
         return json({ error: 'A question Doc id is required.', code: 'missing_file_id' }, 400);
       }
-      const folderId =
-        (typeof body?.folderId === 'string' && body.folderId.trim()) ||
-        current?.drive_folder_id ||
-        null;
       if (!folderId) {
         return json(
           {
@@ -844,6 +984,123 @@ async function handleRequest(req: Request) {
           : checksumChanged
             ? 'checksum'
             : 'unchanged',
+      });
+    }
+
+    if (action === 'list_permissions' || action === 'share_file' || action === 'revoke_permission') {
+      const target = await resolveSecretsWeddingId({
+        fileId,
+        getFileMetadata: connector.getFileMetadata,
+      });
+      if (!target.ok) {
+        return json({ error: target.error, code: target.code }, target.status);
+      }
+
+      if (action === 'list_permissions') {
+        const permissions = await connector.listPermissions(fileId);
+        return json({
+          ok: true,
+          action,
+          checkedAt: new Date().toISOString(),
+          fileId,
+          weddingId: target.weddingId,
+          permissions,
+        });
+      }
+
+      if (action === 'share_file') {
+        const email = normalizeShareEmail(body?.email);
+        if (!email) return json({ error: 'Enter a valid email address.' }, 400);
+
+        const permissions = await connector.listPermissions(fileId);
+        const existing = findPermissionByEmail(permissions, email);
+        if (existing) {
+          if (existing.role !== 'reader') {
+            return json(
+              {
+                error: 'This email already has a non-reader permission. Lower it in Drive first.',
+                code: 'existing_permission_not_reader',
+                permission: existing,
+              },
+              409,
+            );
+          }
+          return json({
+            ok: true,
+            action,
+            shared: false,
+            existing: true,
+            fileId,
+            weddingId: target.weddingId,
+            permission: existing,
+          });
+        }
+
+        let permission;
+        try {
+          permission = await connector.shareFile({
+            fileId,
+            email,
+            role: 'reader',
+            notify: body?.notify !== false,
+            message: sanitizeShareMessage(body?.message),
+          });
+        } catch (error: any) {
+          if (error?.code === 'drive_permission_denied' || error?.status === 403) {
+            return json(
+              {
+                error:
+                  'Only files created or opened by the Stage Deck service account can be shared.',
+                code: 'drive_share_not_app_created',
+              },
+              403,
+            );
+          }
+          throw error;
+        }
+
+        await writeShareAudit(admin, allowlisted, 'drive_share', fileId, {
+          weddingId: target.weddingId,
+          email,
+          permissionId: permission?.id ?? null,
+        });
+        return json({
+          ok: true,
+          action,
+          shared: true,
+          fileId,
+          weddingId: target.weddingId,
+          permission,
+        });
+      }
+
+      const permissionId =
+        typeof body?.permissionId === 'string' ? body.permissionId.trim() : '';
+      if (!permissionId) return json({ error: 'A permission id is required.' }, 400);
+
+      const permissions = await connector.listPermissions(fileId);
+      const permission = permissions.find((entry) => entry.id === permissionId);
+      if (!permission) {
+        return json({ error: 'Permission not found.', code: 'drive_permission_not_found' }, 404);
+      }
+      if (isOwnerPermission(permission)) {
+        return json(
+          { error: 'The file owner permission cannot be removed.', code: 'drive_owner_permission' },
+          403,
+        );
+      }
+
+      await connector.deletePermission({ fileId, permissionId });
+      await writeShareAudit(admin, allowlisted, 'drive_unshare', fileId, {
+        weddingId: target.weddingId,
+        permissionId,
+      });
+      return json({
+        ok: true,
+        action,
+        fileId,
+        weddingId: target.weddingId,
+        removedPermissionId: permissionId,
       });
     }
 

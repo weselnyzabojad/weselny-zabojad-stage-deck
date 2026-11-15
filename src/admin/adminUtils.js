@@ -101,6 +101,13 @@ export function buildRoleLink(baseUrl, roomCode, role) {
   return `${base}/${String(roomCode ?? '').trim()}/${role}`;
 }
 
+// Musicians use the shared musician role plus an explicit registry id (#992).
+export function buildMusicianLink(baseUrl, roomCode, musicianId) {
+  return `${buildRoleLink(baseUrl, roomCode, 'musician')}?musician=${encodeURIComponent(
+    String(musicianId ?? '').trim(),
+  )}`;
+}
+
 // COMPLEX speakers use the speaker shell plus an explicit speech id (issue #926).
 export function buildSpeechLink(baseUrl, roomCode, speechId) {
   const base = String(baseUrl ?? '').replace(/\/+$/, '');

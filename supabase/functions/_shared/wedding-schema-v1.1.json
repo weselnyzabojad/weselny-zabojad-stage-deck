@@ -108,6 +108,9 @@
     "witnesses": {
       "$ref": "https://weselnyzabojad.example/schemas/domains/witnesses.json#/properties/witnesses"
     },
+    "musicians": {
+      "$ref": "https://weselnyzabojad.example/schemas/domains/musicians.json#/properties/musicians"
+    },
     "liveSyncState": {
       "$ref": "#/$defs/liveSyncState"
     },

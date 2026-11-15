@@ -11,20 +11,10 @@ describe('issue #534 accessible admin confirmations', () => {
     for (const file of [
       'src/admin/AdminApp.jsx',
       'src/admin/AdminDialogs.jsx',
-      'src/admin/AdminDrivePanel.jsx',
       'src/admin/AdminServiceProviders.jsx',
     ]) {
       expect(read(file), file).not.toMatch(/window\.(confirm|prompt)/);
     }
-  });
-
-  it('uses the shared dialog for Drive publishing', () => {
-    const panel = read('src/admin/AdminDrivePanel.jsx');
-    expect(panel).toContain("import { AdminConfirmDialog } from './AdminDialogs'");
-    expect(panel).toContain('<AdminConfirmDialog');
-    expect(panel).toContain('confirmPublish');
-    expect(panel).toContain('publishConfirmOpen');
-    expect(panel).not.toContain('window.confirm');
   });
 
   it('uses the shared dialog with text confirmation for provider deletion', () => {

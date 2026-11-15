@@ -187,6 +187,13 @@ Repeat for `admin_drive`. A `404` means the function is not deployed.
    `https://www.googleapis.com/auth/drive.file` scope for files the service
    account creates or opens, plus read access to the wedding tree. Do not grant
    full `drive` scope unless an existing deployment already requires it.
+
+   **Sharing limit.** The admin sharing dialog can only grant `reader` access to
+   files the service account created or opened (the `drive.file` scope), and
+   only files below `secrets/<weddingId>/`. Customer-visible files under
+   `YYYY/Month/<weddingId>/` and files outside the service account's scope are
+   rejected. Folder-wide sharing, public links and writer/commenter roles are
+   not offered.
 7. Root folder:
 
 ```text
@@ -353,7 +360,26 @@ supabase functions deploy get_song_request_status
 
 ---
 
-## 8. Secret-handling rules
+## 8. Service health secrets
+
+The admin monitoring bar probes the production deck and the Netlify site
+server-side through `service_health`:
+
+```sh
+supabase secrets set \
+  PUBLIC_DECK_URL=https://deck.weselnyzabojad.pl/ \
+  NETLIFY_API_TOKEN=your-read-only-personal-access-token \
+  NETLIFY_SITE_ID=your-netlify-site-id
+# Optional: NETLIFY_API_BASE=https://api.netlify.com/api/v1
+```
+
+`NETLIFY_API_TOKEN` is a read-only personal access token used only by the Edge
+Function; it is never exposed through `VITE_*` or the browser. Missing
+configuration renders the Netlify card as `down` with an explicit detail.
+
+---
+
+## 9. Secret-handling rules
 
 - Never commit `.env`, `.env.local` or any `.env.*` file.
 - Never put secrets behind `VITE_*`.
@@ -366,7 +392,7 @@ supabase functions deploy get_song_request_status
 
 ---
 
-## 9. Related files
+## 10. Related files
 
 - `.env.example` — public template and secret-name reference.
 - `project.md` — architecture and product decisions.

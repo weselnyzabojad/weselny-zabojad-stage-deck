@@ -148,7 +148,7 @@ describe('issue #762 dev step navigator', () => {
     expect(deck).toContain('currentStepId={liveState.active_step_id}');
     expect(deck).toContain('devJumpToStep(nextStepId)');
     expect(deck).toContain('setOverlay(null);');
-    expect(deck.match(/\{devViewSwitcher\}/g)?.length).toBe(6);
+    expect(deck.match(/\{devViewSwitcher\}/g)?.length).toBe(7);
   });
 
   it('documents the step preview workflow', () => {

@@ -42,7 +42,6 @@ describe('issue #372 admin backend preflight and read-only mode', () => {
     expect(app).toContain('guardReadOnly');
     expect(app).toContain('disabled={readOnly}');
     expect(app).toContain('readOnly={readOnly}');
-    expect(read('src/admin/AdminDrivePanel.jsx')).toContain('readOnly || !targetWedding');
   });
 
   it('fails closed on the server and exposes Drive status', () => {

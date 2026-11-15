@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import SyncStatusBadge from './SyncStatusBadge';
 import UtilityControlGroup from './UtilityControlGroup';
 import LanguageToggle from './LanguageToggle';
@@ -69,13 +70,13 @@ function saveSteps(wedding, steps) {
 
 function TimeField({ label, value, onChange }) {
   return (
-    <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+    <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
       {label}
       <input
         type="time"
         value={value ?? ''}
         onChange={(event) => onChange(event.target.value)}
-        className="rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
+        className="rounded-lg border border-line/70 bg-card px-2.5 py-2 font-mono text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20"
       />
     </label>
   );
@@ -84,17 +85,17 @@ function TimeField({ label, value, onChange }) {
 function CourseCard({ label, value, mode, onTime, onMode }) {
   const { t } = useI18n();
   return (
-    <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5">
+    <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-line/70 bg-page/60 p-4">
       <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
         {label}
       </h3>
       <TimeField label={t('venueManager.time')} value={value} onChange={onTime} />
-      <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+      <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
         {t('venueManager.serviceModeLabel')}
         <select
           value={mode ?? 'TABLE_SERVICE'}
           onChange={(event) => onMode(event.target.value)}
-          className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
+          className="rounded-lg border border-line/70 bg-card px-2.5 py-2 text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20"
         >
           <option value="TABLE_SERVICE">{t('mandatory.serviceMode.TABLE_SERVICE')}</option>
           <option value="BUFFET">{t('mandatory.serviceMode.BUFFET')}</option>
@@ -191,12 +192,12 @@ export default function VenueManagerView({
     <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
       <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
 
-      <section className="rounded-xl border border-line bg-card p-3 shadow-lg sm:p-4">
+      <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
           {t('venueManager.mandatorySteps')}
         </h2>
 
-        <div className="mt-2.5 grid gap-2.5 sm:mt-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
+        <div className="mt-2.5 grid gap-3 sm:mt-4 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {courses.map((course, index) => (
             <div key={course.id ?? index} className="relative">
               <CourseCard
@@ -226,18 +227,18 @@ export default function VenueManagerView({
             + {t('venueManager.addCourse')}
           </button>
 
-          <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5 sm:col-span-2 lg:col-span-1">
+          <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-line/70 bg-page/60 p-4 sm:col-span-2 lg:col-span-1">
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
               {t('venueManager.cakeService')}
             </h3>
-            <label className="flex flex-col gap-0.5 text-[10px] uppercase tracking-wider text-muted">
+            <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
               {t('venueManager.cakeService')}
               <select
                 value={settings.cakeServiceMode ?? 'KITCHEN_RETURN'}
                 onChange={(event) =>
                   update({ ...settings, cakeServiceMode: event.target.value })
                 }
-                className="rounded border border-line bg-card px-2 py-1 text-xs text-ink"
+                className="rounded-lg border border-line/70 bg-card px-2.5 py-2 text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20"
               >
                 <option value="KITCHEN_RETURN">{t('venueManager.cake.KITCHEN_RETURN')}</option>
                 <option value="CUT_IN_PLACE">{t('venueManager.cake.CUT_IN_PLACE')}</option>
@@ -245,7 +246,7 @@ export default function VenueManagerView({
             </label>
           </div>
 
-          <div className="flex min-w-0 flex-col gap-2 rounded-lg border border-line bg-page/60 p-2.5 sm:col-span-2 lg:col-span-1">
+          <div className="flex min-w-0 flex-col gap-3 rounded-xl border border-line/70 bg-page/60 p-4 sm:col-span-2 lg:col-span-1">
             <h3 className="font-heading text-xs font-bold uppercase tracking-wider text-ink">
               {t('venueManager.closure')}
             </h3>
@@ -334,25 +335,22 @@ export default function VenueManagerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
-        right={null}
-      />
-
-      <SecondaryControlBar
-        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
-        center={(
-          <>
+        right={(
+          <StatusMenu active={speechMode !== 'OFF'}>
             <ChildrenExpectedBadge wedding={wedding} inline />
             <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-          </>
-        )}
-        right={(
-          <>
             <UtilityControlGroup>
               <LanguageToggle variant="desktop" />
               <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
             </UtilityControlGroup>
-          </>
+          </StatusMenu>
         )}
+      />
+
+      <SecondaryControlBar
+        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
+        center={null}
+        right={null}
       />
 
       <main className="flex-1 p-4">{body}</main>

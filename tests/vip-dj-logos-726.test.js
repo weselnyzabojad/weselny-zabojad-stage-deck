@@ -11,7 +11,7 @@ const exists = (path) => existsSync(new URL(`../${path}`, import.meta.url));
 
 describe('issue #726 VIP DJ logos', () => {
   it('keeps the seeded registry and accepts registered identities on VIP packages', () => {
-    expect(VIP_DJS.map((dj) => dj.id)).toEqual(['dj_mark', 'dj_szymoniak']);
+    expect(VIP_DJS.map((dj) => dj.id)).toEqual(['dj_mark', 'dj_szymoniak', 'dj_zaremba']);
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_VIP' })).toBe('vip');
     expect(djDetailTier({ servicePackage: 'HOST_AND_DJ_STANDARD' })).toBe('standard');
     expect(
