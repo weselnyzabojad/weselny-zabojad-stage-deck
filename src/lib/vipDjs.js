@@ -17,6 +17,14 @@ export const VIP_DJS = [
     tier: 'VIP',
     defaultForPackage: null,
   },
+  {
+    id: 'dj_zaremba',
+    displayName: 'DJ Zaremba',
+    phone: 'TODO_OWNER_PHONE',
+    instagram: 'TODO_OWNER_INSTAGRAM',
+    tier: 'VIP',
+    defaultForPackage: null,
+  },
 ];
 
 const VIP_IDS = new Set(VIP_DJS.map((dj) => dj.id));

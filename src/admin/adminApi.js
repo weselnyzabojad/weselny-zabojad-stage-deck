@@ -723,6 +723,7 @@ export async function listVipDjs() {
       vipDjs: [
         { id: 'dj_mark', display_name: 'DJ Mark', active: true, package_default: 'HOST_AND_DJ_VIP' },
         { id: 'dj_szymoniak', display_name: 'DJ Szymoniak', active: true, package_default: null },
+        { id: 'dj_zaremba', display_name: 'DJ Zaremba', active: true, package_default: null },
       ],
     };
   }
