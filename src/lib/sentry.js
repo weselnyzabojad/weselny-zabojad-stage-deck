@@ -83,3 +83,33 @@ export function captureAppError(
     return false;
   }
 }
+
+// Reports an admin service-health transition with identifiers only (issue
+// #980). No provider detail, email or token is sent; `initSentry` stays
+// production-only, so local dev and demo builds never emit an event.
+export function captureHealthFailure(
+  { providerId, providerName = providerId, status = 'down', httpStatus = null } = {},
+  sdk = Sentry,
+) {
+  if (!initialized || !providerId) return false;
+
+  try {
+    sdk.captureException(new Error(`Admin service health failed: ${providerName}`), {
+      tags: {
+        scope: 'admin_health',
+        provider: String(providerId),
+        health_status: String(status),
+      },
+      contexts: {
+        app: {
+          providerId: String(providerId),
+          healthStatus: String(status),
+          httpStatus: httpStatus == null ? null : String(httpStatus),
+        },
+      },
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}

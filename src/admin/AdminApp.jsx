@@ -36,6 +36,7 @@ import {
 } from './adminUtils';
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
+import AdminHealthBar from './AdminHealthBar';
 import AdminDrivePanel from './AdminDrivePanel';
 import AdminServiceProviders from './AdminServiceProviders';
 import AdminGamesPanel from './AdminGamesPanel';
@@ -427,6 +428,7 @@ function AdminAppContent() {
   const loadingRef = useRef(false);
   const [backendHealth, setBackendHealth] = useState(null);
   const [backendChecking, setBackendChecking] = useState(true);
+  const [healthRefresh, setHealthRefresh] = useState(0);
 
   const readOnly = backendHealth?.readOnly === true;
 
@@ -874,7 +876,10 @@ function AdminAppContent() {
             </button>
             <button
               type="button"
-              onClick={() => load()}
+              onClick={() => {
+                setHealthRefresh((value) => value + 1);
+                load();
+              }}
               disabled={loading}
               className="rounded border border-line-strong bg-raised px-2.5 py-1 font-semibold text-ink disabled:opacity-50"
             >
@@ -889,6 +894,7 @@ function AdminAppContent() {
             </button>
           </div>
         </div>
+        <AdminHealthBar refreshKey={healthRefresh} />
         <nav className="mx-auto mt-3 flex max-w-6xl gap-2 text-xs">
           {[
             ['weddings', 'Weddings'],
