@@ -7545,3 +7545,66 @@ derived from the active view; the policy value still comes from
 | 1 | [#1083](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1083) | Hide the pill on all DJ Booth queue surfaces, preserve MC/DJ + MC and Music Policy | - |
 
 **Open questions.** None.
+
+### 17.91 DJ vendor presence bars replace the end-hour lane (decision, 2026-11-15)
+
+Replace the top `PAS ZAKOŃCZEŃ` end-hour lane in the DJ Booth with a stack of
+horizontal vendor presence bars under the central `BIEŻĄCY KROK` card. Each bar
+shows one vendor's name, role and `start–end` window; rows vanish once the live
+event clock passes their end time, and the whole stack disappears when none
+remain.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. Presence rows
+are derived from the existing `mediaTeam` and `musicians.items` cartridge fields
+through `buildEndHours`.
+
+**Feature scope.**
+
+- **Placement** — add a current-column footer slot to `TimelineFocusStack`,
+  rendered directly after the central current card. Only the DJ view fills it, so
+  the bars match the `BIEŻĄCY KROK` column width and sit above `NOTATKI SETU`.
+- **Presence stack** — one horizontal bar per vendor with name, role,
+  `start–end`, soft rounded border and an active/upcoming status dot.
+- **Filtering** — require both start and end; show upcoming and active rows;
+  hide rows once `now > end`; handle cross-midnight windows.
+- **Clock** — compare against the live event clock (`clock.nowClock`), not the
+  drift-adjusted projected timeline.
+- **Empty state** — render nothing at all when no row qualifies.
+- **Cleanup** — remove `DjEndHourLane` from both DJ layouts and delete its
+  obsolete `dj.endHourLane.*` keys.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ Booth wide | Lane removed; presence bars under the central current card |
+| DJ Booth compact | Lane removed; presence bars under the current card |
+| DJ Mark / DJ VIP / DJ Szymoniak / DJ Zaremba | Same behaviour |
+| DJ Standard | `EndHoursCard` unchanged |
+| MC Master and all other roles | No change |
+| Timeline, drift, anchors, exports | Unchanged; presence is presentation-only |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; existing cartridge fields only |
+| Upcoming vendors | Shown before start with an upcoming status |
+| Required data | Both `startTime` and `endTime` |
+| Clock | Live event clock (`clock.nowClock`) |
+| Auto-hide boundary | Visible while `now ≤ end`; hidden once `now > end` |
+| Compact layout | Presence bars included |
+| Section title | Small localized label, hidden with the stack |
+| Placement mechanism | Current-column footer slot on `TimelineFocusStack` |
+| Old lane | Component and i18n keys removed |
+| Standard DJ | Unchanged |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1084](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1084) | Remove the old lane, add the footer slot, build the presence stack and live filtering, update tests/i18n | - |
+
+**Open questions.** None.
