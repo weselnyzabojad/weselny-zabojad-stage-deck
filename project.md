@@ -6521,4 +6521,92 @@ moved or exposed below the customer-visible wedding folder.
 
 **Tracking.** [#967](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/967), [#968](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/968), [#969](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/969).
 
+### 17.75 Doc-authorized Drive folder creation (decision, 2026-11-15)
+
+Folder or Doc creation must be triggered by a value read from the wedding
+Google Doc, mapped into the cartridge during parse, and executed only by an
+explicit admin action. Import, parse, publish, read and client-supplied flags
+never create Drive data. This applies equally to Test Wiedzy, Test Zgodności and
+speech Docs.
+
+The current implementation trusts the admin payload: `create_game_question_doc`
+accepts `enabled` from the client and `create_speech_doc` creates folders
+whenever the form is complete. This decision replaces that trigger with the
+Doc-sourced authorization below.
+
+**Current field audit.**
+
+| Target | Doc value | Cartridge today | Gap |
+| --- | --- | --- | --- |
+| Test Wiedzy / Test Zgodności | `## GAMES` → `Requested` | Collapsed to boolean `steps[].game.enabled`; `UNDECIDED` behaves like `YES` | No field preserves `YES` / `NO` / `UNDECIDED`, so creation cannot distinguish consent from undecided |
+| Speeches | none | `speechMode` exists but is admin-only (`no` in the field map) | The template has no `Speech mode`, so no Doc value can authorize creation |
+
+**Google Doc contract.**
+
+- `## GAMES` → `Requested` maps to `steps[].game.requested` with exactly
+  `YES`, `NO` or `UNDECIDED`. Only `YES` authorizes creation; `NO` and
+  `UNDECIDED` block it. Missing or invalid values warn and never infer consent.
+- `## SPEECHES` gains `Speech mode: OFF | LIGHT | COMPLEX` and maps to the
+  existing `speechMode`. The Doc is authoritative; the admin control becomes
+  read-only. Only `COMPLEX` authorizes speech Doc creation. Missing or invalid
+  values warn and block creation without a silent default.
+- `steps[].game.enabled` keeps its runtime meaning (`YES` / `UNDECIDED` visible,
+  `NO` hidden); it is not the creation gate. Existing cartridges without
+  `requested` stay readable but cannot create a Doc until republished with the
+  value.
+- `## SPEECHES` table rows stay documentation only; no `speeches[]` array is
+  mapped into the cartridge.
+
+**Creation boundary.**
+
+- `create_game_question_doc` loads the stored cartridge and requires
+  `steps[].game.requested === 'YES'` before resolving a folder or creating a
+  Doc; the payload `enabled` flag is ignored for authorization.
+- `create_speech_doc` loads the stored cartridge and requires
+  `speechMode === 'COMPLEX'` before resolving a folder or creating a Doc.
+- Rejected requests return before any Drive call and create no folder or file.
+- The admin UI disables Create and states why, but the Edge check is
+  authoritative.
+- The explicit, confirmed #969 migration remains the only non-create admin
+  action allowed to ensure target folders; it is still owner-triggered.
+- Path resolution and idempotent reuse stay owned by the #968 helper:
+  `<weddingId>/games/` is customer-visible; speech and Zgodności folders live
+  under the sibling `secrets/<weddingId>/` root.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin game panels | Show Doc-sourced `Requested`; Create only for `YES`; explain `NO` / `UNDECIDED` / missing |
+| Admin speech panel | Show Doc-sourced mode read-only; Create only for `COMPLEX`; explain `OFF` / `LIGHT` / missing |
+| Edge functions | Validate stored cartridge before any Drive side effect; ignore client authorization flags |
+| MC / Speaker / DJ / Photographer / Venue / Song Request | No visual or behavioural change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Trigger | Doc value mapped into the cartridge; admin action performs the side effect |
+| Games | `Requested` enum; only `YES` authorizes creation |
+| Speeches | `Speech mode` enum; only `COMPLEX` authorizes creation |
+| Authority | Doc wins; admin speech mode is read-only |
+| Missing values | Warn and block; never infer consent or default silently |
+| Server check | Stored cartridge is authoritative; client flags are not trusted |
+| Side effects | No folder/Doc creation before authorization or on parse/publish/read |
+| Paths | Keep the #968 customer/private boundary and idempotent folder helper |
+| Existing Docs | Remain linked; authorized retries reuse folders and Docs |
+| Other roles | No change |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972) | Map `## GAMES` `Requested` to `steps[].game.requested`; schema, parser, template, field map and fixtures | - |
+| 2 | [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973) | Add `Speech mode` to `## SPEECHES` and map it to `speechMode`; template, field map and fixtures | - |
+| 3 | [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974) | Server-side authorization and admin gating for games and speeches; no Drive side effect before the Doc check | #972, #973, #968 |
+
+**Open questions.** None.
+
+**Tracking.** [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972), [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973), [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974).
+
 
