@@ -36,7 +36,7 @@ const POLISHED_VARIANTS = {
     status: 'done',
   },
   current: {
-    card: 'timeline-focus-current rounded-2xl border-2 border-brand-strong bg-card shadow-lg ring-1 ring-brand-strong/40',
+    card: 'timeline-focus-current rounded-2xl border-2 border-brand-strong bg-card shadow-2xl ring-2 ring-brand-strong/50',
     chip: 'border-brand-strong/60 bg-brand/15 text-brand-soft shadow-sm',
     status: 'active',
   },
@@ -131,7 +131,11 @@ export default function StageStepCard({
               </span>
             ) : null}
           </div>
-          <div className="mt-1 line-clamp-2 break-words font-heading text-sm font-semibold text-ink">
+          <div
+            className={`mt-1 line-clamp-2 break-words font-heading text-ink ${
+              variant === 'current' ? 'text-base font-bold' : 'text-sm font-semibold'
+            }`}
+          >
             {title}
           </div>
         </div>

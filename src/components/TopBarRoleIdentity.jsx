@@ -1,20 +1,21 @@
 import { normalizeRole, roleShort } from '../lib/roles.js';
+import { resolveDjIdentityId } from '../lib/importantSongs.js';
+import { vipDjById } from '../lib/vipDjs.js';
 import { useI18n } from '../i18n/useI18n';
 
 // Static, non-clickable role element for companion views. The role is fixed by
 // the join token/device choice, so there is no role-switching control here.
-export default function TopBarRoleIdentity({ role = 'mc', tier = null, className = '' }) {
+export default function TopBarRoleIdentity({ role = 'mc', _tier = null, wedding = null, className = '' }) {
   const { t } = useI18n();
   // Photographer 1 and 2 keep distinct ids internally but share a number-free
   // top-bar label; auth, join cards, PINs and pocket badges keep the real ids.
   // Legacy `photo` values normalize to photo1 first.
   const resolvedRole = normalizeRole(role);
   const isPhotographer = resolvedRole === 'photo1' || resolvedRole === 'photo2';
+  const provider = resolvedRole === 'dj' ? vipDjById(resolveDjIdentityId(wedding)) : null;
   const short =
     resolvedRole === 'dj'
-      ? String(tier).toUpperCase() === 'VIP'
-        ? 'DJ VIP'
-        : 'DJ'
+      ? provider?.displayName ?? 'DJ'
       : isPhotographer
         ? t('roles.photoShort')
         : roleShort(resolvedRole);

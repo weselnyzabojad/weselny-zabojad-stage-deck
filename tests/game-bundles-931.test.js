@@ -211,7 +211,7 @@ describe('issue #931 encrypted game question bundles', () => {
     const api = read('supabase/functions/admin_api/index.ts');
     const handler = api.slice(api.indexOf("action === 'publish_game_questions'"));
     const invalidCheck = handler.indexOf('if (validated.error)');
-    const revisionRead = handler.indexOf("from('game_question_revisions')");
+    const revisionRead = handler.indexOf('stage_deck_next_game_revision');
     const insert = handler.indexOf("from('game_question_revisions').insert");
     expect(invalidCheck).toBeGreaterThan(-1);
     expect(revisionRead).toBeGreaterThan(invalidCheck);

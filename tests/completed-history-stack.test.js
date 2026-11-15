@@ -81,7 +81,7 @@ describe('completed history stack (#180)', () => {
     expect(html).not.toContain('Moment A');
   });
 
-  it('keeps the same two-history depth stack on a compact pocket layout', () => {
+  it('keeps the compact layout collapsed behind the history tab', () => {
     const html = renderToStaticMarkup(
       createElement(TimelineFocusStack, {
         entries: timeline(7, 3),
@@ -89,12 +89,10 @@ describe('completed history stack (#180)', () => {
         compact: true,
       }),
     );
-    const history = historyMarkup(html);
-
-    expect(history.match(/data-focus-card/g)).toHaveLength(2);
-    expect(history).toContain('data-focus-depth="2"');
-    expect(history).toContain('data-focus-opacity="0.65"');
     expect(html).toContain('data-viewport="compact"');
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain('Completed steps (3)');
+    expect(html).not.toContain('data-focus-zone="history"');
   });
 
   it('defines the overlap and scale behind the last completed card on wide layouts', () => {

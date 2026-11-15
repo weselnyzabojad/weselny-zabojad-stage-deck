@@ -9,6 +9,7 @@ import {
   upsertVipDj,
 } from './adminApi.js';
 import { AdminConfirmDialog } from './AdminDialogs';
+import { ADMIN_BUTTON } from './adminUi';
 
 const CATEGORIES = [
   ['dj', 'DJ'],
@@ -367,69 +368,94 @@ export default function AdminServiceProviders({ wedding, readOnly = false, onCha
         <p className="mt-2 text-[10px] text-muted">No service providers yet.</p>
       ) : null}
 
-      {grouped.map((group) => (
-        <div key={group.category} className="mt-2">
-          <h4 className="font-mono text-[9px] font-bold uppercase tracking-wider text-muted">
-            {group.label}
-          </h4>
-          <ul className="mt-1 space-y-1">
-            {group.rows.map((provider) => (
-              <li
-                key={provider.id}
-                className={`rounded border border-line bg-card px-2 py-1 text-[10px] ${provider.active === false ? 'opacity-60' : ''}`}
-              >
-                <div className="flex flex-wrap items-center justify-between gap-1">
-                  <span className="font-semibold text-ink">
-                    {provider.first_name} {provider.last_name}
-                    {provider.category === 'other' && provider.function_label
-                      ? ` · ${provider.function_label}`
-                      : ''}
-                    {provider.active === false ? ' · inactive' : ''}
-                  </span>
-                  <span className="flex gap-1">
-                    <button
-                      type="button"
-                      onClick={() => edit(provider)}
-                      disabled={readOnly}
-                      className="rounded border border-line px-1.5 py-0.5 text-[9px] text-ink disabled:opacity-40"
-                    >
-                      Edit
-                    </button>
-                    {provider.active !== false ? (
-                      <button
-                        type="button"
-                        onClick={() => deactivate(provider)}
-                        disabled={readOnly}
-                        className="rounded border border-amber-800 px-1.5 py-0.5 text-[9px] text-amber-200 disabled:opacity-40"
-                      >
-                        Deactivate
-                      </button>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={() => remove(provider)}
-                      disabled={readOnly}
-                      className="rounded border border-alert/60 px-1.5 py-0.5 text-[9px] text-alert-soft disabled:opacity-40"
-                    >
-                      Delete
-                    </button>
-                  </span>
-                </div>
-                <div className="mt-0.5 font-mono text-[9px] text-muted">
-                  {[provider.phone, provider.email, provider.address, provider.instagram]
-                    .filter(Boolean)
-                    .join(' · ') || 'No contact details'}
-                </div>
-                <div className="mt-0.5 font-mono text-[9px] text-muted">
-                  {roleForCategory[provider.category]
-                    ? `Role access: ${weddingRoles.has(roleForCategory[provider.category]) ? 'active' : 'none'}`
-                    : 'Contact only — no app access'}
-                </div>
-              </li>
-            ))}
-          </ul>
+      {grouped.some((group) => group.rows.length > 0) ? (
+        <div className="mt-2 overflow-x-auto rounded border border-line">
+          <table className="w-full text-left text-[10px]">
+            <thead className="bg-page/60 text-[9px] uppercase tracking-wider text-muted">
+              <tr>
+                <th className="px-2 py-1.5">Category</th>
+                <th className="px-2 py-1.5">Name</th>
+                <th className="px-2 py-1.5">Contact</th>
+                <th className="px-2 py-1.5">Role access</th>
+                <th className="px-2 py-1.5 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {grouped.flatMap((group) =>
+                group.rows.map((provider) => (
+                  <tr
+                    key={provider.id}
+                    className={`border-t border-line/70 ${provider.active === false ? 'opacity-60' : ''}`}
+                  >
+                    <td className="px-2 py-1.5 font-mono text-[9px] text-muted">{group.label}</td>
+                    <td className="px-2 py-1.5 font-semibold text-ink">
+                      {provider.first_name} {provider.last_name}
+                      {provider.category === 'other' && provider.function_label
+                        ? ` · ${provider.function_label}`
+                        : ''}
+                      {provider.active === false ? ' · inactive' : ''}
+                    </td>
+                    <td className="px-2 py-1.5 font-mono text-[9px] text-muted">
+                      {[provider.phone, provider.email, provider.address, provider.instagram]
+                        .filter(Boolean)
+                        .join(' · ') || 'No contact details'}
+                    </td>
+                    <td className="px-2 py-1.5 font-mono text-[9px] text-muted">
+                      {roleForCategory[provider.category]
+                        ? `Role access: ${weddingRoles.has(roleForCategory[provider.category]) ? 'active' : 'none'}`
+                        : 'Contact only — no app access'}
+                    </td>
+                    <td className="px-2 py-1.5 text-right">
+                      <details className="relative inline-block text-left">
+                        <summary
+                          aria-label={`Actions for ${provider.first_name} ${provider.last_name}`}
+                          className={`${ADMIN_BUTTON.ghost} cursor-pointer list-none px-1.5 py-0.5 text-[11px]`}
+                        >
+                          ⋯
+                        </summary>
+                        <div
+                          role="menu"
+                          className="absolute right-0 z-banner mt-1 w-32 space-y-1 rounded-lg border border-line bg-card p-1.5 text-left shadow-xl"
+                        >
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => edit(provider)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full px-1.5 py-0.5 text-[9px]`}
+                          >
+                            Edit
+                          </button>
+                          {provider.active !== false ? (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => deactivate(provider)}
+                              disabled={readOnly}
+                              className={`${ADMIN_BUTTON.secondary} w-full px-1.5 py-0.5 text-[9px]`}
+                            >
+                              Deactivate
+                            </button>
+                          ) : null}
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => remove(provider)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.danger} w-full px-1.5 py-0.5 text-[9px]`}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </details>
+                    </td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
         </div>
-      ))}
+      ) : null}
 
       {!readOnly ? (
         <form className="mt-3 grid gap-1.5 border-t border-line pt-2 sm:grid-cols-2" onSubmit={submit}>

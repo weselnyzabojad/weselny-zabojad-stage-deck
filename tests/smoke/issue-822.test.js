@@ -29,6 +29,7 @@ describe('issue #822 landing partner logos', () => {
     expect(html).toContain('En partenariat avec :');
     expect(html).toContain('alt="DJ Mark"');
     expect(html).toContain('alt="DJ Szymoniak"');
+    expect(html).toContain('alt="DJ Zaremba"');
     expect(html.indexOf('En partenariat avec :')).toBeLessThan(
       html.indexOf(fr['landing.footer.note']),
     );

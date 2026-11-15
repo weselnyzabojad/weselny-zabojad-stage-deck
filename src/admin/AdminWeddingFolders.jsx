@@ -197,19 +197,20 @@ export default function AdminWeddingFolders({ readOnly = false }) {
         </p>
       ) : null}
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      <div role="tablist" aria-label="Wedding folder year" className="mt-3 flex flex-wrap gap-4 border-b border-line">
         {years.map((year) => {
           const active = year.id === selectedYearId;
           return (
             <button
               key={year.id}
               type="button"
-              aria-pressed={active}
+              role="tab"
+              aria-selected={active}
               onClick={() => setSelectedYearId(year.id)}
-              className={`rounded border px-3 py-1.5 font-mono text-xs font-bold ${
+              className={`-mb-px border-b-2 px-1 pb-1.5 font-mono text-xs font-bold transition ${
                 active
-                  ? 'border-brand-strong bg-brand/40 text-ink'
-                  : 'border-line bg-raised text-muted'
+                  ? 'border-brand-strong text-ink'
+                  : 'border-transparent text-muted hover:text-ink'
               }`}
             >
               {year.name}

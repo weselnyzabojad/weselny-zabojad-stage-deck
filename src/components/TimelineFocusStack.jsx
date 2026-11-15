@@ -83,7 +83,7 @@ function FocusZone({
                   data-focus-depth={tier?.depth ?? position + 1}
                   data-focus-opacity={tier?.opacity ?? 1}
                   data-focus-scale={tier?.scale ?? 1}
-                  style={{ opacity: tier?.opacity ?? 1, zIndex: tier?.zIndex ?? 1 }}
+                  style={{ opacity: zone === 'current' ? 1 : Math.min(tier?.opacity ?? 0.7, 0.7), zIndex: tier?.zIndex ?? 1 }}
                 >
                   <StageStepCard
                     entry={entry}
@@ -142,11 +142,12 @@ export default function TimelineFocusStack({
   zoneScroll = true,
   entryBodies = null,
   photographerAvailable = null,
-  polished = false,
+  polished = true,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
   const [expandedByZone, setExpandedByZone] = useState({ history: false, future: false });
+  const [compactTab, setCompactTab] = useState(null);
   const stack = buildFocusStack(entries, activeIndex);
   const expandedStack = buildFocusStack(entries, activeIndex, {
     historyLimit: entries.length,
@@ -179,6 +180,130 @@ export default function TimelineFocusStack({
   const rootClassName = compact
     ? 'grid grid-cols-1 gap-3'
     : 'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start';
+
+  if (compact) {
+    return (
+      <section
+        aria-label={copy.rail}
+        data-testid="timeline-focus-stack"
+        data-focus-stack
+        data-viewport="compact"
+        className={`${rootClassName} ${className}`.trim()}
+      >
+        <div className="order-1 min-w-0">
+          <section aria-label={copy.current} data-focus-zone="current" className="flex flex-col gap-2">
+            <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
+              {copy.current}
+            </h2>
+            {stack.current ? (
+              <CurrentStepTilt>
+                <div
+                  className="relative"
+                  data-focus-card
+                  data-focus-depth="0"
+                  data-focus-opacity="1"
+                  data-focus-scale="1"
+                  style={{ zIndex: 30 }}
+                >
+                  <StageStepCard
+                    entry={stack.current}
+                    variant="current"
+                    photographerAvailable={photographerAvailable}
+                    polished={polished}
+                  >
+                    {entryBodies?.[stack.current.step?.id] ?? null}
+                    {currentBody}
+                  </StageStepCard>
+                </div>
+              </CurrentStepTilt>
+            ) : (
+              <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-muted">
+                {copy.noCurrent}
+              </p>
+            )}
+          </section>
+        </div>
+
+        <div className="order-2 min-w-0 space-y-2">
+          <div role="tablist" aria-label={copy.rail} className="grid grid-cols-2 gap-2">
+            {[
+              ['history', `${copy.done} (${stack.history.length + stack.hidden.history})`],
+              ['future', `${copy.upcoming} (${stack.future.length + stack.hidden.future})`],
+            ].map(([zone, label]) => {
+              const selected = compactTab === zone;
+              return (
+                <button
+                  key={zone}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  aria-controls={`compact-zone-${zone}`}
+                  onClick={() => setCompactTab(selected ? null : zone)}
+                  className={`rounded-xl border px-3 py-2 font-heading text-[10px] font-bold uppercase tracking-widest transition ${
+                    selected
+                      ? 'border-brand-strong bg-brand/20 text-ink'
+                      : 'border-line bg-raised text-muted hover:border-line-strong hover:text-ink'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {compactTab === 'history' ? (
+            <div role="tabpanel" id="compact-zone-history">
+              <FocusZone
+                zone="history"
+                label={copy.done}
+                entries={expandedByZone.history ? expandedStack.history : stack.history}
+                variant="done"
+                empty={copy.noDone}
+                openKey={openByZone.history}
+                onToggle={toggle}
+                onCollapse={() => collapse('history')}
+                compact
+                zoneScroll={zoneScroll}
+                entryBodies={entryBodies}
+                photographerAvailable={photographerAvailable}
+                hiddenCount={stack.hidden.history}
+                expanded={expandedByZone.history}
+                onToggleExpanded={() => toggleExpanded('history')}
+                showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.history })}
+                showLessLabel={t('mc.rail.showLess')}
+                polished={polished}
+              />
+            </div>
+          ) : null}
+
+          {compactTab === 'future' ? (
+            <div role="tabpanel" id="compact-zone-future">
+              <FocusZone
+                zone="future"
+                label={copy.upcoming}
+                entries={expandedByZone.future ? expandedStack.future : stack.future}
+                variant={(_entry, position) => (position === 0 ? 'next' : 'later')}
+                empty={copy.noUpcoming}
+                openKey={openByZone.future}
+                onToggle={toggle}
+                onCollapse={() => collapse('future')}
+                compact
+                zoneScroll={zoneScroll}
+                entryBodies={entryBodies}
+                photographerAvailable={photographerAvailable}
+                hiddenCount={stack.hidden.future}
+                expanded={expandedByZone.future}
+                onToggleExpanded={() => toggleExpanded('future')}
+                showMoreLabel={t('mc.rail.showMore', { count: stack.hidden.future })}
+                showLessLabel={t('mc.rail.showLess')}
+                polished={polished}
+              />
+            </div>
+          ) : null}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

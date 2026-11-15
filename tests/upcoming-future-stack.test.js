@@ -99,19 +99,20 @@ describe('upcoming future stack (#181)', () => {
       }),
     );
 
-    for (const html of [wide, compact]) {
-      const future = futureMarkup(html);
-      expect(future.match(/data-focus-card/g)).toHaveLength(2);
-      expect(future).toContain('data-focus-depth="1"');
-      expect(future).toContain('data-focus-depth="2"');
-      expect(future).toContain('data-focus-opacity="0.65"');
-      expect(future).toContain('Moment E');
-      expect(future).toContain('Moment F');
-      expect(html).not.toContain('Moment G');
-    }
+    const future = futureMarkup(wide);
+    expect(future.match(/data-focus-card/g)).toHaveLength(2);
+    expect(future).toContain('data-focus-depth="1"');
+    expect(future).toContain('data-focus-depth="2"');
+    expect(future).toContain('data-focus-opacity="0.65"');
+    expect(future).toContain('Moment E');
+    expect(future).toContain('Moment F');
+    expect(wide).not.toContain('Moment G');
 
     expect(wide).toContain('data-viewport="wide"');
     expect(compact).toContain('data-viewport="compact"');
+    expect(compact).toContain('role="tablist"');
+    expect(compact).toContain('Upcoming steps (3)');
+    expect(compact).not.toContain('data-focus-zone="future"');
   });
 
   it('treats the first planned step as next when no step is active yet', () => {

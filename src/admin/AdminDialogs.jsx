@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import ModalShell from '../components/ModalShell';
 import { challengeExistingFactor } from './adminApi';
 import { roleShort } from '../lib/roles';
+import { ADMIN_BUTTON } from './adminUi';
 
 function DialogBody({ title, description, titleId = undefined, descriptionId = undefined, children }) {
   return (
@@ -75,7 +76,7 @@ export function AdminConfirmDialog({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded border border-line px-3 py-1.5 text-xs font-semibold text-ink"
+          className={ADMIN_BUTTON.ghost}
         >
           Cancel
         </button>
@@ -83,11 +84,7 @@ export function AdminConfirmDialog({
           type="button"
           onClick={onConfirm}
           disabled={blocked || busy}
-          className={`rounded border px-3 py-1.5 text-xs font-bold text-ink disabled:opacity-50 ${
-            tone === 'danger'
-              ? 'border-alert/60 bg-alert/40 hover:bg-alert/60'
-              : 'border-brand-strong bg-brand hover:bg-brand-hover'
-          }`}
+          className={tone === 'danger' ? ADMIN_BUTTON.danger : ADMIN_BUTTON.primary}
         >
           {busy ? 'Working…' : confirmLabel}
         </button>
@@ -98,6 +95,7 @@ export function AdminConfirmDialog({
 
 export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description, onVerified, onCancel }) {
   const [code, setCode] = useState('');
+  const titleId = useId();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [wasOpen, setWasOpen] = useState(open);
@@ -125,8 +123,9 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title={title}
         description={description ?? 'Enter the 6-digit code from your authenticator app.'}
       >
@@ -167,6 +166,7 @@ export function AdminMfaDialog({ open, title = 'Confirm with TOTP', description,
 
 export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
   const [password, setPassword] = useState('');
+  const titleId = useId();
   const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -203,8 +203,9 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Change password"
         description="The new password is checked against HaveIBeenPwned before it is saved. Only a SHA-1 prefix is sent."
       >
@@ -253,6 +254,7 @@ export function AdminPasswordDialog({ open, onSubmit, onCancel }) {
 
 export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = false, error = '' }) {
   const [pins, setPins] = useState({});
+  const titleId = useId();
   const [wasOpen, setWasOpen] = useState(open);
 
   if (open !== wasOpen) {
@@ -265,8 +267,9 @@ export function AdminPinDialog({ open, roles = [], onSubmit, onCancel, busy = fa
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Rotate role PINs"
         description="Leave a field blank to auto-generate that role's PIN. All PINs are shown once, then stored as hashes."
       >
@@ -316,6 +319,7 @@ export function AdminPublishRevisionDialog({
   error = '',
 }) {
   const [cartridgeJson, setCartridgeJson] = useState('');
+  const titleId = useId();
   const [parseError, setParseError] = useState('');
   const [resetKey, setResetKey] = useState([open, wedding]);
 
@@ -340,8 +344,9 @@ export function AdminPublishRevisionDialog({
   };
 
   return (
-    <ModalShell open={open} onClose={onCancel} labelledBy={undefined}>
+    <ModalShell open={open} onClose={onCancel} labelledBy={titleId}>
       <DialogBody
+        titleId={titleId}
         title="Replace published cartridge"
         description={`Publishes a new immutable revision for ${wedding?.wedding_id ?? 'this wedding'}. The room code, PINs, sessions and live progress are preserved.`}
       >

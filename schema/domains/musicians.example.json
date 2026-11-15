@@ -1,0 +1,18 @@
+{
+  "$schema": "https://weselnyzabojad.example/schemas/domains/musicians.json",
+  "musicians": {
+    "expected": true,
+    "items": [
+      {
+        "id": "violin_1",
+        "name": "Anna",
+        "instrument": "violin",
+        "startTime": "15:00",
+        "endTime": "21:00",
+        "ceremonyRequired": true,
+        "notes": "Plays during the ceremony and dinner.",
+        "active": true
+      }
+    ]
+  }
+}

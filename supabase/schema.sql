@@ -8,6 +8,20 @@
 --
 -- The service-role key stays in Edge Function secrets and is never shipped to
 -- the browser. Do not add permissive `using (true)` policies.
+--
+-- Issue #1049: this file is a BASE-ONLY bootstrap for an empty database. It is
+-- never a re-runnable patch. Once migrations exist, running it again aborts
+-- before it can replace later policies or grants.
+
+do $$
+begin
+  if exists (
+    select 1 from information_schema.tables
+    where table_schema = 'supabase_migrations' and table_name = 'schema_migrations'
+  ) and exists (select 1 from supabase_migrations.schema_migrations limit 1) then
+    raise exception 'schema.sql is base-only; apply supabase/migrations instead.';
+  end if;
+end $$;
 
 create table if not exists public.live_sync_state (
   wedding_id text primary key,
@@ -360,19 +374,8 @@ revoke all on function public.current_app_role()   from public, anon;
 grant execute on function public.current_wedding_id()    to authenticated;
 grant execute on function public.current_app_role()      to authenticated;
 
--- End-of-event wipe (service role / admin only): removes the room state and
--- the wedding row; roles and live state cascade.
-create or replace function public.stage_deck_wipe_room(p_wedding_id text)
-returns void
-language sql
-security definer
-set search_path = public
-as $$
-  delete from public.live_sync_state where wedding_id = 'wzsd:' || p_wedding_id;
-  delete from public.weddings where wedding_id = p_wedding_id;
-$$;
-
-revoke all on function public.stage_deck_wipe_room(text) from public, anon, authenticated;
+-- End-of-event room deletion is owned by the later migrations and admin API;
+-- the legacy wipe RPC is intentionally not recreated here (issue #1049).
 
 -- TTL purge: deletes rooms past `expires_at` (state, wedding, roles, notes).
 -- Schedule daily with pg_cron when available:

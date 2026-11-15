@@ -173,6 +173,16 @@ export default function GameClickerOverlay({
   useEffect(() => {
     if (!open) return undefined;
     const handleKeyDown = (event) => {
+      if (event.defaultPrevented) return;
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          'button, a, input, select, textarea, [contenteditable="true"], [role="button"], [role="option"], [role="tab"]',
+        )
+      ) {
+        return;
+      }
       if (event.key === 'ArrowRight') {
         event.preventDefault();
         navigate(1);

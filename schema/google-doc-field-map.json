@@ -200,6 +200,17 @@
       "witnesses[].speechIds": "no",
       "witnesses[].notes": "no"
     },
+    "musicians.example.json": {
+      "musicians.expected": "required",
+      "musicians.items[].id": "no",
+      "musicians.items[].name": "no",
+      "musicians.items[].instrument": "no",
+      "musicians.items[].startTime": "no",
+      "musicians.items[].endTime": "no",
+      "musicians.items[].ceremonyRequired": "no",
+      "musicians.items[].notes": "no",
+      "musicians.items[].active": "no"
+    },
     "test-zgodnosci-questions.example.json": {
       "gameType": "separate",
       "questions[].id": "separate",

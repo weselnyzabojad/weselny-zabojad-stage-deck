@@ -197,6 +197,13 @@ proposal.
 | photo_main | PHOTO | Marek | +48 600 222 222 | 14:00 | 23:30 | Ceremony; Group photos; First dance; Oczepiny | Leaves after the winner photo. |
 | video_main | VIDEO | Ola | +48 600 333 333 | 14:30 | 00:30 | Highlight film | Needs a clean feed from the DJ booth. |
 
+## MUSICIANS
+
+Musician expected: false
+
+Set this to `true` or `false` only. Names, instruments, availability and ceremony
+requirements are managed in `/admin`, never in this Doc.
+
 ## PHOTO PLAN
 
 Mini session enabled: true
