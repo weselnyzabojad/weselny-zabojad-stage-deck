@@ -637,6 +637,54 @@ export async function confirmWeddingMc(weddingId, mode) {
   return callAdmin('confirm_mc', { weddingId, mode });
 }
 
+export async function listMusicians(weddingId) {
+  if (ADMIN_DEMO) {
+    return {
+      expected: true,
+      musicians: [
+        {
+          id: 'demo-musician-1',
+          name: 'Anna',
+          instrument: 'violin',
+          start_time: '15:00',
+          end_time: '21:00',
+          ceremony_required: true,
+          notes: 'Ceremony and dinner.',
+          active: true,
+        },
+      ],
+    };
+  }
+  return callAdmin('list_musicians', { weddingId });
+}
+
+export async function upsertMusician(payload) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_upsert');
+    return { musician: { id: payload.id ?? 'demo-musician-1', ...payload } };
+  }
+  return callAdmin('upsert_musician', payload);
+}
+
+export async function deactivateMusician(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_deactivate');
+    return { musician: { id, active: false } };
+  }
+  return callAdmin('deactivate_musician', { weddingId, id });
+}
+
+export async function deleteMusician(weddingId, id) {
+  if (ADMIN_DEMO) {
+    const { demoMutate } = await import('./adminDemoApi.js');
+    demoMutate('musician_delete');
+    return { removed: true };
+  }
+  return callAdmin('delete_musician', { weddingId, id });
+}
+
 export async function listProviders(weddingId) {
   if (ADMIN_DEMO) return { providers: [] };
   return callAdmin('list_providers', { weddingId });
