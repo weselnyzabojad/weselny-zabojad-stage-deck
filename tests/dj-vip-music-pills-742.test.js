@@ -63,11 +63,12 @@ describe('issue #742 DJ VIP music pills and Set notes placement', () => {
     expect(html).toContain('text-alert-tint');
   });
 
-  it('places Set notes between the current step and Music Policy on the laptop', () => {
+  it('places the DJ notebook after the current step on the laptop', () => {
     const dj = read('src/components/DjBoothView.jsx');
     const main = dj.slice(dj.indexOf('<main id="main-content"'), dj.indexOf('</main>'));
-    expect(main.indexOf("t('dj.setNotes')")).toBeLessThan(main.indexOf('<MusicPolicyCard'));
-    expect(main.indexOf('<TimelineFocusStack')).toBeLessThan(main.indexOf("t('dj.setNotes')"));
+    expect(main.indexOf('<TimelineFocusStack')).toBeLessThan(main.indexOf('<DjSetNotesNotepad'));
+    expect(main).toContain('<DjSetNotesNotepad policy={musicPolicy} />');
+    expect(main).not.toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(main).not.toContain('<aside');
     expect(main).not.toContain('lg:col-span-2');
     expect(main).not.toContain('lg:grid-cols-3');

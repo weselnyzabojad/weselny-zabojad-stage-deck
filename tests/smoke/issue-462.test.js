@@ -93,7 +93,7 @@ describe('issue #462 DJ VIP Disco Polo policy display', () => {
     const dj = read('src/components/DjBoothView.jsx');
     expect((dj.match(/discoPoloPolicy=\{musicPolicy\?\.discoPoloPolicy \?\? 'NO'\}/g) ?? []).length).toBe(2);
     expect((dj.match(/showDiscoPoloBadge=\{false\}/g) ?? []).length).toBe(2);
-    expect(dj).toContain('{caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}');
+    expect(dj).toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(dj).toContain('{caps.guestRequests ? (');
 
     const mc = read('src/views/McMasterView.jsx');

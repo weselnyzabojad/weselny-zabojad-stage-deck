@@ -5,13 +5,14 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 describe('issue #298 DJ Standard hides Music Policy', () => {
   const djBooth = read('src/components/DjBoothView.jsx');
 
-  it('gates every MusicPolicyCard render behind the VIP tier', () => {
+  it('gates every Music Policy surface behind the VIP tier', () => {
     const renders = djBooth.match(/<MusicPolicyCard\b/g) ?? [];
-    expect(renders).toHaveLength(2);
+    expect(renders).toHaveLength(1);
     expect(
       djBooth.match(
         /\{caps\.musicPolicy \? <MusicPolicyCard policy=\{musicPolicy\} \/> : null\}/g,
       ),
-    ).toHaveLength(2);
+    ).toHaveLength(1);
+    expect(djBooth).toMatch(/\{caps\.musicPolicy \? \(\s*<DjSetNotesNotepad/);
   });
 });
