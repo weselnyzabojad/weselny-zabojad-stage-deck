@@ -293,7 +293,6 @@ async function handleRequest(req: Request) {
       const order = Number(body?.order);
       if (
         !weddingId ||
-        !weddingFolderId ||
         !speechId ||
         !speakerName ||
         !Number.isInteger(order) ||
@@ -320,7 +319,24 @@ async function handleRequest(req: Request) {
       if (!authorization.allowed) {
         return json({ error: authorization.error, code: authorization.code }, 409);
       }
-      const folder = await connector.ensureSpeechFolder({ weddingFolderId, weddingId });
+      const resolvedWeddingFolderId = await resolveWeddingFolderId(
+        admin,
+        weddingId,
+        weddingFolderId,
+      );
+      if (!resolvedWeddingFolderId) {
+        return json(
+          {
+            error: 'The wedding Drive folder could not be resolved.',
+            code: 'missing_wedding_folder',
+          },
+          409,
+        );
+      }
+      const folder = await connector.ensureSpeechFolder({
+        weddingFolderId: resolvedWeddingFolderId,
+        weddingId,
+      });
       const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const text = buildSpeechDocTemplate({
         speakerName,
