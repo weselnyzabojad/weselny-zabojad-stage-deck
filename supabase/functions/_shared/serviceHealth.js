@@ -4,7 +4,7 @@
 // timeouts and sanitized errors with mocked fetch calls. It never returns
 // provider tokens, API keys or raw provider payloads.
 
-export const HEALTH_PROVIDERS = ['supabase', 'sentry', 'drive', 'sunset'];
+export const HEALTH_PROVIDERS = ['supabase', 'sentry', 'drive', 'sunset', 'deck'];
 export const DEFAULT_HEALTH_TIMEOUT_MS = 4000;
 export const DEFAULT_DRIVE_HEALTH_FILE_ID = '1Q7IVT0GNiLztKQE8l4eCDCRw-px1qheh';
 
@@ -173,7 +173,38 @@ export function createServiceHealth({
     });
   }
 
-  return { probeSupabase, probeSentry, probeDrive, probeSunset, worstStatus };
+  async function probeDeck({ url }) {
+    return probe({
+      id: 'deck',
+      name: 'Production deck',
+      run: async () => {
+        if (!url) return { status: 'down', detail: 'Deck URL is not configured.' };
+        let response = await fetchWithTimeout(url, {
+          method: 'HEAD',
+          redirect: 'manual',
+          headers: { Accept: 'text/html' },
+        });
+        if (response.status === 405 || response.status === 501) {
+          response = await fetchWithTimeout(url, {
+            method: 'GET',
+            redirect: 'manual',
+            headers: { Accept: 'text/html' },
+          });
+        }
+        const status = healthStatusFor(response.status);
+        let detail = null;
+        if (status !== 'ok') {
+          detail =
+            response.status === 401 || response.status === 403
+              ? `Deck is behind a Netlify login redirect (HTTP ${response.status}).`
+              : `Deck returned ${response.status}.`;
+        }
+        return { status, httpStatus: response.status, detail };
+      },
+    });
+  }
+
+  return { probeSupabase, probeSentry, probeDrive, probeSunset, probeDeck, worstStatus };
 }
 
 export async function runServiceHealth({
@@ -182,6 +213,7 @@ export async function runServiceHealth({
   sentry = {},
   drive = {},
   sunset = {},
+  deck = {},
   now = () => Date.now(),
 } = {}) {
   const providers = await Promise.all([
@@ -189,6 +221,7 @@ export async function runServiceHealth({
     health.probeSentry(sentry),
     health.probeDrive(drive),
     health.probeSunset(sunset),
+    health.probeDeck(deck),
   ]);
   return {
     ok: providers.every((provider) => provider.status === 'ok'),

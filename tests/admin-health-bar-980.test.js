@@ -27,7 +27,7 @@ describe('issue #980 admin health bar', () => {
     const providers = normalizeHealthProviders({
       providers: HEALTH_PROVIDER_ORDER.map(({ id }) => provider(id, 'ok')),
     });
-    expect(providers.map((entry) => entry.id)).toEqual(['supabase', 'sentry', 'drive', 'sunset']);
+    expect(providers.map((entry) => entry.id)).toEqual(['supabase', 'sentry', 'drive', 'sunset', 'deck']);
     expect(providers.every((entry) => entry.status === 'ok')).toBe(true);
   });
 
@@ -66,7 +66,7 @@ describe('issue #980 admin health bar', () => {
 
   it('turns a failed health call into four down providers', () => {
     const providers = healthErrorProviders('Failed to fetch');
-    expect(providers).toHaveLength(4);
+    expect(providers).toHaveLength(5);
     expect(providers.every((entry) => entry.status === 'down')).toBe(true);
     expect(providers.every((entry) => entry.detail === 'Failed to fetch')).toBe(true);
   });
@@ -99,7 +99,7 @@ describe('issue #980 admin health bar', () => {
     expect(bar).toContain('captureHealthFailure');
     expect(bar).toContain('aria-label="Service monitoring"');
     expect(bar).toContain('Retry all');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-4');
+    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
     expect(bar).not.toContain('role="dialog"');
 
     const app = read('src/admin/AdminApp.jsx');
