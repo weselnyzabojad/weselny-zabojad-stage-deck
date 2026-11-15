@@ -27,15 +27,20 @@ const PRIMARY_BUTTON =
 const SECONDARY_BUTTON =
   'rounded border border-line-strong bg-raised px-2 py-1 font-semibold text-ink disabled:opacity-40';
 
+const BADGE_BASE =
+  'inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide';
+
 function PanelBadge({ enabled }) {
   return (
     <span
-      className={`rounded border px-1.5 py-0.5 text-[9px] font-bold ${
+      aria-label={enabled ? 'Game enabled' : 'Game disabled'}
+      className={`${BADGE_BASE} ${
         enabled
           ? 'border-emerald-700 bg-emerald-950/50 text-emerald-200'
           : 'border-line-strong bg-raised text-muted'
       }`}
     >
+      <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${enabled ? 'bg-emerald-400' : 'bg-line-strong'}`} />
       {enabled ? 'ENABLED' : 'DISABLED'}
     </span>
   );
@@ -50,7 +55,8 @@ function RequestedBadge({ requested }) {
         ? 'border-alert/60 bg-alert/15 text-alert-soft'
         : 'border-amber-700 bg-amber-950/50 text-amber-200';
   return (
-    <span className={`rounded border px-1.5 py-0.5 text-[9px] font-bold ${tone}`}>
+    <span aria-label={`Doc requested ${value}`} className={`${BADGE_BASE} ${tone}`}>
+      <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-current" />
       DOC REQUESTED {value}
     </span>
   );
@@ -206,16 +212,6 @@ function GamePanel({
         Drive · {drivePath.segments.join('/')} · {driveVisibility}
       </p>
 
-      {!creation.allowed ? (
-        <p
-          role="alert"
-          className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100"
-        >
-          <span className="font-semibold">Create blocked by the wedding Doc.</span>{' '}
-          {creation.error}
-        </p>
-      ) : null}
-
       {!game.enabled ? (
         <p className="mt-2 rounded border border-line bg-page/60 p-2 text-[10px] text-muted">
           Disabled by the wedding cartridge. No question Doc, parse or publish actions are
@@ -268,20 +264,34 @@ function GamePanel({
             </button>
           </>
         ) : (
-          <button
-            type="button"
-            onClick={onCreate}
-            disabled={
-              disabled ||
-              Boolean(busy) ||
-              game.languagesMissing ||
-              !creation.allowed
-            }
-            title={creation.allowed ? undefined : creation.error}
-            className={PRIMARY_BUTTON}
-          >
-            Create question Doc
-          </button>
+          <>
+            {!creation.allowed ? (
+              <p
+                role="alert"
+                className="mb-1 w-full rounded border-l-4 border-amber-600 bg-amber-950/40 px-2 py-1 text-[10px] text-amber-100"
+              >
+                <span className="mr-1" aria-hidden="true">
+                  ⚠
+                </span>
+                <span className="font-semibold">Create blocked by the wedding Doc.</span>{' '}
+                {creation.error}
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={onCreate}
+              disabled={
+                disabled ||
+                Boolean(busy) ||
+                game.languagesMissing ||
+                !creation.allowed
+              }
+              title={creation.allowed ? undefined : creation.error}
+              className={PRIMARY_BUTTON}
+            >
+              Create question Doc
+            </button>
+          </>
         )}
       </div>
 
