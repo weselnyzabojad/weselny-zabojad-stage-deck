@@ -39,6 +39,13 @@ import {
   speechDocCreationAuthorization,
   speechDocFilename,
 } from '../_shared/speechDoc.js';
+import {
+  findPermissionByEmail,
+  isOwnerPermission,
+  normalizeShareEmail,
+  resolveSecretsWeddingId,
+  sanitizeShareMessage,
+} from '../_shared/driveSharing.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 
 const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
@@ -53,6 +60,22 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+async function writeShareAudit(
+  admin: any,
+  allowlisted: any,
+  action: string,
+  fileId: string,
+  detail: Record<string, unknown>,
+) {
+  await admin.from('admin_audit_log').insert({
+    actor_id: allowlisted.user_id,
+    actor_email: allowlisted.email,
+    action,
+    target: fileId,
+    detail,
   });
 }
 
@@ -209,6 +232,9 @@ async function handleRequest(req: Request) {
         'create_game_question_doc',
         'rewrite_game_question_doc_columns',
         'parse_game_question_doc',
+        'list_permissions',
+        'share_file',
+        'revoke_permission',
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
@@ -845,6 +871,113 @@ async function handleRequest(req: Request) {
           : checksumChanged
             ? 'checksum'
             : 'unchanged',
+      });
+    }
+
+    if (action === 'list_permissions' || action === 'share_file' || action === 'revoke_permission') {
+      const target = await resolveSecretsWeddingId({
+        fileId,
+        getFileMetadata: connector.getFileMetadata,
+      });
+      if (!target.ok) {
+        return json({ error: target.error, code: target.code }, target.status);
+      }
+
+      if (action === 'list_permissions') {
+        const permissions = await connector.listPermissions(fileId);
+        return json({
+          ok: true,
+          action,
+          checkedAt: new Date().toISOString(),
+          fileId,
+          weddingId: target.weddingId,
+          permissions,
+        });
+      }
+
+      if (action === 'share_file') {
+        const email = normalizeShareEmail(body?.email);
+        if (!email) return json({ error: 'Enter a valid email address.' }, 400);
+
+        const permissions = await connector.listPermissions(fileId);
+        const existing = findPermissionByEmail(permissions, email);
+        if (existing) {
+          return json({
+            ok: true,
+            action,
+            shared: false,
+            existing: true,
+            fileId,
+            weddingId: target.weddingId,
+            permission: existing,
+          });
+        }
+
+        let permission;
+        try {
+          permission = await connector.shareFile({
+            fileId,
+            email,
+            role: 'reader',
+            notify: body?.notify !== false,
+            message: sanitizeShareMessage(body?.message),
+          });
+        } catch (error: any) {
+          if (error?.code === 'drive_permission_denied' || error?.status === 403) {
+            return json(
+              {
+                error:
+                  'Only files created or opened by the Stage Deck service account can be shared.',
+                code: 'drive_share_not_app_created',
+              },
+              403,
+            );
+          }
+          throw error;
+        }
+
+        await writeShareAudit(admin, allowlisted, 'drive_share', fileId, {
+          weddingId: target.weddingId,
+          email,
+          permissionId: permission?.id ?? null,
+        });
+        return json({
+          ok: true,
+          action,
+          shared: true,
+          fileId,
+          weddingId: target.weddingId,
+          permission,
+        });
+      }
+
+      const permissionId =
+        typeof body?.permissionId === 'string' ? body.permissionId.trim() : '';
+      if (!permissionId) return json({ error: 'A permission id is required.' }, 400);
+
+      const permissions = await connector.listPermissions(fileId);
+      const permission = permissions.find((entry) => entry.id === permissionId);
+      if (!permission) {
+        return json({ error: 'Permission not found.', code: 'drive_permission_not_found' }, 404);
+      }
+      if (isOwnerPermission(permission)) {
+        return json(
+          { error: 'The file owner permission cannot be removed.', code: 'drive_owner_permission' },
+          403,
+        );
+      }
+
+      await connector.deletePermission({ fileId, permissionId });
+      await writeShareAudit(admin, allowlisted, 'drive_unshare', fileId, {
+        weddingId: target.weddingId,
+        permissionId,
+      });
+      return json({
+        ok: true,
+        action,
+        fileId,
+        weddingId: target.weddingId,
+        removedPermissionId: permissionId,
       });
     }
 
