@@ -7095,3 +7095,151 @@ not cartridge content.
 **Open questions.** None.
 
 **Tracking.** [#979](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/979), [#980](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/980), [#981](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/981), [#982](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/982).
+
+### 17.82 Remove admin Google Drive source panel (decision, 2026-11-15)
+
+**Goal.**
+
+Remove the admin ÔÇťGoogle Drive sourceÔÇŁ search/preview/publish-from-Drive
+surface and its browser-only flow, while keeping server actions and shared code
+used by the folder tree, private file sharing, revision context, restore and the
+games/speeches panels.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**Removal boundary.**
+
+- Delete the panel UI, Drive-source search/list/preview/validate/diff and
+  replace-cartridge confirm wiring from `/admin`.
+- Keep `AdminWeddingFolders` (folder tree, Load secrets, private sharing) rendered
+  directly by the admin shell.
+- Remove client helpers with no other callers (`listDriveSources`,
+  `publishDriveRevision`, `checkDriveSource`); keep `previewDriveSource`,
+  `getRevisionContext`, `restorePreviousRevision` and shared dialogs.
+- Keep Edge Functions and DB unchanged, including `publish_drive`,
+  `revision_context`, `restore_revision`, `list` and `preview`. No replacement
+  publish-from-Drive UI is planned here.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin | Drive-source panel gone; folders/sharing/games/speeches/restore unchanged |
+| Edge Functions / DB | Unchanged |
+| Stage roles / landing | Unchanged |
+
+**Task split.** One issue; it is the only unblocked issue of this batch.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#989](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/989) | Remove panel + client flow, preserve shared server/client code and update affected tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#989](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/989). Blocks ┬ž17.78 and ┬ž17.79.
+
+### 17.83 Musician role and end-hour awareness (decision, 2026-11-15)
+
+**Goal.**
+
+Model musicians as multiple admin-managed service people with individual
+availability, surface them as joinable stage roles with a dedicated read-only
+view, and show end-hour awareness on DJ Standard and DJ VIP. The Google Doc only
+declares whether a musician is expected.
+
+**Google Doc contract.**
+
+- New `## MUSICIANS` section carrying exactly `Musician expected: true|false`.
+  Missing or invalid Ôćĺ `false` with a warning. No names, instruments or times in
+  the Doc.
+- New `schema/domains/musicians.json` with the boolean plus reserved
+  admin-sourced detail fields; `schema/google-doc-field-map.json` maps only the
+  boolean. Template, schema, field map and fixtures must validate.
+- Details (name, instrument, start, end, ceremony, notes, active) are entered in
+  `/admin` and snapshotted into the cartridge `musicians[]` at publish time.
+
+**Admin data and access.**
+
+- New `public.wedding_musicians` table, multiple rows per wedding, service-role
+  only, audit on changes, archived weddings read-only.
+- Instrument is free text (violin, saxophone, piano, guitar, other); each
+  musician has start/end clocks and a ceremony-required flag.
+- Each active musician gets its own join PIN/QR and link
+  (`/<room>/musician?musician=<id>`); deactivation revokes access.
+- Musician view: shared read-only timeline + personal availability, no controls,
+  scripts or VIP data.
+- **TODO:** align musician identity/contact fields with the VIP DJ registry
+  before implementation.
+
+**DJ presentation.**
+
+- DJ Standard: one compact read-only ÔÇťend hoursÔÇŁ card listing every person with
+  an end hour ÔÇö musicians and `mediaTeam[].endTime` (PHOTO/VIDEO/DRONE).
+- DJ VIP: a visual parallel lane of end-hour markers only. It must not create
+  timeline steps, durations, drift, anchors, controls or export changes; the
+  ÔÇťmedia departures are planning dataÔÇŁ invariant stays intact.
+- No per-step musician field; step-level impact is explicitly out of scope.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin | Musician registry (multiple rows), Doc expectation indicator, per-musician QR/PIN |
+| Musician | New joinable role + read-only timeline and personal availability |
+| DJ Standard | Single end-hour card for all end-hour people |
+| DJ VIP | Parallel visual end-hour lane (no timeline mutation) |
+| Other roles / landing | No change |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on | State |
+| --- | --- | --- | --- | --- |
+| 1 | [#993](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/993) | Doc `## MUSICIANS` boolean + schema/cartridge/field-map contract | - | blocked by #989 |
+| 2 | [#990](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/990) | `wedding_musicians` table, admin API/UI, publish snapshot + feedback placeholder | #993 | blocked by #989 + feedback |
+| 3 | [#992](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/992) | Musician role, per-musician PIN/link, dedicated view | #990 | blocked by #989 + feedback |
+| 4 | [#991](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/991) | DJ Standard single end-hour card | #993 | blocked by #989 + feedback |
+| 5 | [#995](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/995) | DJ VIP parallel end-hour lane | #993 | blocked by #989 + feedback |
+
+**Open questions.** None. Musician feedback is pending; issue #990 carries the
+paste-in placeholder for deep analysis.
+
+**Tracking.** [#990](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/990), [#991](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/991), [#992](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/992), [#993](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/993), [#995](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/995).
+
+### 17.84 Admin UI/UX audit (decision, 2026-11-15)
+
+**Goal.**
+
+Apply an admin-only visual and interaction cleanup: consistent action hierarchy,
+calmer card-based surfaces, consolidated status, compact library controls,
+semantic tabs, decluttered detail actions/provider rows and slimmer game alerts.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser or field-map change.
+
+**Scope and decisions.**
+
+| Area | Decision |
+| --- | --- |
+| Scope | Admin only; stage-role views and landing unchanged |
+| Actions | One solid primary per view; outlined/ghost secondary; red destructive only |
+| Surfaces | Remove nested bordered containers Ôćĺ shaded cards, padding, `shadow-sm` |
+| System status | Four health badges Ôćĺ one dot + ÔÇťSystem statusÔÇŁ with detail dropdown |
+| Library controls | Search/status/role in one inline row |
+| Year selectors | Semantic tabs with active underline, not buttons |
+| Detail actions | Keep Rotate PINs + QR cards; rest in More Actions menu |
+| Role tags | Status indicators: green filled / gray missing, not navigation |
+| Provider rows | Table/grid with row-level ellipsis or hover actions |
+| Games | Unified badges; blocker becomes inline amber alert above Create |
+| Drive source | Out of scope; removed by #989 before these start |
+
+**Task split.** All four issues are blocked until #989 closes.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#994](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/994) | Admin design system, button hierarchy, card surfaces | #989 |
+| 2 | [#996](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/996) | Library status consolidation, inline filters, year tabs | #989 |
+| 3 | [#997](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/997) | Detail header More Actions, role status dots, provider table | #989 |
+| 4 | [#998](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/998) | Games badges + inline blocker alert | #989 |
+
+**Open questions.** None.
+
+**Tracking.** [#994](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/994), [#996](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/996), [#997](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/997), [#998](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/998).
