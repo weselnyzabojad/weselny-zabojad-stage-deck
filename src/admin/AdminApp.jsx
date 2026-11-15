@@ -1057,11 +1057,26 @@ function AdminAppContent() {
                         </button>
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
-                        {(wedding.roles ?? []).map((role) => (
-                          <span key={role} className="rounded border border-line-strong bg-raised px-1.5 py-0.5 font-mono text-[9px] text-brand-tint">
-                            {roleShort(role)}
-                          </span>
-                        ))}
+                        {ROLE_IDS.map((role) => {
+                          const filled = (wedding.roles ?? []).includes(role);
+                          return (
+                            <span
+                              key={role}
+                              aria-label={`${roleShort(role)}: ${filled ? 'filled' : 'missing'}`}
+                              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[9px] ${
+                                filled
+                                  ? 'border-emerald-800 bg-emerald-950/40 text-emerald-200'
+                                  : 'border-line bg-raised text-muted'
+                              }`}
+                            >
+                              <span
+                                aria-hidden="true"
+                                className={`h-1.5 w-1.5 rounded-full ${filled ? 'bg-emerald-400' : 'bg-line-strong'}`}
+                              />
+                              {roleShort(role)}
+                            </span>
+                          );
+                        })}
                       </div>
                       {wedding.vipWarning ? (
                         <p
@@ -1080,7 +1095,7 @@ function AdminAppContent() {
                         </p>
                       ) : null}
                     </div>
-                    <div className="flex flex-wrap gap-1.5 text-[10px]">
+                    <div className="flex flex-wrap items-start gap-1.5 text-[10px]">
                       <button
                         type="button"
                         onClick={() => handleRotate(wedding)}
@@ -1096,38 +1111,52 @@ function AdminAppContent() {
                       >
                         QR cards
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePublishRevision(wedding)}
-                        disabled={readOnly}
-                        className={ADMIN_BUTTON.primary}
-                      >
-                        Replace cartridge
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleRestorePrevious(wedding)}
-                        disabled={readOnly}
-                        className={ADMIN_BUTTON.secondary}
-                      >
-                        Restore previous
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleArchive(wedding)}
-                        disabled={readOnly}
-                        className={ADMIN_BUTTON.secondary}
-                      >
-                        Archive
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(wedding)}
-                        disabled={readOnly}
-                        className={ADMIN_BUTTON.danger}
-                      >
-                        Delete
-                      </button>
+                      <details className="relative">
+                        <summary className={`${ADMIN_BUTTON.secondary} cursor-pointer list-none`}>
+                          More actions
+                        </summary>
+                        <div
+                          role="menu"
+                          className="absolute right-0 z-banner mt-1 w-44 space-y-1 rounded-lg border border-line bg-card p-1.5 shadow-xl"
+                        >
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handlePublishRevision(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Replace cartridge
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleRestorePrevious(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Restore previous
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleArchive(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.secondary} w-full`}
+                          >
+                            Archive
+                          </button>
+                          <button
+                            type="button"
+                            role="menuitem"
+                            onClick={() => handleDelete(wedding)}
+                            disabled={readOnly}
+                            className={`${ADMIN_BUTTON.danger} w-full`}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </details>
                     </div>
                   </div>
                   <div className="mt-2 font-mono text-[9px] text-muted">
