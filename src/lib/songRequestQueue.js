@@ -3,7 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 const STATUSES = new Set(['pending', 'accepted', 'declined']);
 
 export function canModerateSongRequests(role) {
-  return role === 'mc' || role === 'dj';
+  // Provider preview ids keep DJ moderation rights; production still passes the
+  // canonical `dj` role (issue #1019).
+  return role === 'mc' || role === 'dj' || role === 'dj_mark' || role === 'dj_szymoniak';
 }
 
 // Realtime hint for the joined MC/DJ queue. RLS scopes postgres_changes to the

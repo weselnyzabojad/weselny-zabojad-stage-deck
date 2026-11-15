@@ -509,6 +509,9 @@ export default function StageDeck({
     pin: pairing?.pin ?? null,
     onRoleChange: handleRoleChange
   };
+  // Provider preview ids (dj_mark/dj_szymoniak) keep DJ moderation rights while
+  // the visible identity is resolved separately (issue #1019).
+  const djBoothProps = { ...roleProps, role: 'dj' };
 
   const cartridgeMessages = [];
   if (cartridgeNotice?.kind === 'updated') {
@@ -622,7 +625,7 @@ export default function StageDeck({
             extensionUntil={mandatorySettings.closureExtensionUntil ?? null}
             closureTime={mandatorySettings.closureTime ?? null}
             extensionBlockedReason={extensionBlockedReason}
-            {...roleProps}
+            {...djBoothProps}
           />
         </AppErrorBoundary>
         {statusBanners}
