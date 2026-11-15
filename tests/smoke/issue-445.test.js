@@ -43,8 +43,10 @@ describe('issue #445 DJ music policy and set notes i18n', () => {
 
   it('localizes the Set notes title and removes the leading glyph', () => {
     const dj = read('src/components/DjBoothView.jsx');
-    expect(dj).toContain("t('dj.setNotes')");
+    const notepad = read('src/components/DjSetNotesNotepad.jsx');
+    expect(dj + notepad).toContain("t('dj.setNotes')");
     expect(dj).not.toContain('Set notes');
+    expect(notepad).not.toContain('Set notes');
     expect(dj).not.toContain('🎚');
   });
 

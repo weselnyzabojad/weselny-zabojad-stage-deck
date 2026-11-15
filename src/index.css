@@ -14,6 +14,7 @@
 @theme inline {
   --font-heading: "Montserrat", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-handwriting: "Caveat", "Segoe Script", "Comic Sans MS", cursive;
   --color-page: var(--bg-page);
   --color-card: var(--bg-card);
   --color-raised: var(--bg-raised);

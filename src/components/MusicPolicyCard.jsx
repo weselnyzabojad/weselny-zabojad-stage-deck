@@ -25,6 +25,29 @@ const STATUS_META = {
   },
 };
 
+const PAPER_STATUS_META = {
+  open: {
+    chip: 'border-emerald-700 bg-emerald-100 text-emerald-900',
+    dot: 'bg-emerald-600',
+  },
+  upcoming: {
+    chip: 'border-cyan-700 bg-cyan-100 text-cyan-900',
+    dot: 'bg-cyan-600',
+  },
+  closed: {
+    chip: 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]',
+    dot: 'bg-[#8b6f47]',
+  },
+  disabled: {
+    chip: 'border-red-700 bg-red-100 text-red-900',
+    dot: 'bg-red-600',
+  },
+  unknown: {
+    chip: 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]',
+    dot: 'bg-[#8b6f47]',
+  },
+};
+
 function statusLabel(status, t) {
   if (!status) return '';
   if (status.key === 'disabled') return t('music.status.disabled');
@@ -51,9 +74,9 @@ function statusDetail(status, t) {
     : t('music.detail.left', { duration });
 }
 
-function StatusChip({ status, compact, t }) {
+function StatusChip({ status, compact, t, paper = false }) {
   if (!status) return null;
-  const meta = STATUS_META[status.key] ?? STATUS_META.unknown;
+  const meta = (paper ? PAPER_STATUS_META : STATUS_META)[status.key] ?? (paper ? PAPER_STATUS_META.unknown : STATUS_META.unknown);
   return (
     <span
       className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono font-bold ${
@@ -67,20 +90,26 @@ function StatusChip({ status, compact, t }) {
   );
 }
 
-function CleanChip({ cleanVersions, t }) {
+function CleanChip({ cleanVersions, t, paper = false }) {
   if (cleanVersions === null) {
     return (
-      <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
+      <span className={`rounded border px-1.5 py-0.5 ${paper ? 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]' : 'border-line-strong bg-raised text-muted'}`}>
         ✨ {t('music.clean.missing')}
       </span>
     );
   }
   return cleanVersions ? (
-    <span className="rounded border border-emerald-800 bg-emerald-950/60 px-1.5 py-0.5 font-semibold text-emerald-300">
+    <span
+      className={`rounded border px-1.5 py-0.5 font-semibold ${
+        paper
+          ? 'border-emerald-700 bg-emerald-100 text-emerald-900'
+          : 'border-emerald-800 bg-emerald-950/60 text-emerald-300'
+      }`}
+    >
       ✨ {t('music.clean.on')}
     </span>
   ) : (
-    <span className="rounded border border-line-strong bg-raised px-1.5 py-0.5 text-muted">
+    <span className={`rounded border px-1.5 py-0.5 ${paper ? 'border-[#b9a98e] bg-[#efe7d8] text-[#6b5a45]' : 'border-line-strong bg-raised text-muted'}`}>
       ✨ {t('music.clean.off')}
     </span>
   );
@@ -92,18 +121,24 @@ const PILL_TONES = {
   dont: 'border-alert/40 bg-alert/10 text-alert-tint',
 };
 
-function SongPill({ tone, title, children }) {
+const PAPER_PILL_TONES = {
+  main: 'border-[#9a7b4f]/50 bg-[#efe2c8] text-[#4a3415]',
+  must: 'border-[#b9a98e] bg-[#f7f0e3] text-[#3f3423]',
+  dont: 'border-[#c97a6a]/70 bg-[#f7ddd7] text-[#7a2e23]',
+};
+
+function SongPill({ tone, title, children, paper = false }) {
   return (
     <li
       title={title}
-      className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-2.5 py-2 text-[11px] ${PILL_TONES[tone]}`}
+      className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-2.5 py-2 text-[11px] ${(paper ? PAPER_PILL_TONES : PILL_TONES)[tone]}`}
     >
       {children}
     </li>
   );
 }
 
-function MainSongPills({ items, t }) {
+function MainSongPills({ items, t, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
@@ -114,19 +149,20 @@ function MainSongPills({ items, t }) {
             key={item.id}
             tone="main"
             title={`${item.stepTitle}: ${item.missing ? t('music.missing') : label}`}
+            paper={paper}
           >
-            <span className="font-heading font-semibold uppercase tracking-wide text-brand-soft">
+            <span className={`font-heading font-semibold uppercase tracking-wide ${paper ? 'text-[#6b4d2f]' : 'text-brand-soft'}`}>
               {item.stepTitle}
             </span>
             {item.missing ? (
-              <span className="font-semibold text-amber-200">
+              <span className={`font-semibold ${paper ? 'text-[#8a5a12]' : 'text-amber-200'}`}>
                 {t('music.mainSongMissing')}
               </span>
             ) : (
               <span className="break-words">
                 <strong>{label}</strong>
                 {item.title && item.artist ? (
-                  <span className="text-muted"> — {item.artist}</span>
+                  <span className={paper ? 'text-[#6b5a45]' : 'text-muted'}> — {item.artist}</span>
                 ) : null}
               </span>
             )}
@@ -137,40 +173,44 @@ function MainSongPills({ items, t }) {
   );
 }
 
-function MustPlayPills({ items, t }) {
+function MustPlayPills({ items, t, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
       {items.map((item) => (
-        <SongPill key={item.id} tone="must" title={item.track}>
-          <span className="break-words font-heading font-semibold text-ink">
+        <SongPill key={item.id} tone="must" title={item.track} paper={paper}>
+          <span className={`break-words font-heading font-semibold ${paper ? 'text-[#3f3423]' : 'text-ink'}`}>
             {item.track}
           </span>
           {item.linked ? (
             <span
               title={t('music.keySong.tooltip')}
-              className="rounded-full border border-brand-strong bg-brand/30 px-1.5 py-0.5 font-mono text-[9px] text-brand-tint"
+              className={`rounded-full border px-1.5 py-0.5 font-mono text-[9px] ${
+                paper
+                  ? 'border-[#9a7b4f] bg-[#efe2c8] text-[#4a3415]'
+                  : 'border-brand-strong bg-brand/30 text-brand-tint'
+              }`}
             >
               {t('music.keySong.label')}
             </span>
           ) : null}
           {item.conflict ? (
-            <span className="text-[9px] text-amber-200">{t('music.keySong.conflict')}</span>
+            <span className={`text-[9px] ${paper ? 'text-[#8a5a12]' : 'text-amber-200'}`}>{t('music.keySong.conflict')}</span>
           ) : null}
-          {item.note ? <span className="break-words text-muted">{item.note}</span> : null}
+          {item.note ? <span className={`break-words ${paper ? 'text-[#6b5a45]' : 'text-muted'}`}>{item.note}</span> : null}
         </SongPill>
       ))}
     </ul>
   );
 }
 
-function DoNotPlayPills({ items }) {
+function DoNotPlayPills({ items, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
       {items.map((item) => (
-        <SongPill key={item.key} tone="dont" title={item.track}>
-          <span className="break-words font-heading font-semibold text-alert-tint">
+        <SongPill key={item.key} tone="dont" title={item.track} paper={paper}>
+          <span className={`break-words font-heading font-semibold ${paper ? 'text-[#7a2e23]' : 'text-alert-tint'}`}>
             {item.track}
           </span>
         </SongPill>
@@ -180,7 +220,7 @@ function DoNotPlayPills({ items }) {
 }
 
 // Music policy card for the DJ Booth (full) and MC / Pocket (compact).
-export default function MusicPolicyCard({ policy, compact = false }) {
+export default function MusicPolicyCard({ policy, compact = false, paper = false }) {
   const { t } = useI18n();
   if (!policy?.hasData) return null;
 
@@ -237,20 +277,20 @@ export default function MusicPolicyCard({ policy, compact = false }) {
   return (
     <section
       aria-labelledby="music-policy-title"
-      className="rounded-xl border border-line bg-card/95 p-5 shadow-lg"
+      className={paper ? 'text-[#3b2f23]' : 'rounded-xl border border-line bg-card/95 p-5 shadow-lg'}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2
           id="music-policy-title"
-          className="font-heading text-xs font-bold uppercase tracking-widest text-ink"
+          className={`font-heading text-xs font-bold uppercase tracking-widest ${paper ? 'text-[#3b2f23]' : 'text-ink'}`}
         >
           🎵 {t('music.title')}
         </h2>
-        <StatusChip status={requestStatus} t={t} />
+        <StatusChip status={requestStatus} t={t} paper={paper} />
       </div>
 
       {statusDetail(requestStatus, t) ? (
-        <p className="mt-1 text-[10px] text-muted">
+        <p className={`mt-1 text-[10px] ${paper ? 'text-[#6b5a45]' : 'text-muted'}`}>
           {statusDetail(requestStatus, t)}
           {policy.requestWindow
             ? ` · ${t('music.windowRange', {
@@ -262,44 +302,44 @@ export default function MusicPolicyCard({ policy, compact = false }) {
       ) : null}
 
       <div className="mt-2">
-        <DiscoPoloBadge value={discoPoloPolicy} />
+        <DiscoPoloBadge value={discoPoloPolicy} paper={paper} />
       </div>
 
       {mainSongs.length > 0 ? (
         <div className="mt-4">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
+          <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-[#6b4d2f]' : 'text-brand-tint'}`}>
             ⭐ {t('music.mainSongs.title', { count: mainSongs.length })}
           </h3>
           <div className="mt-1.5">
-            <MainSongPills items={mainSongs} t={t} />
+            <MainSongPills items={mainSongs} t={t} paper={paper} />
           </div>
         </div>
       ) : null}
 
       {mustPlay.length > 0 ? (
         <div className="mt-4">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
+          <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-emerald-900' : 'text-emerald-300'}`}>
             ✅ {t('music.mustPlay.title', { count: mustPlay.length })}
           </h3>
           <div className="mt-1.5">
-            <MustPlayPills items={mustPlay} t={t} />
+            <MustPlayPills items={mustPlay} t={t} paper={paper} />
           </div>
         </div>
       ) : null}
 
       {doNotPlay.length > 0 ? (
         <div className="mt-4">
-          <h3 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
+          <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-[#7a2e23]' : 'text-alert-soft'}`}>
             🚫 {t('music.doNotPlay.title', { count: doNotPlay.length })}
           </h3>
           <div className="mt-1.5">
-            <DoNotPlayPills items={doNotPlay} />
+            <DoNotPlayPills items={doNotPlay} paper={paper} />
           </div>
         </div>
       ) : null}
 
       <div className="mt-3 flex flex-wrap gap-1.5 text-[10px]">
-        <CleanChip cleanVersions={cleanVersions} t={t} />
+        <CleanChip cleanVersions={cleanVersions} t={t} paper={paper} />
       </div>
     </section>
   );

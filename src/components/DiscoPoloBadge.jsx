@@ -12,9 +12,15 @@ const DOTS = {
   ON_REQUEST: 'bg-amber-400',
 };
 
+const PAPER_TONES = {
+  NO: 'border-red-700 bg-red-100 text-red-900',
+  YES: 'border-emerald-700 bg-emerald-100 text-emerald-900',
+  ON_REQUEST: 'border-amber-700 bg-amber-100 text-amber-900',
+};
+
 // Display-only policy badge. It never enforces a play count; the DJ reads it as
 // guidance. Absent/invalid values fail closed to NO.
-export default function DiscoPoloBadge({ value = 'NO', compact = false }) {
+export default function DiscoPoloBadge({ value = 'NO', compact = false, paper = false }) {
   const { t } = useI18n();
   const policy = TONES[value] ? value : 'NO';
   const label = t(`music.discoPolo.${policy}`);
@@ -27,7 +33,7 @@ export default function DiscoPoloBadge({ value = 'NO', compact = false }) {
       title={`${label}. ${description}`}
       className={`inline-flex items-center gap-1.5 rounded border font-mono font-bold ${
         compact ? 'px-1.5 py-0.5 text-[9px]' : 'px-2 py-1 text-[10px]'
-      } ${TONES[policy]}`}
+      } ${paper ? PAPER_TONES[policy] : TONES[policy]}`}
     >
       <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${DOTS[policy]}`} aria-hidden="true" />
       <span>{label}</span>

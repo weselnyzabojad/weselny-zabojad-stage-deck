@@ -2,6 +2,7 @@ import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/e
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
+import DjSetNotesNotepad from './DjSetNotesNotepad';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -328,18 +329,20 @@ export default function DjBoothView({
 
           {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
 
-          <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
-            <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-              {t('dj.setNotes')}
-            </h2>
-            <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
-              <li>{t('dj.setNotes.project')}</li>
-              <li>{t('dj.setNotes.cutoffs')}</li>
-              <li>{t('dj.setNotes.private')}</li>
-            </ul>
-          </section>
-
-          {caps.musicPolicy ? <MusicPolicyCard policy={musicPolicy} /> : null}
+          {caps.musicPolicy ? (
+            <DjSetNotesNotepad policy={musicPolicy} />
+          ) : (
+            <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
+              <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+                {t('dj.setNotes')}
+              </h2>
+              <ul className="mt-2 space-y-1.5 text-[11px] text-muted">
+                <li>{t('dj.setNotes.project')}</li>
+                <li>{t('dj.setNotes.cutoffs')}</li>
+                <li>{t('dj.setNotes.private')}</li>
+              </ul>
+            </section>
+          )}
         </div>
       </main>
 
