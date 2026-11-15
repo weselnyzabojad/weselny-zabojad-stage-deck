@@ -30,7 +30,25 @@ describe('issue #155 shared top-bar controls', () => {
       renderToStaticMarkup(
         createElement(TopBarRoleLabel, { role: 'dj', tier: 'VIP' }),
       ),
-    ).toContain('DJ VIP');
+    ).toContain('DJ');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleLabel, {
+          role: 'dj',
+          tier: 'VIP',
+          wedding: { djIdentityId: 'dj_mark' },
+        }),
+      ),
+    ).toContain('DJ Mark');
+    expect(
+      renderToStaticMarkup(
+        createElement(TopBarRoleLabel, {
+          role: 'dj',
+          tier: 'VIP',
+          wedding: { djIdentityId: 'dj_mark' },
+        }),
+      ),
+    ).not.toContain('DJ VIP');
     expect(
       renderToStaticMarkup(
         createElement(TopBarRoleLabel, { role: 'dj', tier: 'STANDARD' }),

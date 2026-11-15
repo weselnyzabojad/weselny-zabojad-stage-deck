@@ -89,7 +89,16 @@ describe('issue #751 desktop top bar layout and overflow', () => {
   it('renders the role badge text without changing labels', () => {
     expect(render(createElement(TopBarRoleLabel, { role: 'mc' }))).toContain('MC');
     expect(render(createElement(TopBarRoleIdentity, { role: 'dj', tier: 'VIP' }))).toContain(
-      'Role: DJ VIP',
+      'Role: DJ',
     );
+    expect(
+      render(
+        createElement(TopBarRoleIdentity, {
+          role: 'dj',
+          tier: 'VIP',
+          wedding: { djIdentityId: 'dj_mark' },
+        }),
+      ),
+    ).toContain('Role: DJ Mark');
   });
 });
