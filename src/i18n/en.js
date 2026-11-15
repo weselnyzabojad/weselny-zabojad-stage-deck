@@ -633,6 +633,12 @@ const en = {
   'venueManager.cake.CUT_IN_PLACE': 'Cut in place / guests come',
   'venueManager.prestationHelper': 'Prestation ready is derived automatically 1 hour before first guests arrival.',
   'venueManager.saved': 'Saved',
+  'venueManager.confirm.title': 'Confirm change',
+  'venueManager.confirm.description': 'Review the old and new value before saving.',
+  'venueManager.confirm.old': 'Before',
+  'venueManager.confirm.new': 'After',
+  'venueManager.confirm.cancel': 'Cancel',
+  'venueManager.confirm.confirm': 'Confirm',
   'venueManager.rescheduleBlocked':
     'Cannot move: it would cross the next fixed step or venue closure.',
 
@@ -774,6 +780,7 @@ const en = {
 };
 
 export default en;
+
 
 
 

@@ -637,6 +637,12 @@ const fr = {
   'venueManager.cake.CUT_IN_PLACE': 'Découpe sur place / les invités viennent',
   'venueManager.prestationHelper': 'La prestation prête est calculée automatiquement 1 heure avant l’arrivée des premiers invités.',
   'venueManager.saved': 'Enregistré',
+  'venueManager.confirm.title': 'Confirmer la modification',
+  'venueManager.confirm.description': "Vérifiez l'ancienne et la nouvelle valeur avant d'enregistrer.",
+  'venueManager.confirm.old': 'Avant',
+  'venueManager.confirm.new': 'Après',
+  'venueManager.confirm.cancel': 'Annuler',
+  'venueManager.confirm.confirm': 'Confirmer',
   'venueManager.rescheduleBlocked':
     'Déplacement impossible : cela croiserait l’étape fixe suivante ou la fermeture.',
 
@@ -778,6 +784,7 @@ const fr = {
 };
 
 export default fr;
+
 
 
 
