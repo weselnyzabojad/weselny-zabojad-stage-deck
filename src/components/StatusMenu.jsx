@@ -58,7 +58,7 @@ export default function StatusMenu({ children, active = false, className = '' })
         role="menu"
         aria-label={t('statusMenu.label')}
         hidden={!open}
-        className="absolute right-0 z-banner mt-2 w-[min(92vw,22rem)] space-y-2 rounded-xl border border-line bg-card p-3 shadow-2xl"
+        className="absolute right-0 z-toast mt-2 w-[min(92vw,22rem)] space-y-2 rounded-xl border border-line bg-card p-3 shadow-2xl"
       >
         {children}
       </div>
