@@ -287,6 +287,51 @@ async function writeAudit(admin: any, actor: any, action: string, target: string
   });
 }
 
+// Issue #992: musician access is per musician, never a shared wedding role.
+async function revokeMusicianAccess(admin: any, weddingId: string, musicianId: string) {
+  const now = new Date().toISOString();
+  const { error: accessError } = await admin
+    .from('wedding_musician_access')
+    .delete()
+    .eq('wedding_id', weddingId)
+    .eq('musician_id', musicianId);
+  if (accessError) throw accessError;
+  const { error: sessionError } = await admin
+    .from('role_sessions')
+    .update({ revoked_at: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', 'musician')
+    .eq('musician_id', musicianId)
+    .is('revoked_at', null);
+  if (sessionError) throw sessionError;
+  const { error: presenceError } = await admin
+    .from('role_presence')
+    .update({ status: 'offline', session_jti: null, last_seen: now })
+    .eq('wedding_id', weddingId)
+    .eq('role', 'musician')
+    .eq('musician_id', musicianId);
+  if (presenceError) throw presenceError;
+}
+
+async function ensureMusicianAccess(admin: any, weddingId: string, musicianId: string) {
+  const { data: existing, error } = await admin
+    .from('wedding_musician_access')
+    .select('musician_id')
+    .eq('wedding_id', weddingId)
+    .eq('musician_id', musicianId)
+    .maybeSingle();
+  if (error) throw error;
+  if (existing) return null;
+  const pin = randomPin();
+  const { error: insertError } = await admin.from('wedding_musician_access').insert({
+    musician_id: musicianId,
+    wedding_id: weddingId,
+    pin_hash: bcrypt.hashSync(pin, 10),
+  });
+  if (insertError) throw insertError;
+  return pin;
+}
+
 // Create the role PINs and the initial live state for a brand-new wedding.
 // Content-only republications never reach this function, so existing PINs,
 // sessions and live progress are preserved.
@@ -2848,12 +2893,20 @@ async function handleRequest(req: Request) {
       const { data, error } = await query.select('*').single();
       if (error) throw error;
 
+      let pin = null;
+      if (data.active !== false) {
+        pin = await ensureMusicianAccess(admin, weddingId, data.id);
+      } else {
+        await revokeMusicianAccess(admin, weddingId, data.id);
+      }
+
       await writeAudit(admin, allowlisted, 'musician_upsert', weddingId, {
         musicianId: data.id,
         before,
         after: data,
+        pinIssued: Boolean(pin),
       });
-      return json({ musician: data });
+      return json({ musician: data, pin });
     }
 
     if (action === 'deactivate_musician') {
@@ -2879,6 +2932,7 @@ async function handleRequest(req: Request) {
         .select('*')
         .maybeSingle();
       if (error) throw error;
+      await revokeMusicianAccess(admin, weddingId, id);
       await writeAudit(admin, allowlisted, 'musician_deactivate', weddingId, {
         musicianId: id,
         before,
@@ -2902,6 +2956,7 @@ async function handleRequest(req: Request) {
         .maybeSingle();
       if (readError) throw readError;
       if (!before) return json({ error: 'Musician not found.' }, 404);
+      await revokeMusicianAccess(admin, weddingId, id);
       const { error } = await admin
         .from('wedding_musicians')
         .delete()
