@@ -55,6 +55,10 @@ import {
 } from '../_shared/adminPublish.js';
 import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
 import {
+  normalizeMusicianPayload,
+  withMusicianSnapshot,
+} from '../_shared/musicians.js';
+import {
   DRIVE_DOC_MIME_TYPE,
   createGoogleDriveConnector,
   driveErrorHttpStatus,
@@ -346,6 +350,19 @@ async function weddingExists(admin: any, weddingId: string) {
 
 async function handlePublish(admin: any, allowlisted: any, body: any, { source = 'admin_json' } = {}) {  const normalized = normalizePublishRequest(body, { source });
   if (normalized.error) return { response: json({ error: normalized.error }, normalized.status) };
+
+  // Issue #990: the admin-managed roster is persisted separately from the Doc
+  // and snapshotted into every publication. The Doc keeps only `expected`.
+  const { data: musicianRows, error: musicianError } = await admin
+    .from('wedding_musicians')
+    .select('*')
+    .eq('wedding_id', normalized.request.weddingId)
+    .order('created_at', { ascending: true });
+  if (musicianError) throw musicianError;
+  normalized.request.cartridge = withMusicianSnapshot(
+    normalized.request.cartridge,
+    musicianRows ?? [],
+  );
 
   const published = await publishCartridge({
     admin,
@@ -2775,6 +2792,127 @@ async function handleRequest(req: Request) {
       await revokeProviderRole(admin, weddingId, role);
       await writeAudit(admin, allowlisted, 'role_disable', weddingId, { role });
       return json({ weddingId, role, removed: true });
+    }
+
+    if (action === 'list_musicians') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const [{ data, error }, { data: wedding, error: weddingError }] = await Promise.all([
+        admin
+          .from('wedding_musicians')
+          .select('*')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: true }),
+        admin.from('weddings').select('cartridge').eq('wedding_id', weddingId).maybeSingle(),
+      ]);
+      if (error) throw error;
+      if (weddingError) throw weddingError;
+      return json({
+        musicians: data ?? [],
+        expected: wedding?.cartridge?.musicians?.expected === true,
+      });
+    }
+
+    if (action === 'upsert_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+
+      const normalized = normalizeMusicianPayload(body);
+      if (normalized.error) return json({ error: normalized.error }, 400);
+
+      const id = typeof body?.id === 'string' && body.id.trim() ? body.id.trim() : null;
+      let before = null;
+      if (id) {
+        const { data, error } = await admin
+          .from('wedding_musicians')
+          .select('*')
+          .eq('id', id)
+          .eq('wedding_id', weddingId)
+          .maybeSingle();
+        if (error) throw error;
+        if (!data) return json({ error: 'Musician not found.' }, 404);
+        before = data;
+      }
+
+      const query = id
+        ? admin
+            .from('wedding_musicians')
+            .update(normalized.musician)
+            .eq('id', id)
+            .eq('wedding_id', weddingId)
+        : admin
+            .from('wedding_musicians')
+            .insert({ wedding_id: weddingId, ...normalized.musician });
+      const { data, error } = await query.select('*').single();
+      if (error) throw error;
+
+      await writeAudit(admin, allowlisted, 'musician_upsert', weddingId, {
+        musicianId: data.id,
+        before,
+        after: data,
+      });
+      return json({ musician: data });
+    }
+
+    if (action === 'deactivate_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Musician id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_musicians')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Musician not found.' }, 404);
+      const { data, error } = await admin
+        .from('wedding_musicians')
+        .update({ active: false })
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .select('*')
+        .maybeSingle();
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'musician_deactivate', weddingId, {
+        musicianId: id,
+        before,
+        after: data,
+      });
+      return json({ musician: data });
+    }
+
+    if (action === 'delete_musician') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const id = typeof body?.id === 'string' ? body.id.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+      if (!id) return json({ error: 'Musician id is required.' }, 400);
+      const writable = await requireWritableWedding(admin, weddingId);
+      if (writable.error) return json({ error: writable.error }, writable.status);
+      const { data: before, error: readError } = await admin
+        .from('wedding_musicians')
+        .select('*')
+        .eq('id', id)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Musician not found.' }, 404);
+      const { error } = await admin
+        .from('wedding_musicians')
+        .delete()
+        .eq('id', id)
+        .eq('wedding_id', weddingId);
+      if (error) throw error;
+      await writeAudit(admin, allowlisted, 'musician_delete', weddingId, {
+        musicianId: id,
+        before,
+      });
+      return json({ removed: true });
     }
 
     if (action === 'list_providers') {
