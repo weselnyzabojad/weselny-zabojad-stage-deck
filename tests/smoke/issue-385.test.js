@@ -43,7 +43,7 @@ describe('issue #385 shared secondary control bar', () => {
     expect(pin).toBeLessThan(drift);
     expect(utilities).toBeGreaterThan(-1);
     expect(utilities).toBeLessThan(phone);
-    expect(mc).toContain('<StatusMenu');
+    expect(mc).not.toContain('<StatusMenu');
   });
 
   it('removes the moved controls from the MC top bar', () => {
@@ -68,13 +68,12 @@ describe('issue #385 shared secondary control bar', () => {
     }
   });
 
-  it('places the photographer children badge in the status menu and not in the pocket header', () => {
+  it('places the photographer children badge in the top-right header zone', () => {
     const photo = read('src/components/PhotographerView.jsx');
     expect(photo).toContain('<ChildrenExpectedBadge');
     expect(photo).toContain('inline');
     expect(photo).not.toContain('fixed bottom-3 right-3');
-    const menu = photo.slice(photo.indexOf('<StatusMenu'), photo.indexOf('</StatusMenu>'));
-    expect(menu).toContain('<ChildrenExpectedBadge');
+    expect(photo).not.toContain('<StatusMenu');
     expect(read('src/components/RoleShell.jsx')).not.toContain('<ChildrenExpectedBadge');
   });
 

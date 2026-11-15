@@ -103,7 +103,7 @@ describe('issue #713 MC Master content polish', () => {
     const mc = read('src/views/McMasterView.jsx');
     expect(mc).not.toContain('actions={bannerActions}');
     expect(mc).not.toContain('const bannerActions = (');
-    expect(mc).toContain('<StatusMenu');
+    expect(mc).not.toContain('<StatusMenu');
   });
 
   it('passes the polished variant to both MC focus stacks', () => {

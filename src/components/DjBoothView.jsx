@@ -13,7 +13,6 @@ import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
-import StatusMenu from './StatusMenu';
 import StepMandatoryNotes from './StepMandatoryNotes';
 import { mapMandatoryToSteps } from '../lib/mandatorySteps.js';
 import SpeechSummaryChip from './SpeechSummaryChip';
@@ -301,26 +300,7 @@ export default function DjBoothView({
         right={(
           <>
             {viewSwitch}
-            <StatusMenu active={Boolean(culturalRules) || speechMode !== 'OFF'}>
-              {(caps.culturalChips && culturalRules) || caps.speeches ? (
-                <CulturalRulesBar
-                  rules={culturalRules ?? {}}
-                  oczepinyStatus={oczepinyStatus}
-                  showRules={Boolean(caps.culturalChips && culturalRules)}
-                  grid
-                  dense
-                >
-                  {caps.speeches ? (
-                    <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-                  ) : null}
-                </CulturalRulesBar>
-              ) : null}
-              <ChildrenExpectedBadge wedding={wedding} inline />
-              <UtilityControlGroup>
-                <LanguageToggle variant="desktop" />
-                <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-              </UtilityControlGroup>
-            </StatusMenu>
+            <ChildrenExpectedBadge wedding={wedding} inline />
           </>
         )}
         brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}
@@ -333,9 +313,27 @@ export default function DjBoothView({
             {caps.vipAuth && authControl ? authControl : null}
           </>
         )}
-        center={null}
+        center={
+          (caps.culturalChips && culturalRules) || caps.speeches ? (
+            <CulturalRulesBar
+              rules={culturalRules ?? {}}
+              oczepinyStatus={oczepinyStatus}
+              showRules={Boolean(caps.culturalChips && culturalRules)}
+              grid
+              dense
+            >
+              {caps.speeches ? (
+                <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
+              ) : null}
+            </CulturalRulesBar>
+          ) : null
+        }
         right={(
           <>
+            <UtilityControlGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </UtilityControlGroup>
             <OpenOnPhoneButton role={role} tier={tierLabel} roomCode={roomCode} />
           </>
         )}

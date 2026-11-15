@@ -23,7 +23,6 @@ import OczepinyCueCard from '../components/OczepinyCueCard';
 import RoleShell from '../components/RoleShell';
 import RoleSignOutControl from '../components/RoleSignOutControl';
 import SecondaryControlBar from '../components/SecondaryControlBar';
-import StatusMenu from '../components/StatusMenu';
 import TimelineFocusStack from '../components/TimelineFocusStack';
 import TopBarCenterIdentity from '../components/TopBarCenterIdentity';
 import TopBarClock from '../components/TopBarClock';
@@ -445,17 +444,7 @@ export default function McMasterView({ model }) {
         right={(
           <>
             {viewSwitch}
-            <StatusMenu active={Boolean(WEDDING.culturalRules) || speechMode !== 'OFF'}>
-              <CulturalRulesBar
-                rules={WEDDING.culturalRules}
-                oczepinyStatus={oczepinyStatus}
-                grid
-                dense
-              >
-                <SpeechesChip mode={speechMode} speeches={speeches} dense />
-              </CulturalRulesBar>
-              <ChildrenExpectedBadge wedding={WEDDING} inline />
-            </StatusMenu>
+            <ChildrenExpectedBadge wedding={WEDDING} inline />
           </>
         )}
       />
@@ -482,7 +471,16 @@ export default function McMasterView({ model }) {
             <DriftPill drift={driftReport.drift} />
           </>
         )}
-        center={null}
+        center={
+          <CulturalRulesBar
+            rules={WEDDING.culturalRules}
+            oczepinyStatus={oczepinyStatus}
+            grid
+            dense
+          >
+            <SpeechesChip mode={speechMode} speeches={speeches} dense />
+          </CulturalRulesBar>
+        }
         right={(
           <>
             {utilityGroup}
