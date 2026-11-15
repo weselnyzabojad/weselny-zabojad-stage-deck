@@ -7669,3 +7669,74 @@ translations.
 | 1 | [#1085](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1085) | Notepad shell, handwriting font, Music Policy relocation and paper variant, tests/i18n cleanup | - |
 
 **Open questions.** None.
+
+### 17.93 DJ policy columns and clean-versions removal (decision, 2026-11-15)
+
+Reshape the wide DJ VIP policy area around the timeline: the notepad keeps only
+the general notes, Disco Polo and request status at the central column width;
+main songs move under the completed column; must-play and do-not-play move under
+the upcoming column. Separately, delete the unused, non-enforced
+`cleanVersions` flag from the UI and the cartridge contract.
+
+**Google Doc contract.**
+
+Not Doc-linked. No template or parser source change. `cleanVersions` was already
+marked `"no"` in the field map and is removed from the schema, example, importer
+and normalizer.
+
+**F1 — Timeline policy redistribution.**
+
+- `TimelineFocusStack` gains `historyFooter` and `futureFooter` next to
+  `currentFooter`; each renders under its column and defaults to empty.
+- Central column: vendor presence, then the notepad at the exact current-column
+  width. Notepad contents: general notes, Disco Polo and request status.
+- Left column: `⭐ Główne utwory według kroku` panel with the main-song pills.
+- Right column: `✅ Do zagrania` and `🚫 Nie grać` panels with their pills.
+- Panels use natural height, disappear when empty, and keep existing headings,
+  counts and pill semantics.
+- Compact, DJ Standard, MC and DJ + MC keep the current cards.
+
+**F2 — Clean-versions removal.**
+
+- Delete the `✨ Wersje czyste` chip from default, compact and paper cards.
+- Remove `cleanVersions` from `schema/domains/music-policy.json`,
+  `schema/domains/music-policy.example.json`,
+  `schema/google-doc-field-map.json`, `src/lib/musicPolicy.js` and
+  `src/lib/cartridgeImporter.js`.
+- Delete `music.clean.*` keys from EN/FR/PL and update every fixture/assertion.
+- Old cartridges remain loadable because `musicPolicy` keeps
+  `additionalProperties: true`; no migration is needed.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ VIP wide | Notepad central; main songs left; must/do-not-play right |
+| DJ VIP compact | Unchanged |
+| DJ Standard | Unchanged |
+| MC Master / DJ + MC | Default Music Policy card, minus the clean chip |
+| Other roles | No change |
+| Schema/parser | `cleanVersions` removed; legacy key ignored |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Placement | `historyFooter`, `currentFooter`, `futureFooter` slots |
+| Notepad contents | Notes + Disco Polo + request status |
+| Side panels | Standard soft cards with existing semantic pills |
+| Height | Natural; page scrolls |
+| Compact | Unchanged |
+| Clean-versions scope | Remove chip and contract field completely |
+| Backward compatibility | No migration; legacy cartridges tolerated |
+| Recommended order | Clean-versions removal first, then column redistribution |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1091](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1091) | Remove clean-versions chip, schema/parser/field-map/i18n and test fixtures | - |
+| 2 | [#1092](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1092) | Add column footer slots, move notepad/list panels, preserve non-DJ paths | #1091 |
+
+**Open questions.** None.
