@@ -127,7 +127,7 @@ function PhotoPlanBlock({ type, data }) {
   }[type] ?? type;
 
   return (
-    <div className="rounded-lg border border-line bg-page p-2.5">
+    <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
       <h4 className="font-heading text-[10px] font-bold uppercase tracking-widest text-brand-soft">
         {title}
       </h4>
@@ -176,7 +176,7 @@ function MiniSessionOverride({ value, onSave }) {
   const { t } = useI18n();
   return (
     <form
-      className="mx-auto mt-2 flex max-w-xl flex-wrap items-center justify-center gap-2 rounded-lg border border-line bg-page p-2 text-center"
+      className="mx-auto mt-4 flex max-w-xl flex-wrap items-center justify-center gap-3 rounded-xl border border-line-strong bg-white p-4 text-center shadow-sm"
       onSubmit={(event) => {
         event.preventDefault();
         const form = new FormData(event.currentTarget);
@@ -190,12 +190,12 @@ function MiniSessionOverride({ value, onSave }) {
           type="time"
           name="miniTime"
           defaultValue={value ?? ''}
-          className="mt-0.5 block rounded border border-line bg-card px-2 py-1 font-mono text-xs text-ink"
+          className="mt-1 block rounded-lg border border-line px-2.5 py-1.5 font-mono text-sm text-slate-900 outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/30"
         />
       </label>
       <button
         type="submit"
-        className="rounded border border-brand-strong bg-brand/40 px-2 py-1 text-[10px] font-semibold text-ink"
+        className="rounded-lg border border-brand-strong bg-brand/40 px-3 py-1.5 text-[11px] font-semibold text-ink"
       >
         {t('photo.saveForAllMedia')}
       </button>
@@ -371,21 +371,21 @@ export default function PhotographerView({
           ) : (
             <>
               <div className="grid grid-cols-2 gap-2">
-                <div className="rounded-lg border border-line bg-page p-2.5">
+                <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                   <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.sunset')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.sunsetTime ?? '—'}</div>
                   <div className="font-mono text-[10px] text-muted">{countdownText(sunsetSeconds, t) ?? '—'}</div>
                 </div>
-                <div className="rounded-lg border border-line bg-page p-2.5">
+                <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                   <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.goldenHour')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.goldenHourStart ?? '—'}</div>
                   <div className="font-mono text-[10px] text-muted">{countdownText(goldenSeconds, t) ?? '—'}</div>
                 </div>
-                <div className="rounded-lg border border-line bg-page p-2.5">
+                <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                   <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.civilTwilight')}</div>
                   <div className="font-mono text-xl font-bold text-ink">{sunset.civilTwilightEnd ?? '—'}</div>
                 </div>
-                <div className="rounded-lg border border-line bg-page p-2.5">
+                <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                   <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.miniLatestStart')}</div>
                   <div className="font-mono text-xl font-bold text-ink">
                     {countdowns.latestMiniStartAt ? formatTimeOfDay(countdowns.latestMiniStartAt, timeZone) : '—'}
@@ -494,7 +494,7 @@ export default function PhotographerView({
                     </p>
                   ) : null}
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                    <div className="rounded-lg border border-line bg-page p-2.5">
+                    <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                       <div className="text-[9px] uppercase tracking-wider text-muted">{t('photo.sunset')}</div>
                       <div className="font-mono text-xl font-bold text-ink">
                         {sunset.sunsetTime ?? '—'}
@@ -503,7 +503,7 @@ export default function PhotographerView({
                         {countdownText(sunsetSeconds, t) ?? '—'}
                       </div>
                     </div>
-                    <div className="rounded-lg border border-line bg-page p-2.5">
+                    <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
                         {t('photo.goldenHour')}
                       </div>
@@ -514,7 +514,7 @@ export default function PhotographerView({
                         {countdownText(goldenSeconds, t) ?? '—'}
                       </div>
                     </div>
-                    <div className="rounded-lg border border-line bg-page p-2.5">
+                    <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
                         {t('photo.civilTwilight')}
                       </div>
@@ -522,7 +522,7 @@ export default function PhotographerView({
                         {sunset.civilTwilightEnd ?? '—'}
                       </div>
                     </div>
-                    <div className="rounded-lg border border-line bg-page p-2.5">
+                    <div className="rounded-xl border border-line bg-page p-4 shadow-sm">
                       <div className="text-[9px] uppercase tracking-wider text-muted">
                         {t('photo.miniSessionLatestStart')}
                       </div>
