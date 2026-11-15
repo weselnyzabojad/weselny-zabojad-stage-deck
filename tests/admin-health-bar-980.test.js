@@ -89,7 +89,7 @@ describe('issue #980 admin health bar', () => {
     expect(sentry).toContain('env?.PROD');
   });
 
-  it('uses the probe endpoint and renders the bar before the admin tabs', () => {
+  it('uses the probe endpoint and renders the monitoring bar before the admin tabs', () => {
     const api = read('src/admin/adminApi.js');
     expect(api).toContain('/service_health');
     expect(api).toContain('Authorization: `Bearer ${session.access_token}`');
@@ -97,10 +97,10 @@ describe('issue #980 admin health bar', () => {
     const bar = read('src/admin/AdminHealthBar.jsx');
     expect(bar).toContain('checkServiceHealth');
     expect(bar).toContain('captureHealthFailure');
-    expect(bar).toContain('aria-label');
-    expect(bar).toContain('role="dialog"');
-    expect(bar).toContain('Retry');
-    expect(bar).toContain('aria-modal="false"');
+    expect(bar).toContain('aria-label="Service monitoring"');
+    expect(bar).toContain('Retry all');
+    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-4');
+    expect(bar).not.toContain('role="dialog"');
 
     const app = read('src/admin/AdminApp.jsx');
     const headerRender = app.slice(app.indexOf('<AdminHealthBar'), app.indexOf('<nav'));
