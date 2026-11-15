@@ -8,6 +8,7 @@ import { useI18n } from '../i18n/useI18n';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import SpeechSummaryChip from './SpeechSummaryChip';
 import SyncStatusBadge from './SyncStatusBadge';
 import TimelineFocusStack from './TimelineFocusStack';
@@ -418,7 +419,7 @@ export default function PhotographerView({
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
         right={(
-          <>
+          <StatusMenu active={Boolean(culturalRules) || speechMode !== 'OFF'}>
             <CulturalRulesBar
               rules={culturalRules ?? {}}
               oczepinyStatus={oczepinyStatus}
@@ -428,7 +429,12 @@ export default function PhotographerView({
             >
               <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
             </CulturalRulesBar>
-          </>
+            <ChildrenExpectedBadge wedding={wedding} inline />
+            <UtilityControlGroup>
+              <LanguageToggle variant="desktop" />
+              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
+            </UtilityControlGroup>
+          </StatusMenu>
         )}
       />
 
@@ -439,16 +445,10 @@ export default function PhotographerView({
             {authControl}
           </>
         )}
-        center={(
-          <ChildrenExpectedBadge wedding={wedding} inline />
-        )}
+        center={null}
         right={(
           <>
             <OpenOnPhoneButton role={role} roomCode={roomCode} />
-            <UtilityControlGroup>
-              <LanguageToggle variant="desktop" />
-              <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
-            </UtilityControlGroup>
           </>
         )}
       />

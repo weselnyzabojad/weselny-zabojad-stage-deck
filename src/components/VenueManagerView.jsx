@@ -2,6 +2,7 @@ import { useState } from 'react';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
+import StatusMenu from './StatusMenu';
 import SyncStatusBadge from './SyncStatusBadge';
 import UtilityControlGroup from './UtilityControlGroup';
 import LanguageToggle from './LanguageToggle';
@@ -334,25 +335,22 @@ export default function VenueManagerView({
           </>
         )}
         center={<TopBarCenterIdentity wedding={wedding} />}
-        right={null}
-      />
-
-      <SecondaryControlBar
-        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
-        center={(
-          <>
+        right={(
+          <StatusMenu active={speechMode !== 'OFF'}>
             <ChildrenExpectedBadge wedding={wedding} inline />
             <SpeechSummaryChip mode={speechMode} speeches={speeches} dense />
-          </>
-        )}
-        right={(
-          <>
             <UtilityControlGroup>
               <LanguageToggle variant="desktop" />
               <ThemeToggle theme={theme} onToggle={onToggleTheme} variant="desktop" />
             </UtilityControlGroup>
-          </>
+          </StatusMenu>
         )}
+      />
+
+      <SecondaryControlBar
+        left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
+        center={null}
+        right={null}
       />
 
       <main className="flex-1 p-4">{body}</main>
