@@ -119,6 +119,7 @@ export default function VenueManagerView({
   theme = 'night',
   onToggleTheme,
   pin = null,
+  roomCode = null,
   speechMode = 'OFF',
   speeches = [],
   onUpdateMandatory,

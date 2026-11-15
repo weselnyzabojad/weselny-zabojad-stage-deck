@@ -65,5 +65,9 @@ describe('issue #1096 STATUS removal and secondary-bar chips', () => {
   it('adds Open on phone for Venue Manager', () => {
     const venue = read(views.venue);
     expect(venue).toContain('<OpenOnPhoneButton role="venue_manager"');
+    expect(venue).toContain('roomCode = null');
+    const deck = read('src/StageDeck.jsx');
+    const block = deck.slice(deck.indexOf('<VenueManagerView'), deck.indexOf('/>', deck.indexOf('<VenueManagerView')));
+    expect(block).toContain('roomCode={deckIntent.roomCode}');
   });
 });

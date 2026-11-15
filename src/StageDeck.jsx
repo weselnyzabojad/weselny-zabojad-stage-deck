@@ -699,6 +699,7 @@ export default function StageDeck({
             speeches={summarySpeeches}
             mandatoryOverride={liveState.media_overrides?.steps ?? null}
             onUpdateMandatory={(nextSteps) => setMediaOverride('steps', nextSteps)}
+            roomCode={deckIntent.roomCode}
           />
         </AppErrorBoundary>
         {statusBanners}
