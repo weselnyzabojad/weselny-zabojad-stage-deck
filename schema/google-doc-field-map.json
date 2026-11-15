@@ -79,7 +79,6 @@
       "musicPolicy.requestsOpen": "no",
       "musicPolicy.requestWindow.start": "no",
       "musicPolicy.requestWindow.end": "no",
-      "musicPolicy.cleanVersions": "no",
       "musicPolicy.importantSongs[].id": "required",
       "musicPolicy.importantSongs[].moment": "required",
       "musicPolicy.importantSongs[].title": "required",
@@ -295,3 +294,4 @@
   },
   "todos": []
 }
+

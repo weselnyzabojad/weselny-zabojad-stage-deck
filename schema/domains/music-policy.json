@@ -58,10 +58,6 @@
               "$ref": "#/$defs/clock"
             }
           }
-        },
-        "cleanVersions": {
-          "type": "boolean",
-          "description": "Play clean/radio edits only."
         }
       }
     }

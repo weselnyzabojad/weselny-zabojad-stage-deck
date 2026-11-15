@@ -275,7 +275,5 @@ export function summarizeCartridge(cartridge) {
     doNotPlayCount: Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay.length : 0,
     requestsOpen:
       typeof musicPolicy?.requestsOpen === 'boolean' ? musicPolicy.requestsOpen : null,
-    cleanVersions:
-      typeof musicPolicy?.cleanVersions === 'boolean' ? musicPolicy.cleanVersions : null,
   };
 }

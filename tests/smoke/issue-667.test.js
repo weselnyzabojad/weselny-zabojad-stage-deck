@@ -14,7 +14,6 @@ describe('issue #667 music-policy Google Doc source flags', () => {
     expect(template).toContain('| first_dance | Perfect — Ed Sheeran | First dance. |');
     expect(template).not.toContain('Planned time');
     expect(template).not.toContain('Request window start');
-    expect(template).not.toContain('Clean versions');
     expect(template).not.toContain('Window start');
   });
 
@@ -58,7 +57,6 @@ describe('issue #667 music-policy Google Doc source flags', () => {
     ]);
     expect(policy).not.toHaveProperty('requestsOpen');
     expect(policy).not.toHaveProperty('requestWindow');
-    expect(policy).not.toHaveProperty('cleanVersions');
     expect(policy.importantSongs[0]).not.toHaveProperty('stepId');
     expect(policy.importantSongs[0]).not.toHaveProperty('plannedTime');
     expect(warnings).toEqual([]);
@@ -98,3 +96,4 @@ describe('issue #667 music-policy Google Doc source flags', () => {
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 });
+

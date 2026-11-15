@@ -30,7 +30,6 @@ const musicPolicy = {
   doNotPlay: [],
   mainSongs: [],
   requestStatus: null,
-  cleanVersions: true,
   discoPoloPolicy: 'YES',
 };
 
@@ -117,3 +116,4 @@ describe('issue #468 DJ Standard capability gating', () => {
     expect(read('docs/admin-setup-and-secrets.md')).not.toContain('djCapabilities');
   });
 });
+

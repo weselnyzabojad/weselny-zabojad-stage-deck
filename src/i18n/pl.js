@@ -412,9 +412,6 @@ const pl = {
   'dj.setNotes.cutoffs': 'Czerwone odcięcia to twarde stopnie — wycisz przed podanym czasem.',
   'dj.setNotes.private': 'Ten widok nigdy nie ujawnia skryptów MC ani alertów rodzinnych.',
   'dj.footer': 'Widok DJ tylko do odczytu · brak sterowania krokami · synchronizacja z gospodarzem przez PIN pokoju',
-  'music.clean.missing': 'Wersje czyste —',
-  'music.clean.on': 'Wersje czyste WŁ.',
-  'music.clean.off': 'Wersje czyste WYŁ.',
   'music.keySong.tooltip': 'Powiązane z kartą Kluczowe utwory DJ-a przez id',
   'music.keySong.label': 'Kluczowy utwór',
   'music.keySong.conflict': 'Utwór do zagrania różni się od wpisu Kluczowe utwory — wyświetlany jest tytuł z Kluczowych utworów.',
@@ -781,5 +778,6 @@ const pl = {
 };
 
 export default pl;
+
 
 

@@ -14,7 +14,6 @@ const policy = (value) => ({
   doNotPlay: [],
   mainSongs: [],
   requestStatus: null,
-  cleanVersions: null,
   ...(value ? { discoPoloPolicy: value } : {}),
 });
 
@@ -116,3 +115,4 @@ describe('issue #462 DJ VIP Disco Polo policy display', () => {
     }
   });
 });
+
