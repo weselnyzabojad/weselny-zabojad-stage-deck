@@ -1,11 +1,12 @@
 import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/eventTime.js';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
+import DjPolicyPanel from './DjPolicyPanel';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import DjSetNotesNotepad from './DjSetNotesNotepad';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
-import MusicPolicyCard from './MusicPolicyCard';
+import MusicPolicyCard, { DoNotPlayPills, MainSongPills, MustPlayPills } from './MusicPolicyCard';
 import MusicalSetBar from './MusicalSetBar';
 import useCompact from '../hooks/useCompact';
 import OczepinyCueCard from './OczepinyCueCard';
@@ -131,6 +132,56 @@ export default function DjBoothView({
   const vendorPresence = caps.vip ? (
     <VendorPresenceBars wedding={wedding} nowClock={clock?.nowClock} />
   ) : null;
+
+  const mainSongRows = Array.isArray(musicPolicy?.mainSongs) ? musicPolicy.mainSongs : [];
+  const mustPlayRows = Array.isArray(musicPolicy?.mustPlay) ? musicPolicy.mustPlay : [];
+  const doNotPlayRows = Array.isArray(musicPolicy?.doNotPlay) ? musicPolicy.doNotPlay : [];
+  const mainSongsTitle = t('music.mainSongs.title', { count: mainSongRows.length });
+  const mustPlayTitle = t('music.mustPlay.title', { count: mustPlayRows.length });
+  const doNotPlayTitle = t('music.doNotPlay.title', { count: doNotPlayRows.length });
+
+  const historyFooter = caps.musicPolicy && mainSongRows.length > 0 ? (
+    <DjPolicyPanel label={mainSongsTitle}>
+      <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
+        ⭐ {mainSongsTitle}
+      </h2>
+      <div className="mt-1.5">
+        <MainSongPills items={mainSongRows} t={t} />
+      </div>
+    </DjPolicyPanel>
+  ) : null;
+
+  const futureFooter = caps.musicPolicy && (mustPlayRows.length > 0 || doNotPlayRows.length > 0) ? (
+    <DjPolicyPanel label={t('music.title')}>
+      {mustPlayRows.length > 0 ? (
+        <section aria-label={mustPlayTitle}>
+          <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
+            ✅ {mustPlayTitle}
+          </h2>
+          <div className="mt-1.5">
+            <MustPlayPills items={mustPlayRows} t={t} />
+          </div>
+        </section>
+      ) : null}
+      {doNotPlayRows.length > 0 ? (
+        <section aria-label={doNotPlayTitle} className={mustPlayRows.length > 0 ? 'mt-3' : ''}>
+          <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
+            🚫 {doNotPlayTitle}
+          </h2>
+          <div className="mt-1.5">
+            <DoNotPlayPills items={doNotPlayRows} />
+          </div>
+        </section>
+      ) : null}
+    </DjPolicyPanel>
+  ) : null;
+
+  const currentColumnFooter = caps.musicPolicy ? (
+    <div className="space-y-2">
+      {vendorPresence}
+      <DjSetNotesNotepad policy={musicPolicy} />
+    </div>
+  ) : vendorPresence;
 
   // Extra current-card detail for the shared focus stack. The stack owns the
   // card hierarchy and visibility counts; this body only adds DJ-specific
@@ -324,14 +375,14 @@ export default function DjBoothView({
             entries={timeline}
             activeIndex={activeIndex}
             currentBody={djCurrentBody}
-            currentFooter={vendorPresence}
+            historyFooter={historyFooter}
+            currentFooter={currentColumnFooter}
+            futureFooter={futureFooter}
           />
 
           {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
 
-          {caps.musicPolicy ? (
-            <DjSetNotesNotepad policy={musicPolicy} />
-          ) : (
+          {!caps.musicPolicy ? (
             <section className="rounded-xl border border-line bg-card/95 p-4 shadow-lg">
               <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
                 {t('dj.setNotes')}
@@ -342,7 +393,7 @@ export default function DjBoothView({
                 <li>{t('dj.setNotes.private')}</li>
               </ul>
             </section>
-          )}
+          ) : null}
         </div>
       </main>
 

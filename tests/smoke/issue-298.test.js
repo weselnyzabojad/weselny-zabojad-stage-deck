@@ -13,6 +13,7 @@ describe('issue #298 DJ Standard hides Music Policy', () => {
         /\{caps\.musicPolicy \? <MusicPolicyCard policy=\{musicPolicy\} \/> : null\}/g,
       ),
     ).toHaveLength(1);
-    expect(djBooth).toMatch(/\{caps\.musicPolicy \? \(\s*<DjSetNotesNotepad/);
+    expect(djBooth).toContain('<DjSetNotesNotepad');
+    expect(djBooth).toMatch(/const currentColumnFooter = caps\.musicPolicy \?/);
   });
 });

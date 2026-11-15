@@ -113,7 +113,7 @@ function SongPill({ tone, title, children, paper = false }) {
   );
 }
 
-function MainSongPills({ items, t, paper = false }) {
+export function MainSongPills({ items, t, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
@@ -148,7 +148,7 @@ function MainSongPills({ items, t, paper = false }) {
   );
 }
 
-function MustPlayPills({ items, t, paper = false }) {
+export function MustPlayPills({ items, t, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
@@ -179,7 +179,7 @@ function MustPlayPills({ items, t, paper = false }) {
   );
 }
 
-function DoNotPlayPills({ items, paper = false }) {
+export function DoNotPlayPills({ items, paper = false }) {
   if (items.length === 0) return null;
   return (
     <ul className="grid gap-1.5">
@@ -195,7 +195,7 @@ function DoNotPlayPills({ items, paper = false }) {
 }
 
 // Music policy card for the DJ Booth (full) and MC / Pocket (compact).
-export default function MusicPolicyCard({ policy, compact = false, paper = false }) {
+export default function MusicPolicyCard({ policy, compact = false, paper = false, showLists = true }) {
   const { t } = useI18n();
   if (!policy?.hasData) return null;
 
@@ -227,19 +227,19 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
           </span>
         </div>
 
-        {mainSongs.length > 0 ? (
+        {showLists && mainSongs.length > 0 ? (
           <div className="mt-1.5">
             <MainSongPills items={mainSongs} t={t} />
           </div>
         ) : null}
 
-        {mustPlay.length > 0 ? (
+        {showLists && mustPlay.length > 0 ? (
           <div className="mt-1.5">
             <MustPlayPills items={mustPlay} t={t} />
           </div>
         ) : null}
 
-        {doNotPlay.length > 0 ? (
+        {showLists && doNotPlay.length > 0 ? (
           <div className="mt-1.5">
             <DoNotPlayPills items={doNotPlay} />
           </div>
@@ -279,7 +279,7 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
         <DiscoPoloBadge value={discoPoloPolicy} paper={paper} />
       </div>
 
-      {mainSongs.length > 0 ? (
+      {showLists && mainSongs.length > 0 ? (
         <div className="mt-4">
           <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-[#6b4d2f]' : 'text-brand-tint'}`}>
             ⭐ {t('music.mainSongs.title', { count: mainSongs.length })}
@@ -290,7 +290,7 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
         </div>
       ) : null}
 
-      {mustPlay.length > 0 ? (
+      {showLists && mustPlay.length > 0 ? (
         <div className="mt-4">
           <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-emerald-900' : 'text-emerald-300'}`}>
             ✅ {t('music.mustPlay.title', { count: mustPlay.length })}
@@ -301,7 +301,7 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
         </div>
       ) : null}
 
-      {doNotPlay.length > 0 ? (
+      {showLists && doNotPlay.length > 0 ? (
         <div className="mt-4">
           <h3 className={`font-heading text-[10px] font-semibold uppercase tracking-widest ${paper ? 'text-[#7a2e23]' : 'text-alert-soft'}`}>
             🚫 {t('music.doNotPlay.title', { count: doNotPlay.length })}

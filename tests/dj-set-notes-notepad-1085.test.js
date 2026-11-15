@@ -37,19 +37,20 @@ describe('issue #1085 DJ set-notes notepad', () => {
     expect(html).toContain('Follow the projected times');
   });
 
-  it('places the full Music Policy inside the notepad on paper', () => {
+  it('keeps only the policy summary inside the notepad on paper', () => {
     const html = render(createElement(DjSetNotesNotepad, { policy }));
     expect(html).toContain('Music policy');
     expect(html).toContain('Disco Polo: Guest request only');
-    expect(html).toContain('Sto lat');
-    expect(html).toContain('Perfect');
-    expect(html).toContain('bg-[#efe2c8]');
-    expect(html).toContain('bg-[#f7ddd7]');
+    expect(html).not.toContain('Sto lat');
+    expect(html).not.toContain('Perfect');
+    expect(html).not.toContain('bg-[#efe2c8]');
+    expect(html).not.toContain('bg-[#f7ddd7]');
   });
 
   it('renders the default Music Policy card unchanged for MC and compact', () => {
     const html = render(createElement(MusicPolicyCard, { policy }));
     expect(html).toContain('bg-card/95');
+    expect(html).toContain('Sto lat');
     expect(html).not.toContain('bg-[#efe2c8]');
   });
 
@@ -60,7 +61,8 @@ describe('issue #1085 DJ set-notes notepad', () => {
 
     expect(compact).toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(compact).not.toContain('DjSetNotesNotepad');
-    expect(wide).toContain('<DjSetNotesNotepad policy={musicPolicy} />');
+    expect(dj).toContain('<DjSetNotesNotepad policy={musicPolicy} />');
+    expect(wide).toContain('currentFooter={currentColumnFooter}');
     expect(wide).not.toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(dj).toContain("import DjSetNotesNotepad from './DjSetNotesNotepad'");
   });
