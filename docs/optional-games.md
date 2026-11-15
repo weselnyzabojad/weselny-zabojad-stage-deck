@@ -1,10 +1,10 @@
 # Optional Games: Test Wiedzy & Test Zgodności
 
-> **Status: Doc contract implemented (issue #972).** The `## GAMES` `Requested`
-> value is mapped to the matching `steps[].game.requested` as `YES`, `NO` or
-> `UNDECIDED`. Only `YES` authorizes a later Doc/folder creation for that game
-> step; this issue performs no Drive reads, folder creation or Doc creation.
-> Creation gating lands separately.
+> **Status: Doc contract and creation gate implemented (issues #972, #974).**
+> The `## GAMES` `Requested` value is mapped to the matching
+> `steps[].game.requested` as `YES`, `NO` or `UNDECIDED`. Only that step's `YES`
+> authorizes an explicit admin Create action to create its folder and Doc; NO,
+> UNDECIDED, missing or duplicated steps create no Drive data.
 
 The two games are independent and both optional:
 

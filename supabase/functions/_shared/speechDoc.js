@@ -3,6 +3,32 @@
 
 const LABEL = /^\s*(SPEAKER|MC)\s*\[\s*([A-Za-z]{2})\s*\]\s*$/;
 
+const SPEECH_MODES = ['OFF', 'LIGHT', 'COMPLEX'];
+
+// Issue #974: the stored wedding cartridge is the only speech Doc
+// authorization source. Only COMPLEX may create a Doc; LIGHT stays
+// metadata-only. Client mode values are never consulted.
+export function speechDocCreationAuthorization(cartridge) {
+  const mode = SPEECH_MODES.includes(cartridge?.speechMode) ? cartridge.speechMode : null;
+  if (!mode) {
+    return {
+      allowed: false,
+      mode: null,
+      code: 'missing_speech_mode',
+      error: 'The wedding Doc has no Speech mode. Set Speech mode: COMPLEX under ## SPEECHES.',
+    };
+  }
+  if (mode !== 'COMPLEX') {
+    return {
+      allowed: false,
+      mode,
+      code: 'speech_mode_not_complex',
+      error: `Speech mode is ${mode} in the wedding Doc. Set Speech mode: COMPLEX to create speech Docs.`,
+    };
+  }
+  return { allowed: true, mode, code: null };
+}
+
 export function speechDocFilename({ weddingId, order, speakerName, relationship }) {
   const clean = (value) =>
     String(value ?? '')

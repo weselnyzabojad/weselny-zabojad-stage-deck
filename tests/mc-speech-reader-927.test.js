@@ -100,7 +100,7 @@ describe('issue #927 MC speech list, live controls and reader', () => {
     expect(api).toContain('Publishing is blocked while a speech is live.');
     expect(api).toContain('Restore is blocked while a speech is live.');
     expect(api).toContain('Delete is blocked while a speech is live.');
-    expect(api).toContain('Speech mode cannot change while a speech is live.');
+    expect(api).not.toContain('Speech mode cannot change while a speech is live.');
 
     const panel = read('src/admin/AdminSpeechesPanel.jsx');
     expect(panel).toContain('Boolean(liveSpeechId)');

@@ -100,15 +100,79 @@ export function buildGameQuestionDocTemplate({ gameType, languages } = {}) {
   return [`# ${gameTypeLabel(gameType)}`, '', header, separator, ''].join('\n');
 }
 
-// Preflight for the create action. A Doc is never created for a disabled game
-// or without the ordered language list.
-export function gameQuestionDocCreatePreflight({ gameType, enabled, languages } = {}) {
+// Issue #974: only the matching predefined game step can authorize creation,
+// and only when its Doc-sourced `requested` value is exactly YES. There is no
+// fallback to the legacy `games` object or to another game step.
+export function gameQuestionDocCreationAuthorization(cartridge, gameType) {
+  const type = normalizeGameType(gameType);
+  if (!type) {
+    return {
+      allowed: false,
+      code: 'invalid_game_type',
+      requested: null,
+      step: 'invalid',
+      error: 'gameType must be TEST_WIEDZY or TEST_ZGODNOSCI.',
+    };
+  }
+  const label = gameTypeLabel(type);
+  const steps = Array.isArray(cartridge?.steps) ? cartridge.steps : [];
+  const matches = steps.filter(
+    (step) => normalizeGameType(step?.game?.gameType) === type,
+  );
+  if (matches.length === 0) {
+    return {
+      allowed: false,
+      code: 'not_requested',
+      requested: null,
+      step: 'missing',
+      error: `The wedding Doc has no ${label} game step. Add it under ## GAMES with Requested: YES.`,
+    };
+  }
+  if (matches.length > 1) {
+    return {
+      allowed: false,
+      code: 'not_requested',
+      requested: null,
+      step: 'duplicate',
+      error: `The wedding Doc has more than one ${label} game step. Keep one step with Requested: YES.`,
+    };
+  }
+  const requested =
+    typeof matches[0].game.requested === 'string' ? matches[0].game.requested : null;
+  if (requested !== 'YES') {
+    return {
+      allowed: false,
+      code: 'not_requested',
+      requested,
+      step: 'found',
+      error: `${label} is ${requested ?? 'missing'} in the wedding Doc. Set Requested: YES before creating the Doc.`,
+    };
+  }
+  return {
+    allowed: true,
+    code: null,
+    requested: 'YES',
+    step: 'found',
+    game: matches[0].game,
+  };
+}
+
+// Preflight for the create action. A Doc is never created for a game the Doc
+// did not authorize or without the ordered language list. Client `enabled`
+// values are ignored.
+export function gameQuestionDocCreatePreflight({ cartridge, gameType, languages } = {}) {
   const type = normalizeGameType(gameType);
   if (!type) {
     return { code: 'invalid_game_type', error: 'gameType must be TEST_WIEDZY or TEST_ZGODNOSCI.' };
   }
-  if (enabled !== true) {
-    return { code: 'game_disabled', error: 'The game is disabled. Enable it before creating a Doc.' };
+  const authorization = gameQuestionDocCreationAuthorization(cartridge, type);
+  if (!authorization.allowed) {
+    return {
+      code: authorization.code,
+      error: authorization.error,
+      requested: authorization.requested,
+      step: authorization.step,
+    };
   }
   const codes = normalizeGameLanguages(languages);
   if (!codes) {
@@ -123,7 +187,7 @@ export function gameQuestionDocCreatePreflight({ gameType, enabled, languages } 
       error: 'The order content languages list is missing. Add at least one language first.',
     };
   }
-  return { value: { gameType: type, languages: codes } };
+  return { value: { gameType: type, languages: codes, authorization } };
 }
 
 function cells(line) {

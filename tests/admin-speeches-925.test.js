@@ -4,15 +4,16 @@ import { describe, expect, it } from 'vitest';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 describe('issue #925 admin speech lifecycle UI', () => {
-  it('gates OFF, LIGHT and COMPLEX actions', () => {
+  it('keeps the Doc mode read-only and gates LIGHT metadata vs COMPLEX Docs', () => {
     const panel = read('src/admin/AdminSpeechesPanel.jsx');
-    for (const mode of ['OFF', 'LIGHT', 'COMPLEX']) {
-      expect(panel).toContain(`'${mode}'`);
-    }
+    expect(panel).toContain("mode !== 'LIGHT' && mode !== 'COMPLEX'");
+    expect(panel).toContain('from the wedding Doc · read-only');
     expect(panel).toContain('Speech management is disabled');
     expect(panel).toContain("mode === 'COMPLEX' ? 'Add speech + create Doc'");
     expect(panel).toContain('Add metadata-only speech');
-    expect(panel).toContain("mode === 'COMPLEX' ?");
+    expect(panel).toContain('LIGHT records metadata only');
+    expect(panel).not.toContain('setSpeechMode');
+    expect(panel).not.toContain('changeMode');
   });
 
   it('wires create, rename, parse, preview, publish, restore and delete', () => {
@@ -44,11 +45,11 @@ describe('issue #925 admin speech lifecycle UI', () => {
       'publishSpeech',
       'restoreSpeech',
       'deleteSpeech',
-      'setSpeechMode',
       'upsertSpeechMetadata',
     ]) {
       expect(api).toContain(`function ${fn}`);
     }
+    expect(api).not.toContain('function setSpeechMode');
     expect(read('supabase/functions/admin_api/index.ts')).toContain(
       "action === 'upsert_speech_metadata'",
     );

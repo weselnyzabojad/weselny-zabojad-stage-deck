@@ -134,7 +134,7 @@ describe('issue #926 per-speech speaker access', () => {
     expect(api).toContain("action === 'revoke_speech_access'");
     expect(api).toContain('bcrypt.hashSync(pin, 10)');
     expect(api).toContain('revokeSpeechSessions');
-    expect(api).toContain("mode !== 'COMPLEX'");
+    expect(api).not.toContain("action === 'set_speech_mode'");
   });
 
   it('renders the dedicated bilingual view with cache and revoked states', () => {

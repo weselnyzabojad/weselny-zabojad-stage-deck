@@ -1665,52 +1665,6 @@ async function handleRequest(req: Request) {
       return json({ ok: true });
     }
 
-    if (action === 'set_speech_mode') {
-      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
-      const mode = typeof body?.mode === 'string' ? body.mode.trim().toUpperCase() : '';
-      if (!WEDDING_ID_PATTERN.test(weddingId) || !['OFF', 'LIGHT', 'COMPLEX'].includes(mode)) {
-        return json({ error: 'A valid weddingId and speech mode are required.' }, 400);
-      }
-      const { data: live } = await admin
-        .from('speech_live')
-        .select('speech_id')
-        .eq('wedding_id', weddingId)
-        .maybeSingle();
-      if (live?.speech_id) {
-        return json({ error: 'Speech mode cannot change while a speech is live.' }, 409);
-      }
-      const { data: wedding } = await admin
-        .from('weddings')
-        .select('cartridge')
-        .eq('wedding_id', weddingId)
-        .maybeSingle();
-      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
-      const cartridge = { ...wedding.cartridge, speechMode: mode };
-      delete cartridge.speeches;
-      const { error } = await admin
-        .from('weddings')
-        .update({ cartridge })
-        .eq('wedding_id', weddingId);
-      if (error) throw error;
-      if (mode !== 'COMPLEX') {
-        const { data: accessRows } = await admin
-          .from('speech_access')
-          .select('speech_id')
-          .eq('wedding_id', weddingId);
-        for (const row of accessRows ?? []) {
-          await revokeSpeechAccess(admin, weddingId, row.speech_id, {
-            actor: allowlisted.email,
-            action: 'speech_mode_access_revoke',
-          });
-        }
-      }
-      await writeSpeechLog(admin, weddingId, 'speech_mode', {
-        actor: allowlisted.email,
-        message: mode,
-      });
-      return json({ mode });
-    }
-
     if (action === 'preflight_game_migration') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);

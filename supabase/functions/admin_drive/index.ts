@@ -36,6 +36,7 @@ import {
 import {
   buildSpeechDocTemplate,
   parseSpeechDoc,
+  speechDocCreationAuthorization,
   speechDocFilename,
 } from '../_shared/speechDoc.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
@@ -114,6 +115,17 @@ async function upsertGameQuestionDoc(admin: any, record: Record<string, unknown>
     .from('game_question_docs')
     .upsert(record, { onConflict: 'wedding_id,game_type' });
   if (error) throw error;
+}
+
+// Issue #974: the stored wedding cartridge is the only creation authority.
+// This read happens before any Drive call in both create actions.
+async function loadWeddingCartridge(admin: any, weddingId: string) {
+  const { data } = await admin
+    .from('weddings')
+    .select('cartridge')
+    .eq('wedding_id', weddingId)
+    .maybeSingle();
+  return data?.cartridge && typeof data.cartridge === 'object' ? data.cartridge : null;
 }
 
 // The admin wedding summary does not carry the Drive folder id. When the panel
@@ -267,6 +279,20 @@ async function handleRequest(req: Request) {
       if (speakerLanguage === mcLanguage) {
         return json({ error: 'Speaker and MC languages must differ.' }, 400);
       }
+      const cartridge = await loadWeddingCartridge(admin, weddingId);
+      if (!cartridge) {
+        return json(
+          {
+            error: 'The stored wedding cartridge is missing. Republish the wedding Doc first.',
+            code: 'missing_cartridge',
+          },
+          409,
+        );
+      }
+      const authorization = speechDocCreationAuthorization(cartridge);
+      if (!authorization.allowed) {
+        return json({ error: authorization.error, code: authorization.code }, 409);
+      }
       const folder = await connector.ensureSpeechFolder({ weddingFolderId, weddingId });
       const name = speechDocFilename({ weddingId, order, speakerName, relationship });
       const text = buildSpeechDocTemplate({
@@ -402,6 +428,28 @@ async function handleRequest(req: Request) {
       if (!WEDDING_ID_PATTERN.test(weddingId)) {
         return json({ error: 'weddingId is required.' }, 400);
       }
+      const cartridge = await loadWeddingCartridge(admin, weddingId);
+      if (!cartridge) {
+        return json(
+          {
+            error: 'The stored wedding cartridge is missing. Republish the wedding Doc first.',
+            code: 'missing_cartridge',
+          },
+          409,
+        );
+      }
+      const preflight = gameQuestionDocCreatePreflight({
+        cartridge,
+        gameType: body?.gameType,
+        languages: body?.languages,
+      });
+      if (preflight.error) {
+        return json(
+          { error: preflight.error, code: preflight.code },
+          preflight.code === 'not_requested' ? 409 : 400,
+        );
+      }
+      const { gameType, languages } = preflight.value;
       const weddingFolderId = await resolveWeddingFolderId(
         admin,
         weddingId,
@@ -416,18 +464,6 @@ async function handleRequest(req: Request) {
           409,
         );
       }
-      const preflight = gameQuestionDocCreatePreflight({
-        gameType: body?.gameType,
-        enabled: body?.enabled,
-        languages: body?.languages,
-      });
-      if (preflight.error) {
-        return json(
-          { error: preflight.error, code: preflight.code },
-          preflight.code === 'game_disabled' ? 409 : 400,
-        );
-      }
-      const { gameType, languages } = preflight.value;
       const gameId =
         typeof body?.gameId === 'string' && body.gameId.trim()
           ? body.gameId.trim()

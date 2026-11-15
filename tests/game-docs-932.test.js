@@ -116,32 +116,45 @@ describe('issue #932 game question Doc templates and parsers', () => {
     });
   });
 
-  it('blocks Doc creation while disabled or without languages', () => {
+  it('blocks Doc creation until the wedding Doc authorizes it or without languages', () => {
+    const cartridge = (requested) => ({
+      steps: [
+        {
+          game: { gameType: GAME_TYPES.TEST_WIEDZY, requested },
+        },
+      ],
+    });
     expect(
       gameQuestionDocCreatePreflight({
+        cartridge: cartridge('NO'),
         gameType: GAME_TYPES.TEST_WIEDZY,
-        enabled: false,
         languages: ['PL'],
       }).code,
-    ).toBe('game_disabled');
+    ).toBe('not_requested');
     expect(
       gameQuestionDocCreatePreflight({
+        cartridge: cartridge('YES'),
         gameType: GAME_TYPES.TEST_WIEDZY,
-        enabled: true,
         languages: [],
       }).code,
     ).toBe('missing_languages');
     expect(
       gameQuestionDocCreatePreflight({
+        cartridge: cartridge('YES'),
         gameType: GAME_TYPES.TEST_WIEDZY,
-        enabled: true,
         languages: ['Polish'],
       }).code,
     ).toBe('invalid_languages');
     expect(
       gameQuestionDocCreatePreflight({
+        cartridge: {
+          steps: [
+            {
+              game: { gameType: GAME_TYPES.TEST_ZGODNOSCI, requested: 'YES' },
+            },
+          ],
+        },
         gameType: GAME_TYPES.TEST_ZGODNOSCI,
-        enabled: true,
         languages: ['PL', 'DE'],
       }).value.languages,
     ).toEqual(['PL', 'DE']);

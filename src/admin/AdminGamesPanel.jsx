@@ -41,6 +41,21 @@ function PanelBadge({ enabled }) {
   );
 }
 
+function RequestedBadge({ requested }) {
+  const value = requested ?? 'MISSING';
+  const tone =
+    requested === 'YES'
+      ? 'border-emerald-700 bg-emerald-950/50 text-emerald-200'
+      : requested === 'NO'
+        ? 'border-alert/60 bg-alert/15 text-alert-soft'
+        : 'border-amber-700 bg-amber-950/50 text-amber-200';
+  return (
+    <span className={`rounded border px-1.5 py-0.5 text-[9px] font-bold ${tone}`}>
+      DOC REQUESTED {value}
+    </span>
+  );
+}
+
 function ParseProgress({ state }) {
   if (!state) return null;
   const index = Math.max(0, GAME_PARSE_PROGRESS.indexOf(state.stage));
@@ -160,6 +175,7 @@ function GamePanel({
     drivePath.scope === 'private'
       ? 'private · never shared with the couple'
       : 'customer-visible wedding folder';
+  const creation = game.creation;
   const parseBlocked =
     disabled ||
     !doc ||
@@ -173,6 +189,7 @@ function GamePanel({
         <div className="flex flex-wrap items-center gap-2">
           <h4 className="font-heading text-xs font-bold text-ink">{game.label}</h4>
           <PanelBadge enabled={game.enabled} />
+          <RequestedBadge requested={game.requested} />
           {doc?.status ? (
             <span className="font-mono text-[9px] uppercase text-muted">{doc.status}</span>
           ) : null}
@@ -189,78 +206,96 @@ function GamePanel({
         Drive · {drivePath.segments.join('/')} · {driveVisibility}
       </p>
 
+      {!creation.allowed ? (
+        <p
+          role="alert"
+          className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100"
+        >
+          <span className="font-semibold">Create blocked by the wedding Doc.</span>{' '}
+          {creation.error}
+        </p>
+      ) : null}
+
       {!game.enabled ? (
         <p className="mt-2 rounded border border-line bg-page/60 p-2 text-[10px] text-muted">
           Disabled by the wedding cartridge. No question Doc, parse or publish actions are
-          available for this game.
+          available for this game. An existing Doc stays linked below.
         </p>
-      ) : (
-        <>
-          {languagesMissing ? (
-            <p
-              role="alert"
-              className="mt-2 rounded border border-alert/60 bg-alert/15 p-2 text-[10px] font-semibold text-alert-soft"
-            >
-              Content languages are missing. Add{' '}
-              <span className="font-mono">extensions.languages.supported</span> before creating a
-              question Doc.
-            </p>
-          ) : null}
+      ) : null}
 
-          {active ? (
-            <p className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
-              A results session is active for this game. Publish and restore are blocked until it
-              finishes.
-            </p>
-          ) : null}
+      {languagesMissing ? (
+        <p
+          role="alert"
+          className="mt-2 rounded border border-alert/60 bg-alert/15 p-2 text-[10px] font-semibold text-alert-soft"
+        >
+          Content languages are missing. Add{' '}
+          <span className="font-mono">extensions.languages.supported</span> before creating a
+          question Doc.
+        </p>
+      ) : null}
 
-          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
-            {doc ? (
-              <>
-                <span className="rounded border border-line bg-page px-2 py-1 font-mono text-[9px] text-muted">
-                  {doc.drive_doc_name || doc.drive_doc_id || 'Question Doc'}
-                  {doc.drive_doc_version ? ` · v${doc.drive_doc_version}` : ''}
-                </span>
-                {doc.drive_doc_url ? (
-                  <a
-                    href={doc.drive_doc_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={SECONDARY_BUTTON}
-                  >
-                    Open Doc
-                  </a>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => onCopyLink(doc)}
-                  disabled={disabled || !doc.drive_doc_url}
-                  className={SECONDARY_BUTTON}
-                >
-                  Copy Doc link
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={onCreate}
-                disabled={disabled || Boolean(busy) || game.languagesMissing}
-                className={PRIMARY_BUTTON}
+      {game.enabled && active ? (
+        <p className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
+          A results session is active for this game. Publish and restore are blocked until it
+          finishes.
+        </p>
+      ) : null}
+
+      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+        {doc ? (
+          <>
+            <span className="rounded border border-line bg-page px-2 py-1 font-mono text-[9px] text-muted">
+              {doc.drive_doc_name || doc.drive_doc_id || 'Question Doc'}
+              {doc.drive_doc_version ? ` · v${doc.drive_doc_version}` : ''}
+            </span>
+            {doc.drive_doc_url ? (
+              <a
+                href={doc.drive_doc_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={SECONDARY_BUTTON}
               >
-                Create question Doc
-              </button>
-            )}
-          </div>
+                Open Doc
+              </a>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => onCopyLink(doc)}
+              disabled={disabled || !doc.drive_doc_url}
+              className={SECONDARY_BUTTON}
+            >
+              Copy Doc link
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={onCreate}
+            disabled={
+              disabled ||
+              Boolean(busy) ||
+              game.languagesMissing ||
+              !creation.allowed
+            }
+            title={creation.allowed ? undefined : creation.error}
+            className={PRIMARY_BUTTON}
+          >
+            Create question Doc
+          </button>
+        )}
+      </div>
 
-          {doc ? (
-            <p className="mt-1 font-mono text-[9px] text-muted">
-              {doc.drive_doc_id ? `id ${doc.drive_doc_id}` : 'No Doc id'} ·{' '}
-              {doc.question_count ?? 0} parsed questions
-              {doc.last_parsed_at ? ` · parsed ${formatAdminTime(doc.last_parsed_at)}` : ''}
-              {doc.drive_folder_id ? ` · folder ${doc.drive_folder_id}` : ''}
-            </p>
-          ) : null}
+      {doc ? (
+        <p className="mt-1 font-mono text-[9px] text-muted">
+          {doc.drive_doc_id ? `id ${doc.drive_doc_id}` : 'No Doc id'} ·{' '}
+          {doc.question_count ?? 0} parsed questions
+          {doc.last_parsed_at ? ` · parsed ${formatAdminTime(doc.last_parsed_at)}` : ''}
+          {doc.drive_folder_id ? ` · folder ${doc.drive_folder_id}` : ''}
+        </p>
+      ) : null}
 
+      {game.enabled ? (
+        <>
           {review ? (
             <div className="mt-2 rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
               <p className="font-semibold">Question Doc review required</p>
@@ -400,7 +435,7 @@ function GamePanel({
             </ul>
           </details>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -491,7 +526,7 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
     Boolean(gameBundleFor(gameType)?.active);
 
   const createDoc = async (game) => {
-    if (disabled || !game.enabled || game.languagesMissing) return;
+    if (disabled || !game.creation.allowed || game.languagesMissing) return;
     setBusy(game.gameType);
     setError('');
     setMessage('');
@@ -502,7 +537,6 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
         gameType: game.gameType,
         gameId: game.gameId,
         title: game.title,
-        enabled: true,
         languages: game.languages,
       });
       setMessage(

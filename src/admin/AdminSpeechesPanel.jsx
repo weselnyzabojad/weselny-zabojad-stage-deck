@@ -12,11 +12,11 @@ import {
   restoreSpeech,
   revokeSpeechAccess,
   rotateSpeechAccess,
-  setSpeechMode,
   upsertSpeechMetadata,
 } from './adminApi';
 import AdminQrCards from './AdminQrCards';
 import { buildSpeechLink } from './adminUtils';
+import { speechDocCreationAuthorization } from '../lib/speeches';
 
 const DECK_BASE_URL = 'https://deck.weselnyzabojad.pl';
 
@@ -35,7 +35,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [mode, setMode] = useState('OFF');
+  const [mode, setMode] = useState(wedding?.cartridge?.speechMode ?? '');
   const [speeches, setSpeeches] = useState([]);
   const [revisions, setRevisions] = useState([]);
   const [logs, setLogs] = useState([]);
@@ -54,6 +54,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
     () => Math.max(0, ...speeches.map((speech) => speech.sort_order ?? 0)) + 1,
     [speeches],
   );
+  const creation = speechDocCreationAuthorization({ speechMode: mode });
 
   const load = async () => {
     setLoading(true);
@@ -64,7 +65,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
         listSpeeches(wedding.wedding_id),
         preflightSpeechMigration(wedding.wedding_id).catch(() => ({ speeches: [] })),
       ]);
-      setMode(context?.wedding?.cartridge?.speechMode ?? 'OFF');
+      setMode(context?.wedding?.cartridge?.speechMode ?? '');
       setSpeeches(result?.speeches ?? []);
       setRevisions(result?.revisions ?? []);
       setLogs(result?.logs ?? []);
@@ -74,31 +75,6 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
       setError(err.message ?? 'Could not load speeches.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const changeMode = async (nextMode) => {
-    if (disabled) return;
-    if (
-      mode === 'COMPLEX' &&
-      nextMode !== 'COMPLEX' &&
-      !window.confirm(
-        'Switch away from COMPLEX? Scripts and Doc links are dropped, speaker access is revoked, and Google Docs are left untouched.',
-      )
-    ) {
-      return;
-    }
-    setBusy(true);
-    setError('');
-    try {
-      await setSpeechMode({ weddingId: wedding.wedding_id, mode: nextMode });
-      setMode(nextMode);
-      await load();
-      onChanged?.();
-    } catch (err) {
-      setError(err.message ?? 'Could not change the speech mode.');
-    } finally {
-      setBusy(false);
     }
   };
 
@@ -164,7 +140,9 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
           order: form.order,
         });
       } else {
-        setError('Enable LIGHT or COMPLEX speech mode first.');
+        setError(
+          'Speech mode in the wedding Doc is not LIGHT or COMPLEX. Update the Doc and republish.',
+        );
         return;
       }
       setForm({ ...EMPTY_FORM, order: nextOrder });
@@ -397,7 +375,7 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
         }}
         className="flex w-full items-center justify-between px-2 py-1.5 text-left font-heading text-[10px] font-semibold uppercase tracking-widest text-muted"
       >
-        <span>Speeches · {mode}</span>
+        <span>Speeches · {mode || 'MISSING'}</span>
         <span aria-hidden="true">{open ? '−' : '+'}</span>
       </button>
 
@@ -407,27 +385,33 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
 
           <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
             <span className="font-mono uppercase text-muted">Mode</span>
-            {['OFF', 'LIGHT', 'COMPLEX'].map((value) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => changeMode(value)}
-                disabled={busy || disabled || value === mode || Boolean(liveSpeechId)}
-                className={`rounded border px-2 py-1 font-semibold ${
-                  value === mode
-                    ? 'border-brand-strong bg-brand/40 text-ink'
-                    : 'border-line bg-page text-muted'
-                } disabled:opacity-50`}
-              >
-                {value}
-              </button>
-            ))}
+            <span
+              className={`rounded border px-2 py-1 font-semibold ${
+                creation.allowed
+                  ? 'border-brand-strong bg-brand/40 text-ink'
+                  : 'border-line bg-page text-muted'
+              }`}
+            >
+              {mode || 'MISSING'}
+            </span>
+            <span className="text-muted">from the wedding Doc · read-only</span>
             {liveSpeechId ? (
               <span className="ml-auto rounded border border-amber-700 px-2 py-1 text-amber-200">
                 LIVE · {liveSpeechId}
               </span>
             ) : null}
           </div>
+
+          {!creation.allowed ? (
+            <p
+              role="alert"
+              className="rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100"
+            >
+              <span className="font-semibold">Speech Doc creation is blocked.</span>{' '}
+              {creation.error} This panel cannot override the Doc.
+              {mode === 'LIGHT' ? ' LIGHT records metadata only; no Drive Doc is created.' : ''}
+            </p>
+          ) : null}
 
           {migration?.speeches?.length ? (
             <div className="rounded border border-amber-800 bg-amber-950/30 p-2 text-[10px] text-amber-100">
@@ -480,9 +464,10 @@ export default function AdminSpeechesPanel({ wedding, readOnly = false, onChange
             </p>
           ) : null}
 
-          {mode === 'OFF' ? (
+          {mode !== 'LIGHT' && mode !== 'COMPLEX' ? (
             <p className="rounded border border-line bg-card p-2 text-[10px] text-muted">
-              Speech management is disabled for this wedding. Choose LIGHT or COMPLEX to enable it.
+              Speech management is disabled for this wedding. Set Speech mode: LIGHT or COMPLEX in
+              the wedding Doc and republish to enable it.
             </p>
           ) : (
             <form onSubmit={addSpeech} className="grid gap-1.5 rounded border border-line bg-card p-2 sm:grid-cols-2">
