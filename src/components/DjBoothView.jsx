@@ -2,6 +2,7 @@ import { clockToEventDate, formatCountdown, resolveEventDateISO } from '../lib/e
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CulturalRulesBar from './CulturalRulesBar';
 import DjSongRequestQueue from './DjSongRequestQueue';
+import DjEndHourLane from './DjEndHourLane';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard from './MusicPolicyCard';
@@ -212,6 +213,8 @@ export default function DjBoothView({
       ) : null}
 
 
+      {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
+
       <TimelineFocusStack
         compact
         zoneScroll={false}
@@ -309,6 +312,8 @@ export default function DjBoothView({
 
       <main id="main-content" tabIndex={-1} className="flex-1 p-4">
         <div className="w-full space-y-4">
+          {caps.vip ? <DjEndHourLane wedding={wedding} /> : null}
+
           <TimelineFocusStack
             zoneScroll={false}
             entries={timeline}

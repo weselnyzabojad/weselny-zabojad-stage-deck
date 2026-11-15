@@ -453,6 +453,8 @@ const pl = {
   'dj.endHours.count': 'Zakończenia: {count}',
   'dj.endHours.hint': 'Znane godziny zakończenia z planu wesela.',
   'dj.endHours.leavesAt': 'Kończy o',
+  'dj.endHourLane.title': 'Pas zakończeń',
+  'dj.endHourLane.hint': 'Wyjazdy poza timeline',
   'photo.lightWindows': 'Okna światła',
   'photo.sunsetGolden': 'Zachód słońca i złota godzina',
   'photo.sunset': 'Zachód słońca',

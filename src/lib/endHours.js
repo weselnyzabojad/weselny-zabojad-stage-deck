@@ -72,3 +72,10 @@ export function buildEndHours(wedding = {}) {
 export function formatEndHour(row) {
   return formatWindow(row.startTime, row.endTime);
 }
+
+// VIP lane position by end clock; presentation only, never timeline data.
+export function lanePositionPercent(sortValue) {
+  if (!Number.isFinite(sortValue)) return 0;
+  const minuteOfDay = ((sortValue % 1440) + 1440) % 1440;
+  return Math.min(100, Math.max(0, (minuteOfDay / 1440) * 100));
+}
