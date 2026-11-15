@@ -6,6 +6,8 @@ import {
   upsertMusician,
 } from './adminApi';
 import { AdminConfirmDialog } from './AdminDialogs';
+import AdminQrCards from './AdminQrCards';
+import { buildMusicianLink } from './adminUtils';
 import { ADMIN_BUTTON } from './adminUi';
 
 const INSTRUMENTS = ['violin', 'saxophone', 'piano', 'guitar', 'harp', 'cello', 'vocals', 'other'];
@@ -37,6 +39,8 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [pinNotice, setPinNotice] = useState('');
+  const [qrMusician, setQrMusician] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -85,10 +89,15 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
     }
     setSaving(true);
     try {
-      await upsertMusician({
+      const result = await upsertMusician({
         weddingId: wedding.wedding_id,
         ...form,
       });
+      if (result?.pin) {
+        setPinNotice(
+          `${result.musician?.name ?? form.name} PIN: ${result.pin} — shown once.`,
+        );
+      }
       setForm(EMPTY_FORM);
       await load();
       onChanged?.();
@@ -165,6 +174,11 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
           {error}
         </p>
       ) : null}
+      {pinNotice ? (
+        <p role="status" className="mt-2 rounded border border-emerald-700 bg-emerald-950/40 px-2 py-1 text-[10px] text-emerald-200">
+          {pinNotice}
+        </p>
+      ) : null}
 
       {!loading && musicians.length === 0 ? (
         <p className="mt-2 text-[10px] text-muted">No musicians recorded yet.</p>
@@ -208,6 +222,14 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
                         className={`${ADMIN_BUTTON.ghost} px-1.5 py-0.5 text-[9px]`}
                       >
                         Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setQrMusician(musician)}
+                        disabled={!wedding.room_code}
+                        className={`${ADMIN_BUTTON.secondary} px-1.5 py-0.5 text-[9px]`}
+                      >
+                        QR
                       </button>
                       {musician.active !== false ? (
                         <button
@@ -342,6 +364,41 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
             ) : null}
           </div>
         </form>
+      ) : null}
+
+      {qrMusician ? (
+        <div className="fixed inset-0 z-modal flex items-start justify-center overflow-y-auto bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-line bg-card p-4 shadow-2xl">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="font-heading text-sm font-bold text-ink">Musician QR</h3>
+              <button
+                type="button"
+                onClick={() => setQrMusician(null)}
+                className={`${ADMIN_BUTTON.secondary} px-2 py-1 text-[10px]`}
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-3">
+              <AdminQrCards
+                cards={[
+                  {
+                    role: `musician-${qrMusician.id}`,
+                    label: `${qrMusician.name} — ${qrMusician.instrument}`,
+                    url: buildMusicianLink(
+                      'https://deck.weselnyzabojad.pl',
+                      wedding.room_code,
+                      qrMusician.id,
+                    ),
+                    roomCode: wedding.room_code,
+                    couple: wedding.couple,
+                    date: wedding.date,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
       ) : null}
 
       <AdminConfirmDialog

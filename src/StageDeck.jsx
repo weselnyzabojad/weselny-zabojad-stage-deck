@@ -10,6 +10,7 @@ import CeremonyCueCard from './components/CeremonyCueCard';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
 import SpeakerView from './components/SpeakerView';
+import MusicianView from './components/MusicianView';
 import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from '@demo';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
@@ -695,6 +696,37 @@ export default function StageDeck({
             speeches={summarySpeeches}
             mandatoryOverride={liveState.media_overrides?.steps ?? null}
             onUpdateMandatory={(nextSteps) => setMediaOverride('steps', nextSteps)}
+          />
+        </AppErrorBoundary>
+        {statusBanners}
+        {devViewSwitcher}
+      </>
+    );
+  }
+
+  if (currentRole === 'musician') {
+    return (
+      <>
+        <AppErrorBoundary
+          scope="musician"
+          weddingId={WEDDING.weddingId}
+          role={currentRole}
+          resetKey={currentRole}
+          lastKnownStep={lastKnownStep}
+        >
+          <MusicianView
+            wedding={WEDDING}
+            timeline={timeline}
+            clock={driftReport.clock}
+            syncStatus={displaySyncStatus}
+            syncError={syncError}
+            remoteUpdatedAt={remoteUpdatedAt}
+            outbox={outbox}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            musicianId={roleSession?.musicianId ?? deckIntent.musicianId ?? null}
+            roomCode={deckIntent.roomCode}
+            pin={roleProps.pin}
           />
         </AppErrorBoundary>
         {statusBanners}
