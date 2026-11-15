@@ -984,8 +984,8 @@ function AdminAppContent() {
               </h2>
             </div>
 
-            <div className="flex flex-wrap items-end gap-2 rounded-xl border border-line bg-card p-3">
-              <label className="min-w-[12rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
+            <div className="flex flex-nowrap items-end gap-2 overflow-x-auto rounded-xl border border-line bg-card p-3">
+              <label className="min-w-[14rem] flex-1 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Search
                 <input
                   value={query}
@@ -994,24 +994,24 @@ function AdminAppContent() {
                   className="mt-1 w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 />
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              <label className="w-36 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Status
                 <select
                   value={statusFilter}
                   onChange={(event) => setStatusFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+                  className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="active">Active</option>
                   <option value="archived">Archived</option>
                   <option value="all">All</option>
                 </select>
               </label>
-              <label className="text-[10px] font-semibold uppercase tracking-widest text-muted">
+              <label className="w-40 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Role
                 <select
                   value={roleFilter}
                   onChange={(event) => setRoleFilter(event.target.value)}
-                  className="mt-1 block rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+                  className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
                 >
                   <option value="">All roles</option>
                   {ROLE_IDS.map((role) => (
