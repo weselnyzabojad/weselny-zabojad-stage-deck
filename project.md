@@ -6876,4 +6876,78 @@ edits only. No schema, parser, field-map or template change.
 
 **Tracking.** [#1026](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1026), [#1027](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1027).
 
+### 17.80 Deck and Netlify service probes (decision, 2026-11-15)
+
+Extend the admin service monitoring bar with two infrastructure probes: the
+production deck URL and the Netlify site. Both run server-side in the existing
+`service_health` Edge Function so the browser never talks to Netlify or carries
+its token, and both appear as always-visible cards next to Supabase, Sentry,
+Google Drive and sunrise-sunset.org.
+
+**Google Doc contract.** Not Doc-linked. Runtime infrastructure configuration
+only. No schema, parser, field-map, template or fixture change.
+
+**Current architecture.** `AdminHealthBar` polls `checkServiceHealth()` every
+60 seconds while the tab is visible. `service_health` authenticates the admin,
+then calls `runServiceHealth` in `supabase/functions/_shared/serviceHealth.js`,
+which returns one provider result per probe. The client normalizes results
+against `HEALTH_PROVIDER_ORDER` in `src/admin/adminHealth.js`.
+
+**Probe contract.**
+
+| Probe | Target | Healthy | Degraded | Down |
+| --- | --- | --- | --- | --- |
+| Production deck | `PUBLIC_DECK_URL` root, fallback `https://deck.weselnyzabojad.pl/` | HTTP 200 | 3xx/4xx, including the current Netlify Edge Access 401 login redirect | 5xx, timeout, network failure |
+| Netlify site | `GET {NETLIFY_API_BASE}/sites/{NETLIFY_SITE_ID}` with `NETLIFY_API_TOKEN` | 200 and `published_deploy.state === 'ready'` | 200 without a ready published deploy, or 3xx/4xx such as an auth/site error | 5xx, timeout, network failure, missing configuration |
+| Existing probes | Supabase, Sentry, Google Drive, sunrise-sunset.org | unchanged | unchanged | unchanged |
+
+- The deck probe uses `HEAD` with a `GET` fallback and does not follow redirects
+  to the Netlify login page; a redirect is reported as degraded.
+- Missing `PUBLIC_DECK_URL` falls back to the production URL, so the card works
+  without new secrets.
+- Netlify uses two new Supabase secrets: `NETLIFY_API_TOKEN` and
+  `NETLIFY_SITE_ID`; `NETLIFY_API_BASE` is optional and defaults to
+  `https://api.netlify.com/api/v1`. Missing token or site id renders the card
+  `down` with a "Netlify monitoring is not configured." detail.
+- The token, site id and raw Netlify payload never reach the browser or the
+  health payload. New provider failures reuse the existing
+  `captureHealthFailure` transition logic.
+- Provider order extends to `supabase`, `sentry`, `drive`, `sunset`, `deck`,
+  `netlify`; the card grid moves to three columns on wide screens.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin `/admin` monitoring bar | Two additional provider cards with HTTP status, latency, checked time and detail |
+| Admin sign-in / MFA | No change |
+| MC, DJ, Photographer, Speaker, Venue, Song Request, Landing | No change |
+| Browser network | No direct request to the deck or Netlify API; everything through `service_health` |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Probe location | Server-side `service_health` Edge Function |
+| Deck URL | Existing `PUBLIC_DECK_URL` with production fallback |
+| Deck 401/403 | Degraded, because the release contract expects the public deck root to return 200 |
+| Netlify target | Site API, not the public Netlify status page |
+| Netlify identity | `NETLIFY_API_TOKEN` + `NETLIFY_SITE_ID` |
+| Netlify healthy | Site API 200 and published deploy `ready` |
+| Missing Netlify config | Card `down` with explicit detail |
+| Failure alerts | Existing one-event-per-failure-transition Sentry behaviour |
+| Scope | Admin monitoring only; no staging, role or customer views |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1028](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1028) | Production deck probe, provider card, local mock, tests and `PUBLIC_DECK_URL` wiring | - |
+| 2 | [#1029](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1029) | Netlify site probe, provider card, secrets/docs, local mock and tests | #1028 |
+
+**Open questions.** None.
+
+**Tracking.** [#1028](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1028), [#1029](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1029).
+
 
