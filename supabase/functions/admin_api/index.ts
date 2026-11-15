@@ -1410,14 +1410,7 @@ async function handleRequest(req: Request) {
       }
 
       const masterKey = serverEnv('SPEECH_SECRET_MASTER_KEY');
-      const { data: latest } = await admin
-        .from('speech_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      let revision = Number(latest?.revision ?? 0);
+      let revision = 0;
       let revisionCreated = false;
       const entries: Record<string, any> = {};
       const records: any[] = [];
@@ -1475,7 +1468,15 @@ async function handleRequest(req: Request) {
 
         if (summary.linked && text) {
           if (!revisionCreated) {
-            revision = Number(latest?.revision ?? 0) + 1;
+            const { data: allocated, error: allocationError } = await admin.rpc(
+              'stage_deck_next_speech_revision',
+              { p_wedding_id: weddingId },
+            );
+            if (allocationError) throw allocationError;
+            revision = Number(allocated ?? 0);
+            if (!Number.isInteger(revision) || revision < 1) {
+              return json({ error: 'Could not allocate a speech revision.' }, 409);
+            }
             revisionCreated = true;
           }
           entries[speechId] = await encryptSpeechScript({
@@ -1509,7 +1510,12 @@ async function handleRequest(req: Request) {
           published_by: allowlisted.user_id,
           entries,
         });
-        if (revisionError) throw revisionError;
+        if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
       }
       if (records.length > 0) {
         const { error: upsertError } = await admin
@@ -1633,14 +1639,15 @@ async function handleRequest(req: Request) {
         .select('*')
         .eq('wedding_id', weddingId);
       if (recordsError) throw recordsError;
-      const { data: latest } = await admin
-        .from('speech_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const revision = Number(latest?.revision ?? 0) + 1;
+      const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+        'stage_deck_next_speech_revision',
+        { p_wedding_id: weddingId },
+      );
+      if (allocationError) throw allocationError;
+      const revision = Number(allocatedRevision ?? 0);
+      if (!Number.isInteger(revision) || revision < 1) {
+        return json({ error: 'Could not allocate a speech revision.' }, 409);
+      }
       const entries: Record<string, any> = {};
       for (const record of records ?? []) {
         if (record.id === speech.id || record.live_revision == null) continue;
@@ -1665,7 +1672,12 @@ async function handleRequest(req: Request) {
         published_by: allowlisted.user_id,
         entries,
       });
-      if (revisionError) throw revisionError;
+      if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
       const record = {
         wedding_id: weddingId,
         id: speech.id,
@@ -1890,15 +1902,15 @@ async function handleRequest(req: Request) {
 
       for (const game of plan.games) {
         if (game.action === 'migrate') {
-          const { data: latest } = await admin
-            .from('game_question_revisions')
-            .select('revision')
-            .eq('wedding_id', weddingId)
-            .eq('game_type', game.gameType)
-            .order('revision', { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          const revision = Number(latest?.revision ?? 0) + 1;
+          const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+            'stage_deck_next_game_revision',
+            { p_wedding_id: weddingId, p_game_type: game.gameType },
+          );
+          if (allocationError) throw allocationError;
+          const revision = Number(allocatedRevision ?? 0);
+          if (!Number.isInteger(revision) || revision < 1) {
+            return json({ error: 'Could not allocate a game revision.' }, 409);
+          }
           const entry = await encryptGameBundle({
             masterKey,
             weddingId,
@@ -1917,7 +1929,12 @@ async function handleRequest(req: Request) {
               question_count: game.questions.length,
               entry,
             });
-          if (revisionError) throw revisionError;
+          if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
           const { error: upsertError } = await admin
             .from('game_question_bundles')
             .upsert(
@@ -2141,15 +2158,15 @@ async function handleRequest(req: Request) {
         return json({ error: 'Publishing is blocked while the game is active.' }, 409);
       }
 
-      const { data: latest } = await admin
-        .from('game_question_revisions')
-        .select('revision')
-        .eq('wedding_id', weddingId)
-        .eq('game_type', gameType)
-        .order('revision', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      const revision = Number(latest?.revision ?? 0) + 1;
+      const { data: allocatedRevision, error: allocationError } = await admin.rpc(
+        'stage_deck_next_game_revision',
+        { p_wedding_id: weddingId, p_game_type: gameType },
+      );
+      if (allocationError) throw allocationError;
+      const revision = Number(allocatedRevision ?? 0);
+      if (!Number.isInteger(revision) || revision < 1) {
+        return json({ error: 'Could not allocate a game revision.' }, 409);
+      }
       const entry = await encryptGameBundle({
         masterKey: serverEnv('SPEECH_SECRET_MASTER_KEY'),
         weddingId,
@@ -2166,7 +2183,12 @@ async function handleRequest(req: Request) {
         question_count: questions.length,
         entry,
       });
-      if (revisionError) throw revisionError;
+      if (revisionError) {
+          if (String(revisionError.code ?? '') === '23505' || /duplicate key/i.test(revisionError.message ?? '')) {
+            return json({ error: 'Revision conflict. Retry the operation.', code: 'revision_conflict' }, 409);
+          }
+          throw revisionError;
+        }
 
       const { error: upsertError } = await admin.from('game_question_bundles').upsert(
         {
