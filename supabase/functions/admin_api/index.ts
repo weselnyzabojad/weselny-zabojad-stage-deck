@@ -85,6 +85,7 @@ const validateCartridge = makeCartridgeValidator(Ajv2020, weddingSchema, [oczepi
 const driveConnector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
+  apiBase: Deno.env.get('GOOGLE_DRIVE_API_BASE') ?? '',
 });
 
 async function sha256Text(value: string) {

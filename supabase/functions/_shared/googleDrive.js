@@ -13,6 +13,7 @@ export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 export const DRIVE_REQUEST_SCOPES = `${DRIVE_READONLY_SCOPE} ${DRIVE_FILE_SCOPE}`;
 export const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 export const GOOGLE_DRIVE_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/files';
+export const GOOGLE_DRIVE_UPLOAD_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
 export const DRIVE_METADATA_FIELDS =
   'id,name,mimeType,modifiedTime,version,md5Checksum,size,parents,webViewLink';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
@@ -99,6 +100,7 @@ export async function signServiceAccountAssertion({
   privateKey,
   nowSeconds = Math.floor(Date.now() / 1000),
   lifetimeSeconds = 3600,
+  audience = GOOGLE_TOKEN_ENDPOINT,
 } = {}) {
   if (!clientEmail || !privateKey) {
     throw createDriveError(
@@ -112,7 +114,7 @@ export async function signServiceAccountAssertion({
     JSON.stringify({
       iss: clientEmail,
       scope: DRIVE_REQUEST_SCOPES,
-      aud: GOOGLE_TOKEN_ENDPOINT,
+      aud: audience,
       iat: nowSeconds,
       exp: nowSeconds + lifetimeSeconds,
     }),
@@ -241,9 +243,19 @@ export function createGoogleDriveConnector({
   maxRetries = DEFAULT_MAX_RETRIES,
   baseDelayMs = DEFAULT_BASE_DELAY_MS,
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
-  tokenEndpoint = GOOGLE_TOKEN_ENDPOINT,
-  filesEndpoint = GOOGLE_DRIVE_FILES_ENDPOINT,
+  // Set `apiBase` to route every Google call through a local stand-in (the
+  // dockerized Drive mock). Explicit endpoint overrides still win.
+  apiBase = '',
+  tokenEndpoint = null,
+  filesEndpoint = null,
+  uploadEndpoint = null,
 } = {}) {
+  const base = typeof apiBase === 'string' ? apiBase.trim().replace(/\/+$/, '') : '';
+  const resolvedTokenEndpoint = tokenEndpoint ?? (base ? `${base}/token` : GOOGLE_TOKEN_ENDPOINT);
+  const resolvedFilesEndpoint =
+    filesEndpoint ?? (base ? `${base}/drive/v3/files` : GOOGLE_DRIVE_FILES_ENDPOINT);
+  const resolvedUploadEndpoint =
+    uploadEndpoint ?? (base ? `${base}/upload/drive/v3/files` : GOOGLE_DRIVE_UPLOAD_ENDPOINT);
   let cachedToken = null;
   let tokenExpiresAt = 0;
 
@@ -303,10 +315,11 @@ export function createGoogleDriveConnector({
       clientEmail,
       privateKey,
       nowSeconds: Math.floor(nowMs / 1000),
+      audience: resolvedTokenEndpoint,
     });
 
     const response = await request(
-      tokenEndpoint,
+      resolvedTokenEndpoint,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -354,7 +367,7 @@ export function createGoogleDriveConnector({
     }
 
     const params = new URLSearchParams({ fields: DRIVE_METADATA_FIELDS });
-    const url = `${filesEndpoint}/${encodeURIComponent(fileId.trim())}?${params.toString()}`;
+    const url = `${resolvedFilesEndpoint}/${encodeURIComponent(fileId.trim())}?${params.toString()}`;
     const response = await authorizedRequest(url, { method: 'GET' });
     return sanitizedMetadata(await readJson(response));
   }
@@ -380,7 +393,7 @@ export function createGoogleDriveConnector({
       params.set('pageToken', pageToken.trim());
     }
 
-    const response = await authorizedRequest(`${filesEndpoint}?${params.toString()}`, {
+    const response = await authorizedRequest(`${resolvedFilesEndpoint}?${params.toString()}`, {
       method: 'GET',
     });
     const payload = await readJson(response);
@@ -420,7 +433,7 @@ export function createGoogleDriveConnector({
     if (typeof pageToken === 'string' && pageToken.trim()) {
       params.set('pageToken', pageToken.trim());
     }
-    const response = await authorizedRequest(`${filesEndpoint}?${params.toString()}`, {
+    const response = await authorizedRequest(`${resolvedFilesEndpoint}?${params.toString()}`, {
       method: 'GET',
     });
     const payload = await readJson(response);
@@ -437,7 +450,7 @@ export function createGoogleDriveConnector({
     if (!folderName) throw createDriveError('drive_invalid_request', 'A folder name is required.');
     const existing = await listChildren({ parentId: parent, name: folderName });
     if (existing.files[0]) return existing.files[0];
-    const response = await authorizedRequest(`${filesEndpoint}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`, {
+    const response = await authorizedRequest(`${resolvedFilesEndpoint}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -561,10 +574,7 @@ export function createGoogleDriveConnector({
       `--${boundary}--`,
       '',
     ].join('\r\n');
-    const endpoint = filesEndpoint.replace(
-      'https://www.googleapis.com/drive/v3/files',
-      'https://www.googleapis.com/upload/drive/v3/files',
-    );
+    const endpoint = resolvedUploadEndpoint;
     const response = await authorizedRequest(
       `${endpoint}?uploadType=multipart&fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
       {
@@ -583,10 +593,7 @@ export function createGoogleDriveConnector({
     if (!content.trim()) {
       throw createDriveError('drive_invalid_request', 'Question Doc content cannot be empty.');
     }
-    const endpoint = filesEndpoint.replace(
-      'https://www.googleapis.com/drive/v3/files',
-      'https://www.googleapis.com/upload/drive/v3/files',
-    );
+    const endpoint = resolvedUploadEndpoint;
     const response = await authorizedRequest(
       `${endpoint}/${encodeURIComponent(id)}?uploadType=media&fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
       {
@@ -622,7 +629,7 @@ export function createGoogleDriveConnector({
     });
     if (removal.length > 0) params.set('removeParents', removal.join(','));
     const response = await authorizedRequest(
-      `${filesEndpoint}/${encodeURIComponent(id)}?${params.toString()}`,
+      `${resolvedFilesEndpoint}/${encodeURIComponent(id)}?${params.toString()}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -638,7 +645,7 @@ export function createGoogleDriveConnector({
     if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
     if (!fileName) throw createDriveError('drive_invalid_request', 'A file name is required.');
     const response = await authorizedRequest(
-      `${filesEndpoint}/${encodeURIComponent(id)}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
+      `${resolvedFilesEndpoint}/${encodeURIComponent(id)}?fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -665,13 +672,13 @@ export function createGoogleDriveConnector({
     if (file.mimeType === DRIVE_JSON_MIME_TYPE) {
       kind = 'json';
       response = await authorizedRequest(
-        `${filesEndpoint}/${encodeURIComponent(file.id)}?alt=media`,
+        `${resolvedFilesEndpoint}/${encodeURIComponent(file.id)}?alt=media`,
         { method: 'GET' },
       );
     } else if (file.mimeType === DRIVE_DOC_MIME_TYPE) {
       kind = 'google_doc';
       response = await authorizedRequest(
-        `${filesEndpoint}/${encodeURIComponent(file.id)}/export?mimeType=text%2Fplain`,
+        `${resolvedFilesEndpoint}/${encodeURIComponent(file.id)}/export?mimeType=text%2Fplain`,
         { method: 'GET' },
       );
     } else {

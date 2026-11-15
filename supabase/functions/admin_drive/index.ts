@@ -46,6 +46,7 @@ const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
   privateKey: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY') ?? '',
+  apiBase: Deno.env.get('GOOGLE_DRIVE_API_BASE') ?? '',
 });
 
 function json(body: unknown, status = 200) {
