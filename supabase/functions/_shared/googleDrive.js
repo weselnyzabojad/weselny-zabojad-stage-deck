@@ -16,6 +16,7 @@ export const GOOGLE_DRIVE_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/
 export const GOOGLE_DRIVE_UPLOAD_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
 export const DRIVE_METADATA_FIELDS =
   'id,name,mimeType,modifiedTime,version,md5Checksum,size,parents,webViewLink';
+export const DRIVE_PERMISSION_FIELDS = 'id,type,role,emailAddress,displayName,domain';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
 export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
@@ -163,6 +164,17 @@ function sanitizedMetadata(payload) {
       ? payload.parents.filter((parent) => typeof parent === 'string')
       : null,
     webViewLink: typeof payload?.webViewLink === 'string' ? payload.webViewLink : null,
+  };
+}
+
+function sanitizedPermission(payload) {
+  return {
+    id: typeof payload?.id === 'string' ? payload.id : null,
+    type: typeof payload?.type === 'string' ? payload.type : null,
+    role: typeof payload?.role === 'string' ? payload.role : null,
+    emailAddress: typeof payload?.emailAddress === 'string' ? payload.emailAddress : null,
+    displayName: typeof payload?.displayName === 'string' ? payload.displayName : null,
+    domain: typeof payload?.domain === 'string' ? payload.domain : null,
   };
 }
 
@@ -655,6 +667,61 @@ export function createGoogleDriveConnector({
     return sanitizedMetadata(await readJson(response));
   }
 
+  async function listPermissions(fileId) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    const params = new URLSearchParams({
+      fields: `permissions(${DRIVE_PERMISSION_FIELDS})`,
+    });
+    const response = await authorizedRequest(
+      `${resolvedFilesEndpoint}/${encodeURIComponent(id)}/permissions?${params.toString()}`,
+      { method: 'GET' },
+    );
+    const payload = await readJson(response);
+    return (Array.isArray(payload?.permissions) ? payload.permissions : []).map(
+      sanitizedPermission,
+    );
+  }
+
+  async function shareFile({ fileId, email, role = 'reader', notify = true, message = '' }) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    const address = typeof email === 'string' ? email.trim() : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    if (!address) throw createDriveError('drive_invalid_request', 'A recipient email is required.');
+    if (role !== 'reader') {
+      throw createDriveError('drive_invalid_request', 'Only reader access can be granted.');
+    }
+    const params = new URLSearchParams({
+      sendNotificationEmail: notify ? 'true' : 'false',
+      fields: DRIVE_PERMISSION_FIELDS,
+    });
+    const note = typeof message === 'string' ? message.trim().slice(0, 200) : '';
+    if (note) params.set('emailMessage', note);
+    const response = await authorizedRequest(
+      `${resolvedFilesEndpoint}/${encodeURIComponent(id)}/permissions?${params.toString()}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'user', role: 'reader', emailAddress: address }),
+      },
+    );
+    return sanitizedPermission(await readJson(response));
+  }
+
+  async function deletePermission({ fileId, permissionId }) {
+    const id = typeof fileId === 'string' ? fileId.trim() : '';
+    const permission = typeof permissionId === 'string' ? permissionId.trim() : '';
+    if (!id) throw createDriveError('drive_invalid_request', 'A Drive file id is required.');
+    if (!permission) {
+      throw createDriveError('drive_invalid_request', 'A Drive permission id is required.');
+    }
+    await authorizedRequest(
+      `${resolvedFilesEndpoint}/${encodeURIComponent(id)}/permissions/${encodeURIComponent(permission)}`,
+      { method: 'DELETE' },
+    );
+    return true;
+  }
+
   async function readSource(fileId, { maxBytes = MAX_SOURCE_BYTES } = {}) {
     const file = await getFileMetadata(fileId);
     const limit = Math.max(1, Number(maxBytes) || MAX_SOURCE_BYTES);
@@ -738,6 +805,9 @@ export function createGoogleDriveConnector({
     updateGoogleDocText,
     moveFile,
     renameFile,
+    listPermissions,
+    shareFile,
+    deletePermission,
     readSource,
     isConfigured: Boolean(clientEmail && privateKey),
   };

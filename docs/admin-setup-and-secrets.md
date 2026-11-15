@@ -187,6 +187,13 @@ Repeat for `admin_drive`. A `404` means the function is not deployed.
    `https://www.googleapis.com/auth/drive.file` scope for files the service
    account creates or opens, plus read access to the wedding tree. Do not grant
    full `drive` scope unless an existing deployment already requires it.
+
+   **Sharing limit.** The admin sharing dialog can only grant `reader` access to
+   files the service account created or opened (the `drive.file` scope), and
+   only files below `secrets/<weddingId>/`. Customer-visible files under
+   `YYYY/Month/<weddingId>/` and files outside the service account's scope are
+   rejected. Folder-wide sharing, public links and writer/commenter roles are
+   not offered.
 7. Root folder:
 
 ```text

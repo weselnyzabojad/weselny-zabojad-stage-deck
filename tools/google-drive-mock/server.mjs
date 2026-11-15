@@ -29,6 +29,7 @@ export const MOCK_WEDDING_ID = 'Jennifer&Guillaume-UM-2026-08-001';
 export const DRIVE_FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder';
 export const DRIVE_DOC_MIME_TYPE = 'application/vnd.google-apps.document';
 export const DRIVE_JSON_MIME_TYPE = 'application/json';
+const MOCK_OWNER_EMAIL = 'drive-mock@stage-deck.local';
 
 class HttpError extends Error {
   constructor(status, message, reason = '') {
@@ -160,7 +161,7 @@ export function createMockDrive({ cartridge = '' } = {}) {
   const files = new Map();
   let sequence = 0;
 
-  function insert({ id, name, mimeType, parents = [], content = null }) {
+  function insert({ id, name, mimeType, parents = [], content = null, appCreated = true }) {
     sequence += 1;
     const file = {
       id: id ?? `mock-file-${sequence}`,
@@ -168,6 +169,16 @@ export function createMockDrive({ cartridge = '' } = {}) {
       mimeType,
       parents: [...parents],
       content,
+      appCreated,
+      permissions: [
+        {
+          id: 'owner',
+          type: 'user',
+          role: 'owner',
+          emailAddress: MOCK_OWNER_EMAIL,
+          displayName: 'Stage Deck service account',
+        },
+      ],
       trashed: false,
       version: 1,
       modifiedTime: new Date().toISOString(),
@@ -197,14 +208,22 @@ export function createMockDrive({ cartridge = '' } = {}) {
   folder(wedding.id, 'games');
   const secrets = folder(month.id, 'secrets');
   const privateWedding = folder(secrets.id, MOCK_WEDDING_ID);
-  folder(privateWedding.id, 'speeches');
+  const speeches = folder(privateWedding.id, 'speeches');
   folder(privateWedding.id, 'compatibility-test-game');
+  insert({
+    name: `${MOCK_WEDDING_ID} - 1 - Mock - Best man`,
+    mimeType: DRIVE_DOC_MIME_TYPE,
+    parents: [speeches.id],
+    content: 'Mock speech script for local Drive sharing.',
+    appCreated: true,
+  });
   if (cartridge.trim()) {
     insert({
       name: `${MOCK_WEDDING_ID}.json`,
       mimeType: DRIVE_JSON_MIME_TYPE,
       parents: [wedding.id],
       content: cartridge,
+      appCreated: false,
     });
   }
 
@@ -348,6 +367,65 @@ export function createMockDrive({ cartridge = '' } = {}) {
         const file = getFile(decodeURIComponent(uploadMatch[1]));
         sendJson(res, 200, metadata(writeContent(file, await readBody(req))));
         return;
+      }
+
+      const permissionsMatch = /^\/drive\/v3\/files\/([^/]+)\/permissions(?:\/([^/]+))?$/.exec(
+        path,
+      );
+      if (permissionsMatch) {
+        const file = getFile(decodeURIComponent(permissionsMatch[1]));
+        const permissionId = permissionsMatch[2]
+          ? decodeURIComponent(permissionsMatch[2])
+          : '';
+
+        if (req.method === 'GET' && !permissionId) {
+          sendJson(res, 200, { permissions: file.permissions });
+          return;
+        }
+
+        if (req.method === 'POST' && !permissionId) {
+          if (!file.appCreated) {
+            throw new HttpError(
+              403,
+              'The service account cannot manage permissions for this file.',
+              'insufficientFilePermissions',
+            );
+          }
+          const body = JSON.parse((await readBody(req)) || '{}');
+          if (body.role !== 'reader' || body.type !== 'user') {
+            throw new HttpError(400, 'Only user reader permissions are supported.', 'invalid');
+          }
+          const email = String(body.emailAddress ?? '').trim().toLowerCase();
+          if (!email) throw new HttpError(400, 'A recipient email is required.', 'invalid');
+          const existing = file.permissions.find(
+            (permission) => permission.emailAddress?.toLowerCase() === email,
+          );
+          if (existing) {
+            sendJson(res, 200, existing);
+            return;
+          }
+          const permission = {
+            id: `permission-${(sequence += 1)}`,
+            type: 'user',
+            role: 'reader',
+            emailAddress: email,
+            displayName: email,
+          };
+          file.permissions.push(permission);
+          sendJson(res, 200, permission);
+          return;
+        }
+
+        if (req.method === 'DELETE' && permissionId) {
+          const permission = file.permissions.find((entry) => entry.id === permissionId);
+          if (!permission) throw new HttpError(404, 'Permission not found.', 'notFound');
+          if (permission.role === 'owner') {
+            throw new HttpError(403, 'The owner permission cannot be removed.', 'forbidden');
+          }
+          file.permissions = file.permissions.filter((entry) => entry.id !== permissionId);
+          sendJson(res, 200, { ok: true });
+          return;
+        }
       }
 
       const fileMatch = /^\/drive\/v3\/files\/([^/]+)(?:\/(export))?$/.exec(path);
