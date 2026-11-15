@@ -21,8 +21,8 @@ describe('issue #896 landing footer partners', () => {
     const landing = read('src/components/LandingPage.jsx');
     expect(landing).toContain('border-[#C5A059]/40 bg-white px-6 py-10');
     expect(landing).toContain('shadow-lg shadow-[#C5A059]/10');
-    expect(landing).toContain('gap-x-10 gap-y-6 sm:gap-x-16');
-    expect(landing).toContain('className="h-20 w-auto object-contain sm:h-24"');
+    expect(landing).toContain('gap-x-12 gap-y-6 sm:gap-x-16');
+    expect(landing).toContain('max-h-[60px] w-auto object-contain sm:max-h-20');
     expect(landing).toContain('src={partner.logoUrl}');
     expect(landing).toContain('alt={partner.displayName}');
     expect(landing).toContain("displayName: 'DJ Mark'");
