@@ -6619,4 +6619,61 @@ Doc-sourced authorization below.
 
 **Tracking.** [#972](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/972), [#973](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/973), [#974](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/974).
 
+### 17.82 Admin monitoring top bar (decision, 2026-11-15)
+
+**Goal.**
+
+Replace the compact “System status” dropdown with a dedicated admin monitoring bar
+that always exposes all four monitored APIs and refreshes itself while the admin
+tab is visible. The bar is an operational dashboard, not a hidden menu, and keeps
+the existing `service_health` contract.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, template or field-map
+change.
+
+**Bar contract.**
+
+- Full-width strip under the admin header row and above the
+  Weddings/Live presence/Audit tabs.
+- Four always-visible cards for `supabase`, `sentry`, `drive`, `sunset`: state
+  dot + text, provider name, HTTP status, latency and last-checked time.
+- Unhealthy cards show the sanitized probe detail inline; one overall summary
+  (all healthy / N issues) remains visible without opening anything.
+- One Retry-all action; call-level errors render visibly.
+- 60-second polling only while the document is visible; pause when hidden, never
+  overlap requests, stop on unmount. Manual Retry stays available.
+- One Sentry event per new failure transition; local dev stays silent.
+- Accessible labelled region, no colour-only meaning, polite announcements that
+  do not steal focus.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin header | Dedicated monitoring strip above tabs; all provider details visible |
+| Admin read-only | Bar stays usable, Retry available |
+| Stage roles / landing | No change |
+| Edge Functions | No change; consume `service_health` as-is |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Placement | Strip above tabs |
+| Density | Four compact cards with inline errors |
+| Refresh | 60s while visible + manual Retry |
+| Error reporting | Preserve one-per-transition Sentry behaviour |
+| Task size | Single issue |
+| Backend | No changes |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1013](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1013) | Monitoring bar layout, all-provider cards, inline errors, Retry, polling/visibility, accessibility and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1013](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1013).
+
 
