@@ -8543,3 +8543,62 @@ validation set.
 **Open questions.** None.
 
 **Tracking.** [#1149](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1149).
+
+### 17.106 Landing-only production release surface (decision, 2026-11-16)
+
+**Goal.**
+
+Make the next production release publish the public marketing landing page
+only. The deck, owner admin, song requests, recap pages, PWA shell and their
+runtime chunks must be absent from that build, and every non-landing URL must
+return a branded HTTP 404 page.
+
+**Feature block.**
+
+- **F1 — Build-time release surface.** Add `RELEASE_SURFACE=landing` and a Vite
+  plugin that swaps the HTML entry to a landing-only entry. Unset or `full`
+  keeps today’s build.
+- **F2 — Branded 404.** In landing-only mode, only `/` and `/index.html` serve
+  the landing page; all other paths return a personalised Stage Deck 404 page
+  with Polish-first and English copy, home and contact links, and `noindex`.
+- **F3 — Release documentation.** Document enabling, verifying and disabling the
+  surface in the production release checklist.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Landing-only build | Landing page only; no deck/admin/recap/request/PWA chunks |
+| Landing-only non-root paths | Branded HTTP 404 page |
+| Default / `RELEASE_SURFACE=full` build | Unchanged full app, generic 404 and SPA redirects |
+| Landing page content/design | Unchanged |
+| Stage views, schema, Edge Functions, database | Unchanged |
+
+**Out of scope.** Changing landing content, emitting a PWA for the landing-only
+release, performing the Netlify environment change or the production deploy,
+and keeping the switch enabled permanently.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Approach | Build-time entry swap, not a runtime route gate |
+| Non-landing URLs | HTTP 404 with a branded page |
+| 404 style | Polish-first, English support, Stage Deck branding, contact + home links |
+| Release trigger | `RELEASE_SURFACE=landing` in the Netlify production context for that release only |
+| PWA | Disabled in landing-only mode |
+| Deployment | Separate explicit release action; the task ships the mechanism and docs |
+
+**Task split.** One atomic release-infrastructure issue: one entry, one build
+switch, one 404 treatment and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1152](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1152) | Landing-only entry, strict redirects, branded 404, tests, release docs | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1152](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1152).
