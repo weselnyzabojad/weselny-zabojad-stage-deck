@@ -149,6 +149,50 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     };
   }
 
+  // DJ VIP musician-preferred-music list (issue #1098). Reads are scoped by RLS
+  // to the role token's wedding; only the DJ update path marks a row played.
+  async function fetchMusicianSuggestions() {
+    const { data, error } = await supabase
+      .from('musician_song_suggestions')
+      .select('*')
+      .order('created_at', { ascending: true });
+    if (error) throw new Error(describeError(error));
+    return data ?? [];
+  }
+
+  async function markMusicianSuggestionPlayed(id) {
+    if (!id) return;
+    const { error } = await supabase
+      .from('musician_song_suggestions')
+      .update({ status: 'played', played_at: new Date().toISOString() })
+      .eq('id', id)
+      .eq('status', 'pending');
+    if (error) throw new Error(describeError(error));
+  }
+
+  function subscribeMusicianSuggestions({ onChange, onStatus } = {}) {
+    const channel = supabase
+      .channel(`wzsd:musician-suggestions:${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'musician_song_suggestions',
+        },
+        (payload) => onChange?.(payload),
+      )
+      .subscribe((status, error) => {
+        if (status === 'SUBSCRIBED') onStatus?.('connected');
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          onStatus?.('error', describeError(error));
+        }
+      });
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }
+
   function subscribe(roomKey, { onState, onStatus } = {}) {
     onStatus?.('connecting');
 
@@ -195,5 +239,8 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     publish,
     subscribe,
     subscribeWedding,
+    fetchMusicianSuggestions,
+    markMusicianSuggestionPlayed,
+    subscribeMusicianSuggestions,
   };
 }
