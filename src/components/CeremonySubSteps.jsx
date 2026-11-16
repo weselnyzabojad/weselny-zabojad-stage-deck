@@ -4,10 +4,14 @@ const ROLE_KEYS = new Set(['MC', 'DJ', 'Musician', 'Speaker', 'Venue']);
 
 // One expandable Ceremony-parts list per Ceremony step card. The sub-steps are
 // informational only: they never become timeline cards or duration inputs.
-export default function CeremonySubSteps({ subSteps = [] }) {
+// `detail` narrows the fields per role: full (MC/DJ VIP/Musician), media
+// (time, title, music cue, role) and venue (time, title, role).
+export default function CeremonySubSteps({ subSteps = [], detail = 'full' }) {
   const { t } = useI18n();
   const rows = Array.isArray(subSteps) ? subSteps.filter(Boolean) : [];
   if (rows.length === 0) return null;
+  const showNotes = detail === 'full';
+  const showMusicCue = detail === 'full' || detail === 'media';
 
   return (
     <details
@@ -43,10 +47,10 @@ export default function CeremonySubSteps({ subSteps = [] }) {
                   </span>
                 ) : null}
               </div>
-              {item.notes ? (
+              {showNotes && item.notes ? (
                 <p className="mt-0.5 text-[10px] leading-snug text-muted">{item.notes}</p>
               ) : null}
-              {item.musicCue ? (
+              {showMusicCue && item.musicCue ? (
                 <p className="mt-0.5 text-[10px] text-muted">
                   <span className="uppercase tracking-wider">
                     {t('ceremony.subSteps.musicCue')}:
