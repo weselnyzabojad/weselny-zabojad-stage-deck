@@ -15,7 +15,7 @@ import McMasterView from './views/McMasterView';
 import { buildInitialLiveState } from '@demo';
 import { STEP_TYPE_STYLES } from './lib/styleConstants';
 import { deriveHardAnchors } from './lib/hardAnchors';
-import { resolveMandatoryConstraints } from './lib/mandatorySteps';
+import { rescheduleFlexibleStep, resolveMandatoryConstraints } from './lib/mandatorySteps';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { availableRoleIds, isMediaRole } from './lib/roles';
@@ -385,6 +385,28 @@ export default function StageDeck({
       closureTime: mandatorySettings.closureTime ?? null,
     });
     if (result.canExtend) setMediaOverride('steps', result.steps);
+    return result;
+  };
+
+  const handleRescheduleStep = (stepId, newTime) => {
+    const before = steps.find((step) => step.id === stepId) ?? null;
+    const result = rescheduleFlexibleStep(steps, stepId, newTime, {
+      now,
+      eventDateISO: EVENT_DATE_ISO,
+      timeZone: VENUE_TIME_ZONE,
+      liveState,
+    });
+    if (result.error || !result.changed) return result;
+
+    setMediaOverride('steps', result.steps, {
+      change: {
+        kind: 'reschedule',
+        stepId,
+        stepTitle: before?.title ?? result.step?.title ?? '',
+        from: before?.time ?? null,
+        to: newTime,
+      },
+    });
     return result;
   };
   const musicalSetExtension = extendMusicalSet(steps, liveState.active_step_id, {
@@ -788,6 +810,7 @@ export default function StageDeck({
     djMcAccessToken: sessionValid ? roleSession?.token ?? null : null,
     djMcRoomCode: deckIntent.roomCode,
     onExtendMusicalSet: handleExtendMusicalSet,
+    rescheduleStep: handleRescheduleStep,
     extensionAllowed: mandatorySettings.closureExtensionAllowed === true,
     extensionUntil: mandatorySettings.closureExtensionUntil ?? null,
     closureTime: mandatorySettings.closureTime ?? null,

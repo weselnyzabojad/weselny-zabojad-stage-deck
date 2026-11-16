@@ -557,6 +557,18 @@ const en = {
   'mc.undo.speechSelection': 'Speech selection',
   'mc.undo.mediaOverride': 'Media override changed',
   'mc.undo.gameResults': 'Game results',
+  'mc.undo.scheduleChanged': 'Step time changed',
+  'mc.reschedule.actionLabel': 'Reschedule {title}',
+  'mc.reschedule.title': 'Change step time',
+  'mc.reschedule.description':
+    'Move this future step. Following flexible steps shift until the next fixed anchor.',
+  'mc.reschedule.time': 'New time',
+  'mc.reschedule.apply': 'Apply',
+  'mc.reschedule.cancel': 'Cancel',
+  'mc.reschedule.error':
+    'Could not reschedule this step. Choose a future time that does not cross a fixed step.',
+  'mc.reschedule.locked': 'Only the Venue Manager can postpone fixed steps.',
+  'mc.reschedule.info': 'Why this step is locked',
   'mc.confirm.signOut': 'Sign out of this role? You will need the role PIN to rejoin.',
   'mc.confirm.swapCue':
     'One of these steps carries a photographer cue. Swap anyway? The vendor may be waiting for that moment.',

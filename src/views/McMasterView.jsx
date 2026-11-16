@@ -5,8 +5,10 @@
 // layer for the MC role. The `model` object carries the already-derived values
 // and callbacks so there is exactly one place to wire a future routed shell.
 
+import { useId, useState } from 'react';
 import CakeCard from '../components/CakeCard';
 import DjSongRequestQueue from '../components/DjSongRequestQueue';
+import ModalShell from '../components/ModalShell';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -65,6 +67,7 @@ const UNDO_LABEL_KEYS = {
   toggle_subtask: 'mc.undo.subtaskChanged',
   select_speech: 'mc.undo.speechSelection',
   media_override: 'mc.undo.mediaOverride',
+  schedule_change: 'mc.undo.scheduleChanged',
   game_results: 'mc.undo.gameResults',
 };
 
@@ -84,6 +87,106 @@ import OpenOnPhoneButton from '../components/OpenOnPhoneButton';
 import SkipLink from '../components/SkipLink';
 import UndoToast from '../components/UndoToast';
 import MusicalSetBar from '../components/MusicalSetBar';
+
+function LockedStepInfo() {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const tooltipId = useId();
+  return (
+    <div className="relative flex items-center gap-1">
+      <button
+        type="button"
+        disabled
+        aria-label={t('mc.reschedule.locked')}
+        className="flex min-h-11 min-w-11 cursor-not-allowed items-center justify-center rounded-lg border border-line bg-card/70 text-sm text-muted opacity-60"
+      >
+        <span aria-hidden="true">🔒</span>
+      </button>
+      <button
+        type="button"
+        aria-label={t('mc.reschedule.info')}
+        aria-expanded={open}
+        aria-describedby={open ? tooltipId : undefined}
+        onClick={() => setOpen((value) => !value)}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-line bg-card/70 font-mono text-[11px] font-bold text-muted transition hover:border-line-strong hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
+      >
+        i
+      </button>
+      {open ? (
+        <span
+          id={tooltipId}
+          role="tooltip"
+          className="absolute right-0 top-full z-banner mt-1 w-52 rounded-lg border border-line bg-card px-3 py-2 text-left text-[11px] font-normal leading-snug text-ink shadow-2xl"
+        >
+          {t('mc.reschedule.locked')}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function StepTimeEditor({ entry, error, onApply, onClose }) {
+  const { t } = useI18n();
+  const [time, setTime] = useState(() => entry?.step?.time ?? '');
+  const titleId = useId();
+  if (!entry) return null;
+
+  return (
+    <ModalShell open onClose={onClose} labelledBy={titleId}>
+      <form
+        className="flex flex-col gap-3 p-5 pt-14"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onApply(time);
+        }}
+      >
+        <div>
+          <h2 id={titleId} className="font-heading text-lg font-bold text-ink">
+            {t('mc.reschedule.title')}
+          </h2>
+          <p className="mt-1 text-xs text-muted">{t('mc.reschedule.description')}</p>
+        </div>
+        <p className="text-sm font-semibold text-ink">{entry.step?.title}</p>
+        <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
+          {t('mc.reschedule.time')}
+          <input
+            type="time"
+            value={time}
+            onChange={(event) => setTime(event.target.value)}
+            required
+            autoFocus
+            className="rounded-lg border border-line-strong bg-card px-3 py-2 font-mono text-base text-ink outline-none focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/30"
+          />
+        </label>
+        {error ? (
+          <p role="alert" className="text-xs text-alert-soft">
+            {error}
+          </p>
+        ) : null}
+        <div className="mt-1 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="min-h-11 rounded-lg border border-line bg-raised px-3 py-2 text-xs font-semibold text-ink transition hover:bg-line"
+          >
+            {t('mc.reschedule.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="min-h-11 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
+          >
+            {t('mc.reschedule.apply')}
+          </button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
 
 export default function McMasterView({ model }) {
   const {
@@ -135,6 +238,7 @@ export default function McMasterView({ model }) {
   undoToast,
   setUndoToast,
   onExtendMusicalSet = null,
+  rescheduleStep = null,
   extensionAllowed = false,
   extensionUntil = null,
   closureTime = null,
@@ -174,9 +278,53 @@ export default function McMasterView({ model }) {
     ) : null;
 
   const isCompact = useCompact();
+  const [editingStepId, setEditingStepId] = useState(null);
+  const [editorError, setEditorError] = useState('');
 
   const railEntries = driftReport.entries ?? [];
   const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
+  const editingEntry = editingStepId
+    ? railEntries.find((entry) => entry.step?.id === editingStepId) ?? null
+    : null;
+
+  const rescheduleActions = {};
+  if (rescheduleStep) {
+    for (const entry of railEntries) {
+      const step = entry?.step;
+      if (!step || entry.isActive || entry.isDone) continue;
+      if (step.type === 'HARD_ANCHOR' || step.mandatory) {
+        rescheduleActions[step.id] = <LockedStepInfo />;
+        continue;
+      }
+      if (step.type !== 'FLEXIBLE') continue;
+      rescheduleActions[step.id] = (
+        <button
+          type="button"
+          title={t('mc.reschedule.actionLabel', { title: step.title })}
+          aria-label={t('mc.reschedule.actionLabel', { title: step.title })}
+          onClick={() => {
+            setEditorError('');
+            setEditingStepId(step.id);
+          }}
+          className="flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-line bg-card/70 text-sm text-ink transition hover:border-line-strong hover:bg-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-soft"
+        >
+          <span aria-hidden="true">✎</span>
+        </button>
+      );
+    }
+  }
+
+  const applyReschedule = (time) => {
+    if (!rescheduleStep || !editingStepId) return;
+    const result = rescheduleStep(editingStepId, time);
+    if (!result || result.error) {
+      setEditorError(t('mc.reschedule.error'));
+      return;
+    }
+    setEditorError('');
+    setEditingStepId(null);
+    setUndoToast({ id: Date.now(), label: t('mc.undo.scheduleChanged') });
+  };
   const activeMusicalSetEntry =
     railEntries.find((entry) => entry.isActive && entry.step?.optionalFlag === 'dj_set') ?? null;
 
@@ -257,6 +405,7 @@ export default function McMasterView({ model }) {
           currentBody={compactCurrentBody}
           photographerAvailable={resolvePhotographerAvailable(WEDDING)}
           polished
+          entryActions={rescheduleActions}
         />
       ) : null}
 
@@ -513,6 +662,7 @@ export default function McMasterView({ model }) {
             currentBody={heroBody}
             photographerAvailable={resolvePhotographerAvailable(WEDDING)}
             polished
+            entryActions={rescheduleActions}
           />
 
           {speechMode !== 'OFF' && speeches?.length > 0 ? (
@@ -592,6 +742,18 @@ export default function McMasterView({ model }) {
         onUndo={handleUndo}
         onDismiss={() => setUndoToast(null)}
       />
+      {editingEntry ? (
+        <StepTimeEditor
+          key={editingEntry.step?.id}
+          entry={editingEntry}
+          error={editorError}
+          onApply={applyReschedule}
+          onClose={() => {
+            setEditingStepId(null);
+            setEditorError('');
+          }}
+        />
+      ) : null}
 
       </div>
     </>
@@ -644,6 +806,23 @@ export default function McMasterView({ model }) {
         />
       ) : null}
       {compactContent}
+      <UndoToast
+        toast={undoToast}
+        onUndo={handleUndo}
+        onDismiss={() => setUndoToast(null)}
+      />
+      {editingEntry ? (
+        <StepTimeEditor
+          key={editingEntry.step?.id}
+          entry={editingEntry}
+          error={editorError}
+          onApply={applyReschedule}
+          onClose={() => {
+            setEditingStepId(null);
+            setEditorError('');
+          }}
+        />
+      ) : null}
     </RoleShell>
   );
 }
