@@ -8015,3 +8015,123 @@ cartridge re-publish unless the step disappears.
 **Open questions.** None.
 
 **Tracking.** [#1102](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1102), [#1103](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1103), [#1104](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1104), [#1105](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1105), [#1106](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1106).
+
+### 17.98 Musician experience, preferred music and Ceremony sub-steps (decision, 2026-11-16)
+
+Replace the small Musician view with a standalone fork of the Photographer
+layout, give the musician a way to suggest songs to the DJ VIP, formalize the
+instrument picker, and add informational Ceremony sub-steps. The existing
+`## MUSICIANS` → `Musician expected` Doc contract, musician registry, PIN/QR
+access and end-hour awareness stay in place.
+
+The four feature blocks are:
+
+- **F1 — Musician view.** A decoupled Photographer-based view with a personal
+  availability/end-hour card and the shared end-hours list.
+- **F2 — Musician preferred music.** A durable per-musician suggestion list,
+  a musician form and the DJ VIP panel that replaces `✅ Do zagrania`.
+- **F3 — Instrument catalogue.** A short MusicBrainz-curated, localized list
+  used by the admin registry and stage views.
+- **F4 — Ceremony sub-steps.** Informational, Doc-authored moments nested under
+  the Ceremony step.
+
+**Google Doc contract.**
+
+- **F1/F2/F3:** not Doc-linked. Keep `## MUSICIANS` → `Musician expected:
+  true|false`; names, instruments, availability and suggestions remain
+  admin/runtime data.
+- **F4:** Doc-linked. Add `## CEREMONY SUBSTEPS` with
+  `Step ID | Sub-step ID | Time | Title | Notes | Music cue | Responsible role`.
+  `Step ID` must reference a Ceremony step; `Sub-step ID` and `Title` are
+  required; `Time`, `Notes`, `Music cue` and `Responsible role` are optional.
+  Responsible role accepts `MC`, `DJ`, `Musician`, `Speaker` or `Venue`.
+  Schema path: `steps[].ceremony.subSteps[]`. Sub-steps are informational and
+  never affect durations, drift, order or anchors.
+
+**Feature scope.**
+
+- **Musician view:** standalone copy of `PhotographerView.jsx`; remove sunset,
+  mini-session, group-photo, photo-plan and photographer-cue blocks; keep the
+  shared timeline and shell primitives; add personal availability, end hour,
+  localized instrument, own suggestions and full Ceremony sub-step detail.
+- **Suggestions:** new durable backend table; song, artist, optional timeline
+  step and optional note; per-musician ownership; pending → played; DJ VIP sees
+  all, marks played, cannot edit or delete; no maximum count.
+- **DJ VIP panel:** replace `✅ Do zagrania` with “Musician’s preferred music”;
+  show pending suggestions first and collapsed played history; inline
+  “Already in main songs” warning; empty-state message; move `mustPlay` into
+  the ⭐ main-songs panel.
+- **Instruments:** short curated list (violin, viola, cello, saxophone, piano,
+  keyboard, harp, guitar, vocals, flute, clarinet, trumpet, accordion, organ,
+  other) with EN/FR/PL labels; closed admin select plus “Other” free text;
+  existing free-text values remain readable; no runtime API call.
+- **Access:** musician gets live-state read access; no live-state write access.
+- **i18n:** every new stage-view string and instrument/responsible-role label
+  is added in EN, FR and PL.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Musician | Photographer-forked view; personal end hour; own song suggestions; full Ceremony sub-steps |
+| MC Master | Full Ceremony sub-steps; no suggestion UI |
+| DJ VIP | Musician’s preferred music panel; pending/played; duplicate warning; full sub-steps |
+| DJ Standard | Unchanged |
+| Photographer 1 / 2 / Cameraman | Reduced Ceremony sub-steps: time, title, cue, responsible role |
+| Venue Manager | Reduced Ceremony sub-steps: time, title, responsible role |
+| Speaker | Unchanged; no sub-steps |
+| Admin | Curated instrument select + Other; no suggestion panel |
+| Song Request | Unchanged |
+| Google Doc / schema | Existing musicians contract unchanged; new Ceremony sub-step contract only |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Existing Doc contract | Keep `## MUSICIANS` → `Musician expected` |
+| View strategy | Replace `MusicianView.jsx` with a Photographer fork |
+| Decoupling | No shared view-specific component; generic primitives may be shared |
+| Photo blocks | All removed: sunset, mini-session, group photos, photo plan, photo cues |
+| End hour | Personal “Available until” card plus shared `EndHoursCard` |
+| Suggestion storage | New durable per-wedding backend table |
+| Suggestion ownership | Per musician; DJ sees all with author and instrument |
+| Suggestion fields | Song + artist + optional step link + optional note |
+| Statuses | `pending` and `played`; DJ VIP-only status change |
+| Musician editing | Own pending entries only; no maximum; played is read-only |
+| DJ editing | Mark played only; no edit or delete |
+| Panel name | “Musician’s preferred music” / localized |
+| Panel content | Suggestions only; `mustPlay` moves to the main-songs panel |
+| Duplicate handling | No dedupe; inline warning on normalized track + artist |
+| Empty panel | Localized empty message |
+| New-suggestion alert | None beyond the live panel update |
+| Song lookup | Reuse advisory `search_song_metadata`; failures never block |
+| Instrument source | MusicBrainz-curated local list; no runtime API |
+| Instrument list | Short curated list, closed select + Other |
+| Instrument ownership | Admin-only |
+| Sub-step semantics | Informational; no timeline math |
+| Sub-step source | New `## CEREMONY SUBSTEPS` section |
+| Sub-step fields | Optional time, title, notes, music cue and responsible role; required id and title |
+| Sub-step schema | `steps[].ceremony.subSteps[]` |
+| Sub-step views | MC, DJ VIP, Musician full; photographers/cameraman and Venue reduced |
+| Sub-step placement | Nested inside the Ceremony card, collapsed by default |
+| Sub-step editing | Doc-only, read-only |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1109](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1109) | Curated EN/FR/PL instrument catalogue, admin closed select + Other, localized display | - |
+| 1 | [#1110](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1110) | Musician live-state read policy; no write access | - |
+| 1 | [#1108](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1108) | Suggestion table, RLS, pending/played transitions, Realtime and tests | - |
+| 1 | [#1112](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1112) | `## CEREMONY SUBSTEPS` Doc, schema, parser, field map and fixtures | - |
+| 2 | [#1107](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1107) | Standalone Photographer fork, photo-block removal, personal end hour, i18n | #1109, #1110 |
+| 2 | [#1111](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1111) | Musician suggestion form, advisory lookup, own pending/played list | #1107, #1108 |
+| 2 | [#1098](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1098) | DJ VIP musician panel, played marking, duplicate warning, `mustPlay` move | #1108, #1109 |
+| 2 | [#1113](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1113) | Full Ceremony sub-steps on MC, DJ VIP and Musician | #1112, #1107 |
+| 2 | [#1114](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1114) | Reduced Ceremony sub-steps on media and Venue Manager | #1112 |
+
+**Open questions.** None.
+
+**Unblocks.** [#1098](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1098) is no longer blocked; it now carries the DJ VIP panel contract.
+
+**Tracking.** [#1098](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1098), [#1107](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1107), [#1108](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1108), [#1109](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1109), [#1110](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1110), [#1111](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1111), [#1112](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1112), [#1113](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1113), [#1114](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1114).
