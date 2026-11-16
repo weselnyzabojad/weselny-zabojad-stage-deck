@@ -10,10 +10,12 @@ const LABELS = {
   dj: 'DJ',
   dj_mark: 'DJ Mark',
   dj_szymoniak: 'DJ Szymoniak',
+  dj_mc: 'DJ + MC',
   photo1: 'Photo 1',
   photo2: 'Photo 2',
   video: 'Camera',
   venue_manager: 'Venue',
+  musician: 'Musician',
   speaker: 'Speaker',
   song_request: 'Song request',
 };
