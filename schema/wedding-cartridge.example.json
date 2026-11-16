@@ -84,7 +84,17 @@
         "type": "RELIGIOUS",
         "mcSupportRequested": true,
         "location": "St. Mary Church",
-        "notes": "Full mass; MC introduces the couple at the church door."
+        "notes": "Full mass; MC introduces the couple at the church door.",
+        "subSteps": [
+          {
+            "id": "ceremony_entrance",
+            "time": "17:00",
+            "title": "Bridal entrance",
+            "notes": "Doors open; guests stand.",
+            "musicCue": "Canon in D",
+            "responsibleRole": "Musician"
+          }
+        ]
       }
     },
     {

@@ -188,7 +188,77 @@ function mapCeremonyScript(source, steps) {
   };
 }
 
-// Only the four throwing moments and the two winner-photo moments may appear
+// Informational ceremony moments. They are attached to the Ceremony step and
+// never become timeline steps or duration inputs.
+const CEREMONY_SUBSTEP_ROLES = {
+  mc: 'MC',
+  dj: 'DJ',
+  musician: 'Musician',
+  speaker: 'Speaker',
+  venue: 'Venue',
+};
+
+function mapCeremonySubSteps(source, steps, warnings = []) {
+  const rows = table(source, [
+    'Step ID',
+    'Sub-step ID',
+    'Time',
+    'Title',
+    'Notes',
+    'Music cue',
+    'Responsible role',
+  ]);
+  const byStep = new Map();
+  for (const row of rows) {
+    const stepId = text(row['Step ID']);
+    const id = text(row['Sub-step ID']);
+    const title = text(row.Title);
+    const step = steps.find((entry) => entry.id === stepId);
+    if (!step?.ceremony) {
+      warnings.push(`CEREMONY SUBSTEPS: unknown Ceremony step "${stepId || '?'}"`);
+      continue;
+    }
+    if (!id || !title) {
+      warnings.push(
+        `CEREMONY SUBSTEPS: row for "${stepId || '?'}" needs both Sub-step ID and Title`,
+      );
+      continue;
+    }
+    const list = byStep.get(stepId) ?? [];
+    if (list.some((entry) => entry.id === id)) {
+      warnings.push(`CEREMONY SUBSTEPS: duplicate sub-step id "${id}" on "${stepId}"`);
+      continue;
+    }
+    const time = text(row.Time);
+    if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+      warnings.push(`CEREMONY SUBSTEPS: invalid time "${time}" on "${id}"`);
+      continue;
+    }
+    const roleRaw = normalizeKey(row['Responsible role']);
+    const responsibleRole = roleRaw ? CEREMONY_SUBSTEP_ROLES[roleRaw] : null;
+    if (roleRaw && !responsibleRole) {
+      warnings.push(
+        `CEREMONY SUBSTEPS: invalid responsible role "${text(row['Responsible role'])}" on "${id}"`,
+      );
+    }
+    const entry = {
+      id,
+      title,
+      ...(time ? { time } : {}),
+      ...(text(row.Notes) ? { notes: text(row.Notes) } : {}),
+      ...(text(row['Music cue']) ? { musicCue: text(row['Music cue']) } : {}),
+      ...(responsibleRole ? { responsibleRole } : {}),
+    };
+    list.push(entry);
+    byStep.set(stepId, list);
+  }
+  for (const [stepId, subSteps] of byStep) {
+    const step = steps.find((entry) => entry.id === stepId);
+    if (step?.ceremony) step.ceremony = { ...step.ceremony, subSteps };
+  }
+}
+
+
 // as Oczepiny sub-events. IDs are canonical and derived from the title.
 const OCZEPINY_SUB_EVENTS = {
   'veil toss': 'veil_toss',
@@ -985,6 +1055,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   }
   const ceremonyScript = section(parsed, 'CEREMONY SCRIPT');
   if (ceremonyScript) mapCeremonyScript(ceremonyScript, stepsWithMandatory);
+  mapCeremonySubSteps(section(parsed, 'CEREMONY SUBSTEPS'), stepsWithMandatory, warnings);
 
   // Game steps own their question list. Match by id/title, then remove the old
   // optionalFlag/gameId indirection.

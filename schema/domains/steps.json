@@ -442,6 +442,50 @@
         },
         "notes": {
           "type": "string"
+        },
+        "subSteps": {
+          "type": "array",
+          "description": "Informational ceremony moments; never timeline steps or duration inputs.",
+          "items": {
+            "$ref": "#/$defs/ceremonySubStep"
+          }
+        }
+      }
+    },
+    "ceremonySubStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "time": {
+          "type": "string",
+          "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "musicCue": {
+          "type": "string"
+        },
+        "responsibleRole": {
+          "type": "string",
+          "enum": [
+            "MC",
+            "DJ",
+            "Musician",
+            "Speaker",
+            "Venue"
+          ]
         }
       }
     },
