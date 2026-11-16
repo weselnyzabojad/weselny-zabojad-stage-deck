@@ -248,6 +248,7 @@ export default function PhotographerView({
   onToggleSubtask,
   cakeProtocol = null,
   cakeServiceMode = 'KITCHEN_RETURN',
+  scheduleBanner = null,
 }) {
   const { t } = useI18n();
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
@@ -419,6 +420,8 @@ export default function PhotographerView({
         center={<TopBarCenterIdentity wedding={wedding} />}
         right={<ChildrenExpectedBadge wedding={wedding} inline />}
       />
+
+      {scheduleBanner}
 
       <SecondaryControlBar
         left={(
@@ -595,6 +598,7 @@ export default function PhotographerView({
       speeches={speeches}
       speechMode={speechMode}
       authControl={authControl}
+      banner={scheduleBanner}
     >
       {compactContent}
     </RoleShell>

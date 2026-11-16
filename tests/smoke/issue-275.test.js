@@ -9,9 +9,9 @@ describe('issue #275 Venue Manager overrides and popup', () => {
     expect(deck).toContain('mandatoryOverride={liveState.media_overrides?.steps');
   });
 
-  it('shows a non-auto-closing acknowledgement popup to non-Venue-Manager roles', () => {
+  it('shows a non-auto-closing acknowledgement popup only to the MC', () => {
     const popup = read('src/components/MandatoryUpdatePopup.jsx');
-    expect(popup).toContain('role === \'venue_manager\'');
+    expect(popup).toContain("role !== 'mc'");
     expect(popup).toContain('Acknowledge');
     expect(popup).not.toContain('setTimeout');
   });

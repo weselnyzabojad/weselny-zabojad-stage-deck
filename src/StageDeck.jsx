@@ -8,6 +8,7 @@ import PhotographerView from './components/PhotographerView';
 import VenueManagerView from './components/VenueManagerView';
 import CeremonyCueCard from './components/CeremonyCueCard';
 import MandatoryUpdatePopup from './components/MandatoryUpdatePopup';
+import ScheduleChangeBanner from './components/ScheduleChangeBanner';
 import WeddingClosureBanner from './components/WeddingClosureBanner';
 import SpeakerView from './components/SpeakerView';
 import MusicianView from './components/MusicianView';
@@ -566,6 +567,14 @@ export default function StageDeck({
     </div>
   ) : null;
 
+  const scheduleChangeBanner = (
+    <ScheduleChangeBanner
+      weddingId={WEDDING.weddingId}
+      role={currentRole}
+      update={liveState.media_overrides?.steps ?? null}
+    />
+  );
+
   const statusBanners = (
     <>
       {cartridgeNoticeBanner}
@@ -573,7 +582,6 @@ export default function StageDeck({
       <MandatoryUpdatePopup
         weddingId={WEDDING.weddingId}
         role={currentRole}
-        isVipDj={djDetailTier(WEDDING) === 'vip'}
         update={liveState.media_overrides?.steps ?? null}
       />
       <CeremonyCueCard wedding={WEDDING} role={currentRole} />
@@ -647,6 +655,7 @@ export default function StageDeck({
             extensionUntil={mandatorySettings.closureExtensionUntil ?? null}
             closureTime={mandatorySettings.closureTime ?? null}
             extensionBlockedReason={extensionBlockedReason}
+            scheduleBanner={scheduleChangeBanner}
             {...djBoothProps}
           />
         </AppErrorBoundary>
@@ -688,6 +697,7 @@ export default function StageDeck({
             onToggleSubtask={toggleSubtask}
             cakeProtocol={cakeProtocol}
             cakeServiceMode={cakeServiceMode}
+            scheduleBanner={scheduleChangeBanner}
             {...roleProps}
           />
         </AppErrorBoundary>

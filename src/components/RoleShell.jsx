@@ -38,6 +38,7 @@ export default function RoleShell({
   speechMode = null,
   viewSwitch = null,
   authControl = null,
+  banner = null,
 }) {
   const { t, tp, formatTime } = useI18n();
   const mediaCompact = useCompact();
@@ -104,6 +105,8 @@ export default function RoleShell({
           ) : null}
         </div>
       </header>
+
+      {banner}
 
       <main id="phone-main" className="min-h-0 flex-1 overflow-x-clip overflow-y-auto px-4 py-4">
         {children}

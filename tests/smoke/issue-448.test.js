@@ -45,8 +45,7 @@ describe('issue #448 venue extension hour', () => {
     expect(read('src/lib/mandatorySteps.js')).toContain('closureExtensionUntil');
   });
 
-  it('shows the actual hour in the update popup and closure banner', () => {
-    expect(read('src/components/MandatoryUpdatePopup.jsx')).toContain('mandatoryUpdate.extensionUntil');
+  it('shows the actual hour in the closure banner', () => {
     const banner = read('src/components/WeddingClosureBanner.jsx');
     expect(banner).toContain('closure.extensionUntil');
     expect(banner).toContain('closure.extensionPossible');

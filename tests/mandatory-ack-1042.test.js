@@ -34,11 +34,10 @@ describe('issue #1042 mandatory update acknowledgement re-arm', () => {
     expect(storage.map.size).toBe(1);
   });
 
-  it('keeps the venue exclusion and MC/DJ VIP gating', () => {
+  it('keeps the MC-only mandatory popup gating', () => {
     const popup = read('src/components/MandatoryUpdatePopup.jsx');
-    expect(popup).toContain("role === 'venue_manager'");
-    expect(popup).toContain("const isMc = role === 'mc'");
-    expect(popup).toContain("const isDjVip = role === 'dj' && isVipDj");
+    expect(popup).toContain("role !== 'mc'");
+    expect(popup).not.toContain('isVipDj');
     expect(popup).toContain('role,');
     expect(popup).toContain('updatedAt: update.updatedAt');
   });
