@@ -1,5 +1,6 @@
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import EndHoursCard from './EndHoursCard';
+import MusicianSuggestionForm from './MusicianSuggestionForm';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -15,6 +16,7 @@ import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
+import useMusicianSuggestions from '../hooks/useMusicianSuggestions';
 import { instrumentLabel } from '../lib/instruments.js';
 
 function windowLabel(startTime, endTime) {
@@ -39,6 +41,7 @@ export default function MusicianView({
   theme = 'night',
   onToggleTheme,
   musicianId = null,
+  accessToken = null,
   roomCode = null,
   pin = null,
 }) {
@@ -47,6 +50,11 @@ export default function MusicianView({
   const musician = musicians.find((item) => item.id === musicianId) ?? null;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const compact = useCompact();
+  const musicianSuggestions = useMusicianSuggestions({
+    accessToken,
+    musicianId,
+    enabled: Boolean(musicianId),
+  });
 
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
@@ -110,6 +118,18 @@ export default function MusicianView({
       )}
 
       <EndHoursCard wedding={wedding} />
+
+      {musician ? (
+        <MusicianSuggestionForm
+          suggestions={musicianSuggestions.suggestions}
+          timeline={timeline}
+          loading={musicianSuggestions.loading}
+          error={musicianSuggestions.error}
+          onCreate={musicianSuggestions.createSuggestion}
+          onUpdate={musicianSuggestions.updateSuggestion}
+          onDelete={musicianSuggestions.deleteSuggestion}
+        />
+      ) : null}
     </div>
   );
 
