@@ -1,5 +1,6 @@
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CakeCard from './CakeCard';
+import { ceremonySubStepBodies } from './ceremonySubStepBodies';
 import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
 import MiniSessionTwinTask from './MiniSessionTwinTask';
@@ -336,6 +337,18 @@ export default function PhotographerView({
           compact
         />
       </div>
+    );
+  }
+  for (const [stepId, body] of Object.entries(
+    ceremonySubStepBodies(timeline, 'media'),
+  )) {
+    cueBodies[stepId] = cueBodies[stepId] ? (
+      <div className="space-y-2">
+        {cueBodies[stepId]}
+        {body}
+      </div>
+    ) : (
+      body
     );
   }
 

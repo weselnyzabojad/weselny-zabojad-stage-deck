@@ -12,6 +12,7 @@ import TopBarCenterIdentity from './TopBarCenterIdentity';
 import TopBarClock from './TopBarClock';
 import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
+import { ceremonySubStepBodies } from './ceremonySubStepBodies';
 import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
@@ -288,7 +289,11 @@ export default function VenueManagerView({
 
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-3 sm:space-y-4">
-      <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
+      <TimelineFocusStack
+        entries={timeline}
+        activeIndex={activeIndex}
+        entryBodies={ceremonySubStepBodies(timeline, 'venue')}
+      />
 
       <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
