@@ -16,7 +16,8 @@ describe('issue #895 FAQ and final CTA copy', () => {
     expect(fr['landing.faq.1.a']).toContain('aucune obligation');
     expect(fr['landing.faq.2.a']).toContain('aucun compte n’est requis');
     expect(fr['landing.faq.3.a']).toContain('Rien ne s’arrête');
-    expect(fr['landing.faq.4.a']).toContain('100 % privé et sécurisé');
+    expect(fr['landing.faq.4.a']).toContain('Votre espace mariage est privé');
+    expect(fr['landing.faq.4.a']).toContain('chaque intervenant');
     expect(fr['landing.faq.5.a']).toContain('sans le moindre frais supplémentaire');
 
     expect(pl['landing.faq.1.a']).toContain('bez żadnego obowiązku');
