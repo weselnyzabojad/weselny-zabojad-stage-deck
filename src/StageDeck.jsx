@@ -763,6 +763,7 @@ export default function StageDeck({
             theme={theme}
             onToggleTheme={toggleTheme}
             musicianId={roleSession?.musicianId ?? deckIntent.musicianId ?? null}
+            accessToken={sessionValid ? roleSession?.token ?? null : null}
             roomCode={deckIntent.roomCode}
             pin={roleProps.pin}
           />

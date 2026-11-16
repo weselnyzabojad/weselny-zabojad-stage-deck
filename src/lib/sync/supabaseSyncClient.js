@@ -170,6 +170,44 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     if (error) throw new Error(describeError(error));
   }
 
+  async function createMusicianSuggestion({ musicianId, song, artist, note = null, stepId = null }) {
+    if (!musicianId || !song || !artist) throw new Error('Musician, song and artist are required.');
+    const { data, error } = await supabase
+      .from('musician_song_suggestions')
+      .insert({
+        musician_id: musicianId,
+        song,
+        artist,
+        note: note || null,
+        step_id: stepId || null,
+        status: 'pending',
+      })
+      .select('*')
+      .single();
+    if (error) throw new Error(describeError(error));
+    return data;
+  }
+
+  async function updateMusicianSuggestion(id, { song, artist, note = null, stepId = null }) {
+    if (!id) return;
+    const { error } = await supabase
+      .from('musician_song_suggestions')
+      .update({ song, artist, note: note || null, step_id: stepId || null })
+      .eq('id', id)
+      .eq('status', 'pending');
+    if (error) throw new Error(describeError(error));
+  }
+
+  async function deleteMusicianSuggestion(id) {
+    if (!id) return;
+    const { error } = await supabase
+      .from('musician_song_suggestions')
+      .delete()
+      .eq('id', id)
+      .eq('status', 'pending');
+    if (error) throw new Error(describeError(error));
+  }
+
   function subscribeMusicianSuggestions({ onChange, onStatus } = {}) {
     const channel = supabase
       .channel(`wzsd:musician-suggestions:${Date.now()}`)
@@ -241,6 +279,9 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     subscribeWedding,
     fetchMusicianSuggestions,
     markMusicianSuggestionPlayed,
+    createMusicianSuggestion,
+    updateMusicianSuggestion,
+    deleteMusicianSuggestion,
     subscribeMusicianSuggestions,
   };
 }

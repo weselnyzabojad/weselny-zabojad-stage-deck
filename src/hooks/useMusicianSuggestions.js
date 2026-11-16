@@ -5,7 +5,7 @@ import { createSupabaseSyncClient } from '../lib/sync/supabaseSyncClient.js';
 // DJ VIP view of the durable musician suggestion table. The hook is disabled
 // when there is no role token (for example the local demo), leaving the panel in
 // its empty state instead of attempting an unauthenticated request.
-export function useMusicianSuggestions({ accessToken = null, enabled = false } = {}) {
+export function useMusicianSuggestions({ accessToken = null, musicianId = null, enabled = false } = {}) {
   const config = useMemo(() => getSyncConfig(), []);
   const client = useMemo(
     () =>
@@ -52,11 +52,41 @@ export function useMusicianSuggestions({ accessToken = null, enabled = false } =
     [client, refresh],
   );
 
+  const createSuggestion = useCallback(
+    async (fields) => {
+      if (!client || !musicianId) return;
+      await client.createMusicianSuggestion({ musicianId, ...fields });
+      await refresh();
+    },
+    [client, musicianId, refresh],
+  );
+
+  const updateSuggestion = useCallback(
+    async (id, fields) => {
+      if (!client || !id) return;
+      await client.updateMusicianSuggestion(id, fields);
+      await refresh();
+    },
+    [client, refresh],
+  );
+
+  const deleteSuggestion = useCallback(
+    async (id) => {
+      if (!client || !id) return;
+      await client.deleteMusicianSuggestion(id);
+      await refresh();
+    },
+    [client, refresh],
+  );
+
   return {
     suggestions: client ? suggestions : [],
     loading: Boolean(client) && !loaded,
     error: client ? error : null,
     markPlayed,
+    createSuggestion,
+    updateSuggestion,
+    deleteSuggestion,
   };
 }
 
