@@ -273,13 +273,27 @@ h2 {
   border-top: 2px dashed rgba(197, 160, 89, 0.35);
 }
 
-.english .lead {
-  margin-top: 0.65rem;
-  font-size: 0.98rem;
+.translations {
+  display: grid;
+  gap: 1.5rem;
 }
 
-.english .actions {
+@media (min-width: 40rem) {
+  .translations {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+.translation .lead {
+  margin-top: 0.65rem;
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.translation .actions {
   margin-top: 1rem;
+  row-gap: 0.5rem;
 }
 
 .text-link {
@@ -310,13 +324,6 @@ h2 {
 
 .footer p {
   margin: 0.35rem 0 0;
-}
-
-.footer-fine {
-  font-family: Lora, Georgia, serif;
-  font-style: italic;
-  letter-spacing: 0;
-  color: rgba(148, 163, 184, 0.75);
 }
 
 @media (max-width: 34rem) {

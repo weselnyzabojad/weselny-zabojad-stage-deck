@@ -7,11 +7,13 @@ describe('landing-only branded 404 (part of #1152)', () => {
   const html = read('release/landing/404.html');
   const css = read('release/landing/404.css');
 
-  it('is a standalone Polish-first page with English support', () => {
+  it('is a standalone Polish-first page with French and English support', () => {
     expect(html).toContain('<html lang="pl"');
     expect(html).toContain('<p class="eyebrow">Strona nie znaleziona</p>');
     expect(html).toContain('Tej strony nie ma na planie.');
-    expect(html).toContain('<div class="english" lang="en">');
+    expect(html).toContain('<section class="translation" lang="fr">');
+    expect(html).toContain('Cette page n’est pas au planning.');
+    expect(html).toContain('<section class="translation" lang="en">');
     expect(html).toContain('This page isn’t on the schedule.');
   });
 
@@ -25,6 +27,8 @@ describe('landing-only branded 404 (part of #1152)', () => {
     expect(html).toContain('href="https://www.weselnyzabojad.pl/"');
     expect(html).toContain('Back to the landing page');
     expect(html).toContain('Contact us');
+    expect(html).toContain('Revenir à la page d’accueil');
+    expect(html).toContain('Nous contacter');
   });
 
   it('uses same-origin styling so the production CSP stays strict', () => {
