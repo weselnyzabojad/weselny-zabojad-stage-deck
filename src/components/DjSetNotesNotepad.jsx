@@ -6,8 +6,9 @@ const NOTE_KEYS = ['dj.setNotes.project', 'dj.setNotes.cutoffs', 'dj.setNotes.pr
 // Physical DJ notepad: the paper, ruled lines and punched holes are decorative.
 // Music Policy is rendered inside the same sheet so the wide DJ view reads as
 // one continuous notebook rather than two stacked cards.
-export default function DjSetNotesNotepad({ policy }) {
+export default function DjSetNotesNotepad({ policy, showPolicy = true }) {
   const { t } = useI18n();
+  const hasPolicy = showPolicy && policy?.hasData;
 
   return (
     <section
@@ -50,12 +51,16 @@ export default function DjSetNotesNotepad({ policy }) {
           ))}
         </ul>
 
-        <div
-          aria-hidden="true"
-          className="my-5 border-t-2 border-dashed border-[#8b6f47]/55"
-        />
+        {hasPolicy ? (
+          <>
+            <div
+              aria-hidden="true"
+              className="my-5 border-t-2 border-dashed border-[#8b6f47]/55"
+            />
 
-        <MusicPolicyCard policy={policy} paper showLists={false} />
+            <MusicPolicyCard policy={policy} paper showLists={false} />
+          </>
+        ) : null}
       </div>
     </section>
   );

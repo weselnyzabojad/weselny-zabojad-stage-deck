@@ -67,7 +67,7 @@ describe('issue #742 DJ VIP music pills and Set notes placement', () => {
     const main = dj.slice(dj.indexOf('<main id="main-content"'), dj.indexOf('</main>'));
     expect(main).toContain('currentFooter={currentColumnFooter}');
     expect(main).not.toContain('<DjSetNotesNotepad');
-    expect(dj).toContain('<DjSetNotesNotepad policy={musicPolicy} />');
+    expect(dj).toContain('<DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />');
     expect(main).not.toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(main).not.toContain('<aside');
     expect(main).not.toContain('lg:col-span-2');

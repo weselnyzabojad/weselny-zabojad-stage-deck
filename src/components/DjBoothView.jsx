@@ -186,15 +186,22 @@ export default function DjBoothView({
   ) : null;
 
   const futureFooter = caps.vip ? (
-    <MusicianPreferredMusic
-      suggestions={musicianSuggestions.suggestions}
-      musicians={wedding?.musicians?.items ?? []}
-      mainSongs={mainSongRows}
-      timeline={timeline}
-      loading={musicianSuggestions.loading}
-      error={musicianSuggestions.error}
-      onMarkPlayed={musicianSuggestions.markPlayed}
-    />
+    <div className="space-y-2">
+      <MusicianPreferredMusic
+        suggestions={musicianSuggestions.suggestions}
+        musicians={wedding?.musicians?.items ?? []}
+        mainSongs={mainSongRows}
+        timeline={timeline}
+        loading={musicianSuggestions.loading}
+        error={musicianSuggestions.error}
+        onMarkPlayed={musicianSuggestions.markPlayed}
+      />
+      {caps.musicPolicy && musicPolicy?.hasData ? (
+        <DjPolicyPanel label={t('music.title')}>
+          <MusicPolicyCard policy={musicPolicy} panel showLists={false} />
+        </DjPolicyPanel>
+      ) : null}
+    </div>
   ) : caps.musicPolicy && doNotPlayRows.length > 0 ? (
     <DjPolicyPanel label={t('music.title')}>
       <section aria-label={doNotPlayTitle}>
@@ -211,7 +218,7 @@ export default function DjBoothView({
   const currentColumnFooter = caps.musicPolicy ? (
     <div className="space-y-2">
       {vendorPresence}
-      <DjSetNotesNotepad policy={musicPolicy} />
+      <DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />
     </div>
   ) : vendorPresence;
 
