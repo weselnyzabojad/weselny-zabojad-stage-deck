@@ -15,6 +15,7 @@ import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
 import useCompact from '../hooks/useCompact';
+import { instrumentLabel } from '../lib/instruments.js';
 
 function windowLabel(startTime, endTime) {
   if (startTime && endTime) return `${startTime}–${endTime}`;
@@ -37,7 +38,7 @@ export default function MusicianView({
   roomCode = null,
   pin = null,
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const musicians = Array.isArray(wedding?.musicians?.items) ? wedding.musicians.items : [];
   const musician = musicians.find((item) => item.id === musicianId) ?? null;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -61,7 +62,9 @@ export default function MusicianView({
           <dl className="mt-3 grid gap-3 text-[11px] sm:grid-cols-2">
             <div>
               <dt className="uppercase tracking-wider text-muted">{t('musician.instrument')}</dt>
-              <dd className="mt-0.5 font-semibold text-ink">{musician.instrument || '—'}</dd>
+              <dd className="mt-0.5 font-semibold text-ink">
+                {musician.instrument ? instrumentLabel(musician.instrument, locale) : '—'}
+              </dd>
             </div>
             <div>
               <dt className="uppercase tracking-wider text-muted">{t('musician.window')}</dt>
