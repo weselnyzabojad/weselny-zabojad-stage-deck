@@ -15,7 +15,7 @@ export function useMusicianSuggestions({ accessToken = null, enabled = false } =
     [enabled, accessToken, config],
   );
   const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(Boolean(client));
+  const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
@@ -27,17 +27,13 @@ export function useMusicianSuggestions({ accessToken = null, enabled = false } =
     } catch (cause) {
       setError(cause?.message ?? 'Could not load musician suggestions.');
     } finally {
-      setLoading(false);
+      setLoaded(true);
     }
   }, [client]);
 
   useEffect(() => {
-    if (!client) {
-      setSuggestions([]);
-      setLoading(false);
-      return undefined;
-    }
-    setLoading(true);
+    if (!client) return undefined;
+    // eslint-disable-next-line react/set-state-in-effect -- hydrates the panel after the authenticated fetch resolves
     void refresh();
     const unsubscribe = client.subscribeMusicianSuggestions({
       onChange: () => {
@@ -56,7 +52,12 @@ export function useMusicianSuggestions({ accessToken = null, enabled = false } =
     [client, refresh],
   );
 
-  return { suggestions, loading, error, markPlayed };
+  return {
+    suggestions: client ? suggestions : [],
+    loading: Boolean(client) && !loaded,
+    error: client ? error : null,
+    markPlayed,
+  };
 }
 
 export default useMusicianSuggestions;
