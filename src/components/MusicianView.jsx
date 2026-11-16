@@ -1,4 +1,5 @@
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
+import { ceremonySubStepBodies } from './ceremonySubStepBodies';
 import EndHoursCard from './EndHoursCard';
 import MusicianSuggestionForm from './MusicianSuggestionForm';
 import RoleShell from './RoleShell';
@@ -58,7 +59,11 @@ export default function MusicianView({
 
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
-      <TimelineFocusStack entries={timeline} activeIndex={activeIndex} />
+      <TimelineFocusStack
+        entries={timeline}
+        activeIndex={activeIndex}
+        entryBodies={ceremonySubStepBodies(timeline)}
+      />
 
       {musician ? (
         <section

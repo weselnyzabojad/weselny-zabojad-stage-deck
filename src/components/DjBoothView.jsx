@@ -7,6 +7,7 @@ import DjSetNotesNotepad from './DjSetNotesNotepad';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard, { DoNotPlayPills, MainSongPills, MustPlayPills } from './MusicPolicyCard';
+import { ceremonySubStepBodies } from './ceremonySubStepBodies';
 import MusicianPreferredMusic from './MusicianPreferredMusic';
 import useMusicianSuggestions from '../hooks/useMusicianSuggestions';
 import MusicalSetBar from './MusicalSetBar';
@@ -308,6 +309,7 @@ export default function DjBoothView({
         activeIndex={activeIndex}
         currentBody={djCurrentBody}
         currentFooter={vendorPresence}
+        entryBodies={caps.vip ? ceremonySubStepBodies(timeline) : null}
       />
 
       {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
@@ -410,6 +412,7 @@ export default function DjBoothView({
             historyFooter={historyFooter}
             currentFooter={currentColumnFooter}
             futureFooter={futureFooter}
+            entryBodies={caps.vip ? ceremonySubStepBodies(timeline) : null}
           />
 
           {!caps.vip ? <EndHoursCard wedding={wedding} /> : null}
