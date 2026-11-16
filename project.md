@@ -8266,3 +8266,56 @@ snapshot/migration owned by F2.
 **Open questions.** None.
 
 **Tracking.** [#1134](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1134), [#1135](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1135), [#1136](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1136), [#1137](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1137).
+
+### 17.101 DJ VIP Music Policy placement (decision, 2026-11-16)
+
+**Goal.**
+
+On the DJ VIP wide view, remove the Music Policy status card from the Set notes
+notepad and place it in a separate soft panel on the right, directly below
+**Musician’s preferred music**. The song lists keep their current positions and
+the notes notepad becomes notes-only for VIP.
+
+**Feature block.**
+
+- **F1 — VIP Music Policy placement.** Move only the status/Disco Polo card;
+  keep main songs, must-play and do-not-play where they are; leave DJ Standard,
+  the compact VIP layout and all other roles unchanged.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ VIP wide | Set notes notes-only; right column shows Musician’s preferred music then Music Policy |
+| DJ VIP compact | Unchanged |
+| DJ Standard wide | Music Policy stays inside Set notes |
+| Main/must-play/do-not-play lists | Unchanged |
+| MC, Photographer, Musician, Speaker, Venue Manager, Admin | Unchanged |
+
+**Out of scope.** New policy content, list relocation, data-model changes,
+stage-state changes, DJ Standard redesign and compact-layout changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| View scope | DJ VIP wide only |
+| Moved content | Status/Disco Polo card only; no song lists |
+| Set notes | VIP notes-only; DJ Standard unchanged |
+| New UI | Soft dark panel matching the existing right-column policy panels |
+| Empty policy | Render nothing and no empty separator/wrapper |
+| Doc linkage | Not Doc-linked |
+
+**Task split.** One atomic issue: one view, one placement and one validation
+set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1138](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1138) | DJ VIP wide placement, notes-only Set notes, soft policy panel and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1138](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1138).
