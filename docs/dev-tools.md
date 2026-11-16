@@ -10,6 +10,9 @@
 - **Viewport gate:** the switcher is `hidden` below 640px and only appears from
   the `sm` breakpoint. On a phone it must never cover the HOLD, Undo or Go-live
   stage controls.
+- **Role coverage:** the switcher exposes every stage view, including MC, DJ
+  Standard/VIP identities, DJ + MC, Photographer 1/2, Cameraman, Venue Manager,
+  Musician, Speaker and the Song Request preview.
 - **Workflow:** to preview a role on a phone-sized layout, use a desktop or
   tablet browser with responsive devtools (≥640px CSS width) and run the dev
   server. Production and installed PWA builds do not include the switcher.
