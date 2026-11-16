@@ -8377,3 +8377,61 @@ the existing `mediaTeam` and `musicians.items` records.
 | 1 | [#1142](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1142) | ActiveVendorsBar, active-only selector, DJ VIP/Musician wiring, i18n and tests | - |
 
 **Open questions.** None.
+
+### 17.103 Collapse the dev view switcher behind a DEV chip (decision, 2026-11-16)
+
+Make the development-only view switcher collapsed by default on every viewport.
+Only a small clickable `DEV` chip remains visible; opening it reveals the
+existing role and step-preview controls, and Escape, outside click or the chip
+again closes it with focus restored.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The component
+stays inside the existing development-only build gate.
+
+**Feature scope.**
+
+- **Collapsed default** — only the `DEV` button is visible; role grid and step
+  preview are not rendered.
+- **Expanded panel** — existing controls, opened from the chip.
+- **Close** — toggle, Escape and outside click; focus returns to the chip.
+- **Placement** — keep the current mobile top-left and laptop bottom-left
+  anchors; the panel opens from the chip.
+- **Sizing** — viewport-capped, internally scrollable when needed.
+- **Accessibility** — `aria-expanded`, `aria-controls`, labelled region and
+  keyboard operation.
+- **Test hook** — optional `defaultOpen` prop for existing component tests;
+  production default remains closed.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Mobile stage views with `?dev=1` | Collapsed DEV chip top-left |
+| Laptop stage views with `?dev=1` | Collapsed DEV chip bottom-left |
+| Expanded panel | Existing role/step controls |
+| Production | Unchanged and excluded by the DEV gate |
+| Other overlays/layout | No change |
+| Schema/parser | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Default | Collapsed on every load |
+| Collapsed UI | `DEV` chip only |
+| Position | Keep current responsive corners |
+| Close | Toggle + Escape + outside click |
+| Persistence | None |
+| Test hook | Optional `defaultOpen` prop |
+| Production | Dev-only gate unchanged |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1146](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1146) | Collapsed DEV chip, expandable panel, close/focus behaviour, tests | - |
+
+**Open questions.** None.
