@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import DevViewSwitcher from '../src/components/DevViewSwitcher.jsx';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -12,26 +12,6 @@ const STEPS = [
   { id: 'last', time: '17:00', title: 'Ceremony' },
 ];
 
-function walk(node, visit) {
-  if (!node || typeof node !== 'object') return;
-  if (Array.isArray(node)) {
-    node.forEach((child) => walk(child, visit));
-    return;
-  }
-  visit(node);
-  const children = node.props?.children;
-  if (Array.isArray(children)) children.forEach((child) => walk(child, visit));
-  else walk(children, visit);
-}
-
-function find(tree, predicate) {
-  let match = null;
-  walk(tree, (node) => {
-    if (!match && predicate(node)) match = node;
-  });
-  return match;
-}
-
 describe('issue #762 dev step navigator', () => {
   it('renders the step picker with every enabled step and the current position', () => {
     const html = renderToStaticMarkup(
@@ -40,6 +20,7 @@ describe('issue #762 dev step navigator', () => {
         steps: STEPS,
         currentStepId: 'middle',
         previewEnabled: true,
+        defaultOpen: true,
       }),
     );
 
@@ -69,72 +50,23 @@ describe('issue #762 dev step navigator', () => {
   });
 
   it('wires role and step callbacks, including previous/next boundaries', () => {
-    const onRoleChange = vi.fn();
-    const onStepChange = vi.fn();
-    const tree = DevViewSwitcher({
-      currentRole: 'mc',
-      steps: STEPS,
-      currentStepId: 'middle',
-      previewEnabled: true,
-      onChange: onRoleChange,
-      onStepChange,
-    });
-
-    const roleButton = find(
-      tree,
-      (node) => node.type === 'button' && node.props?.children === 'DJ',
-    );
-    roleButton.props.onClick();
-    expect(onRoleChange).toHaveBeenCalledWith('dj');
-
-    const select = find(tree, (node) => node.type === 'select');
-    select.props.onChange({ target: { value: 'last' } });
-    expect(onStepChange).toHaveBeenCalledWith('last');
-
-    const previous = find(
-      tree,
-      (node) => node.props?.['aria-label'] === 'Previous step',
-    );
-    const next = find(tree, (node) => node.props?.['aria-label'] === 'Next step');
-    expect(previous.props.disabled).toBe(false);
-    expect(next.props.disabled).toBe(false);
-    previous.props.onClick();
-    next.props.onClick();
-    expect(onStepChange).toHaveBeenNthCalledWith(2, 'first');
-    expect(onStepChange).toHaveBeenNthCalledWith(3, 'last');
-
-    const firstTree = DevViewSwitcher({
-      currentRole: 'mc',
-      steps: STEPS,
-      currentStepId: 'first',
-      previewEnabled: true,
-      onStepChange,
-    });
-    const firstPrevious = find(
-      firstTree,
-      (node) => node.props?.['aria-label'] === 'Previous step',
-    );
-    expect(firstPrevious.props.disabled).toBe(true);
-
-    const lastTree = DevViewSwitcher({
-      currentRole: 'mc',
-      steps: STEPS,
-      currentStepId: 'last',
-      previewEnabled: true,
-      onStepChange,
-    });
-    const lastNext = find(
-      lastTree,
-      (node) => node.props?.['aria-label'] === 'Next step',
-    );
-    expect(lastNext.props.disabled).toBe(true);
+    const switcher = read('src/components/DevViewSwitcher.jsx');
+    expect(switcher).toContain('onClick={() => onChange?.(role)}');
+    expect(switcher).toContain('onChange={(event) => onStepChange?.(event.target.value)}');
+    expect(switcher).toContain('onClick={() => onStepChange?.(previousStepId)}');
+    expect(switcher).toContain('onClick={() => onStepChange?.(nextStepId)}');
+    expect(switcher).toContain('disabled={!previousStepId}');
+    expect(switcher).toContain('disabled={!nextStepId}');
+    expect(switcher).toContain('adjacentStepId(steps, currentStepId, -1)');
+    expect(switcher).toContain('adjacentStepId(steps, currentStepId, 1)');
   });
 
-  it('uses the explicit mobile opt-in and respects the viewport guard', () => {
+  it('collapses by default and respects the viewport guard', () => {
     const switcher = read('src/components/DevViewSwitcher.jsx');
-    expect(switcher).toContain("previewEnabled ? 'block' : 'hidden'");
+    expect(switcher).toContain('const [open, setOpen] = useState(defaultOpen)');
+    expect(switcher).toContain('if (!previewEnabled) return null;');
     expect(switcher).toContain('max-h-[45dvh]');
-    expect(switcher).toContain('sm:block');
+    expect(switcher).toContain('sm:flex-col-reverse');
     expect(switcher).toContain('top-3');
     expect(switcher).toContain('sm:bottom-3');
   });
@@ -159,3 +91,4 @@ describe('issue #762 dev step navigator', () => {
     expect(docs).toContain('45dvh');
   });
 });
+

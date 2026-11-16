@@ -39,7 +39,12 @@ describe('dev view switcher covers every stage view', () => {
 
   it('renders localized-free labels for the new roles', () => {
     const html = renderToStaticMarkup(
-      createElement(DevViewSwitcher, { currentRole: 'mc', onChange: () => {} }),
+      createElement(DevViewSwitcher, {
+        currentRole: 'mc',
+        onChange: () => {},
+        previewEnabled: true,
+        defaultOpen: true,
+      }),
     );
     expect(html).toContain('Musician');
     expect(html).toContain('DJ + MC');

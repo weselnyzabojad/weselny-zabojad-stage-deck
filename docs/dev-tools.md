@@ -7,26 +7,28 @@
 - **Build gate:** `StageDeck.jsx` renders it only when `import.meta.env.DEV` is
   true. Vite replaces that with `false` in production, so the module is
   tree-shaken out of the production bundle.
-- **Viewport gate:** the switcher is `hidden` below 640px and only appears from
-  the `sm` breakpoint. On a phone it must never cover the HOLD, Undo or Go-live
-  stage controls.
+- **Collapsed by default:** only a small `DEV` chip is visible on every viewport.
+  Clicking it opens the role/step panel; clicking again, pressing Escape or
+  clicking outside closes it and returns focus to the chip. The state is not
+  persisted, so a reload starts collapsed again.
+- **Viewport placement:** the chip sits at the top-left on phones and bottom-left
+  from the `sm` breakpoint, so it does not cover the HOLD, Undo or Go-live
+  controls. The open panel is capped at `45dvh` and scrolls internally.
 - **Role coverage:** the switcher exposes every stage view, including MC, DJ
   Standard/VIP identities, DJ + MC, Photographer 1/2, Cameraman, Venue Manager,
   Musician, Speaker and the Song Request preview.
-- **Workflow:** to preview a role on a phone-sized layout, use a desktop or
-  tablet browser with responsive devtools (≥640px CSS width) and run the dev
-  server. Production and installed PWA builds do not include the switcher.
+- **Workflow:** use a desktop, tablet or phone browser with `?dev=1` and run the
+  dev server. Production and installed PWA builds do not include the switcher.
 
-If a future dev flow needs the switcher on a phone, add an explicit `?dev=1`
-opt-in instead of showing it by default.
+Opening the chip is an explicit `?dev=1` development action; there is no
+production exposure.
 
 ## STEP PREVIEW (`?dev=1`)
 
 `?dev=1` enables the temporary step inspector for local review:
 
-- The switcher stays visible below 640px, positioned at the top-left so it does
-  not cover the HOLD, Undo or Go-live controls, and remains scrollable inside
-  `45dvh`.
+- The switcher opens from the collapsed `DEV` chip, stays within `45dvh`, and
+  scrolls internally when needed.
 - The step section lists every enabled step in the current order. Use the
   picker or the previous/next buttons to jump directly to a step.
 - The preview state is in memory only: it never creates a Supabase client, never
