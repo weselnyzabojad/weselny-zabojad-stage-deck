@@ -5,7 +5,7 @@ const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8')
 describe('issue #275 Venue Manager overrides and popup', () => {
   it('sends mandatory changes through the shared override setter', () => {
     const deck = read('src/StageDeck.jsx');
-    expect(deck).toContain("setMediaOverride('steps', nextSteps)");
+    expect(deck).toContain("setMediaOverride('steps', nextSteps, change ? { change } : null)");
     expect(deck).toContain('mandatoryOverride={liveState.media_overrides?.steps');
   });
 
