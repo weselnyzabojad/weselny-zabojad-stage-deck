@@ -145,8 +145,8 @@ function RoleMock() {
 
   return (
     <MockShell title={t('landing.mock.role.title')} caption={t('landing.mock.role.caption')}>
-      <div className="flex gap-1.5">
-        {['MC', 'DJ', 'PHOTO'].map((role, index) => (
+      <div className="flex flex-wrap gap-1.5">
+        {['MC', 'DJ', 'MUSICIAN', 'PHOTO'].map((role, index) => (
           <span
             key={role}
             className={`rounded px-2 py-1 font-mono text-[9px] ${
