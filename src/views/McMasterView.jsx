@@ -7,6 +7,7 @@
 
 import { useId, useState } from 'react';
 import CakeCard from '../components/CakeCard';
+import { ceremonySubStepBodies } from '../components/ceremonySubStepBodies';
 import DjSongRequestQueue from '../components/DjSongRequestQueue';
 import ModalShell from '../components/ModalShell';
 import MusicPolicyCard from '../components/MusicPolicyCard';
@@ -406,6 +407,7 @@ export default function McMasterView({ model }) {
           photographerAvailable={resolvePhotographerAvailable(WEDDING)}
           polished
           entryActions={rescheduleActions}
+          entryBodies={ceremonySubStepBodies(railEntries)}
         />
       ) : null}
 
@@ -663,6 +665,7 @@ export default function McMasterView({ model }) {
             photographerAvailable={resolvePhotographerAvailable(WEDDING)}
             polished
             entryActions={rescheduleActions}
+            entryBodies={ceremonySubStepBodies(railEntries)}
           />
 
           {speechMode !== 'OFF' && speeches?.length > 0 ? (
