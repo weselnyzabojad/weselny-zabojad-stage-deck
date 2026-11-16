@@ -27,8 +27,10 @@ describe('issue #1051 runtime and bundle performance', () => {
 
   it('does not store full media override arrays in the mutation log', () => {
     const hook = read('src/hooks/useLiveStageState.js');
-    expect(hook).toContain("Array.isArray(value) ? { kind: 'array', length: value.length } : value");
-    expect(hook).toContain("Array.isArray(previous)");
+    const state = read('src/lib/liveStageState.js');
+    expect(state).toContain("kind: 'array', length: value.length");
+    expect(state).toContain('compactOverrideValue(previous)');
+    expect(hook).toContain('applyMediaOverride');
     expect(hook).toContain('useMemo(() => JSON.stringify(liveState), [liveState])');
   });
 

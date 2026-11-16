@@ -17,7 +17,7 @@ describe('issue #275 Venue Manager overrides and popup', () => {
   });
 
   it('audits overrides through the shared live-state mutation log', () => {
-    expect(read('src/hooks/useLiveStageState.js')).toContain("appendMutation(next, actor, 'media_override'");
+    expect(read('src/lib/liveStageState.js')).toContain("change ? 'schedule_change' : 'media_override'");
     expect(read('src/StageDeck.jsx')).toContain('<MandatoryUpdatePopup');
   });
 });

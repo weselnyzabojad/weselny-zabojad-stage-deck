@@ -66,6 +66,34 @@ export function reconcileLiveStateWithCartridge({ liveState, steps = [], speeche
       ? null
       : liveState.stage_ping ?? null;
 
+  // Keep runtime step overrides in sync with the newly published cartridge:
+  // apply their fields onto the current steps, include new cartridge steps and
+  // drop removed ones. A notice whose target step disappeared is cleared.
+  const mediaOverrides = { ...(liveState.media_overrides ?? {}) };
+  const stepOverride = mediaOverrides.steps;
+  if (stepOverride && Array.isArray(stepOverride.value)) {
+    const overrideById = new Map(
+      stepOverride.value
+        .filter((step) => step?.id)
+        .map((step) => [step.id, step]),
+    );
+    const present = stepOverride.value.filter((step) => knownSteps.has(step?.id));
+    if (present.length === 0) {
+      delete mediaOverrides.steps;
+    } else {
+      const merged = steps.map((step) =>
+        overrideById.has(step.id) ? { ...step, ...overrideById.get(step.id) } : step,
+      );
+      const nextOverride = { ...stepOverride, value: merged };
+      if (stepOverride.change && knownSteps.has(stepOverride.change.stepId)) {
+        nextOverride.change = stepOverride.change;
+      } else {
+        delete nextOverride.change;
+      }
+      mediaOverrides.steps = nextOverride;
+    }
+  }
+
   const next = {
     ...liveState,
     active_step_id: active ?? null,
@@ -74,6 +102,7 @@ export function reconcileLiveStateWithCartridge({ liveState, steps = [], speeche
     stage_ping: stagePing,
     step_order: order,
     active_speech_id: activeSpeech,
+    media_overrides: mediaOverrides,
   };
 
   const notices = [];
