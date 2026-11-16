@@ -18,7 +18,7 @@ describe('issue #1097 Venue Manager change confirmation', () => {
     expect(venue).toContain("import { venueChangeDecision } from '../lib/venueChangeConfirmation.js'");
     expect(venue).toContain("import ModalShell from './ModalShell'");
     expect(venue).toContain('const [pendingChange, setPendingChange] = useState(null)');
-    expect(venue).toContain('const applyUpdate = (patch) => {');
+    expect(venue).toContain('const applyUpdate = (patch, change = null) => {');
     expect(venue).toContain('const requestConfirmedChange = (patch, change) => {');
     expect(venue).toContain("if (decision === 'apply')");
     expect(venue).toContain('setPendingChange({ patch, ...change })');
@@ -32,12 +32,23 @@ describe('issue #1097 Venue Manager change confirmation', () => {
   it('keeps notification inside the confirmed apply path', () => {
     const venue = read('src/components/VenueManagerView.jsx');
     const apply = venue.slice(venue.indexOf('const applyUpdate'), venue.indexOf('const courses ='));
-    expect(apply).toContain('onUpdateMandatory?.(rescheduled.steps)');
+    expect(apply).toContain('onUpdateMandatory?.(');
+    expect(apply).toContain("authorRole: 'venue_manager'");
     const request = venue.slice(
       venue.indexOf('const requestConfirmedChange'),
       venue.indexOf('const requestCourseChange'),
     );
-    expect(request).not.toContain('onUpdateMandatory');
+    expect(request).toContain('applyUpdate(patch, change)');
+    expect(request).toContain('setPendingChange({ patch, ...change })');
+  });
+
+  it('passes the edited field metadata to the schedule banner', () => {
+    const venue = read('src/components/VenueManagerView.jsx');
+    expect(venue).toContain("authorRole: 'venue_manager'");
+    expect(venue).toContain('stepTitle: change.label');
+    expect(venue).toContain('from: change.oldDisplay');
+    expect(venue).toContain('to: change.newDisplay');
+    expect(venue).toContain('applyUpdate(change.patch, change)');
   });
 
   it('adds cancel and confirm actions on the shared modal shell', () => {

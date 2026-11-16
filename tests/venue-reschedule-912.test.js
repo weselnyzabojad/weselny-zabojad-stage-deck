@@ -148,10 +148,12 @@ describe('issue #912 Venue Manager reschedule cascade', () => {
 
   it('syncs through the existing media override path', () => {
     const deck = read('src/StageDeck.jsx');
-    expect(deck).toContain("onUpdateMandatory={(nextSteps) => setMediaOverride('steps', nextSteps)}");
+    expect(deck).toContain("onUpdateMandatory={(nextSteps, change) =>");
+    expect(deck).toContain("setMediaOverride('steps', nextSteps, change ? { change } : null)");
     expect(deck).toContain('mandatoryOverride={liveState.media_overrides?.steps ?? null}');
     const view = read('src/components/VenueManagerView.jsx');
     expect(view).toContain('cascadeFlexibleSteps');
-    expect(view).toContain('onUpdateMandatory?.(rescheduled.steps)');
+    expect(view).toContain('onUpdateMandatory?.(');
+    expect(view).toContain("authorRole: 'venue_manager'");
   });
 });

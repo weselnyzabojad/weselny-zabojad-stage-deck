@@ -146,7 +146,7 @@ export default function VenueManagerView({
     });
   }
 
-  const applyUpdate = (patch) => {
+  const applyUpdate = (patch, change = null) => {
     const next = { ...settings, ...patch };
     const previousSteps = loadSteps(wedding, mandatoryOverride);
     const nextSteps = applyMandatorySettings({ steps: previousSteps }, next, { sort: false });
@@ -158,7 +158,18 @@ export default function VenueManagerView({
     setRescheduleError('');
     setSettings(next);
     saveSteps(wedding, rescheduled.steps);
-    onUpdateMandatory?.(rescheduled.steps);
+    onUpdateMandatory?.(
+      rescheduled.steps,
+      change
+        ? {
+            kind: 'reschedule',
+            stepTitle: change.label,
+            from: change.oldDisplay ?? change.oldValue ?? null,
+            to: change.newDisplay ?? change.newValue ?? null,
+            authorRole: 'venue_manager',
+          }
+        : null,
+    );
     setSaved(t('venueManager.saved'));
     window.setTimeout(() => setSaved(''), 1500);
   };
@@ -172,7 +183,7 @@ export default function VenueManagerView({
     const decision = venueChangeDecision(change.oldValue, change.newValue);
     if (decision === 'noop') return;
     if (decision === 'apply') {
-      applyUpdate(patch);
+      applyUpdate(patch, change);
       return;
     }
     setPendingChange({ patch, ...change });
@@ -264,7 +275,7 @@ export default function VenueManagerView({
             onClick={() => {
               const change = pendingChange;
               setPendingChange(null);
-              if (change) applyUpdate(change.patch);
+              if (change) applyUpdate(change.patch, change);
             }}
             className="rounded-lg border border-brand-strong bg-brand px-4 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover"
           >
