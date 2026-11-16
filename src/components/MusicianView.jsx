@@ -60,6 +60,7 @@ export default function MusicianView({
   const body = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       <TimelineFocusStack
+        compact={compact}
         entries={timeline}
         activeIndex={activeIndex}
         entryBodies={ceremonySubStepBodies(timeline)}
