@@ -18,8 +18,10 @@ describe('issue #229 sunset lifecycle and shared mini-session override', () => {
 
   it('wires the shared override and audit setter', () => {
     const hook = read('src/hooks/useLiveStageState.js');
+    const state = read('src/lib/liveStageState.js');
     const deck = read('src/StageDeck.jsx');
-    expect(hook).toContain("appendMutation(next, actor, 'media_override'");
+    expect(state).toContain("'media_override'");
+    expect(hook).toContain('applyMediaOverride');
     expect(hook).toContain('setMediaOverride');
     expect(deck).toContain("setMediaOverride('miniSessionTime', time)");
   });

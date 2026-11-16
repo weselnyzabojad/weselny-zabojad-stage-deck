@@ -1,4 +1,5 @@
 import { firstArrivalCeremonyNote, resolveCeremony } from './ceremony.js';
+import { clockToEventDate } from './eventTime.js';
 import { addMinutesToClock } from './liveStageState.js';
 import { calculateStepDurations } from './stepDurations.js';
 
@@ -411,6 +412,75 @@ export function cascadeFlexibleSteps(previousSteps, nextSteps) {
   }
 
   return { steps: sorted, error: null };
+}
+
+// MC reschedules one upcoming FLEXIBLE step. The selected step and the
+// following flexible blocks move by the same delta; hard anchors and mandatory
+// obligations stay fixed. A past/invalid result is rejected before any write.
+export function rescheduleFlexibleStep(
+  steps,
+  stepId,
+  newTime,
+  { now = new Date(), eventDateISO = null, timeZone = 'UTC', liveState = null } = {},
+) {
+  const list = (Array.isArray(steps) ? steps : []).filter(Boolean);
+  if (typeof stepId !== 'string' || !stepId) {
+    return { steps: list, error: 'Choose a step to reschedule.' };
+  }
+  if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(newTime ?? '')) {
+    return { steps: list, error: 'Enter a valid time in HH:MM format.' };
+  }
+
+  const step = list.find((entry) => entry.id === stepId);
+  if (!step) return { steps: list, error: 'This step no longer exists.' };
+  if (step.type !== 'FLEXIBLE') {
+    return { steps: list, error: 'Only flexible steps can be rescheduled.' };
+  }
+  if (step.mandatory && typeof step.mandatory === 'object') {
+    return {
+      steps: list,
+      error: 'Mandatory steps can only be changed by the Venue Manager.',
+    };
+  }
+  if (liveState?.active_step_id === stepId) {
+    return { steps: list, error: 'The current step cannot be rescheduled.' };
+  }
+  if (Array.isArray(liveState?.completed_step_ids) && liveState.completed_step_ids.includes(stepId)) {
+    return { steps: list, error: 'Completed steps cannot be rescheduled.' };
+  }
+  if (!step.time) {
+    return { steps: list, error: 'This step has no planned time to change.' };
+  }
+
+  if (eventDateISO) {
+    const at = clockToEventDate({
+      clock: newTime,
+      eventDateISO,
+      timeZone,
+      after: now,
+    });
+    if (!(at instanceof Date) || !Number.isFinite(at.getTime())) {
+      return { steps: list, error: 'Could not validate the new time.' };
+    }
+    if (at.getTime() <= now.getTime()) {
+      return { steps: list, error: 'Choose a time in the future.' };
+    }
+  }
+
+  const delta = clockDeltaMinutes(step.time, newTime);
+  if (delta == null) {
+    return { steps: list, error: 'Could not calculate the time change.' };
+  }
+  if (delta === 0) return { steps: list, error: null, changed: false, step };
+
+  const next = list.map((entry) =>
+    entry.id === stepId ? { ...entry, time: newTime } : entry,
+  );
+  const cascaded = cascadeFlexibleSteps(list, next);
+  if (cascaded.error) return { steps: list, error: cascaded.error };
+
+  const updated = cascaded.steps.find((entry) => entry.id === stepId) ?? step;
+  return { steps: cascaded.steps, error: null, changed: true, step: updated };
 }
 
 function clockMinutes(value) {

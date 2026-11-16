@@ -119,7 +119,98 @@ export function undoSnapshot(
     active_speech_id: snapshot.active_speech_id ?? null,
   };
 
+  // A schedule undo restores only the steps override, never unrelated media
+  // overrides. The restored entry is tagged as an undo so other devices update
+  // their timeline without raising a fresh schedule-change banner.
+  if (targetOp === 'schedule_change') {
+    const updatedAt = now instanceof Date && Number.isFinite(now.getTime())
+      ? now.toISOString()
+      : new Date().toISOString();
+    const media = { ...(current.media_overrides ?? {}) };
+    const previous = snapshot.media_overrides?.steps ?? null;
+    if (previous) {
+      const forward = current.media_overrides?.steps?.change ?? null;
+      media.steps = {
+        ...previous,
+        updatedAt,
+        change: {
+          ...(forward ?? {}),
+          kind: 'undo',
+          at: updatedAt,
+        },
+      };
+    } else {
+      delete media.steps;
+    }
+    restored.media_overrides = media;
+  }
+
   return appendMutation(restored, actor, 'undo', { targetOp }, now);
+}
+
+function compactOverrideValue(value) {
+  if (Array.isArray(value)) return { kind: 'array', length: value.length };
+  if (value && typeof value === 'object' && Array.isArray(value.value)) {
+    return { ...value, value: { kind: 'array', length: value.value.length } };
+  }
+  return value;
+}
+
+// Shared, audited override used by the MC reschedule, Venue Manager and media
+// tools. The optional `change` metadata is what non-MC views use to announce a
+// schedule update without reading the whole step array.
+export function applyMediaOverride(
+  state,
+  key,
+  value,
+  actor = {},
+  now = new Date(),
+  meta = null,
+) {
+  if (typeof key !== 'string' || !key) return state;
+
+  const updatedAt =
+    now instanceof Date && Number.isFinite(now.getTime())
+      ? now.toISOString()
+      : new Date().toISOString();
+  const previous = state.media_overrides?.[key] ?? null;
+  const change =
+    meta?.change && typeof meta.change === 'object'
+      ? {
+          ...meta.change,
+          authorRole: meta.change.authorRole ?? actor?.role ?? 'mc',
+          at: updatedAt,
+        }
+      : null;
+  const entry = {
+    value,
+    updatedAt,
+    role: actor?.role ?? 'mc',
+    ...(typeof actor?.deviceId === 'string' && actor.deviceId
+      ? { deviceId: actor.deviceId }
+      : {}),
+    ...(change ? { change } : {}),
+  };
+  const next = {
+    ...state,
+    media_overrides: {
+      ...(state.media_overrides ?? {}),
+      [key]: entry,
+    },
+  };
+
+  return appendMutation(
+    next,
+    actor,
+    change ? 'schedule_change' : 'media_override',
+    {
+      key,
+      previous: compactOverrideValue(previous),
+      value: compactOverrideValue(value),
+      ...(change ? { change } : {}),
+    },
+    now,
+  );
 }
 
 export function createLiveState(steps, overrides = {}) {

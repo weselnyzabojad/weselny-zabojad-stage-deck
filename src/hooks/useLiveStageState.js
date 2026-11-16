@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   loadLiveState,
-  appendMutation,
+  applyMediaOverride,
   markStepDone,
   mergeMutationLogs,
   normalizeLiveState,
@@ -558,30 +558,20 @@ export function useLiveStageState({
     [apply, actor],
   );
 
-  // Shared, audited media override (for example the mini-session time chosen
-  // by a photographer). Stored in live state so every media device receives it.
+  // Shared, audited override (for example the mini-session time chosen by a
+  // photographer or an MC schedule change). Stored in live state so every device
+  // receives it. A `change` payload marks a schedule command and feeds the
+  // non-MC notification banner.
   const setMediaOverride = useCallback(
-    (key, value) => {
+    (key, value, meta = null) => {
       if (typeof key !== 'string' || !key) return;
+      const op = meta?.change ? 'schedule_change' : 'media_override';
       apply(
-        (state) => {
-          const previous = state.media_overrides?.[key] ?? null;
-          const next = {
-            ...state,
-            media_overrides: {
-              ...(state.media_overrides ?? {}),
-              [key]: { value, updatedAt: new Date().toISOString(), role: actor.role },
-            },
-          };
-          return appendMutation(next, actor, 'media_override', {
-            key,
-            previous: Array.isArray(previous)
-              ? { kind: 'array', length: previous.length }
-              : previous,
-            value: Array.isArray(value) ? { kind: 'array', length: value.length } : value,
-          });
+        (state) => applyMediaOverride(state, key, value, actor, new Date(), meta),
+        {
+          op,
+          label: meta?.change ? 'Schedule changed' : 'Media override changed',
         },
-        { op: 'media_override', label: 'Media override changed' },
       );
     },
     [apply, actor],
