@@ -1,10 +1,11 @@
 import { buildEndHours, formatEndHour } from '../lib/endHours';
+import { instrumentLabel } from '../lib/instruments.js';
 import { useI18n } from '../i18n/useI18n';
 
 // One compact, read-only card for the Standard DJ: every musician and media
 // role with a known end hour, sorted by departure time. VIP owns its own lane.
 export default function EndHoursCard({ wedding }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const rows = buildEndHours(wedding);
   if (rows.length === 0) return null;
 
@@ -35,7 +36,9 @@ export default function EndHoursCard({ wedding }) {
                   {row.role}
                 </span>
                 {row.instrument ? (
-                  <span className="text-[10px] text-muted">{row.instrument}</span>
+                  <span className="text-[10px] text-muted">
+                    {instrumentLabel(row.instrument, locale)}
+                  </span>
                 ) : null}
               </div>
             </div>

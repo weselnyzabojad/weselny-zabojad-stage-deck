@@ -9,8 +9,7 @@ import { AdminConfirmDialog } from './AdminDialogs';
 import AdminQrCards from './AdminQrCards';
 import { buildMusicianLink } from './adminUtils';
 import { ADMIN_BUTTON } from './adminUi';
-
-const INSTRUMENTS = ['violin', 'saxophone', 'piano', 'guitar', 'harp', 'cello', 'vocals', 'other'];
+import { INSTRUMENTS, instrumentChoice, instrumentLabel } from '../lib/instruments.js';
 
 const EMPTY_FORM = {
   id: null,
@@ -206,7 +205,9 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
                     {musician.name}
                     {musician.active === false ? ' — inactive' : ''}
                   </td>
-                  <td className="px-2 py-1.5 text-muted">{musician.instrument}</td>
+                  <td className="px-2 py-1.5 text-muted">
+                    {instrumentLabel(musician.instrument, 'en')}
+                  </td>
                   <td className="px-2 py-1.5 font-mono text-[9px] text-muted">
                     {availability(musician)}
                   </td>
@@ -275,21 +276,36 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
           </label>
           <label className="text-[9px] text-muted">
             Instrument
-            <input
-              list="musician-instruments"
-              value={form.instrument}
-              onChange={(event) =>
-                setForm((current) => ({ ...current, instrument: event.target.value }))
-              }
+            <select
+              value={instrumentChoice(form.instrument)}
+              onChange={(event) => {
+                const key = event.target.value;
+                setForm((current) => ({
+                  ...current,
+                  instrument: key === 'other' ? '' : key,
+                }));
+              }}
               required
-              maxLength={120}
               className="mt-0.5 w-full rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
-            />
-            <datalist id="musician-instruments">
+            >
               {INSTRUMENTS.map((instrument) => (
-                <option key={instrument} value={instrument} />
+                <option key={instrument.key} value={instrument.key}>
+                  {instrument.labels.en}
+                </option>
               ))}
-            </datalist>
+            </select>
+            {instrumentChoice(form.instrument) === 'other' ? (
+              <input
+                value={form.instrument}
+                onChange={(event) =>
+                  setForm((current) => ({ ...current, instrument: event.target.value }))
+                }
+                placeholder="Instrument name"
+                required
+                maxLength={120}
+                className="mt-1 w-full rounded border border-line-strong bg-page px-1.5 py-1 text-[10px] text-ink"
+              />
+            ) : null}
           </label>
           <label className="text-[9px] text-muted">
             Start time
@@ -384,7 +400,7 @@ export default function AdminMusicians({ wedding, readOnly = false, onChanged = 
                 cards={[
                   {
                     role: `musician-${qrMusician.id}`,
-                    label: `${qrMusician.name} — ${qrMusician.instrument}`,
+                    label: `${qrMusician.name} - ${instrumentLabel(qrMusician.instrument, 'en')}`,
                     url: buildMusicianLink(
                       'https://deck.weselnyzabojad.pl',
                       wedding.room_code,
