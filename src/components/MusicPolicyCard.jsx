@@ -195,7 +195,7 @@ export function DoNotPlayPills({ items, paper = false }) {
 }
 
 // Music policy card for the DJ Booth (full) and MC / Pocket (compact).
-export default function MusicPolicyCard({ policy, compact = false, paper = false, showLists = true }) {
+export default function MusicPolicyCard({ policy, compact = false, paper = false, panel = false, showLists = true }) {
   const { t } = useI18n();
   if (!policy?.hasData) return null;
 
@@ -251,7 +251,13 @@ export default function MusicPolicyCard({ policy, compact = false, paper = false
   return (
     <section
       aria-labelledby="music-policy-title"
-      className={paper ? 'text-[#3b2f23]' : 'rounded-xl border border-line bg-card/95 p-5 shadow-lg'}
+      className={
+        paper
+          ? 'text-[#3b2f23]'
+          : panel
+            ? ''
+            : 'rounded-xl border border-line bg-card/95 p-5 shadow-lg'
+      }
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2

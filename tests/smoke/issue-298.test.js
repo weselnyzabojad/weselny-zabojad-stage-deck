@@ -7,13 +7,14 @@ describe('issue #298 DJ Standard hides Music Policy', () => {
 
   it('gates every Music Policy surface behind the VIP tier', () => {
     const renders = djBooth.match(/<MusicPolicyCard\b/g) ?? [];
-    expect(renders).toHaveLength(1);
+    expect(renders).toHaveLength(2);
     expect(
       djBooth.match(
         /\{caps\.musicPolicy \? <MusicPolicyCard policy=\{musicPolicy\} \/> : null\}/g,
       ),
     ).toHaveLength(1);
-    expect(djBooth).toContain('<DjSetNotesNotepad');
+    expect(djBooth).toContain('{caps.musicPolicy && musicPolicy?.hasData ? (');
+    expect(djBooth).toContain('<DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />');
     expect(djBooth).toMatch(/const currentColumnFooter = caps\.musicPolicy \?/);
   });
 });
