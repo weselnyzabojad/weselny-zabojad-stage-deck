@@ -8191,3 +8191,78 @@ changes and new security controls.
 **Open questions.** None.
 
 **Tracking.** [#1130](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1130), [#1131](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1131).
+
+### 17.100 Wedding recap and private post-wedding delivery (decision, 2026-11-16)
+
+**Goal.**
+
+Deliver a private post-wedding recap to the newlyweds a few days after the
+event. The owner reviews and manually publishes the recap; the couple receives
+a 90-day private link plus a print/PDF view. The recap is rich but redacted:
+planned vs actual timeline, day-in-numbers, humanized schedule changes, music,
+games, ceremony parts and vendor hours, never internal or contact data.
+
+**Feature blocks.**
+
+- **F1 — Recap generator and redaction.** Pure payload builder with summary
+  numbers, realized timeline, change history and allowlist-based redaction.
+- **F2 — Snapshot and private token backend.** Immutable redacted snapshot,
+  hashed 90-day token, revoke, public read endpoint and cleanup.
+- **F3 — Admin preview and publish.** Owner preview, publish, copy link,
+  expiry status and revoke.
+- **F4 — Couple page and PDF.** Mobile-first `/recap/<token>` in EN/FR/PL with
+  print styles.
+
+**Google Doc contract.** Not Doc-linked. No Google Doc, schema, parser,
+field-map, template or fixture changes. The only data-model change is the
+snapshot/migration owned by F2.
+
+**Content contract.**
+
+| Included | Excluded |
+| --- | --- |
+| Couple names, date, venue | PINs, role tokens and device IDs |
+| First/last actual moment, completed steps, drift, biggest delay | Vendor phone numbers, emails and admin notes |
+| Planned vs actual timeline and statuses | Raw mutation payloads and internal logs |
+| Humanized schedule changes with old/new time and author role | Internal MC scripts and speech scripts |
+| Main songs, must-play/do-not-play, guest requests | Musician suggestions |
+| Games and couple-safe results | Any stage-view or control surface |
+| Ceremony parts, times, cues and responsible roles | Unpublished or unmerged feature claims |
+| Media-team and musician hours | Contact data of any kind |
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin `/admin` | Preview, publish, copy link, expiry and revoke |
+| Public `/recap/<token>` | Read-only recap, EN/FR/PL, print/PDF, safe expired/revoked state |
+| Stage role views | Unchanged |
+| `/join`, landing, song request | Unchanged |
+| Google Doc / schema / parser | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Delivery | Private link plus print/PDF |
+| Publishing | Manual admin review and publish after the wedding |
+| Detail level | Rich but redacted; no contacts, PINs, tokens, internal notes or raw logs |
+| Change history | Included in the recap only; no live panel in this batch |
+| Link lifetime | 90 days |
+| Snapshot | Immutable redacted payload, readable after live-state TTL purge |
+| Access | High-entropy hashed token, revocable, no couple account |
+| Indexing | `noindex` on the recap route |
+| Email | Out of scope; owner sends the link manually |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1135](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1135) | Pure recap generator, summary, timeline, change history, redaction and tests | - |
+| 2 | [#1134](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1134) | Snapshot table, hashed token, 90-day expiry, revoke, public read endpoint and cleanup | #1135 |
+| 3 | [#1136](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1136) | Admin preview, publish, copy link, expiry status and revoke | #1135, #1134 |
+| 4 | [#1137](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1137) | Couple-facing recap page, EN/FR/PL, print/PDF and token states | #1135, #1134 |
+
+**Open questions.** None.
+
+**Tracking.** [#1134](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1134), [#1135](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1135), [#1136](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1136), [#1137](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1137).
