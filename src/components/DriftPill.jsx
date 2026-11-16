@@ -53,7 +53,16 @@ export default function DriftPill({ drift, size = 'md', compact = false, classNa
       : toneKey === 'early' || toneKey === 'ontime'
         ? 'positive'
         : 'neutral';
-  const chip = compact ? tone.chip : desktopTone(desktopToneKey);
+  // The compact pill keeps its pocket palette on time, but a late compact pill
+  // adopts the laptop light-pink/red tone so the mobile MC badge matches the
+  // desktop pill. Other compact states stay untouched.
+  const chip = compact && toneKey !== 'late' ? tone.chip : desktopTone(desktopToneKey);
+  const shape =
+    compact && toneKey === 'late'
+      ? 'rounded-full border'
+      : compact
+        ? 'rounded border-2'
+        : 'rounded-2xl shadow-sm backdrop-blur-sm';
   const sizing = size === 'sm' ? 'px-2 py-1 text-[10px]' : compact ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm';
 
   return (
@@ -62,7 +71,7 @@ export default function DriftPill({ drift, size = 'md', compact = false, classNa
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className={`inline-flex items-center gap-1.5 font-semibold ${compact ? 'rounded border-2' : 'rounded-2xl shadow-sm backdrop-blur-sm'} ${sizing} ${chip} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-semibold ${shape} ${sizing} ${chip} ${className}`}
     >
       <span
         aria-hidden="true"
