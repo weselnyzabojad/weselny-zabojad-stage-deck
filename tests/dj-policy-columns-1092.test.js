@@ -42,10 +42,11 @@ describe('issue #1092 DJ policy columns', () => {
 
     expect(history).toContain('<MainSongPills');
     expect(history).toContain('mainSongRows.length > 0');
-    expect(future).toContain('<MustPlayPills');
-    expect(future).toContain('<DoNotPlayPills');
-    expect(future).toContain('mustPlayRows.length > 0');
-    expect(future).toContain('doNotPlayRows.length > 0');
+    expect(history).toContain('<MustPlayPills');
+    expect(history).toContain('<DoNotPlayPills');
+    expect(history).toContain('mustPlayRows.length > 0');
+    expect(history).toContain('doNotPlayRows.length > 0');
+    expect(future).toContain('<MusicianPreferredMusic');
     expect(current).toContain('<DjSetNotesNotepad');
     expect(current).toContain('{vendorPresence}');
     expect(dj).toContain('historyFooter={historyFooter}');

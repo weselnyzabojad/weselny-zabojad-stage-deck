@@ -7,6 +7,8 @@ import DjSetNotesNotepad from './DjSetNotesNotepad';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard, { DoNotPlayPills, MainSongPills, MustPlayPills } from './MusicPolicyCard';
+import MusicianPreferredMusic from './MusicianPreferredMusic';
+import useMusicianSuggestions from '../hooks/useMusicianSuggestions';
 import MusicalSetBar from './MusicalSetBar';
 import useCompact from '../hooks/useCompact';
 import OczepinyCueCard from './OczepinyCueCard';
@@ -117,6 +119,10 @@ export default function DjBoothView({
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
   const detailTier = djDetailTier({ ...wedding, servicePackage: resolvedPackage });
   const caps = djCapabilities(detailTier);
+  const musicianSuggestions = useMusicianSuggestions({
+    accessToken: caps.vip ? songRequestAccessToken : null,
+    enabled: caps.vip,
+  });
   const tierLabel = caps.vip ? 'VIP' : 'STANDARD';
   const importantSongs = getImportantSongs(wedding);
   const mainSong = activeEntry
@@ -140,21 +146,20 @@ export default function DjBoothView({
   const mustPlayTitle = t('music.mustPlay.title', { count: mustPlayRows.length });
   const doNotPlayTitle = t('music.doNotPlay.title', { count: doNotPlayRows.length });
 
-  const historyFooter = caps.musicPolicy && mainSongRows.length > 0 ? (
-    <DjPolicyPanel label={mainSongsTitle}>
-      <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
-        ⭐ {mainSongsTitle}
-      </h2>
-      <div className="mt-1.5">
-        <MainSongPills items={mainSongRows} t={t} />
-      </div>
-    </DjPolicyPanel>
-  ) : null;
-
-  const futureFooter = caps.musicPolicy && (mustPlayRows.length > 0 || doNotPlayRows.length > 0) ? (
+  const historyFooter = caps.musicPolicy && (mainSongRows.length > 0 || mustPlayRows.length > 0) ? (
     <DjPolicyPanel label={t('music.title')}>
+      {mainSongRows.length > 0 ? (
+        <section aria-label={mainSongsTitle}>
+          <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-tint">
+            ⭐ {mainSongsTitle}
+          </h2>
+          <div className="mt-1.5">
+            <MainSongPills items={mainSongRows} t={t} />
+          </div>
+        </section>
+      ) : null}
       {mustPlayRows.length > 0 ? (
-        <section aria-label={mustPlayTitle}>
+        <section aria-label={mustPlayTitle} className={mainSongRows.length > 0 ? 'mt-3' : ''}>
           <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
             ✅ {mustPlayTitle}
           </h2>
@@ -164,7 +169,10 @@ export default function DjBoothView({
         </section>
       ) : null}
       {doNotPlayRows.length > 0 ? (
-        <section aria-label={doNotPlayTitle} className={mustPlayRows.length > 0 ? 'mt-3' : ''}>
+        <section
+          aria-label={doNotPlayTitle}
+          className={mainSongRows.length > 0 || mustPlayRows.length > 0 ? 'mt-3' : ''}
+        >
           <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
             🚫 {doNotPlayTitle}
           </h2>
@@ -173,6 +181,29 @@ export default function DjBoothView({
           </div>
         </section>
       ) : null}
+    </DjPolicyPanel>
+  ) : null;
+
+  const futureFooter = caps.vip ? (
+    <MusicianPreferredMusic
+      suggestions={musicianSuggestions.suggestions}
+      musicians={wedding?.musicians?.items ?? []}
+      mainSongs={mainSongRows}
+      timeline={timeline}
+      loading={musicianSuggestions.loading}
+      error={musicianSuggestions.error}
+      onMarkPlayed={musicianSuggestions.markPlayed}
+    />
+  ) : caps.musicPolicy && doNotPlayRows.length > 0 ? (
+    <DjPolicyPanel label={t('music.title')}>
+      <section aria-label={doNotPlayTitle}>
+        <h2 className="font-heading text-[10px] font-semibold uppercase tracking-widest text-alert-soft">
+          🚫 {doNotPlayTitle}
+        </h2>
+        <div className="mt-1.5">
+          <DoNotPlayPills items={doNotPlayRows} />
+        </div>
+      </section>
     </DjPolicyPanel>
   ) : null;
 
