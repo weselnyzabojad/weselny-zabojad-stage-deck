@@ -8135,3 +8135,59 @@ The four feature blocks are:
 **Unblocks.** [#1098](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1098) is no longer blocked; it now carries the DJ VIP panel contract.
 
 **Tracking.** [#1098](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1098), [#1107](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1107), [#1108](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1108), [#1109](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1109), [#1110](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1110), [#1111](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1111), [#1112](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1112), [#1113](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1113), [#1114](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1114).
+
+### 17.99 Landing page alignment with the current application (decision, 2026-11-16)
+
+**Goal.**
+
+Bring the public landing page back in line with the roles and claims the
+application actually ships. This is a targeted accuracy pass: add the Musician
+role where the page lists contributors, remove absolute "100%" security
+guarantees, and leave the combined DJ + MC role out of public copy. Structure,
+sections, visual design and commercial positioning stay unchanged.
+
+**Feature blocks.**
+
+- **F1 — Role coverage.** Add musicians to the hero and role-preview copy in
+  EN, FR and PL; never advertise DJ + MC.
+- **F2 — Security claim cleanup.** Replace absolute privacy/security wording
+  with statements backed by `docs/security-claims.md`.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/` landing | Updated hero/role-mock copy and softened security wording; no new sections |
+| `docs/security-claims.md` | Claim/evidence mapping updated with the security wording |
+| `index.html` metadata | Unchanged; it contains no role list or absolute security claim |
+| `/join`, role decks, admin, song request | Unchanged |
+| EN / PL / FR | Same role coverage and claim meaning |
+
+**Out of scope.** DJ + MC in public copy, new landing sections or cards, full
+content refresh, pricing, tracking, stage-view behaviour, schema/parser/Doc
+changes and new security controls.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Alignment depth | Targeted accuracy, not a full landing refresh |
+| Role coverage | Add Musician only; keep DJ + MC out of public copy |
+| Security wording | No "100%" or equivalent absolute guarantee |
+| Doc linkage | Not Doc-linked; copy-only |
+| Security evidence | `docs/security-claims.md` remains the claim map |
+| Task split | Two independently closable landing issues |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1130](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1130) | Landing role coverage in hero/role mock, EN/FR/PL copy and tests | - |
+| 1 | [#1131](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1131) | Landing security claim cleanup, `docs/security-claims.md` and tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1130](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1130), [#1131](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1131).
