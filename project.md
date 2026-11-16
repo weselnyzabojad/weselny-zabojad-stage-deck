@@ -8490,3 +8490,56 @@ and counts are unchanged.
 | 1 | [#1148](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1148) | Pass compact flag in MusicianView, verify shared tablist, tests | - |
 
 **Open questions.** None.
+
+### 17.105 Mobile MC delay badge aligned with the laptop pill (decision, 2026-11-16)
+
+**Goal.**
+
+Align the mobile MC delay badge with the laptop delay pill without moving it
+into the top bar. The compact badge keeps its current position above
+**BIEŻĄCY KROK** but adopts the laptop light-pink/red negative tone, red text and
+rounded pill treatment. It remains compact in size and shows only the delay
+value, never the word “OPÓŹNIENIA”.
+
+**Feature block.**
+
+- **F1 — Compact DriftPill styling.** Reuse the shared \`DriftPill\` compact
+  variant and its laptop negative palette rather than creating a second
+  component.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master compact | Delay badge above BIEŻĄCY KROK; laptop negative palette, rounded pill, compact size, no “OPÓŹNIENIA” |
+| MC Master laptop | Unchanged |
+| Other roles / mobile views | Unchanged |
+| Delay calculation / tooltip / timeline | Unchanged |
+
+**Out of scope.** Moving the badge next to PIN, exact laptop dimensions, laptop
+changes, new i18n strings, and every other role.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Text | Omit “OPÓŹNIENIA” on mobile |
+| Position | Keep above BIEŻĄCY KROK |
+| Size | Compact size with laptop style |
+| Surface | Light pink background, red text, rounded pill |
+| Component | Extend the shared \`DriftPill\` compact variant |
+| Scope | MC Master compact only |
+
+**Task split.** One atomic UI issue: one component variant, one view and one
+validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1149](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1149) | Compact DriftPill laptop negative styling, text preservation, tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1149](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1149).
