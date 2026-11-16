@@ -2,9 +2,8 @@ import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import VendorPresenceBars from '../src/components/VendorPresenceBars.jsx';
-import TimelineFocusStack from '../src/components/TimelineFocusStack.jsx';
-import { buildVendorPresence } from '../src/lib/endHours.js';
+import ActiveVendorsBar from '../src/components/ActiveVendorsBar.jsx';
+import { buildActiveVendors } from '../src/lib/endHours.js';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 const render = (element) => renderToStaticMarkup(element);
@@ -23,75 +22,47 @@ const wedding = {
   ],
 };
 
-describe('issue #1084 DJ vendor presence bars', () => {
-  it('keeps upcoming and active rows and hides ended rows', () => {
-    const rows = buildVendorPresence(wedding, '16:00');
-    expect(rows.map((row) => row.name)).toEqual(['Anna', 'Magda', 'Ola', 'Late']);
-    expect(rows[1].state).toBe('active');
-    expect(rows[2].state).toBe('active');
-    expect(rows[3].state).toBe('upcoming');
+describe('issue #1142 active vendors bar', () => {
+  it('keeps only vendors whose full window contains the live clock', () => {
+    const rows = buildActiveVendors(wedding, '16:00');
+    expect(rows.map((row) => row.name)).toEqual(['Anna', 'Magda', 'Ola']);
+    expect(rows.map((row) => row.name)).not.toContain('Late');
+    expect(rows.map((row) => row.name)).not.toContain('No start');
   });
 
-  it('requires both start and end and handles the end boundary', () => {
-    const atEnd = buildVendorPresence(wedding, '21:30');
-    expect(atEnd.map((row) => row.name)).toContain('Magda');
-
-    const afterEnd = buildVendorPresence(wedding, '21:31');
-    expect(afterEnd.map((row) => row.name)).not.toContain('Magda');
-    expect(afterEnd.map((row) => row.name)).not.toContain('No start');
+  it('handles the end boundary and cross-midnight windows', () => {
+    expect(buildActiveVendors(wedding, '21:30').map((row) => row.name)).toContain('Magda');
+    expect(buildActiveVendors(wedding, '21:31').map((row) => row.name)).not.toContain('Magda');
+    expect(buildActiveVendors(wedding, '23:00').map((row) => row.name)).toContain('Late');
+    expect(buildActiveVendors(wedding, '00:45').map((row) => row.name)).not.toContain('Late');
   });
 
-  it('keeps cross-midnight windows until their next-day end', () => {
-    expect(buildVendorPresence(wedding, '23:00').map((row) => row.name)).toContain('Late');
-    expect(buildVendorPresence(wedding, '00:45').map((row) => row.name)).not.toContain('Late');
+  it('collapses to nothing without a clock or active rows', () => {
+    expect(buildActiveVendors(wedding, null)).toEqual([]);
+    expect(buildActiveVendors({}, '12:00')).toEqual([]);
+    expect(render(createElement(ActiveVendorsBar, { wedding: {}, nowClock: '12:00' }))).toBe('');
   });
 
-  it('collapses to nothing without a live clock or qualifying rows', () => {
-    expect(buildVendorPresence(wedding, null)).toEqual([]);
-    expect(buildVendorPresence({}, '12:00')).toEqual([]);
-    expect(
-      render(createElement(VendorPresenceBars, { wedding: {}, nowClock: '12:00' })),
-    ).toBe('');
-  });
-
-  it('renders one horizontal bar per vendor with role, window and status', () => {
-    const html = render(createElement(VendorPresenceBars, { wedding, nowClock: '16:00' }));
+  it('renders horizontal badges with name, role and departure/countdown', () => {
+    const html = render(createElement(ActiveVendorsBar, { wedding, nowClock: '16:00' }));
     expect(html).toContain('Magda');
     expect(html).toContain('Photographer');
-    expect(html).toContain('14:00');
-    expect(html).toContain('21:30');
-    expect(html).toContain('On site');
-    expect(html).toContain('Upcoming');
-    expect(html.match(/<li/g) ?? []).toHaveLength(4);
+    expect(html).toContain('Until 21:30');
+    expect(html.match(/<li/g) ?? []).toHaveLength(3);
+
+    const countdown = render(createElement(ActiveVendorsBar, { wedding, nowClock: '21:10' }));
+    expect(countdown).toContain('Ends in 20 min');
+    expect(countdown).toContain('Until 23:15');
   });
 
-  it('renders the footer inside the current column of the shared stack', () => {
-    const html = render(
-      createElement(TimelineFocusStack, {
-        entries: [
-          {
-            index: 0,
-            step: { id: 's1', title: 'Dinner', type: 'FLEXIBLE', durationMin: 15 },
-            isActive: true,
-            isDone: false,
-            projectedStart: '16:00',
-            projectedEnd: '16:15',
-          },
-        ],
-        activeIndex: 0,
-        currentFooter: createElement('span', { 'data-testid': 'footer' }, 'presence'),
-      }),
-    );
-    expect(html).toContain('data-testid="footer"');
-    expect(html).toContain('presence');
-  });
-
-  it('wires the presence stack and removes the old lane', () => {
-    const view = read('src/components/DjBoothView.jsx');
-    expect(view).toContain("import VendorPresenceBars from './VendorPresenceBars'");
-    expect(view).toContain('currentFooter={vendorPresence}');
-    expect(view).toContain('currentFooter={currentColumnFooter}');
-    expect(view).not.toContain('DjEndHourLane');
-    expect(view).not.toContain('dj-end-hour-lane');
+  it('wires DJ VIP and Musician without the old surfaces', () => {
+    const dj = read('src/components/DjBoothView.jsx');
+    const musician = read('src/components/MusicianView.jsx');
+    expect(dj).toContain("import ActiveVendorsBar from './ActiveVendorsBar'");
+    expect(dj).not.toContain('VendorPresenceBars');
+    expect(dj).toContain('currentFooter={activeVendors}');
+    expect(musician).toContain('<ActiveVendorsBar');
+    expect(musician).toContain('currentFooter={<ActiveVendorsBar');
+    expect(musician).not.toContain('<EndHoursCard');
   });
 });

@@ -48,7 +48,7 @@ describe('issue #1092 DJ policy columns', () => {
     expect(history).toContain('doNotPlayRows.length > 0');
     expect(future).toContain('<MusicianPreferredMusic');
     expect(current).toContain('<DjSetNotesNotepad');
-    expect(current).toContain('{vendorPresence}');
+    expect(current).toContain('{activeVendors}');
     expect(dj).toContain('historyFooter={historyFooter}');
     expect(dj).toContain('currentFooter={currentColumnFooter}');
     expect(dj).toContain('futureFooter={futureFooter}');
@@ -58,7 +58,7 @@ describe('issue #1092 DJ policy columns', () => {
     const dj = read('src/components/DjBoothView.jsx');
     const compact = dj.slice(dj.indexOf('const compactContent'), dj.indexOf('const wideContent'));
     expect(compact).toContain('<MusicPolicyCard policy={musicPolicy} />');
-    expect(compact).toContain('currentFooter={vendorPresence}');
+    expect(compact).toContain('currentFooter={activeVendors}');
     expect(compact).not.toContain('historyFooter=');
     expect(compact).not.toContain('futureFooter=');
     expect(compact).not.toContain('DjSetNotesNotepad');

@@ -64,7 +64,8 @@ describe('issue #992 musician role, join access and view', () => {
   it('renders a read-only musician view with personal availability and end hours', () => {
     const view = read('src/components/MusicianView.jsx');
     expect(view).toContain('<TimelineFocusStack');
-    expect(view).toContain('<EndHoursCard');
+    expect(view).toContain('<ActiveVendorsBar');
+    expect(view).not.toContain('<EndHoursCard');
     expect(view).toContain("t('musician.availability')");
     expect(view).toContain("role=\"musician\"");
     expect(view).not.toContain('HoldToConfirmButton');

@@ -27,7 +27,7 @@ import TopBarRoleIdentity from './TopBarRoleIdentity';
 import TopBarLogo from './TopBarLogo';
 import TopBarShell from './TopBarShell';
 import UtilityControlGroup from './UtilityControlGroup';
-import VendorPresenceBars from './VendorPresenceBars';
+import ActiveVendorsBar from './ActiveVendorsBar';
 import VipDjLogo from './VipDjLogo';
 import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
@@ -136,8 +136,8 @@ export default function DjBoothView({
     { role: 'dj', isVipDj: caps.vip },
   );
   const mandatoryItems = activeEntry?.step?.id ? mandatoryByStep[activeEntry.step.id] ?? [] : [];
-  const vendorPresence = caps.vip ? (
-    <VendorPresenceBars wedding={wedding} nowClock={clock?.nowClock} />
+  const activeVendors = caps.vip ? (
+    <ActiveVendorsBar wedding={wedding} nowClock={clock?.nowClock} />
   ) : null;
 
   const mainSongRows = Array.isArray(musicPolicy?.mainSongs) ? musicPolicy.mainSongs : [];
@@ -217,10 +217,10 @@ export default function DjBoothView({
 
   const currentColumnFooter = caps.musicPolicy ? (
     <div className="space-y-2">
-      {vendorPresence}
+      {activeVendors}
       <DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />
     </div>
-  ) : vendorPresence;
+  ) : activeVendors;
 
   // Extra current-card detail for the shared focus stack. The stack owns the
   // card hierarchy and visibility counts; this body only adds DJ-specific
@@ -315,7 +315,7 @@ export default function DjBoothView({
         entries={timeline}
         activeIndex={activeIndex}
         currentBody={djCurrentBody}
-        currentFooter={vendorPresence}
+        currentFooter={activeVendors}
         entryBodies={caps.vip ? ceremonySubStepBodies(timeline) : null}
       />
 

@@ -95,3 +95,36 @@ export function buildVendorPresence(wedding = {}, nowClock = null) {
       };
     });
 }
+
+// Compact active-vendor badges for the DJ VIP and Musician current-card footers.
+// Only vendors inside a complete start/end window appear; upcoming and
+// end-only rows are deliberately excluded.
+export function buildActiveVendors(wedding = {}, nowClock = null) {
+  const now = clockToMinutes(nowClock);
+  if (now == null) return [];
+
+  const serviceNow = now < SERVICE_DAY_ROLLOVER_HOUR * 60 ? now + 24 * 60 : now;
+
+  return buildEndHours(wedding)
+    .filter((row) => row.startTime && row.endTime && row.sortValue != null)
+    .map((row) => {
+      const rawStart = clockToMinutes(row.startTime);
+      const start =
+        rawStart != null && rawStart < SERVICE_DAY_ROLLOVER_HOUR * 60
+          ? rawStart + 24 * 60
+          : rawStart;
+      const end =
+        start != null && row.sortValue < start
+          ? row.sortValue + 24 * 60
+          : row.sortValue;
+      if (start == null || serviceNow < start || serviceNow > end) {
+        return null;
+      }
+      return {
+        ...row,
+        remainingMinutes: Math.max(0, end - serviceNow),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.sortValue - b.sortValue || a.name.localeCompare(b.name));
+}
