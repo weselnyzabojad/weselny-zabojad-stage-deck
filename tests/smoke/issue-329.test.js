@@ -142,13 +142,12 @@ describe('issue #329 localized operational cues', () => {
     const pl = renderToStaticMarkup(
       createElement(MandatoryUpdatePopup, {
         weddingId: 'w1',
-        role: 'dj',
-        isVipDj: true,
+        role: 'mc',
         update,
       }),
     );
     expect(pl).toContain('Menadżer obiektu zmienił plan');
-    expect(pl).toContain('Ostatni utwór');
+    expect(pl).toContain('Podanie tortu');
   });
 
   it('keeps interpolation placeholders intact for service modes', () => {

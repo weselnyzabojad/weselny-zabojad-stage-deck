@@ -78,14 +78,9 @@ describe('issue #327 mandatory update popup role visibility', () => {
     expect(html).not.toContain('Last song:');
   });
 
-  it('shows DJ VIP only closure and last-song fields', () => {
+  it('does not render the popup for DJ VIP after the banner split', () => {
     const html = render('dj', true);
-    expect(html).not.toContain('First guests arrival:');
-    expect(html).toContain('Wedding closure: 02:00');
-    expect(html).toContain('Closure extension: Until 03:00');
-    expect(html).toContain('Last song: Perfect - Ed Sheeran');
-    expect(html).not.toContain('Dinner');
-    expect(html).not.toContain('Cake service');
+    expect(html).toBe('');
   });
 
   it('never exposes restricted data to other roles', () => {

@@ -3,7 +3,7 @@ import { resolveMandatoryConstraints } from '../lib/mandatorySteps.js';
 import { acknowledgeUpdate, isUpdateAcknowledged } from '../lib/mandatoryAck.js';
 import { useI18n } from '../i18n/useI18n.js';
 
-export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false, update }) {
+export default function MandatoryUpdatePopup({ weddingId, role, update }) {
   const { t } = useI18n();
   const [acknowledgedRevision, setAcknowledgedRevision] = useState(() => {
     if (typeof window === 'undefined') return null;
@@ -18,55 +18,23 @@ export default function MandatoryUpdatePopup({ weddingId, role, isVipDj = false,
   const acknowledged =
     Boolean(update?.updatedAt) && acknowledgedRevision === update.updatedAt;
 
-  if (!update?.value || role === 'venue_manager' || acknowledged) return null;
-
-  const isMc = role === 'mc';
-  const isDjVip = role === 'dj' && isVipDj;
-  if (!isMc && !isDjVip) return null;
+  if (!update?.value || role !== 'mc' || acknowledged) return null;
 
   const constraints = resolveMandatoryConstraints({}, update);
   const rows = [];
 
-  if (isMc) {
-    for (const service of constraints.kitchenServices) {
-      rows.push({
-        id: `kitchen_${service.key}`,
-        label: `${service.label} · ${t(`mandatory.serviceMode.${service.mode}`)}`,
-        value: service.time,
-      });
-    }
+  for (const service of constraints.kitchenServices) {
     rows.push({
-      id: 'cake',
-      label: t('mandatoryUpdate.cakeService'),
-      value: t(`mandatory.cakeMode.${constraints.cakeServiceMode}`),
+      id: `kitchen_${service.key}`,
+      label: `${service.label} · ${t(`mandatory.serviceMode.${service.mode}`)}`,
+      value: service.time,
     });
   }
-
-  if (isDjVip) {
-    if (constraints.closureTime) {
-      rows.push({
-        id: 'closure',
-        label: t('mandatoryUpdate.closure'),
-        value: constraints.closureTime,
-      });
-    }
-    if (constraints.closureExtensionAllowed) {
-      rows.push({
-        id: 'extension',
-        label: t('mandatoryUpdate.extension'),
-        value: constraints.closureExtensionUntil
-          ? t('mandatoryUpdate.extensionUntil', { time: constraints.closureExtensionUntil })
-          : t('mandatoryUpdate.extensionValue'),
-      });
-    }
-    if (constraints.lastSong) {
-      rows.push({
-        id: 'last_song',
-        label: t('mandatoryUpdate.lastSong'),
-        value: constraints.lastSong,
-      });
-    }
-  }
+  rows.push({
+    id: 'cake',
+    label: t('mandatoryUpdate.cakeService'),
+    value: t(`mandatory.cakeMode.${constraints.cakeServiceMode}`),
+  });
 
   if (rows.length === 0) return null;
 

@@ -102,6 +102,7 @@ export default function DjBoothView({
   extensionUntil = null,
   closureTime = null,
   extensionBlockedReason = null,
+  scheduleBanner = null,
 }) {
   const { t } = useI18n();
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
@@ -306,6 +307,8 @@ export default function DjBoothView({
         brand={<VipDjLogo wedding={wedding} vip={caps.vip} />}
       />
 
+      {scheduleBanner}
+
       <SecondaryControlBar
         left={(
           <>
@@ -445,6 +448,7 @@ export default function DjBoothView({
       speeches={caps.speeches ? speeches : null}
       speechMode={caps.speeches ? speechMode : null}
       authControl={caps.vipAuth ? authControl : null}
+      banner={scheduleBanner}
     >
       {compactContent}
     </RoleShell>
