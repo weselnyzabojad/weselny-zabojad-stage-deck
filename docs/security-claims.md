@@ -23,6 +23,7 @@ to shipped code or configuration. Planned/unmerged work is not claimable.
 | Error-only session replay | `src/lib/sentry.js` — `replaysSessionSampleRate: 0`, `replaysOnErrorSampleRate: 1.0` | verified |
 | Wedding TTL + scheduled purge | `schema.sql` / migrations — `expires_at` default 30 days, `stage_deck_purge_expired()`; daily schedule via `pg_cron` when available | verified with deployment caveat |
 | Private wedding data not public | Role JWTs + RLS + service-role-only admin data; no public storage bucket for wedding content | verified (architecture; deployment configuration must stay correct) |
+| Landing privacy card and FAQ | Role-scoped JWTs + RLS; retention schedule via `expires_at` and `stage_deck_purge_expired()`; see deployment caveat above | verified with deployment caveat |
 | Weselny Żabojad standards + wedding-sector provider consultation | Owner process statement; not inferable from source code | process statement (owner-confirmed) |
 
 ## Deployment caveat
