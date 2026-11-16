@@ -43,6 +43,7 @@ import AdminServiceProviders from './AdminServiceProviders';
 import AdminMusicians from './AdminMusicians';
 import AdminGamesPanel from './AdminGamesPanel';
 import AdminDocMigrationPanel from './AdminDocMigrationPanel';
+import AdminRecapPanel from './AdminRecapPanel';
 import AdminWeddingRoles from './AdminWeddingRoles';
 import AdminSpeechesPanel from './AdminSpeechesPanel';
 import { AdminPublishRevisionDialog } from './AdminDialogs';
@@ -1190,6 +1191,11 @@ function AdminAppContent() {
                     onChanged={load}
                   />
                   <AdminDocMigrationPanel
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onChanged={load}
+                  />
+                  <AdminRecapPanel
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
                     onChanged={load}

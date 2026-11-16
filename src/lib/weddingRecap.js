@@ -11,6 +11,13 @@ import { resolveMusicPolicy } from './musicPolicy.js';
 
 export const RECAP_SCHEMA_VERSION = 1;
 
+export function recapPublicationStatus(recap, now = Date.now()) {
+  if (recap?.revoked_at) return 'revoked';
+  const expiresAt = Date.parse(recap?.expires_at ?? '');
+  if (Number.isFinite(expiresAt) && expiresAt <= now) return 'expired';
+  return 'active';
+}
+
 function text(value) {
   return typeof value === 'string' && value.trim() ? value.trim() : null;
 }

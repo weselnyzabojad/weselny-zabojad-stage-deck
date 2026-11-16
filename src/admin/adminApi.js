@@ -577,6 +577,28 @@ export async function getRevisionContext(weddingId) {
   return callAdmin('revision_context', { weddingId });
 }
 
+export async function getRecapSource(weddingId) {
+  if (ADMIN_DEMO) {
+    return { wedding: null, liveState: null, songRequests: [] };
+  }
+  return callAdmin('recap_source', { weddingId });
+}
+
+export async function publishRecap(weddingId, payload) {
+  if (ADMIN_DEMO) throw new Error('Recap publishing is unavailable in demo mode.');
+  return callAdmin('publish_recap', { weddingId, payload });
+}
+
+export async function listRecaps(weddingId) {
+  if (ADMIN_DEMO) return { recaps: [] };
+  return callAdmin('list_recaps', { weddingId });
+}
+
+export async function revokeRecap(weddingId, recapId) {
+  if (ADMIN_DEMO) throw new Error('Recap revocation is unavailable in demo mode.');
+  return callAdmin('revoke_recap', { weddingId, recapId });
+}
+
 export async function restorePreviousRevision(weddingId, expectedRevision, revision = null) {
   if (ADMIN_DEMO) {
     const { demoMutate } = await import('./adminDemoApi.js');
