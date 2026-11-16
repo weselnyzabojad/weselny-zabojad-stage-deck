@@ -23,7 +23,8 @@ describe('issue #1107 standalone musician view', () => {
     expect(view).toContain('data-testid="musician-availability"');
     expect(view).toContain("t('musician.endHour')");
     expect(view).toContain("t('musician.until'");
-    expect(view).toContain('<EndHoursCard');
+    expect(view).toContain('<ActiveVendorsBar');
+    expect(view).not.toContain('<EndHoursCard');
     expect(view).toContain('instrumentLabel(musician.instrument, locale)');
   });
 

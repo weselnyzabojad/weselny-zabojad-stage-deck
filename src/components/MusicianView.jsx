@@ -1,6 +1,6 @@
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
+import ActiveVendorsBar from './ActiveVendorsBar';
 import { ceremonySubStepBodies } from './ceremonySubStepBodies';
-import EndHoursCard from './EndHoursCard';
 import MusicianSuggestionForm from './MusicianSuggestionForm';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
@@ -63,6 +63,7 @@ export default function MusicianView({
         entries={timeline}
         activeIndex={activeIndex}
         entryBodies={ceremonySubStepBodies(timeline)}
+        currentFooter={<ActiveVendorsBar wedding={wedding} nowClock={clock?.nowClock} />}
       />
 
       {musician ? (
@@ -121,8 +122,6 @@ export default function MusicianView({
           {t('musician.accessUnavailable')}
         </p>
       )}
-
-      <EndHoursCard wedding={wedding} />
 
       {musician ? (
         <MusicianSuggestionForm
