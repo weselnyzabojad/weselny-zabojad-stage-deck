@@ -560,6 +560,19 @@ const fr = {
   'mc.undo.speechSelection': 'Sélection du discours',
   'mc.undo.mediaOverride': 'Remplacement média modifié',
   'mc.undo.gameResults': 'Résultats du jeu',
+  'mc.undo.scheduleChanged': 'Heure de l’étape modifiée',
+  'mc.reschedule.actionLabel': 'Replanifier {title}',
+  'mc.reschedule.title': 'Modifier l’heure de l’étape',
+  'mc.reschedule.description':
+    'Déplacez cette étape à venir. Les étapes flexibles suivantes se décalent jusqu’au prochain point fixe.',
+  'mc.reschedule.time': 'Nouvelle heure',
+  'mc.reschedule.apply': 'Appliquer',
+  'mc.reschedule.cancel': 'Annuler',
+  'mc.reschedule.error':
+    'Impossible de replanifier cette étape. Choisissez une heure future qui ne dépasse pas un point fixe.',
+  'mc.reschedule.locked':
+    'Seul le responsable du lieu peut reporter les étapes fixes.',
+  'mc.reschedule.info': 'Pourquoi cette étape est verrouillée',
   'mc.confirm.signOut':
     'Se déconnecter de ce rôle ? Vous aurez besoin du PIN du rôle pour rejoindre.',
   'mc.confirm.swapCue':

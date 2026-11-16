@@ -85,6 +85,7 @@ export default function StageStepCard({
   collapsible = false,
   photographerAvailable = null,
   polished = false,
+  action = null,
   children,
 }) {
   const { t } = useI18n();
@@ -165,17 +166,20 @@ export default function StageStepCard({
       className={`${polished ? 'rounded-2xl border p-3.5 transition-shadow' : 'rounded-xl border p-3'} ${meta.card}`}
     >
       {collapsible ? (
-        <button
-          type="button"
-          data-rail-card
-          aria-expanded={isOpen}
-          aria-controls={bodyId}
-          aria-label={t(isOpen ? 'mc.rail.collapse' : 'mc.rail.expand', { title })}
-          onClick={onToggle}
-          className="flex w-full items-start gap-1 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft"
-        >
-          <div className={headerWrapperClass}>{header}</div>
-        </button>
+        <div className="flex items-start gap-1.5">
+          <button
+            type="button"
+            data-rail-card
+            aria-expanded={isOpen}
+            aria-controls={bodyId}
+            aria-label={t(isOpen ? 'mc.rail.collapse' : 'mc.rail.expand', { title })}
+            onClick={onToggle}
+            className="flex min-w-0 flex-1 items-start gap-1 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-soft"
+          >
+            <div className={headerWrapperClass}>{header}</div>
+          </button>
+          {action ? <div className="shrink-0 pt-0.5">{action}</div> : null}
+        </div>
       ) : (
         <div className={headerWrapperClass}>{header}</div>
       )}

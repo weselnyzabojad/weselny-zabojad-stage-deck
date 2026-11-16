@@ -50,6 +50,7 @@ function FocusZone({
   showMoreLabel,
   showLessLabel,
   polished = false,
+  entryActions = null,
 }) {
   return (
     <section
@@ -93,6 +94,7 @@ function FocusZone({
                     onToggle={() => onToggle(zone, key)}
                     photographerAvailable={photographerAvailable}
                     polished={polished}
+                    action={entryActions?.[key] ?? null}
                   >
                     {entryBodies?.[key] ?? null}
                   </StageStepCard>
@@ -146,6 +148,7 @@ export default function TimelineFocusStack({
   entryBodies = null,
   photographerAvailable = null,
   polished = true,
+  entryActions = null,
 }) {
   const { t } = useI18n();
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
@@ -269,6 +272,7 @@ export default function TimelineFocusStack({
                 compact
                 zoneScroll={zoneScroll}
                 entryBodies={entryBodies}
+                entryActions={entryActions}
                 photographerAvailable={photographerAvailable}
                 hiddenCount={stack.hidden.history}
                 expanded={expandedByZone.history}
@@ -294,6 +298,7 @@ export default function TimelineFocusStack({
                 compact
                 zoneScroll={zoneScroll}
                 entryBodies={entryBodies}
+                entryActions={entryActions}
                 photographerAvailable={photographerAvailable}
                 hiddenCount={stack.hidden.future}
                 expanded={expandedByZone.future}
@@ -330,6 +335,7 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
+          entryActions={entryActions}
           photographerAvailable={photographerAvailable}
           hiddenCount={stack.hidden.history}
           expanded={expandedByZone.history}
@@ -393,6 +399,7 @@ export default function TimelineFocusStack({
           compact={compact}
           zoneScroll={zoneScroll}
           entryBodies={entryBodies}
+          entryActions={entryActions}
           photographerAvailable={photographerAvailable}
           hiddenCount={stack.hidden.future}
           expanded={expandedByZone.future}

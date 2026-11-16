@@ -558,6 +558,19 @@ const pl = {
   'mc.undo.speechSelection': 'Wybór przemówienia',
   'mc.undo.mediaOverride': 'Zmieniono nadpisanie mediów',
   'mc.undo.gameResults': 'Wyniki gry',
+  'mc.undo.scheduleChanged': 'Zmieniono godzinę kroku',
+  'mc.reschedule.actionLabel': 'Zmień godzinę: {title}',
+  'mc.reschedule.title': 'Zmień godzinę kroku',
+  'mc.reschedule.description':
+    'Przenieś ten przyszły krok. Kolejne elastyczne kroki przesuną się do najbliższego stałego punktu.',
+  'mc.reschedule.time': 'Nowa godzina',
+  'mc.reschedule.apply': 'Zastosuj',
+  'mc.reschedule.cancel': 'Anuluj',
+  'mc.reschedule.error':
+    'Nie można zmienić godziny tego kroku. Wybierz przyszłą godzinę, która nie przekracza stałego punktu.',
+  'mc.reschedule.locked':
+    'Tylko menedżer obiektu może przesuwać stałe kroki.',
+  'mc.reschedule.info': 'Dlaczego ten krok jest zablokowany',
   'mc.confirm.signOut':
     'Wylogować z tej roli? Aby dołączyć ponownie, potrzebny będzie PIN roli.',
   'mc.confirm.swapCue':
