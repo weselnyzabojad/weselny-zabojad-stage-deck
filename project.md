@@ -8319,3 +8319,61 @@ set.
 **Open questions.** None.
 
 **Tracking.** [#1138](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1138).
+
+### 17.102 Active-vendors bar replaces remaining end-hours lists (decision, 2026-11-16)
+
+Replace the remaining static vendor-departure surfaces with a compact
+`ActiveVendorsBar` attached below the current-step card. The bar shows only
+vendors whose live window is active, uses the current card width, and disappears
+when nobody is on site.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. Rows come from
+the existing `mediaTeam` and `musicians.items` records.
+
+**Feature scope.**
+
+- **DJ VIP** — replace `VendorPresenceBars` with `ActiveVendorsBar`, active-only,
+  horizontal badges and a 30-minute countdown.
+- **Musician** — remove the bottom `EndHoursCard` and render
+  `ActiveVendorsBar` through `currentFooter`.
+- **Placement** — current-card footer, so the width matches the `BIEŻĄCY KROK`
+  column exactly.
+- **Data rule** — require start and end; include only `start ≤ now ≤ end`;
+  exclude upcoming and end-only rows.
+- **Empty state** — no container, border or reserved space.
+- **i18n** — replace `dj.vendorPresence.*` with `dj.activeVendors.*`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ VIP | Active vendors bar under the current card |
+| Musician | End-hours card removed; active vendors bar under the current card |
+| DJ Standard | `EndHoursCard` unchanged |
+| MC and other roles | No change |
+| Schema/parser | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Views | DJ VIP + Musician |
+| DJ Standard | Unchanged |
+| MC | Unchanged |
+| Active rule | start ≤ now ≤ end |
+| Missing start | Excluded |
+| Upcoming | Hidden |
+| Placement | Current-card footer |
+| Countdown | Within 30 minutes |
+| Old components | `VendorPresenceBars` replaced; Musician `EndHoursCard` removed |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1142](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1142) | ActiveVendorsBar, active-only selector, DJ VIP/Musician wiring, i18n and tests | - |
+
+**Open questions.** None.
