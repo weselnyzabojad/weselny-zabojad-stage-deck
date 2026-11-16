@@ -8435,3 +8435,58 @@ stays inside the existing development-only build gate.
 | 1 | [#1146](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1146) | Collapsed DEV chip, expandable panel, close/focus behaviour, tests | - |
 
 **Open questions.** None.
+
+### 17.104 Compact Musician step toggles from TimelineFocusStack (decision, 2026-11-16)
+
+On the compact Musician view, replace the expanded completed/upcoming columns
+with the same side-by-side count buttons used by compact MC. The buttons are the
+existing `TimelineFocusStack` compact tablist, so no new component or duplicated
+markup is needed.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. Timeline data
+and counts are unchanged.
+
+**Feature scope.**
+
+- **Musician compact** — pass the viewport-aware `compact` flag to
+  `TimelineFocusStack`.
+- **Buttons** — `UKOŃCZONE KROKI (n)` and `NADCHODZĄCE KROKI (n)` side by side,
+  matching compact MC.
+- **Behaviour** — the existing tablist expand/collapse panels, counts and
+  accessibility semantics.
+- **Order** — current card, ActiveVendorsBar, then the two buttons.
+- **Desktop Musician** — keeps the three-column layout.
+- **Shared component** — reuse `TimelineFocusStack`; no `StepToggleButtons`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Musician compact/mobile | Two count buttons + expandable panels |
+| Musician desktop | Existing columns |
+| MC compact | Reference behaviour, unchanged |
+| Other roles | No change |
+| Schema/parser/i18n | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked |
+| Scope | Musician compact only |
+| Desktop | Unchanged |
+| Shared component | Reuse `TimelineFocusStack` compact mode |
+| New component | None |
+| Order | Current card → ActiveVendorsBar → buttons |
+| Labels/counts | Existing `mc.rail.*` copy |
+| Data | Unchanged |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1148](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1148) | Pass compact flag in MusicianView, verify shared tablist, tests | - |
+
+**Open questions.** None.
