@@ -137,6 +137,7 @@ const ARCHIVED_BLOCKED_ACTIONS = new Set([
   'publish_game_questions',
   'restore_game_questions',
   'delete_game_questions',
+  'publish_recap',
   'upsert_provider',
   'deactivate_provider',
   'delete_provider',
@@ -166,6 +167,94 @@ function serverEnv(name: string, fallback = '') {
 function randomPin() {
   const value = crypto.getRandomValues(new Uint32Array(1))[0] % 900000;
   return String(100000 + value);
+}
+
+const RECAP_FORBIDDEN_KEYS = new Set([
+  'phone',
+  'email',
+  'pin',
+  'password',
+  'secret',
+  'token',
+  'token_hash',
+  'tokenHash',
+  'device_id',
+  'deviceId',
+  'mutation_log',
+  'mutationLog',
+  'notes',
+  'mcCues',
+  'teleprompter',
+  'speeches',
+  'musicianSuggestions',
+]);
+
+function findForbiddenRecapKey(value: any, path = ''): string | null {
+  if (!value || typeof value !== 'object') return null;
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const found = findForbiddenRecapKey(value[index], `${path}[${index}]`);
+      if (found) return found;
+    }
+    return null;
+  }
+  for (const [key, child] of Object.entries(value)) {
+    const childPath = path ? `${path}.${key}` : key;
+    if (RECAP_FORBIDDEN_KEYS.has(key)) return childPath;
+    const found = findForbiddenRecapKey(child, childPath);
+    if (found) return found;
+  }
+  return null;
+}
+
+async function sha256Hex(value: string) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function randomRecapToken() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/g, '');
+}
+
+function normalizeRecapPayload(payload: any, weddingId: string) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return { error: 'A recap payload object is required.' };
+  }
+  if (payload.schemaVersion !== 1) {
+    return { error: 'Unsupported recap schema version.' };
+  }
+  if (!payload.wedding || typeof payload.wedding !== 'object') {
+    return { error: 'Recap wedding identity is required.' };
+  }
+  if (payload.wedding.id !== weddingId) {
+    return { error: 'Recap wedding id does not match the requested wedding.' };
+  }
+  if (!payload.summary || typeof payload.summary !== 'object') {
+    return { error: 'Recap summary is required.' };
+  }
+  if (!Array.isArray(payload.timeline)) {
+    return { error: 'Recap timeline must be an array.' };
+  }
+  let serialized = '';
+  try {
+    serialized = JSON.stringify(payload);
+  } catch {
+    return { error: 'Recap payload is not serializable.' };
+  }
+  if (serialized.length > 512_000) {
+    return { error: 'Recap payload is too large.' };
+  }
+  const forbidden = findForbiddenRecapKey(payload);
+  if (forbidden) {
+    return { error: `Recap payload contains a private field (${forbidden}).` };
+  }
+  return { payload };
 }
 
 const PROVIDER_CATEGORIES = new Set(['dj', 'photo1', 'photo2', 'video', 'venue_manager', 'mc', 'dj_mc', 'other']);
@@ -2372,6 +2461,121 @@ async function handleRequest(req: Request) {
         after: data,
       });
       return json({ vipDj: data });
+    }
+
+    if (action === 'recap_source') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const [wedding, live, requests] = await Promise.all([
+        admin
+          .from('weddings')
+          .select('wedding_id, couple, date, cartridge, cartridge_revision')
+          .eq('wedding_id', weddingId)
+          .maybeSingle(),
+        admin
+          .from('live_sync_state')
+          .select('state, updated_at')
+          .eq('wedding_id', `wzsd:${weddingId}`)
+          .maybeSingle(),
+        admin
+          .from('song_requests')
+          .select('song, artist, created_at')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: true }),
+      ]);
+      const firstError = wedding.error || live.error || requests.error;
+      if (firstError) throw firstError;
+      if (!wedding.data) return json({ error: 'Wedding not found.' }, 404);
+      return json({
+        wedding: wedding.data.cartridge ?? null,
+        liveState: live.data?.state ?? null,
+        liveUpdatedAt: live.data?.updated_at ?? null,
+        songRequests: requests.data ?? [],
+      });
+    }
+
+    if (action === 'publish_recap') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const normalized = normalizeRecapPayload(body?.payload, weddingId);
+      if (normalized.error) return json({ error: normalized.error }, 400);
+
+      const token = randomRecapToken();
+      const tokenHash = await sha256Hex(token);
+      const expiresAt = new Date(
+        Date.now() + 90 * 24 * 60 * 60 * 1000,
+      ).toISOString();
+      const { data, error } = await admin
+        .from('wedding_recaps')
+        .insert({
+          wedding_id: weddingId,
+          token_hash: tokenHash,
+          schema_version: normalized.payload.schemaVersion,
+          payload: normalized.payload,
+          expires_at: expiresAt,
+          created_by: allowlisted.user_id,
+        })
+        .select('id, published_at, expires_at')
+        .single();
+      if (error) throw error;
+
+      const baseUrl = serverEnv(
+        'PUBLIC_DECK_URL',
+        'https://deck.weselnyzabojad.pl',
+      ).replace(/\/+$/, '');
+      const url = `${baseUrl}/recap/${token}`;
+      await writeAudit(admin, allowlisted, 'recap_publish', weddingId, {
+        recapId: data.id,
+        expiresAt,
+      });
+      return json({
+        recap: {
+          id: data.id,
+          url,
+          token,
+          publishedAt: data.published_at,
+          expiresAt: data.expires_at,
+        },
+      });
+    }
+
+    if (action === 'list_recaps') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data, error } = await admin
+        .from('wedding_recaps')
+        .select('id, schema_version, published_at, expires_at, revoked_at')
+        .eq('wedding_id', weddingId)
+        .order('published_at', { ascending: false });
+      if (error) throw error;
+      return json({ recaps: data ?? [] });
+    }
+
+    if (action === 'revoke_recap') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const recapId = typeof body?.recapId === 'string' ? body.recapId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId) || !/^[0-9a-f-]{36}$/i.test(recapId)) {
+        return json({ error: 'Invalid recap.' }, 400);
+      }
+      const { data, error } = await admin
+        .from('wedding_recaps')
+        .update({ revoked_at: new Date().toISOString() })
+        .eq('id', recapId)
+        .eq('wedding_id', weddingId)
+        .select('id, revoked_at')
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return json({ error: 'Recap not found.' }, 404);
+      await writeAudit(admin, allowlisted, 'recap_revoke', weddingId, {
+        recapId,
+      });
+      return json({ ok: true, recap: data });
     }
 
     if (action === 'list') {
