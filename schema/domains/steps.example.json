@@ -19,9 +19,25 @@
       "title": "Ceremony",
       "type": "FLEXIBLE",
       "location": "Garden Gazebo",
+      "ceremony": {
+        "type": "RELIGIOUS",
+        "mcSupportRequested": true,
+        "location": "Garden Gazebo",
+        "notes": "Full mass; MC introduces the couple at the door.",
+        "subSteps": [
+          {
+            "id": "ceremony_entrance",
+            "time": "17:00",
+            "title": "Bridal entrance",
+            "notes": "Doors open; guests stand.",
+            "musicCue": "Canon in D",
+            "responsibleRole": "Musician"
+          }
+        ]
+      },
       "dj": {
         "playlist": "Ceremony Procession",
-        "track": "Canon in D — Pachelbel",
+        "track": "Canon in D – Pachelbel",
         "cutoff": "18:20"
       }
     },

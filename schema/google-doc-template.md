@@ -418,6 +418,20 @@ Je vous déclare officiellement mari et femme !
 I now pronounce you married!
 ```
 
+## CEREMONY SUBSTEPS
+
+Optional informational moments inside the Ceremony step. They never become
+timeline steps, do not affect durations, drift or anchors, and are displayed
+nested under the Ceremony card. `Step ID` must reference a step that owns a
+ceremony object. `Time`, `Notes`, `Music cue` and `Responsible role` are
+optional; `Responsible role` accepts MC, DJ, Musician, Speaker or Venue.
+
+| Step ID | Sub-step ID | Time | Title | Notes | Music cue | Responsible role |
+| --- | --- | --- | --- | --- | --- | --- |
+| step_02 | ceremony_entrance | 17:00 | Bridal entrance | Doors open; guests stand. | Canon in D | Musician |
+| step_02 | ceremony_vows | 17:15 | Vows | Microphones for the couple. |  | MC |
+| step_02 | ceremony_rings | 17:25 | Ring exchange | Photographer moves to the altar. |  | Musician |
+
 ## WITNESSES
 
 Witnesses are key persons, not guests or media crew. Contact details are

@@ -199,6 +199,13 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Verbatim trilingual ceremony script attached to the Ceremony step.',
   },
   {
+    order: 28.5,
+    marker: 'CEREMONY SUBSTEPS',
+    required: false,
+    schemaPath: ['steps[].ceremony.subSteps'],
+    purpose: 'Informational ceremony moments nested under the Ceremony step.',
+  },
+  {
     order: 29,
     marker: 'WITNESSES',
     required: false,
