@@ -40,6 +40,8 @@ const en = {
   'role.musician.short': 'Musician',
   'role.musician.blurb': 'Read-only timeline, personal availability and end-hour awareness.',
   'musician.availability': 'My availability',
+  'musician.endHour': 'Your end hour',
+  'musician.until': 'Available until {time}',
   'musician.instrument': 'Instrument',
   'musician.window': 'Availability',
   'musician.ceremony': 'Ceremony',

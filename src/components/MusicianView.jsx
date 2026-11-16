@@ -22,6 +22,10 @@ function windowLabel(startTime, endTime) {
   return endTime || startTime || '—';
 }
 
+// Standalone musician view. It follows the same shell/layout shape as
+// PhotographerView (top bar, secondary bar, shared timeline, footer) but is an
+// intentional fork: photo-only blocks are absent and changes to the media view
+// must not be copied here automatically.
 // Read-only musician view (issue #992): the shared timeline, the musician's
 // personal availability and the end-hour card. No step controls or VIP data.
 export default function MusicianView({
@@ -51,6 +55,7 @@ export default function MusicianView({
       {musician ? (
         <section
           aria-labelledby="musician-availability-title"
+          data-testid="musician-availability"
           className="rounded-xl border border-line bg-card p-4 shadow-lg"
         >
           <h2
@@ -59,6 +64,16 @@ export default function MusicianView({
           >
             {t('musician.availability')}
           </h2>
+          {musician.endTime ? (
+            <div className="mt-3 rounded-lg border border-brand-strong bg-brand/15 px-3 py-2">
+              <div className="text-[9px] uppercase tracking-widest text-brand-soft">
+                {t('musician.endHour')}
+              </div>
+              <div className="font-mono text-lg font-bold text-ink">
+                {t('musician.until', { time: musician.endTime })}
+              </div>
+            </div>
+          ) : null}
           <dl className="mt-3 grid gap-3 text-[11px] sm:grid-cols-2">
             <div>
               <dt className="uppercase tracking-wider text-muted">{t('musician.instrument')}</dt>

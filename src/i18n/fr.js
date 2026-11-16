@@ -40,6 +40,8 @@ const fr = {
   'role.musician.blurb': 'Timeline, disponibilite personnelle et heures de fin en lecture seule.',
   'role.speaker.blurb': 'Téléprompteur en lecture seule pour le discours assigné.',
   'musician.availability': 'Ma disponibilite',
+  'musician.endHour': 'Votre heure de fin',
+  'musician.until': 'Disponible jusqu a {time}',
   'musician.instrument': 'Instrument',
   'musician.window': 'Disponibilite',
   'musician.ceremony': 'Ceremonie',
