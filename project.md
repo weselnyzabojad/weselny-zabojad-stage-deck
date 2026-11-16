@@ -7923,3 +7923,95 @@ the existing Venue Manager settings and mandatory-step persistence.
 | 1 | [#1097](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1097) | Confirmation dialog, old/new flow, cancel, delayed notification, tests | - |
 
 **Open questions.** None.
+
+### 17.97 MC future-step reschedule with crew notification (decision, 2026-11-16)
+
+Let the MC move an upcoming flexible step to any future clock time, cascade the
+following flexible steps and make every role's timeline follow the adjusted
+plan. Fixed steps stay protected: the MC cannot touch a `HARD_ANCHOR` or a
+mandatory obligation, and generic `HARD_ANCHOR` postponement remains outside
+this feature. Other crew views get one dismissible top banner naming the step,
+the old → new time and the author.
+
+**Google Doc contract.**
+
+Not Doc-linked. No schema, parser, template or field-map change. The adjusted
+time is runtime state stored in the existing `media_overrides.steps` live-state
+channel; cartridge content remains the authored plan. The override survives a
+cartridge re-publish unless the step disappears.
+
+**Feature scope.**
+
+- **Editable steps:** upcoming `FLEXIBLE` steps only. The active step, completed
+  steps, `HARD_ANCHOR` steps and mandatory obligations are locked.
+- **Edit:** native time input with hour and minute precision; earlier or later
+  is allowed provided the resulting time is still in the future.
+- **Cascade:** the selected step moves by the chosen delta and following
+  `FLEXIBLE` steps shift by the same delta until the next `HARD_ANCHOR` or the
+  closure. Invalid order, overlap or duration is rejected before any write.
+- **Roles:** `mc` and `dj_mc` expose the control. `dj_mc` is treated as MC for
+  this capability only.
+- **Apply:** immediate, no extra confirmation dialog; the existing Undo toast
+  can restore the previous time. Undo updates every timeline silently.
+- **Persistence:** every role derives the timeline from the same synced live
+  state, so reload, offline catch-up and cartridge reconciliation keep the
+  adjusted plan.
+- **Notification:** a non-blocking top banner shows the step title, old → new
+  time and author. It stays until dismissed on that device, and a newer change
+  replaces the visible banner. After dismissal only the timeline remains.
+- **Venue Manager changes:** the five confirmed mandatory fields from #1097
+  feed the same banner. The existing blocking popup stays MC-only, so DJ VIP
+  receives one notification instead of two.
+- **Backend:** `mc`, `dj_mc` and `venue_manager` may write the room's live state;
+  all other stage roles stay read-only and anon stays revoked.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master wide | Reschedule action on upcoming flexible rail cards; locked `(i)` on hard anchors |
+| MC Master compact | Same edit action and locked explanation |
+| MC current/history cards | No edit action |
+| DJ VIP / DJ Standard | Top banner after MC or Venue Manager changes |
+| Photographer 1 / Photographer 2 / Cameraman | Top banner after MC or Venue Manager changes |
+| Venue Manager | Timeline updates silently; existing confirmation flow unchanged |
+| Speaker | Timeline updates silently |
+| MC mandatory popup | Kept for Venue Manager mandatory changes; no schedule banner for the MC's own edit |
+| Admin / Song Request | No change |
+| Google Doc / schema / parser | No change |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Doc linkage | Not Doc-linked; runtime-only |
+| Step scope | Upcoming `FLEXIBLE` steps only |
+| Direction | Earlier or later, provided the new time is in the future |
+| Granularity | Hours and minutes |
+| Cascade | Shift following `FLEXIBLE` steps; stop at the next `HARD_ANCHOR`/closure |
+| Hard anchors | MC control disabled with an `(i)` explanation; Venue Manager path unchanged |
+| Mandatory obligations | Locked for the MC |
+| Roles | `mc` + `dj_mc` |
+| Apply flow | Immediate; existing Undo toast; silent undo |
+| Override lifetime | Survives cartridge re-publish unless the step disappears |
+| Notification audience | DJ VIP, DJ Standard, Photographer 1/2, Cameraman |
+| Silent views | Venue Manager and Speaker timelines update without a banner |
+| Notification persistence | Stays until dismissed; replaces the previous banner |
+| Notification content | Step title, old → new, author role |
+| After dismissal | Timeline only, no persistent chip |
+| Venue Manager changes | Confirmed mandatory fields use the same banner; popup stays MC-only |
+| Backend policy | Full room-write access for `mc`, `dj_mc` and `venue_manager` |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1104](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1104) | Pure reschedule helper, cascade, future validation, synced override metadata and undo | - |
+| 1 | [#1106](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1106) | RLS write policy for `mc`, `dj_mc` and `venue_manager` | - |
+| 2 | [#1103](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1103) | MC rail edit control, locked `(i)` affordance, time editor, i18n, tests | #1104 |
+| 3 | [#1102](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1102) | Dismissible top banner on DJ/media views; MC popup becomes MC-only | #1103, #1104 |
+| 4 | [#1105](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1105) | Venue Manager change metadata and banner emission for confirmed fields | #1102, #1106 |
+
+**Open questions.** None.
+
+**Tracking.** [#1102](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1102), [#1103](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1103), [#1104](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1104), [#1105](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1105), [#1106](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1106).
