@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
 describe('issue #332 dev and secondary mobile density', () => {
-  it('hides the dev switcher on phones and keeps it bounded on larger screens', () => {
+  it('keeps the collapsed dev chip available on phones and the panel bounded', () => {
     const source = read('src/components/DevViewSwitcher.jsx');
-    expect(source).toContain('hidden');
-    expect(source).toContain('sm:block');
-    expect(source).toContain('bottom-3');
+    expect(source).toContain('if (!previewEnabled) return null;');
+    expect(source).toContain('fixed left-3 top-3');
+    expect(source).toContain('sm:bottom-3');
     expect(source).toContain('max-h-[45dvh]');
     expect(source).toContain('overflow-y-auto');
     expect(source).toContain('grid-cols-2');

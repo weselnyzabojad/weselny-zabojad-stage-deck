@@ -33,6 +33,8 @@ describe('issue #211 development-only all-role switcher', () => {
       createElement(DevViewSwitcher, {
         currentRole: 'photo1',
         onChange: () => {},
+        previewEnabled: true,
+        defaultOpen: true,
       }),
     );
     expect(html).toContain('DEV VIEW SWITCHER');
