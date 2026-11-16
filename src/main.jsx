@@ -6,7 +6,7 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
-import { isLandingPath } from './lib/publicRoutes.js'
+import { isLandingPath, parseRecapToken } from './lib/publicRoutes.js'
 import { loadLocale, setLocale } from './i18n/index.js'
 import { initSentry } from './lib/sentry.js'
 
@@ -16,6 +16,7 @@ initSentry()
 const App = lazy(() => import('./App.jsx'))
 const AdminApp = lazy(() => import('./admin/AdminApp.jsx'))
 const SongRequestApp = lazy(() => import('./components/SongRequestApp.jsx'))
+const WeddingRecapPage = lazy(() => import('./components/WeddingRecapPage.jsx'))
 // Public marketing landing; kept in its own chunk so the deck entry stays lean.
 const LandingPage = lazy(() => import('./components/LandingPage.jsx'))
 const IS_LANDING =
@@ -35,6 +36,10 @@ const IS_ADMIN =
 const SONG_REQUEST_ROUTE =
   typeof window !== 'undefined'
     ? parseSongRequestPath(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
+    : null
+const RECAP_TOKEN =
+  typeof window !== 'undefined'
+    ? parseRecapToken(window.location.pathname, import.meta.env.BASE_URL)
     : null
 
 createRoot(document.getElementById('root')).render(
@@ -72,6 +77,16 @@ createRoot(document.getElementById('root')).render(
         >
           <SongRequestApp roomCode={SONG_REQUEST_ROUTE.roomCode} />
         </Suspense>
+      ) : RECAP_TOKEN ? (
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
+              Loading recap…
+            </div>
+          }
+        >
+          <WeddingRecapPage token={RECAP_TOKEN} />
+        </Suspense>
       ) : IS_ADMIN ? (
         <Suspense
           fallback={
@@ -94,6 +109,6 @@ createRoot(document.getElementById('root')).render(
         </Suspense>
       )}
     </AppErrorBoundary>
-    {IS_LANDING ? null : <PwaUpdatePrompt />}
+    {IS_LANDING || RECAP_TOKEN ? null : <PwaUpdatePrompt />}
   </StrictMode>,
 )
