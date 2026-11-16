@@ -44,6 +44,8 @@ const pl = {
   'roles.switchTitle': 'Zmień rolę tego urządzenia',
   'roles.menuAria': 'Zmień rolę urządzenia',
   'musician.availability': 'Moja dostepnosc',
+  'musician.endHour': 'Twoja godzina zakonczenia',
+  'musician.until': 'Dostepny do {time}',
   'musician.instrument': 'Instrument',
   'musician.window': 'Dostepnosc',
   'musician.ceremony': 'Ceremonia',
