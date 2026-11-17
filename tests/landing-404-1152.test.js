@@ -32,7 +32,7 @@ describe('landing-only branded 404 (part of #1152)', () => {
   });
 
   it('uses same-origin styling so the production CSP stays strict', () => {
-    expect(html).toContain('<link rel="stylesheet" href="404.css" />');
+    expect(html).toContain('<link rel="stylesheet" href="/404.css" />');
     expect(html).not.toContain('<style');
     expect(html).not.toContain('<script');
     expect(css).toContain('--night: #070b19');

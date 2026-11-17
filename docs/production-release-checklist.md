@@ -74,6 +74,43 @@ Verify in the Netlify dashboard (or authenticated Netlify MCP):
 - [ ] `https://deck.weselnyzabojad.pl/` returns 200, not a Netlify login redirect.
 - [ ] A deploy preview loads `/`, `/join`, `/admin` and `/request/:code` without console errors.
 
+## 3b. Landing-only release surface (#1152)
+
+Use this surface only for a release that must publish the marketing landing page
+and nothing else. The mechanism is build-time; no runtime route gate is
+involved, and the Netlify environment change is a separate release action.
+
+Enable, in the Netlify production context only:
+
+- `RELEASE_SURFACE=landing`
+- keep `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=production`
+  and `NODE_VERSION=22` unchanged.
+
+Verify locally before deploying:
+
+```sh
+RELEASE_SURFACE=landing npm run build
+npm run verify:landing-build
+npx vite preview --port 4173
+```
+
+- `/` and `/index.html` serve the landing page.
+- Every other route (`/join`, `/admin`, `/request/...`, `/recap/...`) serves
+  `404.html` with HTTP 404 and the Stage Deck branding.
+- The artifact contains no `App`, `AdminApp`, `SongRequestApp`,
+  `WeddingRecapPage` or `PwaUpdatePrompt` chunk and no `sw.js`,
+  `manifest.webmanifest` or `registerSW.js`.
+- The default build is unchanged: run `npm run build` without
+  `RELEASE_SURFACE` (or with `RELEASE_SURFACE=full`) and confirm `/join`,
+  `/admin` and `/request/:code` still work as today.
+
+An invalid value (for example `RELEASE_SURFACE=landing-only`) fails the build
+with an explicit message instead of publishing the deck.
+
+Restore the full release by removing `RELEASE_SURFACE` from the production
+context (or setting it to `full`) and redeploying. Rolling back the Netlify
+deploy also restores the previous surface.
+
 ## 4. Supabase configuration
 
 Verify names only; never paste values into GitHub.
