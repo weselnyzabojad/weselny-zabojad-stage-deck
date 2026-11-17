@@ -5,6 +5,7 @@ import CulturalRulesBar from './CulturalRulesBar';
 import GroupPhotoChecklist from './GroupPhotoChecklist';
 import MiniSessionTwinTask from './MiniSessionTwinTask';
 import useCompact from '../hooks/useCompact';
+import { useReadReceipt } from '../hooks/useReadReceipt';
 import { useI18n } from '../i18n/useI18n';
 import OczepinyCueCard from './OczepinyCueCard';
 import RoleShell from './RoleShell';
@@ -232,6 +233,8 @@ export default function PhotographerView({
   remoteUpdatedAt,
   outbox = null,
   flash = null,
+  receiptTarget = null,
+  receiptClient = null,
   role,
   roles,
   onRoleChange,
@@ -253,6 +256,12 @@ export default function PhotographerView({
   scheduleBanner = null,
 }) {
   const { t } = useI18n();
+  useReadReceipt({
+    stepId: receiptTarget?.stepId,
+    revision: receiptTarget?.revision,
+    enabled: Boolean(receiptTarget && receiptClient),
+    client: receiptClient,
+  });
   const now = clock?.now instanceof Date ? clock.now : FALLBACK_NOW;
   const eventDateISO = resolveEventDateISO(wedding);
   const timeZone = resolveVenueTimeZone(wedding);

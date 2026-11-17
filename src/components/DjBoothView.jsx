@@ -12,6 +12,7 @@ import MusicianPreferredMusic from './MusicianPreferredMusic';
 import useMusicianSuggestions from '../hooks/useMusicianSuggestions';
 import MusicalSetBar from './MusicalSetBar';
 import useCompact from '../hooks/useCompact';
+import { useReadReceipt } from '../hooks/useReadReceipt';
 import OczepinyCueCard from './OczepinyCueCard';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import RoleShell from './RoleShell';
@@ -85,6 +86,8 @@ export default function DjBoothView({
   remoteUpdatedAt,
   outbox = null,
   flash = null,
+  receiptTarget = null,
+  receiptClient = null,
   role,
   roles,
   onRoleChange,
@@ -109,6 +112,12 @@ export default function DjBoothView({
   scheduleBanner = null,
 }) {
   const { t } = useI18n();
+  useReadReceipt({
+    stepId: receiptTarget?.stepId,
+    revision: receiptTarget?.revision,
+    enabled: Boolean(receiptTarget && receiptClient),
+    client: receiptClient,
+  });
   const activeIndex = timeline.findIndex((entry) => entry.isActive);
   const activeEntry = activeIndex >= 0 ? timeline[activeIndex] : null;
   const nextEntry =
