@@ -21,7 +21,7 @@ describe('issue #335 mobile 3D current-step card', () => {
 
   it('keeps the shared wrapper on every role focus stack', () => {
     const stack = read('src/components/TimelineFocusStack.jsx');
-    expect(stack).toContain('<CurrentStepTilt>');
+    expect(stack).toContain('<CurrentStepTilt');
     expect(stack).toContain('entry={stack.current}');
   });
 });

@@ -22,7 +22,7 @@ function finePointer() {
 
 // Lightweight pointer-driven tilt for the current step. CSS variables are
 // updated inside requestAnimationFrame so React never re-renders on pointer move.
-export default function CurrentStepTilt({ children }) {
+export default function CurrentStepTilt({ children, className = '' }) {
   const rootRef = useRef(null);
   const frameRef = useRef(0);
 
@@ -62,7 +62,7 @@ export default function CurrentStepTilt({ children }) {
     <div
       ref={rootRef}
       data-current-step-tilt
-      className="current-step-tilt transform-gpu"
+      className={`current-step-tilt transform-gpu ${className}`.trim()}
       onPointerMove={onPointerMove}
       onPointerLeave={reset}
       onPointerCancel={reset}
