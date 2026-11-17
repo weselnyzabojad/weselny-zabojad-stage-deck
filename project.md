@@ -8960,3 +8960,91 @@ Rules:
   assigned to the `Release-1.2` milestone.
 
 **Tracking.** GitHub milestone #6 and the `release-1.2` label.
+
+### 17.113 Blacklist Shield for guest song requests (decision, 2026-11-17)
+
+**Goal.**
+
+Protect the DJ pending queue from kitsch requests without an aggressive error
+screen. The couple lists red flags in a new `## BLACKLIST` Google Doc section;
+the published cartridge carries them, a dedicated guest endpoint exposes only the
+merged keywords, the guest form blocks a match before the network call, and the
+song-request Edge Function rejects a bypassed submission without consuming the
+cooldown.
+
+**Feature blocks.**
+
+- **F1 - v1.2 Doc/schema contract.** Minimal `WeddingSchema v1.2` adding
+  `musicPolicy.blacklistKeywords`, a stable `## BLACKLIST` table, template,
+  field map, parser and fixtures, with v1.1 cartridges and Docs still valid.
+- **F2 - Enforcement.** New `get_song_request_config` public room-scoped endpoint
+  and a `song_blacklisted` rejection in `submit_song_request`, using
+  `blacklistKeywords` plus `doNotPlay` with normalized substring matching.
+- **F3 - Guest UX.** Extract `GuestSongRequestForm` from `SongRequestApp`, load
+  the list on mount, block on submit and show a calm localized rejection with a
+  "Try again" action that restores the entered values.
+- **F4 - Admin read-only panel.** `BlacklistSettings` shows the published
+  keywords and do-not-play tracks, with no editing controls; the Doc remains the
+  only source.
+
+**Release target.** Release-1.2 only (milestone `Release-1.2`, label
+`release-1.2`). Not required for the first release.
+
+**Google Doc contract.**
+
+- New `## BLACKLIST` section, table `| Keyword |`, one row per red flag; missing
+  section means an empty list.
+- `musicPolicy.blacklistKeywords`: optional string array, 1–60 chars per entry,
+  max 50, trimmed and case-insensitively unique.
+- `schema/wedding-schema-v1.2.json` is v1.1 plus this field; `schemaVersion`
+  accepts `"1.1"` and `"1.2"`. The v1.1 schema file stays untouched.
+- Field map adds `musicPolicy.blacklistKeywords[]`; parser, template and
+  conventions are updated; v1.1 fixtures and Docs remain valid.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Wedding Google Doc | New `## BLACKLIST` table, managed by the couple |
+| Admin wedding detail | Read-only badges for blacklist + do-not-play, Doc source note, empty state |
+| Guest request page | List loaded on mount; instant elegant rejection; retry restores values |
+| `get_song_request_config` | Returns only the merged keyword array for a live room |
+| `submit_song_request` | Rejects blocked songs with `song_blacklisted`, no row and no cooldown consumption |
+| MC / DJ / Speaker / Venue / Musician | Unchanged; no new MC Settings screen |
+| First-release schema v1.1 | Unchanged and still accepted |
+
+**Out of scope.** Any `blacklist_keywords` column on `weddings`, admin editing of
+the list, filtering historical requests or musician suggestions, changing the
+10-minute cooldown, and full v1.2 renames/migrations.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Source of truth | Wedding Google Doc via the published cartridge |
+| Schema | Minimal v1.2 + v1.1 back-compatibility |
+| Template | One evolving template moved to v1.2; parser tolerates the missing section |
+| Doc format | `## BLACKLIST` + `| Keyword |` table |
+| Effective list | `blacklistKeywords` + `doNotPlay` track strings, merged server-side |
+| Guest transport | Dedicated `get_song_request_config`, room-scoped, no wedding data |
+| Enforcement | Frontend for instant UX, Edge Function as the authority |
+| Matching | Lowercase/diacritics/punctuation normalized substring on song + artist |
+| Guest UX | Form replaced by a calm localized panel; retry keeps the values |
+| Admin UI | Read-only summary only; no second edit surface |
+| Copy | FR + approved PL/EN translations |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1175](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1175) | v1.2 schema, BLACKLIST template, field map, parser, fixtures, back-compat | - |
+| 2 | [#1176](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1176) | Guest config endpoint, server rejection, client fetch | #1175 |
+| 3 | [#1177](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1177) | `GuestSongRequestForm` extraction, matcher, rejection UX, i18n | #1176 |
+| 4 | [#1178](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1178) | Read-only `BlacklistSettings` in the admin wedding detail | #1175 |
+
+**Open questions.** None.
+
+**Tracking.** [#1175](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1175),
+[#1176](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1176),
+[#1177](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1177),
+[#1178](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1178).
