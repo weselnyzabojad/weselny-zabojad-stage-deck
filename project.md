@@ -8722,3 +8722,76 @@ and view wiring.
 
 **Tracking.** [#1156](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1156),
 [#1157](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1157).
+
+### 17.109 Role read receipts on the current-step card (decision, 2026-11-17)
+
+**Goal.**
+
+Show the MC, at a glance, which providers have seen the latest critical schedule
+change. A compact row of four role badges (DJ, MUSICIAN, PHOTO, SALLE) sits on
+the MC current-step card, neutral by default, amber while unread and green for 5 s
+when a live acknowledgement arrives. The row is additive: the vendor bars, the
+set-notes notepad and every existing alert stay exactly as they are.
+
+**Feature blocks.**
+
+- **F1 - Backend contract.** New `stage_step_receipts` table, security-definer
+  `stage_deck_ack_step` / `stage_deck_step_receipts` / `stage_deck_role_presence`
+  RPCs, RLS and Realtime publication, plus the sync client methods. Also fixes the
+  outdated `role_presence.role` constraint that rejects `dj_mc` and `musician`.
+- **F2 - Provider acknowledgement.** `useReadReceipt` marks the revision as seen
+  on visibility or first interaction, once per revision, best-effort retry.
+- **F3 - MC badges.** `RolePresenceBadge`, an MC-only row in both MC layouts, five
+  new localized states, unread/confirmed/offline presentation and degradation.
+
+**Google Doc contract.** Not Doc-linked. Receipts are runtime presence data
+derived from `liveState.media_overrides.steps.change`; no schema, parser,
+field-map, template or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master (compact and wide) | Badge row as first element of the current-card footer |
+| DJ Booth / DJ VIP / DJ+MC | Acknowledges only; no badge row |
+| Photographer / Video | Acknowledges only; PHOTO group covers `photo1`, `photo2`, `video` |
+| Venue Manager | Acknowledges only; badge label SALLE |
+| Musician | Acknowledges only |
+| Speaker | Out - read-only teleprompter, no current-step card |
+| Song request, landing, admin, recap, 404 | Out |
+| `ActiveVendorsBar`, `EndHoursCard`, `DjSetNotesNotepad` | Unchanged; badges are added above them |
+
+**Out of scope.** Replacing the vendor bars or the old end-hour lane (removed in
+#1084), showing badges outside MC Master, per-device (rather than per-group)
+badges, receipt history/audit, offline queueing, and any change to
+`live_sync_state` or the Silent Flash mechanics.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Receipt key | `(step_id, revision)` where revision is `change.at`; every reschedule is new |
+| Reschedule scope | The latest reschedule counts even for a future step; the row names the step |
+| Read trigger | Screen visible or first local interaction, automatic, no tap required |
+| Role groups | DJ = `dj`/`dj_mc`; PHOTO = `photo1`/`photo2`/`video`; MUSICIAN; SALLE = `venue_manager` |
+| Multi-device | First device of a group wins |
+| MC badge | None - the MC is the author and never acknowledges |
+| Display | MC Master only |
+| Green state | 5 s after a live acknowledgement, then neutral |
+| Online state | `role_presence`, exposed to the MC through a read-only RPC; stale after 120 s |
+| Degradation | Sync off/offline/error renders neutral, never false unread |
+
+**Task split.** Three ordered issues: transport, device acknowledgement, then the
+MC display.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1159](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1159) | Migration, table, RPCs, RLS, Realtime, presence constraint fix, client methods, tests | - |
+| 2 | [#1158](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1158) | `useReadReceipt`, `readReceipts.js` helpers, `StageDeck` target, wiring in 4 views, tests | #1159 |
+| 3 | [#1160](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1160) | `RolePresenceBadge`, MC row in both layouts, i18n, transient green, degradation, tests | #1159, #1158 |
+
+**Open questions.** None.
+
+**Tracking.** [#1159](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1159),
+[#1158](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1158),
+[#1160](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1160).
