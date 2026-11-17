@@ -9201,3 +9201,73 @@ and any Lucide/Heroicons dependency.
 [#1184](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1184),
 [#1185](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1185),
 [#1186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1186).
+
+### 17.116 MC QA dry-run timeline simulator (decision, 2026-11-17)
+
+**Goal.**
+
+Let the MC rehearse the planned timeline before the wedding at accelerated
+speed and read a test-runner report of logistic defects: infeasible anchors or
+closure, crew members without a meal window, and speeches without a speaker.
+The run is session-only, uses the already-loaded cartridge and never changes the
+timeline.
+
+**Feature blocks.**
+
+- **F1 - Validator engine.** Pure `timelineValidator` mapping the real model:
+  derived durations, `HARD_ANCHOR` targets, closure time, media crew windows +
+  vendor meals, speech records. Deterministic PASS/WARN/FAIL findings with a
+  simulated timestamp.
+- **F2 - Simulation controller.** `useQaDryRun` with one interval, virtual clock,
+  progress, x10/x60/x120 speeds and findings streamed at their timestamps.
+- **F3 - MC panel.** `QADryRunSimulator` test-runner UI with controls, progress,
+  simulated clock and a black terminal with coloured `[PASS]`/`[WARN]`/`[FAIL]`
+  lines, opened from the MC view only.
+
+**Release target.** Release-1.2 only (milestone `Release-1.2`, label
+`release-1.2`). Not required for the first release.
+
+**Google Doc contract.** Not Doc-linked. No new `targetTime`/`durationMin`
+field, no schema, template, parser or field-map change. The simulator consumes
+the loaded cartridge and `extensions.kitchen.vendorMeals`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master | QA control opens the simulator panel; reports stay in session |
+| Other role views | No simulator, no data change |
+| Timeline, anchors, drift, live state | Read-only; never mutated |
+| Admin, landing, guest | Unchanged |
+| Google Doc/schema/parser | Unchanged |
+
+**Out of scope.** Persisted reports/history, admin access, Supabase refetch,
+editing/rescheduling, adding target/duration fields, and terminal/desktop
+integrations.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Data source | Reuse the loaded cartridge |
+| Target rule | `HARD_ANCHOR` times + mandatory closure; durations derived |
+| Meal rule | `extensions.kitchen.vendorMeals` matched by role/name; WARN when absent or outside the window |
+| Speech rule | `speeches` records: missing `speaker.name` FAIL, missing `script.ready` WARN |
+| Users | MC only |
+| Reports | Session-only, discarded on close |
+| Speeds | x10/x60/x120 simulated minutes per real second |
+| Terminal | Intentionally black; codes fixed, messages localized |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1187) | Pure validator rules and findings, tests | - |
+| 2 | [#1188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1188) | Simulation hook, clock, speeds, streaming, tests | #1187 |
+| 3 | [#1189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1189) | MC simulator panel, terminal, i18n, integration, tests | #1188 |
+
+**Open questions.** None.
+
+**Tracking.** [#1187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1187),
+[#1188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1188),
+[#1189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1189).
