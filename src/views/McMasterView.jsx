@@ -9,7 +9,7 @@ import { useId, useState } from 'react';
 import CakeCard from '../components/CakeCard';
 import { ceremonySubStepBodies } from '../components/ceremonySubStepBodies';
 import DjSongRequestQueue from '../components/DjSongRequestQueue';
-import ModalShell from '../components/ModalShell';
+import RoleReadReceiptsRow from '../components/RoleReadReceiptsRow';import ModalShell from '../components/ModalShell';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -204,6 +204,8 @@ export default function McMasterView({ model }) {
   djMcRoomCode = null,
   musicPolicy,
   silentFlash = null,
+  receiptTarget = null,
+  receiptClient = null,
   viewSwitch,
   roomCode,
   theme,
@@ -410,6 +412,7 @@ export default function McMasterView({ model }) {
           entryActions={rescheduleActions}
           entryBodies={ceremonySubStepBodies(railEntries)}
           flash={silentFlash}
+          currentFooter={<RoleReadReceiptsRow target={receiptTarget} client={receiptClient} />}
         />
       ) : null}
 
@@ -669,6 +672,7 @@ export default function McMasterView({ model }) {
             entryActions={rescheduleActions}
             entryBodies={ceremonySubStepBodies(railEntries)}
             flash={silentFlash}
+            currentFooter={<RoleReadReceiptsRow target={receiptTarget} client={receiptClient} />}
           />
 
           {speechMode !== 'OFF' && speeches?.length > 0 ? (

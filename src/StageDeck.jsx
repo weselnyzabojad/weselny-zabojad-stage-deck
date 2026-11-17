@@ -873,6 +873,8 @@ export default function StageDeck({
     outbox,
     remoteUpdatedAt,
     silentFlash,
+    receiptTarget,
+    receiptClient,
     currentStep,
     stepTypeClass,
     showDjCues,

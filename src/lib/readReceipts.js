@@ -53,3 +53,32 @@ export function shouldAck({
   if (ackedKey === key || inFlight) return false;
   return true;
 }
+
+// Groups with at least one receipt row (first device of a group wins).
+export function readReceiptGroups(receipts = []) {
+  const groups = new Set();
+  for (const row of Array.isArray(receipts) ? receipts : []) {
+    const group = receiptRoleGroup(row?.role);
+    if (group) groups.add(group);
+  }
+  return groups;
+}
+
+// Presence rows are raw roles; a group is online when any of its devices has an
+// `online` heartbeat fresher than two minutes (the heartbeat runs every 60 s).
+export const PRESENCE_FRESH_MS = 120000;
+
+export function onlineReceiptGroups(
+  presence = [],
+  { now = Date.now(), freshMs = PRESENCE_FRESH_MS } = {},
+) {
+  const groups = new Set();
+  for (const row of Array.isArray(presence) ? presence : []) {
+    if (row?.status !== 'online') continue;
+    const seenAt = Date.parse(row.last_seen ?? '');
+    if (!Number.isFinite(seenAt) || now - seenAt > freshMs) continue;
+    const group = receiptRoleGroup(row.role);
+    if (group) groups.add(group);
+  }
+  return groups;
+}
