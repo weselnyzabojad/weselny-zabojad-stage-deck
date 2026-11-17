@@ -9304,3 +9304,67 @@ Rules:
 or `Wedding-Planner`. This batch therefore remains release-1 only.
 
 **Tracking.** GitHub milestones #7 and #8; labels `backlog` and `wplanner`.
+
+### 17.118 MC post-mortem timing analytics (decision, 2026-11-17)
+
+**Goal.**
+
+Let the MC compare every planned step with the actual run after the wedding and
+spot recurring bottlenecks (late main course, missing actual starts, overall
+lateness). The dashboard reads the already-loaded live state, shares its delta
+logic with the existing recap page and is available only once the event is
+complete.
+
+**Feature blocks.**
+
+- **F1 - Shared analytics helper.** `timingAnalytics` computes delta (HH:MM and
+  ISO, cross-midnight), planned/actual durations, statuses (`on-time`, `late`,
+  `early`, `missing`) and a summary; `WeddingRecapPage` adopts the same
+  delta/status logic. Regression tests prove Next Step already stores ISO
+  timestamps in `liveSyncState.actual_timestamps`.
+- **F2 - MC dashboard.** `PostMortemAnalytics` with a summary, Tailwind
+  planned/actual bars on a percentage axis, delta badges and an empty state,
+  opened from the MC menu only after the event is complete.
+
+**Release target.** **First release.** No milestone, no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No schema, table, column, parser,
+template or field-map change; actual timestamps already live in the synced live
+state.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master | Post-event control + dashboard, only when complete |
+| Wedding recap page | Uses the shared delta/status helper; no visual regression |
+| Live state / Next Step | Read-only for the dashboard; timestamp behaviour covered by tests |
+| DJ, Photo, Video, Venue, Speaker, Musician, guest | Unchanged |
+| Admin, schema, Doc | Unchanged |
+
+**Out of scope.** New backend tables, persisted cross-wedding history, changing
+Next Step, editing past steps, Recharts, and non-MC access.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Data source | Local `liveSyncState.actual_timestamps` + loaded cartridge |
+| Delta | Shared helper; HH:MM/ISO, cross-midnight aware |
+| Thresholds | ±5 min green; > +5 red; < −5 blue; no actual = neutral missing |
+| Duration | Planned from derived step durations; actual from next actual/closure |
+| Availability | Post-event only, MC only |
+| Visualization | Tailwind percentage bars, no chart dependency |
+| Recap | Shares the delta/status helper |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1190) | Shared timing helper, timestamp regression tests, recap adoption | - |
+| 2 | [#1191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1191) | MC post-event dashboard, bars, badges, gating, i18n, tests | #1190 |
+
+**Open questions.** None.
+
+**Tracking.** [#1190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1190),
+[#1191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1191).
