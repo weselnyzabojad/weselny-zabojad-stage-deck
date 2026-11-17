@@ -132,6 +132,71 @@ function AcceptedCard({ request, leaving, busy, locale, onPlayed }) {
   );
 }
 
+// One tab of the moderation panel. Exported so the pending/accepted rendering
+// can be tested without opening the modal; the panel is the only production
+// consumer (issue #1161).
+export function SongRequestModerationList({
+  requests = [],
+  tab = 'pending',
+  loading = false,
+  leavingIds = new Set(),
+  updatingId = null,
+  onAccept = () => {},
+  onDecline = () => {},
+  onPlayed = () => {},
+}) {
+  const { t, locale } = useI18n();
+  const { pending, accepted } = partitionSongRequests(requests);
+  const upNext = accepted.filter((request) => !request.playedAt);
+
+  if (tab === 'pending') {
+    if (pending.length === 0) {
+      return (
+        <p className="rounded-lg border border-line bg-raised/60 px-3 py-4 text-center text-[11px] text-muted">
+          {loading ? t('dj.requests.loadingHint') : t('dj.requests.noPending')}
+        </p>
+      );
+    }
+    return (
+      <ul className="space-y-2">
+        {pending.map((request) => (
+          <RequestCard
+            key={request.id}
+            request={request}
+            leaving={leavingIds.has(request.id)}
+            busy={updatingId === request.id}
+            locale={locale}
+            onAccept={onAccept}
+            onDecline={onDecline}
+          />
+        ))}
+      </ul>
+    );
+  }
+
+  if (upNext.length === 0) {
+    return (
+      <p className="rounded-lg border border-line bg-raised/60 px-3 py-4 text-center text-[11px] text-muted">
+        {t('dj.requests.noAccepted')}
+      </p>
+    );
+  }
+  return (
+    <ul className="space-y-2">
+      {upNext.map((request) => (
+        <AcceptedCard
+          key={request.id}
+          request={request}
+          leaving={leavingIds.has(request.id)}
+          busy={updatingId === request.id}
+          locale={locale}
+          onPlayed={onPlayed}
+        />
+      ))}
+    </ul>
+  );
+}
+
 // VIP desktop queue. The parent renders it only in the VIP DJ layout; Standard
 // and pocket never mount it. The always-visible bar is a summary; moderation
 // happens in the panel so the booth view stays free of inline actions.
@@ -144,7 +209,7 @@ export default function DjSongRequestQueue({
   showDiscoPoloBadge = true,
 }) {
   const config = useMemo(() => getSyncConfig(), []);
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const connected = Boolean(
     enabled && canModerateSongRequests(role) && config.enabled && accessToken,
   );
@@ -397,47 +462,6 @@ export default function DjSongRequestQueue({
     setTab((current) => (current === 'pending' ? 'accepted' : 'pending'));
   };
 
-  const pendingList =
-    pending.length === 0 ? (
-      <p className="rounded-lg border border-line bg-raised/60 px-3 py-4 text-center text-[11px] text-muted">
-        {loading ? t('dj.requests.loadingHint') : t('dj.requests.noPending')}
-      </p>
-    ) : (
-      <ul className="space-y-2">
-        {pending.map((request) => (
-          <RequestCard
-            key={request.id}
-            request={request}
-            leaving={leavingIds.has(request.id)}
-            busy={updatingId === request.id}
-            locale={locale}
-            onAccept={(id) => decide(id, 'accepted')}
-            onDecline={(id) => decide(id, 'declined')}
-          />
-        ))}
-      </ul>
-    );
-
-  const acceptedList =
-    upNext.length === 0 ? (
-      <p className="rounded-lg border border-line bg-raised/60 px-3 py-4 text-center text-[11px] text-muted">
-        {t('dj.requests.noAccepted')}
-      </p>
-    ) : (
-      <ul className="space-y-2">
-        {upNext.map((request) => (
-          <AcceptedCard
-            key={request.id}
-            request={request}
-            leaving={leavingIds.has(request.id)}
-            busy={updatingId === request.id}
-            locale={locale}
-            onPlayed={playAndLeave}
-          />
-        ))}
-      </ul>
-    );
-
   const panel = (
     <ModalShell
       open={panelOpen}
@@ -498,7 +522,25 @@ export default function DjSongRequestQueue({
           aria-labelledby={`song-request-tab-${tab}`}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3 pb-[calc(1rem+env(safe-area-inset-bottom))]"
         >
-          {tab === 'pending' ? pendingList : acceptedList}
+          {tab === 'pending' ? (
+            <SongRequestModerationList
+              requests={requests}
+              tab="pending"
+              loading={loading}
+              leavingIds={leavingIds}
+              updatingId={updatingId}
+              onAccept={(id) => decide(id, 'accepted')}
+              onDecline={(id) => decide(id, 'declined')}
+            />
+          ) : (
+            <SongRequestModerationList
+              requests={requests}
+              tab="accepted"
+              leavingIds={leavingIds}
+              updatingId={updatingId}
+              onPlayed={playAndLeave}
+            />
+          )}
         </div>
       </div>
     </ModalShell>
