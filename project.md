@@ -9271,3 +9271,36 @@ integrations.
 **Tracking.** [#1187](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1187),
 [#1188](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1188),
 [#1189](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1189).
+
+### 17.117 Backlog and Wedding-Planner classification (decision, 2026-11-17)
+
+**Goal.**
+
+Add two explicit buckets beyond the release milestones so ideas can be parked
+(Backlog) or grouped by workstream (Wedding-Planner) without being picked up by
+the automatic release-1 implementation batch.
+
+**Taxonomy.**
+
+| Mechanism | Value | Purpose |
+| --- | --- | --- |
+| Milestone | `Backlog` (GitHub #7) | Deferred ideas/features without a scheduled release |
+| Label | `backlog` (`#6E7781`) | Same at issue level |
+| Milestone | `Wedding-Planner` (GitHub #8) | Wedding planner workstream |
+| Label | `wplanner` (`#0E8A16`) | Same at issue level |
+
+Rules:
+
+- A Backlog item carries `Backlog` + `backlog`; it is not scheduled and must be
+  re-scoped into a release milestone before implementation.
+- A Wedding-Planner item carries `Wedding-Planner` + `wplanner`; it is delivered
+  by an explicit workstream run, not by the automatic release-1 batch.
+- Neither bucket may be a dependency of a first-release issue.
+- `Release-1.2` keeps its own milestone and label; an item may additionally be
+  labeled `wplanner` when it belongs to that workstream.
+
+**Batch exclusion.** The `implement-issues` skill skips any issue labeled
+`release-1.2`, `backlog` or `wplanner`, or assigned to `Release-1.2`, `Backlog`
+or `Wedding-Planner`. This batch therefore remains release-1 only.
+
+**Tracking.** GitHub milestones #7 and #8; labels `backlog` and `wplanner`.
