@@ -9625,3 +9625,65 @@ switch, and Doc/schema changes.
 **Tracking.** [#1200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1200),
 [#1201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1201),
 [#1202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1202).
+
+### 17.123 Vendor Handshake J-7 introduction email (decision, 2026-11-17)
+
+**Goal.**
+
+Automatically introduce the technical team (MC, DJ, Photo, Venue…) to each other
+seven days before the wedding and give each selected provider the access basics
+(join URL + room code, never a PIN), reducing the usual PDF/WhatsApp dispersion.
+
+**Feature blocks.**
+
+- **F1 - Recipients and admin panel.** `vendor_handshake_recipients` table,
+  admin CRUD with locale/active state, localized preview of the email.
+- **F2 - Delivery.** Resend Edge Function with localized templates, per-recipient
+  status, test send and manual resend, no PIN/contact leakage.
+- **F3 - J-7 scheduler.** Supabase daily cron, due calculation in the wedding
+  timezone, idempotency, retries and per-wedding automatic toggle.
+
+**Release target.** **Release-1.2.** Milestone `Release-1.2`, label
+`release-1.2`. Not required for the first release.
+
+**Google Doc contract.** Not Doc-linked. Recipients are admin-managed; no
+template, schema, parser or field-map change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | Recipient list, locale, preview, test/resend, automatic toggle |
+| Email recipients | Localized intro, team names/roles, join URL + room code (no PIN) |
+| Supabase cron | Daily due check, idempotent delivery, retries |
+| Vendor/team directory, guest, stage views | Unchanged |
+
+**Out of scope.** Sharing phone/email between vendors, PIN delivery by email,
+marketing campaigns/open analytics, and Google Doc/schema changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Provider | Resend |
+| Scheduler | Supabase daily cron |
+| Recipients | Explicit admin-managed table (MC/custom allowed) |
+| Intro content | Names + roles only, no private contacts |
+| Access | Join URL + room code, never a PIN |
+| Language | Per-recipient PL/FR/EN, PL default |
+| Delivery | Idempotent, per-recipient status, retry on failure |
+| Resend | Manual test/resend; no duplicate automatic sends |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1203) | Recipients table, admin API/panel, preview/templates, tests | - |
+| 2 | [#1204](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1204) | Resend delivery, status/test/resend, no-PIN invariant, tests | #1203 |
+| 3 | [#1205](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1205) | J-7 cron, idempotency, retries, deploy docs, tests | #1204 |
+
+**Open questions.** None.
+
+**Tracking.** [#1203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1203),
+[#1204](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1204),
+[#1205](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1205).
