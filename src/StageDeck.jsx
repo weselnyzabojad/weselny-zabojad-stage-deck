@@ -21,6 +21,9 @@ import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
 import { getDeviceId } from './lib/deviceId';
 import { buildSilentFlash } from './lib/silentFlash';
+import { latestRescheduleTarget } from './lib/readReceipts';
+import { createSupabaseSyncClient } from './lib/sync/supabaseSyncClient';
+import { getSyncConfig } from './lib/sync/syncConfig';
 import { availableRoleIds, isMediaRole } from './lib/roles';
 import { djDetailTier } from './lib/importantSongs';
 import {
@@ -161,6 +164,15 @@ export default function StageDeck({
       }),
     [liveState.media_overrides?.steps],
   );
+  // Read receipts (#1158): provider devices acknowledge the latest reschedule.
+  // Paired production devices only; local/demo and previews never ack.
+  const receiptClient = useMemo(() => {
+    const syncConfig = getSyncConfig();
+    if (!syncConfig.enabled || !sessionValid || !roleSession?.token) return null;
+    return createSupabaseSyncClient(syncConfig, { accessToken: roleSession.token });
+  }, [sessionValid, roleSession]);
+  // Cheap pure derivation: no memo, so the lint dependency stays exact.
+  const receiptTarget = latestRescheduleTarget(liveState);
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
@@ -649,6 +661,8 @@ export default function StageDeck({
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             flash={silentFlash}
+            receiptTarget={receiptTarget}
+            receiptClient={receiptClient}
             servicePackage={djViewWedding.servicePackage}
             role="dj"
             theme={theme}
@@ -696,6 +710,8 @@ export default function StageDeck({
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             flash={silentFlash}
+            receiptTarget={receiptTarget}
+            receiptClient={receiptClient}
             theme={theme}
             onToggleTheme={toggleTheme}
             roomCode={deckIntent.roomCode}
@@ -739,6 +755,8 @@ export default function StageDeck({
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             flash={silentFlash}
+            receiptTarget={receiptTarget}
+            receiptClient={receiptClient}
             theme={theme}
             onToggleTheme={toggleTheme}
             speechMode={speechMode}
@@ -775,6 +793,8 @@ export default function StageDeck({
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
             flash={silentFlash}
+            receiptTarget={receiptTarget}
+            receiptClient={receiptClient}
             theme={theme}
             onToggleTheme={toggleTheme}
             musicianId={roleSession?.musicianId ?? deckIntent.musicianId ?? null}

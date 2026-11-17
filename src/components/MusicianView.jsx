@@ -16,6 +16,7 @@ import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import SkipLink from './SkipLink';
 import { useI18n } from '../i18n/useI18n';
+import { useReadReceipt } from '../hooks/useReadReceipt';
 import useCompact from '../hooks/useCompact';
 import useMusicianSuggestions from '../hooks/useMusicianSuggestions';
 import { instrumentLabel } from '../lib/instruments.js';
@@ -40,6 +41,8 @@ export default function MusicianView({
   remoteUpdatedAt,
   outbox = null,
   flash = null,
+  receiptTarget = null,
+  receiptClient = null,
   theme = 'night',
   onToggleTheme,
   musicianId = null,
@@ -48,6 +51,12 @@ export default function MusicianView({
   pin = null,
 }) {
   const { t, locale } = useI18n();
+  useReadReceipt({
+    stepId: receiptTarget?.stepId,
+    revision: receiptTarget?.revision,
+    enabled: Boolean(receiptTarget && receiptClient),
+    client: receiptClient,
+  });
   const musicians = Array.isArray(wedding?.musicians?.items) ? wedding.musicians.items : [];
   const musician = musicians.find((item) => item.id === musicianId) ?? null;
   const activeIndex = timeline.findIndex((entry) => entry.isActive);

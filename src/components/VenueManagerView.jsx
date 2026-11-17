@@ -18,6 +18,7 @@ import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
 import SpeechSummaryChip from './SpeechSummaryChip';
 import { useI18n } from '../i18n/useI18n';
+import { useReadReceipt } from '../hooks/useReadReceipt';
 import useCompact from '../hooks/useCompact';
 import {
   applyMandatorySettings,
@@ -118,6 +119,8 @@ export default function VenueManagerView({
   remoteUpdatedAt,
   outbox = null,
   flash = null,
+  receiptTarget = null,
+  receiptClient = null,
   theme = 'night',
   onToggleTheme,
   pin = null,
@@ -128,6 +131,12 @@ export default function VenueManagerView({
   mandatoryOverride = null,
 }) {
   const { t } = useI18n();
+  useReadReceipt({
+    stepId: receiptTarget?.stepId,
+    revision: receiptTarget?.revision,
+    enabled: Boolean(receiptTarget && receiptClient),
+    client: receiptClient,
+  });
   const [settings, setSettings] = useState(() =>
     settingsFromSteps(loadSteps(wedding, mandatoryOverride)),
   );
