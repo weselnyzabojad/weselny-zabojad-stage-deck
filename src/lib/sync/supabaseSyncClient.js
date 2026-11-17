@@ -84,6 +84,69 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data;
   }
 
+  // Read receipts (issue #1159). The RPC derives wedding/role/device from the
+  // signed role token, so the ack payload only names the step and revision.
+  async function ackStepReceipt({ stepId, revision } = {}) {
+    if (!stepId || !revision) throw new Error('Step and revision are required.');
+    const { error } = await supabase.rpc('stage_deck_ack_step', {
+      p_step_id: stepId,
+      p_revision: revision,
+    });
+    if (error) throw new Error(describeError(error));
+  }
+
+  async function fetchStepReceipts({ stepId, revision } = {}) {
+    if (!stepId || !revision) return [];
+    const { data, error } = await supabase.rpc('stage_deck_step_receipts', {
+      p_step_id: stepId,
+      p_revision: revision,
+    });
+    if (error) throw new Error(describeError(error));
+    return Array.isArray(data) ? data : [];
+  }
+
+  // INSERT hints only: the consumer refetches or merges the row. `revision` is
+  // compared after parsing because Postgres renders timestamptz differently
+  // from the ISO string carried by the live-state payload.
+  function subscribeStepReceipts({ stepId, revision, onChange, onStatus } = {}) {
+    if (!stepId) return () => {};
+    const channel = supabase
+      .channel(`wzsd:step-receipts:${stepId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'stage_step_receipts',
+          filter: `step_id=eq.${stepId}`,
+        },
+        (payload) => {
+          const row = payload?.new;
+          if (!row || row.step_id !== stepId) return;
+          if (revision && Date.parse(row.revision) !== Date.parse(revision)) return;
+          onChange?.(row);
+        },
+      )
+      .subscribe((status, error) => {
+        if (status === 'SUBSCRIBED') onStatus?.('connected');
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          onStatus?.('error', describeError(error));
+        } else if (status === 'CLOSED') {
+          onStatus?.('disconnected');
+        }
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }
+
+  async function fetchRolePresence() {
+    const { data, error } = await supabase.rpc('stage_deck_role_presence');
+    if (error) throw new Error(describeError(error));
+    return Array.isArray(data) ? data : [];
+  }
+
   async function publish(roomKey, state) {
     const { error } = await supabase.from(config.table).upsert(
       {
@@ -274,6 +337,10 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     fetchWedding,
     fetchServerTime,
     touchPresence,
+    ackStepReceipt,
+    fetchStepReceipts,
+    subscribeStepReceipts,
+    fetchRolePresence,
     publish,
     subscribe,
     subscribeWedding,
