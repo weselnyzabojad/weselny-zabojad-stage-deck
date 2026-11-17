@@ -223,6 +223,12 @@ const en = {
   'dj.soloTitle': 'Solo package.',
   'dj.soloBody':
     'Host and DJ run from one device — open the MC view for scripts and drift controls. Song detail stays at the Standard level.',
+  'dj.requests.moderate': 'Moderate',
+  'dj.requests.moderateAria': 'Open request moderation ({count} pending)',
+  'dj.requests.panelTitle': 'Guest requests',
+  'dj.requests.tabPending': 'Pending ({count})',
+  'dj.requests.tabAccepted': 'Accepted ({count})',
+  'dj.requests.acceptedCount': '{count} up next',
   'dj.requests.title': 'Guest requests',
   'dj.requests.pendingCount': '{count} pending',
   'dj.requests.pendingHeading': 'Pending',

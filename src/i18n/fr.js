@@ -225,6 +225,12 @@ const fr = {
   'dj.soloTitle': 'Formule solo.',
   'dj.soloBody':
     "L'hôte et le DJ utilisent un seul appareil — ouvrez la vue MC pour les scripts et le contrôle du décalage. Le détail des morceaux reste au niveau Standard.",
+  'dj.requests.moderate': 'Modérer',
+  'dj.requests.moderateAria': 'Ouvrir la modération des demandes ({count} en attente)',
+  'dj.requests.panelTitle': 'Demandes des invités',
+  'dj.requests.tabPending': 'En attente ({count})',
+  'dj.requests.tabAccepted': 'À suivre ({count})',
+  'dj.requests.acceptedCount': '{count} à suivre',
   'dj.requests.title': 'Demandes des invités',
   'dj.requests.pendingCount': '{count} en attente',
   'dj.requests.pendingHeading': 'En attente',
