@@ -8858,3 +8858,75 @@ existing test updates and new interaction tests.
 **Open questions.** None.
 
 **Tracking.** [#1161](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1161).
+
+### 17.111 Bilingual broadcast script viewer (decision, 2026-11-17)
+
+**Goal.**
+
+Replace the two ad-hoc speech renderers with one broadcast-grade bilingual
+reader. MC and Speaker see interleaved language pairs in massive, loose
+typography; the reader can activate the browser's speech recognition to
+highlight the words being spoken, keep the active block centered, switch to a
+native fullscreen Focus mode, or fall back to plain touch scrolling with no
+microphone at all.
+
+**Feature blocks.**
+
+- **F1 - Recognition and matching.** `useSpeechRecognition` over the native
+  `SpeechRecognition` / `webkitSpeechRecognition`, PL/FR/EN language mapping,
+  a tokenizer and a tolerant, monotonic read-along matcher.
+- **F2 - Shared viewer.** `BilingualScriptViewer` with interleaved A/B blocks,
+  side language markers, `text-2xl`/`text-3xl` broadcast typography with
+  A−/A+, word spans and red accent highlighting, centered auto-scroll, hidden
+  scrollbar, explicit mic consent plus privacy copy, and native fullscreen with
+  a CSS fallback.
+- **F3 - Wiring.** `speechPairsToScriptBlocks` maps existing `speech.pairs` into
+  the viewer; the MC reader in `SpeechesCard` defaults to `mcLanguage`, the
+  Speaker view defaults to `speakerLanguage`, and every existing consent,
+  decryption, revocation and offline-cache state is preserved.
+
+**Google Doc contract.** Not Doc-linked. The script text already comes from the
+encrypted speech bundle built from the speech Docs; this feature adds no Doc
+field, schema, parser, field-map, template or fixture change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC Master → `SpeechesCard` reader | Shared viewer, translation-first, tracked language `mcLanguage`, existing modal and decrypt/error states |
+| Speaker view → active speech | Shared viewer, source-first, tracked language `speakerLanguage`, existing consent/revocation/offline states |
+| `TeleprompterOverlay` / step teleprompters | Unchanged - trilingual step scripts keep their current reader |
+| DJ, photo, venue, musician, admin, guest, landing | Unchanged |
+| Speech bundle, RLS, Edge Functions, schema | Unchanged |
+
+**Out of scope.** Replacing the step teleprompter, persisting audio or
+transcripts, server-side recognition, changing speech text or language pairs,
+and adding a new dependency for animation.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Speech engine | Native Web Speech API only; Chrome/Edge supported, other browsers fall back to manual |
+| Language | Role-spoken default (Speaker: `speakerLanguage`, MC: `mcLanguage`) with an A/B selector |
+| Matching | Normalize accents/case/punctuation, tolerate ASR slips, monotonic cursor, reset per block |
+| Highlight | Recognized active-language words only: red accent + bold; other text unchanged |
+| Consent | Explicit "Activate voice tracking" button, privacy note, stop control, manual mode always usable |
+| Focus | Native Fullscreen API with a CSS full-viewport fallback and Escape exit |
+| Typography | Broadcast scale (`text-2xl` mobile, `text-3xl`+ tablet), `leading-loose`, A−/A+ 24–48 px |
+| Scroll | Smooth centered auto-scroll only when reduced motion allows; hidden native scrollbar; touch always works |
+| Data adapter | Pure in-memory `speech.pairs` → `scriptBlocks`; no schema or bundle change |
+
+**Task split.** Three ordered issues: engine, viewer, wiring.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1172](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1172) | `useSpeechRecognition`, language map, tokenizer, tolerant matcher, tests | - |
+| 2 | [#1173](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1173) | `BilingualScriptViewer`, typography, borders, tokens, auto-scroll, consent, fullscreen, i18n, tests | #1172 |
+| 3 | [#1174](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1174) | `speechPairsToScriptBlocks`, MC reader and Speaker view wiring, state preservation, tests | #1173 |
+
+**Open questions.** None.
+
+**Tracking.** [#1172](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1172),
+[#1173](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1173),
+[#1174](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1174).
