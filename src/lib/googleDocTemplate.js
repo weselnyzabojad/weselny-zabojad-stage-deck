@@ -2,11 +2,10 @@
 //
 // The couple's harmonogram is a plain Google Doc. Stable `## SECTION` markers
 // (and fixed table headers) let the importer map each part deterministically to
-// a WeddingSchema v1.2 block. This module is pure: it only reads text.
+// a WeddingSchema v1.1 block. This module is pure: it only reads text.
 //
-// Status: the v1.2 schema is still a proposal. The manifest below mirrors
-// `schema/wedding-schema-v1.2.proposal.md`; regenerate the template when the
-// schema is frozen and approved.
+// Status: the first release ships WeddingSchema v1.1. The manifest below and
+// `schema/google-doc-template.md` are the v1.1 customer contract.
 
 export const SECTION_MANIFEST = Object.freeze([
   {
