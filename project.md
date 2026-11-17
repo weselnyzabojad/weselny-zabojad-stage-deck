@@ -9368,3 +9368,69 @@ Next Step, editing past steps, Recharts, and non-MC access.
 
 **Tracking.** [#1190](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1190),
 [#1191](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1191).
+
+### 17.119 Public digital signage screen (decision, 2026-11-17)
+
+**Goal.**
+
+Offer a read-only screen for a venue TV/iPad that shows only the current step
+and the next one, updated live from the MC's timeline. The public route uses a
+dedicated admin-managed token, receives sanitized data only, reconnects silently
+and never exposes the full live state.
+
+**Feature blocks.**
+
+- **F1 - Token and sanitized backend.** `wedding_signage` token hashes,
+  `signage_state` snapshot table, signage-role JWT exchange Edge Function,
+  admin generate/rotate/revoke panel, idempotent Realtime publication.
+- **F2 - MC publisher.** MC computes the projected next step and calls a
+  definer RPC only when the sanitized snapshot changes; no sensitive fields.
+- **F3 - Public screen.** `/signage/<token>` standalone view with massive
+  typography, current/next zones, before/after messages, CSS transitions,
+  silent retry and automatic JWT renewal.
+
+**Release target.** **Backlog.** Milestone `Backlog`, label `backlog`. Not
+scheduled for a release.
+
+**Google Doc contract.** Not Doc-linked. No cartridge schema, template, parser
+or field-map change; only new runtime tables.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | Generate/rotate/revoke signage token, link + QR + copy |
+| MC runtime | Publishes sanitized current/next snapshot with projected time |
+| Public `/signage/<token>` | Read-only current/next display, no interaction |
+| `live_sync_state` | Unchanged; never exposed publicly |
+| Guest, recap, stage role views | Unchanged |
+
+**Out of scope.** Public access to `live_sync_state`, guest interactions,
+navigation/language switch on the screen, signage history and Doc/schema edits.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Security model | Sanitized table + short-lived signage JWT via token exchange |
+| Token | Dedicated admin-managed token, hashed at rest, rotatable/revocable |
+| Content | Current title + location; next title + projected time |
+| Publisher | MC RPC on meaningful snapshot changes |
+| Language | Device locale (PL/FR/EN) with Polish default, no toggle |
+| Before/after | Standby and thank-you messages, never an error screen |
+| Transitions | CSS fade/slide, reduced-motion safe; no framer-motion |
+| Reconnect | Exponential backoff, last snapshot kept, JWT renewal |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1192](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1192) | Signage tables, RLS, JWT exchange, admin lifecycle UI | - |
+| 2 | [#1193](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1193) | MC snapshot derivation, dedupe, RPC publisher | #1192 |
+| 3 | [#1194](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1194) | Public route, signage view, realtime/reconnect, i18n | #1192, #1193 |
+
+**Open questions.** None.
+
+**Tracking.** [#1192](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1192),
+[#1193](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1193),
+[#1194](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1194).
