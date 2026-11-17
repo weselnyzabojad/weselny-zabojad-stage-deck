@@ -364,6 +364,57 @@ input[type="checkbox"] {
     var(--focus-shadow);
 }
 
+/* Silent Flash (issue #1156): the current card glows amber three times over
+   4 s, then returns to the exact resting shadow above. Only the shared
+   `.current-step-flash` wrapper (rendered by TimelineFocusStack) is targeted,
+   so history and future cards never animate. */
+@keyframes silent-flash-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
+      0 0 28px -6px color-mix(in srgb, var(--brand-strong) 50%, transparent),
+      0 1px 0 rgb(255 255 255 / 0.08) inset,
+      var(--focus-shadow);
+  }
+  10%,
+  40%,
+  70% {
+    box-shadow:
+      0 0 0 2px rgb(245 158 11 / 0.75),
+      0 0 26px 4px rgb(245 158 11 / 0.45),
+      0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
+      var(--focus-shadow);
+  }
+  25%,
+  55%,
+  85% {
+    box-shadow:
+      0 0 0 1px rgb(245 158 11 / 0.35),
+      0 0 12px 2px rgb(245 158 11 / 0.18),
+      0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
+      var(--focus-shadow);
+  }
+}
+
+.current-step-flash .timeline-focus-current {
+  animation: silent-flash-glow 4s ease-in-out 1;
+}
+
+/* Reduced motion keeps the information: a static amber ring for the same 4 s
+   window, with no keyframes. The global reduced-motion block would otherwise
+   end the animation immediately and hide the cue. */
+@media (prefers-reduced-motion: reduce) {
+  .current-step-flash .timeline-focus-current {
+    animation: none;
+    box-shadow:
+      0 0 0 2px rgb(245 158 11 / 0.7),
+      0 0 18px 3px rgb(245 158 11 / 0.3),
+      0 0 0 1px color-mix(in srgb, var(--brand-strong) 55%, transparent),
+      var(--focus-shadow);
+  }
+}
+
 /* Fine pointers only: mouse/trackpad tilt and Z-axis elevation. */
 @media (hover: hover) and (pointer: fine) {
   .current-step-tilt {

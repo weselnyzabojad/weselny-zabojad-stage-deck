@@ -12,7 +12,7 @@ describe('issue #295 Current Step 3D tilt', () => {
     expect(tilt).toContain('const MAX_TILT_DEG = 6');
     expect(tilt).toContain('requestAnimationFrame');
     expect(tilt).not.toContain('framer-motion');
-    expect(stack).toContain('<CurrentStepTilt>');
+    expect(stack).toContain('<CurrentStepTilt');
   });
 
   it('uses perspective and Z-axis elevation for the header/body', () => {

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
+import { useSilentFlash } from '../hooks/useSilentFlash.js';
 import { buildFocusStack, focusStackTier } from '../lib/focusStack.js';
 import { nextFocusIndex, toggleRailOpen } from '../lib/stageRail.js';
+import SilentFlashAnnouncement from './SilentFlashAnnouncement.jsx';
 import StageStepCard from './StageStepCard.jsx';
 import CurrentStepTilt from './CurrentStepTilt.jsx';
 
@@ -149,8 +151,10 @@ export default function TimelineFocusStack({
   photographerAvailable = null,
   polished = true,
   entryActions = null,
+  flash = null,
 }) {
   const { t } = useI18n();
+  const flashing = useSilentFlash(flash);
   const [openByZone, setOpenByZone] = useState({ history: null, future: null });
   const [expandedByZone, setExpandedByZone] = useState({ history: false, future: false });
   const [compactTab, setCompactTab] = useState(null);
@@ -187,6 +191,43 @@ export default function TimelineFocusStack({
     ? 'grid grid-cols-1 gap-3'
     : 'grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start';
 
+  // Silent Flash target: the shared current card in both layouts. Only this
+  // zone gets the glow class; history and future cards never animate.
+  const currentZone = (
+    <section aria-label={copy.current} data-focus-zone="current" className="flex flex-col gap-2">
+      <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
+        {copy.current}
+      </h2>
+      {stack.current ? (
+        <CurrentStepTilt className={flashing ? 'current-step-flash' : ''}>
+          <div
+            className="relative"
+            data-focus-card
+            data-focus-depth="0"
+            data-focus-opacity="1"
+            data-focus-scale="1"
+            style={{ zIndex: 30 }}
+          >
+            <StageStepCard
+              entry={stack.current}
+              variant="current"
+              photographerAvailable={photographerAvailable}
+              polished={polished}
+            >
+              {entryBodies?.[stack.current.step?.id] ?? null}
+              {currentBody}
+            </StageStepCard>
+          </div>
+        </CurrentStepTilt>
+      ) : (
+        <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-muted">
+          {copy.noCurrent}
+        </p>
+      )}
+      {flashing ? <SilentFlashAnnouncement change={flash?.change} /> : null}
+    </section>
+  );
+
   if (compact) {
     return (
       <section
@@ -197,37 +238,7 @@ export default function TimelineFocusStack({
         className={`${rootClassName} ${className}`.trim()}
       >
         <div className="order-1 min-w-0">
-          <section aria-label={copy.current} data-focus-zone="current" className="flex flex-col gap-2">
-            <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
-              {copy.current}
-            </h2>
-            {stack.current ? (
-              <CurrentStepTilt>
-                <div
-                  className="relative"
-                  data-focus-card
-                  data-focus-depth="0"
-                  data-focus-opacity="1"
-                  data-focus-scale="1"
-                  style={{ zIndex: 30 }}
-                >
-                  <StageStepCard
-                    entry={stack.current}
-                    variant="current"
-                    photographerAvailable={photographerAvailable}
-                    polished={polished}
-                  >
-                    {entryBodies?.[stack.current.step?.id] ?? null}
-                    {currentBody}
-                  </StageStepCard>
-                </div>
-              </CurrentStepTilt>
-            ) : (
-              <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-muted">
-                {copy.noCurrent}
-              </p>
-            )}
-          </section>
+          {currentZone}
           {currentFooter ? <div className="mt-2 min-w-0">{currentFooter}</div> : null}
         </div>
 
@@ -352,37 +363,7 @@ export default function TimelineFocusStack({
           compact ? 'order-2' : 'order-1 md:col-span-2 lg:col-span-1 lg:order-2'
         }`}
       >
-        <section aria-label={copy.current} data-focus-zone="current" className="flex flex-col gap-2">
-          <h2 className="px-0.5 font-heading text-[10px] font-semibold uppercase tracking-widest text-brand-soft">
-            {copy.current}
-          </h2>
-          {stack.current ? (
-            <CurrentStepTilt>
-              <div
-                className="relative"
-                data-focus-card
-                data-focus-depth="0"
-                data-focus-opacity="1"
-                data-focus-scale="1"
-                style={{ zIndex: 30 }}
-              >
-                <StageStepCard
-                  entry={stack.current}
-                  variant="current"
-                  photographerAvailable={photographerAvailable}
-                  polished={polished}
-                >
-                  {entryBodies?.[stack.current.step?.id] ?? null}
-                  {currentBody}
-                </StageStepCard>
-              </div>
-            </CurrentStepTilt>
-          ) : (
-            <p className="rounded-xl border border-dashed border-line bg-card/40 px-3 py-6 text-center text-xs text-muted">
-              {copy.noCurrent}
-            </p>
-          )}
-        </section>
+        {currentZone}
         {currentFooter ? <div className="mt-2 min-w-0">{currentFooter}</div> : null}
       </div>
 
