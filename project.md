@@ -8602,3 +8602,54 @@ switch, one 404 treatment and one validation set.
 **Open questions.** None.
 
 **Tracking.** [#1152](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1152).
+
+### 17.107 Landing "live changes" card copy rewrite (decision, 2026-11-17)
+
+**Goal.**
+
+Rewrite the body of the "Changements en direct" card in the landing features
+grid so a schedule change reads as a shared action ("Décalons la première
+danse…") that protects the evening's rhythm, and align the EN and PL locales on
+the same meaning. Static marketing copy only: no behaviour, data or schema
+change.
+
+**Feature block.**
+
+- **F1 - Live-changes card copy.** Replace `landing.features.3.body` in
+  `src/i18n/fr.js`, `src/i18n/en.js` and `src/i18n/pl.js`, and update the #820
+  landing smoke test that pins the old French wording.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes; the sentence lives only in the i18n bundles.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Landing page, features grid | New FR/EN/PL sentence in the "Changements en direct" card |
+| Stage and role views, admin, song request, recap | Unchanged - the key is rendered by the landing page only |
+| Landing 404, hero, FAQ, other feature cards | Unchanged |
+| Schema, parsers, Edge Functions, database, PWA shell | Unchanged |
+
+**Out of scope.** Any layout or design change to the card, any other landing
+copy, and changing the behaviour the sentence describes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Locales | FR rewritten; EN and PL aligned to the same meaning |
+| Apostrophes | Typographic `’` and `œ`, matching the rest of `fr.js` |
+| Test impact | Update `tests/smoke/issue-820.test.js` assertions in the same change |
+| Copy approval | Owner approved the FR sentence and the EN/PL proposals |
+
+**Task split.** One atomic copy issue: one i18n key across three locales plus its
+smoke test.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1155](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1155) | Rewrite FR/EN/PL live-changes card copy, update #820 test | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1155](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1155).
