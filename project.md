@@ -9747,3 +9747,67 @@ per-status splits, and schema/Doc changes.
 
 **Tracking.** [#1206](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1206),
 [#1207](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1207).
+
+### 17.125 Client executive summary report (decision, 2026-11-17)
+
+**Goal.**
+
+Upgrade the published wedding recap into a premium, PDF-ready executive summary
+for the couple the day after the event: real end time, completed steps, accepted
+song requests and the Test Zgodności compatibility result with each question. The
+existing recap token and publication flow are reused; the MC compatibility
+buttons already exist and now also snapshot the question text.
+
+**Feature blocks.**
+
+- **F1 - Data and compatibility.** MC snapshot of question text on the existing
+  compatibility/no-compatibility click, validated result normalization, recap
+  payload extension (questions + summary metrics), compatibility percentage on
+  answered questions.
+- **F2 - Executive summary view.** `ClientExecutiveSummaryView` replaces the
+  recap layout, keeps every existing section, adds the premium header and
+  compatibility module, and exports via print CSS with a light PDF theme.
+
+**Release target.** **First release.** No milestone, no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No cartridge/Doc/schema/parser change;
+only the live-state result shape and recap payload evolve.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Public `/recap/<token>` | New executive summary layout with existing sections preserved |
+| MC Test Zgodności runner | Existing compatibility/no-compatibility buttons; question text snapshot added |
+| Admin recap publish | Same flow/token; richer payload |
+| DJ, Photo, Venue, guest, landing | Unchanged |
+| Schema/Google Doc | Unchanged |
+
+**Out of scope.** A second public token, partner-specific answers (👰/🤵/🤝),
+PDF libraries, schema/Doc changes, and new MC compatibility controls.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Layout | Replace the recap layout, keep all existing sections |
+| Link | Existing recap token/publication |
+| Compatibility input | Existing MC buttons; no partner answers |
+| Question text | Snapshot at MC click |
+| Compatibility % | Compatible / answered, rounded; `—` when none |
+| Animations metric | Completed steps |
+| Other metrics | Actual end (reuse #1190), accepted requests |
+| PDF | `window.print()` + light print CSS |
+| Question list | ✓ Compatible / ✕ Incompatible with legacy fallback |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1208](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1208) | MC snapshot, result normalization, recap questions/summary, compatibility %, tests | #1190 |
+| 2 | [#1209](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1209) | `ClientExecutiveSummaryView`, premium header, compatibility module, print/PDF, i18n, tests | #1208 |
+
+**Open questions.** None.
+
+**Tracking.** [#1208](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1208),
+[#1209](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1209).
