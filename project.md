@@ -9122,3 +9122,82 @@ landing (kept PL-first).
 [#1180](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1180),
 [#1181](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1181),
 [#1182](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1182).
+
+### 17.115 Vendor Hub backstage dashboard (decision, 2026-11-17)
+
+**Goal.**
+
+Give technical roles one pre-event dashboard for load-in, access, tech notes and
+staff catering, replacing scattered PDFs and WhatsApp messages. The owner enters
+the data in the admin; the Hub is the default screen for technical roles until
+the MC switches the shared phase to LIVE, which sends the whole crew to the
+timeline and can be reversed.
+
+**Feature blocks.**
+
+- **F1 - Data layer.** `public.wedding_logistics` (`wedding_id`, `data jsonb`,
+  timestamps), RLS read for technical roles of the same wedding, admin-only
+  writes through `admin_api`, client fetch and a pure shape validator.
+- **F2 - Admin editor.** `AdminLogisticsPanel` in the admin wedding detail for
+  call sheet, access, tech specs and catering, with validation and read-only
+  archived state.
+- **F3 - Vendor Hub view.** `VendorLogisticsView` with `CallSheetCard`,
+  `NetworkAccessCard`, `TechSpecsCard` and `VendorCateringCard`, inline SVG
+  icons, theme tokens, copy/reveal and empty/error states.
+- **F4 - LIVE phase.** `event_phase` in the shared live state, MC-only reversible
+  switch, phase-based default routing for technical roles and a menu access to
+  the Hub after LIVE.
+
+**Release target.** Release-1.2 only (milestone `Release-1.2`, label
+`release-1.2`). Not required for the first release.
+
+**Google Doc contract.** Not Doc-linked. The owner explicitly chose admin-only
+entry. No template, schema, parser or field-map change; existing Doc logistics
+(`venueDetails`, `mediaTeam`, `kitchen.vendorMeals`) are not used as the Hub
+source.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | New logistics editor, owner-only |
+| Vendor Hub (MC, DJ, DJ+MC, Photo 1/2, Video, Venue Manager) | Default pre-event dashboard |
+| MC | Only role that sees the LIVE / back-to-setup switch |
+| Technical role timeline | Unchanged content; phase controls the default screen |
+| Speaker, Musician, guest, landing | No Hub access, unchanged |
+| Admin, first-release views, schema/Doc | No editorial or data-contract change outside the new table |
+
+**Out of scope.** Google Doc/template/schema changes, guest or non-technical
+access, editing logistics from role views, changing timeline drift/live data,
+and any Lucide/Heroicons dependency.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Source of truth | Admin-only `wedding_logistics` record |
+| Table shape | One JSONB row per wedding, server-side shape validation |
+| Roles | MC, DJ/DJ+MC, Photo 1/2, Video, Venue Manager |
+| LIVE phase | Shared `event_phase` (`setup`/`live`), reversible, MC-only trigger |
+| Entry before LIVE | Hub by default; timeline reachable via menu |
+| Entry after LIVE | Timeline by default; Hub reachable via menu |
+| Live start | First timeline step, never stored twice |
+| Access credentials | Visible to technical roles, password masked/revealable, copy buttons |
+| Design | Theme tokens, inline SVG icons, no slate-only palette |
+| Data editing | Admin only; role tokens are read-only |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1183](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1183) | Migration, RLS, admin_api upsert, client fetch, shape validation | - |
+| 2 | [#1184](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1184) | Admin logistics editor and validation | #1183 |
+| 3 | [#1185](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1185) | Vendor Hub view and four cards | #1183 |
+| 4 | [#1186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1186) | LIVE phase, MC switch, default routing, Hub menu access | #1185 |
+
+**Open questions.** None.
+
+**Tracking.** [#1183](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1183),
+[#1184](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1184),
+[#1185](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1185),
+[#1186](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1186).
