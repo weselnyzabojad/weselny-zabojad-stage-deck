@@ -117,6 +117,7 @@ export default function VenueManagerView({
   syncError,
   remoteUpdatedAt,
   outbox = null,
+  flash = null,
   theme = 'night',
   onToggleTheme,
   pin = null,
@@ -293,6 +294,7 @@ export default function VenueManagerView({
         entries={timeline}
         activeIndex={activeIndex}
         entryBodies={ceremonySubStepBodies(timeline, 'venue')}
+        flash={flash}
       />
 
       <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">

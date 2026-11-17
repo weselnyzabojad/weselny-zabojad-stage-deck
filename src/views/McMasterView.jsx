@@ -203,6 +203,7 @@ export default function McMasterView({ model }) {
   djMcAccessToken = null,
   djMcRoomCode = null,
   musicPolicy,
+  silentFlash = null,
   viewSwitch,
   roomCode,
   theme,
@@ -408,6 +409,7 @@ export default function McMasterView({ model }) {
           polished
           entryActions={rescheduleActions}
           entryBodies={ceremonySubStepBodies(railEntries)}
+          flash={silentFlash}
         />
       ) : null}
 
@@ -666,6 +668,7 @@ export default function McMasterView({ model }) {
             polished
             entryActions={rescheduleActions}
             entryBodies={ceremonySubStepBodies(railEntries)}
+            flash={silentFlash}
           />
 
           {speechMode !== 'OFF' && speeches?.length > 0 ? (

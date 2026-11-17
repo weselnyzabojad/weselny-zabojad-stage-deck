@@ -19,6 +19,8 @@ import { deriveHardAnchors } from './lib/hardAnchors';
 import { rescheduleFlexibleStep, resolveMandatoryConstraints } from './lib/mandatorySteps';
 import { useLiveStageState } from './hooks/useLiveStageState';
 import { useEventClock } from './hooks/useEventClock';
+import { getDeviceId } from './lib/deviceId';
+import { buildSilentFlash } from './lib/silentFlash';
 import { availableRoleIds, isMediaRole } from './lib/roles';
 import { djDetailTier } from './lib/importantSongs';
 import {
@@ -150,6 +152,15 @@ export default function StageDeck({
     speeches,
     preview: DEV_PREVIEW,
   });
+  // Silent Flash trigger (#1157): the latest reschedule, silent on the device
+  // that authored it. Undo and other live-state writes never flash.
+  const silentFlash = useMemo(
+    () =>
+      buildSilentFlash(liveState.media_overrides?.steps, {
+        deviceId: getDeviceId(),
+      }),
+    [liveState.media_overrides?.steps],
+  );
   // One shared ticking clock for every view (P0.6). Recomputing the drift
   // report from `now` keeps overruns, anchors and cutoffs live.
   const now = useEventClock({ serverTimeOffsetMs });
@@ -637,6 +648,7 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
+            flash={silentFlash}
             servicePackage={djViewWedding.servicePackage}
             role="dj"
             theme={theme}
@@ -683,6 +695,7 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
+            flash={silentFlash}
             theme={theme}
             onToggleTheme={toggleTheme}
             roomCode={deckIntent.roomCode}
@@ -725,6 +738,7 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
+            flash={silentFlash}
             theme={theme}
             onToggleTheme={toggleTheme}
             speechMode={speechMode}
@@ -760,6 +774,7 @@ export default function StageDeck({
             syncError={syncError}
             remoteUpdatedAt={remoteUpdatedAt}
             outbox={outbox}
+            flash={silentFlash}
             theme={theme}
             onToggleTheme={toggleTheme}
             musicianId={roleSession?.musicianId ?? deckIntent.musicianId ?? null}
@@ -837,6 +852,7 @@ export default function StageDeck({
     syncError,
     outbox,
     remoteUpdatedAt,
+    silentFlash,
     currentStep,
     stepTypeClass,
     showDjCues,

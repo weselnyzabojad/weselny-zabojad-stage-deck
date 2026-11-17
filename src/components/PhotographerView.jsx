@@ -231,6 +231,7 @@ export default function PhotographerView({
   syncError,
   remoteUpdatedAt,
   outbox = null,
+  flash = null,
   role,
   roles,
   onRoleChange,
@@ -370,6 +371,7 @@ export default function PhotographerView({
         activeIndex={activeIndex}
         entryBodies={cueBodies}
         photographerAvailable={resolvePhotographerAvailable(wedding)}
+        flash={flash}
       />
 
       {visibility.sunset && !miniSessionDone ? (
@@ -474,6 +476,7 @@ export default function PhotographerView({
             activeIndex={activeIndex}
             entryBodies={cueBodies}
             photographerAvailable={resolvePhotographerAvailable(wedding)}
+            flash={flash}
           />
 
           {visibility.sunset && !miniSessionDone ? (

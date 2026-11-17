@@ -84,6 +84,7 @@ export default function DjBoothView({
   syncError,
   remoteUpdatedAt,
   outbox = null,
+  flash = null,
   role,
   roles,
   onRoleChange,
@@ -316,6 +317,7 @@ export default function DjBoothView({
         activeIndex={activeIndex}
         currentBody={djCurrentBody}
         currentFooter={activeVendors}
+        flash={flash}
         entryBodies={caps.vip ? ceremonySubStepBodies(timeline) : null}
       />
 
@@ -419,6 +421,7 @@ export default function DjBoothView({
             historyFooter={historyFooter}
             currentFooter={currentColumnFooter}
             futureFooter={futureFooter}
+            flash={flash}
             entryBodies={caps.vip ? ceremonySubStepBodies(timeline) : null}
           />
 

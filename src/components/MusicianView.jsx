@@ -39,6 +39,7 @@ export default function MusicianView({
   syncError,
   remoteUpdatedAt,
   outbox = null,
+  flash = null,
   theme = 'night',
   onToggleTheme,
   musicianId = null,
@@ -64,6 +65,7 @@ export default function MusicianView({
         entries={timeline}
         activeIndex={activeIndex}
         entryBodies={ceremonySubStepBodies(timeline)}
+        flash={flash}
         currentFooter={<ActiveVendorsBar wedding={wedding} nowClock={clock?.nowClock} />}
       />
 
