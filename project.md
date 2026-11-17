@@ -8931,7 +8931,7 @@ and adding a new dependency for animation.
 [#1173](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1173),
 [#1174](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1174).
 
-### 17.112 Release targeting and the future-release backlog (decision, 2026-11-17)
+### 17.112 Release targeting and the Release-1.2 backlog (decision, 2026-11-17)
 
 **Goal.**
 
