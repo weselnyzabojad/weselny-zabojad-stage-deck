@@ -8943,20 +8943,20 @@ up future work and release-1 issues never depend on it.
 
 | Mechanism | Value |
 | --- | --- |
-| Milestone | `Post-first-release` (GitHub milestone #6) |
-| Label | `future-release` - "Not required for the first release; excluded from the release-1 batch" |
+| Milestone | `Release-1.2` (GitHub milestone #6) |
+| Label | `release-1.2` - "Planned for Release 1.2; not required for the first release; excluded from the release-1 batch" |
 
 Rules:
 
-- Every future issue carries the `Post-first-release` milestone and the
-  `future-release` label. First-release issues carry neither.
-- A release-1 issue must never depend on a future-release issue. Future issues
+- Every future issue carries the `Release-1.2` milestone and the `release-1.2`
+  label. First-release issues carry neither.
+- A release-1 issue must never depend on a Release 1.2 issue. Release 1.2 issues
   may depend on release-1 issues.
-- Future issues stay open and are re-reviewed when the next release is scoped;
+- Release 1.2 issues stay open and are re-reviewed when that release is scoped;
   they are not part of the release-1 implementation batch.
 - `deferred` still means "detailed design deferred"; `p1` still means "next
   increment"; `phase-b` is now described as "post-first-release features".
-- The batch implementation skill skips any issue labeled `future-release` or
-  assigned to the `Post-first-release` milestone.
+- The batch implementation skill skips any issue labeled `release-1.2` or
+  assigned to the `Release-1.2` milestone.
 
-**Tracking.** GitHub milestone #6 and the `future-release` label.
+**Tracking.** GitHub milestone #6 and the `release-1.2` label.
