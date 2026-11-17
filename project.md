@@ -8795,3 +8795,65 @@ MC display.
 **Tracking.** [#1159](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1159),
 [#1158](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1158),
 [#1160](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1160).
+
+### 17.110 DJ song-request moderation panel (decision, 2026-11-17)
+
+**Goal.**
+
+Let the DJ clear the pending guest-request queue between two mixes without
+leaving the booth view. The existing top bar becomes a compact summary and a
+dedicated panel hosts the queue as compact cards with pending/accepted tabs,
+icon-only one-tap actions with 44 px targets and a short exit animation. The
+backend, 10-minute cooldown, status vocabulary, Realtime subscription and guest
+feedback already ship and are not touched.
+
+**Feature block.**
+
+- **F1 - Bar summary and moderation panel.** Replace the inline accept/decline
+  pills with counts plus a "Moderate" button, and move moderation into a
+  `ModalShell` panel (pending/accepted tabs, compact cards, icon actions, exit
+  transition, capped internal scroll).
+
+**Google Doc contract.** Not Doc-linked. The queue reads runtime `song_requests`
+rows through the existing client; no schema, parser, field-map, template or
+fixture change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ Mark / DJ Szymoniak / DJ Zaremba / generic DJ VIP | Summary bar + moderation panel in compact and wide layouts |
+| DJ + MC / MC Master | Same shared component and panel at the two `dj_mc` bar call sites |
+| DJ Standard | Never renders the queue, unchanged |
+| Guest song-request page | Unchanged; declined feedback already exists |
+| Backend, cooldown, RPC, Realtime | Unchanged |
+| Admin, landing, other role views | Unchanged |
+
+**Out of scope.** Renaming the `declined` status to `denied`, backend or RLS
+changes, new guest copy, Framer Motion or any new dependency, and new mounts of
+the queue outside the existing call sites.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Shape | Always-visible summary bar + dedicated panel, never an always-open list |
+| Bar content | Counts, Disco Polo switch, Moderate, QR, refresh; no inline actions |
+| Actions | Icon-only check/cross, 44×44 px, accessible names, no deny confirmation |
+| Accepted items | Second tab with the existing "Played" action |
+| Callers | All current callers share the redesign |
+| Animation | CSS `transition-all` with `opacity-0 -translate-x-4`, reduced-motion safe |
+| Colors | Theme tokens instead of literal `slate`, to keep day/night contrast |
+| Status | Keep `pending` / `accepted` / `declined`; "denied" in the request maps to `declined` |
+| Dead code | The unreachable `variant="card"` list is replaced by the panel content |
+
+**Task split.** One atomic UI issue: one shared component family plus its i18n,
+existing test updates and new interaction tests.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1161](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1161) | Summary bar, moderation panel, tabs, 44 px icon actions, exit transition, scroll ergonomics, i18n, tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1161](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1161).
