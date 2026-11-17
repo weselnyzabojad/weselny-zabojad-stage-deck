@@ -790,7 +790,7 @@ const fr = {
   'landing.features.2.title': 'Fonctionne sans réseau',
   'landing.features.2.body': 'Toujours accessible, même sans réseau : le planning reste parfaitement fluide et disponible en toutes circonstances, au cœur de la salle.',
   'landing.features.3.title': 'Changements en direct',
-  'landing.features.3.body': 'Un imprévu ? Décalez la première danse ou ajustez le rythme en un clin d’œil : la modification s’actualise instantanément sur tous les écrans.',
+  'landing.features.3.body': 'Un imprévu ? Décalons la première danse en un clin d’œil pour conserver le rythme de la soirée : la modification s’actualise instantanément sur tous les écrans.',
   'landing.features.4.title': 'Vues par rôle',
   'landing.features.4.body': 'Sur-mesure pour chaque intervenant : chacun accède uniquement à ce qui le concerne, pour un travail ultra-précis et sans confusion.',
   'landing.features.5.title': 'Confidentialité d’abord',

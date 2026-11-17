@@ -788,7 +788,7 @@ const pl = {
   'landing.features.2.title': 'Działa bez zasięgu',
   'landing.features.2.body': 'Zawsze dostępny, nawet bez sieci: plan pozostaje idealnie płynny i dostępny w każdej sytuacji, w samym sercu sali.',
   'landing.features.3.title': 'Zmiany na żywo',
-  'landing.features.3.body': 'Coś nieprzewidzianego? Przesuń pierwszy taniec lub zmień tempo w mgnieniu oka: zmiana natychmiast aktualizuje się na wszystkich ekranach.',
+  'landing.features.3.body': 'Coś nieprzewidzianego? Przesuńmy pierwszy taniec w mgnieniu oka, aby zachować rytm wieczoru: zmiana natychmiast aktualizuje się na wszystkich ekranach.',
   'landing.features.4.title': 'Widoki dopasowane do roli',
   'landing.features.4.body': 'Dopasowane do każdego uczestnika: każdy widzi tylko to, co go dotyczy, co pozwala pracować precyzyjnie i bez zamieszania.',
   'landing.features.5.title': 'Prywatność przede wszystkim',

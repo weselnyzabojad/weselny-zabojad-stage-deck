@@ -785,7 +785,7 @@ const en = {
   'landing.features.2.title': 'Works without signal',
   'landing.features.2.body': 'Always available, even without a signal: the plan stays perfectly smooth and accessible in every circumstance, right in the heart of the venue.',
   'landing.features.3.title': 'Live changes',
-  'landing.features.3.body': 'Something unexpected? Move the first dance or adjust the pace in the blink of an eye: the change updates instantly on every screen.',
+  'landing.features.3.body': 'Something unexpected? Let’s move the first dance in the blink of an eye to keep the evening’s rhythm: the change updates instantly on every screen.',
   'landing.features.4.title': 'Role-specific views',
   'landing.features.4.body': 'Tailored to every contributor: each person sees only what concerns them, for ultra-precise work with no confusion.',
   'landing.features.5.title': 'Privacy first',

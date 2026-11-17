@@ -24,11 +24,11 @@ describe('issue #820 landing feature copy and centered features', () => {
 
   it('ships the rewritten feature bodies', () => {
     expect(fr['landing.features.1.body']).toContain('planning unique et partagé');
-    expect(fr['landing.features.3.body']).toContain('Décalez la première danse');
+    expect(fr['landing.features.3.body']).toContain('Décalons la première danse');
     expect(fr['landing.features.4.body']).toContain('Sur-mesure pour chaque intervenant');
     expect(fr['landing.features.7.body']).toContain('selon la formule choisie');
 
-    expect(pl['landing.features.3.body']).toContain('zmień tempo');
+    expect(pl['landing.features.3.body']).toContain('zachować rytm wieczoru');
     expect(pl['landing.features.3.body']).not.toContain('kuchnia potrzebuje');
     expect(en['landing.features.7.body']).toContain('depending on the package');
   });
