@@ -9048,3 +9048,77 @@ the list, filtering historical requests or musician suggestions, changing the
 [#1176](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1176),
 [#1177](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1177),
 [#1178](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1178).
+
+### 17.114 Provider UI localization completion (decision, 2026-11-17)
+
+**Goal.**
+
+Make the application chrome follow the provider's language on first use, finish
+the PL/EN/FR coverage of every remaining hardcoded UI string, and give the owner
+a manual language switch in the admin. Cartridge content (step titles, songs,
+names, scripts) stays in its authored language and is never translated.
+
+**Feature blocks.**
+
+- **F1 - Locale detection.** Stored choice → supported `navigator.languages` /
+  `navigator.language` → English; the landing keeps its Polish-first default.
+- **F2 - Stage audit.** Move remaining hardcoded labels, aria text, placeholders,
+  loading/empty states and the teleprompter footer into the dictionaries;
+  document `StageStepCard` as the canonical `t(key) + step.title` example.
+- **F3 - Admin/landing/guest audit.** Same completion for admin chrome, landing
+  chrome, guest request states and entry fallbacks.
+- **F4 - Admin switch.** Reuse `LanguageToggle` in the admin header/menu; manual
+  choice persists and updates instantly.
+
+**Release target.** Release-1.2 only (milestone `Release-1.2`, label
+`release-1.2`). Not required for the first release.
+
+**Existing baseline.** The lightweight engine stays: `src/i18n/{en,fr,pl}.js`,
+`t`, `tp`, locale subscription, `wzsd:v1:locale`, 849 keys and
+`npm run validate:i18n`. No react-i18next migration and no JSON conversion.
+
+**Google Doc contract.** Not Doc-linked. UI chrome only; cartridge content and
+`pickLocalizedText` are unchanged.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| All role views and shared modals | UI chrome fully keyed, including aria/placeholders/loading states |
+| Landing | Chrome keyed; still Polish when no stored choice |
+| Admin | Chrome keyed; new FR/PL/EN switch in the header |
+| Guest request | Statuses, retries and placeholders keyed |
+| Entry fallbacks | Localized without breaking SSR |
+| Cartridge content | Never translated; authored language preserved |
+
+**Out of scope.** react-i18next/JSON migration, translating wedding data,
+layout changes, a new full settings panel, and the locale behavior of the
+landing (kept PL-first).
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Engine | Keep the existing lightweight solution |
+| Detection | Stored choice > browser language > English |
+| Landing | Polish-first when nothing is stored |
+| Audit | Whole interface, split stage/shared vs admin/landing/guest |
+| Switch | Existing `LanguageToggle` in the admin header |
+| Example card | Document and test `StageStepCard`; no `CurrentStepCard` duplicate |
+| Content | UI keys only; no translation of cartridge data |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1179](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1179) | Browser locale detection, landing exception, tests, docs | - |
+| 2 | [#1180](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1180) | Stage/shared UI audit, 3 locales, StageStepCard contract test | #1179 |
+| 3 | [#1181](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1181) | Admin/landing/guest audit, entry fallbacks, tests | #1179 |
+| 4 | [#1182](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1182) | Admin language switch, persistence, accessibility, tests | #1181 |
+
+**Open questions.** None.
+
+**Tracking.** [#1179](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1179),
+[#1180](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1180),
+[#1181](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1181),
+[#1182](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1182).
