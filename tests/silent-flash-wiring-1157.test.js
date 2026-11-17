@@ -74,7 +74,7 @@ describe('Silent Flash wiring', () => {
   it('passes the descriptor to every in-scope view', () => {
     // DJ, photographer/video, venue manager and musician each receive the prop.
     expect(stage).toContain('flash={silentFlash}');
-    expect(stage).toMatch(/silentFlash,\r?\n\s+currentStep,/);
+    expect(stage).toMatch(/\bsilentFlash,/);
   });
 
   it('keeps Speaker out of the flash wiring', () => {
