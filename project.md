@@ -8930,3 +8930,33 @@ and adding a new dependency for animation.
 **Tracking.** [#1172](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1172),
 [#1173](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1173),
 [#1174](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1174).
+
+### 17.112 Release targeting and the future-release backlog (decision, 2026-11-17)
+
+**Goal.**
+
+Keep the first-release queue separate from features that are deliberately
+planned for a later release, so the release-1 implementation batch never picks
+up future work and release-1 issues never depend on it.
+
+**Convention.**
+
+| Mechanism | Value |
+| --- | --- |
+| Milestone | `Post-first-release` (GitHub milestone #6) |
+| Label | `future-release` - "Not required for the first release; excluded from the release-1 batch" |
+
+Rules:
+
+- Every future issue carries the `Post-first-release` milestone and the
+  `future-release` label. First-release issues carry neither.
+- A release-1 issue must never depend on a future-release issue. Future issues
+  may depend on release-1 issues.
+- Future issues stay open and are re-reviewed when the next release is scoped;
+  they are not part of the release-1 implementation batch.
+- `deferred` still means "detailed design deferred"; `p1` still means "next
+  increment"; `phase-b` is now described as "post-first-release features".
+- The batch implementation skill skips any issue labeled `future-release` or
+  assigned to the `Post-first-release` milestone.
+
+**Tracking.** GitHub milestone #6 and the `future-release` label.
