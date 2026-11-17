@@ -1,7 +1,5 @@
 # WeddingSchema v1.1
 
-> **v1.2 proposal available:** see `wedding-schema-v1.2.proposal.md`. v1.1 remains canonical until that proposal is approved.
-
 Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 
 ## Files
@@ -9,8 +7,7 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | File | Purpose |
 | --- | --- |
 | `wedding-schema-v1.1.json` | Draft 2020-12 JSON Schema (canonical). |
-| `wedding-schema-v1.2.proposal.md` | Proposed v1.2 field model, decisions D1-D9, migration, and validation rules. |
-| `google-doc-template.md` | Provisional Google Doc template with stable `## SECTION` markers (D8 / issue #70). |
+| `google-doc-template.md` | Customer Google Doc template with stable `## SECTION` markers (v1.1 / issue #70). |
 | `wedding-cartridge.example.json` | Complete Jennifer & Guillaume demo cartridge. |
 | `validate-cartridge.mjs` | Structural + cross-field validator. |
 | `validate-lib.mjs` | Shared Ajv + semantic validator used by the CLI, fixtures and Vitest. |
@@ -19,8 +16,8 @@ Portable JSON cartridge specification for the Universal Wedding Stage Deck.
 | `google-doc-field-map-lib.mjs` | Enumerator and validator for the field map. |
 | `fixtures/` | One fixture per edge case, one per real wedding, one per invalid rule. |
 
-The Google Doc template is generated from the v1.2 proposal and is not wired
-into the admin publishing flow until v1.2 is approved. Its conventions and field map live in
+The Google Doc template is the v1.1 customer template. Its conventions and
+field map live in
 [`docs/google-doc-template-conventions.md`](../docs/google-doc-template-conventions.md);
 check it with `npm run validate:template`.
 
@@ -330,7 +327,7 @@ display rules and edge cases.
 
 - `schemaVersion` is a required literal for each release.
 - Additive fields can ship within v1.1 as optional; breaking changes (renames,
-  removed fields, changed semantics) require v1.2+.
+  removed fields, changed semantics) require a new schema version.
 - The shared admin converter (issue #15) is responsible for mapping legacy
   snake_case Google Docs exports into this canonical camelCase shape. The schema
   itself rejects unknown top-level keys; use `extensions` for temporary extras.

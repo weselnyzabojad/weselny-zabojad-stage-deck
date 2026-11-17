@@ -1,12 +1,11 @@
-# Google Doc template conventions (D8 / issue #70)
+# Google Doc template conventions (v1.1 / issue #70)
 
-> **Status: provisional.** These conventions are generated from the v1.2
-> proposal (`schema/wedding-schema-v1.2.proposal.md`). v1.1 remains canonical
-> until v1.2 is approved. Regenerate the template and this map when
-> `schema/wedding-schema-v1.2.json` is frozen.
+> **Status: current.** These conventions describe the v1.1 customer template
+> shipped with the first release. `schema/wedding-schema-v1.1.json` is the
+> canonical contract; there is no v1.2 in that release.
 
 The couple writes one Google Doc per wedding. The importer maps that Doc to a
-`WeddingSchema v1.2` cartridge deterministically, without an AI guess, by
+`WeddingSchema v1.1` cartridge deterministically, without an AI guess, by
 reading:
 
 1. stable `## SECTION` markers,
@@ -22,8 +21,9 @@ Files:
 | [`src/lib/googleDocTemplate.js`](../src/lib/googleDocTemplate.js) | Section manifest + pure parser/validator. |
 | [`scripts/validate-google-doc-template.mjs`](../scripts/validate-google-doc-template.mjs) | CI-style check: `npm run validate:template`. |
 
-The deterministic Google Doc converter and parser are additive: v1.2 is not
-approved yet, and v1.1 remains the runtime contract.
+The deterministic Google Doc converter and parser target the v1.1 runtime
+contract. This template and the field map are the customer-facing v1.1
+contract.
 
 ---
 
@@ -198,7 +198,7 @@ Rules:
 ### Booleans and enums
 
 - Write `true` / `false` for booleans.
-- Enum values are uppercase ASCII and come from the v1.2 proposal:
+- Enum values are uppercase ASCII and come from the v1.1 contract:
   `FLEXIBLE`, `HARD_ANCHOR`; `DEFAULT`, `RAIN`, `HEATWAVE`;
   `YES`, `NO`, `UNDECIDED`; `PHOTO`, `VIDEO`, `DRONE`; `MIDNIGHT`,
   `AFTER_CAKE`, `CUSTOM`; `OFF`, `LIGHT`, `COMPLEX`.
@@ -437,24 +437,16 @@ invented and never a per-file special case:
 
 ---
 
-## 7. Approval gate
+## 7. Release contract (v1.1)
 
-This template is **not** wired into the v1.1 schema or
-the runtime importer yet. When v1.2 is approved:
-
-1. Add `schema/wedding-schema-v1.2.json`.
-2. Regenerate `schema/google-doc-template.md` from the frozen schema.
-3. Update `SECTION_MANIFEST.schemaPath` where the final field names differ.
-4. Add the deterministic parser to the importer and map each section to its
-   cartridge block.
-5. Add fixtures: a filled template plus the expected v1.2 JSON.
-6. Keep `npm run validate:template` green in CI.
+The first release ships `WeddingSchema v1.1`. There is no v1.2 in that release.
+This template, these conventions and `schema/google-doc-field-map.json` are the
+v1.1 customer contract, kept green by `npm run validate:template` and
+`npm run validate:google-doc-map`.
 
 Checklist:
 
-- [ ] v1.2 schema approved and `schema/wedding-schema-v1.2.json` exists.
-- [ ] Template markers and order match the frozen schema.
-- [ ] Field map reviewed against the final validation rules.
-- [ ] Parser fixtures cover every section and every error path.
-- [ ] No VIP alert or vendor contact sections remain in the template.
-- [ ] Google Doc converter wired into admin publishing after the schema is frozen.
+- [x] Template markers and order match `SECTION_MANIFEST`.
+- [x] Field map reviewed against the v1.1 schema.
+- [x] Parser fixtures cover every section and error path.
+- [x] No VIP alert or vendor contact sections remain in the template.

@@ -1,8 +1,7 @@
-﻿# Wedding harmonogram — Google Doc template (v1.2 proposal, D8)
+﻿# Wedding harmonogram — Google Doc template (v1.1)
 
-> **Status: PROVISIONAL.** Generated from the v1.2 proposal, not from an
-> approved schema yet. `schema/wedding-schema-v1.1.json` remains canonical.
-> Regenerate this template when `schema/wedding-schema-v1.2.json` is frozen.
+> **Status: current.** This is the v1.1 customer template shipped with the first
+> release. `schema/wedding-schema-v1.1.json` is the canonical contract.
 >
 > **How to use:** copy this file into a Google Doc, keep every `## SECTION`
 > marker exactly as written, replace the example values, and delete rows you do
@@ -22,7 +21,7 @@ Date ISO: 2026-08-20
 Sync PIN: 2008
 Service package: HOST_AND_DJ_VIP
 Children expected: yes
-Venue: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
+Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Ceremony type: RELIGIOUS
 Ceremony MC support: yes
 Ceremony location: St. Mary Church
@@ -142,12 +141,12 @@ it blank for ordinary steps.
 | Step ID | Subtask ID | Label | Done |
 | --- | --- | --- | --- |
 | step_03 | step_03_speech_mic | Confirm the speech mic is on | false |
-| step_03 | step_03_rosol | RosĂłĹ‚ + Tartare with Vodka shot | false |
+| step_03 | step_03_rosol | Rosół + Tartare with Vodka shot | false |
 
 ## VENUE LOGISTICS
 
 Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
-Address: DwĂłr X, ul. PrzykĹ‚adowa 1, 59-400 Jawor
+Address: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Manager name: Anna Kowalska
 Manager phone: +48 600 000 000
 Manager email: anna@venue.example
@@ -164,7 +163,7 @@ Key holder: Anna Kowalska
 Travel baseline minutes: 55
 Travel distance km: 62
 Travel origin label: Jawor 59-400
-Accommodation name: Hotel PrzykĹ‚ad
+Accommodation name: Hotel Przykład
 Accommodation address: ul. Hotelowa 2, 59-400 Jawor
 Accommodation latitude: 51.06
 Accommodation longitude: 16.2
@@ -182,8 +181,7 @@ Notes: Load-in before the 16:00 ceremony rehearsal.
 ## VIEW VISIBILITY
 
 List a row only to override the D1 default matrix. Omit this table to keep the
-defaults. Every role defaults to its `viewVisibility` preset in the v1.2
-proposal.
+defaults. Every role defaults to its `viewVisibility` preset.
 
 | Role | Section | Visible |
 | --- | --- | --- |
@@ -250,7 +248,7 @@ Disco Polo policy: No
 
 | Track |
 | --- |
-| Macarena - Los del R?o |
+| Macarena - Los del Río |
 
 ## GUEST REQUESTS
 
@@ -273,7 +271,7 @@ speech records and scripts live in the encrypted speech bundle.
 ### Speech Script speech_witness
 
 ```text
-Drodzy PaĹ„stwo, chciaĹ‚bym powiedzieÄ‡ kilka sĹ‚Ăłw o Jennifer i Guillaumeâ€¦
+Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume…
 ```
 
 ## CAKE

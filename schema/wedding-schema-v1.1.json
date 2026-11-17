@@ -423,7 +423,7 @@
     "viewVisibility": {
       "type": "object",
       "additionalProperties": true,
-      "description": "Per-role section visibility (D1/D9). Missing roles default to all-false in v1.2; this app merges role defaults.",
+      "description": "Per-role section visibility (D1/D9). Missing roles default to all-false; this app merges role defaults.",
       "properties": {
         "mc": {
           "$ref": "#/$defs/visibilityMatrix"

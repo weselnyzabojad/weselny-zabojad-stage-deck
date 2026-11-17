@@ -8,7 +8,7 @@
     "musicPolicy": {
       "type": "object",
       "additionalProperties": true,
-      "description": "v1.2 may extend this object, so unknown keys inside musicPolicy are allowed.",
+      "description": "A future schema version may extend this object, so unknown keys inside musicPolicy are allowed.",
       "properties": {
         "importantSongs": {
           "type": "array",
