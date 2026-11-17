@@ -9504,3 +9504,124 @@ pop-ups/toasts, a separate admin tag editor, and Doc/template/parser changes.
 **Tracking.** [#1195](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1195),
 [#1196](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1196),
 [#1197](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1197).
+
+### 17.121 Spotify souvenir playlist export (decision, 2026-11-17)
+
+**Goal.**
+
+Give the couple a memory product after the wedding: the owner triggers a souvenir
+playlist built from accepted/played guest requests, created on the brand Spotify
+account and linked back in the admin, with an automatic CSV fallback when
+Spotify is unavailable.
+
+**Feature blocks.**
+
+- **F1 - Backend export.** `spotify_export` Edge Function, brand-account OAuth
+  refresh token, accepted/played request source, track resolution, public
+  playlist creation, export history and a CSV payload on failure.
+- **F2 - Admin action.** `SpotifyExportAction` in the wedding detail with loading,
+  success URL, history, unmatched note and automatic CSV fallback.
+
+**Release target.** **Backlog.** Milestone `Backlog`, label `backlog`. Not
+scheduled for a release.
+
+**Google Doc contract.** Not Doc-linked. New runtime table
+`wedding_spotify_exports` and deploy secrets only; no cartridge/Doc change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | Action, loading, playlist URL, history, CSV fallback |
+| Spotify (brand account) | Public playlist with resolved tracks |
+| Song requests / DJ history | Read-only source; accepted + played, deduped |
+| Other role views, guest, landing | Unchanged |
+
+**Out of scope.** Per-admin OAuth, playlist updates, photo/cover uploads, guest UI,
+Doc/schema changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Auth | Brand account refresh token in Supabase secrets |
+| Source | Accepted + played guest requests, deduped |
+| Re-exports | Create + persist a new export each time |
+| Fallback | Automatic CSV download with a discreet reason |
+| Placement | Admin wedding detail, no new route |
+| Secrets | Never exposed to the browser |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1198) | Export table, Edge Function, Spotify resolution/playlist, CSV fallback, tests | - |
+| 2 | [#1199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1199) | Admin action UI, states, i18n, tests | #1198 |
+
+**Open questions.** None.
+
+**Tracking.** [#1198](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1198),
+[#1199](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1199).
+
+### 17.122 Public team directory / trombinoscope (decision, 2026-11-17)
+
+**Goal.**
+
+Present the event team (MC, DJ, Photo, Video) on an elegant public page for
+guests and the couple, with professional portraits, localized roles, social
+links and a discreet Weselny Żabojad call-to-action, managed by the owner from the
+admin.
+
+**Feature blocks.**
+
+- **F1 - Data and access.** `event_team` members, a dedicated public team token
+  hash, admin CRUD and a sanitized `team` Edge Function.
+- **F2 - Admin editor.** `AdminTeamPanel` for members, ordering, URLs, previews
+  and public-link generation/rotation.
+- **F3 - Public view.** `/team/<token>` with `TeamDirectoryView` +
+  `TeamMemberCard`, responsive grid, lazy/fallback images, grayscale hover,
+  social links and brand CTA.
+
+**Release target.** **Release-1.2.** Milestone `Release-1.2`, label
+`release-1.2`. Not required for the first release.
+
+**Google Doc contract.** Not Doc-linked. New runtime tables only; external photo
+URLs; no Doc/template/schema/parser change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | Member CRUD, ordering, photos/social URLs, team link/QR |
+| Public `/team/<token>` | Responsive card grid, localized roles, social links, brand CTA |
+| Guests and couple | Read-only access through the token |
+| Deck/role views, recap, landing | Unchanged |
+
+**Out of scope.** Photo uploads/storage, realtime, guest interactions, language
+switch, and Doc/schema changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Access | Dedicated public team token, sanitized Edge Function |
+| Data | `event_team` per wedding, owner-managed |
+| Roles | MC, DJ, Photo, Video, Other with localized labels |
+| Photos | External `photo_url`, lazy loading, fallback avatar |
+| Socials | Instagram handle + website URL, inline SVG icons |
+| Upsell | Discreet CTA to weselnyzabojad.pl |
+| Locale | Device locale PL/FR/EN, PL default |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1200) | Tables, token, admin API, public Edge Function, tests | - |
+| 2 | [#1201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1201) | Admin member editor + link/QR, i18n, tests | #1200 |
+| 3 | [#1202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1202) | Public route, grid, cards, lazy/fallback, CTA, i18n | #1200, #1201 |
+
+**Open questions.** None.
+
+**Tracking.** [#1200](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1200),
+[#1201](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1201),
+[#1202](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1202).
