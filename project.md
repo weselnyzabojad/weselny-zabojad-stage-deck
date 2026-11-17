@@ -1432,8 +1432,8 @@ cartridge:
 Mapping is validation-first and deterministic. Missing required data must fail
 with a section/row error; derived values such as durations and prestation ready
 are calculated after mapping. Speech text stays verbatim and is never translated.
-Keep schema v1.1 until #77 freezes v1.2, and coordinate speech-source work with
-#245.
+Keep the schema on v1.1 for the first release, and coordinate speech-source work
+with #245.
 ([#350](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/350))
 
 The admin Drive flow must then produce a cartridge draft, run schema/semantic/
@@ -1823,10 +1823,10 @@ Drive changes require an explicit admin check, preview and publish action.
    and fixtures from production paths, and run the full CI suite plus a manual
    browser smoke test before release.
 
-Relations: #82's Drive transport/admin placement is superseded by #168ÔÇô#170 and
+Relations: #82's Drive transport/admin placement is superseded by #168–#170 and
 its role-side import removal by #166; #79 retains library-wide management, while
-#170 reuses its diff/backup primitives if available. WeddingSchema v1.2 (#77) is
-independent of this transport decision.
+#170 reuses its diff/backup primitives if available. The planned schema freeze
+(#77) is independent of this transport decision.
 
 ---
 
@@ -1834,7 +1834,7 @@ independent of this transport decision.
 
 Review register opened 2026-11-08. This section is historical: the tracked
 items were delivered through PRs #473-#522; the optional #459 shipped separately as advisory validation. Do
-**not** close #77 (schema v1.2), #80 (cartridge `mcCues`, P0) or #245 (speaker
+**not** close #77 (schema freeze), #80 (cartridge `mcCues`, P0) or #245 (speaker
 cartridge TODO) while working through this list.
 
 #### P0 - correctness
@@ -2128,8 +2128,8 @@ The indicator is cartridge-driven, never hardcoded in the UI:
 
 The original wiring exists from #277. This decision confirms the contract and
 asks for end-to-end regression coverage of explicit true/false and missing
-values through parse Ôćĺ validate Ôćĺ publish. UI display remains in #451. Keep the
-property at the cartridge root when #77 freezes schema v1.2. Tracked by
+values through parse → validate → publish. UI display remains in #451. Keep the
+property at the cartridge root for the schema freeze (#77). Tracked by
 [#452](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/452).
 
 #### Top-bar icon sizing (decision, 2026-11-08)
@@ -2744,7 +2744,8 @@ npm run validate:template
 npm run validate:i18n
 ```
 
-`WeddingSchema v1.2` is not frozen yet; tracking issue #77.
+`WeddingSchema v1.1` is the release contract; schema-freeze work is tracked by
+issue #77.
 
 ---
 
@@ -2968,10 +2969,10 @@ CI runs the same checks on pushes and pull requests to `master`.
 - Google Docs-first import (#82) has deterministic API-to-template parsing and
   AI-prompt cleanup; Drive transport/admin placement is tracked in #168ÔÇô#170.
   Admin JSON publishing remains, but role devices no longer import cartridges.
-- The Pocket role removal and per-role phone layouts shipped in #109ÔÇô#114.
+- The Pocket role removal and per-role phone layouts shipped in #109–#114.
 - The MC Stage Rail (current-step hero with done/upcoming accordions) is planned
   in #118ÔÇô#121; see `docs/mc-stage-rail-plan.md`.
-- v1.2 schema freeze (#77) and MC cue cleanup (#80) remain open. The
+- Schema-freeze work (#77) and MC cue cleanup (#80) remain open. The
   multi-wedding library work (#79) is closed.
 - `/deck/` static hosting still needs an Apache/SPA rewrite for deep links such
   as `/deck/8f3k2q/mc` and `/admin`. This is a known deployment limitation and
@@ -5962,9 +5963,9 @@ and copy in `src/i18n/{fr,pl,en}.js`.
 
 ### 17.67 Service-package contract implemented in v1.1 (decision, 2026-11-14)
 
-Resolve #881 without creating a half-frozen v1.2: the canonical field is
-`servicePackage` in `schema/wedding-schema-v1.1.json`, renamed in place because
-production has zero weddings and `#77` (v1.2 freeze) is closed. The field
+Resolve #881 without creating a half-frozen schema version: the canonical field
+is `servicePackage` in `schema/wedding-schema-v1.1.json`, renamed in place
+because production has zero weddings and `#77` (schema freeze) is closed. The field
 accepts only `HOST_ONLY`, `DJ_MC` and `HOST_AND_DJ_VIP`; legacy variants are
 rejected by validation and never collapsed into another package. The parser
 writes the single top-level value, the duplicate
