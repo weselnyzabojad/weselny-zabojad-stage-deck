@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { isLandingSurface, parseReleaseSurface } from './src/lib/releaseSurface.js'
+import { landingSurfacePlugin } from './scripts/vite-plugin-release-surface.mjs'
 
 // Sourcemap upload is build-only and opt-in. The token is a Netlify build
 // secret, never a VITE_* value, so it cannot reach the browser bundle.
@@ -17,6 +19,10 @@ export default defineConfig(({ command }) => {
   // builds. A normal production build resolves `@demo` to an empty stub, so no
   // wedding data can be read from the public bundle (issue #798).
   const demoEnabled = command === 'serve' || process.env.VITE_DECK_MODE === 'local'
+  // Issue #1152: one build-time switch chooses the release surface. An invalid
+  // value throws here, so a typo fails the build instead of publishing the deck.
+  const releaseSurface = parseReleaseSurface(process.env.RELEASE_SURFACE)
+  const landing = isLandingSurface(releaseSurface)
 
   return {
     resolve: {
@@ -33,6 +39,9 @@ export default defineConfig(({ command }) => {
     // headroom for release growth instead of silencing a warning we still need.
     build: {
       chunkSizeWarningLimit: 1500,
+      // Issue #1152: the landing-only surface resolves its own HTML entry; the
+      // release plugin renames the emitted file to index.html.
+      ...(landing ? { rollupOptions: { input: 'index.landing.html' } } : {}),
       // Hidden maps are produced only when they will be uploaded. The Sentry
       // plugin deletes them from dist after upload, so Netlify never serves
       // source. Without the token no map is emitted and no upload is attempted.
@@ -44,7 +53,8 @@ export default defineConfig(({ command }) => {
     plugins: [
       react(),
       tailwindcss(),
-    VitePWA({
+      landingSurfacePlugin({ landing }),
+    !landing && VitePWA({
       // Issue #81: never reload the live stage silently. A new service worker
       // waits until the user accepts the deferred "Update available" prompt.
       registerType: 'prompt',
