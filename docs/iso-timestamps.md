@@ -1,8 +1,9 @@
 # ISO actual timestamps (TODO 23 / issue #65)
 
-> **Status:** implemented in the app and v1.1-compatible. The v1.2 proposal
-> renames the field to `liveSyncState.actualTimestamps`; v1.1 remains canonical
-> until that proposal is approved.
+> **Status:** implemented in the app and v1.1-compatible. The app reads and
+> writes the ISO shape today. A future schema version may rename the field to
+> `liveSyncState.actualTimestamps`, but v1.1 is the only contract for the first
+> release.
 
 Actual step starts are stored as **full ISO-8601 instants** internally. `HH:MM`
 is only a display format. This removes the old ±12-hour fold limit, preserves
@@ -23,7 +24,7 @@ v1.1 cartridge / live state:
 }
 ```
 
-v1.2 target (camelCase):
+Future camelCase shape (not part of v1.1):
 
 ```json
 "liveSyncState": {
@@ -100,7 +101,8 @@ a bare clock has no date. The drift engine does **not** use it for ISO actuals:
 ## CLI migration
 
 [`scripts/migrate-actual-timestamps.mjs`](../scripts/migrate-actual-timestamps.mjs)
-upgrades a cartridge file or a saved cartridge library before v1.2 rollout.
+upgrades a cartridge file or a saved cartridge library before a camelCase
+rollout.
 
 ```bash
 npm run migrate:timestamps -- path/to/cartridge.json
@@ -119,9 +121,10 @@ npm run migrate:timestamps -- path/to/cartridge.json --check
 
 - v1.1 `$defs.actualTimestamp` accepts either a full ISO datetime or a legacy
   `HH:MM` clock. Both validate; the app normalizes the legacy form on load.
-- v1.2 should require the ISO form and rename `actual_timestamps` to
-  `actualTimestamps` as part of the camelCase migration. The app already reads
-  and writes the ISO shape, so only the key rename remains for that release.
+- A future schema version can require the ISO form and rename
+  `actual_timestamps` to `actualTimestamps` as part of a camelCase migration. The
+  app already reads and writes the ISO shape, so only the key rename would
+  remain. v1.1 keeps the current contract.
 - The optional `liveSyncState` in a cartridge is a seed. Runtime state is
   normalized again regardless of the seed's shape.
 

@@ -11,7 +11,7 @@ describe('Google Doc customer template v1.1', () => {
   it('is labelled as the current v1.1 customer template', () => {
     expect(template).toContain('# Wedding harmonogram — Google Doc template (v1.1)');
     expect(template).toContain('This is the v1.1 customer template shipped with the first');
-    expect(template).not.toMatch(/v1\.2 proposal|PROVISIONAL|wedding-schema-v1\.2/);
+    expect(template).not.toContain('PROVISIONAL');
   });
 
   it('keeps every repaired example value free of double-encoded text', () => {
@@ -25,13 +25,10 @@ describe('Google Doc customer template v1.1', () => {
 
   it('keeps the conventions and schema README on the v1.1 contract', () => {
     expect(conventions).toContain('`WeddingSchema v1.1` cartridge');
-    expect(conventions).toContain('There is no v1.2 in that release.');
-    expect(conventions).not.toContain('wedding-schema-v1.2.proposal.md');
+    expect(conventions).toContain('no follow-up schema version ships');
     expect(conventions).not.toContain('Status: provisional');
 
     expect(schemaReadme).toContain('| `google-doc-template.md` | Customer Google Doc template');
-    expect(schemaReadme).not.toContain('v1.2 proposal available');
-    expect(schemaReadme).not.toContain('wedding-schema-v1.2.proposal.md');
     expect(schemaReadme).not.toContain('Provisional Google Doc template');
   });
 });

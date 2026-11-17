@@ -49,8 +49,8 @@ export function resolveVenueTimeZone(wedding) {
   return isValidTimeZone(candidate) ? candidate : deviceTimeZone();
 }
 
-// `dateISO` is canonical in v1.2. Otherwise derive it from the display `date`
-// (DD.MM.YYYY). The UM `weddingId` has no parseable event date.
+// `dateISO` is the canonical event date. Otherwise derive it from the display
+// `date` (DD.MM.YYYY). The UM `weddingId` has no parseable event date.
 export function resolveEventDateISO(wedding) {
   if (DATE_ISO_PATTERN.test(wedding?.dateISO ?? '')) return wedding.dateISO;
 

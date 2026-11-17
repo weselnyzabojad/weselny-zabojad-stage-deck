@@ -31,8 +31,8 @@ export const DJ_DETAIL_TIERS = {
   STANDARD: 'standard',
 };
 
-// v1.1 cartridges carry `hostingMode`; v1.2 renames it to `servicePackage`.
-// The v1.2 migration maps HOST_AND_DJ -> HOST_AND_DJ_VIP, HOST_ONLY -> HOST_ONLY.
+// `servicePackage` is canonical. Legacy cartridges carry `hostingMode`; the
+// mapper reads both and maps HOST_AND_DJ -> HOST_AND_DJ_VIP, HOST_ONLY -> HOST_ONLY.
 export function resolveServicePackage(wedding) {
   if (typeof wedding?.servicePackage === 'string' && wedding.servicePackage) {
     return wedding.servicePackage;

@@ -2,7 +2,7 @@
 
 > **Status: current.** These conventions describe the v1.1 customer template
 > shipped with the first release. `schema/wedding-schema-v1.1.json` is the
-> canonical contract; there is no v1.2 in that release.
+> canonical contract for that release.
 
 The couple writes one Google Doc per wedding. The importer maps that Doc to a
 `WeddingSchema v1.1` cartridge deterministically, without an AI guess, by
@@ -439,10 +439,10 @@ invented and never a per-file special case:
 
 ## 7. Release contract (v1.1)
 
-The first release ships `WeddingSchema v1.1`. There is no v1.2 in that release.
-This template, these conventions and `schema/google-doc-field-map.json` are the
-v1.1 customer contract, kept green by `npm run validate:template` and
-`npm run validate:google-doc-map`.
+The first release ships `WeddingSchema v1.1`; no follow-up schema version ships
+in that release. This template, these conventions and
+`schema/google-doc-field-map.json` are the v1.1 customer contract, kept green by
+`npm run validate:template` and `npm run validate:google-doc-map`.
 
 Checklist:
 
