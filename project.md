@@ -9434,3 +9434,73 @@ navigation/language switch on the screen, signage history and Doc/schema edits.
 **Tracking.** [#1192](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1192),
 [#1193](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1193),
 [#1194](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1194).
+
+### 17.120 Venue Policy Guard (decision, 2026-11-17)
+
+**Goal.**
+
+Let the Venue Manager configure the physical rules of the venue (decibel limiter
+and forbidden special effects) and tag timeline steps, then surface calm,
+non-blocking warnings on the MC and DJ current-step surfaces so technical
+incidents are caught before they happen.
+
+**Feature blocks.**
+
+- **F1 - Contract and hook.** Optional `step.tags`
+  (`HIGH_INTENSITY`, `SMOKE`, `HAZE`, `SPARKS`), `venuePolicies` in the live-state
+  overrides (`{ decibelLimitEnabled, decibelLimit, forbiddenFx }`) and
+  `useVenuePolicies(stepTags, venueData)` returning redline + DMX-lock data.
+- **F2 - Venue configuration.** `VenueManagerView` gains the limiter toggle/input,
+  the three forbidden-FX checkboxes and a per-step tag editor, all saved through
+  the existing live-state override without touching mandatory settings.
+- **F3 - Stage alerts.** MC current card and DJ set notes show the amber redline
+  line; the current card shows muted-red DMX-lock badges with inline SVG icons.
+  No pop-ups, no dismissal, no top-bar changes.
+
+**Release target.** **First release.** No milestone, no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked for tags or policies. `step.tags` is an
+optional additive schema field entered by the Venue Manager in the app; the Doc
+template, parser and field map are unchanged.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Venue Manager | Limiter config, forbidden FX, per-step tags |
+| MC Master | Amber redline and DMX badges on the current card |
+| DJ Booth / DJ VIP | Redline in `DjSetNotesNotepad` + badges on the current card |
+| Photo, Video, Speaker, Musician, guest | Unchanged |
+| Top bar (Sync, PIN, language, theme) | Unchanged |
+| Schema | Optional `step.tags` only; no Doc contract change |
+
+**Out of scope.** Automatic audio measurement, DMX integration, blocking actions,
+pop-ups/toasts, a separate admin tag editor, and Doc/template/parser changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Policy storage | `media_overrides.venuePolicies` in the live state |
+| Tag storage | Optional `step.tags` written through the venue steps override |
+| Tag author | Venue Manager in `VenueManagerView` |
+| Tag values | `HIGH_INTENSITY`, `SMOKE`, `HAZE`, `SPARKS` |
+| Forbidden FX | `smoke`, `haze`, `sparks` |
+| Redline | `HIGH_INTENSITY` + active limiter → amber line with dB and `-3 dB` advice |
+| DMX warning | Muted red badge per forbidden effect, inline SVG, no Lucide |
+| Roles | MC and DJ only; no other views |
+| Interaction | None: no pop-up, no dismiss, no blocking |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1195](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1195) | Schema tags, venue policy shape, `useVenuePolicies`, tests | - |
+| 2 | [#1196](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1196) | Venue Manager config + per-step tag editor, i18n, tests | #1195 |
+| 3 | [#1197](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1197) | MC card + DJ notes/badges, i18n, layout tests | #1195 |
+
+**Open questions.** None.
+
+**Tracking.** [#1195](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1195),
+[#1196](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1196),
+[#1197](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1197).
