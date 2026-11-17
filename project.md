@@ -9687,3 +9687,63 @@ marketing campaigns/open analytics, and Google Doc/schema changes.
 **Tracking.** [#1203](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1203),
 [#1204](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1204),
 [#1205](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1205).
+
+### 17.124 Guest engagement heatmap (decision, 2026-11-17)
+
+**Goal.**
+
+Give the owner a post-event view of guest interaction: guest song requests
+bucketed every 15 minutes over a fixed 18:00–04:00 axis, aligned with the
+timeline step blocks, so energy peaks can be compared with what was happening on
+stage.
+
+**Feature blocks.**
+
+- **F1 - Data model.** Admin-only `music_engagement` action returning request
+  timestamps only, plus pure helpers for 15-minute buckets, timeline blocks and
+  `eventComplete`.
+- **F2 - Admin widget.** `GuestEngagementHeatmap` with custom SVG bars, step
+  blocks behind the series, emerald glow, fixed axis, tooltips and accessibility,
+  rendered only after the event.
+
+**Release target.** **First release.** No milestone, no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No schema, table, column, parser,
+template or field-map change.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding detail | Post-event heatmap panel only |
+| DJ/role views | Unchanged; no live heatmap |
+| Song requests | Read-only timestamps, all statuses |
+| Google Doc/schema | Unchanged |
+
+**Out of scope.** Live DJ view, realtime updates, genre analysis, Recharts,
+per-status splits, and schema/Doc changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Access | Owner admin only, post-event |
+| Placement | Admin wedding detail |
+| Requests | All statuses, timestamps only |
+| Axis | Fixed 18:00 → 04:00 |
+| Buckets | 15 minutes |
+| Background | One block per timeline step, type colours |
+| Chart | Custom SVG vertical bars, emerald glow |
+| Excluded data | Requests outside the window counted, not drawn |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1206](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1206) | `music_engagement`, bucketing/blocks helpers, tests | - |
+| 2 | [#1207](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1207) | Admin SVG heatmap, post-event gate, i18n, tests | #1206 |
+
+**Open questions.** None.
+
+**Tracking.** [#1206](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1206),
+[#1207](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1207).
