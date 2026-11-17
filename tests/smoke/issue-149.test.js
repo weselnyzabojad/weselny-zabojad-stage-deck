@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import DjSongRequestQueue, {
-  SongRequestQueueList,
+  SongRequestModerationList,
 } from '../../src/components/DjSongRequestQueue.jsx';
 import {
   canModerateSongRequests,
@@ -98,24 +98,23 @@ describe('issue #149 VIP song request queue', () => {
   });
 
   it('renders pending and accepted requests without denied rows', () => {
-    const html = renderToStaticMarkup(
-      createElement(SongRequestQueueList, {
-        requests: rows,
-        requestUrl: 'https://example.com/deck/request/abc123',
-      }),
+    const pendingHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'pending' }),
     );
-    expect(html).toContain('Guest requests');
-    expect(html).toContain('2 pending');
-    expect(html).toContain('First');
-    expect(html).toContain('Later');
-    expect(html).toContain('Accept');
-    expect(html).toContain('Deny');
-    expect(html).toContain('Guest request QR');
-    expect(html).toContain('Up next');
-    expect(html).toContain('Played');
-    expect(html).toContain('Yes');
-    expect(html).not.toContain('Declined');
-    expect(html).not.toContain('>No<');
+    expect(pendingHtml).toContain('First');
+    expect(pendingHtml).toContain('Later');
+    expect(pendingHtml).toContain('Accept First');
+    expect(pendingHtml).toContain('Deny First');
+    expect(pendingHtml).not.toContain('Declined');
+    expect(pendingHtml).not.toContain('>No<');
+
+    const acceptedHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'accepted' }),
+    );
+    expect(acceptedHtml).toContain('Yes');
+    expect(acceptedHtml).toContain('played');
+    expect(acceptedHtml).not.toContain('Declined');
+    expect(acceptedHtml).not.toContain('>No<');
   });
 
   it('does not mount for Standard or non-moderator roles', () => {

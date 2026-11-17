@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { SongRequestQueueList } from '../../src/components/DjSongRequestQueue.jsx';
+import { SongRequestModerationList } from '../../src/components/DjSongRequestQueue.jsx';
 import { subscribeSongRequestChanges } from '../../src/lib/songRequestQueue.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
@@ -22,31 +22,41 @@ const rows = [
 
 describe('issue #457 DJ VIP song request moderation', () => {
   it('shows pending and accepted requests, never denied or already played', () => {
-    const html = renderToStaticMarkup(
-      createElement(SongRequestQueueList, { requests: rows }),
+    const pendingHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'pending' }),
     );
-    expect(html).toContain('Pending Song');
-    expect(html).toContain('Accepted Song');
-    expect(html).toContain('Up next');
-    expect(html).toContain('Played');
-    expect(html).not.toContain('Denied Song');
-    expect(html).not.toContain('Played Song');
-    expect(html).not.toContain('Recent outcomes');
+    const acceptedHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'accepted' }),
+    );
+    expect(pendingHtml).toContain('Pending Song');
+    expect(acceptedHtml).toContain('Accepted Song');
+    for (const html of [pendingHtml, acceptedHtml]) {
+      expect(html).not.toContain('Denied Song');
+      expect(html).not.toContain('Played Song');
+    }
   });
 
   it('offers accessible Accept, Deny and Played actions', () => {
-    const html = renderToStaticMarkup(
-      createElement(SongRequestQueueList, { requests: rows }),
+    const pendingHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'pending' }),
     );
-    expect(html).toContain('aria-label="Accept Pending Song"');
-    expect(html).toContain('aria-label="Deny Pending Song"');
-    expect(html).toContain('aria-label="Mark Accepted Song as played"');
+    const acceptedHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: rows, tab: 'accepted' }),
+    );
+    expect(pendingHtml).toContain('aria-label="Accept Pending Song"');
+    expect(pendingHtml).toContain('aria-label="Deny Pending Song"');
+    expect(acceptedHtml).toContain('aria-label="Mark Accepted Song as played"');
   });
 
   it('renders the empty pending and accepted states', () => {
-    const html = renderToStaticMarkup(createElement(SongRequestQueueList, { requests: [] }));
-    expect(html).toContain('No pending guest requests');
-    expect(html).toContain('No accepted songs waiting');
+    const pendingHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: [], tab: 'pending' }),
+    );
+    const acceptedHtml = renderToStaticMarkup(
+      createElement(SongRequestModerationList, { requests: [], tab: 'accepted' }),
+    );
+    expect(pendingHtml).toContain('No pending guest requests');
+    expect(acceptedHtml).toContain('No accepted songs waiting');
   });
 
   it('subscribes to realtime changes and keeps the polling fallback', () => {

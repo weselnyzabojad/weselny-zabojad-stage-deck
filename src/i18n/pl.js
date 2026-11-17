@@ -223,6 +223,12 @@ const pl = {
   'dj.soloTitle': 'Pakiet solo.',
   'dj.soloBody':
     'Host i DJ działają z jednego urządzenia — otwórz widok MC, aby uzyskać skrypty i kontrolę opóźnienia. Szczegóły utworów pozostają na poziomie Standard.',
+  'dj.requests.moderate': 'Moderuj',
+  'dj.requests.moderateAria': 'Otwórz moderację próśb ({count} oczekujących)',
+  'dj.requests.panelTitle': 'Prośby gości',
+  'dj.requests.tabPending': 'Oczekujące ({count})',
+  'dj.requests.tabAccepted': 'Zaakceptowane ({count})',
+  'dj.requests.acceptedCount': '{count} do zagrania',
   'dj.requests.title': 'Prośby gości',
   'dj.requests.pendingCount': '{count} oczekuje',
   'dj.requests.pendingHeading': 'Oczekujące',
