@@ -8653,3 +8653,72 @@ smoke test.
 **Open questions.** None.
 
 **Tracking.** [#1155](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1155).
+
+### 17.108 Silent Flash on the current-step card (decision, 2026-11-17)
+
+**Goal.**
+
+Replace intrusive schedule-change popups for the crew with a discreet, click-free
+visual cue: when the MC or the venue manager reschedules a step, the shared 3D
+current-step card emits a short amber glow, pulses three times and fades out
+after 4 s. Existing banners and the MC mandatory popup stay in place; the flash
+is additive and never auto-focuses or blocks reading.
+
+**Feature blocks.**
+
+- **F1 - Card mechanism.** A `flash` descriptor on `TimelineFocusStack`, a
+  `useSilentFlash` hook, amber keyframes in `src/index.css`, a reduced-motion
+  static-ring fallback and an sr-only `role="status"` announcement reusing the
+  existing `scheduleChange.*` copy.
+- **F2 - Trigger and wiring.** A pure `src/lib/silentFlash.js` helper derives the
+  descriptor from `liveState.media_overrides.steps` (reschedule only, author
+  device excluded), and `StageDeck` forwards it to DJ, photo/video, venue
+  manager, musician, MC and DJ+MC views.
+
+**Google Doc contract.** Not Doc-linked. The trigger is runtime live state
+written by `applyMediaOverride` (`src/lib/liveStageState.js`); no schema, parser,
+field-map, template or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| DJ Booth / DJ VIP | Current card glows on a reschedule from another device |
+| Photographer / Video | Same, both focus-stack call sites |
+| Venue Manager | Same, single focus-stack call site |
+| Musician | Same, single focus-stack call site |
+| MC Master / DJ+MC | Same; the MC's own reschedule does not flash on their device |
+| Speaker | Out - read-only teleprompter, no current-step card to anchor the glow |
+| Song request, landing, admin, recap, 404 | Out - unrelated surfaces |
+| History/future cards | Out - only the current card flashes |
+
+**Out of scope.** Removing or restyling `ScheduleChangeBanner` and
+`MandatoryUpdatePopup`, flashing on step advance, undo or any other live-state
+write (`remoteUpdatedAt`), adding a new `tailwind.config.js` (Tailwind v4), and
+adding new locale keys.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Trigger | `media_overrides.steps.change.kind === 'reschedule'` only |
+| Step advance | No flash - explicitly excluded |
+| Author device | No flash on the device that made the change |
+| Existing alerts | Kept unchanged, flash is additive |
+| Visual | Amber ring + soft outer glow on theme tokens, 3 pulses, 4 s total |
+| Reduced motion | No animation; static amber ring for the same 4 s |
+| Screen readers | Visually hidden polite live region reusing `scheduleChange.*` |
+| Implementation | Hook owns the timer with `clearTimeout` cleanup; keyframes in `src/index.css` |
+
+**Task split.** Two ordered issues: the card mechanism first, then the trigger
+and view wiring.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1156](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1156) | `flash` prop, `useSilentFlash` hook, amber keyframes, reduced-motion fallback, sr-only announcement, tests | - |
+| 2 | [#1157](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1157) | `silentFlash.js` helper, `StageDeck` derivation, wiring in 5 views, tests | #1156 |
+
+**Open questions.** None.
+
+**Tracking.** [#1156](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1156),
+[#1157](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1157).
