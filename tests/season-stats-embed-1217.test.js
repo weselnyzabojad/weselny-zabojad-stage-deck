@@ -134,7 +134,7 @@ describe('public season stats embed', () => {
     expect(main).toContain('EMBED_ROUTE ?');
     expect(main).toContain('<PublicSeasonStatsWidget route={EMBED_ROUTE} />');
     expect(main).toContain("setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })");
-    expect(main).toContain('IS_LANDING || RECAP_TOKEN || EMBED_ROUTE');
+    expect(main).toContain('IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE');
   });
 
   it('ships the embed keys in PL, EN and FR', () => {
