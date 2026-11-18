@@ -43,6 +43,7 @@ import {
 } from '../_shared/adminAuth.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 import { buildPortfolioKpis } from '../_shared/portfolioKpis.js';
+import { normalizeCountry, resolveVenueCountry } from '../_shared/venueLocation.js';
 import {
   ALLOWED_ROLES,
   WEDDING_ID_PATTERN,
@@ -149,6 +150,7 @@ const ARCHIVED_BLOCKED_ACTIONS = new Set([
   'delete_musician',
   'set_role',
   'remove_role',
+  'update_wedding_venue',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
@@ -2690,7 +2692,7 @@ async function handleRequest(req: Request) {
         admin
           .from('weddings')
           .select(
-            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by',
+            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by, venue_name, venue_address, venue_city, venue_country',
           )
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
@@ -2718,9 +2720,13 @@ async function handleRequest(req: Request) {
 
       return json({
         weddings: (weddings.data ?? []).map((row: any) => {
-          const venue =
+          const legacyVenue =
             typeof row.cartridge?.venueDetails?.venue === 'string'
               ? row.cartridge.venueDetails.venue
+              : '';
+          const legacyAddress =
+            typeof row.cartridge?.venueDetails?.address === 'string'
+              ? row.cartridge.venueDetails.address
               : '';
           const { cartridge: _cartridge, ...summary } = row;
           const servicePackage =
@@ -2749,7 +2755,11 @@ async function handleRequest(req: Request) {
               : 'Content languages missing: set LANGUAGES → Supported before publishing.';
           return {
             ...summary,
-            venue,
+            venue: legacyVenue,
+            venue_name: row.venue_name ?? (legacyVenue || null),
+            venue_address: row.venue_address ?? (legacyAddress || null),
+            venue_city: row.venue_city ?? null,
+            venue_country: row.venue_country ?? null,
             servicePackage,
             djIdentityId,
             vipDjValid,
@@ -2999,6 +3009,64 @@ async function handleRequest(req: Request) {
         { source: 'backup_restore' },
       );
       return response;
+    }
+
+    if (action === 'update_wedding_venue') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+
+      const venueName = cleanProviderField(body?.venueName, 160);
+      const venueAddress = cleanProviderField(body?.venueAddress, 240);
+      const venueCity = cleanProviderField(body?.venueCity, 120);
+      const countryInput =
+        typeof body?.venueCountry === 'string' ? body.venueCountry.trim() : '';
+      const explicitCountry = normalizeCountry(countryInput);
+      if (countryInput && !explicitCountry) {
+        return json(
+          { error: 'Venue country must be a valid two-letter ISO 3166-1 code.' },
+          400,
+        );
+      }
+      const venueCountry = resolveVenueCountry({
+        country: explicitCountry,
+        city: venueCity,
+        address: venueAddress,
+      });
+      const fields = 'venue_name, venue_address, venue_city, venue_country';
+      const { data: before, error: readError } = await admin
+        .from('weddings')
+        .select(fields)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Wedding not found.' }, 404);
+
+      const { data: after, error } = await admin
+        .from('weddings')
+        .update({
+          venue_name: venueName,
+          venue_address: venueAddress,
+          venue_city: venueCity,
+          venue_country: venueCountry,
+        })
+        .eq('wedding_id', weddingId)
+        .select(fields)
+        .single();
+      if (error) throw error;
+
+      await writeAudit(admin, allowlisted, 'update_wedding_venue', weddingId, {
+        before,
+        after,
+      });
+      return json({
+        ok: true,
+        venue: {
+          name: after.venue_name,
+          address: after.venue_address,
+          city: after.venue_city,
+          country: after.venue_country,
+        },
+      });
     }
 
     if (action === 'archive') {
