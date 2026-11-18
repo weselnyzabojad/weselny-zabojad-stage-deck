@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
+import { speechPairsToScriptBlocks } from '../lib/speechScriptBlocks.js';
+import BilingualScriptViewer from './BilingualScriptViewer.jsx';
 import ModalShell from './ModalShell';
 
 const MODE_CHIPS = {
@@ -228,36 +230,20 @@ export default function SpeechesCard({ mode, speeches, speechBundle = null }) {
             </h2>
           </header>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+          <div className="min-h-0 flex-1 px-5 py-5">
             {reader.status === 'loading' ? (
               <p className="text-sm text-muted">{t('speeches.decrypting')}</p>
             ) : reader.status === 'error' ? (
               <p className="rounded border border-amber-800 bg-amber-950/40 p-3 text-sm text-amber-200">
                 {t('speeches.readerUnavailable')}
               </p>
-            ) : reader.data?.pairs?.length ? (
-              <div className="mx-auto max-w-3xl space-y-8">
-                {reader.data.pairs.map((pair, index) => (
-                  <section key={index} className="space-y-2">
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
-                      {t('speeches.translationLabel')} · {reader.data.mcLanguage}
-                    </p>
-                    <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed">
-                      {pair.translation ?? '—'}
-                    </div>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
-                      {t('speeches.sourceLabel')} · {reader.data.speakerLanguage}
-                    </p>
-                    <div className="whitespace-pre-wrap break-words font-body text-sm leading-relaxed text-muted sm:text-base">
-                      {pair.speaker}
-                    </div>
-                  </section>
-                ))}
-              </div>
             ) : (
-              <div className="mx-auto max-w-3xl whitespace-pre-wrap break-words font-body text-lg leading-relaxed text-ink">
-                {reader.data?.script}
-              </div>
+              <BilingualScriptViewer
+                scriptBlocks={speechPairsToScriptBlocks(reader.data)}
+                languageA={reader.data?.speakerLanguage ?? readerSpeech?.speakerLanguage}
+                languageB={reader.data?.mcLanguage ?? readerSpeech?.mcLanguage}
+                initialActive="b"
+              />
             )}
           </div>
         </div>

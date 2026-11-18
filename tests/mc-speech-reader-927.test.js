@@ -58,14 +58,13 @@ describe('issue #927 MC speech list, live controls and reader', () => {
     expect(html).not.toContain('Start speech');
   });
 
-  it('shows MC translation first and the speaker source second', () => {
+  it('uses the shared bilingual viewer in the existing reader modal', () => {
     const card = read('src/components/SpeechesCard.jsx');
-    expect(card).toContain('speeches.translationLabel');
-    expect(card).toContain('speeches.sourceLabel');
+    expect(card).toContain('BilingualScriptViewer');
+    expect(card).toContain('speechPairsToScriptBlocks');
+    expect(card).toContain('initialActive="b"');
     expect(card).toContain('ModalShell');
-    expect(card.indexOf('speeches.translationLabel')).toBeLessThan(
-      card.indexOf('speeches.sourceLabel'),
-    );
+    expect(card).not.toContain('reader.data.pairs.map');
     expect(card).toContain('speechBundle.openSpeech');
     expect(card).toContain('speechBundle.startSpeech');
     expect(card).toContain('speechBundle.endSpeech');

@@ -139,11 +139,11 @@ describe('issue #926 per-speech speaker access', () => {
 
   it('renders the dedicated bilingual view with cache and revoked states', () => {
     const view = read('src/components/SpeakerView.jsx');
-    expect(view).toContain("t('speaker.translationLabel')");
-    expect(view).toContain("t('speaker.sourceLabel')");
+    expect(view).toContain('BilingualScriptViewer');
+    expect(view).toContain('speechPairsToScriptBlocks');
     expect(view).toContain("t('speaker.revokedTitle')");
     expect(view).toContain("t('speaker.offlineNotice')");
-    expect(view).toContain('speechAccess.speech.pairs');
+    expect(view).toContain('speechAccess.speech');
     expect(read('src/StageDeck.jsx')).toContain('useSpeakerSpeech');
     expect(read('src/App.jsx')).toContain('clearSpeakerAccessCache');
   });
