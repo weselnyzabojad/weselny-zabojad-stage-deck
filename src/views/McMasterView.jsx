@@ -608,6 +608,7 @@ export default function McMasterView({ model }) {
       steps={WEDDING?.steps ?? steps ?? []}
       liveState={liveState}
       closureTime={closureTime}
+      wedding={WEDDING}
     />
   );
 

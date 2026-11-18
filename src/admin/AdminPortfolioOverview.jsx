@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
 import { fetchPortfolioKpis } from './adminApi';
+import SocialExportStudio from '../components/SocialExportStudio';
 import {
   nextPortfolioSort,
   portfolioYears,
@@ -143,6 +144,7 @@ export function PortfolioOverviewView({
   onQueryChange = () => {},
   onSort = () => {},
   onRefresh = () => {},
+  onSocial = null,
   readOnly = false,
   demo = false,
 }) {
@@ -559,6 +561,15 @@ export function PortfolioOverviewView({
                       <td className="px-3 py-2">
                         <div className="font-semibold text-ink">{row.couple || t('admin.portfolio.noData')}</div>
                         <div className="font-mono text-[9px] text-muted">{row.id}</div>
+                        {onSocial ? (
+                          <button
+                            type="button"
+                            onClick={() => onSocial(row)}
+                            className="mt-1 rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-strong"
+                          >
+                            {t('social.open')}
+                          </button>
+                        ) : null}
                       </td>
                       <td className="px-3 py-2 font-mono text-[10px] text-muted">{row.date || t('admin.portfolio.noData')}</td>
                       <td className="px-3 py-2"><StatusPill status={row.status} t={t} /></td>
@@ -633,6 +644,7 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reload, setReload] = useState(0);
+  const [socialRow, setSocialRow] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -655,19 +667,31 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   }, [filters, reload]);
 
   return (
-    <PortfolioOverviewView
-      data={data}
-      loading={loading}
-      error={error}
-      filters={filters}
-      query={query}
-      sort={sort}
-      onFilterChange={setFilters}
-      onQueryChange={setQuery}
-      onSort={setSort}
-      onRefresh={() => setReload((value) => value + 1)}
-      readOnly={readOnly}
-      demo={ADMIN_DEMO}
-    />
+    <>
+      <PortfolioOverviewView
+        data={data}
+        loading={loading}
+        error={error}
+        filters={filters}
+        query={query}
+        sort={sort}
+        onFilterChange={setFilters}
+        onQueryChange={setQuery}
+        onSort={setSort}
+        onRefresh={() => setReload((value) => value + 1)}
+        onSocial={setSocialRow}
+        readOnly={readOnly}
+        demo={ADMIN_DEMO}
+      />
+      {socialRow ? (
+        <div className="mt-4">
+          <SocialExportStudio
+            surface="admin"
+            wedding={socialRow}
+            onClose={() => setSocialRow(null)}
+          />
+        </div>
+      ) : null}
+    </>
   );
 }
