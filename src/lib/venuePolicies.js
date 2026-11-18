@@ -50,6 +50,31 @@ export function normalizeVenuePolicies(raw) {
   };
 }
 
+export function validateVenuePolicyDraft(raw) {
+  const policies = normalizeVenuePolicies(raw);
+  if (raw?.decibelLimitEnabled === true) {
+    if (!Number.isFinite(raw.decibelLimit)) {
+      return { valid: false, error: 'missing-limit', policies };
+    }
+    if (raw.decibelLimit < 50 || raw.decibelLimit > 120) {
+      return { valid: false, error: 'out-of-range', policies };
+    }
+  }
+  return { valid: true, error: null, policies };
+}
+
+export function setStepTag(steps, stepId, tag, enabled) {
+  const list = Array.isArray(steps) ? steps : [];
+  return list.map((step) => {
+    if (step?.id !== stepId) return step;
+    const current = normalizeStepTags(step.tags);
+    const next = enabled
+      ? normalizeStepTags([...current, tag])
+      : current.filter((entry) => entry !== tag);
+    return { ...step, tags: next };
+  });
+}
+
 export function venuePolicyWarnings(stepTags, rawPolicies) {
   const policies = normalizeVenuePolicies(rawPolicies);
   const tags = normalizeStepTags(stepTags);
