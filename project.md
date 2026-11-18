@@ -10241,3 +10241,13 @@ historical trends and per-wedding data.
 | 1 | [#1248](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1248) | Compact unified card, inline KPI layout, thin footer, PL/FR/EN switch, tests/docs | #1246 |
 
 **Open questions.** None.
+
+**Alignment update (2026-11-18).** Issue
+[#1240](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1240)
+is closed as **not planned / superseded** by #1245, #1246 and #1248. The public
+season widget remains the iframe surface and is no longer scheduled for removal.
+Issue [#1238](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1238)
+is realigned to the compact two-KPI iframe handoff, and
+[#1243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1243)
+is realigned to release notes without the old widget-removal step. #1239
+(`/extra/banner`) and the React admin remain unchanged.
