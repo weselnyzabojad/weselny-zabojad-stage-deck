@@ -5,7 +5,16 @@
 export const PORTFOLIO_STATUSES = ['all', 'active', 'archived'];
 
 const searchable = (row) =>
-  [row.couple, row.id, row.date, row.dateISO, row.servicePackage]
+  [
+    row.couple,
+    row.id,
+    row.date,
+    row.dateISO,
+    row.servicePackage,
+    row.country,
+    row.city,
+    row.venueName,
+  ]
     .filter(Boolean)
     .join(' ')
     .toLowerCase();
