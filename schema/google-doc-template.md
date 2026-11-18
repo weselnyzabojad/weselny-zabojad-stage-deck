@@ -48,6 +48,18 @@ Default content: PL
 Supported: PL, FR, EN
 Notes: Couple speaks FR/PL; most guests understand EN.
 
+## DEMOGRAPHICS
+
+Optional guest counts. Enter non-negative whole numbers only; leave a line
+blank when the count is unknown. Missing counts stay empty and are never
+replaced with zero. `Notes` is a short free-text line, not a contact list.
+
+Guests total: 96
+Guests PL: 64
+Guests FR: 24
+Guests other: 8
+Notes: 12 children; two guests need vegetarian meals.
+
 ## CULTURAL RULES
 
 Sto Lat, Gorzko and Bread & Salt statuses are required. Sto Lat accepts

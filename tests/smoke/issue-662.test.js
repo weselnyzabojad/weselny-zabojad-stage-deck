@@ -35,8 +35,12 @@ describe('issue #662 demographics Google Doc source flags', () => {
   });
 
   it('degrades the optional demographics values safely when the Doc omits them', async () => {
+    const withoutDemographics = read('schema/google-doc-template.md').replace(
+      /## DEMOGRAPHICS[\s\S]*?(?=\n## )/,
+      '',
+    );
     const { cartridge, warnings } = googleDocTemplateToCartridge(
-      parseGoogleDocTemplate(read('schema/google-doc-template.md')),
+      parseGoogleDocTemplate(withoutDemographics),
     );
 
     expect(cartridge.demographics).toEqual({});
