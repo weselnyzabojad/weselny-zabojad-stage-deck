@@ -9811,3 +9811,116 @@ PDF libraries, schema/Doc changes, and new MC compatibility controls.
 
 **Tracking.** [#1208](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1208),
 [#1209](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1209).
+
+### 17.126 Public "Live Season Stats" embeddable widget (decision, 2026-11-18)
+
+**Goal.**
+
+Give the WordPress site a zero-chrome, public season banner that aggregates real
+Stage Deck outcomes across weddings: guests hosted, destinations, Sto Lat
+adoptions and animations orchestrated. The widget must expose no raw table, must
+survive the 30-day wedding/live-state purge, and must degrade to a calm fallback
+instead of showing zeros or an error screen.
+
+**Feature group.** Public Live Season Stats embed.
+
+**Release target.** First release. No future milestone, no `release-1.2` label.
+
+**Data audit.** The plan is based on the real columns and runtime contracts
+already in the repository:
+
+| Source | Available data | Retention |
+| --- | --- | --- |
+| `weddings` | couple, date, cartridge, `archived_at`, `expires_at` | 30-day TTL |
+| `live_sync_state` | `completed_step_ids`, `actual_timestamps`, `step_order`, `game_results` | purged with the wedding |
+| `song_requests` | `status`, `played_at`, `created_at` | purged with the wedding |
+| `wedding_recaps` | immutable recap payload with timeline, games and ceremony | 90-day TTL |
+| `cartridge_revisions` | publish history | operational |
+
+Not available or not reliable today: a structured wedding city/country, guest
+counts from the Google Doc parser (it currently keeps `demographics.notes` only),
+a Sto Lat budget/counter, a curfew-compliance history and a true event-end
+timestamp. The reviewed Supabase project contained 0 weddings and no
+`wedding_recaps` table at plan time, so KPI viability was validated against the
+schema and fixtures, not production volumes.
+
+**KPI contract.**
+
+| KPI | Definition | Source | Fallback |
+| --- | --- | --- | --- |
+| Guests hosted | Sum of `demographics.total` | Existing cartridge only; partial coverage | Hide card below the coverage threshold; show “sur X mariages renseignés” |
+| Destinations | Distinct countries represented | Admin venue city/address, resolved to ISO country | Hide card when no country is resolved |
+| Sto Lat weddings | Weddings whose normalized status is `YES` or `ON_REQUEST` | `culturalRules.sto_lat.status` | Hide card when no facts |
+| Animations orchestrated | Played games + ceremony parts + enabled oczepiny sub-events | Recap payload + cartridge | Hide card when no animations |
+
+**Season persistence.** A recap publish writes one durable, anonymized
+`season_event_facts` row keyed by a SHA-256 hash of the wedding id. Facts carry
+guests, country, Sto Lat, games, ceremony and oczepiny counts only; no names,
+wedding id, address, city, contacts or raw rows. Republishing updates the same
+row. The public RPC aggregates the current calendar year (event date, publish
+year fallback). This is the only way to keep a season total after the 30-day
+wedding purge and the 90-day recap purge.
+
+**Google Doc contract.**
+
+| Part | Decision |
+| --- | --- |
+| Guests | Not Doc-linked in this change; use existing `demographics.*` when present |
+| Sto Lat | Existing `## CULTURAL RULES` table; schema values normalized to `YES / ON_REQUEST / NO` |
+| Venue city/country | Not Doc-linked; owner-admin venue fields |
+| Season RPC / embed | Not Doc-linked |
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/embed/season-stats` | Public zero-chrome widget; PL default, `?lang=fr|en`, `?theme=transparent` |
+| Admin wedding detail | Venue name/address/city/country editor |
+| `admin_api` | Venue read/write, recap-publish fact ingestion |
+| Supabase | `season_event_facts` table + `get_public_season_stats()` RPC |
+| Netlify | `/embed/*` frame-ancestors for the two WordPress origins |
+| All other stage/admin/recap/guest views | Unchanged |
+
+**Out of scope.** Real-time fact updates, historical trends beyond the current
+season, a public per-wedding API, curfew-compliance reporting, exposing city or
+address publicly, WordPress site editing, deployment, and admin localization
+(#1181 is Release-1.2).
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Audience | Public WordPress visitors |
+| Route | `/embed/season-stats` |
+| KPIs | Guests, destinations, Sto Lat weddings, animations |
+| Season | Calendar year of the event |
+| Persistence | Anonymized facts, one per wedding, written on recap publish |
+| Public data path | Single `SECURITY DEFINER` RPC; table closed to anon/authenticated |
+| Guests | Existing demographics only; partial coverage allowed |
+| Destinations | Admin venue fields; country derived deterministically or set explicitly |
+| Sto Lat | Normalize to `YES / ON_REQUEST / NO`; count `YES` + `ON_REQUEST` |
+| Animations | Games + ceremony parts + oczepiny sub-events |
+| On-time/curfew | Rejected: no true end timestamp and no curfew history |
+| Theme | Dark by default; `?theme=transparent` optional |
+| Language | Polish default; FR/EN through `?lang=` |
+| Attribution | “Season statistics • Powered by Stage Deck”, new-tab link |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1213](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1213) | Normalize `sto_lat.status` to `YES / ON_REQUEST / NO`, legacy mapping, fixtures/tests | - |
+| 2 | [#1212](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1212) | Venue location columns, admin API read/write, country resolution, audit, tests | - |
+| 3 | [#1214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1214) | Admin venue editor in the wedding detail | #1212 |
+| 4 | [#1215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1215) | Anonymized season facts, recap-publish ingestion, backfill, public RPC, tests | #1213, #1212 |
+| 5 | [#1217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1217) | `/embed/season-stats`, `PublicSeasonStatsWidget`, params, fallback, i18n, tests | #1215 |
+| 6 | [#1216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1216) | Netlify `frame-ancestors`, remove global XFO, WordPress snippet, tests | #1217 |
+
+**Open questions.** None.
+
+**Tracking.** [#1212](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1212),
+[#1213](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1213),
+[#1214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1214),
+[#1215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1215),
+[#1216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1216),
+[#1217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1217).
