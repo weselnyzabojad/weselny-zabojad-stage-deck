@@ -492,3 +492,47 @@ input[type="checkbox"] {
     scrollbar-width: thin;
   }
 }
+
+/* Bilingual script viewer (issue #1173): hidden scrollbar, language markers and
+   a CSS full-viewport fallback when the native Fullscreen API is unavailable. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.script-marker-a,
+.script-marker-b {
+  position: relative;
+}
+
+.script-marker-a::before,
+.script-marker-b::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 999px;
+}
+
+.script-marker-a::before {
+  background: linear-gradient(to bottom, #3b82f6, #ffffff 50%, #ef4444);
+}
+
+.script-marker-b::before {
+  background: linear-gradient(to bottom, #ffffff, #ef4444);
+}
+
+.bilingual-focus {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  padding: 1rem;
+  overflow-y: auto;
+  background: var(--bg-page);
+}
