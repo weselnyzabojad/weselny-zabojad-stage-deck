@@ -69,9 +69,10 @@ describe('issue #1137 couple-facing wedding recap', () => {
     ]) {
       expect(page).toContain(section);
     }
-    expect(page).toContain("t('recap.print')");
+    const summary = read('src/components/ClientExecutiveSummaryView.jsx');
+    expect(summary).toContain("t('recap.print')");
+    expect(summary).toContain('print:hidden');
     expect(page).toContain('window.print()');
-    expect(page).toContain('print:hidden');
     expect(page).toContain('noindex, nofollow');
     expect(page).toContain("meta.setAttribute('name', 'robots')");
     expect(page).not.toContain('mutation_log');
