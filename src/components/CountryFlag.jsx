@@ -164,14 +164,14 @@ const FLAGS = {
   ),
 };
 
-export default function CountryFlag({ code }) {
+export default function CountryFlag({ code, className = 'h-3 w-4' }) {
   const normalized = typeof code === 'string' ? code.trim().toUpperCase() : '';
   const flag = FLAGS[normalized];
   if (!flag) {
     return (
       <span
         data-flag-fallback={normalized}
-        className="inline-flex h-3 min-w-4 items-center justify-center rounded-[2px] border border-[#EAE2D3] bg-[#FAF8F5] px-1 text-[8px] font-semibold text-[#78716C]"
+        className={`inline-flex min-w-4 items-center justify-center rounded-[2px] border border-[#EAE2D3] bg-[#FAF8F5] px-1 text-[8px] font-semibold text-[#78716C] ${className}`}
       >
         {normalized || '—'}
       </span>
@@ -182,7 +182,7 @@ export default function CountryFlag({ code }) {
       data-country-flag={normalized}
       aria-hidden="true"
       viewBox="0 0 24 16"
-      className="h-3 w-4 shrink-0 overflow-hidden rounded-[2px] shadow-xs"
+      className={`${className} shrink-0 overflow-hidden rounded-[2px] shadow-xs`}
     >
       {flag}
     </svg>

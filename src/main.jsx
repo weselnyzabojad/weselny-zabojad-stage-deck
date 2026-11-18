@@ -40,7 +40,9 @@ const EMBED_ROUTE =
         import.meta.env.BASE_URL,
       )
     : null
-if (EMBED_ROUTE) setLocale(EMBED_ROUTE.lang, { persist: false })
+if (EMBED_ROUTE) {
+  setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })
+}
 const LEGACY_ADMIN =
   typeof window !== 'undefined' && isLegacyAdminPath(window.location.pathname)
 if (LEGACY_ADMIN) {

@@ -56,7 +56,7 @@ beforeEach(() => {
 describe('public season stats embed', () => {
   it('parses the embed route with per-request language, theme and preview state', () => {
     expect(parseSeasonStatsEmbed('/embed/season-stats', '')).toMatchObject({
-      lang: 'pl',
+      lang: null,
       theme: 'transparent',
       previewState: null,
     });
@@ -133,7 +133,7 @@ describe('public season stats embed', () => {
     expect(main).toContain('parseSeasonStatsEmbed');
     expect(main).toContain('EMBED_ROUTE ?');
     expect(main).toContain('<PublicSeasonStatsWidget route={EMBED_ROUTE} />');
-    expect(main).toContain('setLocale(EMBED_ROUTE.lang, { persist: false })');
+    expect(main).toContain("setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })");
     expect(main).toContain('IS_LANDING || RECAP_TOKEN || EMBED_ROUTE');
   });
 

@@ -80,8 +80,8 @@ describe('issue #1216 Netlify embed policy and WordPress handoff', () => {
     expect(docs).toContain('?lang=fr');
     expect(docs).toContain('?lang=en');
     expect(docs).toContain('?theme=transparent');
-    expect(docs).toContain('| Mobile (< 768px) | 520px | 440px |');
-    expect(docs).toContain('| Desktop (≥ 768px) | 360px | 300px |');
+    expect(docs).toContain('| Mobile (< 768px) | 240px | 200px |');
+    expect(docs).toContain('| Desktop (≥ 768px) | 160px | 130px |');
     expect(docs).toContain('next-wedding strip');
     expect(docs).toContain('https://www.weselnyzabojad.pl');
     expect(docs).toContain('https://weselnyzabojad.pl');
