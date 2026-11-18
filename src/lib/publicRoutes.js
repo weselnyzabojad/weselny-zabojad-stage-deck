@@ -40,7 +40,7 @@ export function parseSeasonStatsEmbed(pathname = '', search = '', baseUrl = '/')
   const requested = (params.get('lang') || '').toLowerCase();
   const previewState = (params.get('previewState') || '').toLowerCase();
   return {
-    lang: EMBED_LANGUAGES.includes(requested) ? requested : 'pl',
+    lang: EMBED_LANGUAGES.includes(requested) ? requested : null,
     theme: params.get('theme') === 'cream' ? 'cream' : 'transparent',
     previewState: ['pre', 'live', 'post'].includes(previewState) ? previewState : null,
   };

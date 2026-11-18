@@ -88,9 +88,9 @@ beforeEach(() => {
 });
 
 describe('issue #1246 two-KPI season widget and states', () => {
-  it('renders exactly two KPI cards', () => {
+  it('renders exactly two KPI columns', () => {
     const html = render(live);
-    expect((html.match(/data-kpi-card/g) ?? []).length).toBe(2);
+    expect((html.match(/data-kpi-column=/g) ?? []).length).toBe(2);
     expect(html).not.toContain('International weddings');
     expect(html).not.toContain('Animations orchestrated');
     expect(html).not.toContain('Sto Lat');
@@ -172,10 +172,17 @@ describe('issue #1246 two-KPI season widget and states', () => {
     expect(read('.env.example')).toContain('VITE_EMBED_PREVIEW=1');
   });
 
-  it('keeps the compact two-column layout and branded footer', () => {
-    expect(widget).toContain('grid-cols-1');
+  it('uses the compact unified band, thin footer and two-column dividers', () => {
+    expect(widget).toContain('max-w-4xl');
+    expect(widget).toContain('rounded-xl');
+    expect(widget).toContain('px-4 py-1.5');
     expect(widget).toContain('sm:grid-cols-2');
-    expect(widget).toContain('items-stretch');
+    expect(widget).toContain('divide-y');
+    expect(widget).toContain('sm:divide-x');
+    expect(widget).toContain('text-xl');
+    expect(widget).toContain('sm:text-2xl');
+    expect(widget).toContain('text-[#292524]');
+    expect(widget).toContain('px-4 py-1');
     expect(widget).toContain('tabular-nums');
     expect(widget).toContain("t('embed.footer.season')");
     expect(widget).toContain('target="_blank"');
@@ -183,5 +190,18 @@ describe('issue #1246 two-KPI season widget and states', () => {
     const html = render(post);
     expect(html).toContain('Season statistics 2025');
     expect(html).toContain('Powered by');
+  });
+
+  it('renders the PL/FR/EN switcher and resolves language priority', () => {
+    const html = render(pre);
+    expect(html).toContain('role="radiogroup"');
+    expect(html).toContain('aria-label="Polski"');
+    expect(html).toContain('aria-label="Français"');
+    expect(html).toContain('aria-label="English"');
+    expect(html).toContain('aria-checked="true"');
+    expect(widget).toContain('changeLocale(code)');
+    expect(read('src/main.jsx')).toContain(
+      "setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })",
+    );
   });
 });

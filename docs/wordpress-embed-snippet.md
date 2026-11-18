@@ -12,12 +12,12 @@ widget (Elementor) on the WordPress page where the season stats should appear.
     title="Statistiques de saison — Weselny Żabojad"
     loading="lazy"
     referrerpolicy="strict-origin-when-cross-origin"
-    style="display:block;width:100%;border:0;height:520px;"
+    style="display:block;width:100%;border:0;height:240px;"
   ></iframe>
 </div>
 <style>
   @media (min-width: 768px) {
-    .wz-season-stats iframe { height: 360px; }
+    .wz-season-stats iframe { height: 160px; }
   }
 </style>
 ```
@@ -28,8 +28,8 @@ the target page.
 
 | Layout | Recommended height | Without next-wedding strip |
 | --- | --- | --- |
-| Mobile (< 768px) | 520px | 440px |
-| Desktop (≥ 768px) | 360px | 300px |
+| Mobile (< 768px) | 240px | 200px |
+| Desktop (≥ 768px) | 160px | 130px |
 
 The widget itself is responsive: two KPI cards side by side on desktop and
 stacked on mobile. Destination badges wrap inside the card. Do not set a fixed
