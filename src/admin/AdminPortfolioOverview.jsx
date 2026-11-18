@@ -35,9 +35,19 @@ const COLUMNS = [
   { key: 'dateISO', label: 'admin.portfolio.table.date' },
   { key: 'status', label: 'admin.portfolio.table.status' },
   { key: 'servicePackage', label: 'admin.portfolio.table.package' },
+  { key: 'guestsTotal', label: 'admin.portfolio.table.guests' },
+  { key: 'country', label: 'admin.portfolio.table.country' },
+  { key: 'providerCount', label: 'admin.portfolio.table.providers' },
+  { key: 'musicianCount', label: 'admin.portfolio.table.musicians' },
+  { key: 'speechCount', label: 'admin.portfolio.table.speeches' },
+  { key: 'witnessCount', label: 'admin.portfolio.table.witnesses' },
+  { key: 'questionCount', label: 'admin.portfolio.table.questions' },
+  { key: 'songCount', label: 'admin.portfolio.table.songs' },
   { key: 'completionPct', label: 'admin.portfolio.table.progress' },
   { key: 'onTimePct', label: 'admin.portfolio.table.onTime' },
   { key: 'biggestDelayMinutes', label: 'admin.portfolio.table.delay' },
+  { key: 'scheduleChangeCount', label: 'admin.portfolio.table.changes' },
+  { key: 'actualEnd', label: 'admin.portfolio.table.end' },
   { key: 'requestsTotal', label: 'admin.portfolio.table.requests' },
   { key: 'compatibilityPct', label: 'admin.portfolio.table.compatibility' },
   { key: 'recapPublished', label: 'admin.portfolio.table.recap' },
@@ -553,6 +563,14 @@ export function PortfolioOverviewView({
                       <td className="px-3 py-2 font-mono text-[10px] text-muted">{row.date || t('admin.portfolio.noData')}</td>
                       <td className="px-3 py-2"><StatusPill status={row.status} t={t} /></td>
                       <td className="px-3 py-2 text-[10px] text-muted">{row.servicePackage || t('admin.portfolio.noData')}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.guestsTotal, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{row.country || t('admin.portfolio.noData')}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.providerCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.musicianCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.speechCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.witnessCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.questionCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.songCount, t)}</td>
                       <td className="px-3 py-2 text-[10px] text-muted">
                         {row.completionPct == null
                           ? t('admin.portfolio.noData')
@@ -568,6 +586,8 @@ export function PortfolioOverviewView({
                           ? t('admin.portfolio.noData')
                           : t('admin.portfolio.value.delay', { minutes: row.biggestDelayMinutes })}
                       </td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{count(row.scheduleChangeCount, t)}</td>
+                      <td className="px-3 py-2 font-mono text-[10px] text-muted">{row.actualEnd || t('admin.portfolio.noData')}</td>
                       <td className="px-3 py-2 text-[10px] text-muted">
                         {row.requestsTotal > 0
                           ? t('admin.portfolio.value.requests', {
