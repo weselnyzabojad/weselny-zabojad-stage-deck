@@ -134,12 +134,37 @@ function asRecapPayload(recap) {
   return recap.payload && typeof recap.payload === 'object' ? recap.payload : recap;
 }
 
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
+function unique(values) {
+  return [...new Set(values.filter((value) => typeof value === 'string' && value.trim()))];
+}
+
+function countBy(values) {
+  const counts = {};
+  for (const value of values) {
+    if (!value) continue;
+    counts[value] = (counts[value] ?? 0) + 1;
+  }
+  return counts;
+}
+
 export function buildPortfolioRow({
   wedding,
   liveState = null,
   recap = null,
   requests = [],
   roles = [],
+  providers = [],
+  musicians = [],
+  speeches = [],
+  gameBundles = [],
+  receipts = [],
+  sessions = [],
+  presence = [],
+  cartridgeRevision = null,
   now = new Date(),
 } = {}) {
   const cartridge = wedding?.cartridge ?? {};
@@ -173,6 +198,61 @@ export function buildPortfolioRow({
   if (!payload) readiness.push('recap_not_published');
   if (timing.onTimePct == null) readiness.push('missing_actuals');
 
+  const coupleProfile = cartridge.coupleProfile ?? {};
+  const demographics = cartridge.demographics ?? {};
+  const culturalRules = cartridge.culturalRules ?? {};
+  const musicPolicy = cartridge.musicPolicy ?? {};
+  const providerRows = asArray(providers);
+  const musicianRows = asArray(musicians);
+  const speechRows = asArray(speeches);
+  const bundleRows = asArray(gameBundles);
+  const witnessRows = asArray(cartridge.witnesses);
+  const speechPlan = asArray(cartridge.speeches);
+  const ceremonySteps = steps.filter((step) => step?.type === 'CEREMONY');
+  const hardAnchors = asArray(cartridge.hardAnchors);
+  const stepTypes = unique(steps.map((step) => text(step?.type)));
+  const locations = unique(steps.map((step) => text(step?.location)));
+  const importantSongs = asArray(musicPolicy.importantSongs);
+  const requestWindow = musicPolicy.requestWindow ?? null;
+  const activeProviders = providerRows.filter((row) => row?.active !== false);
+  const providerCategories = unique(providerRows.map((row) => text(row?.category)));
+  const activeMusicians = musicianRows.filter((row) => row?.active !== false);
+  const publishedBundles = bundleRows.filter((row) => !row?.status || row.status === 'PUBLISHED');
+  const compatibilityQuestions = publishedBundles.reduce(
+    (sum, row) => sum + (number(row?.question_count) ?? 0),
+    0,
+  );
+  const venue = {
+    name: text(wedding?.venue_name) ?? text(cartridge.venueDetails?.venue),
+    city: text(wedding?.venue_city),
+    country: text(wedding?.venue_country),
+  };
+  const guestCounts = {
+    total: number(demographics.total),
+    pl: number(demographics.pl),
+    fr: number(demographics.fr),
+    other: number(demographics.other),
+  };
+  const cultural = {
+    stoLat: text(culturalRules?.sto_lat?.status),
+    gorzko: text(culturalRules?.gorzko?.status),
+    breadSalt: text(culturalRules?.bread_salt?.status),
+  };
+  const photo = {
+    groupPhotos: asArray(cartridge.groupPhotos?.groups).length,
+    miniSession: Boolean(cartridge.miniSession?.enabled),
+    attractions: asArray(cartridge.attractions).length,
+    cake: Boolean(cartridge.cake?.time),
+    firstDance: asArray(cartridge.firstDance).length,
+    specialEffects: asArray(cartridge.specialEffects).length,
+    photoPlanSections: asArray(cartridge.photoPlan?.sections).length,
+  };
+  const team = {
+    sessions: asArray(sessions).filter((row) => !row?.revoked_at).length,
+    presence: asArray(presence).filter((row) => row?.status === 'online').length,
+    receipts: asArray(receipts).length,
+  };
+
   return {
     id: text(wedding?.wedding_id),
     couple: text(wedding?.couple),
@@ -201,6 +281,104 @@ export function buildPortfolioRow({
     recapPublished: payload != null,
     dataQuality: payload ? 'recap' : liveState ? 'live' : 'none',
     readiness,
+    guestsTotal: guestCounts.total,
+    guestsPl: guestCounts.pl,
+    guestsFr: guestCounts.fr,
+    guestsOther: guestCounts.other,
+    country: venue.country,
+    city: venue.city,
+    venueName: venue.name,
+    providerCount: providerRows.length,
+    activeProviderCount: activeProviders.length,
+    musicianCount: musicianRows.length,
+    activeMusicianCount: activeMusicians.length,
+    speechCount: speechPlan.length,
+    speechRecordCount: speechRows.length,
+    witnessCount: witnessRows.length,
+    questionCount: compatibilityQuestions,
+    gameBundleCount: publishedBundles.length,
+    songCount: importantSongs.length + asArray(musicPolicy.mustPlay).length,
+    doNotPlayCount: asArray(musicPolicy.doNotPlay).length,
+    keyMomentCount: importantSongs.length,
+    hardAnchorCount: hardAnchors.length,
+    ceremonyPartCount: ceremonySteps.length,
+    attractionCount: photo.attractions,
+    cartridgeRevision: number(cartridgeRevision) ?? number(wedding?.cartridge_revision),
+    actualEnd: text(summary.actualEnd),
+    actualDurationMinutes: number(summary.actualDurationMinutes),
+    details: {
+      couple: {
+        brideFirstName: text(coupleProfile?.bride?.firstName),
+        brideNationalities: asArray(coupleProfile?.bride?.nationalities),
+        groomFirstName: text(coupleProfile?.groom?.firstName),
+        groomNationalities: asArray(coupleProfile?.groom?.nationalities),
+        commonLanguages: asArray(coupleProfile?.commonLanguages),
+      },
+      demographics: guestCounts,
+      venue,
+      cultural,
+      package: {
+        servicePackage: text(cartridge.servicePackage),
+        languages,
+      },
+      providers: {
+        total: providerRows.length,
+        active: activeProviders.length,
+        categories: countBy(providerCategories),
+      },
+      musicians: {
+        total: musicianRows.length,
+        active: activeMusicians.length,
+        ceremonyRequired: musicianRows.filter((row) => row?.ceremony_required === true).length,
+      },
+      timeline: {
+        steps: steps.length,
+        hardAnchors: hardAnchors.length,
+        types: countBy(stepTypes),
+        locations: locations.length,
+        scheduleChanges: number(summary.scheduleChangeCount),
+        actualEnd: text(summary.actualEnd),
+        actualDurationMinutes: number(summary.actualDurationMinutes),
+      },
+      music: {
+        importantSongs: importantSongs.length,
+        mustPlay: asArray(musicPolicy.mustPlay).length,
+        doNotPlay: asArray(musicPolicy.doNotPlay).length,
+        discoPolo: text(musicPolicy.discoPoloPolicy),
+        requestsOpen: typeof musicPolicy.requestsOpen === 'boolean' ? musicPolicy.requestsOpen : null,
+        requestWindow: requestWindow
+          ? { start: text(requestWindow.start), end: text(requestWindow.end) }
+          : null,
+        guestRequests: requestRows.length,
+      },
+      speeches: {
+        planned: speechPlan.length,
+        records: speechRows.length,
+        witnesses: witnessRows.length,
+        ceremonyParts: ceremonySteps.length,
+        languages: unique(speechRows.map((row) => text(row?.speaker_language))),
+      },
+      games: {
+        games: games.gameCount,
+        answers: games.answered ?? null,
+        compatibilityPct: games.compatibilityPct,
+        bundles: publishedBundles.length,
+        questions: compatibilityQuestions,
+      },
+      photo,
+      oczepiny: asArray(cartridge.oczepiny?.subEvents).length,
+      team,
+      cover: {
+        hasDemographics: guestCounts.total != null,
+        hasVenue: Boolean(venue.country || venue.city || venue.name),
+        hasProviders: providerRows.length > 0,
+        hasMusicians: musicianRows.length > 0,
+        hasSpeeches: speechPlan.length > 0 || speechRows.length > 0,
+        hasGames: games.gameCount > 0 || bundleRows.length > 0,
+        hasMusicPolicy: Boolean(musicPolicy.discoPoloPolicy || importantSongs.length),
+        hasPhotoPlan: photo.groupPhotos > 0 || photo.miniSession || photo.attractions > 0,
+      },
+    },
   };
 }
 
@@ -213,6 +391,8 @@ export function applyPortfolioFilters(rows, filters = {}) {
     if (filters.language && !row.languages.includes(String(filters.language).toUpperCase())) {
       return false;
     }
+    if (filters.country && row.country !== String(filters.country).toUpperCase()) return false;
+    if (filters.provider && !row.details.providers.categories[filters.provider]) return false;
     return true;
   });
 }
@@ -224,16 +404,42 @@ export function buildPortfolioSummary(rows) {
   const requestPlayed = qualityRows.reduce((sum, row) => sum + (row.requestsPlayed ?? 0), 0);
   const packages = {};
   const languages = {};
+  const countries = {};
+  const nationalities = {};
+  const cultures = { stoLat: 0, gorzko: 0, breadSalt: 0 };
+  const providerCategories = {};
+  const discoPolo = {};
   for (const row of rows) {
     if (row.servicePackage) packages[row.servicePackage] = (packages[row.servicePackage] ?? 0) + 1;
     for (const language of row.languages) {
       languages[language] = (languages[language] ?? 0) + 1;
+    }
+    if (row.country) countries[row.country] = (countries[row.country] ?? 0) + 1;
+    for (const nationality of [
+      ...row.details.couple.brideNationalities,
+      ...row.details.couple.groomNationalities,
+    ]) {
+      nationalities[nationality] = (nationalities[nationality] ?? 0) + 1;
+    }
+    for (const key of Object.keys(cultures)) {
+      if (row.details.cultural[key] === 'YES' || row.details.cultural[key] === 'ON_REQUEST') {
+        cultures[key] += 1;
+      }
+    }
+    for (const [category, count] of Object.entries(row.details.providers.categories)) {
+      providerCategories[category] = (providerCategories[category] ?? 0) + count;
+    }
+    if (row.details.music.discoPolo) {
+      discoPolo[row.details.music.discoPolo] =
+        (discoPolo[row.details.music.discoPolo] ?? 0) + 1;
     }
   }
   const warnings = {};
   for (const row of qualityRows) {
     for (const warning of row.readiness) warnings[warning] = (warnings[warning] ?? 0) + 1;
   }
+  const guestCount = (key) =>
+    qualityRows.reduce((sum, row) => sum + (row[`guests${key}`] ?? 0), 0);
   return {
     totals: {
       all: rows.length,
@@ -244,7 +450,42 @@ export function buildPortfolioSummary(rows) {
       completed: rows.filter((row) => row.eventComplete).length,
       liveNow: qualityRows.filter((row) => row.dataQuality === 'live').length,
     },
-    mix: { packages, languages },
+    mix: { packages, languages, countries, nationalities, cultures, discoPolo },
+    providerCategories,
+    guests: {
+      total: guestCount('Total'),
+      pl: guestCount('Pl'),
+      fr: guestCount('Fr'),
+      other: guestCount('Other'),
+      weddingsWithGuests: qualityRows.filter((row) => row.guestsTotal != null).length,
+    },
+    team: {
+      providers: qualityRows.reduce((sum, row) => sum + (row.providerCount ?? 0), 0),
+      activeProviders: qualityRows.reduce((sum, row) => sum + (row.activeProviderCount ?? 0), 0),
+      musicians: qualityRows.reduce((sum, row) => sum + (row.musicianCount ?? 0), 0),
+      witnesses: qualityRows.reduce((sum, row) => sum + (row.witnessCount ?? 0), 0),
+      speeches: qualityRows.reduce((sum, row) => sum + (row.speechCount ?? 0), 0),
+    },
+    music: {
+      songs: qualityRows.reduce((sum, row) => sum + (row.songCount ?? 0), 0),
+      doNotPlay: qualityRows.reduce((sum, row) => sum + (row.doNotPlayCount ?? 0), 0),
+      requests: requestTotal,
+      accepted: requestAccepted,
+      played: requestPlayed,
+    },
+    interactions: {
+      games: qualityRows.reduce((sum, row) => sum + (row.gameCount ?? 0), 0),
+      questions: qualityRows.reduce((sum, row) => sum + (row.questionCount ?? 0), 0),
+      compatibilityAveragePct: average(qualityRows.map((row) => row.compatibilityPct)),
+    },
+    photo: {
+      groupPhotoSets: qualityRows.reduce((sum, row) => sum + (row.details.photo.groupPhotos ?? 0), 0),
+      attractions: qualityRows.reduce((sum, row) => sum + (row.details.photo.attractions ?? 0), 0),
+      miniSessions: qualityRows.filter((row) => row.details.photo.miniSession).length,
+      firstDanceSets: qualityRows.reduce((sum, row) => sum + (row.details.photo.firstDance ?? 0), 0),
+      specialEffects: qualityRows.reduce((sum, row) => sum + (row.details.photo.specialEffects ?? 0), 0),
+      cakeConfigured: qualityRows.filter((row) => row.details.photo.cake).length,
+    },
     recapPublicationRate: ratio(
       qualityRows.filter((row) => row.recapPublished).length,
       qualityRows.length,
@@ -268,6 +509,14 @@ export function buildPortfolioSummary(rows) {
       withTiming: qualityRows.filter((row) => row.onTimePct != null).length,
       withRequests: qualityRows.filter((row) => row.requestsTotal > 0).length,
       withCompatibility: qualityRows.filter((row) => row.compatibilityPct != null).length,
+      withGuests: qualityRows.filter((row) => row.guestsTotal != null).length,
+      withVenue: qualityRows.filter((row) => row.details.cover.hasVenue).length,
+      withProviders: qualityRows.filter((row) => row.details.cover.hasProviders).length,
+      withMusicians: qualityRows.filter((row) => row.details.cover.hasMusicians).length,
+      withSpeeches: qualityRows.filter((row) => row.details.cover.hasSpeeches).length,
+      withGames: qualityRows.filter((row) => row.details.cover.hasGames).length,
+      withMusicPolicy: qualityRows.filter((row) => row.details.cover.hasMusicPolicy).length,
+      withPhotoPlan: qualityRows.filter((row) => row.details.cover.hasPhotoPlan).length,
     },
     readiness: warnings,
   };
@@ -279,6 +528,14 @@ export function buildPortfolioKpis({
   recaps = {},
   requests = {},
   roles = {},
+  providers = {},
+  musicians = {},
+  speeches = {},
+  gameBundles = {},
+  receipts = {},
+  sessions = {},
+  presence = {},
+  cartridgeRevisions = {},
   filters = {},
   now = new Date(),
 } = {}) {
@@ -289,6 +546,14 @@ export function buildPortfolioKpis({
       recap: recaps[wedding.wedding_id] ?? null,
       requests: requests[wedding.wedding_id] ?? [],
       roles: roles[wedding.wedding_id] ?? [],
+      providers: providers[wedding.wedding_id] ?? [],
+      musicians: musicians[wedding.wedding_id] ?? [],
+      speeches: speeches[wedding.wedding_id] ?? [],
+      gameBundles: gameBundles[wedding.wedding_id] ?? [],
+      receipts: receipts[wedding.wedding_id] ?? [],
+      sessions: sessions[wedding.wedding_id] ?? [],
+      presence: presence[wedding.wedding_id] ?? [],
+      cartridgeRevision: cartridgeRevisions[wedding.wedding_id] ?? null,
       now,
     }),
   );
