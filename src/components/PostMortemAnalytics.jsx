@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 import { clockToMinutes } from '../lib/clockMath.js';
 import { buildTimingComparison } from '../lib/timingAnalytics.js';
 import ModalShell from './ModalShell';
+import SocialExportStudio from './SocialExportStudio';
 
 function addMinutes(clock, minutes) {
   const base = clockToMinutes(clock);
@@ -38,6 +39,7 @@ export default function PostMortemAnalytics({
   steps = [],
   liveState = {},
   closureTime = null,
+  wedding = null,
 }) {
   const { t } = useI18n();
   const comparison = useMemo(
@@ -195,6 +197,9 @@ export default function PostMortemAnalytics({
               })}
             </ol>
           )}
+          <div className="mt-5">
+            <SocialExportStudio surface="mc" wedding={wedding} />
+          </div>
         </div>
       </div>
     </ModalShell>
