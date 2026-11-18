@@ -22,6 +22,10 @@ export function speechRecognitionLang(code) {
   return /^[A-Z]{2}$/.test(base) ? base.toLowerCase() : 'en-US';
 }
 
+export function scriptHighlightClass(highlighted) {
+  return highlighted ? 'text-red-500 font-bold transition-colors' : 'text-ink';
+}
+
 export function normalizeWord(word) {
   return String(word ?? '')
     .normalize('NFD')
