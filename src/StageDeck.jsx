@@ -765,6 +765,10 @@ export default function StageDeck({
             onUpdateMandatory={(nextSteps, change) =>
               setMediaOverride('steps', nextSteps, change ? { change } : null)
             }
+            venuePolicies={liveState.media_overrides?.venuePolicies ?? null}
+            onUpdateVenuePolicies={(policies) =>
+              setMediaOverride('venuePolicies', policies)
+            }
             roomCode={deckIntent.roomCode}
           />
         </AppErrorBoundary>

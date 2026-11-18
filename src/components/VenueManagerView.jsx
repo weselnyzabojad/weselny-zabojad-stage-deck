@@ -26,6 +26,14 @@ import {
   settingsFromSteps,
 } from '../lib/mandatorySteps.js';
 import { venueChangeDecision } from '../lib/venueChangeConfirmation.js';
+import {
+  FORBIDDEN_FX,
+  STEP_TAGS,
+  normalizeStepTags,
+  normalizeVenuePolicies,
+  setStepTag,
+  validateVenuePolicyDraft,
+} from '../lib/venuePolicies.js';
 
 const STORAGE_PREFIX = 'wzsd:venue-manager:steps:';
 
@@ -129,6 +137,8 @@ export default function VenueManagerView({
   speeches = [],
   onUpdateMandatory,
   mandatoryOverride = null,
+  venuePolicies = null,
+  onUpdateVenuePolicies = null,
 }) {
   const { t } = useI18n();
   useReadReceipt({
@@ -143,7 +153,17 @@ export default function VenueManagerView({
   const [saved, setSaved] = useState('');
   const [rescheduleError, setRescheduleError] = useState('');
   const [pendingChange, setPendingChange] = useState(null);
+  const [policyDraft, setPolicyDraft] = useState(() => normalizeVenuePolicies(venuePolicies));
+  const [policyError, setPolicyError] = useState('');
+  const [policySaved, setPolicySaved] = useState('');
+  const [previousPolicyInput, setPreviousPolicyInput] = useState(venuePolicies);
   const [previousInputs, setPreviousInputs] = useState([wedding, mandatoryOverride]);
+
+  if (venuePolicies !== previousPolicyInput) {
+    setPreviousPolicyInput(venuePolicies);
+    setPolicyDraft(normalizeVenuePolicies(venuePolicies));
+    setPolicyError('');
+  }
 
   if (wedding !== previousInputs[0] || mandatoryOverride !== previousInputs[1]) {
     setPreviousInputs([wedding, mandatoryOverride]);
@@ -235,6 +255,33 @@ export default function VenueManagerView({
   const removeCourse = (index) => {
     const next = courses.filter((_, i) => i !== index);
     applyUpdate({ ...settings, kitchenServices: next });
+  };
+
+  const tagSteps = loadSteps(wedding, mandatoryOverride);
+  const toggleForbiddenFx = (effect, checked) => {
+    setPolicyDraft((current) => {
+      const forbiddenFx = checked
+        ? [...current.forbiddenFx, effect]
+        : current.forbiddenFx.filter((entry) => entry !== effect);
+      return normalizeVenuePolicies({ ...current, forbiddenFx });
+    });
+    setPolicyError('');
+  };
+  const savePolicies = () => {
+    const result = validateVenuePolicyDraft(policyDraft);
+    if (!result.valid) {
+      setPolicyError(t(`venueManager.policies.error.${result.error}`));
+      return;
+    }
+    setPolicyError('');
+    setPolicyDraft(result.policies);
+    onUpdateVenuePolicies?.(result.policies);
+    setPolicySaved(t('venueManager.policies.saved'));
+    window.setTimeout(() => setPolicySaved(''), 1500);
+  };
+  const toggleStepTag = (stepId, tag, checked) => {
+    const next = setStepTag(tagSteps, stepId, tag, checked);
+    onUpdateMandatory?.(next, null);
   };
 
   const confirmationDialog = (
@@ -438,6 +485,127 @@ export default function VenueManagerView({
           ) : null}
         </p>
       </section>
+
+      <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+          {t('venueManager.policies.title')}
+        </h2>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="flex min-h-11 items-center gap-2 rounded-lg border border-line bg-page/60 px-3 py-2 text-xs text-ink">
+            <input
+              type="checkbox"
+              className="h-5 w-5"
+              checked={policyDraft.decibelLimitEnabled}
+              onChange={(event) => {
+                setPolicyDraft((current) =>
+                  normalizeVenuePolicies({
+                    ...current,
+                    decibelLimitEnabled: event.target.checked,
+                    decibelLimit: event.target.checked ? current.decibelLimit ?? 95 : current.decibelLimit,
+                  }),
+                );
+                setPolicyError('');
+              }}
+            />
+            {t('venueManager.policies.limiterEnabled')}
+          </label>
+
+          <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
+            {t('venueManager.policies.decibelLimit')}
+            <input
+              type="number"
+              min="50"
+              max="120"
+              inputMode="numeric"
+              value={policyDraft.decibelLimit ?? ''}
+              disabled={!policyDraft.decibelLimitEnabled}
+              onChange={(event) => {
+                const value = event.target.value === '' ? null : Number(event.target.value);
+                setPolicyDraft((current) =>
+                  normalizeVenuePolicies({ ...current, decibelLimit: value }),
+                );
+                setPolicyError('');
+              }}
+              className="rounded-lg border border-line/70 bg-card px-2.5 py-2 text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20 disabled:opacity-50"
+            />
+          </label>
+
+          <fieldset className="sm:col-span-2">
+            <legend className="text-[10px] uppercase tracking-wider text-muted">
+              {t('venueManager.policies.forbiddenFx')}
+            </legend>
+            <div className="mt-2 flex flex-wrap gap-3">
+              {FORBIDDEN_FX.map((effect) => (
+                <label
+                  key={effect}
+                  className="flex min-h-9 items-center gap-2 rounded border border-line bg-page/60 px-2.5 py-1.5 text-xs text-ink"
+                >
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5"
+                    checked={policyDraft.forbiddenFx.includes(effect)}
+                    onChange={(event) => toggleForbiddenFx(effect, event.target.checked)}
+                  />
+                  {t(`venueManager.policies.fx.${effect}`)}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={savePolicies}
+            disabled={!onUpdateVenuePolicies}
+            className="min-h-10 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t('venueManager.policies.save')}
+          </button>
+          {policySaved ? <span className="text-[11px] text-emerald-300">{policySaved}</span> : null}
+          {policyError ? (
+            <span role="alert" className="text-[11px] text-alert">
+              {policyError}
+            </span>
+          ) : null}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+          {t('venueManager.policies.stepTags')}
+        </h2>
+        <div className="mt-3 max-h-72 space-y-2 overflow-y-auto pr-1">
+          {tagSteps.map((step) => {
+            const tags = normalizeStepTags(step.tags);
+            return (
+              <div key={step.id} className="rounded-lg border border-line bg-page/60 p-2.5">
+                <div className="text-xs font-semibold text-ink">{step.title ?? step.id}</div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {STEP_TAGS.map((tag) => (
+                    <label
+                      key={tag}
+                      className="flex min-h-8 items-center gap-1.5 rounded border border-line bg-card px-2 py-1 text-[10px] text-ink"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4"
+                        checked={tags.includes(tag)}
+                        onChange={(event) =>
+                          toggleStepTag(step.id, tag, event.target.checked)
+                        }
+                      />
+                      {t(`venueManager.policies.tag.${tag}`)}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {confirmationDialog}
     </div>
   );
