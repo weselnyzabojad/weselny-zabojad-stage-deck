@@ -11,6 +11,8 @@ import { ceremonySubStepBodies } from '../components/ceremonySubStepBodies';
 import DjSongRequestQueue from '../components/DjSongRequestQueue';
 import RoleReadReceiptsRow from '../components/RoleReadReceiptsRow';import ModalShell from '../components/ModalShell';
 import PostMortemAnalytics from '../components/PostMortemAnalytics';
+import VenuePolicyWarnings from '../components/VenuePolicyWarnings';
+import useVenuePolicies from '../hooks/useVenuePolicies.js';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -251,6 +253,10 @@ export default function McMasterView({ model }) {
 } = model;
 
   const { t } = useI18n();
+  const venueGuard = useVenuePolicies(
+    currentStep?.tags,
+    liveState?.media_overrides?.venuePolicies ?? null,
+  );
 
   const oczepinyStatus = resolveOczepinyIndicator({
     wedding: WEDDING,
@@ -450,6 +456,8 @@ export default function McMasterView({ model }) {
         eventDateISO={resolveEventDateISO(WEDDING)}
         timeZone={resolveVenueTimeZone(WEDDING)}
       />
+
+      <VenuePolicyWarnings warnings={venueGuard.warnings} />
 
       {childrenWarning ? (
         <div className="flex items-start gap-2 rounded-xl border border-tone-warning-border bg-tone-warning-bg p-2.5 text-sm text-tone-warning-text">

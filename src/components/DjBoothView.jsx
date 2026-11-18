@@ -4,6 +4,8 @@ import CulturalRulesBar from './CulturalRulesBar';
 import DjPolicyPanel from './DjPolicyPanel';
 import DjSongRequestQueue from './DjSongRequestQueue';
 import DjSetNotesNotepad from './DjSetNotesNotepad';
+import VenuePolicyWarnings from './VenuePolicyWarnings';
+import useVenuePolicies from '../hooks/useVenuePolicies.js';
 import EndHoursCard from './EndHoursCard';
 import FirstDanceCueCard from './FirstDanceCueCard';
 import MusicPolicyCard, { DoNotPlayPills, MainSongPills, MustPlayPills } from './MusicPolicyCard';
@@ -110,6 +112,7 @@ export default function DjBoothView({
   closureTime = null,
   extensionBlockedReason = null,
   scheduleBanner = null,
+  venuePolicies = null,
 }) {
   const { t } = useI18n();
   useReadReceipt({
@@ -126,6 +129,7 @@ export default function DjBoothView({
       : null;
   const isDjSet = activeEntry?.step?.optionalFlag === 'dj_set';
   const completedCount = timeline.filter((entry) => entry.isDone).length;
+  const venueGuard = useVenuePolicies(activeEntry?.step?.tags, venuePolicies);
 
   const resolvedPackage = servicePackage ?? resolveServicePackage(wedding);
   const detailTier = djDetailTier({ ...wedding, servicePackage: resolvedPackage });
@@ -228,7 +232,11 @@ export default function DjBoothView({
   const currentColumnFooter = caps.musicPolicy ? (
     <div className="space-y-2">
       {activeVendors}
-      <DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />
+      <DjSetNotesNotepad
+        policy={musicPolicy}
+        showPolicy={!caps.vip}
+        venueWarnings={venueGuard.warnings}
+      />
     </div>
   ) : activeVendors;
 
@@ -240,6 +248,7 @@ export default function DjBoothView({
       {caps.vip && isDjSet && nextEntry ? (
         <DjSetCountdown wedding={wedding} clock={clock} nextEntry={nextEntry} />
       ) : null}
+      <VenuePolicyWarnings warnings={venueGuard.warnings} effectsOnly />
       <div className="flex flex-wrap items-start justify-between gap-2 font-mono">
         <div className="rounded-lg border border-line bg-page/80 p-2">
           <div className="text-[10px] uppercase tracking-wider text-muted">{t('dj.projected')}</div>

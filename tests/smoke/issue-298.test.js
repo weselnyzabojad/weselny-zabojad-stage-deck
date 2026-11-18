@@ -14,7 +14,8 @@ describe('issue #298 DJ Standard hides Music Policy', () => {
       ),
     ).toHaveLength(1);
     expect(djBooth).toContain('{caps.musicPolicy && musicPolicy?.hasData ? (');
-    expect(djBooth).toContain('<DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />');
+    expect(djBooth).toContain('DjSetNotesNotepad');
+    expect(djBooth).toContain('showPolicy={!caps.vip}');
     expect(djBooth).toMatch(/const currentColumnFooter = caps\.musicPolicy \?/);
   });
 });
