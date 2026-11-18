@@ -7,6 +7,8 @@ import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
 import {
+  detectBannerLocale,
+  isBannerPath,
   isLandingPath,
   parseRecapToken,
   parseSeasonStatsEmbed,
@@ -28,9 +30,22 @@ const PublicSeasonStatsWidget = lazy(() =>
 )
 const IS_LANDING =
   typeof window !== 'undefined' && isLandingPath(window.location.pathname)
+// WordPress may embed the landing at `/extra/banner` (issue #1239).
+const IS_BANNER =
+  typeof window !== 'undefined' &&
+  isBannerPath(window.location.pathname, import.meta.env.BASE_URL)
 // The landing is Polish-first for the first release; an existing device
 // choice still wins and the crew deck keeps its English default.
 if (IS_LANDING && !loadLocale()) setLocale('pl')
+// The iframe follows the browser language with a French fallback; an explicit
+// in-widget toggle still persists like the standalone landing.
+if (IS_BANNER && !loadLocale()) {
+  setLocale(
+    detectBannerLocale(
+      typeof navigator === 'undefined' ? [] : navigator.languages,
+    ),
+  )
+}
 // The embed owns its language per request and must never persist it.
 const EMBED_ROUTE =
   typeof window !== 'undefined'
@@ -83,7 +98,7 @@ createRoot(document.getElementById('root')).render(
         >
           <PublicSeasonStatsWidget route={EMBED_ROUTE} />
         </Suspense>
-      ) : IS_LANDING ? (
+      ) : IS_LANDING || IS_BANNER ? (
         <Suspense
           fallback={
             <div
@@ -138,6 +153,6 @@ createRoot(document.getElementById('root')).render(
         </Suspense>
       )}
     </AppErrorBoundary>
-    {IS_LANDING || RECAP_TOKEN || EMBED_ROUTE ? null : <PwaUpdatePrompt />}
+    {IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE ? null : <PwaUpdatePrompt />}
   </StrictMode>,
 )

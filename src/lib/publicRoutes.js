@@ -12,6 +12,15 @@ export function isLandingPath(pathname = '') {
   return LANDING_PATHS.includes(normalized);
 }
 
+// WordPress landing iframe (issue #1239). The same landing content is served at
+// `/extra/banner`; the route is frameable only by the two WordPress origins.
+export {
+  BANNER_FALLBACK_LOCALE,
+  BANNER_PATH,
+  detectBannerLocale,
+  isBannerPath,
+} from './bannerRoute.js';
+
 // Private recap links are `/recap/<token>` (or `/deck/recap/<token>` when the
 // app is hosted under a base path). The token is opaque; validation is done by
 // the Edge Function.

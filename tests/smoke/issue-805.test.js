@@ -49,7 +49,7 @@ describe('issue #805 public landing route', () => {
     expect(main).toContain("lazy(() => import('./components/LandingPage.jsx'))");
     expect(main).toContain('isLandingPath(window.location.pathname)');
 
-    const landingBranch = main.indexOf('IS_LANDING ?');
+    const landingBranch = main.indexOf('IS_LANDING || IS_BANNER ?');
     const requestBranch = main.indexOf('SONG_REQUEST_ROUTE ? (');
     const adminBranch = main.indexOf('IS_ADMIN ? (');
     const appFallback = main.indexOf('<App />');

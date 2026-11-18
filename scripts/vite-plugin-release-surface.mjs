@@ -29,6 +29,7 @@ export const LANDING_REDIRECTS = `# Landing-only release (RELEASE_SURFACE=landin
 # rules; every other route is a branded 404 with a real 404 status.
 /index.html  /index.html  200
 /            /index.html  200
+/extra/banner  /index.html  200
 /*           /404.html    404
 `
 
