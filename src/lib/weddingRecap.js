@@ -8,6 +8,7 @@
 import { buildTimeline } from './driftEngine.js';
 import { resolveEventDateISO, resolveVenueTimeZone } from './eventTime.js';
 import { resolveMusicPolicy } from './musicPolicy.js';
+import { buildTimingComparison } from './timingAnalytics.js';
 
 export const RECAP_SCHEMA_VERSION = 1;
 
@@ -116,9 +117,43 @@ function buildGames(steps, liveState) {
         totalQuestions: finiteNumber(result?.totalQuestions),
         answeredCount: finiteNumber(result?.answeredCount),
         score: finiteNumber(result?.score),
+        questions: Object.entries(result?.questions ?? {})
+          .map(([id, answer]) => ({
+            id,
+            text: text(answer?.questionText),
+            isCompatible: answer?.isCompatible === true,
+            answeredAt: text(answer?.answeredAt),
+          }))
+          .filter((answer) => answer.answeredAt)
+          .sort((a, b) => Date.parse(a.answeredAt) - Date.parse(b.answeredAt)),
       };
     })
     .filter((game) => game.title);
+}
+
+export function buildCompatibilitySummary(result) {
+  const questions = Object.entries(result?.questions ?? {})
+    .map(([id, answer]) => ({
+      id,
+      text: text(answer?.questionText),
+      isCompatible: answer?.isCompatible === true,
+      answeredAt: text(answer?.answeredAt),
+    }))
+    .filter((answer) => answer.answeredAt)
+    .sort((a, b) => Date.parse(a.answeredAt) - Date.parse(b.answeredAt));
+  const answered = questions.length;
+  const compatible = questions.filter((question) => question.isCompatible).length;
+  return {
+    percentage: answered > 0 ? Math.round((compatible / answered) * 100) : null,
+    answered,
+    compatible,
+    incompatible: answered - compatible,
+    totalQuestions:
+      Number.isInteger(result?.totalQuestions) && result.totalQuestions >= 0
+        ? result.totalQuestions
+        : answered,
+    questions,
+  };
 }
 
 function buildCeremony(steps) {
@@ -194,11 +229,15 @@ function buildMusic(wedding, generatedAt, timeline) {
 
 function songRequestRows(rows) {
   return (Array.isArray(rows) ? rows : [])
-    .map((row) => ({
-      song: text(row?.song ?? row?.title),
-      artist: text(row?.artist),
-      createdAt: text(row?.created_at ?? row?.createdAt),
-    }))
+    .map((row) => {
+      const status = text(row?.status);
+      return {
+        song: text(row?.song ?? row?.title),
+        artist: text(row?.artist),
+        ...(status ? { status } : {}),
+        createdAt: text(row?.created_at ?? row?.createdAt),
+      };
+    })
     .filter((row) => row.song || row.artist);
 }
 
@@ -235,6 +274,13 @@ export function buildWeddingRecap({
   const vendors = buildVendors(wedding);
   const music = buildMusic(wedding, generatedAt, entries);
   const guestRequests = songRequestRows(songRequests);
+  const completedSteps = timeline.filter((entry) => entry.status === 'done').length;
+  const timing = buildTimingComparison(steps, liveState, {
+    closureTime: steps.find((step) => step?.mandatory?.kind === 'CLOSURE')?.time ?? null,
+  });
+  const acceptedSongRequests = guestRequests.filter(
+    (request) => request.status === 'accepted',
+  ).length;
 
   const generatedIso =
     generatedAt instanceof Date && Number.isFinite(generatedAt.getTime())
@@ -256,11 +302,14 @@ export function buildWeddingRecap({
       plannedEnd: timeline[timeline.length - 1]?.plannedEnd ?? null,
       firstActualStart: firstActual?.actualStart ?? null,
       lastActualStart: lastActual?.actualStart ?? null,
+      actualEnd: timing.summary.actualEnd,
       actualDurationMinutes: firstActual && lastActual
         ? minutesBetween(firstActual.actualTimestamp, lastActual.actualTimestamp)
         : null,
       totalSteps: timeline.length,
-      completedSteps: timeline.filter((entry) => entry.status === 'done').length,
+      completedSteps,
+      animations: completedSteps,
+      acceptedSongRequests,
       totalDriftMinutes: drifts.reduce((sum, value) => sum + Math.abs(value), 0),
       biggestDelayMinutes: drifts.length > 0 ? Math.max(0, ...drifts) : 0,
       scheduleChangeCount: changes.length,

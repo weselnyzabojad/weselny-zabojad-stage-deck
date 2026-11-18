@@ -2481,7 +2481,7 @@ async function handleRequest(req: Request) {
           .maybeSingle(),
         admin
           .from('song_requests')
-          .select('song, artist, created_at')
+          .select('song, artist, status, created_at')
           .eq('wedding_id', weddingId)
           .order('created_at', { ascending: true }),
       ]);

@@ -84,6 +84,6 @@ describe('issue #1206 guest engagement heatmap data model', () => {
     expect(api).toContain("action === 'music_engagement'");
     expect(api).toContain("select('created_at')");
     expect(api).toContain('eventComplete');
-    expect(api).not.toContain("select('song, artist, status");
+    expect(api).not.toMatch(/music_engagement[\s\S]{0,500}song, artist/);
   });
 });
