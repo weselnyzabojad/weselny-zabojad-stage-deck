@@ -1,9 +1,21 @@
 import { useCallback, useEffect, useState } from 'react';
+import {
+  ArrowRight,
+  CarFront,
+  Globe2,
+  Plane,
+  Sparkles,
+  Users,
+} from 'lucide-react';
 import { getLocale, setLocale } from '../i18n/index.js';
 import { useI18n } from '../i18n/useI18n.js';
 import { fetchSeasonStats } from '../lib/seasonStats.js';
 
 const ATTRIBUTION_URL = 'https://deck.weselnyzabojad.pl';
+const CARD_BORDER = 'border-[#EAE2D3]';
+const GOLD = 'text-[#B89550]';
+const INK = 'text-[#1C1917]';
+const MUTED = 'text-[#78716C]';
 
 function positive(value) {
   return Number.isFinite(value) && value > 0 ? value : null;
@@ -23,46 +35,48 @@ function monthYear(value, locale) {
   }
 }
 
-function Vehicle({ country }) {
-  if (country === 'PL') {
-    return (
-      <svg
-        data-vehicle="car"
-        aria-hidden="true"
-        viewBox="0 0 24 24"
-        className="h-4 w-4 shrink-0 text-emerald-300"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      >
-        <path d="M3 12l1.8-5h14.4L21 12v4H3z" />
-        <path d="M5 16v2M19 16v2M6.5 12h11" />
-      </svg>
+function internationalWeddings(destinations) {
+  if (!Array.isArray(destinations)) return null;
+  const total = destinations
+    .filter((entry) => {
+      const country = typeof entry?.country === 'string' ? entry.country.trim().toUpperCase() : '';
+      return country && country !== 'PL';
+    })
+    .reduce(
+      (sum, entry) => sum + (Number.isFinite(entry?.weddings) ? entry.weddings : 0),
+      0,
     );
-  }
+  return positive(total);
+}
+
+function Vehicle({ country }) {
+  const Icon = country === 'PL' ? CarFront : Plane;
   return (
-    <svg
-      data-vehicle="plane"
+    <span
       aria-hidden="true"
-      viewBox="0 0 24 24"
-      className="h-4 w-4 shrink-0 text-emerald-300"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
+      data-vehicle={country === 'PL' ? 'car' : 'plane'}
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F7F2E7] text-[#B89550]"
     >
-      <path d="M2 13l20-8-5 9-6 2-3 5-2-4z" />
-    </svg>
+      <Icon size={15} strokeWidth={1.5} />
+    </span>
   );
 }
 
-function KpiCard({ label, value, subline }) {
+function KpiCard({ icon: Icon, label, value, subline }) {
   return (
-    <div className="rounded-xl border border-slate-800/80 bg-slate-900/50 p-4">
-      <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-slate-50/60">
-        {label}
+    <div
+      className={`rounded-2xl border ${CARD_BORDER} bg-[#FFFDF9] p-5 shadow-[0_4px_20px_-4px_rgba(184,149,80,0.08)] transition-colors hover:border-[#D6C6A5]`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className={`text-[11px] font-medium uppercase leading-snug tracking-[0.12em] ${MUTED}`}>
+          {label}
+        </div>
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F7F2E7] text-[#B89550]">
+          <Icon size={15} strokeWidth={1.5} aria-hidden="true" />
+        </span>
       </div>
-      <div className="mt-1 font-heading text-2xl font-bold text-slate-50">{value}</div>
-      {subline ? <div className="mt-1 text-[10px] text-slate-50/60">{subline}</div> : null}
+      <div className={`mt-3 text-3xl font-bold tabular-nums sm:text-4xl ${INK}`}>{value}</div>
+      {subline ? <div className={`mt-2 text-xs ${MUTED}`}>{subline}</div> : null}
     </div>
   );
 }
@@ -70,12 +84,12 @@ function KpiCard({ label, value, subline }) {
 function Skeleton({ label }) {
   return (
     <div aria-busy="true" className="space-y-3">
-      <div className="h-10 animate-pulse rounded-xl border border-slate-800/60 bg-slate-900/40 motion-reduce:animate-none" />
+      <div className={`h-11 animate-pulse rounded-2xl border ${CARD_BORDER} bg-[#FFFDF9]/70 motion-reduce:animate-none`} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
           <div
             key={index}
-            className="h-24 animate-pulse rounded-xl border border-slate-800/60 bg-slate-900/40 motion-reduce:animate-none"
+            className={`h-28 animate-pulse rounded-2xl border ${CARD_BORDER} bg-[#FFFDF9]/70 motion-reduce:animate-none`}
           />
         ))}
       </div>
@@ -84,7 +98,11 @@ function Skeleton({ label }) {
   );
 }
 
-export function PublicSeasonStatsView({ data = null, status = 'ready', theme = 'dark' }) {
+export function PublicSeasonStatsView({
+  data = null,
+  status = 'ready',
+  theme = 'transparent',
+}) {
   const { t, locale } = useI18n();
   const next = data?.nextWedding ?? null;
   const hasNext =
@@ -98,7 +116,7 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
   const destinations = Array.isArray(data?.kpis?.destinations)
     ? positive(data.kpis.destinations.length)
     : null;
-  const stolat = positive(data?.kpis?.stolatWeddings);
+  const international = internationalWeddings(data?.kpis?.destinations);
   const animations = positive(data?.kpis?.animations?.total);
   const coverage = data?.coverage ?? {};
   const destinationCodes = (data?.kpis?.destinations ?? [])
@@ -110,6 +128,7 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
   const cards = [
     {
       key: 'guests',
+      icon: Users,
       label: t('embed.kpi.guests'),
       value: guests,
       subline:
@@ -122,18 +141,21 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
     },
     {
       key: 'destinations',
+      icon: Globe2,
       label: t('embed.kpi.destinations'),
       value: destinations,
       subline: destinationCodes || null,
     },
     {
-      key: 'stolat',
-      label: t('embed.kpi.stolat'),
-      value: stolat,
-      subline: null,
+      key: 'international',
+      icon: Plane,
+      label: t('embed.kpi.international'),
+      value: international,
+      subline: international ? t('embed.kpi.internationalDetail') : null,
     },
     {
       key: 'animations',
+      icon: Sparkles,
       label: t('embed.kpi.animations'),
       value: animations,
       subline: null,
@@ -144,13 +166,13 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
 
   return (
     <main
-      className={`flex min-h-screen w-full items-start justify-center p-3 sm:p-5 ${
-        theme === 'transparent' ? 'bg-transparent' : 'bg-slate-950'
+      className={`flex w-full justify-center overflow-hidden ${
+        theme === 'cream' ? 'bg-[#FAF8F5]' : 'bg-transparent'
       }`}
     >
       <section
-        className={`w-full max-w-5xl overflow-hidden rounded-2xl border border-slate-800/80 p-6 ${
-          theme === 'transparent' ? 'bg-transparent' : 'bg-slate-950'
+        className={`w-full min-w-0 max-w-5xl overflow-hidden p-0 ${
+          theme === 'cream' ? 'bg-[#FAF8F5]' : 'bg-transparent'
         }`}
       >
         {status === 'loading' ? (
@@ -158,23 +180,32 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
         ) : (
           <>
             {hasNext ? (
-              <div className="mb-3 flex flex-wrap items-center gap-2 rounded-xl border border-slate-800/70 bg-slate-900/40 px-3 py-2 text-[11px] text-slate-50/80">
-                <Vehicle country={next.country.toUpperCase()} />
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-50/50">
-                  {t('embed.nextWedding')}
-                </span>
-                <span className="font-semibold text-slate-50">{next.city}</span>
-                <span className="text-slate-50/60">
-                  {monthYear(next, locale)}
-                </span>
+              <div
+                className={`mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border ${CARD_BORDER} bg-[#FFFDF9] px-4 py-2.5 shadow-[0_4px_20px_-4px_rgba(184,149,80,0.08)] sm:rounded-full`}
+              >
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                  <Vehicle country={next.country.toUpperCase()} />
+                  <span className={`text-[10px] font-medium uppercase tracking-[0.12em] ${MUTED}`}>
+                    {t('embed.nextWedding')}
+                  </span>
+                  <span className={`font-serif text-base font-semibold italic sm:text-lg ${INK}`}>
+                    {next.city}
+                  </span>
+                  <span className={`text-xs font-medium ${GOLD}`}>{monthYear(next, locale)}</span>
+                </div>
+                <div className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.12em] ${MUTED}`}>
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#B89550]" />
+                  {t('embed.seasonLive')}
+                </div>
               </div>
             ) : null}
 
             {ready ? (
-              <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <div className="grid min-w-0 grid-cols-2 gap-3 lg:grid-cols-4">
                 {cards.map((card) => (
                   <KpiCard
                     key={card.key}
+                    icon={card.icon}
                     label={card.label}
                     value={card.value}
                     subline={card.subline}
@@ -182,28 +213,34 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
                 ))}
               </div>
             ) : (
-              <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-6 text-center">
-                <div aria-hidden="true" className="text-2xl text-emerald-300">
-                  ✦
-                </div>
-                <p className="mt-2 text-sm text-slate-50/80">{t('embed.fallback')}</p>
+              <div className={`rounded-2xl border ${CARD_BORDER} bg-[#FFFDF9] px-6 py-8 text-center`}>
+                <Sparkles aria-hidden="true" className={`mx-auto h-5 w-5 ${GOLD}`} strokeWidth={1.5} />
+                <p className={`mt-3 text-sm ${MUTED}`}>{t('embed.fallback')}</p>
               </div>
             )}
           </>
         )}
 
-        <footer className="mt-4 border-t border-slate-800/70 pt-3 text-[10px] text-slate-50/60">
+        <footer
+          className={`mt-4 flex flex-col items-center justify-between gap-2 border-t border-[#EAE2D3]/70 pt-3 text-xs sm:flex-row`}
+        >
+          <div className={`flex items-center gap-2 ${MUTED}`}>
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#B89550]" />
+            {t('embed.footer.season')}
+          </div>
           <a
             href={ATTRIBUTION_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-300"
+            className={`group inline-flex items-center gap-1 rounded ${MUTED} focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#B89550]`}
           >
-            <span
+            {t('embed.footer.powered')}{' '}
+            <span className="font-semibold text-[#B89550]">{t('embed.footer.brand')}</span>
+            <ArrowRight
               aria-hidden="true"
-              className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 motion-reduce:animate-none"
+              className="h-3.5 w-3.5 text-[#B89550] transition-transform duration-300 motion-safe:group-hover:translate-x-0.5 motion-reduce:transition-none"
+              strokeWidth={1.5}
             />
-            {t('embed.footer')}
           </a>
         </footer>
       </section>
@@ -211,7 +248,9 @@ export function PublicSeasonStatsView({ data = null, status = 'ready', theme = '
   );
 }
 
-export default function PublicSeasonStatsWidget({ route = { lang: 'pl', theme: 'dark' } }) {
+export default function PublicSeasonStatsWidget({
+  route = { lang: 'pl', theme: 'transparent' },
+}) {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState('loading');
 

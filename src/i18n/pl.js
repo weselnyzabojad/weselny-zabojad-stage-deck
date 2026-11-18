@@ -1044,12 +1044,16 @@ const pl = {
   'embed.kpi.guests': 'Przyjęci goście',
   'embed.kpi.guestsCoverage': '{covered} z {total} wesel',
   'embed.kpi.destinations': 'Kierunki',
-  'embed.kpi.stolat': 'Wesela ze Sto Lat',
+  'embed.kpi.international': 'Wesela międzynarodowe',
+  'embed.kpi.internationalDetail': 'poza Polską',
   'embed.kpi.animations': 'Zaplanowane animacje',
   'embed.nextWedding': 'Najbliższe wesele',
+  'embed.seasonLive': 'Sezon w toku',
   'embed.fallback': 'Statystyki sezonu pojawią się po pierwszym podsumowaniu wesela.',
   'embed.loading': 'Ładowanie statystyk sezonu…',
-  'embed.footer': 'Statystyki sezonu • Napędzane przez Stage Deck',
+  'embed.footer.season': 'Statystyki sezonu',
+  'embed.footer.powered': 'Napędzane przez',
+  'embed.footer.brand': 'Stage Deck',
 };
 
 export default pl;
