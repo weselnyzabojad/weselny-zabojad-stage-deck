@@ -38,8 +38,10 @@ export function parseSeasonStatsEmbed(pathname = '', search = '', baseUrl = '/')
   if (!/^\/embed\/season-stats\/?$/.test(rest)) return null;
   const params = new URLSearchParams(search || '');
   const requested = (params.get('lang') || '').toLowerCase();
+  const previewState = (params.get('previewState') || '').toLowerCase();
   return {
     lang: EMBED_LANGUAGES.includes(requested) ? requested : 'pl',
     theme: params.get('theme') === 'cream' ? 'cream' : 'transparent',
+    previewState: ['pre', 'live', 'post'].includes(previewState) ? previewState : null,
   };
 }

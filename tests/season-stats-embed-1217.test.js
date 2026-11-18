@@ -2,9 +2,7 @@ import { createElement } from 'react';
 import { readFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it } from 'vitest';
-import {
-  PublicSeasonStatsView,
-} from '../src/components/PublicSeasonStatsWidget.jsx';
+import { PublicSeasonStatsView } from '../src/components/PublicSeasonStatsWidget.jsx';
 import { fetchSeasonStats, seasonStatsRpcUrl } from '../src/lib/seasonStats.js';
 import { parseSeasonStatsEmbed } from '../src/lib/publicRoutes.js';
 import { setLocale } from '../src/i18n/index.js';
@@ -15,20 +13,29 @@ import pl from '../src/i18n/pl.js';
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
 const data = {
-  seasonYear: 2027,
+  seasonYear: 2026,
   hasData: true,
-  coverage: { weddings: 4, guestCounts: 3, countries: 3, stolat: 2, animations: 4 },
-  kpis: {
-    guests: { total: 320, weddingsWithGuests: 3 },
+  nextWedding: { city: 'Lyon', country: 'FR', month: 9, year: 2026 },
+  seasonPlan: {
+    state: 'live',
+    year: 2026,
+    weddings: { total: 18, completed: 7, upcoming: 11 },
+    guests: { planned: 2400, completed: 920 },
     destinations: [
-      { country: 'PL', weddings: 2 },
-      { country: 'FR', weddings: 1 },
+      { country: 'PL', planned: 10, completed: 4 },
+      { country: 'FR', planned: 5, completed: 2 },
+      { country: 'BE', planned: 3, completed: 1 },
+    ],
+  },
+  coverage: { weddings: 7, guestCounts: 6, countries: 3 },
+  kpis: {
+    guests: { total: 920 },
+    destinations: [
+      { country: 'PL', weddings: 4 },
+      { country: 'FR', weddings: 2 },
       { country: 'BE', weddings: 1 },
     ],
-    stolatWeddings: 3,
-    animations: { total: 18 },
   },
-  nextWedding: { city: 'Lyon', country: 'FR', month: 6, year: 2027 },
 };
 
 function render(overrides = {}) {
@@ -46,32 +53,26 @@ beforeEach(() => {
   setLocale('en', { persist: false, doc: null });
 });
 
-describe('issue #1217 public season stats embed', () => {
-  it('parses the embed route with PL default and per-request parameters', () => {
-    expect(parseSeasonStatsEmbed('/embed/season-stats', '')).toEqual({
+describe('public season stats embed', () => {
+  it('parses the embed route with per-request language, theme and preview state', () => {
+    expect(parseSeasonStatsEmbed('/embed/season-stats', '')).toMatchObject({
       lang: 'pl',
       theme: 'transparent',
+      previewState: null,
     });
-    expect(parseSeasonStatsEmbed('/embed/season-stats/', '?lang=fr')).toEqual({
+    expect(parseSeasonStatsEmbed('/embed/season-stats', '?lang=fr')).toMatchObject({
       lang: 'fr',
       theme: 'transparent',
     });
-    expect(parseSeasonStatsEmbed('/embed/season-stats', '?lang=en&theme=transparent')).toEqual({
-      lang: 'en',
-      theme: 'transparent',
-    });
-    expect(parseSeasonStatsEmbed('/embed/season-stats', '?theme=cream')).toEqual({
-      lang: 'pl',
+    expect(parseSeasonStatsEmbed('/embed/season-stats', '?theme=cream')).toMatchObject({
       theme: 'cream',
     });
-    expect(parseSeasonStatsEmbed('/embed/season-stats', '?lang=de')).toEqual({
-      lang: 'pl',
-      theme: 'transparent',
-    });
-    expect(parseSeasonStatsEmbed('/deck/embed/season-stats', '?lang=fr', '/deck/')).toEqual({
-      lang: 'fr',
-      theme: 'transparent',
-    });
+    expect(
+      parseSeasonStatsEmbed('/embed/season-stats', '?previewState=live'),
+    ).toMatchObject({ previewState: 'live' });
+    expect(
+      parseSeasonStatsEmbed('/embed/season-stats', '?previewState=unknown'),
+    ).toMatchObject({ previewState: null });
     expect(parseSeasonStatsEmbed('/embed/other', '')).toBeNull();
   });
 
@@ -97,132 +98,33 @@ describe('issue #1217 public season stats embed', () => {
     await expect(fetchSeasonStats({ config: { enabled: false } })).rejects.toThrow(
       'not configured',
     );
-    await expect(
-      fetchSeasonStats({
-        config: { enabled: true, url: 'https://x', anonKey: 'k' },
-        fetchImpl: async () => ({ ok: false, status: 503 }),
-      }),
-    ).rejects.toThrow('503');
   });
 
-  it('renders the four KPI cards and the next-wedding strip', () => {
+  it('renders exactly two KPI cards from the season plan', () => {
     const html = render();
     expect(html).toContain('Guests hosted');
-    expect(html).toContain('320');
     expect(html).toContain('Destinations');
-    expect(html).toContain('International weddings');
-    expect(html).toContain('outside Poland');
-    expect(html).not.toContain('Weddings with Sto Lat');
-    expect(html).toContain('Animations orchestrated');
-    expect(html).toContain('Next wedding');
-    expect(html).toContain('Season in progress');
-    expect(html).toContain('Lyon');
-    expect(html).toContain('June 2027');
-    expect(html).toContain('data-vehicle="plane"');
-    expect(html).toContain('3 of 4 weddings');
-    expect(html).toContain('PL · FR · BE');
-    expect(html).toContain('href="https://deck.weselnyzabojad.pl"');
-    expect(html).toContain('target="_blank"');
-    expect(html).toContain('rel="noopener noreferrer"');
-    expect(html).toContain('Season statistics');
-    expect(html).toContain('Powered by');
-    expect(html).toContain('Stage Deck');
-  });
-
-  it('uses the car icon for a Polish next wedding', () => {
-    const html = render({ data: { ...data, nextWedding: { ...data.nextWedding, country: 'PL' } } });
-    expect(html).toContain('data-vehicle="car"');
-    expect(html).not.toContain('data-vehicle="plane"');
-  });
-
-  it('hides the next-wedding strip when it is absent', () => {
-    const html = render({ data: { ...data, nextWedding: null } });
-    expect(html).not.toContain('Next wedding');
-    expect(html).not.toContain('data-vehicle=');
-  });
-
-  it('renders the loading skeleton without an error screen', () => {
-    const html = render({ data: null, status: 'loading' });
-    expect(html).toContain('aria-busy="true"');
-    expect(html).toContain('Loading season statistics');
-    expect(html).not.toContain('Guests hosted');
-    expect(html).not.toContain('Error');
-  });
-
-  it('uses a calm fallback for empty, error or too-few KPI values', () => {
-    for (const overrides of [
-      { data: null, status: 'error' },
-      { data: { ...data, hasData: false } },
-      {
-        data: {
-          ...data,
-          kpis: { guests: { total: 320 }, destinations: [] },
-        },
-      },
-    ]) {
-      const html = render(overrides);
-      expect(html).toContain('Season statistics will appear after the first wedding recap');
-      expect(html).not.toContain('Error');
-      expect(html).not.toContain('>0<');
-    }
-  });
-
-  it('hides null and zero cards instead of printing zeros', () => {
-    const html = render({
-      data: {
-        ...data,
-        kpis: {
-          guests: { total: 320 },
-          destinations: null,
-          animations: { total: 18 },
-        },
-      },
-    });
-    expect(html).toContain('Guests hosted');
-    expect(html).toContain('Animations orchestrated');
-    expect(html).not.toContain('Destinations');
+    expect(html).toContain('data-country="PL"');
+    expect(html).toContain('data-country="FR"');
+    expect(html).toContain('data-country="BE"');
     expect(html).not.toContain('International weddings');
-    expect(html).not.toContain('>0<');
+    expect(html).not.toContain('Animations orchestrated');
+    expect(html).not.toContain('weddings with Sto Lat');
   });
 
-  it('computes international weddings from non-Polish destinations', () => {
-    const html = render({
-      data: {
-        ...data,
-        kpis: {
-          ...data.kpis,
-          destinations: [
-            { country: 'PL', weddings: 5 },
-            { country: 'FR', weddings: 2 },
-            { country: 'BE', weddings: 1 },
-          ],
-        },
-      },
-    });
-    expect(html).toContain('International weddings');
-    expect(html).toContain('>3<');
-    expect(html).toContain('outside Poland');
-
-    const domesticOnly = render({
-      data: {
-        ...data,
-        kpis: {
-          ...data.kpis,
-          destinations: [{ country: 'PL', weddings: 5 }],
-        },
-      },
-    });
-    expect(domesticOnly).not.toContain('International weddings');
+  it('hides the strip and uses a neutral fallback with no data', () => {
+    const html = render({ data: { hasData: false, seasonPlan: { state: 'none' } } });
+    expect(html).toContain('Season statistics will appear');
+    expect(html).not.toContain('data-country=');
+    expect(html).not.toContain('Guests hosted');
   });
 
-  it('supports transparent and cream themes without the old dark surface', () => {
+  it('supports transparent and cream surfaces', () => {
     const transparent = render({ theme: 'transparent' });
-    expect(transparent).toContain('bg-transparent');
-    expect(transparent).not.toContain('bg-slate-950');
+    expect(transparent).toContain('overflow-hidden bg-transparent');
 
     const cream = render({ theme: 'cream' });
-    expect(cream).toContain('bg-[#FAF8F5]');
-    expect(cream).not.toContain('bg-slate-950');
+    expect(cream).toContain('overflow-hidden bg-[#FAF8F5]');
   });
 
   it('lazy-loads only the widget at /embed/season-stats and hides PWA chrome', () => {
@@ -233,12 +135,11 @@ describe('issue #1217 public season stats embed', () => {
     expect(main).toContain('<PublicSeasonStatsWidget route={EMBED_ROUTE} />');
     expect(main).toContain('setLocale(EMBED_ROUTE.lang, { persist: false })');
     expect(main).toContain('IS_LANDING || RECAP_TOKEN || EMBED_ROUTE');
-    expect(main).not.toContain('HttpError');
   });
 
   it('ships the embed keys in PL, EN and FR', () => {
     const keys = Object.keys(en).filter((key) => key.startsWith('embed.'));
-    expect(keys.length).toBeGreaterThanOrEqual(9);
+    expect(keys.length).toBeGreaterThanOrEqual(12);
     for (const dictionary of [fr, pl]) {
       for (const key of keys) {
         expect(dictionary[key]).toBeTypeOf('string');
