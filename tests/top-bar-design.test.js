@@ -19,7 +19,7 @@ describe('top-bar control colours', () => {
   it('keeps undecided cultural rules on the neutral surface', () => {
     const html = render(
       createElement(CulturalRulesBar, {
-        rules: { sto_lat: { status: 'TBC' }, gorzko: { status: 'TBC' } },
+        rules: { sto_lat: { status: 'ON_REQUEST' }, gorzko: { status: 'TBC' } },
         oczepinyStatus: { state: 'ON' },
       }),
     );
@@ -37,7 +37,7 @@ describe('top-bar control colours', () => {
 
     const refused = render(
       createElement(CulturalRulesBar, {
-        rules: { sto_lat: { status: 'STRICT_NO' }, gorzko: { status: 'STRICT_NO' } },
+        rules: { sto_lat: { status: 'NO' }, gorzko: { status: 'STRICT_NO' } },
         oczepinyStatus: { state: 'OFF' },
       }),
     );

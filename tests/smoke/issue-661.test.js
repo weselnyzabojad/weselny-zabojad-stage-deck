@@ -19,7 +19,7 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
     const { cartridge, warnings } = parse();
 
     expect(cartridge.culturalRules).toEqual({
-      sto_lat: { status: 'YES_EXPLAIN' },
+      sto_lat: { status: 'ON_REQUEST' },
       gorzko: { status: 'IF_GUESTS_START' },
       bread_salt: { status: 'YES', note: 'Vodka vs water shot; break glasses.' },
     });
@@ -30,7 +30,7 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
   it('reads the statuses from the Doc without a missing-status warning', () => {
     const { cartridge, warnings } = parse();
 
-    expect(cartridge.culturalRules.sto_lat.status).toBe('YES_EXPLAIN');
+    expect(cartridge.culturalRules.sto_lat.status).toBe('ON_REQUEST');
     expect(cartridge.culturalRules.gorzko.status).toBe('IF_GUESTS_START');
     expect(cartridge.culturalRules.bread_salt.status).toBe('YES');
     expect(warnings.some((warning) => warning.startsWith('CULTURAL RULES:'))).toBe(false);

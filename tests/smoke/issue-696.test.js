@@ -12,7 +12,7 @@ describe('issue #696 cultural rule statuses come from the Doc', () => {
     );
 
     expect(cartridge.culturalRules).toMatchObject({
-      sto_lat: { status: 'YES_EXPLAIN' },
+      sto_lat: { status: 'ON_REQUEST' },
       gorzko: { status: 'IF_GUESTS_START' },
       bread_salt: { status: 'YES' },
     });

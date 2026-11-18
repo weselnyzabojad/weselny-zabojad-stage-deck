@@ -13,7 +13,7 @@ const wedding = {
   },
   servicePackage: 'HOST_ONLY',
   culturalRules: {
-    sto_lat: { status: 'STRICT_NO' },
+    sto_lat: { status: 'NO' },
     gorzko: { status: 'YES' },
   },
 };

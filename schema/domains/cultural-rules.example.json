@@ -2,7 +2,7 @@
   "$schema": "./cultural-rules.json",
   "culturalRules": {
     "sto_lat": {
-      "status": "STRICT_NO"
+      "status": "NO"
     },
     "gorzko": {
       "status": "STRICT_NO"

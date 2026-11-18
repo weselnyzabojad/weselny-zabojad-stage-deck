@@ -7,6 +7,9 @@ const RULES = [
     icon: '🎶',
     statusLabels: {
       YES: 'YES',
+      ON_REQUEST: 'ON REQUEST',
+      NO: 'NO',
+      // Legacy cartridges keep rendering even though new imports normalize.
       YES_EXPLAIN: 'YES + EXPLAIN',
       STRICT_NO: 'STRICT NO',
       TBC: 'TBC',

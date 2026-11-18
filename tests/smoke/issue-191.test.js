@@ -9,7 +9,7 @@ import RoleShell from '../../src/components/RoleShell.jsx';
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 const rules = {
-  sto_lat: { status: 'STRICT_NO' },
+  sto_lat: { status: 'NO' },
   gorzko: { status: 'STRICT_NO' },
 };
 
@@ -30,7 +30,7 @@ describe('issue #191 pocket mini cultural chips and trimmed drift', () => {
     expect(html).toContain('bg-tone-positive-bg');
     expect(html).not.toContain('>STRICT NO<');
     expect(html).not.toContain('>ACTIVE<');
-    expect(html).toContain('Sto Lat: STRICT NO');
+    expect(html).toContain('Sto Lat: NO');
     expect(html).toContain('Oczepiny: ACTIVE');
   });
 

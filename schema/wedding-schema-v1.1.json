@@ -206,9 +206,8 @@
           "type": "string",
           "enum": [
             "YES",
-            "YES_EXPLAIN",
-            "STRICT_NO",
-            "TBC"
+            "ON_REQUEST",
+            "NO"
           ]
         },
         "note": {
