@@ -43,6 +43,7 @@ import {
 } from '../_shared/adminAuth.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 import { buildPortfolioKpis } from '../_shared/portfolioKpis.js';
+import { buildSeasonFact } from '../_shared/seasonFacts.js';
 import { normalizeCountry, resolveVenueCountry } from '../_shared/venueLocation.js';
 import {
   ALLOWED_ROLES,
@@ -2543,6 +2544,14 @@ async function handleRequest(req: Request) {
       const normalized = normalizeRecapPayload(body?.payload, weddingId);
       if (normalized.error) return json({ error: normalized.error }, 400);
 
+      const { data: weddingRow, error: weddingError } = await admin
+        .from('weddings')
+        .select('wedding_id, date, cartridge, venue_country')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (weddingError) throw weddingError;
+      if (!weddingRow) return json({ error: 'Wedding not found.' }, 404);
+
       const token = randomRecapToken();
       const tokenHash = await sha256Hex(token);
       const expiresAt = new Date(
@@ -2561,6 +2570,19 @@ async function handleRequest(req: Request) {
         .select('id, published_at, expires_at')
         .single();
       if (error) throw error;
+
+      const seasonFact = await buildSeasonFact({
+        wedding: weddingRow,
+        recap: normalized.payload,
+        recapId: data.id,
+      });
+      if (!seasonFact) {
+        return json({ error: 'Could not build the season fact for this recap.' }, 500);
+      }
+      const { error: seasonError } = await admin
+        .from('season_event_facts')
+        .upsert(seasonFact, { onConflict: 'wedding_key' });
+      if (seasonError) throw seasonError;
 
       const baseUrl = serverEnv(
         'PUBLIC_DECK_URL',
