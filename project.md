@@ -9935,3 +9935,100 @@ next-wedding strip exposes only city, country and month/year, by owner decision.
 [#1215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1215),
 [#1216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1216),
 [#1217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1217).
+
+### 17.127 Landing-only pre-release and WordPress handoff (decision, 2026-11-18)
+
+**Goal.**
+
+Prepare a landing-only pre-release before the first release. The release serves a
+dedicated `/extra/banner` landing view for an iframe on
+`www.weselnyzabojad.pl`, keeps the current `/` landing unchanged, and keeps the
+existing contact CTAs pointing to the main-site contact form. The old public
+`/embed/season-stats` widget and its React next-wedding strip are removed, while
+the public RPC and its data stay available for the WordPress webmaster. A written
+handoff covers the iframe, the contact form, and a wp-admin KPI bandeau with the
+four public season KPIs plus a WordPress-side next-wedding strip.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Landing pre-release | Serve the landing at `/extra/banner` for the www iframe without changing `/`. |
+| F2 | Season stats cleanup | Remove `/embed/season-stats` and the React next-wedding strip while keeping the RPC/data. |
+| F3 | WordPress handoff | Give the webmaster exact iframe, contact-form, KPI and next-wedding instructions. |
+| F4 | Release packaging | Tag `landing-release-1` and publish GitHub release notes. |
+
+**Release target.** Pre-release label `landing-pre-release`, no milestone. This
+is neither the first release nor Release-1.2. The release is blocked until the
+new landing logo and the owner's KPI-bandeau mockup are received.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or cartridge change.
+
+**Contracts.**
+
+| Area | Decision |
+| --- | --- |
+| Landing route | `/extra/banner`; the existing `/` landing stays unchanged |
+| Iframe host | `www.weselnyzabojad.pl` embeds `https://deck.weselnyzabojad.pl/extra/banner` |
+| Framing | `/extra/banner` may be framed only by `www.weselnyzabojad.pl` and `weselnyzabojad.pl`; other routes keep `frame-ancestors 'none'` |
+| Language | Browser language (`fr`, `pl`, `en`), fallback French |
+| Contact | Existing CTAs stay; they open `https://www.weselnyzabojad.pl/?prefill=...#kontakt` in a new tab |
+| Season embed | Remove `/embed/season-stats`, `PublicSeasonStatsWidget` and the React next-wedding strip |
+| Season data | Keep `season_event_facts`, `get_public_season_stats` and its `nextWedding` field unchanged |
+| wp-admin KPI bandeau | Four public KPIs fetched directly from `get_public_season_stats` with the anon key; no KPI route on deck |
+| wp-admin next wedding | Rendered by WordPress from the RPC `nextWedding` field, not by the React app |
+| Current visual | Capture the existing KPI bandeau as reference for the owner's mockup |
+| Tag / notes | Git tag `landing-release-1` + GitHub release listing landing, iframe, notice and blockers |
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/extra/banner` | Landing-only iframe view; browser language, FR fallback, unchanged contact CTAs |
+| `/` | Unchanged landing |
+| `/embed/season-stats` | Removed; no replacement route on deck |
+| wp-admin of `www.weselnyzabojad.pl` | KPI bandeau specification only; implementation is the webmaster's |
+| React admin `/admin` | Unchanged |
+| Role, join, recap, song-request and season RPC views | Unchanged |
+
+**Out of scope.** WordPress theme/plugin implementation in this repo, deploying
+to Netlify or WordPress, changing `get_public_season_stats` or
+`season_event_facts`, keeping a public KPI iframe on deck, historical season
+trends, admin localization (#1181), and any Google Doc/schema/parser change.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release kind | Separate landing pre-release, label `landing-pre-release` |
+| Landing iframe | `/extra/banner`, root `/` unchanged |
+| Landing URL | `https://deck.weselnyzabojad.pl/extra/banner` |
+| Language | Browser detection, French fallback |
+| Contact | Existing CTAs and URL unchanged, new tab |
+| Old season embed | Deleted, including React next-wedding strip |
+| KPI data path | WordPress calls the public Supabase RPC directly with the anon key |
+| KPI scope | Four public KPIs only: guests, destinations, Sto Lat, animations |
+| Next wedding | WordPress-side strip using RPC `nextWedding`; removed from React |
+| KPI visuals | Current capture first; final visual follows the owner's mockup |
+| Logo | New logo required in the landing header; blocks the release |
+| Tag | `landing-release-1` |
+| Release notes | GitHub release with landing, iframe, notice and blockers |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1238](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1238) | Capture the current KPI visual; WordPress handoff for iframe, contact, wp-admin KPI bandeau and next-wedding strip | - (before #1240) |
+| 2 | [#1239](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1239) | `/extra/banner` route, CSP, browser language, contact CTAs, tests | - |
+| 3 | [#1240](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1240) | Remove `/embed/season-stats` and React next-wedding strip, update tests/docs | #1238 |
+| 4 | [#1241](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1241) | Apply the new landing header logo | #1239; blocked by logo |
+| 5 | [#1242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1242) | Finalize the KPI bandeau visual from the owner mockup and update the handoff | #1238, #1239; blocked by mockup |
+| 6 | [#1243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1243) | Pre-release notes, `landing-release-1` tag and GitHub release | #1239–#1242; blocked by logo + mockup |
+
+**Blockers.**
+
+- New landing header logo not received.
+- Owner KPI-bandeau mockup not received.
+
+**Open questions.** None.
