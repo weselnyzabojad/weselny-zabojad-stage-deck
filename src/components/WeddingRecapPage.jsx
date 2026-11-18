@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import ClientExecutiveSummaryView from './ClientExecutiveSummaryView.jsx';
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
@@ -6,7 +7,7 @@ import { timingStatus } from '../lib/timingAnalytics.js';
 
 function Section({ title, children }) {
   return (
-    <section className="mt-8">
+    <section className="recap-print-avoid mt-8">
       <h2 className="font-heading text-lg font-bold text-ink">{title}</h2>
       <div className="mt-3">{children}</div>
     </section>
@@ -156,31 +157,11 @@ export default function WeddingRecapPage({ token }) {
         </span>
         <div className="flex items-center gap-2">
           <LanguageToggle variant="desktop" />
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="min-h-10 rounded-full border border-line-strong bg-card px-4 py-2 text-xs font-bold text-ink"
-          >
-            {t('recap.print')}
-          </button>
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-4xl px-5 pb-12 print:max-w-none print:px-0">
-        <section className="rounded-3xl border border-line bg-card/80 p-6 shadow-xl print:border-0 print:bg-white print:p-0 print:shadow-none sm:p-10">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-            {t('recap.eyebrow')}
-          </p>
-          <h1 className="mt-3 font-heading text-3xl font-bold leading-tight text-ink sm:text-5xl">
-            {recap.wedding?.couple ?? t('recap.title')}
-          </h1>
-          <p className="mt-2 text-sm text-muted">
-            {[recap.wedding?.date, recap.wedding?.venue].filter(Boolean).join(' · ')}
-          </p>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
-            {t('recap.subtitle')}
-          </p>
-        </section>
+        <ClientExecutiveSummaryView recap={recap} onPrint={() => window.print()} />
 
         <Section title={t('recap.numbers.title')}>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">

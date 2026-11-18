@@ -536,3 +536,20 @@ input[type="checkbox"] {
   overflow-y: auto;
   background: var(--bg-page);
 }
+
+/* Client executive summary print/PDF: light canvas, no clipped cards. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+
+  .recap-print-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
