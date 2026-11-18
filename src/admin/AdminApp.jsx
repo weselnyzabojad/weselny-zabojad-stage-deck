@@ -37,6 +37,7 @@ import {
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
+import AdminPortfolioOverview from './AdminPortfolioOverview';
 import { ADMIN_BUTTON } from './adminUi';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
@@ -901,6 +902,7 @@ function AdminAppContent() {
         <AdminHealthBar refreshKey={healthRefresh} />
         <nav className="mx-auto mt-3 flex max-w-6xl gap-2 text-xs">
           {[
+            ['overview', 'Overview'],
             ['weddings', 'Weddings'],
             ['presence', 'Live presence'],
             ['audit', 'Audit log'],
@@ -978,6 +980,8 @@ function AdminAppContent() {
           </div>
         ) : null}
         {loading ? <AdminSkeleton rows={3} /> : null}
+
+        {tab === 'overview' ? <AdminPortfolioOverview readOnly={readOnly} /> : null}
 
         {tab === 'weddings' ? (
           <>
