@@ -10,6 +10,7 @@ import CakeCard from '../components/CakeCard';
 import { ceremonySubStepBodies } from '../components/ceremonySubStepBodies';
 import DjSongRequestQueue from '../components/DjSongRequestQueue';
 import RoleReadReceiptsRow from '../components/RoleReadReceiptsRow';import ModalShell from '../components/ModalShell';
+import PostMortemAnalytics from '../components/PostMortemAnalytics';
 import MusicPolicyCard from '../components/MusicPolicyCard';
 import AttractionStrip from '../components/AttractionStrip';
 import ChildrenExpectedBadge from '../components/ChildrenExpectedBadge';
@@ -284,6 +285,7 @@ export default function McMasterView({ model }) {
   const isCompact = useCompact();
   const [editingStepId, setEditingStepId] = useState(null);
   const [editorError, setEditorError] = useState('');
+  const [postMortemOpen, setPostMortemOpen] = useState(false);
 
   const railEntries = driftReport.entries ?? [];
   const railActiveIndex = railEntries.findIndex((entry) => entry.isActive);
@@ -387,6 +389,7 @@ export default function McMasterView({ model }) {
 
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
+      {postMortemControl}
       {driftReport.hardAnchorRadar.hasWarning ? (
         <HardAnchorAlertBanner radar={driftReport.hardAnchorRadar} />
       ) : null}
@@ -581,6 +584,25 @@ export default function McMasterView({ model }) {
       <ThemeToggle theme={theme} onToggle={toggleTheme} variant="desktop" />
     </UtilityControlGroup>
   );
+  const postMortemControl = isComplete ? (
+    <button
+      type="button"
+      onClick={() => setPostMortemOpen(true)}
+      className="min-h-10 rounded-lg border border-line-strong bg-raised px-2.5 py-1.5 text-[10px] font-semibold text-ink transition hover:bg-line"
+    >
+      {t('postMortem.open')}
+    </button>
+  ) : null;
+  const postMortemModal = (
+    <PostMortemAnalytics
+      open={postMortemOpen}
+      onClose={() => setPostMortemOpen(false)}
+      steps={WEDDING?.steps ?? steps ?? []}
+      liveState={liveState}
+      closureTime={closureTime}
+    />
+  );
+
   const wideContent = (
     <>
       <SkipLink />
@@ -706,6 +728,7 @@ export default function McMasterView({ model }) {
           >
             {savedLocally ? t('mc.savedLocally') : t('mc.localSaveUnavailable')}
           </span>
+          {postMortemControl}
         </div>
 
         {/* Undo + Primary Action Button */}
@@ -764,6 +787,7 @@ export default function McMasterView({ model }) {
           }}
         />
       ) : null}
+      {postMortemModal}
 
       </div>
     </>
@@ -833,6 +857,7 @@ export default function McMasterView({ model }) {
           }}
         />
       ) : null}
+      {postMortemModal}
     </RoleShell>
   );
 }
