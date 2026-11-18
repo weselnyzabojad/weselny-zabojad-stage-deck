@@ -12,9 +12,15 @@
         "sto_lat": {
           "type": "object",
           "additionalProperties": false,
+          "description": "A wedding counts for the Sto Lat KPI when the normalized status is YES or ON_REQUEST.",
           "properties": {
             "status": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "YES",
+                "ON_REQUEST",
+                "NO"
+              ]
             }
           },
           "required": [

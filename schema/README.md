@@ -84,7 +84,7 @@ rejected; put app-specific data under `extensions`.
   "syncPin": "2008",
   "servicePackage": "HOST_AND_DJ_VIP",
   "culturalRules": {
-    "sto_lat": { "status": "STRICT_NO", "note": "No Sto Lat tonight" },
+    "sto_lat": { "status": "NO", "note": "No Sto Lat tonight" },
     "gorzko": { "status": "STRICT_NO" },
     "bread_salt": { "status": "YES" }
   },
@@ -199,7 +199,7 @@ Notes:
 
 | Rule | Allowed statuses |
 | --- | --- |
-| `sto_lat` | `YES`, `YES_EXPLAIN`, `STRICT_NO`, `TBC` |
+| `sto_lat` | `YES`, `ON_REQUEST`, `NO` |
 | `gorzko` | `YES`, `IF_GUESTS_START`, `STRICT_NO`, `TBC` |
 | `bread_salt` | `YES`, `NO`, `TBC` |
 

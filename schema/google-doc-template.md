@@ -50,12 +50,13 @@ Notes: Couple speaks FR/PL; most guests understand EN.
 
 ## CULTURAL RULES
 
-Sto Lat, Gorzko and Bread & Salt statuses are required. The Bread & Salt note is
-optional.
+Sto Lat, Gorzko and Bread & Salt statuses are required. Sto Lat accepts
+`YES`, `ON_REQUEST` or `NO`; a wedding counts for the Sto Lat KPI when the
+normalized status is `YES` or `ON_REQUEST`. The Bread & Salt note is optional.
 
 | Rule | Status | Note |
 | --- | --- | --- |
-| stoLat | YES_EXPLAIN | Explain the symbolism in FR. |
+| stoLat | ON_REQUEST | Explain the symbolism in FR when guests ask. |
 | gorzko | IF_GUESTS_START | Only during cake. |
 | breadSalt | YES | Vodka vs water shot; break glasses. |
 

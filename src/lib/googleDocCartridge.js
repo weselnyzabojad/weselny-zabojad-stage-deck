@@ -138,15 +138,35 @@ function parseJsonBlock(source) {
   }
 }
 
-function mapCulturalRules(rows) {
+// Issue #1213: Sto Lat only accepts YES / ON_REQUEST / NO. Legacy Doc values
+// are normalized before validation; anything unrecognised fails safely to NO.
+// A "Sto Lat wedding" for the season KPI is YES or ON_REQUEST.
+function normalizeStoLatStatus(value, warnings) {
+  const raw = text(value);
+  const clean = raw ? raw.toUpperCase().replace(/[\s-]+/g, '_') : '';
+  if (clean === 'YES') return 'YES';
+  if (clean === 'ON_REQUEST') return 'ON_REQUEST';
+  if (clean === 'NO' || clean === 'STRICT_NO' || clean === 'OFF') return 'NO';
+  warnings.push(
+    `CULTURAL RULES: Sto Lat status "${raw ?? ''}" is not recognised; mapped to NO.`,
+  );
+  return 'NO';
+}
+
+function mapCulturalRules(rows, warnings = []) {
   const keyMap = { stolat: 'sto_lat', gorzko: 'gorzko', breadsalt: 'bread_salt' };
   const rules = {};
   for (const row of rows) {
     const key = keyMap[normalizeKey(row.Rule)];
     if (!key) continue;
     rules[key] = {};
-    // The three statuses are required Doc values and are copied verbatim.
-    if (text(row.Status)) rules[key].status = text(row.Status);
+    // Gorzko and Bread & Salt keep their existing contract. Sto Lat is
+    // normalized to the three product values before schema validation.
+    if (key === 'sto_lat') {
+      rules[key].status = normalizeStoLatStatus(row.Status, warnings);
+    } else if (text(row.Status)) {
+      rules[key].status = text(row.Status);
+    }
     if (key === 'bread_salt' && text(row.Note)) rules[key].note = text(row.Note);
   }
   return rules;
@@ -1137,6 +1157,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
       table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),
+      warnings,
     ),
     steps: stepsWithMandatory,
     hardAnchors,
