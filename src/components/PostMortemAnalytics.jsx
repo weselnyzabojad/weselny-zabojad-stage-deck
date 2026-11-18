@@ -198,7 +198,7 @@ export default function PostMortemAnalytics({
             </ol>
           )}
           <div className="mt-5">
-            <SocialExportStudio surface="mc" wedding={wedding} />
+            <SocialExportStudio surface="mc" wedding={wedding} liveState={liveState} />
           </div>
         </div>
       </div>

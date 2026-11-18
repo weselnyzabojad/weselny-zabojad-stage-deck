@@ -252,6 +252,17 @@ export function buildPortfolioRow({
     presence: asArray(presence).filter((row) => row?.status === 'online').length,
     receipts: asArray(receipts).length,
   };
+  const rawPolicy = liveState?.media_overrides?.venuePolicies ?? null;
+  const venuePolicy = {
+    decibelLimitEnabled: rawPolicy?.decibelLimitEnabled === true,
+    decibelLimit:
+      Number.isFinite(rawPolicy?.decibelLimit) && rawPolicy.decibelLimit > 0
+        ? Math.round(rawPolicy.decibelLimit)
+        : null,
+    forbiddenFx: Array.isArray(rawPolicy?.forbiddenFx)
+      ? rawPolicy.forbiddenFx.filter(Boolean)
+      : [],
+  };
 
   return {
     id: text(wedding?.wedding_id),
@@ -306,6 +317,7 @@ export function buildPortfolioRow({
     cartridgeRevision: number(cartridgeRevision) ?? number(wedding?.cartridge_revision),
     actualEnd: text(summary.actualEnd),
     actualDurationMinutes: number(summary.actualDurationMinutes),
+    venuePolicy,
     details: {
       couple: {
         brideFirstName: text(coupleProfile?.bride?.firstName),
