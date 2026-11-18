@@ -1041,12 +1041,16 @@ const en = {
   'embed.kpi.guests': 'Guests hosted',
   'embed.kpi.guestsCoverage': '{covered} of {total} weddings',
   'embed.kpi.destinations': 'Destinations',
-  'embed.kpi.stolat': 'Weddings with Sto Lat',
+  'embed.kpi.international': 'International weddings',
+  'embed.kpi.internationalDetail': 'outside Poland',
   'embed.kpi.animations': 'Animations orchestrated',
   'embed.nextWedding': 'Next wedding',
+  'embed.seasonLive': 'Season in progress',
   'embed.fallback': 'Season statistics will appear after the first wedding recap.',
   'embed.loading': 'Loading season statistics…',
-  'embed.footer': 'Season statistics • Powered by Stage Deck',
+  'embed.footer.season': 'Season statistics',
+  'embed.footer.powered': 'Powered by',
+  'embed.footer.brand': 'Stage Deck',
 };
 
 export default en;

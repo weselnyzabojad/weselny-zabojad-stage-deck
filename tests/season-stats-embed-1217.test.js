@@ -36,7 +36,7 @@ function render(overrides = {}) {
     createElement(PublicSeasonStatsView, {
       data,
       status: 'ready',
-      theme: 'dark',
+      theme: 'transparent',
       ...overrides,
     }),
   );
@@ -50,23 +50,27 @@ describe('issue #1217 public season stats embed', () => {
   it('parses the embed route with PL default and per-request parameters', () => {
     expect(parseSeasonStatsEmbed('/embed/season-stats', '')).toEqual({
       lang: 'pl',
-      theme: 'dark',
+      theme: 'transparent',
     });
     expect(parseSeasonStatsEmbed('/embed/season-stats/', '?lang=fr')).toEqual({
       lang: 'fr',
-      theme: 'dark',
+      theme: 'transparent',
     });
     expect(parseSeasonStatsEmbed('/embed/season-stats', '?lang=en&theme=transparent')).toEqual({
       lang: 'en',
       theme: 'transparent',
     });
+    expect(parseSeasonStatsEmbed('/embed/season-stats', '?theme=cream')).toEqual({
+      lang: 'pl',
+      theme: 'cream',
+    });
     expect(parseSeasonStatsEmbed('/embed/season-stats', '?lang=de')).toEqual({
       lang: 'pl',
-      theme: 'dark',
+      theme: 'transparent',
     });
     expect(parseSeasonStatsEmbed('/deck/embed/season-stats', '?lang=fr', '/deck/')).toEqual({
       lang: 'fr',
-      theme: 'dark',
+      theme: 'transparent',
     });
     expect(parseSeasonStatsEmbed('/embed/other', '')).toBeNull();
   });
@@ -106,9 +110,12 @@ describe('issue #1217 public season stats embed', () => {
     expect(html).toContain('Guests hosted');
     expect(html).toContain('320');
     expect(html).toContain('Destinations');
-    expect(html).toContain('Weddings with Sto Lat');
+    expect(html).toContain('International weddings');
+    expect(html).toContain('outside Poland');
+    expect(html).not.toContain('Weddings with Sto Lat');
     expect(html).toContain('Animations orchestrated');
     expect(html).toContain('Next wedding');
+    expect(html).toContain('Season in progress');
     expect(html).toContain('Lyon');
     expect(html).toContain('June 2027');
     expect(html).toContain('data-vehicle="plane"');
@@ -117,7 +124,9 @@ describe('issue #1217 public season stats embed', () => {
     expect(html).toContain('href="https://deck.weselnyzabojad.pl"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener noreferrer"');
-    expect(html).toContain('Season statistics • Powered by Stage Deck');
+    expect(html).toContain('Season statistics');
+    expect(html).toContain('Powered by');
+    expect(html).toContain('Stage Deck');
   });
 
   it('uses the car icon for a Polish next wedding', () => {
@@ -165,7 +174,6 @@ describe('issue #1217 public season stats embed', () => {
         kpis: {
           guests: { total: 320 },
           destinations: null,
-          stolatWeddings: 0,
           animations: { total: 18 },
         },
       },
@@ -173,14 +181,48 @@ describe('issue #1217 public season stats embed', () => {
     expect(html).toContain('Guests hosted');
     expect(html).toContain('Animations orchestrated');
     expect(html).not.toContain('Destinations');
-    expect(html).not.toContain('Weddings with Sto Lat');
+    expect(html).not.toContain('International weddings');
     expect(html).not.toContain('>0<');
   });
 
-  it('supports the transparent theme without a page background', () => {
-    const html = render({ theme: 'transparent' });
-    expect(html).toContain('bg-transparent');
-    expect(html).not.toContain('bg-slate-950');
+  it('computes international weddings from non-Polish destinations', () => {
+    const html = render({
+      data: {
+        ...data,
+        kpis: {
+          ...data.kpis,
+          destinations: [
+            { country: 'PL', weddings: 5 },
+            { country: 'FR', weddings: 2 },
+            { country: 'BE', weddings: 1 },
+          ],
+        },
+      },
+    });
+    expect(html).toContain('International weddings');
+    expect(html).toContain('>3<');
+    expect(html).toContain('outside Poland');
+
+    const domesticOnly = render({
+      data: {
+        ...data,
+        kpis: {
+          ...data.kpis,
+          destinations: [{ country: 'PL', weddings: 5 }],
+        },
+      },
+    });
+    expect(domesticOnly).not.toContain('International weddings');
+  });
+
+  it('supports transparent and cream themes without the old dark surface', () => {
+    const transparent = render({ theme: 'transparent' });
+    expect(transparent).toContain('bg-transparent');
+    expect(transparent).not.toContain('bg-slate-950');
+
+    const cream = render({ theme: 'cream' });
+    expect(cream).toContain('bg-[#FAF8F5]');
+    expect(cream).not.toContain('bg-slate-950');
   });
 
   it('lazy-loads only the widget at /embed/season-stats and hides PWA chrome', () => {

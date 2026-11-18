@@ -40,6 +40,6 @@ export function parseSeasonStatsEmbed(pathname = '', search = '', baseUrl = '/')
   const requested = (params.get('lang') || '').toLowerCase();
   return {
     lang: EMBED_LANGUAGES.includes(requested) ? requested : 'pl',
-    theme: params.get('theme') === 'transparent' ? 'transparent' : 'dark',
+    theme: params.get('theme') === 'cream' ? 'cream' : 'transparent',
   };
 }

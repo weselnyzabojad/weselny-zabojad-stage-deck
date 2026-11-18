@@ -48,14 +48,15 @@ of the site.
 
 ## Transparent theme
 
-Add `?theme=transparent` when the WordPress section already has a background:
+The iframe is transparent by default, so it blends into the WordPress section.
+`?theme=transparent` remains available as an explicit value. Use `?theme=cream`
+for the very soft cream surface (`#FAF8F5`):
 
 ```text
-https://deck.weselnyzabojad.pl/embed/season-stats?lang=fr&theme=transparent
+https://deck.weselnyzabojad.pl/embed/season-stats?lang=fr&theme=cream
 ```
 
-The default is the dark Stage Deck surface. Keep the recommended heights with
-either theme.
+Keep the recommended heights with either theme.
 
 ## Troubleshooting
 
