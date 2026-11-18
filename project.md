@@ -10031,4 +10031,15 @@ trends, admin localization (#1181), and any Google Doc/schema/parser change.
 - New landing header logo not received.
 - Owner KPI-bandeau mockup not received.
 
+**Post-planning re-scope (2026-11-18).** Issue
+[#1242](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1242)
+was re-scoped by the owner from a wp-admin handoff to a full redesign of the
+public `PublicSeasonStatsWidget` iframe. The redesigned widget keeps the public
+route and the next-wedding strip, replaces the `MARIAGES AVEC STO LAT` card with
+`MARIAGES INTERNATIONAUX` (count of `kpis.destinations` weddings outside Poland),
+and adopts the editorial champagne/cream design system. This supersedes the
+wp-admin native bandeau target in #1238 and conflicts with the removal planned in
+#1240; those two issues must be adjusted or cancelled before implementation. The
+landing logo remains a release blocker for the pre-release.
+
 **Open questions.** None.
