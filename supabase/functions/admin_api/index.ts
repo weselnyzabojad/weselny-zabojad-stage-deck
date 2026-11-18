@@ -2645,12 +2645,29 @@ async function handleRequest(req: Request) {
         status: ['active', 'archived', 'all'].includes(body?.status) ? body.status : 'all',
         package: typeof body?.package === 'string' ? body.package.trim() : '',
         language: typeof body?.language === 'string' ? body.language.trim().toUpperCase() : '',
+        country: typeof body?.country === 'string' ? body.country.trim().toUpperCase() : '',
+        provider: typeof body?.provider === 'string' ? body.provider.trim() : '',
       };
       const now = new Date();
-      const [weddings, live, requests, recaps, roles] = await Promise.all([
+      const [
+        weddings,
+        live,
+        requests,
+        recaps,
+        roles,
+        providers,
+        musicians,
+        speeches,
+        gameBundles,
+        receipts,
+        sessions,
+        presence,
+      ] = await Promise.all([
         admin
           .from('weddings')
-          .select('wedding_id, couple, date, cartridge, archived_at, expires_at, updated_at')
+          .select(
+            'wedding_id, couple, date, cartridge, cartridge_revision, archived_at, expires_at, updated_at, venue_name, venue_city, venue_country',
+          )
           .order('updated_at', { ascending: false }),
         admin.from('live_sync_state').select('wedding_id, state'),
         admin
@@ -2661,9 +2678,38 @@ async function handleRequest(req: Request) {
           .select('wedding_id, payload, published_at, expires_at, revoked_at')
           .order('published_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role'),
+        admin
+          .from('wedding_service_providers')
+          .select('wedding_id, category, active'),
+        admin
+          .from('wedding_musicians')
+          .select('wedding_id, active, ceremony_required'),
+        admin
+          .from('speech_records')
+          .select('wedding_id, status, speaker_language'),
+        admin
+          .from('game_question_bundles')
+          .select('wedding_id, game_type, status, question_count'),
+        admin.from('stage_step_receipts').select('wedding_id').limit(5000),
+        admin
+          .from('role_sessions')
+          .select('wedding_id, revoked_at')
+          .limit(2000),
+        admin.from('role_presence').select('wedding_id, status'),
       ]);
       const firstError =
-        weddings.error || live.error || requests.error || recaps.error || roles.error;
+        weddings.error ||
+        live.error ||
+        requests.error ||
+        recaps.error ||
+        roles.error ||
+        providers.error ||
+        musicians.error ||
+        speeches.error ||
+        gameBundles.error ||
+        receipts.error ||
+        sessions.error ||
+        presence.error;
       if (firstError) throw firstError;
 
       const liveStates: Record<string, any> = {};
@@ -2690,6 +2736,29 @@ async function handleRequest(req: Request) {
         rolesByWedding[row.wedding_id] ??= [];
         rolesByWedding[row.wedding_id].push(row.role);
       }
+      const groupRows = (rows: any[] | null, idKey = 'wedding_id') => {
+        const grouped: Record<string, any[]> = {};
+        for (const row of rows ?? []) {
+          const id = row[idKey];
+          if (!id) continue;
+          grouped[id] ??= [];
+          grouped[id].push(row);
+        }
+        return grouped;
+      };
+      const providersByWedding = groupRows(providers.data);
+      const musiciansByWedding = groupRows(musicians.data);
+      const speechesByWedding = groupRows(speeches.data);
+      const gameBundlesByWedding = groupRows(gameBundles.data);
+      const receiptsByWedding = groupRows(receipts.data);
+      const sessionsByWedding = groupRows(sessions.data);
+      const presenceByWedding = groupRows(presence.data);
+      const cartridgeRevisions: Record<string, number> = {};
+      for (const row of weddings.data ?? []) {
+        if (Number.isFinite(row.cartridge_revision)) {
+          cartridgeRevisions[row.wedding_id] = row.cartridge_revision;
+        }
+      }
 
       return json(
         buildPortfolioKpis({
@@ -2698,6 +2767,14 @@ async function handleRequest(req: Request) {
           requests: requestsByWedding,
           recaps: recapsByWedding,
           roles: rolesByWedding,
+          providers: providersByWedding,
+          musicians: musiciansByWedding,
+          speeches: speechesByWedding,
+          gameBundles: gameBundlesByWedding,
+          receipts: receiptsByWedding,
+          sessions: sessionsByWedding,
+          presence: presenceByWedding,
+          cartridgeRevisions,
           filters,
           now,
         }),
