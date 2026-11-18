@@ -10043,3 +10043,118 @@ wp-admin native bandeau target in #1238 and conflicts with the removal planned i
 landing logo remains a release blocker for the pre-release.
 
 **Open questions.** None.
+
+### 17.128 Season stats widget: two KPIs, country flags and season states (decision, 2026-11-18)
+
+**Goal.**
+
+Reduce the public season stats iframe to two essential KPIs (guests and
+destinations), enrich destinations with inline SVG flags and per-country counts,
+and make the widget coherent across the three lifecycle states: before season,
+season in progress and after season. The widget must never display a fake zero or
+an incoherent pre/live/post message, and it must remain compact in a WordPress
+iframe at desktop and mobile widths.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Two-KPI widget | Keep only guests and destinations, remove international weddings and animations. |
+| F2 | Destination flags and counts | Show sorted country badges with inline SVG flags and per-country counts. |
+| F3 | Season lifecycle states | Derive pre/live/post labels, numbers and CTA strips from planned + completed weddings. |
+| F4 | Preview and QA | Add a dev/recette-only `?previewState=pre|live|post` with coherent demo data. |
+
+**Release target.** Pre-release label `landing-pre-release`, no milestone. This is
+neither the first release nor Release-1.2.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template or
+cartridge change.
+
+**Data contract.** The current RPC only aggregates published recap facts and
+`nextWedding`; it cannot know future weddings, expected guests or planned
+destinations. Extend `get_public_season_stats` with a `seasonPlan` object read
+from non-archived weddings in the calendar year:
+
+```json
+{
+  "state": "pre | live | post | none",
+  "year": 2026,
+  "weddings": { "total": 24, "completed": 10, "upcoming": 14 },
+  "guests": { "planned": 2870, "completed": 1420 },
+  "destinations": [
+    { "country": "PL", "planned": 14, "completed": 10 },
+    { "country": "FR", "planned": 6, "completed": 4 }
+  ]
+}
+```
+
+- `total` / `completed` / `upcoming` come from `weddings` + `cartridge.extensions.dateISO`; a wedding dated today is upcoming.
+- `guests.planned` sums `cartridge.demographics.total`; `guests.completed` keeps the existing facts aggregate.
+- Planned destinations come from `venue_country`; completed destinations from `season_event_facts`.
+- Only aggregates leave the RPC: no names, exact dates, addresses, venue names or per-wedding rows.
+- The existing `kpis`, `coverage` and `nextWedding` fields stay for compatibility.
+- No new table or column.
+
+**State rules.**
+
+| State | Condition | Top strip | Guest card | Destination card |
+| --- | --- | --- | --- | --- |
+| `pre` | 0 completed, ≥1 upcoming | Opening of season + first wedding city/month; “season [year] ahead” | Expected guests + planned weddings | Planned destinations + planned country badges |
+| `live` | ≥1 completed, ≥1 upcoming | Next wedding + animated gold dot; “season in progress” | Guests hosted + progress `completed/total` | Destinations + completed/planned country badges |
+| `post` | ≥1 completed, 0 upcoming | Season closed + thanks or next season; “after season · review [year]” | Final guests + celebrated weddings | Visited destinations + final country badges |
+| `none` | no planned or completed weddings | Neutral fallback | Hidden | Hidden |
+
+**Design contract.**
+
+- Transparent or cream `#FAF8F5` iframe surface, no outer border.
+- Two cards, `grid-cols-1 sm:grid-cols-2`, equal height, warm white, `#EAE2D3` border, `rounded-2xl`, warm champagne shadow.
+- `Intl.NumberFormat` grouping (`2 870`) + `tabular-nums`.
+- Serif italic medium city in the next-wedding strip.
+- Destination badges: `flex flex-wrap gap-2`, `rounded-full`, cream background, `#EAE2D3` border, inline SVG flags (never emoji), code/name + count, sorted descending.
+- Live state: completed countries stronger; future-only countries at `opacity-65`; show completed/planned where useful.
+- Footer: `Statistiques de saison [Année]` left; `Propulsé par Stage Deck →` right, gold, new tab, `rel="noopener noreferrer"`.
+- Compact at 1242 px desktop width and 375 px mobile width; no horizontal or vertical scroll.
+
+**Preview contract.**
+
+`?previewState=pre|live|post` is accepted only when `import.meta.env.DEV` or
+`VITE_EMBED_PREVIEW=1` at build time. In preview it forces a coherent demo payload
+for the selected state; production ignores the parameter. The flag is documented
+in `.env.example`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `get_public_season_stats` | Add `seasonPlan` aggregates and state; keep existing fields |
+| `/embed/season-stats` | Two KPI cards, flags, lifecycle states, preview fixtures |
+| WordPress snippet | Update recommended height/theme guidance if needed |
+| Landing `/`, `/extra/banner`, React admin, role views | Unchanged |
+
+**Out of scope.** New season table or column, per-wedding public API, exact dates,
+names/addresses, historical trends, WordPress theme implementation, admin
+localization (#1181), and Google Doc/schema/parser changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | Pre-release `landing-pre-release`, no milestone |
+| KPIs | Guests + destinations only |
+| Removed cards | Mariages internationaux, animations orchestrées |
+| Destination total | Number of countries (current RPC model has country only) |
+| Flags | Inline SVG, no emoji, fallback to country code |
+| Season | Calendar year |
+| Planned data | Aggregated from live weddings/cartridges and venue countries |
+| Preview | Dev/recette only via `VITE_EMBED_PREVIEW=1`, coherent demo data |
+| Dimensions | 1242 px desktop width, 375 px mobile width; compact height |
+| Conflict | This keeps the widget; #1240 must be cancelled/adjusted before implementation |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1245](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1245) | Extend RPC with `seasonPlan` aggregates/state, privacy and tests | - |
+| 2 | [#1246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1246) | Two-KPI widget, flags/counts, lifecycle states, preview fixtures, i18n/docs/tests | #1245 |
+
+**Open questions.** None.
