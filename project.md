@@ -10344,3 +10344,131 @@ per-wedding public API.
 | 4 | [#1253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1253) | Expanded per-wedding table columns, sorting, tests | #1251 |
 
 **Open questions.** None.
+
+### 17.131 Social Export Studio: 1080×1920 Story templates from real KPIs (decision, 2026-11-18)
+
+**Goal.**
+
+Add a semi-automated Social Export Studio to the post-mortem/event-admin
+surfaces. One click exports true 1080×1920 PNG Story cards built from data the
+app already owns, plus a FR/PL caption containing the same KPIs. No invented
+metrics, no new tracking events, no couple identity on the exported pixels.
+
+**Codebase audit.**
+
+| Template | KPI / data point | Existing source | Status |
+| --- | --- | --- | --- |
+| Day −1 | Event date + venue timezone | `cartridge.extensions.dateISO`, `eventTime.js` | available |
+| Day −1 | Country | `weddings.venue_country` (normalized) | available |
+| Day −1 | Configured languages | `extensions.languages.supported` | available |
+| Day −1 | Locked timeline steps | `cartridge.steps` (+ hard anchors) | available |
+| Day −1 | Synced vendor roles | `weddings.roles` / role list | available |
+| Day −1 | Venue policy armed | `liveStageState.media_overrides.venuePolicies` (`decibelLimitEnabled`, `decibelLimit`, `forbiddenFx`) | available |
+| Day −1 | Noise curfew | `venueDetails.installation.noiseCurfew` exists in schema only, no parser/storage path | **not available** |
+| Day +1 | Completed steps / progress | `live_sync_state.state`, `timingAnalytics.js` | available |
+| Day +1 | On-time / late / early counts, total drift | `buildTimingComparison` | available |
+| Day +1 | First start, last actual, actual end, duration | `buildTimingComparison` | available |
+| Day +1 | Schedule changes absorbed | recap `changes` / `summary.changeCount` | available |
+| Day +1 | Accepted / played guest requests | `song_requests` / recap summary | available |
+| Day +1 | Games, ceremony parts, oczepiny | recap `games`, `ceremony`, cartridge | available |
+| Day +1 | Compatibility % | recap compatibility / `game_results` | available |
+| Day +1 | Cultural balance (Sto Lat, Gorzko, languages) | `culturalRules`, `extensions` | available |
+| Day +1 | Curfew compliance, mic announcements, silent backstage syncs | no data exists | **not available — must not be rendered** |
+| Season | Completed weddings, guests, destinations, Sto Lat, animations | `season_event_facts`, `get_public_season_stats` | available |
+| Season | Compatibility average, per-question results, most divisive question | not persisted; `wedding_recaps` purge after 90 days | **gap** |
+| All | Export engine | none; `html-to-image` not installed | **gap** |
+
+**Edge cases found.**
+
+- Day ±1 must be evaluated from the canonical event date in the venue timezone,
+  never from the browser's local date.
+- Incomplete events produce `null` metrics; cards must show a localized
+  "no data" state instead of `0`, `NaN` or a fake claim.
+- Legacy cartridges may lack `dateISO`; fall back to `weddings.date`.
+- `wedding_recaps` expire after 90 days, so a season compatibility aggregate
+  cannot be computed from recaps.
+- Compatibility answers live in encrypted game bundles and live state; only an
+  aggregate count may be persisted, never question text tied to a wedding.
+- Venue policy guard reports *armed* configuration, not observed compliance.
+- Present but unsafe to export: surnames, contacts, address, private notes,
+  venue manager details, tokens, mutation payloads, device identifiers.
+
+**Template contract.**
+
+| Template | Audience | Unlock | Background | Content |
+| --- | --- | --- | --- | --- |
+| Day −1 "Prep Wrapper" | MC + owner admin | Smart badge when today = event date − 1 | Dark card / transparent HUD | Country only, configured languages, locked steps, synced roles, armed policy (dB limit, forbidden FX) |
+| Day +1 "Post-Event Wrapped" | MC + owner admin | Smart badge after completion or event date + 1 | Dark card / transparent HUD | Real timing/drift, changes absorbed, requests, games, compatibility, cultural rules |
+| Season "Test Zgodności" | Owner admin only | End of season | Dark card | Completed weddings, average compatibility, top aggregated question, aggregate answers, empty lower third for an IG poll sticker |
+
+**Export and layout rules.**
+
+- Render the story at exactly 1080×1920 px; the UI preview is CSS-scaled only.
+- Export via `html-to-image` `toPng` with `pixelRatio: 1` at true size and an
+  explicit `backgroundColor` (dark card) or transparent (HUD).
+- Keep all critical text inside `top 250px` / `bottom 300px` safe margins.
+- Season template reserves the lower third as a clean, subtly framed sticker
+  zone.
+- Fonts: existing `font-mono` for live metrics, high-contrast
+  `bg-slate-950`/`text-slate-100`, minimal French flag accents, anti-kitch.
+- Filenames: `stage-deck-<template>-<season-or-event-date>.png`; no couple name.
+- Captions: FR and PL, same KPIs as the card, `deck.weselnyzabojad.pl`
+  attribution, copied to clipboard.
+
+**Privacy contract.**
+
+- Exported pixels and caption text only ever contain aggregated, anonymized
+  values from the template contract.
+- No surname, contact, address, venue note, speech script, token, device id or
+  raw row may enter an export payload; redaction is applied when building the
+  view model, not in the renderer.
+- Day −1 location is country only.
+- Season data is aggregate only, season-scoped.
+
+**Surface scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| MC post-mortem modal | Social Export tab with Day −1 and Day +1 |
+| Owner admin | Per-row **Social** button opens the studio for that wedding, plus the Season template |
+| Public landing / season widget / role views / WordPress | Unchanged |
+| Data path | Existing wedding/recap/live-state clients; season aggregate through `get_public_season_stats` |
+| Dependency | Add `html-to-image` only |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release, no milestone, no `release-1.2` |
+| Surface | MC (D−1, D+1) and owner admin (all three) |
+| Day +1 metrics | Existing real metrics only; no new tracking |
+| Season durability | Extend `season_event_facts` + `get_public_season_stats`, no facts in recaps |
+| Day −1 location | Country only |
+| Captions | FR + PL |
+| Wedding picker | Per-row **Social** button |
+| Background | Dark card and transparent HUD for D−1/D+1 |
+| Safe zones | Top 250px / bottom 300px kept clear |
+| Privacy | Redaction in the export view model |
+| Dependency | `html-to-image` only |
+
+**Season aggregate extension.**
+
+| Part | Change |
+| --- | --- |
+| `season_event_facts` | Add `compatibility_answered`, `compatibility_total`, `compatibility_percent`, `compatibility_questions`, `compatibility_question_summary` (jsonb, bounded) |
+| `seasonFacts.js` | Compute the aggregate from the recap compatibility block at publish time |
+| Backfill | Additive idempotent update from live recaps where still present |
+| `get_public_season_stats` | Expose `compatibility` under `kpis`: average %, answered/total, weddings covered, top question |
+| Privacy | No question text keyed to a wedding, no couple data; only aggregated counts |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1254](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1254) | `html-to-image`, Studio shell, scaled preview, true 1080×1920 export, safe zones, background toggle, FR/PL captions, MC + admin mounts, per-row Social button, tests | - |
+| 2 | [#1255](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1255) | Day −1 template + export view model, Day −1 smart badge, venue-policy armed display, tests | #1254 |
+| 3 | [#1256](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1256) | Day +1 template + export view model from timing/recap/requests/games, unlock badge, tests | #1254 |
+| 4 | [#1257](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1257) | Durable season compatibility aggregates: migration, `seasonFacts.js`, backfill, RPC extension, tests | - |
+| 5 | [#1258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1258) | Season Test Zgodności template with IG sticker safe zone, season data hook, tests | #1254, #1257 |
+
+**Open questions.** None.
