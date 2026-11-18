@@ -10251,3 +10251,96 @@ is realigned to the compact two-KPI iframe handoff, and
 [#1243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1243)
 is realigned to release notes without the old widget-removal step. #1239
 (`/extra/banner`) and the React admin remain unchanged.
+
+### 17.130 Admin portfolio: full wedding and Google Doc data inventory (decision, 2026-11-18)
+
+**Goal.**
+
+Turn the owner-admin Overview into a comprehensive operational and
+social-content data view. The current dashboard uses only weddings, live state,
+song requests, recaps and roles; the cartridge, Google Doc data, providers,
+musicians, speeches, games, photo plan and cultural domains are mostly ignored.
+Surface every available wedding data group, keep the data admin-only, and make
+the resulting dataset usable later for aggregated social-media content.
+
+**Data audit.**
+
+| Source | Currently used | Available but unused |
+| --- | --- | --- |
+| `weddings` | couple, date, cartridge, status, updated | venue name/address/city/country, created/publish history |
+| cartridge | servicePackage, supported languages, steps | coupleProfile, demographics, childrenExpected, culturalRules, hardAnchors, mediaTeam, musicians, speeches, witnesses, musicPolicy, attractions, cake, firstDance, groupPhotos, miniSession, photoPlan, oczepiny, specialEffects, viewVisibility |
+| live state | completed steps, actuals, game results | step order, active step, schedule changes, speech/game live data |
+| recap | summary, timeline, games, ceremony | changes, vendors, guest requests, first/last actuals, actual end/duration |
+| DB tables | roles, requests, recaps | providers, musicians, musician suggestions, speech metadata, game bundles, receipts, sessions/presence, cartridge revisions, audit |
+| season facts | none in admin | guests, destination, Sto Lat, games/ceremony/oczepiny totals |
+
+The current Google Doc parser maps only `demographics.notes`; guest counts need a
+new `## DEMOGRAPHICS` section. No contact detail, speech script or private note
+may enter the KPI payload.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Doc demographics | Capture guest totals/PL/FR/other from a new Doc section. |
+| F2 | Full KPI data layer | Load and aggregate every available wedding/cartridge/DB source. |
+| F3 | Overview KPI groups | Show all groups in the admin card/distribution layout. |
+| F4 | Per-wedding data table | Expand the comparison table with the new sortable columns. |
+
+**Release target.** First release. No milestone, no `release-1.2` label.
+
+**Google Doc contract.**
+
+| Part | Decision |
+| --- | --- |
+| Section | New `## DEMOGRAPHICS` in `schema/google-doc-template.md` |
+| Fields | `Guests total`, `Guests PL`, `Guests FR`, `Guests other`, `Notes` |
+| Schema | Existing `schema/domains/demographics.json`; no new cartridge field |
+| Parser | `src/lib/googleDocCartridge.js` maps the section; legacy `Demographics notes` remains supported |
+| Field map | `demographics.total/pl/fr/other/notes` documented as optional |
+| Missing values | `null`; never fake zero |
+
+**Privacy and audience.**
+
+- Admin-only operational detail.
+- Future social-media use consumes aggregated/anonymized totals only.
+- No emails, phones, addresses, contacts, speech scripts, private notes, raw
+  mutation payloads or device identifiers in the KPI payload.
+- Destinations remain country/city aggregates; venue address stays admin-only.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin Overview `/admin` | All KPI groups, distributions and expanded table |
+| `portfolio_kpis` | Full row data + expanded summary + coverage |
+| Google Doc parser | `## DEMOGRAPHICS` section |
+| Public landing/season widget, role views, WordPress | Unchanged |
+
+**Out of scope.** Social-media post generation/export, public KPI exposure,
+role-view UI, WordPress changes, new dependencies, historical trends, and any
+per-wedding public API.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release, no milestone |
+| Audience | Admin-only; social exports later are aggregated |
+| Doc changes | Existing sections plus new `## DEMOGRAPHICS` |
+| Guest source | Doc demographics, with legacy admin/cartridge values retained |
+| KPI groups | Guests, languages/cultures, destinations/venues, packages, timeline/timing, providers/team, music/requests, speeches/witnesses, games, photo/attractions/effects, readiness |
+| Table | Expand existing table with sortable data columns |
+| Export | No export in this scope; data stays structured for later |
+| Privacy | No contact/script/private-note fields in the KPI payload |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1250](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1250) | Doc `## DEMOGRAPHICS`, parser, field map, template, fixtures/tests | - |
+| 2 | [#1251](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1251) | Expand `portfolio_kpis` row/summary with all cartridge/DB/recap data, privacy, filters, tests | #1250 |
+| 3 | [#1252](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1252) | Admin Overview KPI groups/distributions, tests | #1251 |
+| 4 | [#1253](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1253) | Expanded per-wedding table columns, sorting, tests | #1251 |
+
+**Open questions.** None.
