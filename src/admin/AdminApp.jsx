@@ -38,6 +38,7 @@ import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
 import AdminPortfolioOverview from './AdminPortfolioOverview';
+import AdminVenueLocationEditor from './AdminVenueLocationEditor';
 import { ADMIN_BUTTON } from './adminUi';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
@@ -1170,6 +1171,11 @@ function AdminAppContent() {
                     rev {Number(wedding.cartridge_revision ?? 0)} · updated {formatAdminTime(wedding.updated_at)} · expires {formatAdminTime(wedding.expires_at)}
                     {wedding.cartridge_published_at ? ` · published ${formatAdminTime(wedding.cartridge_published_at)}` : ''}
                   </div>
+                  <AdminVenueLocationEditor
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onSaved={load}
+                  />
                   <AdminWeddingRoles
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
