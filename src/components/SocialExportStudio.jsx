@@ -9,8 +9,13 @@ import {
   buildDayMinusOneModel,
   dayMinusOneCaptionLines,
 } from '../lib/socialDayMinusOne.js';
+import {
+  buildDayPlusOneModel,
+  dayPlusOneCaptionLines,
+} from '../lib/socialDayPlusOne.js';
 import StoryFrame from './social/StoryFrame.jsx';
 import DayMinusOneStory from './social/DayMinusOneStory.jsx';
+import DayPlusOneStory from './social/DayPlusOneStory.jsx';
 
 const PREVIEW_WIDTH = 270;
 const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
@@ -39,6 +44,8 @@ export default function SocialExportStudio({
   surface = 'mc',
   wedding = null,
   liveState = null,
+  recap = null,
+  requests = [],
   templates = {},
   captionLinesByTemplate = {},
   onClose = null,
@@ -46,7 +53,7 @@ export default function SocialExportStudio({
   const { t } = useI18n();
   const available = useMemo(() => templatesForSurface(surface), [surface]);
   const availableTemplates = useMemo(
-    () => ({ dayMinusOne: DayMinusOneStory, ...templates }),
+    () => ({ dayMinusOne: DayMinusOneStory, dayPlusOne: DayPlusOneStory, ...templates }),
     [templates],
   );
   const [templateId, setTemplateId] = useState(available[0]?.id ?? 'dayMinusOne');
@@ -67,8 +74,15 @@ export default function SocialExportStudio({
         pl: dayMinusOneCaptionLines(model, 'pl'),
       };
     }
+    if (template?.id === 'dayPlusOne') {
+      const model = buildDayPlusOneModel({ wedding, liveState, recap });
+      return {
+        fr: dayPlusOneCaptionLines(model, 'fr'),
+        pl: dayPlusOneCaptionLines(model, 'pl'),
+      };
+    }
     return { fr: [], pl: [] };
-  }, [template?.id, wedding, liveState]);
+  }, [template?.id, wedding, liveState, recap]);
   const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>
@@ -168,7 +182,7 @@ export default function SocialExportStudio({
               label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
             >
               {Template ? (
-                <Template wedding={wedding} liveState={liveState} mode={mode} />
+                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} mode={mode} />
               ) : (
                 <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
               )}
@@ -242,7 +256,7 @@ export default function SocialExportStudio({
           label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
         >
           {Template ? (
-            <Template wedding={wedding} liveState={liveState} mode={mode} />
+            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} mode={mode} />
           ) : (
             <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
           )}
