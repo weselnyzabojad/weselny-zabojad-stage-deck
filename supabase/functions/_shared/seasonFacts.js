@@ -89,6 +89,43 @@ function oczepinyPartCount(cartridge) {
   return subEvents.length;
 }
 
+// Bounded, aggregated Test Zgodności facts (issue #1257). Only counts and a
+// stable question key are kept; question text and couple identity never enter
+// the durable season row.
+function compatibilityFromRecap(recap) {
+  const games = Array.isArray(recap?.games) ? recap.games : [];
+  const entries = games.flatMap((game, gameIndex) => {
+    const questions = Array.isArray(game?.questions) ? game.questions : [];
+    return questions.map((question, questionIndex) => ({
+      key: text(question?.id)
+        ? `q:${text(question.id)}`
+        : `g${gameIndex}:q${questionIndex}`,
+      compatible: typeof question?.isCompatible === 'boolean' ? question.isCompatible : null,
+    }));
+  });
+  const measured = entries.filter((entry) => entry.compatible != null);
+  const summary = new Map();
+  for (const entry of measured) {
+    const current = summary.get(entry.key) ?? { key: entry.key, answered: 0, compatible: 0 };
+    current.answered += 1;
+    if (entry.compatible) current.compatible += 1;
+    summary.set(entry.key, current);
+  }
+  return {
+    compatibility_total: entries.length,
+    compatibility_answered: measured.length,
+    compatibility_percent:
+      measured.length > 0
+        ? Math.round(
+            (measured.filter((entry) => entry.compatible).length / measured.length) * 100,
+          )
+        : null,
+    compatibility_questions: [...summary.values()]
+      .sort((left, right) => right.answered - left.answered || left.key.localeCompare(right.key))
+      .slice(0, 20),
+  };
+}
+
 async function sha256Hex(value) {
   const bytes = new TextEncoder().encode(value);
   const digest = await crypto.subtle.digest('SHA-256', bytes);
@@ -131,6 +168,7 @@ export async function buildSeasonFact({
     ceremony_parts: ceremonyParts,
     oczepiny_parts: oczepinyParts,
     animations_total: animationsTotal,
+    ...compatibilityFromRecap(recap),
     updated_at: now.toISOString(),
   };
 }
