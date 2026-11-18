@@ -62,6 +62,20 @@ function MetricCard({ label, value, hint }) {
   );
 }
 
+function CoverageStat({ label, value, total, t }) {
+  return (
+    <div className="rounded-lg border border-line bg-card px-2.5 py-2">
+      <div className="font-mono text-[9px] uppercase tracking-widest text-muted">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-ink">
+        {t('admin.portfolio.coverage.count', {
+          count: count(value, t),
+          quality: count(total, t),
+        })}
+      </div>
+    </div>
+  );
+}
+
 function Distribution({ title, counts: values, emptyLabel, labelFor }) {
   const entries = Object.entries(values ?? {}).filter(([, value]) => Number(value) > 0);
   const total = entries.reduce((sum, [, value]) => sum + Number(value), 0);
@@ -127,6 +141,7 @@ export function PortfolioOverviewView({
   const years = useMemo(() => portfolioYears(rows), [rows]);
   const packages = Object.keys(data?.portfolio?.mix?.packages ?? {});
   const languages = Object.keys(data?.portfolio?.mix?.languages ?? {});
+  const providerCategories = Object.keys(data?.portfolio?.providerCategories ?? {});
   const visibleRows = useMemo(
     () => sortPortfolioRows(searchPortfolioRows(rows, query), sort.key, sort.direction),
     [rows, query, sort.key, sort.direction],
@@ -135,7 +150,13 @@ export function PortfolioOverviewView({
   const totals = data?.portfolio?.totals ?? {};
   const coverage = data?.portfolio?.coverage ?? {};
   const metrics = data?.portfolio ?? {};
+  const inventory = metrics.guests ?? {};
+  const team = metrics.team ?? {};
+  const interactions = metrics.interactions ?? {};
+  const musicTotals = metrics.music ?? {};
+  const photoTotals = metrics.photo ?? {};
   const acceptedRequests = rows.reduce((sum, row) => sum + (row.requestsAccepted ?? 0), 0);
+  const countries = Object.keys(metrics.mix?.countries ?? {});
 
   const cards = [
     { key: 'total', label: 'admin.portfolio.metric.total', value: count(totals.all, t) },
@@ -166,6 +187,56 @@ export function PortfolioOverviewView({
       key: 'games',
       label: 'admin.portfolio.metric.games',
       value: percent(metrics.gamesPlayedPct, t),
+    },
+    {
+      key: 'guests',
+      label: 'admin.portfolio.metric.guests',
+      value: count(inventory.total, t),
+    },
+    {
+      key: 'countries',
+      label: 'admin.portfolio.metric.countries',
+      value: count(countries.length || null, t),
+    },
+    {
+      key: 'providers',
+      label: 'admin.portfolio.metric.providers',
+      value: count(team.providers, t),
+    },
+    {
+      key: 'musicians',
+      label: 'admin.portfolio.metric.musicians',
+      value: count(team.musicians, t),
+    },
+    {
+      key: 'speeches',
+      label: 'admin.portfolio.metric.speeches',
+      value: count(team.speeches, t),
+    },
+    {
+      key: 'witnesses',
+      label: 'admin.portfolio.metric.witnesses',
+      value: count(team.witnesses, t),
+    },
+    {
+      key: 'questions',
+      label: 'admin.portfolio.metric.questions',
+      value: count(interactions.questions, t),
+    },
+    {
+      key: 'songs',
+      label: 'admin.portfolio.metric.songs',
+      value: count(musicTotals.songs, t),
+    },
+    {
+      key: 'attractions',
+      label: 'admin.portfolio.metric.attractions',
+      value: count(photoTotals.attractions, t),
+    },
+    {
+      key: 'stoLat',
+      label: 'admin.portfolio.metric.stoLat',
+      value: count(metrics.mix?.cultures?.stoLat, t),
     },
   ];
 
@@ -234,6 +305,41 @@ export function PortfolioOverviewView({
             ))}
           </div>
           <p className="sr-only">
+            {t('admin.portfolio.inventorySummary', {
+              guests: count(inventory.total, t),
+              countries: count(countries.length || null, t),
+              providers: count(team.providers, t),
+              musicians: count(team.musicians, t),
+              speeches: count(team.speeches, t),
+              questions: count(interactions.questions, t),
+              songs: count(musicTotals.songs, t),
+              attractions: count(photoTotals.attractions, t),
+            })}
+          </p>
+          <h3 className="font-heading text-xs font-bold text-ink">
+            {t('admin.portfolio.coverage.title')}
+          </h3>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[
+              'withGuests',
+              'withVenue',
+              'withProviders',
+              'withMusicians',
+              'withSpeeches',
+              'withGames',
+              'withMusicPolicy',
+              'withPhotoPlan',
+            ].map((key) => (
+              <CoverageStat
+                key={key}
+                label={t(`admin.portfolio.coverage.${key}`)}
+                value={coverage[key]}
+                total={coverage.quality}
+                t={t}
+              />
+            ))}
+          </div>
+          <p className="sr-only">
             {t('admin.portfolio.cardsSummary', {
               total: count(totals.all, t),
               active: count(totals.active, t),
@@ -271,6 +377,38 @@ export function PortfolioOverviewView({
               counts={data.portfolio?.readiness}
               emptyLabel={t('admin.portfolio.readiness.clear')}
               labelFor={(value) => t(READINESS_KEYS[value] ?? 'admin.portfolio.noData')}
+            />
+            <Distribution
+              title={t('admin.portfolio.mix.countries')}
+              counts={data.portfolio?.mix?.countries}
+              emptyLabel={t('admin.portfolio.noData')}
+              labelFor={(value) => value}
+            />
+            <Distribution
+              title={t('admin.portfolio.mix.nationalities')}
+              counts={data.portfolio?.mix?.nationalities}
+              emptyLabel={t('admin.portfolio.noData')}
+              labelFor={(value) => value}
+            />
+            <Distribution
+              title={t('admin.portfolio.mix.providers')}
+              counts={data.portfolio?.providerCategories}
+              emptyLabel={t('admin.portfolio.noData')}
+              labelFor={(value) => value.replaceAll('_', ' ')}
+            />
+            <Distribution
+              title={t('admin.portfolio.mix.cultures')}
+              counts={data.portfolio?.mix?.cultures}
+              emptyLabel={t('admin.portfolio.noData')}
+              labelFor={(value) =>
+                value === 'stoLat' ? 'Sto Lat' : value === 'gorzko' ? 'Gorzko' : 'Bread & Salt'
+              }
+            />
+            <Distribution
+              title={t('admin.portfolio.mix.discoPolo')}
+              counts={data.portfolio?.mix?.discoPolo}
+              emptyLabel={t('admin.portfolio.noData')}
+              labelFor={(value) => value.replaceAll('_', ' ')}
             />
           </div>
 
@@ -332,6 +470,32 @@ export function PortfolioOverviewView({
                 <option value="">{t('admin.portfolio.filters.allLanguages')}</option>
                 {languages.map((value) => (
                   <option key={value} value={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label className="w-32 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
+              {t('admin.portfolio.filters.country')}
+              <select
+                value={filters.country ?? ''}
+                onChange={(event) => onFilterChange({ ...filters, country: event.target.value })}
+                className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+              >
+                <option value="">{t('admin.portfolio.filters.allCountries')}</option>
+                {countries.map((value) => (
+                  <option key={value} value={value}>{value}</option>
+                ))}
+              </select>
+            </label>
+            <label className="w-36 shrink-0 text-[10px] font-semibold uppercase tracking-widest text-muted">
+              {t('admin.portfolio.filters.provider')}
+              <select
+                value={filters.provider ?? ''}
+                onChange={(event) => onFilterChange({ ...filters, provider: event.target.value })}
+                className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+              >
+                <option value="">{t('admin.portfolio.filters.allProviders')}</option>
+                {providerCategories.map((value) => (
+                  <option key={value} value={value}>{value.replaceAll('_', ' ')}</option>
                 ))}
               </select>
             </label>
@@ -435,7 +599,14 @@ export function PortfolioOverviewView({
 }
 
 export default function AdminPortfolioOverview({ readOnly = false }) {
-  const [filters, setFilters] = useState({ year: '', status: 'all', package: '', language: '' });
+  const [filters, setFilters] = useState({
+    year: '',
+    status: 'all',
+    package: '',
+    language: '',
+    country: '',
+    provider: '',
+  });
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState({ key: 'dateISO', direction: 'desc' });
   const [data, setData] = useState(null);
