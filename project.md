@@ -10158,3 +10158,86 @@ localization (#1181), and Google Doc/schema/parser changes.
 | 2 | [#1246](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1246) | Two-KPI widget, flags/counts, lifecycle states, preview fixtures, i18n/docs/tests | #1245 |
 
 **Open questions.** None.
+
+### 17.129 Season widget compact editorial band and language switcher (decision, 2026-11-18)
+
+**Goal.**
+
+Make the public season stats iframe substantially thinner and more discreet: one
+unified editorial card instead of a header + two large cards + footer stack,
+`max-w-4xl` width, no floating icon circles, inline KPI values and a thin footer.
+The target is **≤150 px total desktop height including the footer** and a very
+compact stacked mobile layout at 375 px. Add a compact PL/FR/EN switcher in the
+header, using the app i18n behavior.
+
+**Release target.** Pre-release label `landing-pre-release`, no milestone. Not
+the first release and not Release-1.2.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template or
+cartridge change.
+
+**Design contract.**
+
+- Single container: `max-w-4xl mx-auto`, `bg-[#FFFDF9]/90`, `border-[#EAE2D3]/80`,
+  `rounded-xl`, `shadow-[0_2px_12px_-4px_rgba(184,149,80,0.06)]`.
+- Header integrated in the container: `py-2 px-4`, `text-xs`, `w-6 h-6` icon,
+  fine bottom border `border-b border-[#EAE2D3]/60`.
+- KPI zone: two columns with `sm:divide-x divide-[#EAE2D3]/70`; mobile uses
+  `divide-y sm:divide-y-0`, padding `py-3 px-4` / `py-3.5 px-5`.
+- No large floating icon circles. Any icon is inline at `w-3.5 h-3.5` next to the
+  label, or removed.
+- Guest card: inline baseline `flex items-baseline gap-2`; value
+  `text-xl sm:text-2xl font-semibold text-[#292524]`; label
+  `text-[10px] uppercase tracking-[0.12em] text-[#78716C]`; subline
+  `text-xs text-[#78716C]`.
+- Destinations card: remove redundant value + subline; line `flex flex-wrap
+  items-center gap-2` with `3 kraje` at `text-sm font-medium` or
+  `text-lg sm:text-xl font-semibold`, followed by thinner flag badges
+  (`px-2 py-0.5 text-[11px] bg-[#FAF8F5] border-[#EAE2D3]/80`, flags
+  `w-3.5 h-2.5`).
+- Footer: thin band `py-1.5 px-4 bg-[#FAF8F5]/50`, text `text-[11px]
+  text-[#78716C]/80`; left `• Statystyki sezonu [Année]`; right discreet
+  `Napędzane przez Stage Deck →` with gold hover.
+- Language switcher: compact PL/FR/EN in the header right; active gold; persisted
+  like the app. Load priority: valid `?lang=` → stored locale → Polish.
+- Preserve all `pre`/`live`/`post` labels, data, preview fixtures and
+  `?previewState=` behavior. No horizontal or vertical scroll.
+- Mobile target: very compact, indicative ≤220 px total height, badges wrapping
+  inside the column.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/embed/season-stats` | Compact unified card, header state strip, 2 KPI columns, thin footer, language switcher |
+| `?previewState` | Unchanged fixture/state behavior |
+| RPC/data/i18n keys | Data unchanged; add/update only widget copy keys |
+| Landing `/`, `/extra/banner`, admin, role views | Unchanged |
+
+**Out of scope.** RPC or season facts changes, state calculation changes, preview
+fixture semantics, landing/admin/WordPress changes, Google Doc/schema/parser,
+historical trends and per-wedding data.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | Pre-release `landing-pre-release`, no milestone |
+| Container | Single unified card, `max-w-4xl` |
+| Desktop height | ≤150 px footer included at 1242 px width |
+| Mobile height | Very compact, indicative ≤220 px at 375 px width |
+| Icons | No floating circles; tiny inline or removed |
+| KPI numbers | `text-xl sm:text-2xl`, `font-semibold`, `#292524` |
+| Destinations | One inline line: country count + thin flag badges |
+| Footer | Thin band, 11px, discreet attribution |
+| Language | PL/FR/EN header switch, persisted; `?lang` → stored → PL |
+| Business logic | States, data, preview fixtures unchanged |
+| Conflict | #1240 (remove widget) remains open and must be cancelled/adjusted |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1248](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1248) | Compact unified card, inline KPI layout, thin footer, PL/FR/EN switch, tests/docs | #1246 |
+
+**Open questions.** None.
