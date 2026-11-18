@@ -343,6 +343,8 @@ const pl = {
   'postMortem.open': 'Analiza czasu',
   'social.title': 'Studio eksportu social',
   'social.open': 'Social',
+  'social.seasonYear': 'Sezon',
+  'social.seasonLoading': 'Ładowanie agregatów sezonu…',
   'social.subtitle': 'Eksportuj gotowe Stories 1080×1920 z prawdziwych danych wydarzenia.',
   'social.templates': 'Szablony Stories',
   'social.template.dayMinusOne': 'D−1 · Prep Wrapper',

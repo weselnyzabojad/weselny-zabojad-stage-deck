@@ -343,6 +343,8 @@ const en = {
   'postMortem.open': 'Post-event timing',
   'social.title': 'Social Export Studio',
   'social.open': 'Social',
+  'social.seasonYear': 'Season',
+  'social.seasonLoading': 'Loading the season aggregates…',
   'social.subtitle': 'Export ready-to-post 1080×1920 Story cards from real event data.',
   'social.templates': 'Story templates',
   'social.template.dayMinusOne': 'Day −1 · Prep Wrapper',

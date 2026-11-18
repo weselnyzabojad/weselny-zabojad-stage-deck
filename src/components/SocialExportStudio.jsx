@@ -13,9 +13,11 @@ import {
   buildDayPlusOneModel,
   dayPlusOneCaptionLines,
 } from '../lib/socialDayPlusOne.js';
+import { buildSeasonModel, seasonCaptionLines } from '../lib/socialSeason.js';
 import StoryFrame from './social/StoryFrame.jsx';
 import DayMinusOneStory from './social/DayMinusOneStory.jsx';
 import DayPlusOneStory from './social/DayPlusOneStory.jsx';
+import SeasonStory from './social/SeasonStory.jsx';
 
 const PREVIEW_WIDTH = 270;
 const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
@@ -48,12 +50,23 @@ export default function SocialExportStudio({
   requests = [],
   templates = {},
   captionLinesByTemplate = {},
+  seasonData = null,
+  seasonYear = null,
+  seasonYears = [],
+  onSeasonYear = null,
+  seasonLoading = false,
+  seasonError = '',
   onClose = null,
 }) {
   const { t } = useI18n();
   const available = useMemo(() => templatesForSurface(surface), [surface]);
   const availableTemplates = useMemo(
-    () => ({ dayMinusOne: DayMinusOneStory, dayPlusOne: DayPlusOneStory, ...templates }),
+    () => ({
+      dayMinusOne: DayMinusOneStory,
+      dayPlusOne: DayPlusOneStory,
+      season: SeasonStory,
+      ...templates,
+    }),
     [templates],
   );
   const [templateId, setTemplateId] = useState(available[0]?.id ?? 'dayMinusOne');
@@ -81,8 +94,15 @@ export default function SocialExportStudio({
         pl: dayPlusOneCaptionLines(model, 'pl'),
       };
     }
+    if (template?.id === 'season') {
+      const model = buildSeasonModel(seasonData);
+      return {
+        fr: seasonCaptionLines(model, 'fr'),
+        pl: seasonCaptionLines(model, 'pl'),
+      };
+    }
     return { fr: [], pl: [] };
-  }, [template?.id, wedding, liveState, recap]);
+  }, [template?.id, wedding, liveState, recap, seasonData]);
   const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>
@@ -163,6 +183,27 @@ export default function SocialExportStudio({
         })}
       </div>
 
+      {template?.id === 'season' && onSeasonYear ? (
+        <label className="mt-3 block max-w-[12rem] text-[10px] font-semibold uppercase tracking-widest text-muted">
+          {t('social.seasonYear')}
+          <select
+            value={seasonYear ?? ''}
+            onChange={(event) => onSeasonYear(Number(event.target.value))}
+            className="mt-1 block w-full rounded border border-line bg-page px-2.5 py-2 text-xs text-ink"
+          >
+            {seasonYears.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+      {template?.id === 'season' && seasonLoading ? (
+        <p role="status" className="mt-2 text-[10px] text-muted">{t('social.seasonLoading')}</p>
+      ) : null}
+      {template?.id === 'season' && seasonError ? (
+        <p role="alert" className="mt-2 text-[10px] text-alert-soft">{seasonError}</p>
+      ) : null}
+
       <div className="mt-3 grid gap-4 lg:grid-cols-[auto_1fr]">
         <div
           className="overflow-hidden rounded-lg border border-line bg-page"
@@ -182,7 +223,7 @@ export default function SocialExportStudio({
               label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
             >
               {Template ? (
-                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} mode={mode} />
+                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} />
               ) : (
                 <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
               )}
@@ -256,7 +297,7 @@ export default function SocialExportStudio({
           label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
         >
           {Template ? (
-            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} mode={mode} />
+            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} />
           ) : (
             <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
           )}
