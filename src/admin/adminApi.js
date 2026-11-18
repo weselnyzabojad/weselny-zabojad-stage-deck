@@ -340,6 +340,14 @@ export async function listAdminData() {
   return callAdmin('list');
 }
 
+export async function fetchPortfolioKpis(filters = {}) {
+  if (ADMIN_DEMO) {
+    const { demoPortfolio } = await import('./adminDemoApi.js');
+    return demoPortfolio(filters);
+  }
+  return callAdmin('portfolio_kpis', filters);
+}
+
 // Admin-only Google Drive proxy (issue #169). The browser never talks to Google
 // directly and never receives credentials or access tokens.
 async function callAdminDrive(action, payload = {}) {

@@ -2,6 +2,8 @@
 // build. It never contacts Supabase and never ships in production. Mutations
 // are intentionally disabled so nobody mistakes the sample data for real.
 
+import { buildPortfolioKpis } from '../../supabase/functions/_shared/portfolioKpis.js';
+
 const DEMO_SESSION = {
   access_token: 'demo-token',
   token_type: 'bearer',
@@ -125,6 +127,118 @@ export function demoList() {
       },
     ],
   };
+}
+
+function demoWedding(id, overrides = {}) {
+  return {
+    wedding_id: id,
+    couple: 'Couple ' + id,
+    date: '20.08.2026',
+    archived_at: null,
+    expires_at: '2026-12-31T00:00:00.000Z',
+    updated_at: hoursAgo(3),
+    cartridge: {
+      servicePackage: 'HOST_AND_DJ_VIP',
+      extensions: {
+        dateISO: '2026-08-20',
+        languages: { supported: ['PL', 'FR'] },
+      },
+      steps: [
+        { id: 'arrival', time: '18:00' },
+        { id: 'dinner', time: '19:00' },
+        { id: 'party', time: '21:00' },
+      ],
+    },
+    ...overrides,
+  };
+}
+
+export function demoPortfolio(filters = {}) {
+  const recap = {
+    summary: { totalSteps: 3, completedSteps: 3, scheduleChangeCount: 1 },
+    timeline: [
+      { actualStart: '18:05', driftMinutes: 5 },
+      { actualStart: '19:12', driftMinutes: 12 },
+      { actualStart: '21:02', driftMinutes: 2 },
+    ],
+    games: [
+      {
+        questions: [
+          { isCompatible: true },
+          { isCompatible: true },
+          { isCompatible: false },
+        ],
+      },
+    ],
+  };
+  return buildPortfolioKpis({
+    weddings: [
+      demoWedding('Demo&&Anna-Piotr-UM-2026-08-001', {
+        couple: 'Anna & Piotr',
+        cartridge: {
+          servicePackage: 'HOST_AND_DJ_VIP',
+          extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+          steps: [
+            { id: 'arrival', time: '18:00' },
+            { id: 'dinner', time: '19:00' },
+            { id: 'party', time: '21:00' },
+          ],
+        },
+      }),
+      demoWedding('Demo&Maria-Jan-UM-2026-09-002', {
+        couple: 'Maria & Jan',
+        date: '12.09.2026',
+        cartridge: {
+          servicePackage: 'HOST_ONLY',
+          extensions: { dateISO: '2026-09-12', languages: { supported: ['PL'] } },
+          steps: [
+            { id: 'arrival', time: '17:00' },
+            { id: 'dinner', time: '18:30' },
+            { id: 'party', time: '21:00' },
+          ],
+        },
+      }),
+      demoWedding('Demo&Archive-UM-2025-07-003', {
+        couple: 'Ewa & Tomasz',
+        date: '12.07.2025',
+        archived_at: hoursAgo(240),
+        cartridge: {
+          servicePackage: 'HOST_AND_DJ',
+          extensions: { dateISO: '2025-07-12', languages: { supported: ['PL', 'EN'] } },
+          steps: [
+            { id: 'arrival', time: '18:00' },
+            { id: 'dinner', time: '19:00' },
+            { id: 'party', time: '21:00' },
+          ],
+        },
+      }),
+    ],
+    liveStates: {
+      'Demo&Maria-Jan-UM-2026-09-002': {
+        step_order: ['arrival', 'dinner', 'party'],
+        completed_step_ids: ['arrival'],
+        actual_timestamps: { arrival: '17:08' },
+      },
+    },
+    recaps: {
+      'Demo&&Anna-Piotr-UM-2026-08-001': { payload: recap },
+      'Demo&Archive-UM-2025-07-003': { payload: recap },
+    },
+    requests: {
+      'Demo&&Anna-Piotr-UM-2026-08-001': [
+        { status: 'accepted', played_at: hoursAgo(24) },
+        { status: 'accepted', played_at: null },
+        { status: 'pending', played_at: null },
+      ],
+      'Demo&Archive-UM-2025-07-003': [{ status: 'accepted', played_at: hoursAgo(2000) }],
+    },
+    roles: {
+      'Demo&&Anna-Piotr-UM-2026-08-001': ['mc', 'dj', 'photo1'],
+      'Demo&Maria-Jan-UM-2026-09-002': ['mc', 'dj'],
+    },
+    filters,
+    now: new Date(),
+  });
 }
 
 export function demoMutate(action) {
