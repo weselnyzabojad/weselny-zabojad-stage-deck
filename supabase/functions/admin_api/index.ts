@@ -42,6 +42,7 @@ import {
   mfaFresh,
 } from '../_shared/adminAuth.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
+import { buildPortfolioKpis } from '../_shared/portfolioKpis.js';
 import {
   ALLOWED_ROLES,
   WEDDING_ID_PATTERN,
@@ -2612,6 +2613,71 @@ async function handleRequest(req: Request) {
         recapId,
       });
       return json({ ok: true, recap: data });
+    }
+
+    if (action === 'portfolio_kpis') {
+      const filters = {
+        year: body?.year ? String(body.year) : '',
+        status: ['active', 'archived', 'all'].includes(body?.status) ? body.status : 'all',
+        package: typeof body?.package === 'string' ? body.package.trim() : '',
+        language: typeof body?.language === 'string' ? body.language.trim().toUpperCase() : '',
+      };
+      const now = new Date();
+      const [weddings, live, requests, recaps, roles] = await Promise.all([
+        admin
+          .from('weddings')
+          .select('wedding_id, couple, date, cartridge, archived_at, expires_at, updated_at')
+          .order('updated_at', { ascending: false }),
+        admin.from('live_sync_state').select('wedding_id, state'),
+        admin
+          .from('song_requests')
+          .select('wedding_id, status, played_at, created_at'),
+        admin
+          .from('wedding_recaps')
+          .select('wedding_id, payload, published_at, expires_at, revoked_at')
+          .order('published_at', { ascending: false }),
+        admin.from('wedding_roles').select('wedding_id, role'),
+      ]);
+      const firstError =
+        weddings.error || live.error || requests.error || recaps.error || roles.error;
+      if (firstError) throw firstError;
+
+      const liveStates: Record<string, any> = {};
+      for (const row of live.data ?? []) {
+        const id = String(row.wedding_id ?? '').replace(/^wzsd:/, '');
+        if (id) liveStates[id] = row.state;
+      }
+      const requestsByWedding: Record<string, any[]> = {};
+      for (const row of requests.data ?? []) {
+        const id = row.wedding_id;
+        if (!id) continue;
+        requestsByWedding[id] ??= [];
+        requestsByWedding[id].push(row);
+      }
+      const recapsByWedding: Record<string, any> = {};
+      for (const row of recaps.data ?? []) {
+        if (row.revoked_at) continue;
+        if (row.expires_at && Date.parse(row.expires_at) <= now.getTime()) continue;
+        if (!recapsByWedding[row.wedding_id]) recapsByWedding[row.wedding_id] = row;
+      }
+      const rolesByWedding: Record<string, string[]> = {};
+      for (const row of roles.data ?? []) {
+        if (!row.wedding_id || !row.role) continue;
+        rolesByWedding[row.wedding_id] ??= [];
+        rolesByWedding[row.wedding_id].push(row.role);
+      }
+
+      return json(
+        buildPortfolioKpis({
+          weddings: weddings.data ?? [],
+          liveStates,
+          requests: requestsByWedding,
+          recaps: recapsByWedding,
+          roles: rolesByWedding,
+          filters,
+          now,
+        }),
+      );
     }
 
     if (action === 'list') {
