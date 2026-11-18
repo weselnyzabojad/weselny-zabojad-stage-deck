@@ -2496,6 +2496,42 @@ async function handleRequest(req: Request) {
       });
     }
 
+    if (action === 'music_engagement') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const [live, requests] = await Promise.all([
+        admin
+          .from('live_sync_state')
+          .select('state')
+          .eq('wedding_id', `wzsd:${weddingId}`)
+          .maybeSingle(),
+        admin
+          .from('song_requests')
+          .select('created_at')
+          .eq('wedding_id', weddingId)
+          .order('created_at', { ascending: true }),
+      ]);
+      const firstError = live.error || requests.error;
+      if (firstError) throw firstError;
+      const state = live.data?.state ?? {};
+      const order = Array.isArray(state.step_order) ? state.step_order : [];
+      const completed = Array.isArray(state.completed_step_ids)
+        ? state.completed_step_ids
+        : [];
+      const eventComplete =
+        state.active_step_id == null &&
+        order.length > 0 &&
+        order.every((stepId: string) => completed.includes(stepId));
+      return json({
+        requests: (requests.data ?? []).map((row: any) => ({
+          createdAt: row.created_at,
+        })),
+        eventComplete,
+      });
+    }
+
     if (action === 'publish_recap') {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
       if (!WEDDING_ID_PATTERN.test(weddingId)) {
