@@ -308,6 +308,21 @@
           ],
           "description": "Predefined step shown only when the matching cartridge feature is enabled; `dj_set` marks the canonical Musical Set step. Wishes and games are represented by their own steps."
         },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "default": [],
+          "items": {
+            "type": "string",
+            "enum": [
+              "HIGH_INTENSITY",
+              "SMOKE",
+              "HAZE",
+              "SPARKS"
+            ]
+          },
+          "description": "Optional Venue Policy Guard tags entered by the Venue Manager, not the Google Doc."
+        },
         "grandEntranceOrder": {
           "type": "string",
           "enum": [
