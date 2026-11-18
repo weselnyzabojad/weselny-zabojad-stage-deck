@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import LanguageToggle from './LanguageToggle';
 import { useI18n } from '../i18n/useI18n.js';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
+import { timingStatus } from '../lib/timingAnalytics.js';
 
 function Section({ title, children }) {
   return (
@@ -216,22 +217,39 @@ export default function WeddingRecapPage({ token }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {recap.timeline.map((entry) => (
-                    <tr key={entry.id} className="border-t border-line/60">
-                      <td className="px-3 py-2">
-                        <div className="font-semibold text-ink">{entry.title}</div>
-                        <div className="text-[10px] text-muted">
-                          {t(`recap.timeline.status.${entry.status}`)}
-                          {entry.location ? ` · ${entry.location}` : ''}
-                        </div>
-                      </td>
-                      <td className="px-3 py-2 font-mono text-muted">{entry.plannedStart ?? '—'}</td>
-                      <td className="px-3 py-2 font-mono text-ink">{entry.actualStart ?? '—'}</td>
-                      <td className="px-3 py-2 font-mono text-muted">
-                        {Number.isFinite(entry.driftMinutes) ? `${entry.driftMinutes} min` : '—'}
-                      </td>
-                    </tr>
-                  ))}
+                  {recap.timeline.map((entry) => {
+                    const timing = timingStatus(
+                      entry.driftMinutes,
+                      Boolean(entry.actualStart),
+                    );
+                    const tone =
+                      timing === 'late'
+                        ? 'text-red-300'
+                        : timing === 'early'
+                          ? 'text-sky-300'
+                          : timing === 'on-time'
+                            ? 'text-emerald-300'
+                            : 'text-muted';
+                    return (
+                      <tr key={entry.id} className="border-t border-line/60">
+                        <td className="px-3 py-2">
+                          <div className="font-semibold text-ink">{entry.title}</div>
+                          <div className="text-[10px] text-muted">
+                            {t(`recap.timeline.status.${entry.status}`)}
+                            {entry.location ? ` · ${entry.location}` : ''}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 font-mono text-muted">{entry.plannedStart ?? '—'}</td>
+                        <td className="px-3 py-2 font-mono text-ink">{entry.actualStart ?? '—'}</td>
+                        <td
+                          data-timing-status={timing}
+                          className={`px-3 py-2 font-mono ${tone}`}
+                        >
+                          {Number.isFinite(entry.driftMinutes) ? `${entry.driftMinutes} min` : '—'}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
