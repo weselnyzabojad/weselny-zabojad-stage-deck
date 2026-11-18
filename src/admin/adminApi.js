@@ -327,6 +327,11 @@ export async function callAdmin(action, payload = {}) {
   return data;
 }
 
+export async function fetchMusicEngagement(weddingId) {
+  if (ADMIN_DEMO) return { requests: [], eventComplete: false };
+  return callAdmin('music_engagement', { weddingId });
+}
+
 export async function listAdminData() {
   if (ADMIN_DEMO) {
     const { demoList } = await import('./adminDemoApi.js');
