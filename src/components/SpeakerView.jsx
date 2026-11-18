@@ -1,4 +1,6 @@
 import { useI18n } from '../i18n/useI18n';
+import { speechPairsToScriptBlocks } from '../lib/speechScriptBlocks.js';
+import BilingualScriptViewer from './BilingualScriptViewer.jsx';
 import RoleShell from './RoleShell';
 import SecondaryControlBar from './SecondaryControlBar';
 import SyncStatusBadge from './SyncStatusBadge';
@@ -75,36 +77,12 @@ export default function SpeakerView({
           ) : null}
         </section>
 
-        {speechAccess.speech.pairs?.length ? (
-          <div className="max-w-prose space-y-6">
-            {speechAccess.speech.pairs.map((pair, index) => (
-              <section key={index} className="space-y-2">
-                <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
-                  {t('speaker.sourceLabel')} · {speechAccess.speech.speakerLanguage}
-                </p>
-                <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
-                  {pair.speaker}
-                </div>
-                {pair.translation ? (
-                  <>
-                    <p className="font-mono text-[10px] uppercase tracking-widest text-muted">
-                      {t('speaker.translationLabel')} · {speechAccess.speech.mcLanguage}
-                    </p>
-                    <div className="whitespace-pre-wrap break-words font-body text-sm leading-relaxed text-muted sm:text-base">
-                      {pair.translation}
-                    </div>
-                  </>
-                ) : null}
-              </section>
-            ))}
-          </div>
-        ) : (
-          <section className="max-w-prose">
-            <div className="whitespace-pre-wrap break-words font-body text-xl leading-relaxed text-ink sm:text-2xl sm:leading-relaxed lg:text-3xl lg:leading-relaxed">
-              {speechAccess.speech.script}
-            </div>
-          </section>
-        )}
+        <BilingualScriptViewer
+          scriptBlocks={speechPairsToScriptBlocks(speechAccess.speech)}
+          languageA={speechAccess.speech.speakerLanguage}
+          languageB={speechAccess.speech.mcLanguage}
+          initialActive="a"
+        />
       </div>
     )
   ) : null;
