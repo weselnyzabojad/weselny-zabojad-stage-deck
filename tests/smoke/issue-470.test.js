@@ -85,7 +85,9 @@ describe('issue #470 MC game clicker flow', () => {
 
   it('records compatibility results and advances', () => {
     const source = read('src/components/GameClickerOverlay.jsx');
-    expect(source).toContain('[current.id]: { answeredAt: new Date().toISOString(), isCompatible }');
+    expect(source).toContain('[current.id]: {');
+    expect(source).toContain('isCompatible');
+    expect(source).toContain('questionText:');
     expect(source).toContain('setAnswered(next)');
     expect(source).toContain('persist(next, { completed:');
     expect(source).toContain('advance()');

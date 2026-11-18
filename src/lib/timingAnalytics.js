@@ -87,6 +87,7 @@ export function buildTimingComparison(
       actualStart,
       actualRaw,
       actualDurationMin: null,
+      actualEnd: null,
       deltaMinutes,
       status,
     };
@@ -98,11 +99,19 @@ export function buildTimingComparison(
     if (nextActual) {
       const duration = clockDeltaMinutes(row.actualStart, nextActual.actualStart);
       row.actualDurationMin = Number.isFinite(duration) && duration >= 0 ? duration : null;
+      row.actualEnd =
+        row.actualDurationMin != null
+          ? addMinutes(row.actualStart, row.actualDurationMin)
+          : null;
       return;
     }
     if (index === rows.length - 1 && resolvedClosure) {
       const duration = clockDeltaMinutes(row.actualStart, resolvedClosure);
       row.actualDurationMin = Number.isFinite(duration) && duration >= 0 ? duration : null;
+      row.actualEnd =
+        row.actualDurationMin != null
+          ? addMinutes(row.actualStart, row.actualDurationMin)
+          : null;
     }
   });
 
@@ -116,6 +125,8 @@ export function buildTimingComparison(
     missing: rows.filter((row) => row.status === 'missing').length,
     firstActual: measured[0]?.actualStart ?? null,
     lastActual: measured[measured.length - 1]?.actualStart ?? null,
+    actualEnd:
+      [...measured].reverse().find((row) => row.actualEnd)?.actualEnd ?? null,
     totalLateness: rows.reduce(
       (total, row) => total + (Number.isFinite(row.deltaMinutes) && row.deltaMinutes > 0 ? row.deltaMinutes : 0),
       0,

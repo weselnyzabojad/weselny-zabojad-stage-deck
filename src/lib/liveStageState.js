@@ -240,6 +240,9 @@ function cleanGameQuestionResult(entry) {
   const clean = { answeredAt };
   if (typeof entry.revealed === 'boolean') clean.revealed = entry.revealed;
   if (typeof entry.isCompatible === 'boolean') clean.isCompatible = entry.isCompatible;
+  if (typeof entry.questionText === 'string' && entry.questionText.trim()) {
+    clean.questionText = entry.questionText.trim().slice(0, 500);
+  }
   return clean;
 }
 

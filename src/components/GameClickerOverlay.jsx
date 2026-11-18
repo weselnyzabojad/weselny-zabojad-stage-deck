@@ -10,6 +10,8 @@ import {
   unansweredItems,
 } from '../lib/games.js';
 
+import { compatibilityQuestionText } from '../lib/gameCompatibility.js';
+
 const LANGS = ['EN', 'PL', 'FR'];
 
 function PromptList({ prompts, compact = false }) {
@@ -143,13 +145,17 @@ export default function GameClickerOverlay({
       if (!current) return;
       const next = {
         ...answered,
-        [current.id]: { answeredAt: new Date().toISOString(), isCompatible },
+        [current.id]: {
+          answeredAt: new Date().toISOString(),
+          isCompatible,
+          questionText: compatibilityQuestionText(current, lang),
+        },
       };
       setAnswered(next);
       persist(next, { completed: Object.keys(next).length >= items.length });
       advance();
     },
-    [advance, answered, current, items.length, persist],
+    [advance, answered, current, items.length, lang, persist],
   );
 
   const navigate = useCallback(
