@@ -29,6 +29,35 @@ function int(value, fallback = null) {
   return Number.isInteger(number) ? number : fallback;
 }
 
+// Optional guest counts (issue #1250). Only non-negative whole numbers are
+// accepted; invalid input is warned about and left absent so the importer never
+// invents a zero.
+function guestCount(source, label, warnings) {
+  const raw = text(kv(source, label));
+  if (raw == null) return undefined;
+  if (!/^\d+$/.test(raw)) {
+    warnings.push(`DEMOGRAPHICS: "${label}" must be a non-negative whole number; ignored`);
+    return undefined;
+  }
+  return Number.parseInt(raw, 10);
+}
+
+function mapDemographics(source, privacySource, warnings) {
+  const values = {
+    total: guestCount(source, 'Guests total', warnings),
+    pl: guestCount(source, 'Guests PL', warnings),
+    fr: guestCount(source, 'Guests FR', warnings),
+    other: guestCount(source, 'Guests other', warnings),
+    notes:
+      text(kv(source, 'Notes')) ??
+      text(kv(privacySource, 'Demographics notes')) ??
+      undefined,
+  };
+  return Object.fromEntries(
+    Object.entries(values).filter(([, value]) => value !== undefined),
+  );
+}
+
 // Normalizes a loose time string to a strict `HH:MM` clock, or returns null.
 // For a range it takes the first clock (the planned start); the importer never
 // invents a time when none parses.
@@ -1194,7 +1223,11 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     ...(speechMode ? { speechMode } : {}),
     extensions,
     ...(liveSyncState ? { liveSyncState } : {}),
-    demographics: { notes: text(kv(privacySource, 'Demographics notes')) ?? undefined },
+    demographics: mapDemographics(
+      section(parsed, 'DEMOGRAPHICS'),
+      privacySource,
+      warnings,
+    ),
   };
 
   for (const key of Object.keys(cartridge)) {

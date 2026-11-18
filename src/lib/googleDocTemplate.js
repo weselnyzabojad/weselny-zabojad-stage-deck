@@ -30,6 +30,13 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Required ordered content languages and their default.',
   },
   {
+    order: 3.5,
+    marker: 'DEMOGRAPHICS',
+    required: false,
+    schemaPath: ['demographics'],
+    purpose: 'Optional guest totals by language and a short guest note.',
+  },
+  {
     order: 4,
     marker: 'CULTURAL RULES',
     required: true,

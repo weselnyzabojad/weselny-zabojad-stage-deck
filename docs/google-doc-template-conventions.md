@@ -56,6 +56,7 @@ Canonical order and mapping:
 | 1 | `## EVENT` | yes | `weddingId`, `date`, `dateISO`, `syncPin`, `servicePackage` |
 | 2 | `## COUPLE IDENTITY` | yes | `coupleProfile` |
 | 3 | `## LANGUAGES` | yes | `languages` |
+| 3.5 | `## DEMOGRAPHICS` | no | `demographics` |
 | 4 | `## CULTURAL RULES` | yes | `culturalRules` |
 | 5 | `## OCZEPINY` | no | `oczepiny` |
 | 6 | `## TIMELINE` | yes | `steps` |
@@ -84,6 +85,12 @@ Canonical order and mapping:
 The machine-readable source of truth is `SECTION_MANIFEST` in
 `src/lib/googleDocTemplate.js`. The template validator fails if a marker is
 missing, duplicated, unknown, out of order, or has the wrong table header.
+
+`## DEMOGRAPHICS` is optional. It accepts `Guests total`, `Guests PL`,
+`Guests FR`, `Guests other` and `Notes`. Counts must be non-negative whole
+numbers; missing or invalid counts stay absent (never zero) and invalid values
+raise an import warning. The legacy `Demographics notes` key in `## PRIVACY`
+remains a fallback for `demographics.notes`.
 
 ---
 
