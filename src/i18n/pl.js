@@ -1041,6 +1041,15 @@ const pl = {
   'admin.portfolio.source.recap': 'Podsumowanie',
   'admin.portfolio.source.live': 'Na żywo',
   'admin.portfolio.source.none': 'Brak danych',
+  'embed.kpi.guests': 'Przyjęci goście',
+  'embed.kpi.guestsCoverage': '{covered} z {total} wesel',
+  'embed.kpi.destinations': 'Kierunki',
+  'embed.kpi.stolat': 'Wesela ze Sto Lat',
+  'embed.kpi.animations': 'Zaplanowane animacje',
+  'embed.nextWedding': 'Najbliższe wesele',
+  'embed.fallback': 'Statystyki sezonu pojawią się po pierwszym podsumowaniu wesela.',
+  'embed.loading': 'Ładowanie statystyk sezonu…',
+  'embed.footer': 'Statystyki sezonu • Napędzane przez Stage Deck',
 };
 
 export default pl;

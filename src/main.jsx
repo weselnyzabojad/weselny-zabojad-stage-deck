@@ -6,7 +6,11 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
-import { isLandingPath, parseRecapToken } from './lib/publicRoutes.js'
+import {
+  isLandingPath,
+  parseRecapToken,
+  parseSeasonStatsEmbed,
+} from './lib/publicRoutes.js'
 import { loadLocale, setLocale } from './i18n/index.js'
 import { initSentry } from './lib/sentry.js'
 
@@ -19,11 +23,24 @@ const SongRequestApp = lazy(() => import('./components/SongRequestApp.jsx'))
 const WeddingRecapPage = lazy(() => import('./components/WeddingRecapPage.jsx'))
 // Public marketing landing; kept in its own chunk so the deck entry stays lean.
 const LandingPage = lazy(() => import('./components/LandingPage.jsx'))
+const PublicSeasonStatsWidget = lazy(() =>
+  import('./components/PublicSeasonStatsWidget.jsx'),
+)
 const IS_LANDING =
   typeof window !== 'undefined' && isLandingPath(window.location.pathname)
 // The landing is Polish-first for the first release; an existing device
 // choice still wins and the crew deck keeps its English default.
 if (IS_LANDING && !loadLocale()) setLocale('pl')
+// The embed owns its language per request and must never persist it.
+const EMBED_ROUTE =
+  typeof window !== 'undefined'
+    ? parseSeasonStatsEmbed(
+        window.location.pathname,
+        window.location.search,
+        import.meta.env.BASE_URL,
+      )
+    : null
+if (EMBED_ROUTE) setLocale(EMBED_ROUTE.lang, { persist: false })
 const LEGACY_ADMIN =
   typeof window !== 'undefined' && isLegacyAdminPath(window.location.pathname)
 if (LEGACY_ADMIN) {
@@ -54,6 +71,16 @@ createRoot(document.getElementById('root')).render(
             </p>
           </div>
         </div>
+      ) : EMBED_ROUTE ? (
+        <Suspense
+          fallback={
+            <div className="flex min-h-screen items-center justify-center bg-slate-950 text-sm text-slate-50/60">
+              Loading season statistics…
+            </div>
+          }
+        >
+          <PublicSeasonStatsWidget route={EMBED_ROUTE} />
+        </Suspense>
       ) : IS_LANDING ? (
         <Suspense
           fallback={
@@ -109,6 +136,6 @@ createRoot(document.getElementById('root')).render(
         </Suspense>
       )}
     </AppErrorBoundary>
-    {IS_LANDING || RECAP_TOKEN ? null : <PwaUpdatePrompt />}
+    {IS_LANDING || RECAP_TOKEN || EMBED_ROUTE ? null : <PwaUpdatePrompt />}
   </StrictMode>,
 )

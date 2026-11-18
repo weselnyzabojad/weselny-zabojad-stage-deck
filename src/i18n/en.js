@@ -1038,6 +1038,15 @@ const en = {
   'admin.portfolio.source.recap': 'Recap',
   'admin.portfolio.source.live': 'Live',
   'admin.portfolio.source.none': 'No data',
+  'embed.kpi.guests': 'Guests hosted',
+  'embed.kpi.guestsCoverage': '{covered} of {total} weddings',
+  'embed.kpi.destinations': 'Destinations',
+  'embed.kpi.stolat': 'Weddings with Sto Lat',
+  'embed.kpi.animations': 'Animations orchestrated',
+  'embed.nextWedding': 'Next wedding',
+  'embed.fallback': 'Season statistics will appear after the first wedding recap.',
+  'embed.loading': 'Loading season statistics…',
+  'embed.footer': 'Season statistics • Powered by Stage Deck',
 };
 
 export default en;

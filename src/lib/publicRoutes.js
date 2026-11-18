@@ -24,3 +24,22 @@ export function parseRecapToken(pathname = '', baseUrl = '/') {
   const match = /^\/recap\/([A-Za-z0-9_-]{32,128})\/?$/.exec(rest);
   return match ? match[1] : null;
 }
+
+// Public season stats iframe (issue #1217). The default is Polish and the
+// parameters are per-request only; they must never persist to storage.
+export const EMBED_LANGUAGES = Object.freeze(['pl', 'fr', 'en']);
+
+export function parseSeasonStatsEmbed(pathname = '', search = '', baseUrl = '/') {
+  let rest = pathname || '';
+  if (baseUrl && baseUrl !== '/' && rest.startsWith(baseUrl)) {
+    rest = rest.slice(baseUrl.length);
+    if (!rest.startsWith('/')) rest = `/${rest}`;
+  }
+  if (!/^\/embed\/season-stats\/?$/.test(rest)) return null;
+  const params = new URLSearchParams(search || '');
+  const requested = (params.get('lang') || '').toLowerCase();
+  return {
+    lang: EMBED_LANGUAGES.includes(requested) ? requested : 'pl',
+    theme: params.get('theme') === 'transparent' ? 'transparent' : 'dark',
+  };
+}
