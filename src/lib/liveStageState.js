@@ -7,6 +7,7 @@
 import { normalizeStagePing } from './stagePings.js';
 import { migrateActualTimestamps } from './eventTime.js';
 import { swapBlockReason } from './stepGuards.js';
+import { normalizeVenuePolicies } from './venuePolicies.js';
 
 const STORAGE_VERSION = 1;
 
@@ -340,6 +341,16 @@ export function normalizeLiveState(raw, steps, context = {}) {
     }))
     .slice(-MAX_MUTATION_LOG);
 
+  const mediaOverrides =
+    raw.media_overrides && typeof raw.media_overrides === 'object'
+      ? { ...raw.media_overrides }
+      : {};
+  if (mediaOverrides.venuePolicies) {
+    mediaOverrides.venuePolicies = normalizeVenuePolicies(
+      mediaOverrides.venuePolicies,
+    );
+  }
+
   return {
     active_step_id: active ?? null,
     completed_step_ids: completed,
@@ -348,10 +359,7 @@ export function normalizeLiveState(raw, steps, context = {}) {
     stage_ping: normalizeStagePing(raw.stage_ping),
     step_order: order,
     active_speech_id: activeSpeech,
-    media_overrides:
-      raw.media_overrides && typeof raw.media_overrides === 'object'
-        ? raw.media_overrides
-        : {},
+    media_overrides: mediaOverrides,
     game_results: normalizeGameResults(raw.game_results),
     mutation_log: mutationLog,
   };
