@@ -9818,9 +9818,11 @@ PDF libraries, schema/Doc changes, and new MC compatibility controls.
 
 Give the WordPress site a zero-chrome, public season banner that aggregates real
 Stage Deck outcomes across weddings: guests hosted, destinations, Sto Lat
-adoptions and animations orchestrated. The widget must expose no raw table, must
-survive the 30-day wedding/live-state purge, and must degrade to a calm fallback
-instead of showing zeros or an error screen.
+adoptions and animations orchestrated. A slim strip above the KPIs also shows
+the next wedding's city and month/year, with a car icon for Poland and a plane
+icon for any other country. The widget must expose no raw table, must survive
+the 30-day wedding/live-state purge, and must degrade to a calm fallback instead
+of showing zeros or an error screen.
 
 **Feature group.** Public Live Season Stats embed.
 
@@ -9831,7 +9833,7 @@ already in the repository:
 
 | Source | Available data | Retention |
 | --- | --- | --- |
-| `weddings` | couple, date, cartridge, `archived_at`, `expires_at` | 30-day TTL |
+| `weddings` | couple, date, cartridge, venue name/address/city/country, `archived_at`, `expires_at` | 30-day TTL |
 | `live_sync_state` | `completed_step_ids`, `actual_timestamps`, `step_order`, `game_results` | purged with the wedding |
 | `song_requests` | `status`, `played_at`, `created_at` | purged with the wedding |
 | `wedding_recaps` | immutable recap payload with timeline, games and ceremony | 90-day TTL |
@@ -9842,7 +9844,9 @@ counts from the Google Doc parser (it currently keeps `demographics.notes` only)
 a Sto Lat budget/counter, a curfew-compliance history and a true event-end
 timestamp. The reviewed Supabase project contained 0 weddings and no
 `wedding_recaps` table at plan time, so KPI viability was validated against the
-schema and fixtures, not production volumes.
+schema and fixtures, not production volumes. The next-wedding strip reads
+`weddings.venue_city`, `venue_country` and `cartridge.extensions.dateISO`; it is
+a live query and is intentionally hidden when the city or country is absent.
 
 **KPI contract.**
 
@@ -9852,6 +9856,7 @@ schema and fixtures, not production volumes.
 | Destinations | Distinct countries represented | Admin venue city/address, resolved to ISO country | Hide card when no country is resolved |
 | Sto Lat weddings | Weddings whose normalized status is `YES` or `ON_REQUEST` | `culturalRules.sto_lat.status` | Hide card when no facts |
 | Animations orchestrated | Played games + ceremony parts + enabled oczepiny sub-events | Recap payload + cartridge | Hide card when no animations |
+| Next wedding | Soonest future non-archived wedding with venue city + country | Live `weddings` read, ordered by `cartridge.extensions.dateISO` | Hide strip when no match or country missing; expose city + month/year only |
 
 **Season persistence.** A recap publish writes one durable, anonymized
 `season_event_facts` row keyed by a SHA-256 hash of the wedding id. Facts carry
@@ -9859,7 +9864,9 @@ guests, country, Sto Lat, games, ceremony and oczepiny counts only; no names,
 wedding id, address, city, contacts or raw rows. Republishing updates the same
 row. The public RPC aggregates the current calendar year (event date, publish
 year fallback). This is the only way to keep a season total after the 30-day
-wedding purge and the 90-day recap purge.
+wedding purge and the 90-day recap purge. The next-wedding strip is a live read
+of `weddings`, not a season fact; it never affects the season totals and its
+absence never breaks the KPI cards.
 
 **Google Doc contract.**
 
@@ -9874,7 +9881,7 @@ wedding purge and the 90-day recap purge.
 
 | Surface | Behaviour |
 | --- | --- |
-| `/embed/season-stats` | Public zero-chrome widget; PL default, `?lang=fr|en`, `?theme=transparent` |
+| `/embed/season-stats` | Public zero-chrome widget; next-wedding strip + 4 KPIs; PL default, `?lang=fr|en`, `?theme=transparent` |
 | Admin wedding detail | Venue name/address/city/country editor |
 | `admin_api` | Venue read/write, recap-publish fact ingestion |
 | Supabase | `season_event_facts` table + `get_public_season_stats()` RPC |
@@ -9882,9 +9889,10 @@ wedding purge and the 90-day recap purge.
 | All other stage/admin/recap/guest views | Unchanged |
 
 **Out of scope.** Real-time fact updates, historical trends beyond the current
-season, a public per-wedding API, curfew-compliance reporting, exposing city or
-address publicly, WordPress site editing, deployment, and admin localization
-(#1181 is Release-1.2).
+season, a general public per-wedding API, curfew-compliance reporting, exposing
+address, venue name, couple names or exact wedding dates publicly, WordPress
+site editing, deployment, and admin localization (#1181 is Release-1.2). The
+next-wedding strip exposes only city, country and month/year, by owner decision.
 
 **Decisions.**
 
@@ -9900,6 +9908,9 @@ address publicly, WordPress site editing, deployment, and admin localization
 | Destinations | Admin venue fields; country derived deterministically or set explicitly |
 | Sto Lat | Normalize to `YES / ON_REQUEST / NO`; count `YES` + `ON_REQUEST` |
 | Animations | Games + ceremony parts + oczepiny sub-events |
+| Next wedding | Automatic for every future wedding with city + country; no opt-in flag |
+| Next-wedding fields | City + localized month/year only; car for PL, plane otherwise |
+| Next-wedding fallback | Hide the strip when no match or country is missing |
 | On-time/curfew | Rejected: no true end timestamp and no curfew history |
 | Theme | Dark by default; `?theme=transparent` optional |
 | Language | Polish default; FR/EN through `?lang=` |
@@ -9912,9 +9923,9 @@ address publicly, WordPress site editing, deployment, and admin localization
 | 1 | [#1213](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1213) | Normalize `sto_lat.status` to `YES / ON_REQUEST / NO`, legacy mapping, fixtures/tests | - |
 | 2 | [#1212](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1212) | Venue location columns, admin API read/write, country resolution, audit, tests | - |
 | 3 | [#1214](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1214) | Admin venue editor in the wedding detail | #1212 |
-| 4 | [#1215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1215) | Anonymized season facts, recap-publish ingestion, backfill, public RPC, tests | #1213, #1212 |
-| 5 | [#1217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1217) | `/embed/season-stats`, `PublicSeasonStatsWidget`, params, fallback, i18n, tests | #1215 |
-| 6 | [#1216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1216) | Netlify `frame-ancestors`, remove global XFO, WordPress snippet, tests | #1217 |
+| 4 | [#1215](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1215) | Anonymized season facts, recap-publish ingestion, backfill, public RPC + next-wedding query, tests | #1213, #1212 |
+| 5 | [#1217](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1217) | `/embed/season-stats`, `PublicSeasonStatsWidget`, next-wedding strip, params, fallback, i18n, tests | #1215 |
+| 6 | [#1216](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1216) | Netlify `frame-ancestors`, remove global XFO, WordPress snippet incl. strip height, tests | #1217 |
 
 **Open questions.** None.
 
