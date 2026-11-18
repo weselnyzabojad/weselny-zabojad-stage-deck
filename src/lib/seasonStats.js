@@ -10,6 +10,7 @@ export function seasonStatsRpcUrl(config) {
 export async function fetchSeasonStats({
   config = getSyncConfig(),
   fetchImpl = fetch,
+  seasonYear = null,
 } = {}) {
   if (!config?.enabled) {
     throw new Error('Season stats are not configured for this build.');
@@ -22,7 +23,9 @@ export async function fetchSeasonStats({
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({}),
+    body: JSON.stringify(
+      Number.isInteger(seasonYear) ? { p_season_year: seasonYear } : {},
+    ),
   });
   if (!response.ok) {
     throw new Error(`Season stats request failed (${response.status})`);

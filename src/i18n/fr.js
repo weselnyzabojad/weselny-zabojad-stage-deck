@@ -345,6 +345,8 @@ const fr = {
   'postMortem.open': 'Bilan de timing',
   'social.title': 'Studio d’export social',
   'social.open': 'Social',
+  'social.seasonYear': 'Saison',
+  'social.seasonLoading': 'Chargement des agrégats de saison…',
   'social.subtitle': 'Exportez des Stories 1080×1920 prêtes à publier à partir de vraies données.',
   'social.templates': 'Modèles de Story',
   'social.template.dayMinusOne': 'J−1 · Prep Wrapper',

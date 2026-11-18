@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
 import { fetchPortfolioKpis } from './adminApi';
 import SocialExportStudio from '../components/SocialExportStudio';
+import { useSeasonStats } from './useSeasonStats';
 import {
   nextPortfolioSort,
   portfolioYears,
@@ -645,6 +646,8 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   const [error, setError] = useState('');
   const [reload, setReload] = useState(0);
   const [socialRow, setSocialRow] = useState(null);
+  const [seasonYear, setSeasonYear] = useState(() => new Date().getFullYear());
+  const season = useSeasonStats({ active: Boolean(socialRow), seasonYear });
 
   useEffect(() => {
     let active = true;
@@ -688,6 +691,12 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
           <SocialExportStudio
             surface="admin"
             wedding={socialRow}
+            seasonData={season.data}
+            seasonYear={seasonYear}
+            seasonYears={[seasonYear - 2, seasonYear - 1, seasonYear, seasonYear + 1]}
+            onSeasonYear={setSeasonYear}
+            seasonLoading={season.loading}
+            seasonError={season.error}
             onClose={() => setSocialRow(null)}
           />
         </div>
