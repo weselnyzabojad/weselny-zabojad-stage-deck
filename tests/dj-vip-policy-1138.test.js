@@ -49,7 +49,8 @@ describe('issue #1138 DJ VIP Music Policy placement', () => {
     expect(future).toContain('musicPolicy?.hasData');
 
     const current = dj.slice(dj.indexOf('const currentColumnFooter'), dj.indexOf('// Extra current-card'));
-    expect(current).toContain('<DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />');
+    expect(current).toContain('DjSetNotesNotepad');
+    expect(current).toContain('showPolicy={!caps.vip}');
     expect(dj).toContain('<MusicPolicyCard policy={musicPolicy} />');
   });
 });

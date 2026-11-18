@@ -1,12 +1,13 @@
 import { useI18n } from '../i18n/useI18n';
 import MusicPolicyCard from './MusicPolicyCard';
+import VenuePolicyWarnings from './VenuePolicyWarnings';
 
 const NOTE_KEYS = ['dj.setNotes.project', 'dj.setNotes.cutoffs', 'dj.setNotes.private'];
 
 // Physical DJ notepad: the paper, ruled lines and punched holes are decorative.
 // Music Policy is rendered inside the same sheet so the wide DJ view reads as
 // one continuous notebook rather than two stacked cards.
-export default function DjSetNotesNotepad({ policy, showPolicy = true }) {
+export default function DjSetNotesNotepad({ policy, showPolicy = true, venueWarnings = [] }) {
   const { t } = useI18n();
   const hasPolicy = showPolicy && policy?.hasData;
 
@@ -42,6 +43,12 @@ export default function DjSetNotesNotepad({ policy, showPolicy = true }) {
         >
           {t('dj.setNotes')}
         </h2>
+
+        {venueWarnings.length > 0 ? (
+          <div className="mt-3">
+            <VenuePolicyWarnings warnings={venueWarnings} paper />
+          </div>
+        ) : null}
 
         <ul className="mt-3 font-handwriting text-lg leading-6 text-[#3b2f23]">
           {NOTE_KEYS.map((key) => (

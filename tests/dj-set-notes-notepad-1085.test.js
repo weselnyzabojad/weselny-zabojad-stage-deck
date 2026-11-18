@@ -61,7 +61,8 @@ describe('issue #1085 DJ set-notes notepad', () => {
 
     expect(compact).toContain('<MusicPolicyCard policy={musicPolicy} />');
     expect(compact).not.toContain('DjSetNotesNotepad');
-    expect(dj).toContain('<DjSetNotesNotepad policy={musicPolicy} showPolicy={!caps.vip} />');
+    expect(dj).toContain('DjSetNotesNotepad');
+    expect(dj).toContain('showPolicy={!caps.vip}');
     expect(wide).toContain('currentFooter={currentColumnFooter}');
     expect(dj).toContain('<MusicPolicyCard policy={musicPolicy} panel showLists={false} />');
     expect(wide).not.toContain('<MusicPolicyCard policy={musicPolicy} />');

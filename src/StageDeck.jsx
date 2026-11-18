@@ -682,6 +682,7 @@ export default function StageDeck({
             closureTime={mandatorySettings.closureTime ?? null}
             extensionBlockedReason={extensionBlockedReason}
             scheduleBanner={scheduleChangeBanner}
+            venuePolicies={liveState.media_overrides?.venuePolicies ?? null}
             {...djBoothProps}
           />
         </AppErrorBoundary>
