@@ -1043,6 +1043,15 @@ const fr = {
   'admin.portfolio.source.recap': 'Récap',
   'admin.portfolio.source.live': 'Direct',
   'admin.portfolio.source.none': 'Aucune donnée',
+  'embed.kpi.guests': 'Invités accueillis',
+  'embed.kpi.guestsCoverage': '{covered} sur {total} mariages',
+  'embed.kpi.destinations': 'Destinations',
+  'embed.kpi.stolat': 'Mariages avec Sto Lat',
+  'embed.kpi.animations': 'Animations orchestrées',
+  'embed.nextWedding': 'Prochain mariage',
+  'embed.fallback': 'Les statistiques de saison apparaîtront après le premier récap de mariage.',
+  'embed.loading': 'Chargement des statistiques de saison…',
+  'embed.footer': 'Statistiques de saison • Propulsé par Stage Deck',
 };
 
 export default fr;
