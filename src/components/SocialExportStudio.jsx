@@ -5,7 +5,12 @@ import {
   exportStoryPng,
   templatesForSurface,
 } from '../lib/socialStory.js';
+import {
+  buildDayMinusOneModel,
+  dayMinusOneCaptionLines,
+} from '../lib/socialDayMinusOne.js';
 import StoryFrame from './social/StoryFrame.jsx';
+import DayMinusOneStory from './social/DayMinusOneStory.jsx';
 
 const PREVIEW_WIDTH = 270;
 const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
@@ -33,12 +38,17 @@ function TemplatePlaceholder({ template, t }) {
 export default function SocialExportStudio({
   surface = 'mc',
   wedding = null,
+  liveState = null,
   templates = {},
   captionLinesByTemplate = {},
   onClose = null,
 }) {
   const { t } = useI18n();
   const available = useMemo(() => templatesForSurface(surface), [surface]);
+  const availableTemplates = useMemo(
+    () => ({ dayMinusOne: DayMinusOneStory, ...templates }),
+    [templates],
+  );
   const [templateId, setTemplateId] = useState(available[0]?.id ?? 'dayMinusOne');
   const [mode, setMode] = useState('dark');
   const [safeZones, setSafeZones] = useState(false);
@@ -47,9 +57,19 @@ export default function SocialExportStudio({
 
   const template =
     available.find((entry) => entry.id === templateId) ?? available[0] ?? null;
-  const Template = template ? templates[template.id] : null;
+  const Template = template ? availableTemplates[template.id] : null;
   const dateISO = wedding?.dateISO ?? wedding?.date ?? '';
-  const captions = captionLinesByTemplate[template?.id] ?? { fr: [], pl: [] };
+  const fallbackCaptions = useMemo(() => {
+    if (template?.id === 'dayMinusOne') {
+      const model = buildDayMinusOneModel({ wedding, liveState });
+      return {
+        fr: dayMinusOneCaptionLines(model, 'fr'),
+        pl: dayMinusOneCaptionLines(model, 'pl'),
+      };
+    }
+    return { fr: [], pl: [] };
+  }, [template?.id, wedding, liveState]);
+  const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>
     buildSocialCaption({ locale, lines: captions[locale] ?? [] });
@@ -148,7 +168,7 @@ export default function SocialExportStudio({
               label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
             >
               {Template ? (
-                <Template wedding={wedding} mode={mode} />
+                <Template wedding={wedding} liveState={liveState} mode={mode} />
               ) : (
                 <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
               )}
@@ -222,7 +242,7 @@ export default function SocialExportStudio({
           label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
         >
           {Template ? (
-            <Template wedding={wedding} mode={mode} />
+            <Template wedding={wedding} liveState={liveState} mode={mode} />
           ) : (
             <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
           )}
