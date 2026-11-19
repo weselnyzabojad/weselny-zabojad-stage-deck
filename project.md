@@ -10661,3 +10661,92 @@ dependency.
 **Tracking.** [#1271](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1271),
 [#1272](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1272),
 [#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270).
+
+### 17.134 Song Request confirmation brand signature (decision, 2026-11-19)
+
+**Goal.**
+
+Add a discreet Weselny Żabojad signature to the guest Song Request screen after
+a request has been sent, turning a high-engagement confirmation moment into an
+organic discovery link to `www.weselnyzabojad.pl`. The block stays editorial and
+subordinate to the request status and action, and is fully localized.
+
+**Feature block.**
+
+- **F1 - Status-card signature.** Render one signature at the bottom of every
+  post-submission `StatusCard` with a gold external link built by
+  `getMainSiteUrl`.
+
+**Release target.** First release. No milestone, no `release-1.2` label.
+Required for the first release. Depends on the first-release-compatible helper
+from #1271; never on a Release-1.2 issue.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes. Copy lives only in `src/i18n/{en,fr,pl}.js`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Song Request `pending` | Signature at the bottom of the confirmation card |
+| Song Request `accepted` | Signature at the bottom of the status card |
+| Song Request `declined` / `played` | Signature below the existing "Send another request" button |
+| Pre-submission form, intro, banners, status copy and buttons | Unchanged |
+| Deck, roles, admin, landing, recap, embed, 404 | Unchanged |
+| Schema / Doc / Edge Functions / database | Unchanged |
+
+**Design contract.**
+
+- Placement: last element inside the local `StatusCard`, after `{children}`;
+  the status action always stays above the signature.
+- Separator: `border-t border-line pt-4 mt-6` (theme-aware hairline).
+- Text: centered `text-xs text-muted`; brand name `font-medium text-ink`; no
+  card, shadow, background or promotional weight.
+- Link: only `weselnyzabojad.pl` and the `ArrowUpRight` icon are clickable;
+  `inline-flex items-center gap-1 font-medium text-[#B89550]
+  hover:text-[#D4AF37] transition-colors`; icon `h-3 w-3`, aria-hidden.
+- `target="_blank"`, `rel="noopener noreferrer"`, localized explicit
+  `aria-label`; middot `aria-hidden`.
+- URL: `getMainSiteUrl(getLocale())` from #1271, never a hardcoded main-site URL.
+- Mobile: no horizontal overflow at 320 px and 375 px; the action button stays
+  above and reachable; vertical scrolling is acceptable when the card grows.
+
+**Copy.**
+
+| Locale | Signature | Aria-label |
+| --- | --- | --- |
+| FR | `Soirée orchestrée par` **Weselny Żabojad** `· weselnyzabojad.pl` | `Ouvrir weselnyzabojad.pl (nouvel onglet)` |
+| PL | `Wieczór prowadzi` **Weselny Żabojad** `· weselnyzabojad.pl` | `Otwórz weselnyzabojad.pl (nowa karta)` |
+| EN | `Evening hosted by` **Weselny Żabojad** `· weselnyzabojad.pl` | `Open weselnyzabojad.pl in a new tab` |
+
+Suggested keys: `songRequest.signature.prefix`, `songRequest.signature.link`,
+`songRequest.signature.aria`.
+
+**Out of scope.** Adding a "Send another request" action to `pending` or
+`accepted`; changing the form, statuses, queue or moderation; adding the
+signature to the landing, deck, admin or other guest screens; new packages;
+TypeScript migration; schema/Doc/parser/Edge Function/database changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release, no milestone, no `release-1.2` |
+| States | `pending`, `accepted`, `declined`, `played` |
+| Placement | Last element of `StatusCard`, below any action button |
+| Clickable area | Domain + `ArrowUpRight` only |
+| Colors | Theme tokens for hairline/text; gold `#B89550` for the link |
+| URL source | `getMainSiteUrl` from #1271 |
+| Doc linkage | Not Doc-linked |
+| Task split | One atomic issue |
+
+**Task split.** One atomic UI issue: one local component, one view, three
+locale dictionaries and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1273) | Status-card signature, EN/FR/PL keys, link/a11y/mobile checks, tests | #1271 |
+
+**Open questions.** None.
+
+**Tracking.** [#1273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1273).
