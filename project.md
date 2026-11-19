@@ -10922,3 +10922,130 @@ be mistaken for a completed main-site integration.
 [#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892),
 [#1241](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1241),
 [#1243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1243).
+
+### 17.137 Admin monitoring strip, 12 health probes, diagnostics and underline tabs (decision, 2026-11-19)
+
+**Goal.**
+
+Replace the tall admin Service Monitoring card grid with a compact single-row
+status strip, add five endpoint groups (six probes, including the confirmed
+Song Requestor metadata APIs), deduplicate central proxy failures, expose
+per-service diagnostics on demand, and replace the four boxed admin navigation
+buttons with underline tabs. The change is admin-only and keeps every stage,
+guest and public surface untouched.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Monitoring data and 12 probes | Extend the health data layer from 6 to 12 providers, including the 5 requested endpoint groups. |
+| F2 | Compact strip and diagnostics | Render a ~40–48 px strip, dedupe the proxy error, and open one detail drawer per selected service. |
+| F3 | Underline navigation tabs | Replace the boxed tab buttons with a clean underline tab bar. |
+
+Shared infrastructure: the health provider catalog (`src/admin/adminHealth.js`),
+the Edge probe runner (`supabase/functions/_shared/serviceHealth.js`) and the
+`service_health` response contract. It is planned once under F1 and consumed by
+F2.
+
+**Release target.** First release. No milestone, no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No `schema/`, Google Doc field-map,
+template, parser or cartridge change. Data comes from the owner-only
+`service_health` proxy and fixed public endpoints.
+
+**Monitored services.**
+
+| # | Provider id | Label | Probe |
+| --- | --- | --- | --- |
+| 1 | `supabase` | Supabase | Unchanged Auth + REST probe |
+| 2 | `sentry` | Sentry | Unchanged project API probe |
+| 3 | `drive` | Google Drive | Unchanged metadata probe |
+| 4 | `sunset` | sunrise-sunset.org | Unchanged JSON probe |
+| 5 | `deck` | Production deck | Unchanged `PUBLIC_DECK_URL` probe |
+| 6 | `netlify` | Netlify | Unchanged site API probe |
+| 7 | `main_site` | weselnyzabojad.pl | `HEAD https://www.weselnyzabojad.pl/`, GET fallback |
+| 8 | `landing_banner` | weselnyzabojad.pl/extra/banner | `HEAD https://www.weselnyzabojad.pl/extra/banner`, GET fallback |
+| 9 | `deck_site` | deck.weselnyzabojad.pl | `HEAD https://deck.weselnyzabojad.pl/`, GET fallback |
+| 10 | `francuski_dj` | francuskidj.pl | `HEAD https://francuskidj.pl/`, GET fallback |
+| 11 | `itunes` | iTunes API | `GET https://itunes.apple.com/search?term=test&entity=song&limit=1` |
+| 12 | `musicbrainz` | MusicBrainz API | `GET https://musicbrainz.org/ws/2/recording?query=test&fmt=json&limit=1` with the existing User-Agent |
+
+The Song Requestor view calls the `search_song_metadata` Edge Function, which
+calls iTunes Search first and MusicBrainz as fallback. The owner confirmed both
+external APIs are monitored, producing 12 pills rather than 11. Probes run
+server-side in `service_health` with the existing 4 s timeout so browser CORS
+and rate-limit constraints stay outside the admin page. New URLs are fixed
+public constants with no new secrets. `Production deck` remains the existing
+`PUBLIC_DECK_URL` probe; `deck_site` is the explicit new endpoint requested.
+
+The provider payload gains a sanitized human-facing `url` field for the detail
+drawer. `service_health` also accepts an optional `providerId`; when present it
+runs only that allowlisted probe and returns the partial provider list so the
+drawer’s individual `Retry` does not re-run every service. No secret, token or
+credential may appear in `url` or `detail`.
+
+**UI contract.**
+
+| Part | Behaviour |
+| --- | --- |
+| Strip | One flex-wrap row, approximately 40–48 px, directly below the `Wedding library` title bar |
+| Global badge | Status dot + `All systems OK`, `X issues`, or `Health check offline` |
+| Pills | Default shows only dot, label and HTTP code (`200`, `503`, `ERR`, `—`) |
+| Pill states | 2xx: muted emerald/sage tint, green border, bright dot. Non-2xx, timeout or unreachable: muted crimson tint, red border, pulsing dot, bold code |
+| Proxy failure | One slim alert under the strip with the proxy message and `Retry`; never repeated inside pills; pills show `—` or `ERR` |
+| Detail drawer | One collapsible panel for the selected pill: clickable full URL, HTTP status/text, latency, `HH:MM:SS` checked time, error/response snippet, individual `Retry` |
+| Toggle | Chevron opens/closes the drawer; `aria-expanded` and `aria-controls` wired |
+| Tooltips | Native `title` on collapsed pills with latency and checked time |
+| Tabs | Full-width `#E2E8F0` bottom border; active indigo text + 2px indicator; inactive `#64748B`; hover `#1E293B`; tighter vertical padding than action buttons |
+| Localization | English-only, matching the current monitoring strip and admin tabs |
+
+Accessibility: pills and tabs are keyboard operable, status changes use
+`aria-live="polite"`, pulsing respects `prefers-reduced-motion`, and colour is
+never the only failure signal (code text remains visible).
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin `/admin` header and strip | F1/F2 apply on all four tabs |
+| Admin `Overview`, `Weddings`, `Live presence`, `Audit log` navigation | F3 applies |
+| Admin mobile layout | No new mobile redesign; the strip may flex-wrap |
+| MC, DJ, Venue, Media, Speaker, Song Request, landing, embeds, WordPress | Unchanged |
+| `search_song_metadata` runtime behaviour | Unchanged; only monitored |
+
+**Out of scope.** Public status page, alerting/notification channels, email or
+Slack alerts, new secrets, probe history/trend charts, an uptime SLA, mobile nav
+redesign, non-admin themes, and French/Polish admin translations.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release, no milestone, no `release-1.2` |
+| Doc linkage | None; no schema/parser/field-map change |
+| Views | Admin only; all non-admin views unchanged |
+| Tabs | Underline tabs, full-width subtle bottom border |
+| iTunes probe | Minimal `term=test&entity=song&limit=1` |
+| Song metadata APIs | Monitor iTunes **and** MusicBrainz, 12 providers total |
+| Localization | English-only |
+| Proxy failures | One global error alert; compact `ERR`/`—` pills |
+| Diagnostics | One drawer for the selected service |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1286](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1286) | F1: add 6 probes + catalog + response contract, per-provider retry, tests | - |
+| 2 | [#1284](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1284) | F2: compact strip, pills, error dedupe, drawer, tooltips, retries, tests | #1286 |
+| 3 | [#1285](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1285) | F3: underline tab bar with semantic tab behaviour, tests | - |
+
+**Validation.**
+
+- `npm run validate:i18n` (no new keys; confirms the English-only decision does
+  not leave dangling required keys)
+- `npm run lint`
+- `npm test`
+- `npm run build`
+- Manual admin check with all providers healthy and with the proxy offline
+
+**Open questions.** None.
