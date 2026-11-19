@@ -11049,3 +11049,125 @@ redesign, non-admin themes, and French/Polish admin translations.
 - Manual admin check with all providers healthy and with the proxy offline
 
 **Open questions.** None.
+
+### 17.138 Monitoring landing alignment, Wedding Monitor PWA and Pixel verification (decision, 2026-11-19)
+
+**Goal.**
+
+Finish the monitoring release after the admin strip, 12 probes and underline
+tabs shipped in `3c4deb9`. Retrofit the delivered strip/tabs to the landing
+design language, package the monitor as an installable owner-authenticated PWA
+at `/status`, adapt it to Android phone widths, and require a physical Pixel
+10 Pro XL acceptance before release sign-off.
+
+**Delivered baseline.** #1286 (12 probes), #1284 (compact strip/drawer) and
+#1285 (underline tabs) are closed. The remaining work is additive and must not
+redo their behaviour.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F0 | Landing-aligned monitor tokens | Retrofit the delivered strip/tabs to warm surfaces, typography, borders, radii and semantic tones |
+| F4 | Wedding Monitor PWA | `/status` owner-auth monitor with dedicated manifest/SW/icons, standalone mode, tabs omitted |
+| F5 | Mobile monitor layout | Two-column 44 px pill grid, full-width drawer, stacked header |
+| F6 | Pixel verification | Physical Google Pixel 10 Pro XL install and standalone acceptance |
+
+**Release target.** First release. No milestone, no `release-1.2` label. This
+batch is required for the first full release, not for the landing-only build
+#1152. The landing-only build continues to exclude admin and PWA chunks.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**Design contract (F0).**
+
+| Token | Value |
+| --- | --- |
+| Surface | `#FFFFFF` |
+| Muted surface | `#FAF8F5` |
+| Border | `#EAE2D3` |
+| Ink | `#292524` |
+| Muted text | `#78716C` |
+| Accent | `#B89550` |
+| Accent soft | `#F7F2E7` |
+| Cards | `rounded-2xl` |
+
+- Keep `font-heading`, `font-body`, `font-mono`; no new fonts.
+- Define warm semantic healthy/error/warning/checking variables with WCAG AA
+  text pairings; keep the HTTP code as a non-colour signal.
+- Apply tokens to the delivered monitoring strip, pills, drawer, underline tabs
+  and PWA theme/background; the rest of the admin stays unchanged.
+- Remove the delivered generic `emerald-*`, `red-*`, `slate-*` and `indigo-*`
+  classes from the new monitor components.
+
+**PWA architecture (F4).**
+
+- Route `/status` (and `/status/`), `start_url: "/status?pwa=1"`.
+- Dedicated manifest `/status/manifest.webmanifest`:
+  `name: "Wedding Monitor"`, `short_name: "Monitor"`, `display: "standalone"`,
+  `orientation: "any"`, `id: "/status"`, `scope: "/status"`, landing tokens for
+  theme/background, maskable 192/512 PNG icons.
+- Dedicated `/status/sw.js` with `scope: "/status"`; the deck manifest, deck SW,
+  icons and update prompt remain untouched and are not used on `/status`.
+- CSP-safe same-origin bootstrap selects the monitor manifest; no inline script.
+- Existing owner auth + AAL2 MFA gate, then a monitor-only dashboard; no
+  `Overview`, `Weddings`, `Live presence` or `Audit log` tabs.
+- `/status` bypasses the `< 1024 px` admin block; `/admin` keeps it.
+- Installability verified on HTTPS; localhost is not a valid Lighthouse proof.
+
+**Mobile contract (F5).**
+
+- Below `640 px`, all 12 pills in a two-column grid, 44 px minimum touch height,
+  no horizontal scrolling at 320/375 px.
+- Header stacks without horizontal overflow; safe-area insets respected.
+- Drawer full-width with 44 px `Retry` and `Open URL` actions.
+- Reduced motion disables the pulsing error dot.
+- Desktop `/admin` keeps the compact single-row strip.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin `/admin` desktop | Delivered strip/drawer/tabs restyled with F0 tokens |
+| Admin `/admin` < 1024 px | Existing “Laptop or desktop required” block unchanged |
+| `/status` browser and standalone | Monitor-only dashboard, owner auth/MFA, no admin tabs, mobile two-column layout |
+| Existing deck PWA `/` | Manifest, SW, icons and update prompt unchanged |
+| Landing `/`, `/extra/banner`, `/embed/*` | Unchanged |
+| Delivered F1-F3 behaviour | 12 probes, proxy dedupe, drawer, underline tabs preserved |
+
+**Out of scope.** Rewriting the whole admin library to the landing palette;
+public/unauthenticated monitoring; push notifications; alerting channels;
+history charts; iOS-specific layout; changing the deck PWA; WordPress/Netlify
+deployment; schema/Doc/Edge Function data model; physical device purchase.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First full release; no milestone, no `release-1.2` |
+| Baseline | #1286/#1284/#1285 delivered in `3c4deb9`; additive only |
+| Probe count | 12: iTunes + MusicBrainz confirmed in code |
+| PWA route | `/status`, owner auth + AAL2 MFA |
+| PWA identity | Dedicated Wedding Monitor manifest/SW; deck PWA untouched |
+| Tabs in PWA | Omitted, not merely visually hidden |
+| Palette | Landing warm tokens for monitor/nav/PWA only |
+| Mobile | Two-column 44 px grid, full-width drawer, stacked header |
+| Pixel test | Dedicated blocked verification issue |
+| Doc linkage | Not Doc-linked |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1287) | Landing-aligned monitor tokens, semantic tones, retrofit of delivered strip/tabs, tests | delivered #1284/#1285 |
+| 2 | [#1288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1288) | `/status` PWA, manifest/SW/icons, auth shell, standalone, tabs omitted, tests | #1287, delivered #1284/#1285 |
+| 3 | [#1289](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1289) | Mobile two-column grid, 44 px targets, full-width drawer, header stack, tests | #1288, #1287 |
+| 4 | [#1290](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1290) | Physical Pixel 10 Pro XL install/standalone/12-pill/no-tabs verification | #1287, #1288, #1289 + deployment |
+
+**Open questions.** None.
+
+**Tracking.** [#1287](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1287),
+[#1288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1288),
+[#1289](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1289),
+[#1290](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1290).
