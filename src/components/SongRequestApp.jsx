@@ -9,6 +9,7 @@ import {
   submitSongRequest,
 } from '../lib/songRequests.js';
 import { getGuestDeviceId } from '../lib/guestDeviceId.js';
+import { getMainSiteUrl } from '../lib/mainSite.js';
 import LanguageToggle from './LanguageToggle';
 import {
   clearGuestRequest,
@@ -30,13 +31,47 @@ function RequestSummary({ song, artist }) {
   );
 }
 
-function StatusCard({ tone, title, body, song, artist, children }) {
+export function BrandSignature() {
+  const { t, locale } = useI18n();
+
+  return (
+    <p className="mt-6 border-t border-line pt-4 text-center text-xs text-muted">
+      {t('songRequest.signature.prefix')}{' '}
+      <span className="font-medium text-ink">Weselny Żabojad</span>
+      <span aria-hidden="true"> · </span>
+      <a
+        href={getMainSiteUrl(locale)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={t('songRequest.signature.aria')}
+        className="inline-flex items-center gap-1 whitespace-nowrap font-medium text-[#B89550] transition-colors hover:text-[#D4AF37]"
+      >
+        {t('songRequest.signature.link')}
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 20 20"
+          className="h-3 w-3 shrink-0"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M6 14 14 6M8 6h6v6" />
+        </svg>
+      </a>
+    </p>
+  );
+}
+
+export function StatusCard({ tone, title, body, song, artist, children }) {
   return (
     <div className={`mt-5 rounded-xl border p-4 ${tone}`} role="status" aria-live="polite">
       <div className="font-heading text-sm font-bold">{title}</div>
       <p className="mt-1 text-xs">{body}</p>
       <RequestSummary song={song} artist={artist} />
       {children}
+      <BrandSignature />
     </div>
   );
 }
