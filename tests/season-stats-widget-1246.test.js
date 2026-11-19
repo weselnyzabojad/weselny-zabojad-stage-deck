@@ -200,8 +200,9 @@ describe('issue #1246 two-KPI season widget and states', () => {
     expect(html).toContain('aria-label="English"');
     expect(html).toContain('aria-checked="true"');
     expect(widget).toContain('changeLocale(code)');
-    expect(read('src/main.jsx')).toContain(
-      "setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })",
-    );
+    const main = read('src/main.jsx');
+    expect(main).toContain("import { resolveEntryLocale } from './lib/localeContinuity.js'");
+    expect(main).toContain('if (EMBED_ROUTE)');
+    expect(main).toContain('{ persist: false }');
   });
 });

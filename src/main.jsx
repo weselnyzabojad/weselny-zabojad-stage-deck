@@ -15,6 +15,7 @@ import {
 } from './lib/publicRoutes.js'
 import { loadLocale, setLocale } from './i18n/index.js'
 import { initSentry } from './lib/sentry.js'
+import { resolveEntryLocale } from './lib/localeContinuity.js'
 
 initSentry()
 
@@ -34,16 +35,30 @@ const IS_LANDING =
 const IS_BANNER =
   typeof window !== 'undefined' &&
   isBannerPath(window.location.pathname, import.meta.env.BASE_URL)
-// The landing is Polish-first for the first release; an existing device
-// choice still wins and the crew deck keeps its English default.
-if (IS_LANDING && !loadLocale()) setLocale('pl')
-// The iframe follows the browser language with a French fallback; an explicit
-// in-widget toggle still persists like the standalone landing.
-if (IS_BANNER && !loadLocale()) {
+const LOCALE_SEARCH =
+  typeof window !== 'undefined' ? window.location.search : ''
+const STORED_LOCALE = loadLocale()
+// The landing and the WordPress banner accept `?lang=fr|pl|en`; the URL wins
+// over the stored choice. The landing defaults to Polish, the banner keeps its
+// browser-language detection with a French fallback.
+if (IS_LANDING) {
   setLocale(
-    detectBannerLocale(
-      typeof navigator === 'undefined' ? [] : navigator.languages,
-    ),
+    resolveEntryLocale({
+      search: LOCALE_SEARCH,
+      stored: STORED_LOCALE,
+      fallback: 'pl',
+    }),
+  )
+}
+if (IS_BANNER) {
+  setLocale(
+    resolveEntryLocale({
+      search: LOCALE_SEARCH,
+      stored: STORED_LOCALE,
+      fallback: detectBannerLocale(
+        typeof navigator === 'undefined' ? [] : navigator.languages,
+      ),
+    }),
   )
 }
 // The embed owns its language per request and must never persist it.
@@ -56,7 +71,14 @@ const EMBED_ROUTE =
       )
     : null
 if (EMBED_ROUTE) {
-  setLocale(EMBED_ROUTE.lang || loadLocale() || 'pl', { persist: false })
+  setLocale(
+    resolveEntryLocale({
+      search: LOCALE_SEARCH,
+      stored: STORED_LOCALE,
+      fallback: 'pl',
+    }),
+    { persist: false },
+  )
 }
 const LEGACY_ADMIN =
   typeof window !== 'undefined' && isLegacyAdminPath(window.location.pathname)
