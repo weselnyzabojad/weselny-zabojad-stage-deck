@@ -52,7 +52,7 @@ describe('issue #891 landing contact prefill', () => {
 
   it('uses the URL API and keeps no client-side tracking', () => {
     const landing = read('src/components/LandingPage.jsx');
-    expect(landing).toContain('new URL(CONTACT_BASE)');
+    expect(landing).toContain("new URL(getMainSiteUrl('pl'))");
     expect(landing).toContain("url.searchParams.set('prefill'");
     expect(landing).toContain("url.hash = 'kontakt'");
     expect(landing).not.toMatch(/analytics|gtag|pixel|localStorage|sessionStorage/i);

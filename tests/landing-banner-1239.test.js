@@ -65,7 +65,8 @@ describe('issue #1239 landing iframe route /extra/banner', () => {
   });
 
   it('keeps the contact CTA URL and new-tab attributes unchanged', () => {
-    expect(landing).toContain("const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';");
+    expect(landing).toContain("import { getMainSiteUrl } from '../lib/mainSite.js'");
+    expect(landing).toContain("new URL(getMainSiteUrl('pl'))");
     expect(landing).toContain("url.searchParams.set('prefill', prefill);");
     expect(landing).toContain("url.hash = 'kontakt';");
     expect(landing).toContain('target="_blank"');

@@ -7,12 +7,11 @@ import LanguageToggle from './LanguageToggle';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n/useI18n.js';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
+import { getMainSiteUrl } from '../lib/mainSite.js';
 import logo from '../assets/img/logo.png';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
 import logoZaremba from '../assets/img/dj-vip/logo_zaremba.png';
-
-const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';
 
 const BUILTIN_PARTNER_LOGOS = {
   dj_mark: logoMark,
@@ -51,7 +50,9 @@ function mergePartners(rows) {
 }
 
 function buildContactHref(prefill) {
-  const url = new URL(CONTACT_BASE);
+  // The prefill integration is only known on the PL contact page, so contact
+  // CTAs intentionally stay on the PL target in every locale.
+  const url = new URL(getMainSiteUrl('pl'));
   url.searchParams.set('prefill', prefill);
   url.hash = 'kontakt';
   return url.toString();
