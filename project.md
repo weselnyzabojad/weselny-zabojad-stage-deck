@@ -10556,3 +10556,108 @@ dictionaries and one validation set.
 **Open questions.** None.
 
 **Tracking.** [#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270).
+
+### 17.133 Language continuity between the main site and Stage Deck (decision, 2026-11-19)
+
+**Goal.**
+
+Carry the visitor's language across `www.weselnyzabojad.pl` and
+`deck.weselnyzabojad.pl` in both directions. Incoming `?lang=fr|pl|en` is
+applied on the landing, the WordPress banner and `/embed/*` iframe routes before
+the first render. Outgoing links use one helper that maps the active locale to
+the corresponding main-site page, so no visitor has to reselect a language.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Incoming language detection | Apply a valid `?lang` on `/`, `/extra/banner` and `/embed/*` before render |
+| F2 | Outgoing language links | One `getMainSiteUrl(lang)` helper for every link back to the main site |
+
+**Release target.** Landing pre-release (`landing-pre-release` workstream, no
+milestone) for both features. Required before the landing release. No
+`Release-1.2` milestone or label.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes. F1 reuses the existing locale engine; F2 adds a pure URL
+helper.
+
+**View scope.**
+
+| Surface | F1 incoming | F2 outgoing |
+| --- | --- | --- |
+| `/` landing | `?lang` wins over stored locale; persisted | Contact CTAs via the helper; ribbon #1270 via the helper |
+| `/extra/banner` | `?lang` wins; otherwise browser detection + FR fallback; persisted | No link added |
+| `/embed/*` | `?lang` wins; per-request only, never persisted | No link added |
+| Deck, role views, admin, recap, Song Request, 404 | Unchanged; `?lang` ignored | Unchanged |
+| Main site `weselnyzabojad.pl` | Unchanged | Unchanged content and language switcher |
+
+**F1 locale priority.**
+
+| Route kind | Priority |
+| --- | --- |
+| Landing `/` | valid `?lang` → stored locale → Polish |
+| `/extra/banner` | valid `?lang` → stored locale → browser language → French |
+| `/embed/*` | valid `?lang` → stored locale → Polish; not persisted |
+
+- Values are `fr`, `pl`, `en`, normalized like `normalizeLocale` (`FR`,
+  `fr-FR`, `pl_PL` accepted); invalid or absent values keep today's behaviour.
+- Application happens at module scope before `createRoot`, so the first paint
+  and `<html lang>` are already localized.
+- The shared locale helper must stay importable by `src/landing-main.jsx`
+  without pulling deck/admin/recap/request chunks.
+
+**F2 URL mapping.**
+
+| Active locale | `getMainSiteUrl(locale)` |
+| --- | --- |
+| `pl` | `https://www.weselnyzabojad.pl/` |
+| `fr` | `https://www.weselnyzabojad.pl/fr/home-fr/` |
+| `en` | `https://www.weselnyzabojad.pl/` |
+| absent / unsupported | `https://www.weselnyzabojad.pl/` |
+
+The mapping follows the main-site `hreflang` links: PL at `/`, FR at
+`/fr/home-fr/`. No EN page exists; `/en/` returns 404, so EN falls back to the
+PL root. This supersedes the plain-URL decision recorded for the ribbon in
+17.132; #1270 must consume `getMainSiteUrl`.
+
+Contact CTA exception: the two landing contact CTAs keep
+`https://www.weselnyzabojad.pl/#kontakt` plus `prefill` in every locale because
+the prefill integration is only known on the PL contact page. They build that
+URL through the helper, not a local constant.
+
+**Out of scope.** Adding a footer link, a Song Request confirmation signature or
+a role preview embed (none exists in the codebase); rewriting or stripping
+`?lang` from the URL; translating cartridge content; changing the main-site
+WordPress content, language switcher or prefill form; schema, Doc, Edge
+Functions and database; a TypeScript migration.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release target | Landing pre-release, no milestone |
+| Incoming routes | `/`, `/extra/banner`, all `/embed/*` |
+| Priority | `?lang` > stored > browser (banner) > PL |
+| Persistence | Persist on landing/banner; transient on embeds |
+| EN target | PL root, because no EN page exists |
+| FR target | `/fr/home-fr/` |
+| Contact CTAs | Keep PL `#kontakt` + `prefill`; documented exception |
+| Consumers | Existing contact CTAs + ribbon #1270; no invented surfaces |
+| Supersedes | 17.132 plain-URL ribbon decision |
+| Language | JavaScript; no TypeScript migration |
+
+**Task split.** Two independent implementation issues plus the existing ribbon
+dependency.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1271](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1271) | `getMainSiteUrl` mapping, contact CTA wiring, tests | - |
+| 2 | [#1272](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1272) | `?lang` detection on landing/banner/embed, priority, persistence, tests | - |
+| 3 | [#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270) | Existing ribbon uses `getMainSiteUrl(getLocale())` | #1271 |
+
+**Open questions.** None.
+
+**Tracking.** [#1271](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1271),
+[#1272](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1272),
+[#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270).
