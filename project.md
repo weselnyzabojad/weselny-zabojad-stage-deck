@@ -10472,3 +10472,87 @@ metrics, no new tracking events, no couple identity on the exported pixels.
 | 5 | [#1258](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1258) | Season Test Zgodności template with IG sticker safe zone, season data hook, tests | #1254, #1257 |
 
 **Open questions.** None.
+
+### 17.132 Landing editorial brand ribbon (decision, 2026-11-19)
+
+**Goal.**
+
+Add an ultra-thin, non-sticky editorial ribbon at the very top of the public
+landing page. It states the Weselny Żabojad brand affiliation and links back to
+`https://www.weselnyzabojad.pl` without competing with the intro editorial card
+or the primary CTA. The ribbon is a release blocker for the landing release.
+
+**Feature block.**
+
+- **F1 - Top-of-page brand ribbon.** Full-width, borderless bar above the
+  landing header with the brand signature on the left and an external link on
+  the right, in EN/FR/PL, on one line at every viewport.
+
+**Release target.** Landing pre-release (`landing-pre-release` workstream, no
+milestone). Required before the landing release; priority label `p0`. No
+`Release-1.2` milestone or label.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes. Copy lives in the existing `src/i18n/{en,fr,pl}.js`
+dictionaries.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/` landing (`src/components/LandingPage.jsx`) | Ribbon above `<header>`; full width; non-sticky; one line |
+| Landing header, intro card, hero, sections, footer | Unchanged |
+| Landing-only 404, admin, role decks, song request, recap | No ribbon |
+| EN / FR / PL | Same structure; localized prefix, descriptor, link label and aria-label |
+| Main site `weselnyzabojad.pl` | Unchanged |
+
+**Design contract.**
+
+- Bar: `w-full bg-[#FAF8F5]/90 border-b border-[#EAE2D3]/70`.
+- Inner: `max-w-5xl mx-auto px-4 py-2 flex items-center justify-between gap-3`;
+  36–40 px maximum height.
+- Left: gold dot `w-1.5 h-1.5 rounded-full bg-[#B89550] shrink-0`, signature in
+  `text-[11px] sm:text-xs text-[#78716C] truncate`, brand name in
+  `text-[#292524] font-medium`, `min-w-0` child for real truncation.
+- Right link: `inline-flex items-center gap-1 text-[11px] sm:text-xs font-medium
+  text-[#B89550] hover:text-[#9A7A3B] transition-colors whitespace-nowrap
+  shrink-0 group`, `ArrowUpRight` `w-3 h-3`, `target="_blank"`,
+  `rel="noopener noreferrer"`, explicit localized `aria-label`.
+- Desktop copy from `sm`; shortened mobile copy below it; no wrapping at 320 px.
+- No drop shadow, no filled button, no visual clutter.
+
+**Copy.**
+
+| Locale | Desktop | Mobile | Link desktop / mobile |
+| --- | --- | --- | --- |
+| FR | `Imaginé par` **Weselny Żabojad** `· MC & DJ trilingue pour mariages internationaux` | `Par` **Weselny Żabojad** | `Découvrir weselnyzabojad.pl` / `weselnyzabojad.pl` |
+| PL | `Stworzone przez` **Weselny Żabojad** `· Trójjęzyczny wodzirej i DJ na wesela międzynarodowe` | `Projekt` **Weselny Żabojad** | `Odwiedź weselnyzabojad.pl` / `weselnyzabojad.pl` |
+| EN | `Imagined by` **Weselny Żabojad** `· Trilingual MC & DJ for international weddings` | `By` **Weselny Żabojad** | `Discover weselnyzabojad.pl` / `weselnyzabojad.pl` |
+
+**Out of scope.** Changing the header, intro card, hero, CTA, sections or
+footer; adding the ribbon to the 404, admin or role views; changing the main
+site; adding locale routes or query parameters to the external link; schema,
+Doc, Edge Function and database changes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release target | Landing pre-release, no milestone |
+| Priority label | `p0` (release blocker) |
+| EN copy | Proposed translation in the copy table |
+| External URL | Plain `https://www.weselnyzabojad.pl`; no language parameter |
+| Brand name | Shared across locales; only prefixes, descriptors and link labels translated |
+| Component | One landing-local ribbon, no new shared abstraction |
+| Task split | One atomic issue |
+
+**Task split.** One atomic UI issue: one component area, one view, three locale
+dictionaries and one validation set.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270) | Landing ribbon, EN/FR/PL copy, responsive single line, link accessibility, tests | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1270](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1270).
