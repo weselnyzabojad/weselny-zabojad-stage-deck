@@ -6,6 +6,7 @@ import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import { loadLocale, setLocale } from './i18n/index.js'
 import { initSentry } from './lib/sentry.js'
 import { detectBannerLocale, isBannerPath } from './lib/bannerRoute.js'
+import { resolveEntryLocale } from './lib/localeContinuity.js'
 
 // Landing-only release entry (RELEASE_SURFACE=landing, issue #1152).
 //
@@ -19,18 +20,24 @@ initSentry()
 
 const LandingPage = lazy(() => import('./components/LandingPage.jsx'))
 
-if (!loadLocale()) {
-  const banner =
-    typeof window !== 'undefined' &&
-    isBannerPath(window.location.pathname, import.meta.env.BASE_URL)
-  setLocale(
-    banner
+const banner =
+  typeof window !== 'undefined' &&
+  isBannerPath(window.location.pathname, import.meta.env.BASE_URL)
+
+// `?lang=fr|pl|en` wins over the stored device choice. Without it, the landing
+// keeps its Polish-first default and the banner keeps browser detection with a
+// French fallback.
+setLocale(
+  resolveEntryLocale({
+    search: typeof window !== 'undefined' ? window.location.search : '',
+    stored: loadLocale(),
+    fallback: banner
       ? detectBannerLocale(
           typeof navigator === 'undefined' ? [] : navigator.languages,
         )
       : 'pl',
-  )
-}
+  }),
+)
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
