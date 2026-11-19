@@ -10750,3 +10750,116 @@ locale dictionaries and one validation set.
 **Open questions.** None.
 
 **Tracking.** [#1273](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1273).
+
+### 17.135 Roles preview iframe for the main-site Services page (decision, 2026-11-19)
+
+**Goal.**
+
+Build a standalone `/embed/roles-preview` iframe that turns the "A view for
+every role" landing card into an interactive public preview for the
+Services/Offer page of `www.weselnyzabojad.pl`. Every canonical public role gets
+its own tab and a compact, localized 3–4-step preview aligned with what that
+role actually sees in the live app.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Role audit and sample data | Audit every canonical role and ship 8 public role previews in EN/FR/PL |
+| F2 | Embed route and widget | `/embed/roles-preview` tabs, animated timeline, transparent no-scroll shell, footer link |
+
+**Release target.** **Release 1.2** — milestone `Release-1.2` (#6) and label
+`release-1.2`. Not required for the first release; no blocker label.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes. Sample content is static and uses new
+`embed.rolesPreview.*` i18n keys.
+
+**Role audit.**
+
+| Role id | View | Public tab | Preview moments |
+| --- | --- | --- | --- |
+| `mc` | `McMasterView` | Yes | Ceremony, speeches, cake, oczepiny |
+| `dj` | `DjBoothView` | Yes | Ceremony, dinner set, first dance, party set |
+| `photo1` | `PhotographerView` | Yes | Preparations, ceremony, couple session, group photos |
+| `photo2` | `PhotographerView` | Yes | Ceremony, second angle, group photos, first dance |
+| `video` | `PhotographerView` | Yes | Ceremony, speeches, first dance, party atmosphere |
+| `venue_manager` | `VenueManagerView` | Yes | Ceremony setup, dinner service, cake service, curfew |
+| `speaker` | `SpeakerView` | Yes | Welcome, toast, reading, mic handover (speech sections, not the wedding timeline) |
+| `musician` | `MusicianView` | Yes | Prelude, processional, dinner jazz, first dance |
+| `dj_mc` | Combined MC + DJ VIP | **No** | Owner-only combined role; excluded by 17.99 "never advertise DJ + MC" and has no `role.dj_mc.*` keys |
+
+`photo1`, `photo2` and `video` share one view but remain three tabs. Song Request
+is a VIP view, not a role. `dj_mark`/`dj_szymoniak` are dev partner previews.
+`dj` covers DJ Standard and DJ VIP capabilities; VIP is not a separate role.
+Exact English reference cues and the localized key contract are in #1274.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/embed/roles-preview` | Transparent, zero-chrome widget with 8 role tabs and a per-role timeline |
+| `/embed/roles-preview?lang=` | Uses the shared `/embed/*` locale rule; transient, never persisted |
+| Landing `/` and `/extra/banner` | Unchanged |
+| Existing landing `RoleMock` | Unchanged |
+| WordPress Services/Offer page | Embedded later by the webmaster; not edited here |
+| Netlify `/embed/*` | Existing `frame-ancestors` already allows both www origins; verify only |
+| Deck, role views, admin, recap, song request | Unchanged |
+
+**F1 data contract.** Static `src/content/rolesPreview.js` (or equivalent), one
+entry per public role, 3–4 steps with time + title key + cue key. Reuse
+`roleShort`/`roleLabel`/`roleBlurb`; add `embed.rolesPreview.<role>.<step>.title`
+and `.cue` keys in EN/FR/PL. No real couple, venue, contact or record data; no
+network call.
+
+**F2 route and UI contract.**
+
+- Route: `/embed/roles-preview`, parsed with `baseUrl`; only this route renders
+  the widget, with no app header, footer, nav or PWA notice.
+- Shell: `h-dvh w-full overflow-hidden bg-transparent`, plus a route-scoped CSS
+  override making `html`/`body` transparent and `overflow: hidden`.
+- Height contract: **420 px desktop**, **520 px at 375 px**; no internal
+  horizontal or vertical scrollbar; no auto-resize script.
+- Card: `bg-white`, `border border-[#EAE2D3]`, `rounded-2xl`,
+  `shadow-[0_4px_20px_-4px_rgba(184,149,80,0.08)]`, gold `#B89550` /
+  `#F7F2E7` accents.
+- Tabs: wrapping pills, inactive `bg-[#FAF8F5] text-[#78716C]`, active
+  `bg-[#292524] text-white`; accessible tablist with roving tabIndex and arrow
+  keys; labels from `roleShort`.
+- Timeline: keyed fade/slide on role change, reduced-motion safe, 3–4 steps.
+- Footer: right-aligned localized "Discover Stage Deck" link to
+  `https://deck.weselnyzabojad.pl/?lang=<active>`, new tab, no opener, localized
+  aria-label.
+- No new dependency; fixed heights are documented for the WordPress handoff.
+
+**Out of scope.** Editing the main-site Services page or its iframe markup;
+changing the existing landing card; adding `dj_mc`, Song Request or partner
+tabs; real wedding/Supabase data; Netlify header edits; new tracking; TypeScript
+migration; schema/Doc/parser/Edge Function/database changes; `postMessage`
+auto-resize.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | Release 1.2, milestone `Release-1.2` + label `release-1.2`, not a blocker |
+| Public roles | 8: `mc`, `dj`, `photo1`, `photo2`, `video`, `venue_manager`, `speaker`, `musician` |
+| `dj_mc` | Excluded from public marketing by 17.99 |
+| Data source | Curated static sample data, no cartridge/Supabase |
+| Language | `?lang` shared `/embed/*` rule; footer preserves `?lang` |
+| Height | 420 px desktop, 520 px mobile, no scrollbars |
+| Landing card | Unchanged |
+| Netlify | Existing `/embed/*` `frame-ancestors` is sufficient |
+| Task split | Two issues: content/data, then route/UI |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1274) | Role audit, 8 public role previews, EN/FR/PL sample cues, tests | - |
+| 2 | [#1275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1275) | `/embed/roles-preview`, tabs, timeline, footer link, transparent no-scroll shell, tests | #1274, #1272 |
+
+**Open questions.** None.
+
+**Tracking.** [#1274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1274),
+[#1275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1275).
