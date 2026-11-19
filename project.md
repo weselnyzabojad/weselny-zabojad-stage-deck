@@ -10863,3 +10863,62 @@ auto-resize.
 
 **Tracking.** [#1274](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1274),
 [#1275](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1275).
+
+### 17.136 Main-site webmaster dependencies (decision, 2026-11-19)
+
+**Goal.**
+
+Ensure every change that must happen on `www.weselnyzabojad.pl` has its own
+GitHub issue, is labelled `blocked` by default, and is closed only after the
+webmaster validates the change on the live main site. Deck-side work must never
+be mistaken for a completed main-site integration.
+
+**Audit of landing-related issues.**
+
+| Issue | Requires a www change? | Action |
+| --- | --- | --- |
+| #1270 landing ribbon | No — links to www only | None |
+| #1271 main-site URL helper | No — deck-side only | None |
+| #1272 incoming `?lang` | Yes — www must send the parameter | Dedicated #1277 |
+| #1273 Song Request signature | No | None |
+| #1274 roles preview data | No | None |
+| #1275 roles preview widget | Yes — embed on Services/Offer | Dedicated #1278 |
+| #1241 landing logo | No — deck landing asset | `blocked` added (waiting for owner asset) |
+| #1243 landing pre-release notes | No code, but must not claim live before www | `blocked` added; depends on #1276/#1277/#1279 |
+| #892 contact form prefill | Yes — WordPress form snippet | Existing dedicated issue; `blocked` + `landing-pre-release` added |
+| #1238 / #1216 | Closed handoffs/snippets, not execution | Execution tracked by #1279 |
+| #1239 / #1240 | Closed deck routes/cleanup | None |
+
+**Dedicated webmaster issues.**
+
+| Change on `www.weselnyzabojad.pl` | Issue | Release | Blocked until |
+| --- | --- | --- | --- |
+| Insert the `/extra/banner` landing iframe with `?lang` | [#1276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1276) | landing-pre-release | #1272 deployed + owner confirms page/section |
+| Add `?lang` to every deck link/iframe on PL and FR pages | [#1277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1277) | landing-pre-release | #1272 deployed + link locations confirmed |
+| Embed `/embed/season-stats` (160/240 px) | [#1279](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1279) | landing-pre-release | landing build deployed + #1272 |
+| Embed `/embed/roles-preview` (420/520 px) on Services | [#1278](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1278) | Release 1.2 | #1274, #1275, #1272 deployed + section confirmed |
+| Enfold contact form reads `prefill` | [#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892) | landing-pre-release | webmaster implementation and live validation |
+
+**Rules.**
+
+- A webmaster issue carries labels `setup`, `documentation`, `blocked` and the
+  matching release label; the Release 1.2 issue also carries milestone
+  `Release-1.2`.
+- The `blocked` label is removed only after the webmaster records the WordPress
+  change and the live acceptance checks pass.
+- A closed handoff/snippet issue does not prove the main site changed; the
+  execution issue is the source of truth.
+- Deck-side issues stay independently implementable; only their end-to-end
+  acceptance depends on the webmaster issues.
+- The landing pre-release notes #1243 must not be published as live until
+  #1276, #1277 and #1279 are closed.
+
+**Open questions.** None.
+
+**Tracking.** [#1276](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1276),
+[#1277](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1277),
+[#1278](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1278),
+[#1279](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1279),
+[#892](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/892),
+[#1241](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1241),
+[#1243](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1243).
