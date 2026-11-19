@@ -89,7 +89,7 @@ describe('issue #811 deck-focused landing', () => {
     expect(landing).not.toContain('supabase');
     expect(landing).not.toMatch(/coupleProfile|bride|groom|Jennifer|Guillaume/);
     expect(landing).not.toMatch(/gtag|analytics|pixel|facebook\.net|hotjar/i);
-    expect(landing).toContain("const CONTACT_BASE = 'https://www.weselnyzabojad.pl/';");
-    expect((landing.match(/https:\/\/www\.weselnyzabojad\.pl\//g) ?? []).length).toBe(1);
+    expect(landing).toContain("import { getMainSiteUrl } from '../lib/mainSite.js'");
+    expect(landing).not.toContain('https://www.weselnyzabojad.pl');
   });
 });
