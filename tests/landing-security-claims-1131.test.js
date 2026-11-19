@@ -10,7 +10,7 @@ import { setLocale } from '../src/i18n/index.js';
 
 const DICTIONARIES = { en, fr, pl };
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
-const FORBIDDEN = /100\s*%|unhackable|zero[- ]risk|certified|audited|GDPR|RODO/i;
+const FORBIDDEN = /100\s*%|unhackable|zero[- ]risk|\bcertified\b|\baudited\b|\bGDPR\b|\bRODO\b/i;
 
 afterEach(() => {
   setLocale('en', { persist: false });

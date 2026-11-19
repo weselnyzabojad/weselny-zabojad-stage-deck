@@ -216,6 +216,51 @@ function FeatureIcon({ index }) {
   );
 }
 
+function BrandRibbon() {
+  const { t, locale } = useI18n();
+
+  return (
+    <div className="w-full border-b border-[#EAE2D3]/70 bg-[#FAF8F5]/90">
+      <div className="mx-auto flex min-h-9 w-full max-w-5xl items-center justify-between gap-3 px-4 py-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#B89550]"
+          />
+          <span className="min-w-0 truncate text-[11px] text-[#78716C] sm:text-xs">
+            <span className="sm:hidden">{t('landing.ribbon.prefixShort')} </span>
+            <span className="hidden sm:inline">{t('landing.ribbon.prefix')} </span>
+            <span className="font-medium text-[#292524]">Weselny Żabojad</span>
+            <span className="hidden sm:inline"> · {t('landing.ribbon.descriptor')}</span>
+          </span>
+        </div>
+        <a
+          href={getMainSiteUrl(locale)}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t('landing.ribbon.linkAria')}
+          className="group inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[11px] font-medium text-[#B89550] transition-colors hover:text-[#9A7A3B] sm:text-xs"
+        >
+          <span className="sm:hidden">{t('landing.ribbon.linkShort')}</span>
+          <span className="hidden sm:inline">{t('landing.ribbon.link')}</span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 20 20"
+            className="h-3 w-3 shrink-0"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M6 14 14 6M8 6h6v6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const { t } = useI18n();
   const [partners, setPartners] = useState(FALLBACK_PARTNERS);
@@ -267,6 +312,7 @@ export default function LandingPage() {
       data-theme="day"
       className="min-h-screen bg-[#FBF9F5] font-heading text-[#1A1A1A]"
     >
+      <BrandRibbon />
       <header className="border-b border-[#C5A059]/15 bg-white/60 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <div className="flex items-center gap-3">
