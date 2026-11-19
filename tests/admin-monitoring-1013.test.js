@@ -31,17 +31,18 @@ afterEach(() => {
 });
 
 describe('issue #1013 admin monitoring top bar', () => {
-  it('renders four always-visible provider cards with details', () => {
+  it('renders the compact strip with per-provider pills and a detail drawer', () => {
     const bar = read('src/admin/AdminHealthBar.jsx');
     expect(bar).toContain('aria-label="Service monitoring"');
     expect(bar).toContain('providers.map((provider)');
-    expect(bar).toContain('provider.httpStatus');
-    expect(bar).toContain('provider.latencyMs');
-    expect(bar).toContain('formatCheckedAt(provider.checkedAt)');
-    expect(bar).toContain('provider.detail');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
+    expect(bar).toContain('healthPillCode');
+    expect(bar).toContain('healthPillTone');
+    expect(bar).toContain('formatCheckedAt(selectedProvider.checkedAt)');
+    expect(bar).toContain('selectedProvider.detail');
+    expect(bar).toContain('id="admin-health-detail"');
     expect(bar).toContain('Retry all');
     expect(bar).not.toContain('role="dialog"');
+    expect(bar).not.toContain('sm:grid-cols-2 xl:grid-cols-3');
   });
 
   it('uses 60s visibility-aware polling', () => {

@@ -19,7 +19,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizeAdminSession, decodeJwt } from '../_shared/adminAuth.js';
 import { createGoogleDriveConnector } from '../_shared/googleDrive.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
-import { runServiceHealth } from '../_shared/serviceHealth.js';
+import { runServiceHealth, isHealthProvider } from '../_shared/serviceHealth.js';
 
 const connector = createGoogleDriveConnector({
   clientEmail: Deno.env.get('GOOGLE_SERVICE_ACCOUNT_EMAIL') ?? '',
@@ -83,6 +83,15 @@ async function handleRequest(req: Request) {
       );
     }
 
+    const body = await req.json().catch(() => ({}));
+    const providerId =
+      typeof body?.providerId === 'string' && body.providerId.trim()
+        ? body.providerId.trim()
+        : null;
+    if (providerId && !isHealthProvider(providerId)) {
+      return json({ error: 'Unknown providerId.' }, 400);
+    }
+
     const result = await runServiceHealth({
       supabase: {
         url: serverEnv('SUPABASE_URL'),
@@ -115,6 +124,7 @@ async function handleRequest(req: Request) {
         siteId: Deno.env.get('NETLIFY_SITE_ID') ?? '',
         token: Deno.env.get('NETLIFY_API_TOKEN') ?? '',
       },
+      providerId,
     });
 
     return json(result);

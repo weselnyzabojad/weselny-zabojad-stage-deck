@@ -7,9 +7,30 @@ export const HEALTH_PROVIDER_ORDER = [
   { id: 'sunset', name: 'sunrise-sunset.org' },
   { id: 'deck', name: 'Production deck' },
   { id: 'netlify', name: 'Netlify' },
+  { id: 'main_site', name: 'weselnyzabojad.pl' },
+  { id: 'landing_banner', name: 'weselnyzabojad.pl/extra/banner' },
+  { id: 'deck_site', name: 'deck.weselnyzabojad.pl' },
+  { id: 'francuski_dj', name: 'francuskidj.pl' },
+  { id: 'itunes', name: 'iTunes API' },
+  { id: 'musicbrainz', name: 'MusicBrainz API' },
 ];
 
 export const HEALTH_STATUSES = ['checking', 'ok', 'degraded', 'down'];
+
+function normalizeProvider({ id, name }, provider) {
+  const status = HEALTH_STATUSES.includes(provider?.status) ? provider.status : 'down';
+  return {
+    id,
+    name,
+    status: provider ? status : 'down',
+    httpStatus: Number.isFinite(provider?.httpStatus) ? provider.httpStatus : null,
+    statusText: typeof provider?.statusText === 'string' ? provider.statusText : null,
+    latencyMs: Number.isFinite(provider?.latencyMs) ? provider.latencyMs : null,
+    checkedAt: typeof provider?.checkedAt === 'string' ? provider.checkedAt : null,
+    detail: provider ? (provider.detail ?? null) : 'No result returned for this provider.',
+    url: typeof provider?.url === 'string' && provider.url ? provider.url : null,
+  };
+}
 
 export function normalizeHealthProviders(payload) {
   const byId = new Map(
@@ -18,19 +39,46 @@ export function normalizeHealthProviders(payload) {
       provider,
     ]),
   );
-  return HEALTH_PROVIDER_ORDER.map(({ id, name }) => {
-    const provider = byId.get(id);
-    const status = HEALTH_STATUSES.includes(provider?.status) ? provider.status : 'down';
-    return {
-      id,
-      name,
-      status: provider ? status : 'down',
-      httpStatus: Number.isFinite(provider?.httpStatus) ? provider.httpStatus : null,
-      latencyMs: Number.isFinite(provider?.latencyMs) ? provider.latencyMs : null,
-      checkedAt: typeof provider?.checkedAt === 'string' ? provider.checkedAt : null,
-      detail: provider ? (provider.detail ?? null) : 'No result returned for this provider.',
-    };
-  });
+  return HEALTH_PROVIDER_ORDER.map((meta) => normalizeProvider(meta, byId.get(meta.id)));
+}
+
+export function normalizeHealthProvider(provider) {
+  const meta = HEALTH_PROVIDER_ORDER.find((entry) => entry.id === provider?.id);
+  if (!meta) return null;
+  return normalizeProvider(meta, provider);
+}
+
+export function healthErrorProviders(message) {
+  return HEALTH_PROVIDER_ORDER.map(({ id, name }) => ({
+    id,
+    name,
+    status: 'down',
+    httpStatus: null,
+    statusText: null,
+    latencyMs: null,
+    checkedAt: null,
+    detail: message,
+    url: null,
+  }));
+}
+
+export function healthProviderFallback(id, message, checkedAt = null) {
+  const meta = HEALTH_PROVIDER_ORDER.find((entry) => entry.id === id);
+  if (!meta) return null;
+  return {
+    ...normalizeProvider(meta, null),
+    checkedAt,
+    detail: message,
+  };
+}
+
+export function mergeHealthProvider(providers, next) {
+  if (!next) return providers;
+  return providers.map((provider) =>
+    provider.id === next.id
+      ? { ...provider, ...next, url: next.url ?? provider.url }
+      : provider,
+  );
 }
 
 export function failingProviderIds(providers) {
@@ -50,16 +98,33 @@ export function newHealthFailures(previousFailing, providers) {
   );
 }
 
-export function healthErrorProviders(message) {
-  return HEALTH_PROVIDER_ORDER.map(({ id, name }) => ({
-    id,
-    name,
-    status: 'down',
-    httpStatus: null,
-    latencyMs: null,
-    checkedAt: null,
-    detail: message,
-  }));
+export function isHealthyProvider(provider) {
+  return provider?.status === 'ok';
+}
+
+export function healthPillTone(provider, checking = false) {
+  if (checking) return 'checking';
+  return isHealthyProvider(provider) ? 'ok' : 'down';
+}
+
+export function healthPillCode(provider, checking = false) {
+  if (checking) return '…';
+  if (Number.isFinite(provider?.httpStatus)) return String(provider.httpStatus);
+  return 'ERR';
+}
+
+export function healthOverallStatus(providers, checking = false) {
+  if (checking) return 'checking';
+  if ((providers ?? []).some((provider) => provider.status === 'down')) return 'down';
+  if ((providers ?? []).some((provider) => provider.status === 'degraded')) return 'degraded';
+  return 'ok';
+}
+
+export function healthSummaryLabel({ status, issues, offline = false, checking = false }) {
+  if (offline) return 'Health check offline';
+  if (checking || status === 'checking') return 'Checking services…';
+  if (status === 'ok') return 'All systems OK';
+  return `${issues} issue${issues === 1 ? '' : 's'}`;
 }
 
 export function healthStatusLabel(status) {

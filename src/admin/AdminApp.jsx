@@ -60,6 +60,13 @@ import {
   AdminPinDialog,
 } from './AdminDialogs';
 
+const ADMIN_TABS = [
+  ['overview', 'Overview'],
+  ['weddings', 'Weddings'],
+  ['presence', 'Live presence'],
+  ['audit', 'Audit log'],
+];
+
 function AdminSkeleton({ rows = 3 }) {
   return (
     <div className="space-y-2" aria-hidden="true">
@@ -791,9 +798,25 @@ function AdminAppContent() {
     [data, query, statusFilter, roleFilter],
   );
 
-  const changeTab = (id) => {
+  const changeTab = (id, { focusPanel = true } = {}) => {
     setTab(id);
-    window.setTimeout(() => document.getElementById('admin-tab-panel')?.focus(), 0);
+    if (focusPanel) {
+      window.setTimeout(() => document.getElementById('admin-tab-panel')?.focus(), 0);
+    }
+  };
+
+  const onTabKeyDown = (event, id) => {
+    const index = ADMIN_TABS.findIndex(([tabId]) => tabId === id);
+    let nextIndex = null;
+    if (event.key === 'ArrowRight') nextIndex = (index + 1) % ADMIN_TABS.length;
+    if (event.key === 'ArrowLeft') nextIndex = (index - 1 + ADMIN_TABS.length) % ADMIN_TABS.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = ADMIN_TABS.length - 1;
+    if (nextIndex == null) return;
+    event.preventDefault();
+    const nextId = ADMIN_TABS[nextIndex][0];
+    changeTab(nextId, { focusPanel: false });
+    window.setTimeout(() => document.getElementById(`admin-tab-${nextId}`)?.focus(), 0);
   };
 
   const copyRoomCode = async (roomCode) => {
@@ -901,30 +924,45 @@ function AdminAppContent() {
           </div>
         </div>
         <AdminHealthBar refreshKey={healthRefresh} />
-        <nav className="mx-auto mt-3 flex max-w-6xl gap-2 text-xs">
-          {[
-            ['overview', 'Overview'],
-            ['weddings', 'Weddings'],
-            ['presence', 'Live presence'],
-            ['audit', 'Audit log'],
-          ].map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => changeTab(id)}
-              className={`rounded border px-3 py-1.5 font-semibold ${
-                tab === id
-                  ? 'border-brand-strong bg-brand/40 text-ink'
-                  : 'border-line bg-raised text-muted'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <nav
+          aria-label="Admin sections"
+          className="mx-auto mt-2 max-w-6xl border-b border-[#E2E8F0] text-xs"
+        >
+          <div role="tablist" aria-label="Admin sections" className="flex gap-5">
+            {ADMIN_TABS.map(([id, label]) => {
+              const active = tab === id;
+              return (
+                <button
+                  key={id}
+                  id={`admin-tab-${id}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls="admin-tab-panel"
+                  tabIndex={active ? 0 : -1}
+                  onClick={() => changeTab(id)}
+                  onKeyDown={(event) => onTabKeyDown(event, id)}
+                  className={`-mb-px border-b-2 px-2 pb-2 pt-1.5 font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-strong ${
+                    active
+                      ? 'border-indigo-600 text-indigo-700'
+                      : 'border-transparent text-[#64748B] hover:bg-[#F1F5F9]/70 hover:text-[#1E293B]'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </nav>
       </header>
 
-      <main id="admin-tab-panel" tabIndex={-1} className="mx-auto max-w-6xl space-y-4 px-4 py-4">
+      <main
+        id="admin-tab-panel"
+        role="tabpanel"
+        aria-labelledby={`admin-tab-${tab}`}
+        tabIndex={-1}
+        className="mx-auto max-w-6xl space-y-4 px-4 py-4"
+      >
         {authError || error ? <ErrorLine>{authError || error}</ErrorLine> : null}
 
         {readOnly ? (

@@ -121,6 +121,12 @@ describe('issue #979 service health probes', () => {
         siteId: 'stage-deck',
         token: 'netlify-token',
       },
+      mainSite: { url: `${mock.url}/page` },
+      landingBanner: { url: `${mock.url}/page` },
+      deckSite: { url: `${mock.url}/page` },
+      francuskiDj: { url: `${mock.url}/page` },
+      itunes: { url: `${mock.url}/itunes/search` },
+      musicbrainz: { url: `${mock.url}/musicbrainz/ws/2/recording` },
     });
 
     expect(result.ok).toBe(false);
@@ -131,6 +137,12 @@ describe('issue #979 service health probes', () => {
       'sunset',
       'deck',
       'netlify',
+      'main_site',
+      'landing_banner',
+      'deck_site',
+      'francuski_dj',
+      'itunes',
+      'musicbrainz',
     ]);
     expect(result.providers.find((provider) => provider.id === 'supabase').status).toBe('ok');
     expect(JSON.stringify(result)).not.toContain(token);
@@ -202,11 +214,77 @@ describe('issue #979 service health probes', () => {
     expect(missing.detail).toContain('not configured');
   });
 
+  it('probes the new public pages with HEAD then GET fallback', async () => {
+    const calls = [];
+    const custom = createServiceHealth({
+      fetchImpl: async (_url, options) => {
+        calls.push(options.method);
+        return new Response('', {
+          status: options.method === 'HEAD' ? 405 : 200,
+          statusText: 'OK',
+        });
+      },
+    });
+    const result = await custom.probeWeselnyzabojad({ url: 'https://www.example.test/' });
+    expect(calls).toEqual(['HEAD', 'GET']);
+    expect(result).toMatchObject({
+      id: 'main_site',
+      name: 'weselnyzabojad.pl',
+      status: 'ok',
+      httpStatus: 200,
+      statusText: 'OK',
+      url: 'https://www.example.test/',
+    });
+  });
+
+  it('probes iTunes and MusicBrainz with minimal parameters and a UA', async () => {
+    const calls = [];
+    const custom = createServiceHealth({
+      fetchImpl: async (url, options) => {
+        calls.push({ url: String(url), options });
+        return new Response('{}', { status: 200 });
+      },
+    });
+    const itunes = await custom.probeItunes({
+      url: 'https://itunes.apple.com/search?term=test&entity=song&limit=1',
+    });
+    const musicbrainz = await custom.probeMusicbrainz({
+      url: 'https://musicbrainz.org/ws/2/recording?query=test&fmt=json&limit=1',
+    });
+
+    expect(itunes).toMatchObject({ id: 'itunes', name: 'iTunes API', status: 'ok' });
+    expect(musicbrainz).toMatchObject({
+      id: 'musicbrainz',
+      name: 'MusicBrainz API',
+      status: 'ok',
+    });
+    expect(calls[0].url).toContain('term=test');
+    expect(calls[0].options.headers.Accept).toBe('application/json');
+    expect(calls[1].options.headers['User-Agent']).toContain('WeselnyZabojadStageDeck');
+  });
+
+  it('runs one provider when asked and rejects unknown ids', async () => {
+    const one = await runServiceHealth({
+      health,
+      providerId: 'itunes',
+      itunes: { url: `${mock.url}/itunes/search` },
+    });
+    expect(one.providerId).toBe('itunes');
+    expect(one.providers.map((provider) => provider.id)).toEqual(['itunes']);
+    expect(one.providers[0].url).toBe(`${mock.url}/itunes/search`);
+
+    await expect(runServiceHealth({ health, providerId: 'bogus' })).rejects.toThrow(
+      'Unknown health provider',
+    );
+  });
+
   it('wires authorization, deployment and local mocks', () => {
     const fn = read('supabase/functions/service_health/index.ts');
     expect(fn).toContain('authorizeAdminSession');
     expect(fn).toContain("from('app_admins')");
     expect(fn).toContain('decodeJwt');
+    expect(fn).toContain('isHealthProvider');
+    expect(fn).toContain('providerId');
     expect(fn).not.toContain('@sentry');
 
     const compose = read('docker-compose.local.yml');

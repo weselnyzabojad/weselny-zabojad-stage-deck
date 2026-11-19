@@ -2,11 +2,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkServiceHealth } from './adminApi';
 import { captureHealthFailure } from '../lib/sentry';
 import {
-  HEALTH_STATUS_MARKERS,
-  HEALTH_TONE_CLASSES,
   healthErrorProviders,
+  healthOverallStatus,
+  healthPillCode,
+  healthPillTone,
+  healthProviderFallback,
   healthStatusLabel,
+  healthSummaryLabel,
+  mergeHealthProvider,
   newHealthFailures,
+  normalizeHealthProvider,
   normalizeHealthProviders,
 } from './adminHealth';
 import { startHealthPolling } from './adminHealthPolling';
@@ -15,31 +20,55 @@ import { ADMIN_BUTTON } from './adminUi';
 function formatCheckedAt(value) {
   if (!value) return '—';
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleTimeString();
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
 }
 
-function overallStatus(providers, checking) {
-  if (checking) return 'checking';
-  if (providers.some((provider) => provider.status === 'down')) return 'down';
-  if (providers.some((provider) => provider.status === 'degraded')) return 'degraded';
-  return 'ok';
+function pillTitle(provider) {
+  const latency = provider.latencyMs == null ? 'latency —' : `${provider.latencyMs} ms`;
+  return `${provider.name} · ${latency} · checked ${formatCheckedAt(provider.checkedAt)}`;
 }
 
-function overallLabel(status, issues) {
-  if (status === 'checking') return 'Checking services…';
-  if (status === 'ok') return 'All systems healthy';
-  return `${issues} service issue${issues === 1 ? '' : 's'}`;
+function pillClasses(tone, active) {
+  const base =
+    'inline-flex max-w-[190px] items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold transition';
+  const state =
+    tone === 'ok'
+      ? 'border-emerald-700 bg-emerald-950/50 text-emerald-200'
+      : tone === 'checking'
+        ? 'border-line bg-raised text-muted'
+        : 'border-red-700 bg-red-950/50 text-red-200';
+  return `${base} ${state} ${active ? 'ring-1 ring-white/50' : ''}`;
 }
 
-// Admin-only monitoring strip (issues #980, #996, #1013). Always shows every
-// monitored provider, refreshes every 60s while the tab is visible and keeps
-// the one-Sentry-event-per-failure-transition behaviour.
+function summaryClasses(tone) {
+  if (tone === 'ok') return 'border-emerald-700 bg-emerald-950/50 text-emerald-200';
+  if (tone === 'checking') return 'border-line bg-raised text-muted';
+  return 'border-red-700 bg-red-950/50 text-red-200';
+}
+
+// Admin-only monitoring strip (issues #980, #996, #1013, #1284). It always
+// shows every monitored provider, refreshes every 60s while the tab is visible
+// and keeps the one-Sentry-event-per-failure-transition behaviour.
 export default function AdminHealthBar({ refreshKey = 0 }) {
   const [providers, setProviders] = useState(() => normalizeHealthProviders(null));
   const [checking, setChecking] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [retryingId, setRetryingId] = useState(null);
   const previousFailing = useRef(new Set());
   const inFlight = useRef(false);
+  const providersRef = useRef(providers);
+
+  useEffect(() => {
+    providersRef.current = providers;
+  }, [providers]);
 
   const reportFailures = useCallback((nextProviders) => {
     const failures = newHealthFailures(previousFailing.current, nextProviders);
@@ -64,11 +93,13 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
     try {
       const payload = await checkServiceHealth();
       const next = normalizeHealthProviders(payload);
+      providersRef.current = next;
       reportFailures(next);
       setProviders(next);
     } catch (cause) {
       const message = String(cause?.message ?? 'Health check failed.');
       const next = healthErrorProviders(message);
+      providersRef.current = next;
       reportFailures(next);
       setProviders(next);
       setError(message);
@@ -77,6 +108,41 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
       setChecking(false);
     }
   }, [reportFailures]);
+
+  const retryProvider = useCallback(
+    async (providerId) => {
+      if (!providerId || checking || retryingId) return;
+      setRetryingId(providerId);
+      try {
+        const payload = await checkServiceHealth({ providerId });
+        const raw = Array.isArray(payload?.providers)
+          ? payload.providers.find((provider) => provider.id === providerId)
+          : null;
+        const next = normalizeHealthProvider(raw);
+        if (!next) throw new Error(`${providerId} returned no health result.`);
+        const merged = mergeHealthProvider(providersRef.current, next);
+        providersRef.current = merged;
+        reportFailures(merged);
+        setProviders(merged);
+        setError(null);
+      } catch (cause) {
+        const message = String(cause?.message ?? 'Health check failed.');
+        const fallback = healthProviderFallback(
+          providerId,
+          message,
+          new Date().toISOString(),
+        );
+        const merged = mergeHealthProvider(providersRef.current, fallback);
+        providersRef.current = merged;
+        reportFailures(merged);
+        setProviders(merged);
+        setError(message);
+      } finally {
+        setRetryingId(null);
+      }
+    },
+    [checking, reportFailures, retryingId],
+  );
 
   useEffect(() => {
     const initial = setTimeout(run, 0);
@@ -87,86 +153,204 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
     };
   }, [run, refreshKey]);
 
-  const status = overallStatus(providers, checking);
+  const status = healthOverallStatus(providers, checking);
   const issues = providers.filter((provider) => provider.status !== 'ok').length;
+  const summaryTone = error ? 'down' : status;
+  const summary = healthSummaryLabel({
+    status,
+    issues,
+    offline: Boolean(error),
+    checking,
+  });
+  const selectedProvider = providers.find((provider) => provider.id === selectedId) ?? null;
+
+  const toggleDetails = () => {
+    setOpen((current) => {
+      const next = !current;
+      if (next && !selectedId) {
+        const firstIssue = providers.find((provider) => provider.status !== 'ok');
+        setSelectedId(firstIssue?.id ?? providers[0]?.id ?? null);
+      }
+      return next;
+    });
+  };
+
+  const selectProvider = (providerId) => {
+    setSelectedId(providerId);
+    setOpen((current) => (selectedId === providerId ? !current : true));
+  };
 
   return (
-    <section
-      aria-label="Service monitoring"
-      className="mx-auto mt-2 max-w-6xl rounded-xl border border-line bg-raised p-2.5"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
+    <section aria-label="Service monitoring" className="mx-auto mt-2 max-w-6xl">
+      <div className="flex min-h-11 flex-wrap items-center gap-2 rounded-lg border border-line bg-card px-2 py-1.5">
+        <span
+          aria-live="polite"
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded border px-2 py-1 text-[10px] font-semibold ${summaryClasses(summaryTone)}`}
+        >
           <span
             aria-hidden="true"
-            className={`text-sm ${HEALTH_TONE_CLASSES[status].split(' ').find((cls) => cls.startsWith('text-')) ?? ''}`}
-          >
-            {HEALTH_STATUS_MARKERS[status]}
-          </span>
-          <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
-            Service monitoring
-          </h2>
-          <span
-            aria-live="polite"
-            className={`rounded border px-2 py-0.5 text-[10px] font-semibold ${HEALTH_TONE_CLASSES[status]}`}
-          >
-            {overallLabel(status, issues)}
-          </span>
-        </div>
-        <button
-          type="button"
-          onClick={run}
-          disabled={checking}
-          className={ADMIN_BUTTON.secondary}
+            className={`h-1.5 w-1.5 rounded-full ${
+              summaryTone === 'ok'
+                ? 'bg-emerald-400'
+                : summaryTone === 'checking'
+                  ? 'bg-slate-400'
+                  : 'animate-pulse bg-red-500 motion-reduce:animate-none'
+            }`}
+          />
+          {summary}
+        </span>
+
+        <ul
+          aria-label="Monitored services"
+          className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5"
         >
-          {checking ? 'Checking…' : 'Retry all'}
-        </button>
+          {providers.map((provider) => {
+            const providerChecking = checking || retryingId === provider.id;
+            const tone = healthPillTone(provider, providerChecking);
+            const code = healthPillCode(provider, providerChecking);
+            const active = open && selectedId === provider.id;
+            return (
+              <li key={provider.id}>
+                <button
+                  type="button"
+                  onClick={() => selectProvider(provider.id)}
+                  title={pillTitle(provider)}
+                  aria-label={`${provider.name}: ${healthStatusLabel(provider.status)} HTTP ${code}`}
+                  aria-expanded={active}
+                  aria-controls="admin-health-detail"
+                  className={pillClasses(tone, active)}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 shrink-0 rounded-full ${
+                      tone === 'ok'
+                        ? 'bg-emerald-400'
+                        : tone === 'checking'
+                          ? 'bg-slate-400'
+                          : 'animate-pulse bg-red-500 motion-reduce:animate-none'
+                    }`}
+                  />
+                  <span className="truncate">{provider.name}</span>
+                  <span
+                    className={`shrink-0 font-mono font-bold ${
+                      tone === 'down' ? 'text-red-300' : 'opacity-80'
+                    }`}
+                  >
+                    {code}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <div className="ml-auto flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            onClick={() => void run()}
+            disabled={checking}
+            className={`${ADMIN_BUTTON.secondary} px-2 py-0.5 text-[10px]`}
+          >
+            {checking ? 'Checking…' : 'Retry all'}
+          </button>
+          <button
+            type="button"
+            onClick={toggleDetails}
+            aria-expanded={open}
+            aria-controls="admin-health-detail"
+            aria-label={open ? 'Hide service details' : 'Show service details'}
+            className={`${ADMIN_BUTTON.ghost} px-1.5 py-0.5 text-xs`}
+          >
+            <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+          </button>
+        </div>
       </div>
 
       {error ? (
-        <p role="alert" className="mt-2 rounded border border-alert/50 bg-alert/15 px-2 py-1.5 text-[11px] text-alert-tint">
-          Health check failed: {error}
-        </p>
+        <div
+          role="alert"
+          className="mt-1.5 flex flex-wrap items-center justify-between gap-2 rounded border border-alert/50 bg-alert/15 px-2 py-1.5 text-[11px] text-alert-tint"
+        >
+          <span className="min-w-0 break-words">Health check failed: {error}</span>
+          <button
+            type="button"
+            onClick={() => void run()}
+            disabled={checking}
+            className={`${ADMIN_BUTTON.secondary} px-2 py-0.5 text-[10px]`}
+          >
+            Retry
+          </button>
+        </div>
       ) : null}
 
-      <ul className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
-        {providers.map((provider) => {
-          const providerStatus = checking ? 'checking' : provider.status;
-          return (
-            <li
-              key={provider.id}
-              className={`rounded-lg border p-2 ${HEALTH_TONE_CLASSES[providerStatus]}`}
+      {open && selectedProvider ? (
+        <div
+          id="admin-health-detail"
+          role="region"
+          aria-label={`${selectedProvider.name} service details`}
+          className="mt-1.5 rounded-lg border border-line bg-card p-3 text-xs"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <h3 className="font-heading text-sm font-bold text-ink">{selectedProvider.name}</h3>
+              {selectedProvider.url ? (
+                <a
+                  href={selectedProvider.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-0.5 block break-all font-mono text-[10px] text-brand-soft underline decoration-dotted"
+                >
+                  {selectedProvider.url}
+                </a>
+              ) : (
+                <span className="mt-0.5 block font-mono text-[10px] text-muted">
+                  No public URL
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => void retryProvider(selectedProvider.id)}
+              disabled={checking || Boolean(retryingId)}
+              className={`${ADMIN_BUTTON.secondary} px-2 py-0.5 text-[10px]`}
             >
-              <div className="flex items-start justify-between gap-2">
-                <span className="flex items-center gap-1.5 text-[11px] font-semibold">
-                  <span aria-hidden="true">{HEALTH_STATUS_MARKERS[providerStatus]}</span>
-                  {provider.name}
-                </span>
-                <span className="text-[9px] font-bold uppercase tracking-wide">
-                  {healthStatusLabel(providerStatus)}
-                </span>
-              </div>
-              <dl className="mt-1 grid grid-cols-3 gap-1 font-mono text-[9px] opacity-90">
-                <div>
-                  <dt className="uppercase tracking-wide opacity-70">HTTP</dt>
-                  <dd>{provider.httpStatus ?? '—'}</dd>
-                </div>
-                <div>
-                  <dt className="uppercase tracking-wide opacity-70">Latency</dt>
-                  <dd>{provider.latencyMs == null ? '—' : `${provider.latencyMs} ms`}</dd>
-                </div>
-                <div>
-                  <dt className="uppercase tracking-wide opacity-70">Checked</dt>
-                  <dd>{formatCheckedAt(provider.checkedAt)}</dd>
-                </div>
-              </dl>
-              {providerStatus !== 'checking' && provider.status !== 'ok' && provider.detail ? (
-                <p className="mt-1 break-words text-[10px] leading-snug">{provider.detail}</p>
-              ) : null}
-            </li>
-          );
-        })}
-      </ul>
+              {retryingId === selectedProvider.id ? 'Retrying…' : 'Retry'}
+            </button>
+          </div>
+
+          <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div>
+              <dt className="text-[9px] uppercase tracking-wide text-muted">HTTP</dt>
+              <dd className="font-mono text-[11px] font-semibold text-ink">
+                {selectedProvider.httpStatus ?? '—'}
+                {selectedProvider.statusText ? ` ${selectedProvider.statusText}` : ''}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[9px] uppercase tracking-wide text-muted">Latency</dt>
+              <dd className="font-mono text-[11px] font-semibold text-ink">
+                {selectedProvider.latencyMs == null ? '—' : `${selectedProvider.latencyMs} ms`}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[9px] uppercase tracking-wide text-muted">Checked</dt>
+              <dd className="font-mono text-[11px] font-semibold text-ink">
+                {formatCheckedAt(selectedProvider.checkedAt)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[9px] uppercase tracking-wide text-muted">State</dt>
+              <dd className="text-[11px] font-semibold text-ink">
+                {healthStatusLabel(selectedProvider.status)}
+              </dd>
+            </div>
+          </dl>
+
+          <p className="mt-2 break-words rounded border border-line bg-page/60 px-2 py-1.5 text-[10px] leading-snug text-muted">
+            {selectedProvider.detail || 'No error detail returned.'}
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }

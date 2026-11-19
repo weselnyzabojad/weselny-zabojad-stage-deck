@@ -15,7 +15,7 @@ describe('issue #1028 production deck health probe', () => {
     expect(health).toContain("id: 'deck'");
     expect(health).toContain("name: 'Production deck'");
     const bar = read('src/admin/AdminHealthBar.jsx');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
+    expect(bar).toContain('healthPillCode');
   });
 
   it('supports deck status overrides in the local service mock', () => {

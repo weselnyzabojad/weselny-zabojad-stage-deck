@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { HEALTH_PROVIDERS } from '../supabase/functions/_shared/serviceHealth.js';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
@@ -18,12 +19,14 @@ describe('issue #1029 Netlify site health probe', () => {
     expect(docs).toContain('NETLIFY_SITE_ID');
   });
 
-  it('adds the Netlify card and keeps six providers', () => {
+  it('adds the Netlify card and keeps 12 providers', () => {
     const health = read('src/admin/adminHealth.js');
     expect(health).toContain("id: 'netlify'");
     expect(health).toContain("name: 'Netlify'");
-    const stack = read('supabase/functions/_shared/serviceHealth.js');
-    expect(stack).toContain("'supabase', 'sentry', 'drive', 'sunset', 'deck', 'netlify'");
+    expect(HEALTH_PROVIDERS).toHaveLength(12);
+    expect(HEALTH_PROVIDERS).toContain('netlify');
+    expect(HEALTH_PROVIDERS).toContain('itunes');
+    expect(HEALTH_PROVIDERS).toContain('musicbrainz');
   });
 
   it('supports Bearer auth, deploy state and status overrides in the mock', () => {

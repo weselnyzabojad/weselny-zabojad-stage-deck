@@ -269,7 +269,7 @@ export async function challengeExistingFactor(code) {
   return verifyTotp(factor.id, code);
 }
 
-export async function checkServiceHealth() {
+export async function checkServiceHealth({ providerId = null } = {}) {
   const config = getAdminConfig();
   if (!config.configured) throw new Error('Supabase is not configured for this build.');
 
@@ -283,7 +283,7 @@ export async function checkServiceHealth() {
       apikey: config.anonKey,
       Authorization: `Bearer ${session.access_token}`,
     },
-    body: '{}',
+    body: JSON.stringify(providerId ? { providerId } : {}),
   });
 
   const data = await response.json().catch(() => ({}));

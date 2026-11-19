@@ -7,11 +7,11 @@ describe('issue #996 admin library layout', () => {
   it('renders the monitoring strip above the admin tabs', () => {
     const bar = read('src/admin/AdminHealthBar.jsx');
     expect(bar).toContain('Service monitoring');
-    expect(bar).toContain('All systems healthy');
+    expect(bar).toContain('healthSummaryLabel');
+    expect(bar).toContain('min-h-11');
     expect(bar).toContain('Retry all');
-    expect(bar).toContain('sm:grid-cols-2 xl:grid-cols-3');
     expect(bar).not.toContain('System status');
-    expect(bar).not.toContain('aria-expanded={open}');
+    expect(bar).toContain('aria-expanded={open}');
   });
 
   it('keeps search, status and role filters on one inline row', () => {

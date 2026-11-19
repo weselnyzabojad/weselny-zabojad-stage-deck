@@ -9,6 +9,9 @@
 //   GET /sunset                                  sunrise-sunset style payload
 //   GET /auth/v1/health                          local Supabase auth shape
 //   GET /rest/v1/                                local Supabase REST shape
+//   HEAD|GET /page                               generic HTML page for the new probes
+//   GET /itunes/search                           iTunes Search shape
+//   GET /musicbrainz/ws/2/recording              MusicBrainz shape
 //
 // Add `?status=500` to a provider route to simulate a failure in dev.
 
@@ -109,6 +112,39 @@ export function createServiceMock() {
         res,
         status,
         status === 200 ? { openapi: '3.0.0', info: { title: 'service-mock' } } : { error: 'mock rest failure' },
+      );
+      return;
+    }
+    if ((req.method === 'GET' || req.method === 'HEAD') && path === '/page') {
+      const status = overrideStatus(url, 200);
+      if (req.method === 'HEAD') {
+        res.writeHead(status, { 'Content-Type': 'text/html' });
+        res.end();
+        return;
+      }
+      res.writeHead(status, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(status === 200 ? '<!doctype html><title>Page</title>' : 'Page failure');
+      return;
+    }
+    if (req.method === 'GET' && path === '/itunes/search') {
+      const status = overrideStatus(url, 200);
+      sendJson(
+        res,
+        status,
+        status === 200
+          ? { resultCount: 1, results: [{ trackName: 'Test', artistName: 'Mock' }] }
+          : { error: 'mock iTunes failure' },
+      );
+      return;
+    }
+    if (req.method === 'GET' && path === '/musicbrainz/ws/2/recording') {
+      const status = overrideStatus(url, 200);
+      sendJson(
+        res,
+        status,
+        status === 200
+          ? { recordings: [{ title: 'Test', 'artist-credit': [{ name: 'Mock' }] }] }
+          : { error: 'mock MusicBrainz failure' },
       );
       return;
     }
