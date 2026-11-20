@@ -43,7 +43,11 @@ describe('landing-only release surface (issue #1152)', () => {
     const normalize = (html) =>
       html
         .replace(/\r\n/g, '\n')
-        .replace(/<script type="module" src="\/src\/(main|landing-main)\.jsx"><\/script>/, '');
+        .replace(/<script type="module" src="\/src\/(main|landing-main)\.jsx"><\/script>/, '')
+        .replace(
+          /\s*<!-- Wedding Monitor PWA[\s\S]*?<script src="\/status-bootstrap\.js" defer><\/script>/,
+          '',
+        );
     expect(normalize(landingHtml)).toBe(normalize(full));
   });
 
@@ -79,6 +83,11 @@ describe('landing-only release surface (issue #1152)', () => {
     expect(config).toContain('landingSurfacePlugin({ landing })');
     expect(config).toContain('!landing && VitePWA({');
     expect(config).toContain('parseReleaseSurface(process.env.RELEASE_SURFACE)');
+
+    // Issue #1288: landing-only artifacts must not ship the monitor PWA.
+    const plugin = read('scripts/vite-plugin-release-surface.mjs');
+    expect(plugin).toContain("rm(path.join(outDir, 'status')");
+    expect(plugin).toContain("rm(path.join(outDir, 'status-bootstrap.js')");
   });
 
   it('ships an artifact checker that rejects deck and PWA output', () => {

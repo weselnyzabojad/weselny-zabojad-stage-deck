@@ -38,7 +38,7 @@ describe('issue #1051 runtime and bundle performance', () => {
     const main = read('src/main.jsx');
     expect(main).toContain("const App = lazy(() => import('./App.jsx'))");
     expect(main).not.toContain("import App from './App.jsx'");
-    expect(main).toContain('{IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE ? null : <PwaUpdatePrompt />}');
+    expect(main).toContain('{IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE || IS_STATUS ? null : <PwaUpdatePrompt />}');
     expect(main).toContain("const WeddingRecapPage = lazy(() => import('./components/WeddingRecapPage.jsx'))");
     expect(main).toContain('Loading stage deck');
   });

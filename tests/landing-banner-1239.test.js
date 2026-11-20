@@ -45,7 +45,9 @@ describe('issue #1239 landing iframe route /extra/banner', () => {
   it('renders the landing at the banner route without the PWA prompt', () => {
     expect(main).toContain('isBannerPath(window.location.pathname');
     expect(main).toContain('IS_LANDING || IS_BANNER');
-    expect(main).toContain('IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE ? null');
+    expect(main).toContain(
+      'IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE || IS_STATUS ? null',
+    );
     expect(landingMain).toContain('isBannerPath(window.location.pathname');
     expect(landingMain).toContain('detectBannerLocale(');
   });

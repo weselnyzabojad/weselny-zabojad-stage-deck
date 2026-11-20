@@ -5,6 +5,7 @@ import './index.css'
 import AppErrorBoundary from './components/AppErrorBoundary.jsx'
 import PwaUpdatePrompt from './components/PwaUpdatePrompt.jsx'
 import { ADMIN_PATH, isAdminPath, isLegacyAdminPath } from './admin/adminUtils.js'
+import { isStatusPath } from './lib/monitorPwa.js'
 import { parseSongRequestPath } from './lib/songRequests.js'
 import {
   detectBannerLocale,
@@ -89,6 +90,10 @@ if (LEGACY_ADMIN) {
 }
 const IS_ADMIN =
   typeof window !== 'undefined' && isAdminPath(window.location.pathname)
+// `/status` is the installable Wedding Monitor PWA (issue #1288). It reuses the
+// owner auth/MFA gate and monitoring strip but never renders the admin tabs.
+const IS_STATUS =
+  typeof window !== 'undefined' && isStatusPath(window.location.pathname)
 const SONG_REQUEST_ROUTE =
   typeof window !== 'undefined'
     ? parseSongRequestPath(window.location.pathname, window.location.search, import.meta.env.BASE_URL)
@@ -153,7 +158,7 @@ createRoot(document.getElementById('root')).render(
         >
           <WeddingRecapPage token={RECAP_TOKEN} />
         </Suspense>
-      ) : IS_ADMIN ? (
+      ) : IS_ADMIN || IS_STATUS ? (
         <Suspense
           fallback={
             <div className="flex min-h-screen items-center justify-center bg-page text-sm text-muted">
@@ -161,7 +166,7 @@ createRoot(document.getElementById('root')).render(
             </div>
           }
         >
-          <AdminApp />
+          <AdminApp statusMode={IS_STATUS} />
         </Suspense>
       ) : (
         <Suspense
@@ -175,6 +180,6 @@ createRoot(document.getElementById('root')).render(
         </Suspense>
       )}
     </AppErrorBoundary>
-    {IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE ? null : <PwaUpdatePrompt />}
+    {IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE || IS_STATUS ? null : <PwaUpdatePrompt />}
   </StrictMode>,
 )

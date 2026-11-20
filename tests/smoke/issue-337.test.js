@@ -20,12 +20,12 @@ describe('issue #337 admin laptop-only access', () => {
 
   it('mounts admin content only after the viewport check', () => {
     const admin = read('src/admin/AdminApp.jsx');
-    const wrapper = admin.indexOf('export default function AdminApp()');
-    const content = admin.indexOf('function AdminAppContent()');
+    const wrapper = admin.indexOf('export default function AdminApp({ statusMode = false })');
+    const content = admin.indexOf('function AdminAppContent({ statusMode = false })');
     expect(wrapper).toBeGreaterThan(-1);
     expect(content).toBeGreaterThan(wrapper);
-    expect(admin).toContain('if (!supported) return <AdminViewportBlocked />');
-    expect(admin).toContain('return <AdminAppContent />');
+    expect(admin).toContain('if (!statusMode && !supported) return <AdminViewportBlocked />');
+    expect(admin).toContain('return <AdminAppContent statusMode={statusMode} />');
   });
 
   it('shows an accessible laptop-required fallback without admin controls', () => {

@@ -23,10 +23,10 @@ describe('issue #1285 admin underline tabs', () => {
     const app = read('src/admin/AdminApp.jsx');
     expect(app).toContain('role="tablist"');
     expect(app).toContain('role="tab"');
-    expect(app).toContain('role="tabpanel"');
+    expect(app).toContain("role={statusMode ? 'region' : 'tabpanel'}");
     expect(app).toContain('aria-selected={active}');
     expect(app).toContain('aria-controls="admin-tab-panel"');
-    expect(app).toContain('aria-labelledby={`admin-tab-${tab}`}');
+    expect(app).toContain('aria-labelledby={statusMode ? undefined : `admin-tab-${tab}`}');
     expect(app).toContain('id={`admin-tab-${id}`}');
     expect(app).toContain('tabIndex={active ? 0 : -1}');
   });
