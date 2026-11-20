@@ -11419,3 +11419,120 @@ photographer briefing notes stored only in live state.
 [#1308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1308),
 [#1309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1309),
 [#1310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1310).
+
+### 17.142 Doc authorization audits, canonical optional timeline and Venue Manager anchor approval (decision, 2026-11-20)
+
+Speech and game creation stay authorized by the wedding Doc, privacy stays
+app-owned, and the timeline becomes a canonical table where deleting a row is
+the only way to exclude an optional step. CAKE and KITCHEN hard anchors gain an
+explicit Venue Manager approval state.
+
+This section **supersedes the "keep Kitchen Services" clause of 17.141**. The
+privacy removal from 17.141 is confirmed as already delivered; #1317/#1319 are
+audits of the #972–#974 behaviour, not rewrites.
+
+**Features.**
+
+| # | Feature | Outcome | State |
+| --- | --- | --- | --- |
+| F1 | Speech mode | Doc is the only source; only `COMPLEX` authorizes speech Docs/folders | Shipped in #973/#974; audit and coverage |
+| F2 | Games | Each game's `YES` authorizes only that game's question Doc/folder | Shipped in #972/#974; audit and coverage |
+| F3 | Privacy | Encryption metadata is app config; no Doc read | Delivered by 17.141; audit and coverage |
+| F4 | Timeline | Canonical rows; every present row has a time; deletion excludes an optional step | New |
+| F5 | Hard anchors | `## KITCHEN` and `## CAKE` are authoritative; the Venue Manager approves CAKE/KITCHEN anchors | New |
+
+**Release target.** Every feature is required for the **first release**. No
+milestone and no `release-1.2` label.
+
+**Google Doc contract.**
+
+- `## SPEECHES` → `Speech mode: OFF | LIGHT | COMPLEX`. Case is normalized;
+  missing or invalid warns and leaves `speechMode` unset. Only `COMPLEX`
+  authorizes creation. The speech table stays documentation only.
+- `## GAMES` → `Requested: YES | NO | UNDECIDED`, per predefined game step.
+  Only the matching step with `YES` authorizes its creation. `NO`,
+  `UNDECIDED`, missing or invalid never authorize, and the legacy `games`
+  object is never a fallback. `enabled` keeps its runtime meaning and is not
+  the creation gate.
+- `## PRIVACY` is already absent from the template and parser (17.141). It must
+  stay absent; a Doc that contains it fails as an unknown marker. The cartridge
+  `privacy` block is filled from `PRIVACY_CONFIG` (`AES-GCM`, host-held key,
+  version 1); no Doc read is performed.
+- `## TIMELINE` ships one canonical row per step with a fixed `Step ID`.
+  Deleting a row excludes the step. Every remaining row must have a valid
+  `HH:MM`; a blank or invalid time is an import error. Duplicate IDs, unknown
+  IDs and fixed metadata that disagrees with the canonical definition are also
+  errors. `First guests arrival` and `Wedding closure` stay in
+  `## MANDATORY STEPS`.
+- Canonical steps: Ceremony, Vin d'honneur / Cocktail, Bread & Salt, Wishes,
+  Grand Entrance, Dinner, First Dance, Wedding Cake, Dance with Bride and
+  Groom, Supper I/II/III, Test Wiedzy, Test Zgodności, Speed Foto, Oczepiny,
+  Musical Set, Last Dance, Wedding Thank-You. Existing IDs are preserved,
+  including `step_speed_foto`; `step_04` is the unused fixed ID for Dinner. New
+  IDs are added only for missing steps. The frozen table lives in #1320.
+- The current `## DEMOGRAPHICS`, `## MUSICIANS` and `## CEREMONY SUBSTEPS`
+  sections keep parsing unchanged.
+- `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` rows attach by `Step ID`. A row
+  for a deleted step warns and is dropped; it never creates a step. The same
+  applies to `## OCZEPINY` and `## GAMES` entries whose step is absent.
+- `## KITCHEN` → `Courses` becomes
+  `Course ID | Name | Time | Service Mode | Dietary notes` and is the only
+  kitchen table. `## MANDATORY STEPS → Kitchen Services` is removed; first
+  arrival, closure and closure extension remain. This supersedes 17.141.
+- `## CAKE` → `Time` is the cake source of truth; `## KITCHEN` is the kitchen
+  source of truth. A differing TIMELINE time warns and the section value wins.
+
+**Approval contract.** Each CAKE and KITCHEN hard anchor starts `PENDING` and
+can be approved or rejected by the Venue Manager with actor, timestamp,
+approved value and optional reason. Approval is bound to the exact time: any
+Doc re-import or Venue Manager override that changes it resets to `PENDING`.
+The state is visible only in the Venue Manager view; it is shared, audited and
+replay-safe. Other roles always see the anchor normally, and approval never
+blocks publish or live use.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin | Doc preview, line-level errors, read-only speech mode, per-game `Requested`; no approval state |
+| Venue Manager | Kitchen/cake values plus pending/approved/rejected approval for CAKE and KITCHEN |
+| MC / DJ / Photographer / Speaker / Song Request | Render the parsed steps and anchors; deleted steps leave no card or placeholder; no approval state |
+| Couple template | Canonical timeline, delete-to-exclude instructions, no `## PRIVACY`, no Kitchen Services table |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; no milestone, no `release-1.2` label |
+| Speech mode | Doc-sourced enum; `COMPLEX` only; audit existing implementation |
+| Games | Per-step `Requested`; independent games; audit existing implementation |
+| Privacy | App-owned; already removed by 17.141; audit and reject old Docs |
+| Timeline | Canonical rows; deletion excludes; present row requires `HH:MM` |
+| Missing time | Import error, not a skipped row |
+| Satellite contradiction | Warn and drop; never synthesize a step |
+| Kitchen | `## KITCHEN` only; `Service Mode` added there; supersedes 17.141 |
+| Cake | `## CAKE` wins; divergence warning |
+| Approval | Venue Manager only; bound to the exact time; informational, not blocking |
+| Migration | Old Docs must be fixed before import |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1317](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1317) | Audit speech-mode Doc authorization and add regression coverage | - |
+| 2 | [#1319](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1319) | Audit per-game Doc authorization and add regression coverage | - |
+| 3 | [#1318](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1318) | Audit app-owned privacy after the 17.141 removal | - |
+| 4 | [#1320](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1320) | Canonical `## TIMELINE` table, required times, delete-to-exclude, parser and fixtures | - |
+| 5 | [#1321](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1321) | Tolerate deleted optional steps across cues, notes, subtasks, games and anchors | #1320 |
+| 6 | [#1322](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1322) | Consolidate `## KITCHEN` and `## CAKE`, add `Service Mode`, remove duplicate kitchen table, divergence warnings | #1320 |
+| 7 | [#1323](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1323) | Venue Manager CAKE/KITCHEN approval state, audit and reset on value change | #1322 |
+
+**Open questions.** None.
+
+**Tracking.** [#1317](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1317),
+[#1318](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1318),
+[#1319](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1319),
+[#1320](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1320),
+[#1321](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1321),
+[#1322](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1322),
+[#1323](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1323).
