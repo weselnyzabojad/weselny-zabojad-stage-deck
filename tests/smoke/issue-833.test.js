@@ -19,7 +19,7 @@ describe('issue #833 landing feature grid cards', () => {
 
     expect(landing).toContain('const FEATURE_ICON_PATHS = [');
     expect(landing.match(/^  'M/gm)).toHaveLength(7);
-    expect(landing).toContain('rounded-2xl border border-[#C5A059]/20 bg-white p-6 text-center');
+    expect(landing).toContain('flex h-full flex-col rounded-2xl p-6 text-center');
     expect(landing).toContain('hover:border-[#C5A059]/60');
     expect(landing).toContain('hover:-translate-y-0.5');
     expect(landing).toContain('transition-all duration-300');

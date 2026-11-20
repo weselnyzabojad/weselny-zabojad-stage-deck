@@ -920,6 +920,8 @@ const pl = {
   'landing.features.6.body': 'Tak proste jak aplikacja: Stage Deck instaluje się jednym gestem na smartfonie lub tablecie, bez niczego do pobrania.',
   'landing.features.7.title': 'Prośby o piosenki od gości',
   'landing.features.7.body': 'Nastrój na miarę: w zależności od wybranej formuły goście przesyłają swoje ulubione muzyczne życzenia bezpośrednio ze smartfona.',
+  'landing.features.7.badge': 'Opcja ekskluzywna',
+  'landing.features.7.condition': 'Wyłącznie w pakietach z naszymi zaufanymi partnerami',
   'landing.how.title': 'Jak to działa',
   'landing.how.1.title': 'Wspólnie tworzymy Wasz dzień',
   'landing.how.1.body': 'Wasz konferansjer porządkuje przebieg dnia, najważniejsze momenty i role każdej osoby w dedykowanej przestrzeni.',
