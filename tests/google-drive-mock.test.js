@@ -106,6 +106,22 @@ describe('dockerized Google Drive mock', () => {
     expect(moved.parents).toEqual([target.folder.id]);
   });
 
+  it('imports HTML as a native Google Doc', async () => {
+    const years = await connector.listChildren({ parentId: MOCK_ROOT_FOLDER_ID });
+    const months = await connector.listChildren({ parentId: years.files[0].id });
+    const month = months.files.find((file) => file.name === 'August');
+    const siblings = await connector.listChildren({ parentId: month.id });
+    const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_FOLDER);
+    const doc = await connector.createGoogleDocFromHtml({
+      parentId: wedding.id,
+      name: 'Wedding harmonogram - Anna & Piotr',
+      html: '<h1>Anna &amp; Piotr</h1><h2>TIMELINE</h2>',
+    });
+    expect(doc.mimeType).toBe(DRIVE_DOC_MIME_TYPE);
+    expect(doc.name).toBe('Wedding harmonogram - Anna & Piotr');
+    expect((await connector.readSource(doc.id)).text).toContain('<h1>Anna &amp; Piotr</h1>');
+  });
+
   it('rejects unauthenticated and unsupported Drive queries', async () => {
     const unauthenticated = await fetch(`${mock.url}/drive/v3/files`);
     expect(unauthenticated.status).toBe(401);

@@ -47,6 +47,9 @@ import {
   sanitizeShareMessage,
 } from '../_shared/driveSharing.js';
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
+import { templateReadiness } from '../_shared/templateReadiness.js';
+import { CLIENT_TEMPLATE_MARKDOWN } from '../_shared/clientTemplateSource.js';
+import { renderClientTemplateHtml } from '../../../src/lib/clientTemplate.js';
 
 const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
 
@@ -183,6 +186,17 @@ async function requireWritableWedding(admin: any, weddingId: string) {
   return { wedding: data };
 }
 
+function clientTemplateFilename({ brideName, groomName, weddingId }: Record<string, string>) {
+  const clean = (value: string) =>
+    String(value ?? '')
+      .replace(/[\\/:*?"<>|]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  return `Wedding harmonogram - ${clean(brideName)} & ${clean(groomName)} (${clean(weddingId)})`
+    .slice(0, 180)
+    .trim();
+}
+
 function expectedGameQuestionFolder(source: any, folderId: string | null) {
   if (!folderId) return false;
   return Array.isArray(source?.file?.parents) && source.file.parents.includes(folderId);
@@ -246,6 +260,7 @@ async function handleRequest(req: Request) {
         'list_permissions',
         'share_file',
         'revoke_permission',
+        'create_wedding_template_doc',
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
@@ -259,6 +274,7 @@ async function handleRequest(req: Request) {
         'create_game_question_doc',
         'rewrite_game_question_doc_columns',
         'parse_game_question_doc',
+        'create_wedding_template_doc',
       ].includes(action)
     ) {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
@@ -307,6 +323,140 @@ async function handleRequest(req: Request) {
         checkedAt: new Date().toISOString(),
         files: result.files,
         nextPageToken: result.nextPageToken,
+      });
+    }
+
+    if (action === 'create_wedding_template_doc') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data: wedding, error: weddingError } = await admin
+        .from('weddings')
+        .select(
+          'wedding_id, bride_name, groom_name, venue_name, venue_address, template_doc_id, archived_at',
+        )
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (weddingError) throw weddingError;
+      if (!wedding) return json({ error: 'Wedding not found.' }, 404);
+      if (wedding.archived_at) {
+        return json({ error: 'Archived weddings are read-only.', code: 'wedding_archived' }, 409);
+      }
+
+      const readiness = templateReadiness(wedding);
+      if (!readiness.ready) {
+        return json(
+          {
+            error: 'Complete the client template prerequisites first.',
+            code: 'template_prerequisites_missing',
+            missing: readiness.missing,
+          },
+          409,
+        );
+      }
+      if (wedding.template_doc_id) {
+        return json(
+          {
+            error: 'The client template already exists for this wedding.',
+            code: 'template_doc_exists',
+            fileId: wedding.template_doc_id,
+          },
+          409,
+        );
+      }
+
+      const weddingFolderId = await resolveWeddingFolderId(admin, weddingId, body?.weddingFolderId);
+      if (!weddingFolderId) {
+        return json(
+          {
+            error: 'The wedding Drive folder could not be resolved.',
+            code: 'missing_wedding_folder',
+          },
+          409,
+        );
+      }
+
+      const name = clientTemplateFilename({
+        brideName: wedding.bride_name,
+        groomName: wedding.groom_name,
+        weddingId,
+      });
+      let existing;
+      try {
+        existing = await connector.listChildren({
+          parentId: weddingFolderId,
+          name,
+          mimeType: DRIVE_DOC_MIME_TYPE,
+        });
+      } catch (error: any) {
+        if (typeof error?.code === 'string' && error.code.startsWith('drive_')) {
+          await writeShareAudit(admin, allowlisted, 'create_wedding_template_doc_failed', weddingFolderId, {
+            weddingId,
+            error: error.message,
+            code: error.code,
+          });
+          return json({ error: error.message, code: error.code }, driveErrorHttpStatus(error.code));
+        }
+        throw error;
+      }
+      if (existing.files[0]) {
+        return json(
+          {
+            error: 'A client template with this name already exists in the wedding folder.',
+            code: 'template_doc_exists',
+            fileId: existing.files[0].id,
+          },
+          409,
+        );
+      }
+
+      let file;
+      try {
+        file = await connector.createGoogleDocFromHtml({
+          parentId: weddingFolderId,
+          name,
+          html: renderClientTemplateHtml({
+            brideName: wedding.bride_name,
+            groomName: wedding.groom_name,
+            venueName: wedding.venue_name,
+            venueAddress: wedding.venue_address,
+            template: CLIENT_TEMPLATE_MARKDOWN,
+          }),
+        });
+      } catch (error: any) {
+        if (typeof error?.code === 'string' && error.code.startsWith('drive_')) {
+          await writeShareAudit(admin, allowlisted, 'create_wedding_template_doc_failed', weddingFolderId, {
+            weddingId,
+            error: error.message,
+            code: error.code,
+          });
+          return json({ error: error.message, code: error.code }, driveErrorHttpStatus(error.code));
+        }
+        throw error;
+      }
+
+      const { error: updateError } = await admin
+        .from('weddings')
+        .update({ template_doc_id: file.id })
+        .eq('wedding_id', weddingId);
+      if (updateError) throw updateError;
+
+      await writeShareAudit(admin, allowlisted, 'create_wedding_template_doc', file.id, {
+        weddingId,
+        name,
+        folderId: weddingFolderId,
+      });
+      return json({
+        ok: true,
+        file: {
+          id: file.id,
+          name: file.name ?? name,
+          url:
+            file.webViewLink ??
+            (file.id ? `https://docs.google.com/document/d/${file.id}/edit` : null),
+          folderId: weddingFolderId,
+        },
       });
     }
 

@@ -415,7 +415,7 @@ describe('issue #974 per-game Doc-authorized Drive creation', () => {
         api.indexOf('const requestedFileId'),
       ),
       api.slice(api.indexOf("action === 'children'"), api.indexOf("action === 'status'")),
-      api.slice(api.indexOf("action === 'list'"), api.indexOf("action === 'create_speech_doc'")),
+      api.slice(api.indexOf("action === 'list'"), api.indexOf("action === 'create_wedding_template_doc'")),
     ];
     for (const section of sections) {
       expect(section).not.toContain('ensureFolderPath');
