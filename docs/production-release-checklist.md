@@ -192,4 +192,82 @@ Verify names only; never paste values into GitHub.
 | Smoke test owner | |
 | Date | |
 
+## 10. Public under-construction release addendum (2026-11-20)
+
+Status: **Phase 1 prepared only — no production change.** This addendum covers
+the reduced public surface (`RELEASE_SURFACE=public`) and the season statistics
+iframe. The full landing and `/extra/banner` are intentionally not part of it.
+
+### Scope
+
+| Item | Value |
+| --- | --- |
+| Release surface | `RELEASE_SURFACE=public` |
+| Public routes | `/`, `/index.html`, `/embed/season-stats`, `/embed/season-stats/` |
+| Everything else | Branded 404 (`/404.html`, HTTP 404) |
+| Season iframe | `https://deck.weselnyzabojad.pl/embed/season-stats?lang=pl\|fr\|en` |
+| Heights | 240 px mobile / 160 px desktop |
+| Secrets | No new secret; no server secret behind `VITE_*` |
+
+### Netlify state after Phase 1
+
+| Item | Value |
+| --- | --- |
+| Production deploy | `6af60cd14998c3e401f8923e` / `b74bfe8` (unchanged) |
+| Build base directory | **Repo root** (was the obsolete `universal-wedding-stage-deck` nested path) |
+| Framework detection | `vite` (was `hydrogen`) |
+| Verified branch build | `6b008839ac91dba0104cfc5e` — `development`, ready, 3 header rules |
+| Access control | SSO team login still required for all projects; site still 401 |
+| `RELEASE_SURFACE` | **Not set yet**; set to `public` in the production context only at Phase 3 |
+| Existing vars | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=production` confirmed |
+
+### Database chain (requires separate GO)
+
+Apply in order:
+
+1. `202611160003_wedding_recaps`
+2. `202611180001_wedding_venue_location`
+3. `202611180002_season_event_facts`
+4. `202611180003_season_plan_rpc`
+
+Skip `202611180004_season_compatibility` for this release. Migration 1 is
+required because the season facts table references `wedding_recaps`. No Edge
+Function deployment is required for the embed.
+
+Production database baseline after rollback: last migration
+`20261113221320 | fixed_search_path`; `weddings = 0`; no PITR and no backups
+available. Apply only after explicit GO and re-check the anon RPC returns 200.
+
+### Deployment sequence (after GO)
+
+1. Set `RELEASE_SURFACE=public` in the production context only.
+2. Merge the release PR `development → master`; keep SSO on.
+3. Confirm the production deploy uses the public surface:
+   - `/` → under-construction page
+   - `/embed/season-stats` → widget
+   - `/extra/banner`, `/join`, `/admin`, `/recap/*`, `/status` → 404
+   - no deck/admin/PWA chunks or PWA artifacts
+4. Verify anonymously, then open production:
+   - SSO off for all projects, then SSO on for non-production projects only.
+5. Send only the season iframe snippet to the webmaster; do not send
+   `/extra/banner` until the special landing design is released.
+
+### Rollback
+
+| Layer | Action |
+| --- | --- |
+| Netlify | Roll back to deploy `6af60cd14998c3e401f8923e`; remove `RELEASE_SURFACE` |
+| Access | Restore SSO for all projects |
+| Database | No automatic rollback; use the inverse schema script prepared for the four migrations after impact review |
+| Webmaster | Tell the webmaster to remove the season iframe if it was already inserted |
+
+### Approval gates
+
+| Gate | Owner GO |
+| --- | --- |
+| Apply the four migrations | Pending |
+| Set `RELEASE_SURFACE=public` and deploy | Pending |
+| Remove the SSO gate | Pending |
+| Send the webmaster season snippet | Pending |
+
 **Do not execute sections 5–6 until every gate in section 1 is closed and the owner records GO here.**
