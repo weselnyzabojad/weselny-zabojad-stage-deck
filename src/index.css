@@ -44,6 +44,66 @@
   --color-tone-negative-bg: var(--tone-negative-bg);
   --color-tone-negative-border: var(--tone-negative-border);
   --color-tone-negative-text: var(--tone-negative-text);
+
+  /* Landing-aligned monitoring surface tokens (issue #1287). */
+  --color-monitor-surface: var(--monitor-surface);
+  --color-monitor-surface-muted: var(--monitor-surface-muted);
+  --color-monitor-border: var(--monitor-border);
+  --color-monitor-ink: var(--monitor-ink);
+  --color-monitor-muted: var(--monitor-muted);
+  --color-monitor-accent: var(--monitor-accent);
+  --color-monitor-accent-ink: var(--monitor-accent-ink);
+  --color-monitor-accent-soft: var(--monitor-accent-soft);
+  --color-monitor-healthy-bg: var(--monitor-healthy-bg);
+  --color-monitor-healthy-border: var(--monitor-healthy-border);
+  --color-monitor-healthy-text: var(--monitor-healthy-text);
+  --color-monitor-healthy-dot: var(--monitor-healthy-dot);
+  --color-monitor-error-bg: var(--monitor-error-bg);
+  --color-monitor-error-border: var(--monitor-error-border);
+  --color-monitor-error-text: var(--monitor-error-text);
+  --color-monitor-error-dot: var(--monitor-error-dot);
+  --color-monitor-warning-bg: var(--monitor-warning-bg);
+  --color-monitor-warning-border: var(--monitor-warning-border);
+  --color-monitor-warning-text: var(--monitor-warning-text);
+  --color-monitor-warning-dot: var(--monitor-warning-dot);
+  --color-monitor-checking-bg: var(--monitor-checking-bg);
+  --color-monitor-checking-border: var(--monitor-checking-border);
+  --color-monitor-checking-text: var(--monitor-checking-text);
+  --color-monitor-checking-dot: var(--monitor-checking-dot);
+}
+
+/* The monitoring strip, diagnostic drawer and monitor PWA always use the
+   landing page's warm editorial palette. These values are intentionally
+   independent of the day/night deck theme. */
+:root {
+  --monitor-surface: #ffffff;
+  --monitor-surface-muted: #faf8f5;
+  --monitor-border: #eae2d3;
+  --monitor-ink: #292524;
+  --monitor-muted: #78716c;
+  --monitor-accent: #b89550;
+  --monitor-accent-ink: #7a5c22;
+  --monitor-accent-soft: #f7f2e7;
+
+  --monitor-healthy-bg: #eff6ee;
+  --monitor-healthy-border: #c7dcc1;
+  --monitor-healthy-text: #2f6b3a;
+  --monitor-healthy-dot: #3f7d4a;
+
+  --monitor-error-bg: #fbeeec;
+  --monitor-error-border: #e7c3bc;
+  --monitor-error-text: #9b2c22;
+  --monitor-error-dot: #b23a2e;
+
+  --monitor-warning-bg: #fbf3e2;
+  --monitor-warning-border: #e6d3a8;
+  --monitor-warning-text: #855a13;
+  --monitor-warning-dot: #a8751c;
+
+  --monitor-checking-bg: #f5f1ea;
+  --monitor-checking-border: #ddd3c2;
+  --monitor-checking-text: #6b625a;
+  --monitor-checking-dot: #8a7f73;
 }
 
 :root,

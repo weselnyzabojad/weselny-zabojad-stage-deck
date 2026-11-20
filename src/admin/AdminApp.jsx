@@ -926,7 +926,7 @@ function AdminAppContent() {
         <AdminHealthBar refreshKey={healthRefresh} />
         <nav
           aria-label="Admin sections"
-          className="mx-auto mt-2 max-w-6xl border-b border-[#E2E8F0] text-xs"
+          className="mx-auto mt-2 max-w-6xl border-b border-monitor-border text-xs"
         >
           <div role="tablist" aria-label="Admin sections" className="flex gap-5">
             {ADMIN_TABS.map(([id, label]) => {
@@ -944,8 +944,8 @@ function AdminAppContent() {
                   onKeyDown={(event) => onTabKeyDown(event, id)}
                   className={`-mb-px border-b-2 px-2 pb-2 pt-1.5 font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-strong ${
                     active
-                      ? 'border-indigo-600 text-indigo-700'
-                      : 'border-transparent text-[#64748B] hover:bg-[#F1F5F9]/70 hover:text-[#1E293B]'
+                      ? 'border-monitor-accent text-monitor-accent-ink'
+                      : 'border-transparent text-monitor-muted hover:bg-monitor-surface-muted hover:text-monitor-ink'
                   }`}
                 >
                   {label}

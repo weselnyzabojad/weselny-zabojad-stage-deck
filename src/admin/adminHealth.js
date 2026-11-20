@@ -140,11 +140,20 @@ export function healthStatusLabel(status) {
   }
 }
 
+// Monitoring surfaces use the landing-aligned tokens from src/index.css
+// (issue #1287) instead of the generic Tailwind palette.
 export const HEALTH_TONE_CLASSES = {
-  checking: 'border-line bg-raised text-muted',
-  ok: 'border-emerald-700 bg-emerald-950/50 text-emerald-200',
-  degraded: 'border-amber-700 bg-amber-950/50 text-amber-200',
-  down: 'border-red-700 bg-red-950/50 text-red-200',
+  checking: 'border-monitor-checking-border bg-monitor-checking-bg text-monitor-checking-text',
+  ok: 'border-monitor-healthy-border bg-monitor-healthy-bg text-monitor-healthy-text',
+  degraded: 'border-monitor-warning-border bg-monitor-warning-bg text-monitor-warning-text',
+  down: 'border-monitor-error-border bg-monitor-error-bg text-monitor-error-text',
+};
+
+export const HEALTH_DOT_CLASSES = {
+  checking: 'bg-monitor-checking-dot',
+  ok: 'bg-monitor-healthy-dot',
+  degraded: 'bg-monitor-warning-dot',
+  down: 'animate-pulse bg-monitor-error-dot motion-reduce:animate-none',
 };
 
 export const HEALTH_STATUS_MARKERS = {
