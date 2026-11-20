@@ -25,6 +25,7 @@ import {
   cascadeFlexibleSteps,
   settingsFromSteps,
 } from '../lib/mandatorySteps.js';
+import { SERVICE_PACKAGES, isServicePackage } from '../lib/servicePackage.js';
 import { venueChangeDecision } from '../lib/venueChangeConfirmation.js';
 import {
   FORBIDDEN_FX,
@@ -139,8 +140,11 @@ export default function VenueManagerView({
   mandatoryOverride = null,
   venuePolicies = null,
   onUpdateVenuePolicies = null,
+  servicePackage = null,
+  onSaveServicePackage = null,
 }) {
   const { t } = useI18n();
+  const currentPackage = servicePackage ?? wedding?.servicePackage ?? '';
   useReadReceipt({
     stepId: receiptTarget?.stepId,
     revision: receiptTarget?.revision,
@@ -158,6 +162,17 @@ export default function VenueManagerView({
   const [policySaved, setPolicySaved] = useState('');
   const [previousPolicyInput, setPreviousPolicyInput] = useState(venuePolicies);
   const [previousInputs, setPreviousInputs] = useState([wedding, mandatoryOverride]);
+  const [packageValue, setPackageValue] = useState(currentPackage);
+  const [previousPackage, setPreviousPackage] = useState(currentPackage);
+  const [packageStatus, setPackageStatus] = useState('');
+  const [packageError, setPackageError] = useState('');
+  const [packageBusy, setPackageBusy] = useState(false);
+
+  if (currentPackage !== previousPackage) {
+    setPreviousPackage(currentPackage);
+    setPackageValue(currentPackage);
+    setPackageError('');
+  }
 
   if (venuePolicies !== previousPolicyInput) {
     setPreviousPolicyInput(venuePolicies);
@@ -203,6 +218,26 @@ export default function VenueManagerView({
     );
     setSaved(t('venueManager.saved'));
     window.setTimeout(() => setSaved(''), 1500);
+  };
+
+  const savePackage = async () => {
+    if (!isServicePackage(packageValue)) {
+      setPackageError(t('venueManager.package.error.invalid'));
+      return;
+    }
+    setPackageBusy(true);
+    setPackageStatus('');
+    setPackageError('');
+    try {
+      const saved = await onSaveServicePackage?.(packageValue);
+      if (typeof saved === 'string' && saved) setPackageValue(saved);
+      setPackageStatus(t('venueManager.package.saved'));
+      window.setTimeout(() => setPackageStatus(''), 1500);
+    } catch (error) {
+      setPackageError(error?.message || t('venueManager.package.error.save'));
+    } finally {
+      setPackageBusy(false);
+    }
   };
 
   const courses = Array.isArray(settings.kitchenServices)
@@ -352,6 +387,52 @@ export default function VenueManagerView({
         entryBodies={ceremonySubStepBodies(timeline, 'venue')}
         flash={flash}
       />
+
+      <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
+        <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
+          {t('venueManager.package.title')}
+        </h2>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+          <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
+            {t('venueManager.package.current')}
+            <select
+              value={packageValue}
+              onChange={(event) => {
+                setPackageValue(event.target.value);
+                setPackageError('');
+                setPackageStatus('');
+              }}
+              disabled={packageBusy}
+              className="rounded-lg border border-line/70 bg-card px-2.5 py-2 text-xs text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20 disabled:opacity-50"
+            >
+              {SERVICE_PACKAGES.map((value) => (
+                <option key={value} value={value}>
+                  {t(`venueManager.package.${value}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={savePackage}
+            disabled={packageBusy || !isServicePackage(packageValue)}
+            className="min-h-10 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {t('venueManager.package.save')}
+          </button>
+        </div>
+
+        <p className="mt-2 text-[10px] text-muted">
+          {t('venueManager.package.ownerNote')}
+          {packageStatus ? (
+            <span role="status" className="ml-2 text-emerald-300">{packageStatus}</span>
+          ) : null}
+          {packageError ? (
+            <span role="alert" className="ml-2 text-alert">{packageError}</span>
+          ) : null}
+        </p>
+      </section>
 
       <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">

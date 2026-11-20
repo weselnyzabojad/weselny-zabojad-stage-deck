@@ -84,6 +84,18 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data;
   }
 
+  // Venue Manager package correction (issue #1309). The RPC derives the
+  // wedding and role from the signed token and updates only the cartridge
+  // value; it never re-provisions roles, PINs, sessions or VIP identities.
+  async function setServicePackage(servicePackage) {
+    if (!servicePackage) throw new Error('Service package is required.');
+    const { data, error } = await supabase.rpc('stage_deck_set_service_package', {
+      p_service_package: servicePackage,
+    });
+    if (error) throw new Error(describeError(error));
+    return data;
+  }
+
   // Read receipts (issue #1159). The RPC derives wedding/role/device from the
   // signed role token, so the ack payload only names the step and revision.
   async function ackStepReceipt({ stepId, revision } = {}) {
@@ -336,6 +348,7 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     fetchLatest,
     fetchWedding,
     fetchServerTime,
+    setServicePackage,
     touchPresence,
     ackStepReceipt,
     fetchStepReceipts,
