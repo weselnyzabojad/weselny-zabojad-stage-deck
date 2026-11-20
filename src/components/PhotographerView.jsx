@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ChildrenExpectedBadge from './ChildrenExpectedBadge';
 import CakeCard from './CakeCard';
 import { ceremonySubStepBodies } from './ceremonySubStepBodies';
@@ -23,6 +24,7 @@ import LanguageToggle from './LanguageToggle';
 import ThemeToggle from './ThemeToggle';
 import OpenOnPhoneButton from './OpenOnPhoneButton';
 import SkipLink from './SkipLink';
+import { MAX_PHOTOGRAPHER_NOTES_LENGTH } from '../lib/liveStageState.js';
 import {
   clockToEventDate,
   formatDuration,
@@ -254,8 +256,46 @@ export default function PhotographerView({
   cakeProtocol = null,
   cakeServiceMode = 'KITCHEN_RETURN',
   scheduleBanner = null,
+  photographerNotes = '',
+  onSavePhotographerNotes = null,
 }) {
   const { t } = useI18n();
+  const [notesDraft, setNotesDraft] = useState(photographerNotes);
+  const [previousNotesProp, setPreviousNotesProp] = useState(photographerNotes);
+  const [lastSavedNotes, setLastSavedNotes] = useState(photographerNotes);
+  const [notesStatus, setNotesStatus] = useState('');
+  const [notesError, setNotesError] = useState('');
+  const [notesBusy, setNotesBusy] = useState(false);
+
+  if (photographerNotes !== previousNotesProp) {
+    const wasClean = notesDraft === lastSavedNotes;
+    setPreviousNotesProp(photographerNotes);
+    setLastSavedNotes(photographerNotes);
+    if (wasClean) setNotesDraft(photographerNotes);
+  }
+
+  const saveNotes = async () => {
+    const value = notesDraft.trim();
+    if (value.length > MAX_PHOTOGRAPHER_NOTES_LENGTH) {
+      setNotesError(t('photo.briefing.error.tooLong'));
+      return;
+    }
+    setNotesBusy(true);
+    setNotesStatus('');
+    setNotesError('');
+    try {
+      const saved = await onSavePhotographerNotes?.(value);
+      const next = typeof saved === 'string' ? saved : value;
+      setNotesDraft(next);
+      setLastSavedNotes(next);
+      setNotesStatus(t('photo.briefing.saved'));
+      window.setTimeout(() => setNotesStatus(''), 1500);
+    } catch (error) {
+      setNotesError(error?.message || t('photo.briefing.error.save'));
+    } finally {
+      setNotesBusy(false);
+    }
+  };
   useReadReceipt({
     stepId: receiptTarget?.stepId,
     revision: receiptTarget?.revision,
@@ -370,7 +410,50 @@ export default function PhotographerView({
 
   const isCompact = useCompact();
 
-  // Compact (phone) read-only content: step timeline and light windows.
+  const briefingNotesCard = (
+    <Card title={t('photo.briefing.title')} icon="📝">
+      <label className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-muted">
+        {t('photo.briefing.label')}
+        <textarea
+          value={notesDraft}
+          onChange={(event) => {
+            setNotesDraft(event.target.value);
+            setNotesError('');
+            setNotesStatus('');
+          }}
+          maxLength={MAX_PHOTOGRAPHER_NOTES_LENGTH}
+          rows={4}
+          disabled={notesBusy}
+          placeholder={t('photo.briefing.placeholder')}
+          className="min-h-20 w-full resize-y rounded-lg border border-line/70 bg-page px-2.5 py-2 text-xs normal-case tracking-normal text-ink outline-none transition focus:border-brand-strong focus:ring-2 focus:ring-brand-strong/20 disabled:opacity-50"
+        />
+      </label>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={saveNotes}
+          disabled={notesBusy || notesDraft === lastSavedNotes}
+          className="min-h-10 rounded-lg border border-brand-strong bg-brand px-3 py-2 text-xs font-bold text-on-accent transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {t('photo.briefing.save')}
+        </button>
+        <span className="text-[10px] text-muted">
+          {t('photo.briefing.counter', {
+            used: notesDraft.length,
+            max: MAX_PHOTOGRAPHER_NOTES_LENGTH,
+          })}
+        </span>
+        {notesStatus ? (
+          <span role="status" className="text-[11px] text-emerald-300">{notesStatus}</span>
+        ) : null}
+        {notesError ? (
+          <span role="alert" className="text-[11px] text-alert">{notesError}</span>
+        ) : null}
+      </div>
+    </Card>
+  );
+
+  // Compact (phone) content: step timeline, briefing note and light windows.
   const compactContent = (
     <div id="main-content" tabIndex={-1} className="space-y-4">
       <SkipLink />
@@ -382,6 +465,8 @@ export default function PhotographerView({
         photographerAvailable={resolvePhotographerAvailable(wedding)}
         flash={flash}
       />
+
+      {briefingNotesCard}
 
       {visibility.sunset && !miniSessionDone ? (
         <Card title={t('photo.lightWindows')} icon="🌅">
@@ -487,6 +572,8 @@ export default function PhotographerView({
             photographerAvailable={resolvePhotographerAvailable(wedding)}
             flash={flash}
           />
+
+          {briefingNotesCard}
 
           {visibility.sunset && !miniSessionDone ? (
             <Card
@@ -594,7 +681,7 @@ export default function PhotographerView({
       </main>
 
       <footer className="border-t border-line bg-card px-4 py-2 text-center font-mono text-[11px] text-muted">
-        Read-only media view · step timeline, shot plan and light windows
+        {t('photo.footer')}
       </footer>
     </div>
   );

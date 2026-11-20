@@ -857,6 +857,14 @@
         "active_speech_id": {
           "$ref": "#/$defs/nullableId"
         },
+        "photographer_notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500,
+          "description": "Operational Oczepiny briefing note edited by media roles at runtime. Never part of the published cartridge."
+        },
         "game_results": {
           "type": "object",
           "description": "Runtime game results keyed by game id. Questions and definitions stay in the cartridge.",

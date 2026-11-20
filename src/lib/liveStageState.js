@@ -11,6 +11,12 @@ import { normalizeVenuePolicies } from './venuePolicies.js';
 
 const STORAGE_VERSION = 1;
 
+export const MAX_PHOTOGRAPHER_NOTES_LENGTH = 500;
+
+export function normalizePhotographerNotes(raw) {
+  return typeof raw === 'string' ? raw.trim().slice(0, MAX_PHOTOGRAPHER_NOTES_LENGTH) : '';
+}
+
 export function storageKey(weddingId) {
   return `wzsd:v${STORAGE_VERSION}:${weddingId}:live_sync_state`;
 }
@@ -224,6 +230,7 @@ export function createLiveState(steps, overrides = {}) {
     step_order: steps.map((step) => step.id),
     active_speech_id: null,
     media_overrides: {},
+    photographer_notes: '',
     game_results: {},
     mutation_log: [],
     ...overrides,
@@ -363,6 +370,7 @@ export function normalizeLiveState(raw, steps, context = {}) {
     step_order: order,
     active_speech_id: activeSpeech,
     media_overrides: mediaOverrides,
+    photographer_notes: normalizePhotographerNotes(raw.photographer_notes),
     game_results: normalizeGameResults(raw.game_results),
     mutation_log: mutationLog,
   };

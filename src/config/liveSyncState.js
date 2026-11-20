@@ -9,6 +9,7 @@ export const LIVE_SYNC_CONFIG = Object.freeze({
   checked_subtasks: Object.freeze({}),
   stage_ping: null,
   step_order: Object.freeze([]),
+  photographer_notes: '',
   mutation_log: Object.freeze([]),
 });
 
@@ -32,6 +33,10 @@ export function normalizeLiveSyncState(raw = {}) {
     step_order: Array.isArray(input.step_order)
       ? input.step_order
       : [...LIVE_SYNC_CONFIG.step_order],
+    photographer_notes:
+      typeof input.photographer_notes === 'string'
+        ? input.photographer_notes
+        : LIVE_SYNC_CONFIG.photographer_notes,
     mutation_log: Array.isArray(input.mutation_log)
       ? input.mutation_log
       : [...LIVE_SYNC_CONFIG.mutation_log],
