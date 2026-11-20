@@ -598,6 +598,44 @@ export function createGoogleDriveConnector({
     return sanitizedMetadata(await readJson(response));
   }
 
+  async function createGoogleDocFromHtml({ parentId, name, html }) {
+    const parent = typeof parentId === 'string' ? parentId.trim() : '';
+    const fileName = typeof name === 'string' ? name.trim() : '';
+    const content = typeof html === 'string' ? html : '';
+    if (!parent) throw createDriveError('drive_invalid_request', 'A parent folder id is required.');
+    if (!fileName) throw createDriveError('drive_invalid_request', 'A file name is required.');
+    if (!content.trim()) {
+      throw createDriveError('drive_invalid_request', 'The client template HTML cannot be empty.');
+    }
+    const boundary = `stage-deck-${crypto.randomUUID()}`;
+    const metadata = JSON.stringify({
+      name: fileName,
+      mimeType: DRIVE_DOC_MIME_TYPE,
+      parents: [parent],
+    });
+    const body = [
+      `--${boundary}`,
+      'Content-Type: application/json; charset=UTF-8',
+      '',
+      metadata,
+      `--${boundary}`,
+      'Content-Type: text/html; charset=UTF-8',
+      '',
+      content,
+      `--${boundary}--`,
+      '',
+    ].join('\r\n');
+    const response = await authorizedRequest(
+      `${resolvedUploadEndpoint}?uploadType=multipart&fields=${encodeURIComponent(DRIVE_METADATA_FIELDS)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body,
+      },
+    );
+    return sanitizedMetadata(await readJson(response));
+  }
+
   async function updateGoogleDocText({ fileId, text }) {
     const id = typeof fileId === 'string' ? fileId.trim() : '';
     const content = typeof text === 'string' ? text : '';
@@ -802,6 +840,7 @@ export function createGoogleDriveConnector({
     ensureFolderPath,
     ensureSpeechFolder,
     createGoogleDoc,
+    createGoogleDocFromHtml,
     updateGoogleDocText,
     moveFile,
     renameFile,
