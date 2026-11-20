@@ -423,9 +423,22 @@ function mapStepNotes(source, steps, warnings = []) {
 }
 
 function mapTimeline(source, warnings, errors = []) {
-  const canonicalRows = table(source, ['Hour', 'Step name', 'Example values']);
-  if (canonicalRows.length > 0) {
-    return mapCanonicalTimeline(canonicalRows, errors);
+  const tables = Array.isArray(source?.tables) ? source.tables : [];
+  const candidate = tables.find((entry) =>
+    (entry.header ?? []).some((cell) =>
+      ['hour', 'stepname', 'examplevalues'].includes(normalizeKey(cell)),
+    ),
+  );
+  if (candidate) {
+    const expected = ['Hour', 'Step name', 'Example values'].map(normalizeKey);
+    const actual = (candidate.header ?? []).map(normalizeKey);
+    if (actual.length !== expected.length || actual.some((cell, index) => cell !== expected[index])) {
+      errors.push(
+        `TIMELINE: expected exactly Hour | Step name | Example values (found ${candidate.header.join(' | ')})`,
+      );
+      return { steps: [], anchorIds: {} };
+    }
+    return mapCanonicalTimeline(candidate.rows ?? [], errors);
   }
   return mapLegacyTimeline(source, warnings, errors);
 }
@@ -434,30 +447,31 @@ function mapCanonicalTimeline(rows, errors) {
   const steps = [];
   const anchorIds = {};
   const seen = new Set();
-  for (const row of rows) {
+  rows.forEach((row, index) => {
+    const label = `TIMELINE row ${index + 1}`;
     const rawHour = text(row.Hour);
     const name = text(row['Step name']);
     if (!name) {
-      errors.push('TIMELINE: row is missing Step name');
-      continue;
+      errors.push(`${label}: missing Step name`);
+      return;
     }
     const canonical = canonicalStepByName(name);
     if (!canonical) {
-      errors.push(`TIMELINE: unknown Step name "${name}"`);
-      continue;
+      errors.push(`${label}: unknown Step name "${name}"`);
+      return;
     }
     if (seen.has(canonical.id)) {
-      errors.push(`TIMELINE: duplicate Step name "${canonical.name}"`);
-      continue;
+      errors.push(`${label}: duplicate Step name "${canonical.name}"`);
+      return;
     }
     if (!rawHour) {
-      errors.push(`TIMELINE: ${canonical.name} is missing Hour`);
-      continue;
+      errors.push(`${label} (${canonical.name}): missing Hour`);
+      return;
     }
     const time = clock(rawHour);
     if (!time) {
-      errors.push(`TIMELINE: ${canonical.name} has invalid Hour "${rawHour}"`);
-      continue;
+      errors.push(`${label} (${canonical.name}): invalid Hour "${rawHour}"`);
+      return;
     }
     seen.add(canonical.id);
     const step = {
@@ -471,7 +485,7 @@ function mapCanonicalTimeline(rows, errors) {
     if (canonical.optionalFlag) step.optionalFlag = canonical.optionalFlag;
     if (canonical.anchorId) anchorIds[canonical.id] = canonical.anchorId;
     steps.push(step);
-  }
+  });
   return { steps, anchorIds };
 }
 
