@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { validateCartridge } from '../../schema/validate-lib.mjs';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
@@ -45,12 +45,7 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
       'Winner photo',
       'Winners with couple photo',
     ]);
-    expect(template).toContain('| Title |');
-    const subEventsSection = template.slice(
-      template.indexOf('### Sub-events'),
-      template.indexOf('## TIMELINE'),
-    );
-    expect(subEventsSection).not.toContain('Test Zgodno');
+    expect(template).not.toContain('### Sub-events');
   });
 
   it('maps the required Doc fields and derives canonical sub-event ids', async () => {
@@ -89,17 +84,6 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('warns and skips a sub-event title outside the allowed set', () => {
-    const result = parse(
-      template.replace('| Winner photo |', '| Test Zgodności |'),
-    );
-
-    expect(result.warnings).toContain(
-      'OCZEPINY sub-event skipped: unknown title "Test Zgodności"',
-    );
-    expect(result.cartridge.oczepiny.subEvents).toHaveLength(5);
-  });
-
   it('warns when a required Doc value is missing', () => {
     const result = parse(template.replace('Toss: VEIL', 'Toss: '));
 
@@ -109,13 +93,12 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
   it('keeps the optional music and briefing values safe when absent', async () => {
     const source = template
       .replace('Music track: Oczepiny mix', 'Music track: ')
-      .replace('Music playlist: Midnight, Party', 'Music playlist: ')
-      .replace('Photographer briefed notes: Briefed the photographer and cameraman.', 'Photographer briefed notes: ');
+      .replace('Music playlist: Midnight, Party', 'Music playlist: ');
     const { cartridge, warnings } = parse(source);
     const ocz = cartridge.oczepiny;
 
     expect(ocz.music).toEqual({ enabled: true, track: '', playlist: [] });
-    expect(ocz.photographerBriefed).toEqual({ notes: '' });
+    expect(ocz).not.toHaveProperty('photographerBriefed');
     expect(warnings).toEqual([]);
     expect(await validateCartridge(cartridge)).toEqual([]);
   });

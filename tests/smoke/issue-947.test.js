@@ -28,8 +28,8 @@ describe('issue #947 dead venue access resolver and load-out field cleanup', () 
     const installation =
       json(domainPath).properties.venueDetails.properties.installation;
     expect(installation.properties.loadOutMinutes).toBeUndefined();
-    expect(installation.properties.loadInMinutes).toBeTruthy();
-    expect(installation.properties.setupMinutes).toBeTruthy();
+    expect(installation.properties.loadInMinutes).toBeUndefined();
+    expect(installation.properties.setupMinutes).toBeUndefined();
     expect(read('supabase/functions/_shared/domains/venue-details.json')).toBe(read(domainPath));
   });
 

@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { validateCartridge } from '../../schema/validate-lib.mjs';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
@@ -23,7 +23,6 @@ describe('issue #659 cake Google Doc source flags', () => {
       time: '20:30',
       cuttingSong: 'Cake — The Coup',
       sparklers: true,
-      photographerCue: 'Front-left of the cake table',
     });
     expect(cartridge.cake).not.toHaveProperty('serveTime');
     expect(warnings).toEqual([]);

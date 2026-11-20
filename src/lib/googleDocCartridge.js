@@ -2,13 +2,12 @@ import { calculateStepDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
 import { normalizeSpeechMode } from './speeches.js';
-import { normalizeLiveSyncState, normalizePrivacy } from '../config/index.js';
+import { resolveEventDateISO } from './eventTime.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
 // `22.15`, `15h00`, ranges (`15:40/16:00`, `22:00-22:30`, `18:00–20:00`) and
 // single-digit hours; the importer normalizes them to a strict `HH:MM`.
 const CLOCK_TOKEN = /^([01]?\d|2[0-3])[:.hH]([0-5]\d)/;
-const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
 // UM contract from `## EVENT` → `Wedding ID`; the old YYYY-MM-DD_slug format
 // is rejected here so a bad Doc cannot reach admin publication.
 const WEDDING_ID = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
@@ -157,16 +156,6 @@ function subTable(source, title, expectedHeader) {
   return table(subsection(source, title), expectedHeader);
 }
 
-function parseJsonBlock(source) {
-  const block = source?.codeBlocks?.find((entry) => entry.lang === 'json') ?? source?.codeBlocks?.[0];
-  if (!block?.text) return null;
-  try {
-    return JSON.parse(block.text);
-  } catch {
-    return null;
-  }
-}
-
 // Issue #1213: Sto Lat only accepts YES / ON_REQUEST / NO. Legacy Doc values
 // are normalized before validation; anything unrecognised fails safely to NO.
 // A "Sto Lat wedding" for the season KPI is YES or ON_REQUEST.
@@ -308,23 +297,6 @@ function mapCeremonySubSteps(source, steps, warnings = []) {
 }
 
 
-// as Oczepiny sub-events. IDs are canonical and derived from the title.
-const OCZEPINY_SUB_EVENTS = {
-  'veil toss': 'veil_toss',
-  'bouquet toss': 'bouquet_toss',
-  'bow-tie game': 'bow_tie_game',
-  'cravat toss': 'cravat_toss',
-  'winner photo': 'winner_photo',
-  'winners with couple photo': 'winners_with_couple_photo',
-};
-
-function canonicalSubEventTitle(value) {
-  const clean = text(value)?.toLowerCase().replace(/\s+/g, ' ');
-  if (!clean) return null;
-  const id = OCZEPINY_SUB_EVENTS[clean];
-  return id ? { id, title: text(value) } : null;
-}
-
 function mapOczepiny(source, warnings = []) {
   const throwings = {};
   const missing = [];
@@ -341,22 +313,6 @@ function mapOczepiny(source, warnings = []) {
     if (!(key in throwings)) missing.push(`${label} throwing`);
   }
 
-  const subEvents = table(source, ['Title']).reduce((events, row) => {
-    const title = text(row.Title);
-    const canonical = canonicalSubEventTitle(title);
-    if (!title) {
-      warnings.push('OCZEPINY sub-event skipped: missing Title');
-      return events;
-    }
-    if (!canonical) {
-      warnings.push(`OCZEPINY sub-event skipped: unknown title "${title}"`);
-      return events;
-    }
-    if (!events.some((event) => event.id === canonical.id)) events.push(canonical);
-    return events;
-  }, []);
-  if (!subEvents.length) missing.push('Sub-events');
-
   const enabled = bool(kv(source, 'Enabled'));
   const order = text(kv(source, 'Order')) ?? text(kv(source, 'Oczepiny variant'));
   const variant = text(kv(source, 'Oczepiny variant')) ?? text(kv(source, 'Order'));
@@ -367,7 +323,6 @@ function mapOczepiny(source, warnings = []) {
   const winnerEnabled = bool(kv(source, 'Winner photo enabled'));
   const winnersOnly = bool(kv(source, 'Winners only photo'));
   const winnersWithCouple = bool(kv(source, 'Winners + couple photo'));
-  const photographerAvailable = bool(kv(source, 'Photographer available'));
   const musicEnabled = bool(kv(source, 'Music enabled'));
 
   for (const [value, label] of [
@@ -381,12 +336,22 @@ function mapOczepiny(source, warnings = []) {
     [winnerEnabled, 'Winner photo enabled'],
     [winnersOnly, 'Winners only photo'],
     [winnersWithCouple, 'Winners + couple photo'],
-    [photographerAvailable, 'Photographer available'],
     [musicEnabled, 'Music enabled'],
   ]) {
     if (value === null || value === undefined) missing.push(label);
   }
   if (missing.length) warnings.push(`OCZEPINY: missing ${missing.join(', ')}`);
+
+  // The allowed list is fixed; the throwing/winner flags describe the plan but
+  // the couple no longer authors the sub-event table.
+  const subEvents = [
+    { id: 'veil_toss', title: 'Veil toss' },
+    { id: 'bouquet_toss', title: 'Bouquet toss' },
+    { id: 'bow_tie_game', title: 'Bow-tie game' },
+    { id: 'cravat_toss', title: 'Cravat toss' },
+    { id: 'winner_photo', title: 'Winner photo' },
+    { id: 'winners_with_couple_photo', title: 'Winners with couple photo' },
+  ];
 
   return {
     enabled: enabled ?? true,
@@ -405,10 +370,8 @@ function mapOczepiny(source, warnings = []) {
       photographerCue: '',
       winnersOnly: winnersOnly ?? false,
       winnersWithCouple: winnersWithCouple ?? false,
-      photographerAvailable: photographerAvailable ?? false,
-    },
-    photographerBriefed: {
-      notes: text(kv(source, 'Photographer briefed notes')) ?? '',
+      // Derived from the assigned media team after the cartridge is assembled.
+      photographerAvailable: false,
     },
     music: {
       enabled: musicEnabled ?? false,
@@ -644,31 +607,10 @@ function mapPhotoPlan(source, warnings = []) {
       };
     })(),
     groupPhotos: {
-      stepId: text(kv(source, 'Group photos step ID')),
       location,
       description: text(kv(source, 'Group photos description')),
       groups,
     },
-    specialEffects: (() => {
-      const sparklers = bool(kv(source, 'Sparklers'));
-      const fire = bool(kv(source, 'Fire'));
-      const heavySmoke = bool(kv(source, 'Heavy smoke'));
-      const missing = [
-        sparklers === null && 'Sparklers',
-        fire === null && 'Fire',
-        heavySmoke === null && 'Heavy smoke',
-      ].filter(Boolean);
-      if (missing.length) {
-        warnings.push(`SPECIAL EFFECTS: missing ${missing.join(', ')}`);
-      }
-      // Approvals are venue-manager runtime data, never Doc values.
-      return {
-        sparklers: sparklers ?? false,
-        fire: fire ?? false,
-        heavySmoke: heavySmoke ?? false,
-        other: text(kv(source, 'Other effects')),
-      };
-    })(),
   };
 }
 
@@ -928,24 +870,14 @@ function mapMandatory(source) {
   };
 }
 
-function mapLiveSync(source, steps) {
-  const stepIds = new Set(steps.map((step) => step.id));
-  const active = text(kv(source, 'Active step ID'));
-  const completed = list(kv(source, 'Completed step IDs')).filter((id) => stepIds.has(id));
-  const actual = {};
-  for (const part of String(kv(source, 'Actual timestamps') ?? '').split(',')) {
-    const [id, value] = part.split('=').map((item) => item.trim());
-    if (id && stepIds.has(id) && ISO.test(value)) actual[id] = value;
-  }
-  return {
-    active_step_id: active && stepIds.has(active) ? active : null,
-    completed_step_ids: completed,
-    actual_timestamps: actual,
-    step_order: steps.map((step) => step.id),
-  };
-}
-
-export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) {
+export function googleDocTemplateToCartridge(
+  parsed,
+  {
+    now = new Date(),
+    weddingId: providedWeddingId = null,
+    servicePackage: providedServicePackage = null,
+  } = {},
+) {
   const errors = [];
   const warnings = [];
   const event = section(parsed, 'EVENT');
@@ -959,19 +891,23 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const brideNationalities = list(kv(coupleSource, 'Bride nationality'));
   const groomNationalities = list(kv(coupleSource, 'Groom nationality'));
   const commonLanguages = list(kv(coupleSource, 'Shared languages'));
-  const weddingId = text(kv(event, 'Wedding ID'));
+  // Legacy Docs may still carry these fields; the current template and field
+  // map do not. Context wins, then the legacy line keeps old fixtures readable.
+  const weddingId = text(providedWeddingId) ?? text(kv(event, 'Wedding ID'));
   const date = text(kv(event, 'Date'));
-  const dateISO = text(kv(event, 'Date ISO'));
+  const dateISO =
+    resolveEventDateISO({ date }) ?? text(kv(event, 'Date ISO'));
   const syncPin = text(kv(event, 'Sync PIN'));
-  const servicePackageSource = text(kv(event, 'Service package'));
-  const servicePackage = normalizeServicePackage(servicePackageSource);
+  const servicePackage = normalizeServicePackage(
+    text(providedServicePackage) ?? text(kv(event, 'Service package')),
+  );
   if (!servicePackage) {
     errors.push(
-      'EVENT: Service package must be one of HOST_ONLY, DJ_MC or HOST_AND_DJ_VIP',
+      'EVENT: Service package must be provided by the admin (HOST_ONLY, DJ_MC or HOST_AND_DJ_VIP)',
     );
   }
   if (!weddingId) {
-    errors.push('EVENT: Wedding ID is required');
+    errors.push('EVENT: Wedding ID is required from the Drive context');
   } else if (!WEDDING_ID.test(weddingId)) {
     errors.push(
       `EVENT: Wedding ID "${weddingId}" must match Name&Name-UM-YYYY-MM-NNN, e.g. Weronika&Guillaume-UM-2027-04-002`,
@@ -988,8 +924,9 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     warnings.push(`COUPLE IDENTITY: missing ${missingCoupleFields.join(', ')}`);
   }
   if (!date) errors.push('EVENT: Date is required');
-  if (!dateISO) errors.push('EVENT: Date ISO is required');
-  if (!syncPin) errors.push('EVENT: Sync PIN is required');
+  if (!dateISO) {
+    errors.push('EVENT: Date must use DD.MM.YYYY so Date ISO can be derived');
+  }
 
   const { steps, anchorIds } = mapTimeline(timeline, warnings);
   if (!steps.length) errors.push('TIMELINE: no valid steps mapped');
@@ -1070,7 +1007,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
           time,
           cuttingSong,
           sparklers,
-          photographerCue: text(kv(cakeSource, 'Photographer cue')),
         };
       })()
     : undefined;
@@ -1079,18 +1015,6 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
   const games = gamesSource ? mapGames(gamesSource, warnings) : undefined;
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
   const speechMode = mapSpeechMode(section(parsed, 'SPEECHES'), warnings);
-
-  const privacySource = section(parsed, 'PRIVACY');
-  const privacy = privacySource
-    ? normalizePrivacy({
-        cloudSync: text(kv(privacySource, 'Cloud sync')),
-        encryption: {
-          alg: text(kv(privacySource, 'Encryption algorithm')),
-          keyHolder: text(kv(privacySource, 'Encryption key holder')),
-          version: int(kv(privacySource, 'Encryption version')),
-        },
-      })
-    : undefined;
 
   const mandatorySettings = mapMandatory(section(parsed, 'MANDATORY STEPS'));
   const stepsWithMandatory = applyMandatorySettings({ steps }, mandatorySettings);
@@ -1133,10 +1057,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     errors.push('LANGUAGES: Supported must contain two-letter ISO 639-1 codes');
   }
   const kitchenSource = section(parsed, 'KITCHEN');
-  const extensionSource = section(parsed, 'EXTENSIONS');
-  const extensionJson = parseJsonBlock(extensionSource);
   const extensions = {
-    ...(extensionJson && typeof extensionJson === 'object' ? extensionJson : {}),
     stepAnchorIds: anchorIds,
     dateISO,
     languages: {
@@ -1154,16 +1075,38 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       : {}),
   };
 
-  const liveSyncSource = section(parsed, 'LIVE SYNC STATE');
-  const liveSyncState = liveSyncSource
-    ? normalizeLiveSyncState(mapLiveSync(liveSyncSource, stepsWithMandatory))
-    : undefined;
-
   const calculated = calculateStepDurations(stepsWithMandatory, {
     closureTime: mandatorySettings.closureTime,
   });
   if (calculated.errors.length) {
     errors.push(...calculated.errors.map((message) => `TIMELINE: ${message}`));
+  }
+
+  const mediaTeam = table(section(parsed, 'MEDIA TEAM'), [
+    'Team ID',
+    'Role',
+    'Name',
+    'Phone',
+    'Start',
+    'End',
+    'Deliverables',
+    'Notes',
+  ]).map((row) => ({
+    id: slug(row['Team ID']),
+    role: ['PHOTO', 'VIDEO', 'DRONE'].includes(text(row.Role)?.toUpperCase())
+      ? text(row.Role).toUpperCase()
+      : 'PHOTO',
+    name: text(row.Name) ?? row['Team ID'],
+    phone: text(row.Phone),
+    startTime: clock(row.Start),
+    endTime: clock(row.End),
+    deliverables: list(row.Deliverables),
+    notes: text(row.Notes),
+  }));
+  const photographerAvailable = mediaTeam.some((member) => member.role === 'PHOTO');
+  const oczepiny = mapOczepiny(section(parsed, 'OCZEPINY'), warnings);
+  if (oczepiny) {
+    oczepiny.winnerPhoto.photographerAvailable = photographerAvailable;
   }
 
   const cartridge = {
@@ -1181,7 +1124,7 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
       commonLanguages,
     },
     date,
-    syncPin,
+    ...(syncPin ? { syncPin } : {}),
     servicePackage,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
@@ -1191,41 +1134,19 @@ export function googleDocTemplateToCartridge(parsed, { now = new Date() } = {}) 
     steps: stepsWithMandatory,
     hardAnchors,
     viewVisibility: mapViewVisibility(section(parsed, 'VIEW VISIBILITY')),
-    mediaTeam: table(section(parsed, 'MEDIA TEAM'), [
-      'Team ID',
-      'Role',
-      'Name',
-      'Phone',
-      'Start',
-      'End',
-      'Deliverables',
-      'Notes',
-    ]).map((row) => ({
-      id: slug(row['Team ID']),
-      role: ['PHOTO', 'VIDEO', 'DRONE'].includes(text(row.Role)?.toUpperCase())
-        ? text(row.Role).toUpperCase()
-        : 'PHOTO',
-      name: text(row.Name) ?? row['Team ID'],
-      phone: text(row.Phone),
-      startTime: clock(row.Start),
-      endTime: clock(row.End),
-      deliverables: list(row.Deliverables),
-      notes: text(row.Notes),
-    })),
+    mediaTeam,
     musicians: mapMusicians(section(parsed, 'MUSICIANS'), warnings),
     photoPlan: mapPhotoPlan(section(parsed, 'PHOTO PLAN'), warnings),
-    oczepiny: mapOczepiny(section(parsed, 'OCZEPINY'), warnings),
+    oczepiny,
     witnesses: mapWitnesses(section(parsed, 'WITNESSES'), warnings),
     cake,
-    privacy,
     musicPolicy,
     attractions,
     ...(speechMode ? { speechMode } : {}),
     extensions,
-    ...(liveSyncState ? { liveSyncState } : {}),
     demographics: mapDemographics(
       section(parsed, 'DEMOGRAPHICS'),
-      privacySource,
+      undefined,
       warnings,
     ),
   };

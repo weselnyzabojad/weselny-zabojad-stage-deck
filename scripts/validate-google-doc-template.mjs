@@ -23,7 +23,6 @@ const EXPECTED_TABLES = {
   'COUPLE IDENTITY': null,
   'LANGUAGES': null,
   'CULTURAL RULES': ['Rule', 'Status', 'Note'],
-  'OCZEPINY': ['Title'],
   'MANDATORY STEPS': ['Field', 'Time'],
   'TIMELINE': [
     'Step ID',
@@ -64,9 +63,6 @@ const EXPECTED_TABLES = {
   'CAKE': null,
   'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Requires photographer', 'Notes'],
   'KITCHEN': ['Course ID', 'Name', 'Time', 'Dietary notes'],
-  'PRIVACY': null,
-  'LIVE SYNC STATE': null,
-  'EXTENSIONS': null,
   'CEREMONY SCRIPT': null,
   'WITNESSES': [
     'Witness ID',

@@ -15,9 +15,7 @@ describe('issue #637 Oczepiny cleanup and music/countdown modes', () => {
     const domain = json('schema/domains/oczepiny.json');
     const ocz = domain.properties.oczepiny.properties;
     expect(ocz.winnerPhoto.properties.replacesWinnersDance).toBeUndefined();
-    expect(ocz.photographerBriefed.properties.confirmed).toBeUndefined();
-    expect(ocz.photographerBriefed.properties.confirmedAt).toBeUndefined();
-    expect(ocz.photographerBriefed.properties.confirmedBy).toBeUndefined();
+    expect(ocz.photographerBriefed).toBeUndefined();
     expect(ocz.subEvents.items.properties.durationMin).toBeUndefined();
     expect(ocz.game.properties.type).toBeUndefined();
     expect(ocz.game.properties.notes).toBeUndefined();
@@ -31,7 +29,7 @@ describe('issue #637 Oczepiny cleanup and music/countdown modes', () => {
     ]) {
       const ocz = json(path).oczepiny ?? json(path).photoPlan?.oczepiny;
       expect(ocz.winnerPhoto).not.toHaveProperty('replacesWinnersDance');
-      expect(ocz.photographerBriefed).not.toHaveProperty('confirmed');
+      expect(ocz.photographerBriefed).toBeUndefined();
       expect(ocz.subEvents.every((event) => !('durationMin' in event))).toBe(true);
       expect(ocz.game).not.toHaveProperty('type');
       expect(Array.isArray(ocz.music.playlist)).toBe(true);

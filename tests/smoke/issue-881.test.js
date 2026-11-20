@@ -1,17 +1,14 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { resolveServicePackage } from '../../src/lib/importantSongs.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
 const template = read('schema/google-doc-template.md');
-const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
-
-function withPackage(value) {
-  return template.replace(/^Service package: .*$/m, `Service package: ${value}`);
-}
+const parse = (source = template, options = {}) =>
+  googleDocTemplateToCartridge(parseGoogleDocTemplate(source), options);
 
 describe('issue #881 service-package contract', () => {
   it('uses one canonical servicePackage field with three valid values', () => {
@@ -31,7 +28,7 @@ describe('issue #881 service-package contract', () => {
 
   it('round-trips the three valid Document values unchanged', () => {
     for (const value of ['HOST_ONLY', 'DJ_MC', 'HOST_AND_DJ_VIP']) {
-      const parsed = parse(withPackage(value));
+      const parsed = parse(template, { servicePackage: value });
       expect(parsed.errors).toEqual([]);
       expect(parsed.cartridge.servicePackage).toBe(value);
       expect(parsed.cartridge.extensions?.servicePackage).toBeUndefined();
@@ -46,19 +43,19 @@ describe('issue #881 service-package contract', () => {
       'MC_DJ',
       '',
     ]) {
-      const parsed = parse(withPackage(value));
-      expect(parsed.errors.join(' ')).toContain('Service package must be one of');
+      const parsed = parse(template, { servicePackage: value });
+      expect(parsed.errors.join(' ')).toContain('Service package must be provided by the admin');
       expect(parsed.cartridge?.servicePackage ?? null).toBeNull();
     }
   });
 
-  it('documents only the three valid values', () => {
-    expect(template).toContain('Service package: HOST_AND_DJ_VIP');
-    expect(template).not.toMatch(/Service package: HOST_AND_DJ_STANDARD/);
-    expect(template).not.toMatch(/Service package: MC_DJ/);
+  it('removes servicePackage from the Doc contract and keeps it in the schema', () => {
+    expect(template).not.toContain('Service package:');
     const map = json('schema/google-doc-field-map.json');
-    expect(JSON.stringify(map)).toContain('servicePackage');
-    expect(JSON.stringify(map)).not.toContain('hostingMode');
+    expect(map.files['wedding-cartridge.example.json']).not.toHaveProperty('servicePackage');
+    expect(map.files['wedding-cartridge.example.json']).not.toHaveProperty('hostingMode');
+    const schema = json('schema/wedding-schema-v1.1.json');
+    expect(schema.required).toContain('servicePackage');
   });
 
   it('keeps a read-only legacy fallback for old cached cartridges', () => {

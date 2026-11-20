@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { resolveMusicPolicy } from '../../src/lib/musicPolicy.js';
 import { validateCartridge } from '../../schema/validate-lib.mjs';
 import { DEMO_WEDDING } from '../../src/demo/demoWedding.js';

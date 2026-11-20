@@ -134,9 +134,6 @@
       "winnersWithCouple": true,
       "photographerAvailable": true
     },
-    "photographerBriefed": {
-      "notes": "Cameraman confirmed the midnight window."
-    },
     "music": {
       "track": "Oczepiny mix",
       "playlist": [
@@ -509,8 +506,7 @@
   "cake": {
     "time": "20:30",
     "cuttingSong": "Cake - The Coup",
-    "sparklers": true,
-    "photographerCue": "Front-left of the cake table"
+    "sparklers": true
   },
   "speechMode": "COMPLEX",
   "liveSyncState": {

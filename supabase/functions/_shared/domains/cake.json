@@ -19,9 +19,6 @@
         },
         "sparklers": {
           "type": "boolean"
-        },
-        "photographerCue": {
-          "type": "string"
         }
       }
     }

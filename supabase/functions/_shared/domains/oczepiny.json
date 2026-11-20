@@ -51,17 +51,6 @@
             "photographerAvailable"
           ]
         },
-        "photographerBriefed": {
-          "type": "object",
-          "properties": {
-            "notes": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "notes"
-          ]
-        },
         "music": {
           "type": "object",
           "properties": {
@@ -169,7 +158,6 @@
         "toss",
         "ties",
         "winnerPhoto",
-        "photographerBriefed",
         "music",
         "subEvents"
       ]

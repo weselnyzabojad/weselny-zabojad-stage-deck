@@ -14,8 +14,7 @@
     "cake.example.json": {
       "cake.time": "required",
       "cake.cuttingSong": "required",
-      "cake.sparklers": "required",
-      "cake.photographerCue": "no"
+      "cake.sparklers": "required"
     },
     "couple-profile.example.json": {
       "coupleProfile.bride.firstName": "required",
@@ -97,13 +96,9 @@
       "oczepiny.winnerPhoto.photographerCue": "no",
       "oczepiny.winnerPhoto.winnersOnly": "required",
       "oczepiny.winnerPhoto.winnersWithCouple": "required",
-      "oczepiny.winnerPhoto.photographerAvailable": "required",
-      "oczepiny.photographerBriefed.notes": "optional",
       "oczepiny.music.track": "optional",
       "oczepiny.music.playlist": "optional",
       "oczepiny.music.enabled": "required",
-      "oczepiny.subEvents[].id": "no",
-      "oczepiny.subEvents[].title": "required",
       "oczepiny.variant": "required",
       "oczepiny.throwings.veil": "required",
       "oczepiny.throwings.bouquet": "required",
@@ -237,7 +232,6 @@
     },
     "wedding-cartridge.example.json": {
       "schemaVersion": "no",
-      "weddingId": "required",
       "coupleProfile.bride.firstName": "required",
       "coupleProfile.bride.nationalities": "required",
       "coupleProfile.groom.firstName": "required",
@@ -245,9 +239,7 @@
       "coupleProfile.commonLanguages": "required",
       "extensions.languages.supported": "required",
       "date": "required",
-      "syncPin": "no",
       "role": "no",
-      "servicePackage": "required",
       "mediaTeam[].id": "no",
       "mediaTeam[].role": "required",
       "mediaTeam[].name": "required",
@@ -288,18 +280,6 @@
       "steps[].game.requested": "required",
       "steps[].game.sourceDocId": "no",
       "steps[].game.status": "no",
-      "privacy.cloudSync": "no",
-      "privacy.encryption.alg": "no",
-      "privacy.encryption.keyHolder": "no",
-      "privacy.encryption.version": "no",
-      "liveSyncState.active_step_id": "no",
-      "liveSyncState.active_speech_id": "no",
-      "liveSyncState.completed_step_ids": "no",
-      "liveSyncState.actual_timestamps": "no",
-      "liveSyncState.checked_subtasks": "no",
-      "liveSyncState.stage_ping": "no",
-      "liveSyncState.step_order": "no",
-      "liveSyncState.mutation_log": "no",
       "childrenExpected": "required",
       "hardAnchors[].id": "no",
       "hardAnchors[].time": "no",
@@ -310,4 +290,3 @@
   },
   "todos": []
 }
-

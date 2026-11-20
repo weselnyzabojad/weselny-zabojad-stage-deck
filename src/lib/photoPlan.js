@@ -226,10 +226,6 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
     ties: ['BOW_TIE', 'TIE', 'OFF'].includes(raw.ties) ? raw.ties : null,
     winnerPhoto,
     winnerPhotoWarning,
-    photographerBriefed:
-      raw.photographerBriefed && typeof raw.photographerBriefed === 'object'
-        ? { notes: text(raw.photographerBriefed.notes) }
-        : null,
     music: raw.music && typeof raw.music === 'object'
       ? {
           enabled: raw.music.enabled === true,
