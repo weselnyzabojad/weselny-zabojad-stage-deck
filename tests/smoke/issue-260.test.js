@@ -19,7 +19,10 @@ describe('issue #260 isMainSongRequired schema flag', () => {
     expect(cake.isMainSongRequired).toBe(true);
   });
 
-  it('updates the Google Doc template timeline column', () => {
-    expect(read('schema/google-doc-template.md')).toContain('Main Song Required');
+  it('keeps the main-song flag in the canonical step catalog', () => {
+    const catalog = read('src/lib/canonicalSteps.js');
+    expect(catalog).toContain('Grand Entrance');
+    expect(catalog).toContain('isMainSongRequired: true');
+    expect(read('schema/google-doc-template.md')).not.toContain('Main Song Required');
   });
 });

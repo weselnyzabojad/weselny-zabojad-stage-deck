@@ -120,9 +120,9 @@ Every table uses the GitHub pipe format with a header row, a separator row, and
 one row per item. Header names are fixed and case-sensitive.
 
 ```text
-| Step ID | Time | Title | Type | Location |
-| --- | --- | --- | --- | --- |
-| step_03 | 18:00 | Hall Entrance | FLEXIBLE | Main Hall |
+| Hour | Step name | Example values |
+| --- | --- | --- |
+| 18:00 | Grand Entrance | Guest order, entrance music |
 ```
 
 Rules:
@@ -237,8 +237,16 @@ non-obvious mappings.
 
 ### TIMELINE and its satellites
 
-`TIMELINE` carries the step skeleton. Three satellite sections attach to it by
-`Step ID`; never repeat step metadata in them.
+`TIMELINE` is the fixed three-column catalog: `Hour`, `Step name` and
+`Example values`. The Step name is the canonical customer-facing key; internal
+step IDs live in `src/lib/canonicalSteps.js` and are never edited by the couple.
+Keep only the hours and row presence: change an hour, reorder rows for
+presentation, or delete a row to exclude that step. A remaining blank or invalid
+hour is an import error. `Example values` is read-only guidance and is never
+parsed.
+
+Three satellite sections still attach by the internal `Step ID`; never repeat
+step metadata in them.
 
 | Section | Row key | Attaches to |
 | --- | --- | --- |
@@ -369,27 +377,29 @@ section that has one.
 
 ### 6.1 Canonical step vocabulary
 
-The couple's harmonogram uses free-form, often localized step names
-(`Ceremonia`, `Zaślubiny`, `Msza`, `Ceremony`, `Tort`, `Gâteau`, `Kolacja`,
-`Supper`, …). Transcribe them to a **fixed canonical title** so the app can map
-them deterministically. Detection never matches localized titles — it reads the
-structured flags below.
+The timeline ships with one row per step from the frozen 19-step catalog in
+`src/lib/canonicalSteps.js`. The canonical names are the customer-facing key;
+localized display text belongs in notes, never in the Step name. Example values
+are read-only guidance and are never parsed.
 
-| Canonical step | Flag / type |
+| Canonical step | Fixed metadata |
 | --- | --- |
-| Ceremony | `ceremony` (`RELIGIOUS` / `CIVIL` / `HUMANIST`) |
 | Vin d'honneur / Cocktail | FLEXIBLE |
+| Ceremony | FLEXIBLE; `ceremony` details from `## EVENT` |
+| Grand Entrance | FLEXIBLE; `grandEntranceOrder` from notes |
+| Dinner | FLEXIBLE; kitchen metadata when present |
+| Wedding Cake | HARD_ANCHOR |
+| Wedding Thank-You | FLEXIBLE |
+| Wishes | FLEXIBLE |
+| First Dance | FLEXIBLE; `firstDanceMode` from notes |
+| Oczepiny | HARD_ANCHOR, `optionalFlag: oczepiny` |
+| Test Wiedzy | FLEXIBLE; game question list |
+| Test Zgodności | FLEXIBLE; game question list |
+| Musical Set | FLEXIBLE, `optionalFlag: dj_set` |
 | Bread & Salt | FLEXIBLE |
-| Wishes | step presence (no flag) |
-| Grand Entrance | `grandEntranceOrder` (`GUESTS_FIRST` / `NEWLYWEDS_FIRST`) |
-| Dinner | FLEXIBLE (speeches attach) + a mandatory kitchen course |
-| First Dance | `firstDanceMode` (`NORMAL` / `FAKE`) |
-| Wedding Cake | HARD_ANCHOR + the `CAKE` section |
-| Dance with Bride and Groom | game step |
-| Supper I / II / III… | mandatory kitchen course (variable-length list) |
-| Test Wiedzy | `game` question list on the step |
-| Test Zgodności | `game` question list on the step |
-| Oczepiny | `optionalFlag: oczepiny` |
+| Dance with Bride and Groom | FLEXIBLE |
+| Supper I / II / III | FLEXIBLE; kitchen metadata when present |
+| Speed Foto | FLEXIBLE |
 | Last Dance | FLEXIBLE |
 
 Guest-flow moments (guest check-in, moving to the orangery, taking seats) are

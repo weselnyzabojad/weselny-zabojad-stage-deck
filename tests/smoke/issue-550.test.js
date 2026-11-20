@@ -19,9 +19,10 @@ describe('issue #550 per-step MC cues', () => {
     const parsed = parseGoogleDocTemplate(read('schema/google-doc-template.md'));
     const result = googleDocTemplateToCartridge(parsed);
     const entrance = result.cartridge.steps.find((step) => step.id === 'step_03');
-    expect(entrance.notes).toBe(
+    expect(entrance.notes).toContain(
       'Keep the newlyweds by the door until the MC announces them.',
     );
+    expect(entrance.notes).toContain('Guest order: newlyweds first.');
     expect(entrance.mcCues).toBeUndefined();
     expect(
       result.cartridge.steps.find((step) => step.id === 'step_01').notes,

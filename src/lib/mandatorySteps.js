@@ -1,6 +1,7 @@
 import { firstArrivalCeremonyNote, resolveCeremony } from './ceremony.js';
 import { clockToEventDate } from './eventTime.js';
 import { addMinutesToClock } from './liveStageState.js';
+import { canonicalStepById } from './canonicalSteps.js';
 import { calculateStepDurations } from './stepDurations.js';
 
 export const KITCHEN_SERVICE_MODE_LABELS = {
@@ -257,8 +258,9 @@ export function applyMandatorySettings(wedding, settings = {}, { sort = true } =
     };
     if (step) {
       step.time = course.time ?? step.time;
-      step.title = course.name || step.title;
       step.mandatory = mandatory;
+      if (canonicalStepById(step.id)) continue;
+      step.title = course.name || step.title;
       step.type = 'HARD_ANCHOR';
     } else if (course.time) {
       steps.push(
