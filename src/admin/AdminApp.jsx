@@ -663,14 +663,14 @@ function AdminAppContent({ statusMode = false }) {
     setPublishDialog(wedding);
   };
 
-  const handlePublishRevisionSubmit = async (cartridge) => {
+  const handlePublishRevisionSubmit = async (cartridge, servicePackage) => {
     if (guardReadOnly()) return;
     const wedding = publishDialog;
     if (!wedding) return;
     setDialogBusy(true);
     setDialogError('');
     try {
-      const validation = await validateCartridge(cartridge);
+      const validation = await validateCartridge({ ...cartridge, servicePackage });
       if (!validation.valid) {
         setDialogError(validation.errors.map((item) => `${item.location}: ${item.message}`).join('\n'));
         return;

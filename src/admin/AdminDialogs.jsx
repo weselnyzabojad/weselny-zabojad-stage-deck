@@ -4,6 +4,8 @@ import { challengeExistingFactor } from './adminApi';
 import { roleShort } from '../lib/roles';
 import { ADMIN_BUTTON } from './adminUi';
 
+const SERVICE_PACKAGES = ['HOST_ONLY', 'DJ_MC', 'HOST_AND_DJ_VIP'];
+
 function DialogBody({ title, description, titleId = undefined, descriptionId = undefined, children }) {
   return (
     <>
@@ -319,6 +321,7 @@ export function AdminPublishRevisionDialog({
   error = '',
 }) {
   const [cartridgeJson, setCartridgeJson] = useState('');
+  const [servicePackage, setServicePackage] = useState('');
   const titleId = useId();
   const [parseError, setParseError] = useState('');
   const [resetKey, setResetKey] = useState([open, wedding]);
@@ -327,12 +330,17 @@ export function AdminPublishRevisionDialog({
     setResetKey([open, wedding]);
     if (open) {
       setCartridgeJson('');
+      setServicePackage(wedding?.cartridge?.servicePackage ?? '');
       setParseError('');
     }
   }
 
   const submit = () => {
     setParseError('');
+    if (!SERVICE_PACKAGES.includes(servicePackage)) {
+      setParseError('Choose a service package before publishing.');
+      return;
+    }
     let cartridge;
     try {
       cartridge = JSON.parse(cartridgeJson);
@@ -340,7 +348,7 @@ export function AdminPublishRevisionDialog({
       setParseError(`Cartridge JSON is invalid: ${err.message}`);
       return;
     }
-    onSubmit(cartridge);
+    onSubmit(cartridge, servicePackage);
   };
 
   return (
@@ -354,6 +362,21 @@ export function AdminPublishRevisionDialog({
           current revision {Number(wedding?.cartridge_revision ?? 0)}
           {wedding?.cartridge_source ? ` · source ${wedding.cartridge_source}` : ''}
         </p>
+        <label className="mb-3 block text-[10px] font-semibold uppercase tracking-widest text-muted">
+          Service package
+          <select
+            value={servicePackage}
+            onChange={(event) => setServicePackage(event.target.value)}
+            className="mt-1 w-full rounded border border-line bg-card px-2.5 py-2 text-xs text-ink"
+          >
+            <option value="">Choose a service package</option>
+            {SERVICE_PACKAGES.map((value) => (
+              <option key={value} value={value}>
+                {value}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="block text-[10px] font-semibold uppercase tracking-widest text-muted">
           Cartridge JSON
           <textarea
@@ -377,7 +400,7 @@ export function AdminPublishRevisionDialog({
         <button
           type="button"
           onClick={submit}
-          disabled={busy || !cartridgeJson.trim()}
+          disabled={busy || !cartridgeJson.trim() || !servicePackage}
           className="rounded border border-brand-strong bg-brand px-3 py-1.5 text-xs font-bold text-on-accent disabled:opacity-50"
         >
           {busy ? 'Publishing…' : 'Publish revision'}
