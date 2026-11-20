@@ -20,7 +20,13 @@ const FORBIDDEN_CHUNKS = [
 
 const FORBIDDEN_FILES = ['sw.js', 'manifest.webmanifest', 'registerSW.js']
 
-const REQUIRED_FILES = ['index.html', '404.html', '404.css', '_redirects']
+const REQUIRED_FILES = [
+  'index.html',
+  '404.html',
+  '404.css',
+  '_redirects',
+  'embed/season-stats/index.html',
+]
 
 async function listFiles(dir, prefix = '') {
   const entries = await readdir(dir, { withFileTypes: true })
@@ -62,10 +68,10 @@ if (html.includes('/src/main.jsx') || html.includes('/src/landing-main.jsx') || 
 if (!html.includes('assets/')) errors.push('index.html does not reference built assets')
 
 const redirects = await readFile(path.join(DIST, '_redirects'), 'utf8').catch(() => '')
-if (!redirects.includes('/embed/season-stats       /index.html  200')) {
+if (!redirects.includes('/embed/season-stats             /embed/season-stats/index.html  200')) {
   errors.push('Season stats route is missing from _redirects')
 }
-if (!redirects.includes('/embed/season-stats/      /index.html  200')) {
+if (!redirects.includes('/embed/season-stats/            /embed/season-stats/index.html  200')) {
   errors.push('Season stats trailing-slash route is missing from _redirects')
 }
 if (redirects.includes('/extra/banner')) {
@@ -74,7 +80,7 @@ if (redirects.includes('/extra/banner')) {
 if (redirects.includes('/*    /index.html    200')) {
   errors.push('SPA catch-all redirect survived in the public artifact')
 }
-if (!redirects.includes('/*                        /404.html    404')) {
+if (!redirects.includes('/*                              /404.html                    404')) {
   errors.push('Public 404 catch-all is missing from _redirects')
 }
 

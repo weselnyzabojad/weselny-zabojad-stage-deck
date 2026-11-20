@@ -194,7 +194,7 @@ Verify names only; never paste values into GitHub.
 
 ## 10. Public under-construction release addendum (2026-11-20)
 
-Status: **Phase 2 complete — database prepared, no deploy or SSO change.** This addendum covers
+Status: **Phase 3 complete — public surface deployed behind SSO.** This addendum covers
 the reduced public surface (`RELEASE_SURFACE=public`) and the season statistics
 iframe. The full landing and `/extra/banner` are intentionally not part of it.
 
@@ -213,13 +213,28 @@ iframe. The full landing and `/extra/banner` are intentionally not part of it.
 
 | Item | Value |
 | --- | --- |
-| Production deploy | `6af60cd14998c3e401f8923e` / `b74bfe8` (unchanged) |
+| Production deploy | `6b008afb04e972b1d37d944e` / `99925f9` (public surface, ready) |
+| Previous deploy | `6af60cd14998c3e401f8923e` / `b74bfe8` |
 | Build base directory | **Repo root** (was the obsolete `universal-wedding-stage-deck` nested path) |
 | Framework detection | `vite` (was `hydrogen`) |
 | Verified branch build | `6b008839ac91dba0104cfc5e` — `development`, ready, 3 header rules |
 | Access control | SSO team login still required for all projects; site still 401 |
 | `RELEASE_SURFACE` | **Not set yet**; set to `public` in the production context only at Phase 3 |
 | Existing vars | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=production` confirmed |
+
+### Phase 3 verification (2026-11-20)
+
+- `RELEASE_SURFACE=public` is set in the production context only.
+- PR #844 merged as `99925f9`; production deploy `6b008afb04e972b1d37d944e` is
+  ready on `master`.
+- Deploy summary: 2 generated pages (`index.html`, `404.html`), 5 assets,
+  6 redirect rules and 3 header rules.
+- Artifact contains `index.public`, `ComingSoonPage`, `PublicSeasonStatsWidget`;
+  no deck/admin/landing/recap/PWA chunks.
+- `/extra/banner`, `/join`, `/admin`, `/recap/*`, `/status` remain behind the
+  public 404 redirect.
+- `https://deck.weselnyzabojad.pl/` still returns **401**; SSO is intentionally
+  still on.
 
 ### Database chain — Phase 2 completed (2026-11-20)
 
@@ -274,7 +289,7 @@ Verification after Phase 2:
 | Gate | Owner GO |
 | --- | --- |
 | Apply the four migrations | Done 2026-11-20 |
-| Set `RELEASE_SURFACE=public` and deploy | Pending |
+| Set `RELEASE_SURFACE=public` and deploy | Done 2026-11-20 |
 | Remove the SSO gate | Pending |
 | Send the webmaster season snippet | Pending |
 
