@@ -38,7 +38,7 @@ function pillTitle(provider) {
 
 function pillClasses(tone, active) {
   const base =
-    'inline-flex max-w-[190px] items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold transition';
+    'flex min-h-11 w-full min-w-0 items-center gap-1 rounded-lg border px-2 py-1 text-left text-[10px] font-semibold transition sm:inline-flex sm:min-h-0 sm:w-auto sm:max-w-[190px] sm:rounded-full sm:px-2 sm:py-0.5';
   const state = HEALTH_TONE_CLASSES[tone] ?? HEALTH_TONE_CLASSES.checking;
   return `${base} ${state} ${active ? 'ring-1 ring-monitor-accent' : ''}`;
 }
@@ -177,23 +177,46 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
 
   return (
     <section aria-label="Service monitoring" className="mx-auto mt-2 max-w-6xl">
-      <div className="flex min-h-11 flex-wrap items-center gap-2 rounded-2xl border border-monitor-border bg-monitor-surface px-2 py-1.5">
-        <span
-          aria-live="polite"
-          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold ${summaryClasses(summaryTone)}`}
-        >
+      <div className="flex w-full min-w-0 flex-col gap-2 rounded-2xl border border-monitor-border bg-monitor-surface px-2 py-2 sm:min-h-11 sm:flex-row sm:flex-wrap sm:items-center sm:py-1.5">
+        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:contents">
           <span
-            aria-hidden="true"
-            className={`h-1.5 w-1.5 rounded-full ${
-              HEALTH_DOT_CLASSES[summaryTone] ?? HEALTH_DOT_CLASSES.checking
-            }`}
-          />
-          {summary}
-        </span>
+            aria-live="polite"
+            className={`inline-flex max-w-full shrink-0 items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold sm:order-1 ${summaryClasses(summaryTone)}`}
+          >
+            <span
+              aria-hidden="true"
+              className={`h-1.5 w-1.5 rounded-full ${
+                HEALTH_DOT_CLASSES[summaryTone] ?? HEALTH_DOT_CLASSES.checking
+              }`}
+            />
+            {summary}
+          </span>
+
+          <div className="order-2 ml-auto flex shrink-0 items-center gap-1 sm:order-3">
+            <button
+              type="button"
+              onClick={() => void run()}
+              disabled={checking}
+              className={`${ADMIN_BUTTON.secondary} min-h-11 px-3 text-[10px] sm:min-h-0 sm:px-2 sm:py-0.5`}
+            >
+              {checking ? 'Checking…' : 'Retry all'}
+            </button>
+            <button
+              type="button"
+              onClick={toggleDetails}
+              aria-expanded={open}
+              aria-controls="admin-health-detail"
+              aria-label={open ? 'Hide service details' : 'Show service details'}
+              className={`${ADMIN_BUTTON.ghost} min-h-11 min-w-11 px-2 text-xs sm:min-h-0 sm:min-w-0 sm:px-1.5 sm:py-0.5`}
+            >
+              <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+            </button>
+          </div>
+        </div>
 
         <ul
           aria-label="Monitored services"
-          className="flex min-w-0 flex-1 flex-wrap items-center gap-1.5"
+          className="grid w-full min-w-0 grid-cols-2 gap-1.5 sm:order-2 sm:flex sm:flex-1 sm:flex-wrap sm:items-center"
         >
           {providers.map((provider) => {
             const providerChecking = checking || retryingId === provider.id;
@@ -201,7 +224,7 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
             const code = healthPillCode(provider, providerChecking);
             const active = open && selectedId === provider.id;
             return (
-              <li key={provider.id}>
+              <li key={provider.id} className="min-w-0">
                 <button
                   type="button"
                   onClick={() => selectProvider(provider.id)}
@@ -217,9 +240,9 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
                       HEALTH_DOT_CLASSES[tone] ?? HEALTH_DOT_CLASSES.checking
                     }`}
                   />
-                  <span className="truncate">{provider.name}</span>
+                  <span className="min-w-0 truncate">{provider.name}</span>
                   <span
-                    className={`shrink-0 font-mono font-bold ${
+                    className={`ml-auto shrink-0 font-mono font-bold sm:ml-0 ${
                       tone === 'down' ? 'text-monitor-error-text' : 'opacity-80'
                     }`}
                   >
@@ -230,27 +253,6 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
             );
           })}
         </ul>
-
-        <div className="ml-auto flex shrink-0 items-center gap-1">
-          <button
-            type="button"
-            onClick={() => void run()}
-            disabled={checking}
-            className={`${ADMIN_BUTTON.secondary} px-2 py-0.5 text-[10px]`}
-          >
-            {checking ? 'Checking…' : 'Retry all'}
-          </button>
-          <button
-            type="button"
-            onClick={toggleDetails}
-            aria-expanded={open}
-            aria-controls="admin-health-detail"
-            aria-label={open ? 'Hide service details' : 'Show service details'}
-            className={`${ADMIN_BUTTON.ghost} px-1.5 py-0.5 text-xs`}
-          >
-            <span aria-hidden="true">{open ? '▴' : '▾'}</span>
-          </button>
-        </div>
       </div>
 
       {error ? (
@@ -275,7 +277,7 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
           id="admin-health-detail"
           role="region"
           aria-label={`${selectedProvider.name} service details`}
-          className="mt-1.5 rounded-2xl border border-monitor-border bg-monitor-surface p-3 text-xs"
+          className="mt-1.5 w-full rounded-2xl border border-monitor-border bg-monitor-surface p-3 text-xs"
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
@@ -295,14 +297,34 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
                 </span>
               )}
             </div>
-            <button
-              type="button"
-              onClick={() => void retryProvider(selectedProvider.id)}
-              disabled={checking || Boolean(retryingId)}
-              className={`${ADMIN_BUTTON.secondary} px-2 py-0.5 text-[10px]`}
-            >
-              {retryingId === selectedProvider.id ? 'Retrying…' : 'Retry'}
-            </button>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => void retryProvider(selectedProvider.id)}
+                disabled={checking || Boolean(retryingId)}
+                className={`${ADMIN_BUTTON.secondary} min-h-11 px-3 text-[10px] sm:min-h-0 sm:px-2 sm:py-0.5`}
+              >
+                {retryingId === selectedProvider.id ? 'Retrying…' : 'Retry'}
+              </button>
+              {selectedProvider.url ? (
+                <a
+                  href={selectedProvider.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`${ADMIN_BUTTON.secondary} inline-flex min-h-11 items-center px-3 text-[10px] sm:min-h-0 sm:px-2 sm:py-0.5`}
+                >
+                  Open URL
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className={`${ADMIN_BUTTON.secondary} min-h-11 px-3 text-[10px] sm:min-h-0 sm:px-2 sm:py-0.5`}
+                >
+                  Open URL
+                </button>
+              )}
+            </div>
           </div>
 
           <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
