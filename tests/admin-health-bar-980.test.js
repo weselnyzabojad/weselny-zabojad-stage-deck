@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  HEALTH_DOT_CLASSES,
   HEALTH_PROVIDER_ORDER,
   healthErrorProviders,
   healthOverallStatus,
@@ -166,7 +167,7 @@ describe('issue #980 admin health bar', () => {
     expect(bar).toContain('healthPillTone');
     expect(bar).toContain('healthPillCode');
     expect(bar).toContain('title={pillTitle(provider)}');
-    expect(bar).toContain('motion-reduce:animate-none');
+    expect(HEALTH_DOT_CLASSES.down).toContain('motion-reduce:animate-none');
     expect(bar).toContain('id="admin-health-detail"');
     expect(bar).toContain('checkServiceHealth({ providerId })');
     expect(bar).toContain('Health check failed:');

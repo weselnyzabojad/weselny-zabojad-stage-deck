@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkServiceHealth } from './adminApi';
 import { captureHealthFailure } from '../lib/sentry';
 import {
+  HEALTH_DOT_CLASSES,
+  HEALTH_TONE_CLASSES,
   healthErrorProviders,
   healthOverallStatus,
   healthPillCode,
@@ -36,20 +38,13 @@ function pillTitle(provider) {
 
 function pillClasses(tone, active) {
   const base =
-    'inline-flex max-w-[190px] items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-semibold transition';
-  const state =
-    tone === 'ok'
-      ? 'border-emerald-700 bg-emerald-950/50 text-emerald-200'
-      : tone === 'checking'
-        ? 'border-line bg-raised text-muted'
-        : 'border-red-700 bg-red-950/50 text-red-200';
-  return `${base} ${state} ${active ? 'ring-1 ring-white/50' : ''}`;
+    'inline-flex max-w-[190px] items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold transition';
+  const state = HEALTH_TONE_CLASSES[tone] ?? HEALTH_TONE_CLASSES.checking;
+  return `${base} ${state} ${active ? 'ring-1 ring-monitor-accent' : ''}`;
 }
 
 function summaryClasses(tone) {
-  if (tone === 'ok') return 'border-emerald-700 bg-emerald-950/50 text-emerald-200';
-  if (tone === 'checking') return 'border-line bg-raised text-muted';
-  return 'border-red-700 bg-red-950/50 text-red-200';
+  return HEALTH_TONE_CLASSES[tone] ?? HEALTH_TONE_CLASSES.checking;
 }
 
 // Admin-only monitoring strip (issues #980, #996, #1013, #1284). It always
@@ -182,19 +177,15 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
 
   return (
     <section aria-label="Service monitoring" className="mx-auto mt-2 max-w-6xl">
-      <div className="flex min-h-11 flex-wrap items-center gap-2 rounded-lg border border-line bg-card px-2 py-1.5">
+      <div className="flex min-h-11 flex-wrap items-center gap-2 rounded-2xl border border-monitor-border bg-monitor-surface px-2 py-1.5">
         <span
           aria-live="polite"
-          className={`inline-flex shrink-0 items-center gap-1.5 rounded border px-2 py-1 text-[10px] font-semibold ${summaryClasses(summaryTone)}`}
+          className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-1 text-[10px] font-semibold ${summaryClasses(summaryTone)}`}
         >
           <span
             aria-hidden="true"
             className={`h-1.5 w-1.5 rounded-full ${
-              summaryTone === 'ok'
-                ? 'bg-emerald-400'
-                : summaryTone === 'checking'
-                  ? 'bg-slate-400'
-                  : 'animate-pulse bg-red-500 motion-reduce:animate-none'
+              HEALTH_DOT_CLASSES[summaryTone] ?? HEALTH_DOT_CLASSES.checking
             }`}
           />
           {summary}
@@ -223,17 +214,13 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
                   <span
                     aria-hidden="true"
                     className={`h-1.5 w-1.5 shrink-0 rounded-full ${
-                      tone === 'ok'
-                        ? 'bg-emerald-400'
-                        : tone === 'checking'
-                          ? 'bg-slate-400'
-                          : 'animate-pulse bg-red-500 motion-reduce:animate-none'
+                      HEALTH_DOT_CLASSES[tone] ?? HEALTH_DOT_CLASSES.checking
                     }`}
                   />
                   <span className="truncate">{provider.name}</span>
                   <span
                     className={`shrink-0 font-mono font-bold ${
-                      tone === 'down' ? 'text-red-300' : 'opacity-80'
+                      tone === 'down' ? 'text-monitor-error-text' : 'opacity-80'
                     }`}
                   >
                     {code}
@@ -269,7 +256,7 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
       {error ? (
         <div
           role="alert"
-          className="mt-1.5 flex flex-wrap items-center justify-between gap-2 rounded border border-alert/50 bg-alert/15 px-2 py-1.5 text-[11px] text-alert-tint"
+          className="mt-1.5 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-monitor-error-border bg-monitor-error-bg px-2 py-1.5 text-[11px] text-monitor-error-text"
         >
           <span className="min-w-0 break-words">Health check failed: {error}</span>
           <button
@@ -288,22 +275,22 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
           id="admin-health-detail"
           role="region"
           aria-label={`${selectedProvider.name} service details`}
-          className="mt-1.5 rounded-lg border border-line bg-card p-3 text-xs"
+          className="mt-1.5 rounded-2xl border border-monitor-border bg-monitor-surface p-3 text-xs"
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div className="min-w-0">
-              <h3 className="font-heading text-sm font-bold text-ink">{selectedProvider.name}</h3>
+              <h3 className="font-heading text-sm font-bold text-monitor-ink">{selectedProvider.name}</h3>
               {selectedProvider.url ? (
                 <a
                   href={selectedProvider.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-0.5 block break-all font-mono text-[10px] text-brand-soft underline decoration-dotted"
+                  className="mt-0.5 block break-all font-mono text-[10px] text-monitor-accent-ink underline decoration-dotted"
                 >
                   {selectedProvider.url}
                 </a>
               ) : (
-                <span className="mt-0.5 block font-mono text-[10px] text-muted">
+                <span className="mt-0.5 block font-mono text-[10px] text-monitor-muted">
                   No public URL
                 </span>
               )}
@@ -320,33 +307,33 @@ export default function AdminHealthBar({ refreshKey = 0 }) {
 
           <dl className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <div>
-              <dt className="text-[9px] uppercase tracking-wide text-muted">HTTP</dt>
-              <dd className="font-mono text-[11px] font-semibold text-ink">
+              <dt className="text-[9px] uppercase tracking-wide text-monitor-muted">HTTP</dt>
+              <dd className="font-mono text-[11px] font-semibold text-monitor-ink">
                 {selectedProvider.httpStatus ?? '—'}
                 {selectedProvider.statusText ? ` ${selectedProvider.statusText}` : ''}
               </dd>
             </div>
             <div>
-              <dt className="text-[9px] uppercase tracking-wide text-muted">Latency</dt>
-              <dd className="font-mono text-[11px] font-semibold text-ink">
+              <dt className="text-[9px] uppercase tracking-wide text-monitor-muted">Latency</dt>
+              <dd className="font-mono text-[11px] font-semibold text-monitor-ink">
                 {selectedProvider.latencyMs == null ? '—' : `${selectedProvider.latencyMs} ms`}
               </dd>
             </div>
             <div>
-              <dt className="text-[9px] uppercase tracking-wide text-muted">Checked</dt>
-              <dd className="font-mono text-[11px] font-semibold text-ink">
+              <dt className="text-[9px] uppercase tracking-wide text-monitor-muted">Checked</dt>
+              <dd className="font-mono text-[11px] font-semibold text-monitor-ink">
                 {formatCheckedAt(selectedProvider.checkedAt)}
               </dd>
             </div>
             <div>
-              <dt className="text-[9px] uppercase tracking-wide text-muted">State</dt>
-              <dd className="text-[11px] font-semibold text-ink">
+              <dt className="text-[9px] uppercase tracking-wide text-monitor-muted">State</dt>
+              <dd className="text-[11px] font-semibold text-monitor-ink">
                 {healthStatusLabel(selectedProvider.status)}
               </dd>
             </div>
           </dl>
 
-          <p className="mt-2 break-words rounded border border-line bg-page/60 px-2 py-1.5 text-[10px] leading-snug text-muted">
+          <p className="mt-2 break-words rounded-lg border border-monitor-border bg-monitor-surface-muted px-2 py-1.5 text-[10px] leading-snug text-monitor-muted">
             {selectedProvider.detail || 'No error detail returned.'}
           </p>
         </div>

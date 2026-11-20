@@ -10,10 +10,10 @@ describe('issue #1285 admin underline tabs', () => {
     expect(app).toContain("['weddings', 'Weddings']");
     expect(app).toContain("['presence', 'Live presence']");
     expect(app).toContain("['audit', 'Audit log']");
-    expect(app).toContain('border-b border-[#E2E8F0]');
-    expect(app).toContain('border-indigo-600 text-indigo-700');
-    expect(app).toContain('border-transparent text-[#64748B]');
-    expect(app).toContain('hover:text-[#1E293B]');
+    expect(app).toContain('border-b border-monitor-border');
+    expect(app).toContain('border-monitor-accent text-monitor-accent-ink');
+    expect(app).toContain('border-transparent text-monitor-muted');
+    expect(app).toContain('hover:text-monitor-ink');
     expect(app).toContain('-mb-px border-b-2');
     expect(app).toContain('pb-2 pt-1.5');
     expect(app).not.toContain('rounded border px-3 py-1.5 font-semibold');
