@@ -268,10 +268,11 @@ not creation authorization.
 
 ### Courses
 
-| Course ID | Name | Time | Dietary notes |
-| --- | --- | --- | --- |
-| soup | Soup | 17:00 | 1 vegan |
-| main | Main | 18:00 | 2 vegetarian, 1 gluten-free |
+| Course ID | Name | Time | Service Mode | Dietary notes |
+| --- | --- | --- | --- | --- |
+| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |
+| step_15 | Supper I | 23:00 | TABLE_SERVICE | 2 vegetarian, 1 gluten-free |
+| step_16 | Supper II | 23:30 | BUFFET |  |
 
 ### Dietary Counts
 
@@ -301,17 +302,6 @@ Gluten free: 1
 | Closure extension until | 03:00 |
 | Cake service mode | KITCHEN_RETURN |
 | Last song | Perfect - Ed Sheeran |
-
-### Kitchen Services
-
-One row per meal course, in serving order. The number of courses is not fixed —
-add or remove rows as needed. Each course is an exact-hour mandatory milestone.
-
-| Course ID | Name | Time | Service Mode |
-| --- | --- | --- | --- |
-| step_04 | Dinner | 19:00 | TABLE_SERVICE |
-| step_15 | Supper I | 23:00 | TABLE_SERVICE |
-| step_16 | Supper II | 23:30 | BUFFET |
 
 ## ATTRACTIONS
 
