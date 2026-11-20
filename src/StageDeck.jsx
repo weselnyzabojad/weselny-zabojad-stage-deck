@@ -131,6 +131,7 @@ export default function StageDeck({
     devJumpToStep,
     setGameResults,
     setMediaOverride,
+    saveServicePackage,
     savedLocally,
     syncStatus,
     syncError,
@@ -770,6 +771,8 @@ export default function StageDeck({
             onUpdateVenuePolicies={(policies) =>
               setMediaOverride('venuePolicies', policies)
             }
+            servicePackage={WEDDING.servicePackage}
+            onSaveServicePackage={saveServicePackage}
             roomCode={deckIntent.roomCode}
           />
         </AppErrorBoundary>

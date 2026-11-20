@@ -577,6 +577,14 @@ export function useLiveStageState({
     [apply, actor],
   );
 
+  // Server-authorized package correction. The write path lives behind a
+  // token-scoped RPC; this hook never mirrors it into the direct live-state
+  // publish path.
+  const saveServicePackage = useCallback(
+    async (value) => (client ? client.setServicePackage(value) : value),
+    [client],
+  );
+
   const lastUndo = model.undo.length > 0 ? model.undo[model.undo.length - 1] : null;
 
   return {
@@ -591,6 +599,7 @@ export function useLiveStageState({
     devJumpToStep,
     setGameResults,
     setMediaOverride,
+    saveServicePackage,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),
