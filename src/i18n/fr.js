@@ -890,6 +890,10 @@ const fr = {
   'landing.intro.p2': 'De cette exigence est né le Stage Deck : un espace collaboratif unique qui relie tous vos prestataires en temps réel le jour J, vous laissant l’esprit entièrement libre pour savourer chaque instant.',
   'landing.intro.p2.highlight': 'Stage Deck',
   'landing.intro.trust': 'Conçu selon les standards Weselny Żabojad, avec l’expérience de prestataires du mariage qui vivent de vrais mariages chaque semaine.',
+  'underConstruction.title': 'Bientôt disponible',
+  'underConstruction.subtitle':
+    "Nous apportons les dernières touches à cette page. Elle sera disponible très prochainement. En attendant, n'hésitez pas à nous contacter.",
+  'underConstruction.cta': 'Parlons de votre événement',
   'landing.hero.eyebrow': 'À disposition des prestataires, pour les futurs mariés',
   'landing.ribbon.prefix': 'Imaginé par',
   'landing.ribbon.prefixShort': 'Par',

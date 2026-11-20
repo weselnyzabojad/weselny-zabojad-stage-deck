@@ -3,12 +3,11 @@
 // Presents the Stage Deck product to future newlyweds and their wedding
 // vendors. The deck is included with a booked Weselny Żabojad wedding; the
 // page contains no commercial offers, no tracking and no external assets.
-import LanguageToggle from './LanguageToggle';
+import PublicHeader from './PublicHeader';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../i18n/useI18n.js';
 import { getSyncConfig } from '../lib/sync/syncConfig.js';
 import { getMainSiteUrl } from '../lib/mainSite.js';
-import logo from '../assets/img/logo.png';
 import logoMark from '../assets/img/dj-vip/logo_mark.png';
 import logoSzymoniak from '../assets/img/dj-vip/logo_szymoniak.png';
 import logoZaremba from '../assets/img/dj-vip/logo_zaremba.png';
@@ -315,22 +314,7 @@ export default function LandingPage() {
       className="min-h-screen bg-[#FBF9F5] font-heading text-[#1A1A1A]"
     >
       <BrandRibbon />
-      <header className="border-b border-[#C5A059]/15 bg-white/60 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <div className="flex items-center gap-3">
-            <img src={logo} alt="Weselny Żabojad" className="h-14 w-auto object-contain sm:h-16" />
-            <div>
-              <p className="font-heading text-lg font-bold leading-none text-[#1A1A1A]">
-                Stage Deck
-              </p>
-              <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.18em] text-[#8A6A2F]">
-                {t('landing.hero.eyebrow')}
-              </p>
-            </div>
-          </div>
-          <LanguageToggle variant="desktop" />
-        </div>
-      </header>
+      <PublicHeader />
 
       <main>
         <div className="mx-auto w-full max-w-4xl px-4 pt-10 sm:px-6">

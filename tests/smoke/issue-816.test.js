@@ -18,8 +18,10 @@ afterEach(() => {
 describe('issue #816 landing header and provider-facing copy', () => {
   it('enlarges the landing header logo', () => {
     const landing = read('src/components/LandingPage.jsx');
-    expect(landing).toContain('className="h-14 w-auto object-contain sm:h-16"');
-    expect(landing).toContain('alt="Weselny Żabojad"');
+    const header = read('src/components/PublicHeader.jsx');
+    expect(landing).toContain('<PublicHeader />');
+    expect(header).toContain('className="h-14 w-auto object-contain sm:h-16"');
+    expect(header).toContain('alt="Weselny Żabojad"');
   });
 
   it('ships the validated provider-facing copy in every locale', () => {
