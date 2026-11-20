@@ -11240,3 +11240,80 @@ dictionaries.
 **Open questions.** None.
 
 **Tracking.** [#1294](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1294).
+
+### 17.140 Under-construction public page and public release surface (decision, 2026-11-20)
+
+**Goal.**
+
+Prepare the pre-release public surface while the special landing page is being
+designed. `/` shows a reusable, localized "Bientôt disponible / En construction"
+page with the existing public header and one contact CTA. The only other public
+route is the season statistics embed `/embed/season-stats`. `/extra/banner`, the
+current full landing, the deck and admin stay out of this surface.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Reusable under-construction page | Shared header, centered card, Sparkles icon, one localized main-site CTA, optional title/subtitle keys |
+| F2 | Public release surface | New `public` surface serving `/` and `/embed/season-stats` only, with branded 404 for everything else |
+
+**Release target.** Under-construction workstream — new label
+`under-construction`, no milestone. Not the first release and not Release 1.2.
+No `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| `/` | Under-construction page with shared header, centered card and localized CTA |
+| `/embed/season-stats` | Existing season widget; `?lang` + theme contract; 240 px mobile / 160 px desktop |
+| `/extra/banner` | Not published in this surface |
+| Current full landing `/` content | Not published; reserved for the future special landing design |
+| Deck, admin, join, recap, request, status, PWA | Not published in this surface |
+| WordPress main site | Unchanged; the webmaster receives the embed snippet later |
+
+**Contracts.**
+
+| Area | Decision |
+| --- | --- |
+| Header | Extract shared `PublicHeader` from `LandingPage`; both pages use it |
+| Component props | `titleKey?` / `subtitleKey?`; defaults `underConstruction.title` / `.subtitle` |
+| CTA | One gold pill to `getMainSiteUrl(locale)`, new tab, no secondary link |
+| i18n | `underConstruction.title`, `.subtitle`, `.cta` in EN/FR/PL |
+| Page shell | `min-h-screen flex flex-col`, cream background, `flex-1 flex items-center justify-center p-6` |
+| Card | White, `max-w-lg w-full`, `p-8 sm:p-12`, gold border and soft shadow |
+| Icon | `Sparkles` from the existing `lucide-react`, warm gold on light beige circle |
+| Surface value | New `RELEASE_SURFACE=public`; `full` remains default, `landing` unchanged |
+| Public routes | `/`, `/index.html`, `/embed/season-stats` and trailing slash only |
+| Other routes | Branded 404 with HTTP 404 |
+| PWA | Omitted from the public artifact |
+| Production | No migration/deploy/SSO change in these issues; separate release GO |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | `under-construction` label, no milestone |
+| Split | Two issues: component/header/i18n, then public surface integration |
+| CTA | Localized main-site URL via `getMainSiteUrl(locale)` |
+| Header | Shared `PublicHeader`, no duplicated markup |
+| Public routes | `/` + `/embed/season-stats`; hide `/extra/banner` |
+| Full landing | Not published until the special design is ready |
+| Doc linkage | Not Doc-linked |
+| TypeScript | Repository is JavaScript; build + lint + tests are the gates |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1297) | `ComingSoonPage`, shared `PublicHeader`, EN/FR/PL keys, props, tests | - |
+| 2 | [#1298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1298) | `RELEASE_SURFACE=public`, public entry, `/` + season embed routing, redirects, artifact tests | #1297 |
+
+**Open questions.** None.
+
+**Tracking.** [#1297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1297),
+[#1298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1298).
