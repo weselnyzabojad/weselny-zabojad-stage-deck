@@ -30,8 +30,8 @@ describe('issue #698 runtime config folder', () => {
       parseGoogleDocTemplate(read('schema/google-doc-template.md')),
     );
 
-    expect(cartridge).not.toHaveProperty('privacy');
     expect(cartridge).not.toHaveProperty('liveSyncState');
+    expect(cartridge.privacy).toEqual(normalizePrivacy());
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 });
