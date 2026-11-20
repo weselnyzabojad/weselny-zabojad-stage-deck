@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { updateWeddingIdentity } from './adminApi';
+import { updateWeddingIdentity, createWeddingTemplateDoc } from './adminApi';
 import { ADMIN_BUTTON } from './adminUi';
 import {
   TEMPLATE_PREREQUISITES,
@@ -26,12 +26,21 @@ export default function AdminWeddingIdentityEditor({
   wedding,
   readOnly = false,
   onSaved = () => {},
-  onCreateTemplate = null,
 }) {
   const [values, setValues] = useState(() => initialValues(wedding));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState('');
+  const [createBusy, setCreateBusy] = useState(false);
+  const [createError, setCreateError] = useState(null);
+  const [created, setCreated] = useState(() =>
+    wedding?.template_doc_id
+      ? {
+          id: wedding.template_doc_id,
+          url: `https://docs.google.com/document/d/${wedding.template_doc_id}/edit`,
+        }
+      : null,
+  );
 
   const disabled = readOnly || ADMIN_DEMO || busy;
   const readiness = templateReadiness({
@@ -39,7 +48,40 @@ export default function AdminWeddingIdentityEditor({
     bride_name: values.bride,
     groom_name: values.groom,
   });
-  const canCreate = readiness.ready && !disabled && Boolean(onCreateTemplate);
+  const existingDocId = created?.id ?? wedding?.template_doc_id ?? null;
+  const canCreate = readiness.ready && !disabled && !createBusy && !existingDocId;
+
+  const createTemplate = async () => {
+    if (!canCreate) return;
+    if (
+      !window.confirm(
+        'Create the client template? It can only be created once and cannot be overwritten.',
+      )
+    ) {
+      return;
+    }
+    setCreateBusy(true);
+    setCreateError(null);
+    try {
+      const result = await createWeddingTemplateDoc({
+        weddingId: wedding?.wedding_id,
+        weddingFolderId: wedding?.drive_folder_id ?? wedding?.driveFolderId ?? '',
+      });
+      const file = result?.file ?? {};
+      setCreated({
+        id: file.id ?? null,
+        name: file.name ?? null,
+        url:
+          file.url ??
+          (file.id ? `https://docs.google.com/document/d/${file.id}/edit` : null),
+      });
+      await onSaved();
+    } catch (err) {
+      setCreateError(err);
+    } finally {
+      setCreateBusy(false);
+    }
+  };
 
   const update = (field) => (event) => {
     setSaved('');
@@ -192,14 +234,60 @@ export default function AdminWeddingIdentityEditor({
             );
           })}
         </ul>
+        {createError ? (
+          <div
+            role="alert"
+            className="mt-2 rounded border border-alert/60 bg-alert/15 px-2.5 py-2 text-[10px] text-alert-soft"
+          >
+            <p>{createError.message ?? 'The client template could not be created.'}</p>
+            {createError.code === 'template_prerequisites_missing' &&
+            Array.isArray(createError.missing) &&
+            createError.missing.length > 0 ? (
+              <ul className="mt-1 list-disc pl-4">
+                {createError.missing.map((field) => (
+                  <li key={field}>{FIELD_LABELS[field] ?? field}</li>
+                ))}
+              </ul>
+            ) : null}
+            {createError.code === 'template_doc_exists' && createError.fileId ? (
+              <a
+                className="mt-1 inline-block font-semibold underline"
+                href={`https://docs.google.com/document/d/${createError.fileId}/edit`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open the existing client template
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+        {existingDocId ? (
+          <p className="mt-2 rounded border border-emerald-800 bg-emerald-950/30 px-2.5 py-2 text-[10px] text-emerald-200">
+            Client template created.{' '}
+            <a
+              className="font-semibold underline"
+              href={
+                created?.url ?? `https://docs.google.com/document/d/${existingDocId}/edit`
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              Open {created?.name ?? 'the client template'}
+            </a>
+          </p>
+        ) : null}
         <button
           type="button"
-          onClick={onCreateTemplate ?? undefined}
+          onClick={createTemplate}
           disabled={!canCreate}
-          className={`${ADMIN_BUTTON.secondary} mt-2`}
+          className={`${ADMIN_BUTTON.secondary} mt-2 disabled:opacity-40`}
         >
-          Create client template
+          {createBusy ? 'Creating client template...' : 'Create client template'}
         </button>
+        <p className="mt-1 text-[9px] text-muted">
+          Creation happens once. The client template is never overwritten; a second request is
+          rejected.
+        </p>
         {!readiness.ready ? (
           <p className="mt-1 text-[9px] text-muted">
             Fill the missing fields above before creating the client template.

@@ -110,7 +110,8 @@ describe('issue #1326 admin wedding identity for the client template', () => {
     expect(backend).toContain('bride_name: brideName');
     expect(backend).toContain('groom_name: groomName');
     expect(backend).toContain("writeAudit(admin, allowlisted, 'update_wedding_identity'");
-    expect(backend).toContain('bride_name, groom_name, venue_name, venue_address');
+    expect(backend).toContain('bride_name, groom_name');
+    expect(backend).toContain('venue_name, venue_address');
     expect(backend).toMatch(/ARCHIVED_BLOCKED_ACTIONS[\s\S]*?'update_wedding_identity'/);
   });
 
