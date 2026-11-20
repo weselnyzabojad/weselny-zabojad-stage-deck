@@ -17,6 +17,8 @@ import TopBarShell from './TopBarShell';
 import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
 import SpeechSummaryChip from './SpeechSummaryChip';
+import AnchorApprovalPanel from './AnchorApprovalPanel';
+import { decideAnchorApproval } from '../lib/anchorApprovals.js';
 import { useI18n } from '../i18n/useI18n';
 import { useReadReceipt } from '../hooks/useReadReceipt';
 import useCompact from '../hooks/useCompact';
@@ -142,6 +144,8 @@ export default function VenueManagerView({
   onUpdateVenuePolicies = null,
   servicePackage = null,
   onSaveServicePackage = null,
+  anchorApprovals = {},
+  onSetAnchorApproval = null,
 }) {
   const { t } = useI18n();
   const currentPackage = servicePackage ?? wedding?.servicePackage ?? '';
@@ -218,6 +222,18 @@ export default function VenueManagerView({
     );
     setSaved(t('venueManager.saved'));
     window.setTimeout(() => setSaved(''), 1500);
+  };
+
+  const decideAnchor = (anchor, status, reason) => {
+    if (!onSetAnchorApproval) return;
+    const decision = decideAnchorApproval({
+      status,
+      anchor,
+      actor: { role: 'venue_manager' },
+      reason,
+      now: new Date(),
+    });
+    onSetAnchorApproval({ ...(anchorApprovals ?? {}), [anchor.id]: decision });
   };
 
   const savePackage = async () => {
@@ -433,6 +449,13 @@ export default function VenueManagerView({
           ) : null}
         </p>
       </section>
+
+      <AnchorApprovalPanel
+        steps={loadSteps(wedding, mandatoryOverride)}
+        approvals={anchorApprovals}
+        readOnly={Boolean(wedding?.archived_at)}
+        onDecision={decideAnchor}
+      />
 
       <section className="rounded-xl border border-line bg-card p-4 shadow-lg sm:p-5">
         <h2 className="font-heading text-xs font-bold uppercase tracking-widest text-ink">
