@@ -9,10 +9,12 @@ const SRC = join(fileURLToPath(ROOT), 'src');
 const read = (path) => readFileSync(new URL(path, ROOT), 'utf8');
 
 function parseCsp(toml) {
-  // Issue #1216 adds a more specific /embed/* rule before the global one. This
-  // test pins the app-wide policy, which is the last matching CSP block.
-  const matches = [...toml.matchAll(/Content-Security-Policy = "([^"]+)"/g)];
-  const match = matches.at(-1);
+  // Issue #1216/#1298: the global /* rule is first and the embed-specific rules
+  // come after it. This test pins the app-wide policy in the /* block.
+  const start = toml.indexOf('for = "/*"');
+  const next = toml.indexOf('[[headers]]', start);
+  const block = toml.slice(start, next === -1 ? undefined : next);
+  const match = /Content-Security-Policy = "([^"]+)"/.exec(block);
   if (!match) throw new Error('Content-Security-Policy header is missing from netlify.toml');
   return Object.fromEntries(
     match[1]

@@ -27,13 +27,25 @@
 # `worker-src` also allows `blob:` because Sentry Session Replay starts its
 # compression worker from a Blob URL. Replay is error-only and fully masked.
 #
-# Netlify uses the first matching header rule, so the embed-specific rules must
-# stay above the global one. `/embed/*` and the landing iframe `/extra/banner`
-# are the only paths allowed to be framed, and only by the two Weselny Zabojad
-# WordPress origins. Everything else keeps `frame-ancestors 'none'`. CSP is the
+# Netlify resolves matching header rules with the last definition winning, so
+# the global rule comes first and the embed-specific rules come after it.
+# `/embed/*` and the landing iframe `/extra/banner` are the only paths allowed
+# to be framed, and only by the two Weselny Zabojad WordPress origins.
+# Everything else keeps `frame-ancestors 'none'`. CSP is the
 # single framing authority: no X-Frame-Options header is set, because it cannot
 # express a path-specific allowlist and would override the embed policy in
 # older browsers.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org https://o4512420559716352.ingest.de.sentry.io; manifest-src 'self'; worker-src 'self' blob:; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+
 [[headers]]
   # The wildcard also covers `/extra/banner/`: the route accepts the trailing
   # slash and the global rule would otherwise apply `frame-ancestors 'none'`.
@@ -47,6 +59,7 @@
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Resource-Policy = "same-origin"
 
+
 [[headers]]
   for = "/embed/*"
   [headers.values]
@@ -58,13 +71,3 @@
     Cross-Origin-Opener-Policy = "same-origin"
     Cross-Origin-Resource-Policy = "same-origin"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org https://o4512420559716352.ingest.de.sentry.io; manifest-src 'self'; worker-src 'self' blob:; frame-src 'none'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests"
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
-    Cross-Origin-Opener-Policy = "same-origin"
-    Cross-Origin-Resource-Policy = "same-origin"
