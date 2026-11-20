@@ -40,6 +40,8 @@ export function demoList() {
       {
         wedding_id: 'Aleksandra&Michal-UM-2026-08-004',
         couple: 'Aleksandra & MichaĹ‚',
+        bride_name: 'Aleksandra',
+        groom_name: 'Michal',
         date: '20.08.2026',
         venue: 'DwĂłr Pod Lipami',
         venue_name: 'Dwór Pod Lipami',
@@ -58,6 +60,8 @@ export function demoList() {
       {
         wedding_id: 'Sample&Archive-UM-2025-07-001',
         couple: 'Sample & Archive',
+        bride_name: 'Sample',
+        groom_name: 'Archive',
         date: '12.07.2025',
         venue: 'Sample Hall',
         venue_name: 'Sample Hall',

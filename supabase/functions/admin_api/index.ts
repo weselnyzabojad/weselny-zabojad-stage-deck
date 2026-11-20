@@ -152,6 +152,7 @@ const ARCHIVED_BLOCKED_ACTIONS = new Set([
   'set_role',
   'remove_role',
   'update_wedding_venue',
+  'update_wedding_identity',
 ]);
 const REQUIRED_ADMIN_ENV = ['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'];
 
@@ -2791,7 +2792,7 @@ async function handleRequest(req: Request) {
         admin
           .from('weddings')
           .select(
-            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by, venue_name, venue_address, venue_city, venue_country',
+            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by, bride_name, groom_name, venue_name, venue_address, venue_city, venue_country',
           )
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
@@ -3108,6 +3109,49 @@ async function handleRequest(req: Request) {
         { source: 'backup_restore' },
       );
       return response;
+    }
+
+    if (action === 'update_wedding_identity') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) return json({ error: 'Invalid weddingId.' }, 400);
+
+      const brideName = typeof body?.brideName === 'string' ? body.brideName.trim() : '';
+      const groomName = typeof body?.groomName === 'string' ? body.groomName.trim() : '';
+      if (!brideName || !groomName) {
+        return json({ error: 'Bride and groom first names are required.' }, 400);
+      }
+      if (brideName.length > 80 || groomName.length > 80) {
+        return json({ error: 'Bride and groom names must be 80 characters or fewer.' }, 400);
+      }
+
+      const fields = 'bride_name, groom_name';
+      const { data: before, error: readError } = await admin
+        .from('weddings')
+        .select(fields)
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (readError) throw readError;
+      if (!before) return json({ error: 'Wedding not found.' }, 404);
+
+      const { data: after, error } = await admin
+        .from('weddings')
+        .update({ bride_name: brideName, groom_name: groomName })
+        .eq('wedding_id', weddingId)
+        .select(fields)
+        .single();
+      if (error) throw error;
+
+      await writeAudit(admin, allowlisted, 'update_wedding_identity', weddingId, {
+        before,
+        after,
+      });
+      return json({
+        ok: true,
+        identity: {
+          brideName: after.bride_name,
+          groomName: after.groom_name,
+        },
+      });
     }
 
     if (action === 'update_wedding_venue') {

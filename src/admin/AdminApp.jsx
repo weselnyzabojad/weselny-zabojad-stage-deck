@@ -40,6 +40,7 @@ import AdminHealthBar from './AdminHealthBar';
 import AdminStatusDashboard from './AdminStatusDashboard';
 import AdminPortfolioOverview from './AdminPortfolioOverview';
 import AdminVenueLocationEditor from './AdminVenueLocationEditor';
+import AdminWeddingIdentityEditor from './AdminWeddingIdentityEditor';
 import { ADMIN_BUTTON } from './adminUi';
 import AdminWeddingFolders from './AdminWeddingFolders';
 import AdminServiceProviders from './AdminServiceProviders';
@@ -1221,6 +1222,11 @@ function AdminAppContent({ statusMode = false }) {
                     {wedding.cartridge_published_at ? ` · published ${formatAdminTime(wedding.cartridge_published_at)}` : ''}
                   </div>
                   <AdminVenueLocationEditor
+                    wedding={wedding}
+                    readOnly={readOnly || Boolean(wedding.archived_at)}
+                    onSaved={load}
+                  />
+                  <AdminWeddingIdentityEditor
                     wedding={wedding}
                     readOnly={readOnly || Boolean(wedding.archived_at)}
                     onSaved={load}
