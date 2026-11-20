@@ -776,6 +776,10 @@ export default function StageDeck({
             }
             servicePackage={WEDDING.servicePackage}
             onSaveServicePackage={saveServicePackage}
+            anchorApprovals={liveState.media_overrides?.anchorApprovals?.value ?? {}}
+            onSetAnchorApproval={(approvals) =>
+              setMediaOverride('anchorApprovals', approvals)
+            }
             roomCode={deckIntent.roomCode}
           />
         </AppErrorBoundary>
