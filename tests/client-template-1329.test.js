@@ -83,12 +83,12 @@ describe('issue #1329 canonical step catalog and 3-column timeline', () => {
 
   it('rejects blank, malformed and out-of-range hours with the row name', () => {
     for (const [hour, message] of [
-      ['', 'Oczepiny is missing Hour'],
-      ['25:99', 'Oczepiny has invalid Hour "25:99"'],
-      ['noon', 'Oczepiny has invalid Hour "noon"'],
+      ['', 'TIMELINE row 15 (Oczepiny): missing Hour'],
+      ['25:99', 'TIMELINE row 15 (Oczepiny): invalid Hour "25:99"'],
+      ['noon', 'TIMELINE row 15 (Oczepiny): invalid Hour "noon"'],
     ]) {
       const result = parse(replaceRow(template, 'Oczepiny', row(hour, 'Oczepiny')));
-      expect(result.errors, hour).toContain(`TIMELINE: ${message}`);
+      expect(result.errors, hour).toContain(message);
       expect(result.cartridge.steps.some((step) => step.title === 'Oczepiny')).toBe(false);
     }
   });
@@ -100,10 +100,10 @@ describe('issue #1329 canonical step catalog and 3-column timeline', () => {
         '| 00:00 | Oczepiny | Toss, ties, winner photo, music |\n| 00:30 | Oczepiny | Duplicate |',
       ),
     );
-    expect(duplicate.errors).toContain('TIMELINE: duplicate Step name "Oczepiny"');
+    expect(duplicate.errors).toContain('TIMELINE row 16: duplicate Step name "Oczepiny"');
 
     const unknown = parse(replaceRow(template, 'Oczepiny', row('00:00', 'Ceremonia')));
-    expect(unknown.errors).toContain('TIMELINE: unknown Step name "Ceremonia"');
+    expect(unknown.errors).toContain('TIMELINE row 15: unknown Step name "Ceremonia"');
     expect(unknown.cartridge.steps.some((step) => step.title === 'Ceremonia')).toBe(false);
   });
 
