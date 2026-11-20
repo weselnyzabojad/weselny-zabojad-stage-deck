@@ -11317,3 +11317,105 @@ or fixture changes.
 
 **Tracking.** [#1297](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1297),
 [#1298](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1298).
+
+### 17.141 Wedding Google Doc template cleanup and operational edits (decision, 2026-11-20)
+
+**Goal.**
+
+Reduce the v1.1 wedding Google Doc to fields that the couple or vendors must
+author. Remove generated, duplicate, runtime-only and retired fields from the
+template, field map, parser, schema and fixtures; derive the removed values from
+their real source. Keep Kitchen Services and ceremony scripts as valid inputs.
+Add two operational flows that no longer belong in the Doc: an initial service
+package chosen at admin publish, corrected later by the Venue Manager, and
+photographer briefing notes stored only in live state.
+
+**Feature groups.**
+
+| ID | Feature | One-line goal |
+| --- | --- | --- |
+| F1 | Doc contract cleanup | Trim generated/retired fields; derive dates, wedding ID, Oczepiny values; keep Kitchen and ceremony scripts |
+| F2 | Initial service package | Admin chooses the package at publish; the Doc no longer supplies it |
+| F3 | Venue Manager package correction | Venue Manager can correct the stored package value without re-provisioning roles |
+| F4 | Photographer briefing notes | Photo/video edit the note in live state, not in the cartridge |
+
+**Release target.** First release. No milestone, no `release-1.2` label.
+
+**Google Doc contract.**
+
+| Area | Decision |
+| --- | --- |
+| Template | `schema/google-doc-template.md` v1.1 |
+| Removed from EVENT | `Date ISO`, `Wedding ID`, `Sync PIN`, `Service package`, duplicate `Venue` |
+| Removed from OCZEPINY | `Photographer available`, `Photographer briefed notes`, `### Sub-events` table |
+| Removed from VENUE LOGISTICS | installation latest start, load-in, setup, parking, power, loading dock, elevator, insurance, key holder, travel baseline/distance/origin, accommodation fields, notes |
+| Kept in VENUE LOGISTICS | one Venue + Address, Manager name/phone/email, Noise curfew, coordinates |
+| Removed from CAKE | `Photographer cue` |
+| Removed from PHOTO PLAN | `Group photos step ID` (Doc only), `Sparklers`, `Fire`, `Heavy smoke`, `Other effects` |
+| Removed sections | `## PRIVACY`, `## LIVE SYNC STATE`, `## EXTENSIONS` from the Doc/parser; runtime schema/config stays |
+| Kept sections | `## KITCHEN` and `## CEREMONY SCRIPT` (`Welcome and Introduction`, `The Pronouncement`) |
+| Generated values | Date ISO from `Date`; Wedding ID from the UM Drive folder; Sync PIN runtime; Oczepiny sub-events fixed six; Oczepiny photographer availability from the assigned role |
+| Global effects | Keep the `specialEffects` domain and Photographer view; retire only `photoPlan.specialEffects` |
+
+**Data sources.**
+
+| Value | Source |
+| --- | --- |
+| Date ISO | Derived from the Doc `Date` (`DD.MM.YYYY`) with validation |
+| Wedding ID | UM wedding folder/Drive context passed into the mapper |
+| Sync PIN | Runtime generation; never authored in the Doc |
+| Service package | Admin initial publish value; Venue Manager correction afterwards |
+| Oczepiny sub-events | Fixed six: veil toss, bouquet toss, bow-tie game, cravat toss, winner photo, winners with couple photo |
+| Oczepiny photographer available | Assigned photographer role/provider |
+| Photographer briefing notes | Live state only |
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Google Doc template/field map/parser/schema | Remove the listed fields; derive generated values; keep Kitchen and ceremony scripts |
+| Admin publish/create | Required initial service package selector; no Doc source |
+| Venue Manager | Current package visible; correction allowed; value only, no role re-provisioning |
+| Photographer/media view | Briefing note editable by active `photo1`, `photo2`, `video`; stored in live state |
+| MC / DJ / Speaker / Song Request / recap | No new UI; consume existing data only |
+| Other roles | No service-package or briefing-note edit access |
+
+**Explicitly out of scope.**
+
+- Automatic role/PIN/session/VIP re-provisioning on package changes.
+- Kitchen Services and ceremony-script removal.
+- Global `specialEffects` removal; only the PHOTO PLAN copy is retired.
+- Production migration/deploy; production has zero weddings.
+- Admin editing of photographer notes.
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; no milestone |
+| Doc cleanup | One atomic contract issue covering template, field map, parser, schema and fixtures |
+| Tail sections | Remove PRIVACY/LIVE SYNC/EXTENSIONS from Doc/parser; keep runtime schema; keep Kitchen and ceremony scripts |
+| Identity | Wedding ID from Drive, Date ISO from Date, Sync PIN runtime |
+| Service package | Admin initial value; Venue Manager may correct it later |
+| Package side effects | Value only; no role/session/VIP re-provisioning |
+| Photographer notes | Live state only; editable by photo/camera roles |
+| Venue logistics | Full removal of the listed fields; keep one Venue/Address and manager/curfew/coordinates |
+| Effects | Remove only PHOTO PLAN effects; keep global specialEffects |
+| Cake cue | Remove from Doc, schema, parser and cake code |
+| Group photos step ID | Remove from Doc/parser; keep schema fallback mapping |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1311) | Template/field map/parser/schema/fixtures cleanup; generated values; tests | - |
+| 2 | [#1308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1308) | Admin initial service package at publish; persistence; validation | #1311 |
+| 3 | [#1309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1309) | Venue Manager package correction; authorized value-only write; no re-provisioning | #1311, #1308 |
+| 4 | [#1310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1310) | Live-state photographer briefing notes; photo/video edit; no cartridge revision | #1311 |
+
+**Open questions.** None.
+
+**Tracking.** [#1311](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1311),
+[#1308](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1308),
+[#1309](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1309),
+[#1310](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1310).
