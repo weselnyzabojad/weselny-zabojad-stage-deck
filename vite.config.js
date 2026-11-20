@@ -4,7 +4,11 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tailwindcss from '@tailwindcss/vite'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
-import { isLandingSurface, parseReleaseSurface } from './src/lib/releaseSurface.js'
+import {
+  isLandingSurface,
+  isPublicSurface,
+  parseReleaseSurface,
+} from './src/lib/releaseSurface.js'
 import { landingSurfacePlugin } from './scripts/vite-plugin-release-surface.mjs'
 
 // Sourcemap upload is build-only and opt-in. The token is a Netlify build
@@ -23,6 +27,12 @@ export default defineConfig(({ command }) => {
   // value throws here, so a typo fails the build instead of publishing the deck.
   const releaseSurface = parseReleaseSurface(process.env.RELEASE_SURFACE)
   const landing = isLandingSurface(releaseSurface)
+  const publicSurface = isPublicSurface(releaseSurface)
+  const surfaceEntry = landing
+    ? 'index.landing.html'
+    : publicSurface
+      ? 'index.public.html'
+      : null
 
   return {
     resolve: {
@@ -39,9 +49,9 @@ export default defineConfig(({ command }) => {
     // headroom for release growth instead of silencing a warning we still need.
     build: {
       chunkSizeWarningLimit: 1500,
-      // Issue #1152: the landing-only surface resolves its own HTML entry; the
+      // Issues #1152/#1298: a reduced surface resolves its own HTML entry; the
       // release plugin renames the emitted file to index.html.
-      ...(landing ? { rollupOptions: { input: 'index.landing.html' } } : {}),
+      ...(surfaceEntry ? { rollupOptions: { input: surfaceEntry } } : {}),
       // Hidden maps are produced only when they will be uploaded. The Sentry
       // plugin deletes them from dist after upload, so Netlify never serves
       // source. Without the token no map is emitted and no upload is attempted.
@@ -53,8 +63,8 @@ export default defineConfig(({ command }) => {
     plugins: [
       react(),
       tailwindcss(),
-      landingSurfacePlugin({ landing }),
-    !landing && VitePWA({
+      landingSurfacePlugin({ landing, publicSurface }),
+    !landing && !publicSurface && VitePWA({
       // Issue #81: never reload the live stage silently. A new service worker
       // waits until the user accepts the deferred "Update available" prompt.
       registerType: 'prompt',

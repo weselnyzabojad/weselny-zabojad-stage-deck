@@ -20,6 +20,7 @@
     "validate:i18n": "node scripts/check-i18n.mjs",
     "validate:env": "node scripts/validate-env.mjs",
     "verify:landing-build": "node scripts/verify-landing-build.mjs",
+    "verify:public-build": "node scripts/verify-public-build.mjs",
     "local:start": "node scripts/local-supabase.mjs start",
     "local:stop": "node scripts/local-supabase.mjs stop",
     "local:status": "node scripts/local-supabase.mjs status",
