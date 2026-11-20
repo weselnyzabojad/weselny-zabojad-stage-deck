@@ -20,7 +20,7 @@ describe('issue #227 Photographer section cleanup', () => {
   });
 
   it('keeps the footer and sunset view', () => {
-    expect(photo).toContain('Read-only media view');
+    expect(photo).toContain("t('photo.footer')");
     expect(photo).toContain('photo.sunsetGolden');
   });
 });

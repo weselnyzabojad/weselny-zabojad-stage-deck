@@ -96,6 +96,16 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     return data;
   }
 
+  // Media briefing note (issue #1310). Media roles cannot write the room table
+  // directly, so this scoped RPC updates only `photographer_notes`.
+  async function setPhotographerNotes(notes) {
+    const { data, error } = await supabase.rpc('stage_deck_set_photographer_notes', {
+      p_notes: notes,
+    });
+    if (error) throw new Error(describeError(error));
+    return data;
+  }
+
   // Read receipts (issue #1159). The RPC derives wedding/role/device from the
   // signed role token, so the ack payload only names the step and revision.
   async function ackStepReceipt({ stepId, revision } = {}) {
@@ -349,6 +359,7 @@ export function createSupabaseSyncClient(config, { accessToken = null } = {}) {
     fetchWedding,
     fetchServerTime,
     setServicePackage,
+    setPhotographerNotes,
     touchPresence,
     ackStepReceipt,
     fetchStepReceipts,

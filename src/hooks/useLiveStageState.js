@@ -5,6 +5,7 @@ import {
   markStepDone,
   mergeMutationLogs,
   normalizeLiveState,
+  normalizePhotographerNotes,
   saveLiveState,
   storageKey,
   swapStepWithNext,
@@ -577,11 +578,19 @@ export function useLiveStageState({
     [apply, actor],
   );
 
-  // Server-authorized package correction. The write path lives behind a
-  // token-scoped RPC; this hook never mirrors it into the direct live-state
-  // publish path.
+  // Server-authorized package correction and media note. Both write paths live
+  // behind token-scoped RPCs; this hook never mirrors them into the direct
+  // live-state publish path.
   const saveServicePackage = useCallback(
     async (value) => (client ? client.setServicePackage(value) : value),
+    [client],
+  );
+
+  const savePhotographerNotes = useCallback(
+    async (notes) => {
+      const normalized = normalizePhotographerNotes(notes);
+      return client ? client.setPhotographerNotes(normalized) : normalized;
+    },
     [client],
   );
 
@@ -600,6 +609,7 @@ export function useLiveStageState({
     setGameResults,
     setMediaOverride,
     saveServicePackage,
+    savePhotographerNotes,
     savedLocally,
     syncStatus: client ? syncStatus : 'disabled',
     syncEnabled: Boolean(client),

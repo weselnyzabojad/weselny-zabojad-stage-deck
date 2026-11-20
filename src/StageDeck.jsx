@@ -132,6 +132,7 @@ export default function StageDeck({
     setGameResults,
     setMediaOverride,
     saveServicePackage,
+    savePhotographerNotes,
     savedLocally,
     syncStatus,
     syncError,
@@ -729,6 +730,8 @@ export default function StageDeck({
             cakeProtocol={cakeProtocol}
             cakeServiceMode={cakeServiceMode}
             scheduleBanner={scheduleChangeBanner}
+            photographerNotes={liveState.photographer_notes ?? ''}
+            onSavePhotographerNotes={savePhotographerNotes}
             {...roleProps}
           />
         </AppErrorBoundary>
