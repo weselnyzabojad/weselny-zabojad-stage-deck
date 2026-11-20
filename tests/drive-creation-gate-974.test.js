@@ -262,6 +262,8 @@ describe('issue #974 per-game Doc-authorized Drive creation', () => {
     expect(panel).not.toContain('changeMode');
     expect(panel).toContain('from the wedding Doc · read-only');
     expect(panel).toContain('Speech Doc creation is blocked.');
+    expect(panel).toContain('{creation.error} This panel cannot override the Doc.');
+    expect(panel).toContain('Speech management is disabled for this wedding.');
     expect(panel).toContain('LIGHT records metadata only');
     expect(api).not.toContain('setSpeechMode');
     expect(backend).not.toContain("action === 'set_speech_mode'");
@@ -277,8 +279,11 @@ describe('issue #974 per-game Doc-authorized Drive creation', () => {
         }),
       );
       expect(markup).toContain(`Speeches · ${mode}`);
-      expect(expected).toBeTruthy();
+      expect(speechDocCreationAuthorization({ speechMode: mode }).error).toContain(expected);
     }
+    expect(speechDocCreationAuthorization({}).error).toContain(
+      'The wedding Doc has no Speech mode.',
+    );
 
     expect(
       renderToStaticMarkup(
@@ -317,6 +322,23 @@ describe('issue #974 per-game Doc-authorized Drive creation', () => {
     expect(speechSection.indexOf('speechDocCreationAuthorization')).toBeLessThan(
       speechSection.indexOf('ensureSpeechFolder'),
     );
+  });
+
+  it('returns before resolving folders or creating Docs for every unauthorized speech mode', () => {
+    const api = read('supabase/functions/admin_drive/index.ts');
+    const speechSection = api.slice(
+      api.indexOf("action === 'create_speech_doc'"),
+      api.indexOf("action === 'rename_speech_doc'"),
+    );
+    const gate = speechSection.indexOf('if (!authorization.allowed)');
+    expect(gate).toBeGreaterThan(speechSection.indexOf('speechDocCreationAuthorization(cartridge)'));
+    for (const sideEffect of ['resolveWeddingFolderId', 'ensureSpeechFolder', 'connector.createGoogleDoc']) {
+      expect(gate, sideEffect).toBeLessThan(speechSection.indexOf(sideEffect));
+    }
+    expect(speechSection.slice(gate)).toContain(
+      'return json({ error: authorization.error, code: authorization.code }, 409)',
+    );
+    expect(speechSection).not.toContain('body?.mode');
   });
 
   it('uses both #968 folder scopes and reuses existing folders and Docs', () => {
