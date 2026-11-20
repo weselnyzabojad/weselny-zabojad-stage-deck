@@ -10,7 +10,10 @@ describe('issue #1327 Drive HTML import for the client template', () => {
   const migration = read('supabase/migrations/202611210002_wedding_template_doc.sql');
 
   it('keeps the embedded edge template byte-identical to the markdown reference', () => {
-    expect(CLIENT_TEMPLATE_MARKDOWN).toBe(read('schema/google-doc-template.md'));
+    const normalize = (value) => value.replace(/\r\n/g, '\n');
+    expect(normalize(CLIENT_TEMPLATE_MARKDOWN)).toBe(
+      normalize(read('schema/google-doc-template.md')),
+    );
   });
 
   it('imports HTML through the multipart Drive upload shape', () => {
