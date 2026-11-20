@@ -11690,6 +11690,10 @@ issue.
 
 ### 17.144 Admin Social Media Studio data review and Story enrichment (decision, 2026-11-21)
 
+> **Updated on 2026-11-21:** issue #1342 is repurposed from Season to **Month**.
+> The Season scope moves to #1347 and a **Before season** Story is added as
+> #1346; the monthly/countdown data is #1345. See 17.145.
+
 The owner-admin Social Export Studio becomes the place to review real
 per-wedding data before exporting. The admin studio loads the missing
 recap/live/request data, keeps the MC output unchanged, and enriches each Story
@@ -11784,7 +11788,7 @@ issue.
 | 2 | [#1339](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1339) | Admin-only Story rendering mode; MC unchanged | - |
 | 3 | [#1340](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1340) | Day −1 couple, venue, guests, cultural rules, package + DJ VIP, caption | #1338, #1339 |
 | 4 | [#1341](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1341) | Day +1 real times/duration, top requested song, per-game results, caption | #1338, #1339 |
-| 5 | [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342) | Season planned/completed weddings, destinations, Sto Lat, caption | - |
+| 5 | [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342) | Month Story admin enrichment (repurposed; Season scope moved to #1347, see 17.145) | #1345 |
 
 **Open questions.** None.
 
@@ -11793,3 +11797,99 @@ issue.
 [#1340](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1340),
 [#1341](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1341),
 [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342).
+
+### 17.145 Season lifecycle Stories: Before season, Month and post-season Season (decision, 2026-11-21)
+
+The season Story becomes a lifecycle instead of a single post-event template:
+**Before season** previews the plan, **Month** recaps the month of the selected
+wedding, and **Season** wraps the season only after its last planned wedding.
+Issue #1342 is repurposed from Season to Month; the Season scope moves to
+#1347.
+
+This section **supersedes 17.144 F3 and the #1342 Season contract**. The admin
+Studio remains the only surface; MC and public season output are unchanged.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F0 | Monthly facts + countdown | Durable `event_month`, optional month RPC block, `nextWedding.daysUntil` |
+| F1 | Month Story | Selected wedding's month, all weddings of that month, guests and compatibility |
+| F2 | Before season Story | Season year, planned destinations and `J−X` countdown |
+| F3 | Season Wrapped | Original season enrichment, offered only after the last planned wedding |
+
+**Release target.** Every feature is required for the **first release**. Label
+`release-1.1`; no milestone.
+
+**Data contract.**
+
+- `season_event_facts` gains nullable `event_month` (1–12), backfilled from the
+  best available event date. `buildSeasonFact` writes it for new facts.
+- `get_public_season_stats(p_season_year, p_month)` keeps its current output
+  when `p_month` is omitted and adds a `month` block when it is supplied:
+  `month`, `year`, guests total/PL/FR/other and compatibility
+  average/answered/total.
+- `nextWedding` is scoped to the requested season year and gains `daysUntil`
+  (non-negative integer or null). The exact first-wedding date is never exposed.
+- **Month** is resolved from the selected wedding's `dateISO`/`date`. It
+  aggregates **all weddings in that month**, not only the selected wedding.
+  The card shows month + year, guest total + PL/FR/other and compatibility
+  average + answered/total. Planned wedding count, destinations, Sto Lat and
+  animations are not part of the Month card.
+- **Before season** is offered when a season plan exists and the season has not
+  started (`completed === 0`, `upcoming > 0`). The card shows the season year,
+  the planned destination count + aggregated country list and `J−X` from
+  `nextWedding.daysUntil`. Planned wedding/guest counts are not part of this
+  card.
+- **Season** is offered only when `seasonPlan.weddings.completed > 0` and
+  `seasonPlan.weddings.upcoming === 0`. It keeps planned/completed/upcoming
+  weddings, destinations, Sto Lat, compatibility average, answered/total and
+  the generic top-question percentage.
+- Every card uses a neutral empty state instead of `0`, `NaN` or a fake claim.
+  FR and PL captions mirror the card.
+
+**Privacy contract.**
+
+- Month and Before season are aggregate-only: no couple, venue, exact date,
+  address, contact or per-wedding row.
+- `daysUntil` is the only countdown signal; the event date stays hidden.
+- Season data stays aggregate and season-scoped.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin Social Studio | Before season, Month and post-season Season templates |
+| MC post-mortem | Unchanged |
+| Public season widget / landing / WordPress | Unchanged |
+| Other stage roles | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| #1342 | Repurposed from Season to Month |
+| Month scope | Selected wedding defines the month; all weddings in that month |
+| Month data | Month/year, guests, compatibility |
+| Before season data | Season/year, planned destinations, countdown |
+| Season gating | After the last planned wedding (`completed > 0`, `upcoming === 0`) |
+| Privacy | Aggregate only; no exact dates |
+| Captions | FR/PL mirror the card |
+| Surfaces | Admin only; MC and public unchanged |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1345](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1345) | Durable `event_month`, month RPC block, `nextWedding.daysUntil` | - |
+| 2 | [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342) | Month Story: selected wedding's month, all weddings, guests + compatibility | #1345 |
+| 3 | [#1346](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1346) | Before season Story: season/year, planned destinations, countdown | #1345 |
+| 4 | [#1347](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1347) | Season post-season gating + original Season enrichment | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342),
+[#1345](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1345),
+[#1346](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1346),
+[#1347](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1347).
