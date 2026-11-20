@@ -880,7 +880,7 @@ function AdminAppContent({ statusMode = false }) {
   }
 
   return (
-    <div className="min-h-screen bg-page text-ink">
+    <div className={`min-h-screen bg-page text-ink ${statusMode ? 'monitor-safe-area' : ''}`}>
       <header className="sticky top-0 z-banner border-b border-line bg-card px-4 py-3">
         {ADMIN_DEMO ? (
           <div className="mx-auto mb-2 max-w-6xl rounded border border-amber-700 bg-amber-950/60 px-3 py-1.5 text-[11px] text-amber-200">
@@ -888,7 +888,7 @@ function AdminAppContent({ statusMode = false }) {
           </div>
         ) : null}
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2">
-          <div>
+          <div className="min-w-0">
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
               {statusMode ? 'Owner monitor' : 'Owner admin'}
             </div>
@@ -896,7 +896,7 @@ function AdminAppContent({ statusMode = false }) {
               {statusMode ? 'Wedding Monitor' : 'Wedding library'}
             </h1>
           </div>
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-muted">
               idle {Math.ceil(sessionState.idleRemainingMs / 60000)}m · absolute{' '}
               {Math.floor(sessionState.absoluteRemainingMs / 3600000)}h
