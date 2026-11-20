@@ -11422,6 +11422,10 @@ photographer briefing notes stored only in live state.
 
 ### 17.142 Doc authorization audits, canonical optional timeline and Venue Manager anchor approval (decision, 2026-11-20)
 
+> **Superseded in part on 2026-11-21:** the F4 timeline contract and its tasks
+> #1320/#1321 are replaced by [17.143](#17143-client-facing-google-doc-template-generation-and-3-column-timeline-decision-2026-11-21).
+> F1-F3, F5 and #1322/#1323 remain in force.
+
 Speech and game creation stay authorized by the wedding Doc, privacy stays
 app-owned, and the timeline becomes a canonical table where deleting a row is
 the only way to exclude an optional step. CAKE and KITCHEN hard anchors gain an
@@ -11536,3 +11540,144 @@ blocks publish or live use.
 [#1321](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1321),
 [#1322](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1322),
 [#1323](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1323).
+
+### 17.143 Client-facing Google Doc template generation and 3-column timeline (decision, 2026-11-21)
+
+The customer template becomes a generated Google Doc created through the Drive
+HTML import API in the wedding folder, and the timeline becomes a 3-column
+customer table. The couple edits hours, row order and row presence only; the
+step catalog and all machine metadata stay in code.
+
+This section **supersedes 17.142 F4, #1320 and #1321**. It keeps the full
+existing template, the English presentation, #1322's KITCHEN/CAKE authority and
+#1323's approval contract.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F1 | Client template generation | Admin prerequisites, HTML-driven Google Doc, create-once conflict guard |
+| F2 | 3-column timeline | `Hour \| Step name \| Example values`; canonical 19-step catalog; Step name is the satellite key |
+
+**Release target.** Both features are required for the **first release**. Label
+`release-1.1`; no milestone. No first-release task depends on a Release-1.2
+issue.
+
+**Admin and data contract.**
+
+- `weddings.bride_name` and `weddings.groom_name` are nullable 1-80 character
+  columns. Existing rows are backfilled from `couple` only when it splits on
+  `&` into exactly two non-empty names; the first is the bride and the second
+  the groom. The split is never inferred from the folder name.
+- The existing `venue_name` and `venue_address` columns are reused. No duplicate
+  venue fields are added.
+- `template_doc_id` stores the created Drive file id. It is nullable until the
+  first successful creation and is the primary create-once guard.
+- The four prerequisites are `bride_name`, `groom_name`, `venue_name` and
+  `venue_address`. A single readiness helper returns `{ ready, missing }`; the
+  server returns `409 template_prerequisites_missing` before any Drive call and
+  the admin action lists the same fields.
+- The admin editor is the only writer of the two names. It trims input, rejects
+  empty values, writes an audit entry and respects read-only/archived state.
+- Creation is allowed once. If `template_doc_id` is set, or the exact filename
+  already exists in the folder, the server returns
+  `409 template_doc_exists` and writes nothing. There is no overwrite or
+  in-place update path.
+- The filename is `Wedding harmonogram - <bride> & <groom> (<weddingId>)`,
+  sanitized for Drive and capped at 180 characters.
+
+**Google Doc contract.**
+
+- The generated Doc is the full current template, in English. No section is
+  dropped and no new cartridge field is introduced.
+- A header block precedes `## EVENT`:
+
+  ```text
+  # <bride> & <groom>
+  Venue: <venue name>
+  Address: <venue address>
+  ```
+
+- `## TIMELINE` has exactly three columns: `Hour`, `Step name`,
+  `Example values`.
+- The catalog is the frozen 19-step list from #1320: Vin d'honneur / Cocktail,
+  Ceremony, Grand Entrance, Dinner, Wedding Cake, Wedding Thank-You, Wishes,
+  First Dance, Oczepiny, Test Wiedzy, Test Zgodności, Musical Set, Bread & Salt,
+  Dance with Bride and Groom, Supper I, Supper II, Supper III, Speed Foto, Last
+  Dance. Each entry has a unique canonical name and a stable internal id that
+  the couple never edits.
+- `Hour` is the planned start in `HH:MM`. The template ships example hours; the
+  couple may change them. Every present row must have a valid time; blank or
+  invalid is an import error.
+- `Example values` is read-only schema-derived guidance. It is never parsed and
+  never authorizes a field value.
+- Row order is presentation-only. The parser orders steps by time using the
+  existing after-midnight service-day rule.
+- Deleting a row is the only way to exclude a step. A deleted row creates no
+  step, cue, subtask, game or anchor.
+- The Step name is the stable customer-facing key. `DJ CUES`, `NOTES`,
+  `SUBTASKS` and `MC CUES` attach by Step name; internal IDs stay in the catalog
+  and cartridge.
+- `## KITCHEN` and `## CAKE` remain authoritative under #1322; their TIMELINE
+  cross-check now resolves the Step name.
+
+**Drive contract.**
+
+- `createGoogleDocFromHtml({ parentId, name, html })` uploads with
+  `uploadType=multipart`, target metadata `mimeType:
+  application/vnd.google-apps.document` and media part `text/html;
+  charset=UTF-8`. The existing plain-text `createGoogleDoc` stays for speech and
+  question Docs.
+- `create_wedding_template_doc` validates the admin session and writable
+  wedding, checks the four prerequisites, resolves the wedding folder, checks
+  the create-once guard, then uploads.
+- Rejections happen before the Drive upload. Drive errors are mapped and audited
+  without exposing tokens or raw requests.
+- Success stores `template_doc_id` and writes an audit entry with file id, name
+  and folder id.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin | Bride/groom editor, four-field readiness, Create client template action, created/conflict states, line-level timeline errors |
+| Couple Google Doc | Header with names/venue/address, full template, 3-column timeline, examples, delete-to-exclude instructions |
+| MC / DJ / Photographer / Speaker | Unchanged; consume the parsed steps and anchors |
+| Venue Manager | Unchanged; #1323 approval contract remains |
+| Song Request / Musician | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| Template scope | Full current template, English |
+| Names | Dedicated `bride_name` / `groom_name`; first is bride, second groom |
+| Prerequisites | Bride, groom, venue name and venue address; all required |
+| Creation lifecycle | Create once; existing Doc is a conflict; no overwrite |
+| Filename | `Wedding harmonogram - <bride> & <groom> (<weddingId>)` |
+| Timeline columns | `Hour`, `Step name`, `Example values` only |
+| Examples | Read-only, schema-derived, never parsed |
+| Ordering | By time, never by row position |
+| Satellite key | Canonical Step name |
+| Supersession | #1320 and #1321 replaced; #1322/#1323 unchanged |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1326](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1326) | Admin bride/groom fields, readiness helper and creation gate | - |
+| 2 | [#1329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1329) | Canonical step catalog, 3-column timeline and full HTML renderer | - |
+| 3 | [#1327](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1327) | Drive HTML import helper and create-once endpoint | #1326, #1329 |
+| 4 | [#1328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1328) | Admin Create client template action | #1326, #1327 |
+| 5 | [#1330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1330) | Parse the 3-column timeline by Step name | #1329 |
+| 6 | [#1331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1331) | Re-key Doc satellites to Step name | #1330 |
+
+**Open questions.** None.
+
+**Tracking.** [#1326](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1326),
+[#1327](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1327),
+[#1328](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1328),
+[#1329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1329),
+[#1330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1330),
+[#1331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1331).
