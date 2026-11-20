@@ -208,6 +208,10 @@ export const SECTION_BY_MARKER = Object.freeze(
 );
 
 const MARKER_PATTERN = /^##[ \t]+(.+?)[ \t]*$/;
+const REMOVED_SECTION_MESSAGES = Object.freeze({
+  PRIVACY:
+    'Section "## PRIVACY" was removed. Privacy and encryption settings are app-owned; delete the section and republish the wedding Doc.',
+});
 const SUBSECTION_PATTERN = /^###[ \t]+(.+?)[ \t]*$/;
 const TABLE_SEPARATOR_PATTERN = /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/;
 const KEY_VALUE_PATTERN = /^([A-Za-z][\w ./+-]*?):[ \t]*(.*)$/;
@@ -446,7 +450,8 @@ export function validateGoogleDocTemplate(parsed) {
 
   for (const marker of unknown) {
     errors.push(
-      `Unknown section "## ${marker}". Use only the markers from docs/google-doc-template-conventions.md.`,
+      REMOVED_SECTION_MESSAGES[marker] ??
+        `Unknown section "## ${marker}". Use only the markers from docs/google-doc-template-conventions.md.`,
     );
   }
   for (const marker of duplicates) {

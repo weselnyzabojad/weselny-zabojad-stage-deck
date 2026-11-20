@@ -2,6 +2,7 @@ import { calculateStepDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
 import { normalizeSpeechMode } from './speeches.js';
+import { normalizePrivacy } from '../config/index.js';
 import { resolveEventDateISO } from './eventTime.js';
 
 // Matches the first HH:MM clock at the start of a loose time string. Accepts
@@ -41,16 +42,13 @@ function guestCount(source, label, warnings) {
   return Number.parseInt(raw, 10);
 }
 
-function mapDemographics(source, privacySource, warnings) {
+function mapDemographics(source, warnings) {
   const values = {
     total: guestCount(source, 'Guests total', warnings),
     pl: guestCount(source, 'Guests PL', warnings),
     fr: guestCount(source, 'Guests FR', warnings),
     other: guestCount(source, 'Guests other', warnings),
-    notes:
-      text(kv(source, 'Notes')) ??
-      text(kv(privacySource, 'Demographics notes')) ??
-      undefined,
+    notes: text(kv(source, 'Notes')) ?? undefined,
   };
   return Object.fromEntries(
     Object.entries(values).filter(([, value]) => value !== undefined),
@@ -1144,11 +1142,8 @@ export function googleDocTemplateToCartridge(
     attractions,
     ...(speechMode ? { speechMode } : {}),
     extensions,
-    demographics: mapDemographics(
-      section(parsed, 'DEMOGRAPHICS'),
-      undefined,
-      warnings,
-    ),
+    privacy: normalizePrivacy(),
+    demographics: mapDemographics(section(parsed, 'DEMOGRAPHICS'), warnings),
   };
 
   for (const key of Object.keys(cartridge)) {

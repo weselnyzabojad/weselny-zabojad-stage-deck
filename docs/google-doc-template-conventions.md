@@ -76,7 +76,6 @@ Canonical order and mapping:
 | 20 | `## GAMES` | no | `steps[].game` |
 | 21 | `## KITCHEN` | no | `kitchen` |
 | 22 | `## PRE-WEDDING TODOS` | no | `preWeddingTodos` |
-| 23 | `## PRIVACY` | no | `privacy` (encryption metadata only) |
 | 24 | `## LIVE SYNC STATE` | no | `liveSyncState` (demo seed only) |
 | 25 | `## EXTENSIONS` | no | `extensions` |
 | 26 | `## MANDATORY STEPS` | no | `steps[].mandatory` |
@@ -89,8 +88,8 @@ missing, duplicated, unknown, out of order, or has the wrong table header.
 `## DEMOGRAPHICS` is optional. It accepts `Guests total`, `Guests PL`,
 `Guests FR`, `Guests other` and `Notes`. Counts must be non-negative whole
 numbers; missing or invalid counts stay absent (never zero) and invalid values
-raise an import warning. The legacy `Demographics notes` key in `## PRIVACY`
-remains a fallback for `demographics.notes`.
+raise an import warning. Guest notes come only from the `Notes` key under
+`## DEMOGRAPHICS`; privacy settings are app-owned and never Doc-sourced.
 
 ---
 
@@ -139,8 +138,7 @@ Rules:
 
 ### Lists
 
-- Only the `-` (or `*`) bullet list is parsed inside `## PRIVACY` and free-text
-  sections.
+- Only the `-` (or `*`) bullet list is parsed inside free-text sections.
 - Numbered lists are display-only; use stable IDs in tables instead.
 - Never rely on indentation to express hierarchy. Use separate tables or
   sub-headings.
@@ -310,10 +308,15 @@ Direct table/key mapping to `cake`, `steps[].game` and `kitchen.*`. `GAMES` writ
 `YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
 `docs/optional-games.md`).
 
-### PRE-WEDDING TODOS / PRIVACY
+### PRE-WEDDING TODOS
 
-Direct mapping to `preWeddingTodos[]` and optional `privacy.*` encryption
-metadata. Every todo row needs a stable ID.
+Direct mapping to `preWeddingTodos[]`. Every todo row needs a stable ID.
+
+### Privacy and live state
+
+`## PRIVACY` is no longer a valid Doc marker. Privacy and encryption metadata
+come from `PRIVACY_CONFIG` in `src/config/privacy.js`; a Doc that still contains
+the section fails validation with a migration message.
 
 ### LIVE SYNC STATE / EXTENSIONS
 
