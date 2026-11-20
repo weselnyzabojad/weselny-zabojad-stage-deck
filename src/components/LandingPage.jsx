@@ -287,6 +287,8 @@ export default function LandingPage() {
     index,
     title: t(`landing.features.${index}.title`),
     body: t(`landing.features.${index}.body`),
+    badge: index === 7 ? t('landing.features.7.badge') : null,
+    condition: index === 7 ? t('landing.features.7.condition') : null,
   }));
   const steps = [1, 2, 3].map((index) => ({
     title: t(`landing.how.${index}.title`),
@@ -425,18 +427,49 @@ export default function LandingPage() {
               {t('landing.features.title')}
             </SectionTitle>
             <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((item) => (
-                <article
-                  key={item.title}
-                  className="rounded-2xl border border-[#C5A059]/20 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#C5A059]/60 hover:shadow-lg hover:shadow-[#C5A059]/10 motion-reduce:transition-none motion-reduce:hover:transform-none sm:p-8"
-                >
-                  <FeatureIcon index={item.index} />
-                  <h3 className="mt-4 font-heading text-base font-semibold text-[#1A1A1A]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-[#475569]">{item.body}</p>
-                </article>
-              ))}
+              {features.map((item) => {
+                const isPartnerOption = Boolean(item.badge);
+                return (
+                  <article
+                    key={item.title}
+                    className={`relative flex h-full flex-col rounded-2xl p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#C5A059]/10 motion-reduce:transition-none motion-reduce:hover:transform-none sm:p-8 ${
+                      isPartnerOption
+                        ? 'border border-[#C5A059]/45 bg-[#FBF4E4] pt-12 hover:border-[#C5A059]/70 sm:pt-12'
+                        : 'border border-[#C5A059]/20 bg-white hover:border-[#C5A059]/60'
+                    }`}
+                  >
+                    {isPartnerOption && (
+                      <span className="absolute right-3 top-3 rounded-full bg-[#1E293B] px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#F0D48A]">
+                        {item.badge}
+                      </span>
+                    )}
+                    <FeatureIcon index={item.index} />
+                    <h3 className="mt-4 font-heading text-base font-semibold text-[#1A1A1A]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-[#475569]">{item.body}</p>
+                    {isPartnerOption && (
+                      <div className="mt-auto pt-5">
+                        <p className="flex items-start justify-center gap-2 rounded-xl border border-[#C5A059]/30 bg-white/70 px-3 py-2.5 text-xs leading-relaxed text-[#6B4F1D]">
+                          <svg
+                            aria-hidden="true"
+                            viewBox="0 0 24 24"
+                            className="mt-0.5 h-4 w-4 shrink-0 text-[#8A6A2F]"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M6 11h12v10H6zM9 11V7a3 3 0 0 1 6 0v4" />
+                          </svg>
+                          <span>{item.condition}</span>
+                        </p>
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           </div>
         </section>

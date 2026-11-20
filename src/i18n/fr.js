@@ -922,6 +922,8 @@ const fr = {
   'landing.features.6.body': 'Aussi simple qu’une application : Stage Deck s’installe en un geste sur smartphone ou tablette, sans rien à télécharger.',
   'landing.features.7.title': 'Demandes de chansons',
   'landing.features.7.body': 'Ambiance sur-mesure : selon la formule choisie, vos invités glissent leurs envies musicales préférées directement depuis leur smartphone.',
+  'landing.features.7.badge': 'Option exclusive',
+  'landing.features.7.condition': 'Exclusif aux formules de nos partenaires privilégiés',
   'landing.how.title': 'Comment ça se passe',
   'landing.how.1.title': 'On façonne votre journée',
   'landing.how.1.body': 'Votre maître de cérémonie structure le déroulé, les temps forts et les rôles de chacun dans un espace dédié.',
