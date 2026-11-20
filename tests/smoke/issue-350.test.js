@@ -56,7 +56,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
       { key: 'step_15', time: '23:00' },
       { key: 'step_16', time: '23:30' },
     ]);
-    expect(result.cartridge.extensions.kitchen.courses).toHaveLength(2);
+    expect(result.cartridge.extensions.kitchen.courses).toHaveLength(3);
     expect(result.cartridge.musicPolicy.importantSongs.length).toBe(3);
     expect(result.cartridge.musicPolicy.mustPlay.length).toBe(2);
     expect(result.cartridge.musicPolicy.doNotPlay.length).toBe(1);

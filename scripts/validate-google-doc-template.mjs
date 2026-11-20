@@ -52,7 +52,7 @@ const EXPECTED_TABLES = {
   ],
   'CAKE': null,
   'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Requires photographer', 'Notes'],
-  'KITCHEN': ['Course ID', 'Name', 'Time', 'Dietary notes'],
+  'KITCHEN': ['Course ID', 'Name', 'Time', 'Service Mode', 'Dietary notes'],
   'CEREMONY SCRIPT': null,
   'WITNESSES': [
     'Witness ID',

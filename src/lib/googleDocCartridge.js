@@ -896,10 +896,21 @@ function mapMusicPolicy(source, importantSongs, warnings = []) {
 
 function mapKitchen(source) {
   return {
-    courses: subTable(source, 'Courses', ['Course ID', 'Name', 'Time', 'Dietary notes']).map((row) => ({
+    courses: subTable(source, 'Courses', [
+      'Course ID',
+      'Name',
+      'Time',
+      'Service Mode',
+      'Dietary notes',
+    ]).map((row) => ({
       id: slug(row['Course ID']),
       name: text(row.Name),
       time: clock(row.Time),
+      serviceMode: ['TABLE_SERVICE', 'BUFFET'].includes(
+        text(row['Service Mode'])?.toUpperCase(),
+      )
+        ? text(row['Service Mode']).toUpperCase()
+        : 'TABLE_SERVICE',
       dietaryNotes: text(row['Dietary notes']),
     })),
     dietaryCounts: {
@@ -928,32 +939,14 @@ function mapMandatory(source) {
     const row = rows.find((entry) => normalizeKey(entry.Field) === target);
     return row?.Time ?? null;
   };
-  const kitchenServices = subTable(
-    source,
-    'Kitchen Services',
-    ['Course ID', 'Name', 'Time', 'Service Mode'],
-  )
-    .map((row) => {
-      const id = slug(row['Course ID']);
-      const time = clock(row.Time);
-      if (!id || !time) return null;
-      const serviceMode = ['TABLE_SERVICE', 'BUFFET'].includes(
-        text(row['Service Mode'])?.toUpperCase(),
-      )
-        ? text(row['Service Mode']).toUpperCase()
-        : 'TABLE_SERVICE';
-      const course = { id, time, serviceMode };
-      if (text(row.Name)) course.name = text(row.Name);
-      return course;
-    })
-    .filter(Boolean);
   return {
     firstGuestsArrival: clock(get('First guests arrival')),
-    kitchenServices,
     closureTime: clock(get('Wedding closure')),
     closureExtensionAllowed: bool(get('Closure extension allowed'), false),
     closureExtensionUntil: clock(get('Closure extension until')),
-    cakeServiceMode: ['KITCHEN_RETURN', 'CUT_IN_PLACE'].includes(text(get('Cake service mode'))?.toUpperCase())
+    cakeServiceMode: ['KITCHEN_RETURN', 'CUT_IN_PLACE'].includes(
+      text(get('Cake service mode'))?.toUpperCase(),
+    )
       ? text(get('Cake service mode')).toUpperCase()
       : undefined,
     lastSong: text(get('Last song')),
@@ -1128,8 +1121,41 @@ export function googleDocTemplateToCartridge(
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
   const speechMode = mapSpeechMode(section(parsed, 'SPEECHES'), warnings);
 
+  const kitchenSource = section(parsed, 'KITCHEN');
+  const kitchen = kitchenSource ? mapKitchen(kitchenSource) : undefined;
   const mandatorySettings = mapMandatory(section(parsed, 'MANDATORY STEPS'));
-  const stepsWithMandatory = applyMandatorySettings({ steps }, mandatorySettings);
+  const kitchenCourses = (kitchen?.courses ?? []).filter((course) => course.id && course.time);
+  const timelineTimes = new Map(steps.map((step) => [step.id, step.time]));
+  const settings = {
+    ...mandatorySettings,
+    kitchenServices: kitchenCourses.map((course) => ({
+      id: course.id,
+      name: course.name,
+      time: course.time,
+      serviceMode: course.serviceMode,
+    })),
+  };
+  const stepsWithMandatory = applyMandatorySettings({ steps }, settings);
+  for (const course of kitchenCourses) {
+    const timelineTime = timelineTimes.get(course.id);
+    if (timelineTime && course.time && timelineTime !== course.time) {
+      warnings.push(
+        `KITCHEN: ${course.name ?? course.id} time ${course.time} differs from TIMELINE ${timelineTime}; using KITCHEN`,
+      );
+    }
+  }
+  const cakeStep =
+    stepsWithMandatory.find((step) => step.id === 'step_05') ??
+    stepsWithMandatory.find((step) => /cake/i.test(step.title ?? ''));
+  if (cake?.time && cakeStep) {
+    if (cakeStep.time && cakeStep.time !== cake.time) {
+      warnings.push(
+        `CAKE: Time ${cake.time} differs from TIMELINE ${cakeStep.time}; using CAKE`,
+      );
+    }
+    cakeStep.time = cake.time;
+    cakeStep.type = 'HARD_ANCHOR';
+  }
   const hardAnchors = deriveHardAnchors(stepsWithMandatory);
   const ceremony = mapCeremony(event);
   const ceremonyStep = stepsWithMandatory.find((step) => /ceremony/i.test(step.title ?? ''));
@@ -1168,7 +1194,6 @@ export function googleDocTemplateToCartridge(
   if (invalidLanguages.length > 0) {
     errors.push('LANGUAGES: Supported must contain two-letter ISO 639-1 codes');
   }
-  const kitchenSource = section(parsed, 'KITCHEN');
   const extensions = {
     stepAnchorIds: anchorIds,
     dateISO,
@@ -1181,7 +1206,7 @@ export function googleDocTemplateToCartridge(
         ? { notes: text(kv(languagesSource, 'Notes')) }
         : {}),
     },
-    ...(kitchenSource ? { kitchen: mapKitchen(kitchenSource) } : {}),
+    ...(kitchen ? { kitchen } : {}),
     ...(guestRequests
       ? { guestRequestRules: text(kv(guestRequests, 'Rules')) }
       : {}),

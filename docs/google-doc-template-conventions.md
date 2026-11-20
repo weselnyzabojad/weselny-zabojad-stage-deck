@@ -317,6 +317,15 @@ Direct table/key mapping to `cake`, `steps[].game` and `kitchen.*`. `GAMES` writ
 `YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
 `docs/optional-games.md`).
 
+`## KITCHEN → Courses` is the only kitchen course table:
+`Course ID | Name | Time | Service Mode | Dietary notes`. `Service Mode` accepts
+`TABLE_SERVICE` or `BUFFET`. Remove the old `## MANDATORY STEPS → Kitchen
+Services` table. First guests arrival, closure and closure extension stay in
+`## MANDATORY STEPS`.
+
+`## CAKE → Time` is the cake source of truth. `## KITCHEN` times are the kitchen
+source of truth. A differing `## TIMELINE` time warns; the section value wins.
+
 ### PRE-WEDDING TODOS
 
 Direct mapping to `preWeddingTodos[]`. Every todo row needs a stable ID.
