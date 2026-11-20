@@ -28,7 +28,7 @@ export const MUSICBRAINZ_HEALTH_USER_AGENT =
 // not secrets, and carry no credentials or signed parameters.
 export const HEALTH_ENDPOINTS = Object.freeze({
   mainSite: 'https://www.weselnyzabojad.pl/',
-  landingBanner: 'https://www.weselnyzabojad.pl/extra/banner',
+  landingBanner: 'https://deck.weselnyzabojad.pl/extra/banner',
   deckSite: 'https://deck.weselnyzabojad.pl/',
   francuskiDj: 'https://francuskidj.pl/',
   itunes: 'https://itunes.apple.com/search?term=test&entity=song&limit=1',
@@ -353,7 +353,7 @@ export function createServiceHealth({
   }
 
   async function probeLandingBanner({ url }) {
-    return probePage({ id: 'landing_banner', name: 'weselnyzabojad.pl/extra/banner', url });
+    return probePage({ id: 'landing_banner', name: 'deck.weselnyzabojad.pl/extra/banner', url });
   }
 
   async function probeDeckSite({ url }) {

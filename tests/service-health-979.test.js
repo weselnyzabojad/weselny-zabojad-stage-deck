@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createServiceHealth, runServiceHealth } from '../supabase/functions/_shared/serviceHealth.js';
+import {
+  HEALTH_ENDPOINTS,
+  createServiceHealth,
+  runServiceHealth,
+} from '../supabase/functions/_shared/serviceHealth.js';
 import { startServiceMock } from '../tools/service-mock/server.mjs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -147,6 +151,12 @@ describe('issue #979 service health probes', () => {
     expect(result.providers.find((provider) => provider.id === 'supabase').status).toBe('ok');
     expect(JSON.stringify(result)).not.toContain(token);
     expect(JSON.stringify(result)).not.toContain('service-key');
+  });
+
+  it('probes the landing iframe on the deck host, not on the WordPress host', () => {
+    expect(HEALTH_ENDPOINTS.landingBanner).toBe(
+      'https://deck.weselnyzabojad.pl/extra/banner',
+    );
   });
 
   it('probes the production deck URL and maps the Netlify login redirect', async () => {
