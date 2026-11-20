@@ -25,7 +25,7 @@ const REQUIRED_FILES = [
   '404.html',
   '404.css',
   '_redirects',
-  'embed/season-stats/index.html',
+  'embed/season-stats.html',
 ]
 
 async function listFiles(dir, prefix = '') {
@@ -68,10 +68,10 @@ if (html.includes('/src/main.jsx') || html.includes('/src/landing-main.jsx') || 
 if (!html.includes('assets/')) errors.push('index.html does not reference built assets')
 
 const redirects = await readFile(path.join(DIST, '_redirects'), 'utf8').catch(() => '')
-if (!redirects.includes('/embed/season-stats             /embed/season-stats/index.html  200')) {
+if (!redirects.includes('/embed/season-stats             /embed/season-stats.html  200')) {
   errors.push('Season stats route is missing from _redirects')
 }
-if (!redirects.includes('/embed/season-stats/            /embed/season-stats/index.html  200')) {
+if (!redirects.includes('/embed/season-stats/            /embed/season-stats.html  200')) {
   errors.push('Season stats trailing-slash route is missing from _redirects')
 }
 if (redirects.includes('/extra/banner')) {

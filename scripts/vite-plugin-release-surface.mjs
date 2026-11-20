@@ -36,13 +36,13 @@ export const LANDING_REDIRECTS = `# Landing-only release (RELEASE_SURFACE=landin
 
 export const PUBLIC_REDIRECTS = `# Public under-construction release (RELEASE_SURFACE=public).
 # Only the placeholder and the season stats embed are public. The embed is
-# served from its own directory so Netlify applies the /embed/* header rule
+# served as a single /embed/ file so Netlify applies the /embed/* header rule
 # (including frame-ancestors) instead of the global /index.html CSP.
 /assets/*                       /404.html                    404
 /index.html                     /index.html                  200
 /                               /index.html                  200
-/embed/season-stats             /embed/season-stats/index.html  200
-/embed/season-stats/            /embed/season-stats/index.html  200
+/embed/season-stats             /embed/season-stats.html  200
+/embed/season-stats/            /embed/season-stats.html  200
 /*                              /404.html                    404
 `
 
@@ -66,11 +66,11 @@ export function landingSurfacePlugin({
       const publicIndex = path.join(outDir, 'index.html')
       await rename(path.join(outDir, entryFile), publicIndex)
       if (publicSurface) {
-        // Serve the embed from a real /embed/... file so Netlify's /embed/*
-        // header rule applies the WordPress frame-ancestors allowlist.
-        const embedDir = path.join(outDir, 'embed/season-stats')
-        await mkdir(embedDir, { recursive: true })
-        await copyFile(publicIndex, path.join(embedDir, 'index.html'))
+        // Serve the embed as a single-segment /embed/... file. Netlify header
+        // wildcards do not match across `/`, so a nested directory would miss
+        // the /embed/* frame-ancestors allowlist.
+        await mkdir(path.join(outDir, 'embed'), { recursive: true })
+        await copyFile(publicIndex, path.join(outDir, 'embed/season-stats.html'))
       }
       await Promise.all([
         copyFile(LANDING_404_HTML, path.join(outDir, '404.html')),
