@@ -89,12 +89,12 @@ describe('public under-construction release surface (issue #1298)', () => {
   });
 
   it('allowlists only the two public routes and a real 404', () => {
-    expect(PUBLIC_REDIRECTS).toContain('/index.html               /index.html  200');
-    expect(PUBLIC_REDIRECTS).toContain('/                         /index.html  200');
-    expect(PUBLIC_REDIRECTS).toContain('/embed/season-stats       /index.html  200');
-    expect(PUBLIC_REDIRECTS).toContain('/embed/season-stats/      /index.html  200');
-    expect(PUBLIC_REDIRECTS).toContain('/assets/*                 /404.html    404');
-    expect(PUBLIC_REDIRECTS).toContain('/*                        /404.html    404');
+    expect(PUBLIC_REDIRECTS).toContain('/index.html                     /index.html                  200');
+    expect(PUBLIC_REDIRECTS).toContain('/                               /index.html                  200');
+    expect(PUBLIC_REDIRECTS).toContain('/embed/season-stats             /embed/season-stats/index.html  200');
+    expect(PUBLIC_REDIRECTS).toContain('/embed/season-stats/            /embed/season-stats/index.html  200');
+    expect(PUBLIC_REDIRECTS).toContain('/assets/*                       /404.html                    404');
+    expect(PUBLIC_REDIRECTS).toContain('/*                              /404.html                    404');
     expect(PUBLIC_REDIRECTS).not.toContain('/extra/banner');
     expect(PUBLIC_REDIRECTS).not.toContain('/*    /index.html    200');
   });
@@ -109,6 +109,8 @@ describe('public under-construction release surface (issue #1298)', () => {
     const plugin = read('scripts/vite-plugin-release-surface.mjs');
     expect(plugin).toContain('PUBLIC_ENTRY_FILE');
     expect(plugin).toContain('PUBLIC_REDIRECTS');
+    expect(plugin).toContain("path.join(outDir, 'embed/season-stats')");
+    expect(plugin).toContain("copyFile(publicIndex, path.join(embedDir, 'index.html'))");
     expect(plugin).toContain("rm(path.join(outDir, 'status')");
     expect(plugin).toContain("rm(path.join(outDir, 'status-bootstrap.js')");
   });
@@ -124,6 +126,7 @@ describe('public under-construction release surface (issue #1298)', () => {
     expect(verify).toContain("'manifest.webmanifest'");
     expect(verify).toContain('status-bootstrap.js');
     expect(verify).toContain('/embed/season-stats');
+    expect(verify).toContain('embed/season-stats/index.html');
     expect(verify).toContain('/extra/banner must not be public');
   });
 });

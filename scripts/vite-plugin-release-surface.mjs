@@ -35,14 +35,15 @@ export const LANDING_REDIRECTS = `# Landing-only release (RELEASE_SURFACE=landin
 `
 
 export const PUBLIC_REDIRECTS = `# Public under-construction release (RELEASE_SURFACE=public).
-# Only the placeholder and the season stats embed are public. Missing assets
-# and every other route return the branded 404 with a real 404 status.
-/assets/*                 /404.html    404
-/index.html               /index.html  200
-/                         /index.html  200
-/embed/season-stats       /index.html  200
-/embed/season-stats/      /index.html  200
-/*                        /404.html    404
+# Only the placeholder and the season stats embed are public. The embed is
+# served from its own directory so Netlify applies the /embed/* header rule
+# (including frame-ancestors) instead of the global /index.html CSP.
+/assets/*                       /404.html                    404
+/index.html                     /index.html                  200
+/                               /index.html                  200
+/embed/season-stats             /embed/season-stats/index.html  200
+/embed/season-stats/            /embed/season-stats/index.html  200
+/*                              /404.html                    404
 `
 
 export function landingSurfacePlugin({
@@ -62,10 +63,15 @@ export function landingSurfacePlugin({
       const entryFile = publicSurface ? PUBLIC_ENTRY_FILE : LANDING_ENTRY_FILE
       const redirects = publicSurface ? PUBLIC_REDIRECTS : LANDING_REDIRECTS
       await mkdir(outDir, { recursive: true })
-      await rename(
-        path.join(outDir, entryFile),
-        path.join(outDir, 'index.html'),
-      )
+      const publicIndex = path.join(outDir, 'index.html')
+      await rename(path.join(outDir, entryFile), publicIndex)
+      if (publicSurface) {
+        // Serve the embed from a real /embed/... file so Netlify's /embed/*
+        // header rule applies the WordPress frame-ancestors allowlist.
+        const embedDir = path.join(outDir, 'embed/season-stats')
+        await mkdir(embedDir, { recursive: true })
+        await copyFile(publicIndex, path.join(embedDir, 'index.html'))
+      }
       await Promise.all([
         copyFile(LANDING_404_HTML, path.join(outDir, '404.html')),
         copyFile(LANDING_404_CSS, path.join(outDir, '404.css')),
