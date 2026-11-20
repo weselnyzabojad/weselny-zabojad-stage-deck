@@ -52,14 +52,14 @@ describe('issue #1239 landing iframe route /extra/banner', () => {
     expect(landingMain).toContain('detectBannerLocale(');
   });
 
-  it('frames /extra/banner only for the two WordPress origins', () => {
-    const banner = block('/extra/banner');
+  it('frames /extra/banner, including the trailing slash, only for the two WordPress origins', () => {
+    const banner = block('/extra/banner*');
     expect(banner.length).toBeGreaterThan(0);
     expect(cspOf(banner)).toContain(
       "frame-ancestors 'self' https://www.weselnyzabojad.pl https://weselnyzabojad.pl;",
     );
     expect(cspOf(banner)).not.toMatch(/frame-ancestors[^;]*\*/);
-    expect(netlify.indexOf('for = "/extra/banner"')).toBeLessThan(
+    expect(netlify.indexOf('for = "/extra/banner*"')).toBeLessThan(
       netlify.indexOf('for = "/*"'),
     );
     expect(cspOf(block('/*'))).toContain("frame-ancestors 'none';");

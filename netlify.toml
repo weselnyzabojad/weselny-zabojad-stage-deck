@@ -35,7 +35,9 @@
 # express a path-specific allowlist and would override the embed policy in
 # older browsers.
 [[headers]]
-  for = "/extra/banner"
+  # The wildcard also covers `/extra/banner/`: the route accepts the trailing
+  # slash and the global rule would otherwise apply `frame-ancestors 'none'`.
+  for = "/extra/banner*"
   [headers.values]
     Content-Security-Policy = "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://qdcuxefperykmjlirufe.supabase.co wss://qdcuxefperykmjlirufe.supabase.co https://api.sunrise-sunset.org https://o4512420559716352.ingest.de.sentry.io; manifest-src 'self'; worker-src 'self' blob:; frame-src 'none'; frame-ancestors 'self' https://www.weselnyzabojad.pl https://weselnyzabojad.pl; form-action 'self'; upgrade-insecure-requests"
     Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
