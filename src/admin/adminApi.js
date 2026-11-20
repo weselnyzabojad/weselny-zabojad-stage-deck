@@ -364,6 +364,11 @@ export async function updateWeddingIdentity(payload) {
   return callAdmin('update_wedding_identity', payload);
 }
 
+export async function createWeddingTemplateDoc(payload) {
+  if (ADMIN_DEMO) throw new Error('Client template creation is unavailable in demo mode.');
+  return callAdminDrive('create_wedding_template_doc', payload);
+}
+
 // Admin-only Google Drive proxy (issue #169). The browser never talks to Google
 // directly and never receives credentials or access tokens.
 async function callAdminDrive(action, payload = {}) {
@@ -391,6 +396,8 @@ async function callAdminDrive(action, payload = {}) {
     error.code = data?.code ?? null;
     error.errors = Array.isArray(data?.errors) ? data.errors : [];
     error.progress = Array.isArray(data?.progress) ? data.progress : [];
+    error.missing = Array.isArray(data?.missing) ? data.missing : [];
+    error.fileId = data?.fileId ?? null;
     throw error;
   }
   return data;

@@ -2792,7 +2792,7 @@ async function handleRequest(req: Request) {
         admin
           .from('weddings')
           .select(
-            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by, bride_name, groom_name, venue_name, venue_address, venue_city, venue_country',
+            'wedding_id, room_code, couple, date, expires_at, archived_at, created_at, updated_at, cartridge, cartridge_revision, cartridge_source, cartridge_source_metadata, cartridge_published_at, mc_confirmed_by, bride_name, groom_name, template_doc_id, venue_name, venue_address, venue_city, venue_country',
           )
           .order('updated_at', { ascending: false }),
         admin.from('wedding_roles').select('wedding_id, role, updated_at'),
