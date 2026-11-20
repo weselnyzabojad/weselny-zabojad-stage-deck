@@ -13,7 +13,7 @@ const firstDanceRow =
 describe('issue #663 first-dance Google Doc source flags', () => {
   it('keeps the required first-dance song in the template', () => {
     expect(template).toContain(firstDanceRow);
-    expect(template).toMatch(/\| step_08 \| 21:45 \|[^\n]*First Dance/);
+    expect(template).toMatch(/\| 21:15 \| First Dance \|/);
   });
 
   it('maps the required step and song fields', async () => {
@@ -21,10 +21,10 @@ describe('issue #663 first-dance Google Doc source flags', () => {
     const step = cartridge.steps.find((entry) => entry.id === 'step_08');
 
     expect(step).toMatchObject({
-      time: '21:45',
+      time: '21:15',
       title: 'First Dance',
       type: 'FLEXIBLE',
-      location: 'Main Hall',
+      location: 'Venue',
       isMainSongRequired: true,
       firstDanceMode: 'NORMAL',
     });

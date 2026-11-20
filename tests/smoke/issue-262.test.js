@@ -40,9 +40,11 @@ describe('issue #262 new predefined steps', () => {
     expect(read('src/StageDeck.jsx')).toContain('filterEnabledSteps(wedding)');
   });
 
-  it('adds the new rows to the Google Doc template', () => {
+  it('adds the canonical rows to the Google Doc template', () => {
     const template = read('schema/google-doc-template.md');
     expect(template).toContain('Wedding Thank-You');
-    expect(template).toContain('Optional Flag');
+    expect(template).toContain('Oczepiny');
+    expect(template).toContain('Test Wiedzy');
+    expect(template).not.toContain('Optional Flag');
   });
 });

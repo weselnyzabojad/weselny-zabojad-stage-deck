@@ -88,14 +88,14 @@ describe('issue #547 canonical step vocabulary & Plan-of-the-day mapping', () =>
     ]) {
       expect(conventions).toContain(term);
     }
-    expect(conventions).toContain('game` question list on the step');
+    expect(conventions).toContain('game question list');
     expect(conventions).toContain('grandEntranceOrder');
     expect(conventions).toContain('Song \u2014');
   });
 
   it('points the template at the canonical step titles', () => {
     const template = read('schema/google-doc-template.md');
-    expect(template).toContain('canonical step titles');
+    expect(template).toContain('canonical Step names');
     expect(template).toContain('Grand Entrance');
     expect(template).toContain('Bread & Salt');
     expect(template).toContain('Last Dance');

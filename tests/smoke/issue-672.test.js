@@ -15,7 +15,8 @@ describe('issue #672 steps Google Doc source flags', () => {
     expect(map.files['steps.example.json']['steps[].planned']).toBe('no');
     expect(map.files['steps.example.json']['steps[].optionalFlag']).toBe('optional');
     expect(map.todos.some((todo) => todo.file === 'steps.example.json')).toBe(false);
-    expect(template).toContain('`Optional Flag` accepts only `oczepiny` or `dj_set`');
+    expect(template).not.toContain('Optional Flag');
+    expect(read('src/lib/canonicalSteps.js')).toContain("optionalFlag: 'oczepiny'");
   });
 
   it('maps the Doc-sourced step fields and the optional feature flag', async () => {
@@ -24,7 +25,7 @@ describe('issue #672 steps Google Doc source flags', () => {
     expect(cartridge.steps.find((step) => step.id === 'step_09')).toMatchObject({
       time: '00:00',
       title: 'Oczepiny',
-      location: 'Main Hall',
+      location: 'Venue',
       isMainSongRequired: false,
       optionalFlag: 'oczepiny',
     });
@@ -33,17 +34,12 @@ describe('issue #672 steps Google Doc source flags', () => {
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('warns and omits an unknown optional flag', () => {
-    const source = template.replace(
-      '| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |',
-      '| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | mystery |  |',
-    );
-    const result = parse(source);
-
-    expect(result.warnings).toContain('step step_09: unknown Optional Flag "mystery" ignored');
-    expect(result.cartridge.steps.find((step) => step.id === 'step_09')).not.toHaveProperty(
-      'optionalFlag',
-    );
+  it('keeps Optional Flag out of the Doc contract and derives it from the catalog', () => {
+    expect(template).not.toContain('Optional Flag');
+    const source = read('src/lib/canonicalSteps.js');
+    expect(source).toContain("optionalFlag: 'oczepiny'");
+    expect(source).toContain("optionalFlag: 'dj_set'");
+    expect(source).not.toContain('mystery');
   });
 
   it('never reads planned from the Doc', () => {

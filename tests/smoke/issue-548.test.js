@@ -57,7 +57,7 @@ describe('issue #548 variable-length kitchen courses', () => {
     const courses = result.cartridge.steps.filter(
       (step) => step.mandatory?.kind === 'KITCHEN_SERVICE',
     );
-    expect(courses.map((course) => course.id)).toEqual(['dinner', 'supper_1', 'supper_2']);
+    expect(courses.map((course) => course.id)).toEqual(['step_04', 'step_15', 'step_16']);
     expect(courses[2]).toMatchObject({
       title: 'Supper II',
       time: '23:30',

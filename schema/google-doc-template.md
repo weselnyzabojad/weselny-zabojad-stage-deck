@@ -87,33 +87,38 @@ Music playlist: Midnight, Party
 
 ## TIMELINE
 
-First guests arrival, kitchen courses and Wedding closure are mandatory
-constraints. The importer embeds them into timeline steps with a `mandatory`
-metadata object; the step time is the only clock value. Each step duration is
-derived at runtime from the next step's time (and the mandatory closure time for
-the final step); it is never authored or stored.
+The timeline is a fixed catalog. Keep the canonical Step names exactly as
+written; the importer never reads a title or row position to invent a step.
+Change only the Hour, move rows to suit the evening, or delete a row to exclude
+that step. Row order is presentation-only; the parsed order is by Hour. Deleting
+a row creates no step, cue, subtask, game or anchor. Every remaining row needs a
+valid `HH:MM` Hour; a blank or invalid Hour is an import error.
 
-Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
-Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
-Test Wiedzy, Test Zgodności, Oczepiny, Musical Set, Last Dance) — see
-`docs/google-doc-template-conventions.md` §6. Detection reads the flags, never
-the localized title. `Optional Flag` accepts only `oczepiny` or `dj_set`; leave
-it blank for ordinary steps.
+The Example values column is reference-only guidance. It is never parsed and
+never sets a field. Use `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` for details.
+First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
 
-| Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| step_01 | 16:30 | Cocktail / Vin d'honneur | FLEXIBLE | Garden |  | false |  |  |
-| step_02 | 17:00 | Ceremony | FLEXIBLE | Garden Gazebo |  | false |  |  |
-| step_03 | 18:00 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
-| step_05 | 20:30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
-| step_06 | 21:00 | Wedding Thank-You | FLEXIBLE | Main Hall |  | false |  |  |
-| step_07 | 21:15 | Wishes | FLEXIBLE | Garden |  | false |  |  |
-| step_08 | 21:45 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
-| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
-| step_10 | 01:00 | Test Wiedzy | FLEXIBLE | Main Hall |  | false |  |  |
-| step_speed_foto | 01:30 | Speed Foto | FLEXIBLE | Dancefloor |  | false |  | Guests run in, pose, clear. |
-| step_11 | 01:45 | Test Zgodności | FLEXIBLE | Main Hall |  | false |  |  |
-| step_12 | 02:00 | Musical Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
+| Hour | Step name | Example values |
+| --- | --- | --- |
+| 16:00 | Vin d'honneur / Cocktail | Location, arrival note |
+| 17:00 | Ceremony | Ceremony type, location, MC support |
+| 18:00 | Grand Entrance | Guest order, entrance music |
+| 18:30 | Bread & Salt | Location, custom note |
+| 19:00 | Dinner | Location, menu note |
+| 20:00 | Wishes | Location, speaker note |
+| 20:30 | Wedding Cake | Cake time, serve mode, music cue |
+| 21:00 | Wedding Thank-You | Location, thank-you note |
+| 21:15 | First Dance | Mode, start/stop, song |
+| 21:45 | Dance with Bride and Groom | Song, floor note |
+| 22:00 | Musical Set | Playlist, start, end |
+| 23:00 | Supper I | Service mode, dietary notes |
+| 23:30 | Supper II | Service mode, dietary notes |
+| 23:50 | Supper III | Service mode, dietary notes |
+| 00:00 | Oczepiny | Toss, ties, winner photo, music |
+| 01:00 | Test Wiedzy | Languages, request, photographer |
+| 01:30 | Speed Foto | Guest order, photo note |
+| 01:45 | Test Zgodności | Languages, request, photographer |
+| 01:50 | Last Dance | Song, closing note |
 
 ## DJ CUES
 
@@ -127,7 +132,8 @@ it blank for ordinary steps.
 | Step ID | Notes |
 | --- | --- |
 | step_01 | Guests gather in the garden for the aperitif. |
-| step_03 | Keep the newlyweds by the door until the MC announces them. |
+| step_03 | Keep the newlyweds by the door until the MC announces them. Guest order: newlyweds first. |
+| step_08 | Mode NORMAL; start at 12s; stop after 4m 30s. |
 
 ## SUBTASKS
 
@@ -303,9 +309,9 @@ add or remove rows as needed. Each course is an exact-hour mandatory milestone.
 
 | Course ID | Name | Time | Service Mode |
 | --- | --- | --- | --- |
-| dinner | Dinner | 18:30 | TABLE_SERVICE |
-| supper_1 | Supper I | 21:30 | TABLE_SERVICE |
-| supper_2 | Supper II | 23:30 | BUFFET |
+| step_04 | Dinner | 19:00 | TABLE_SERVICE |
+| step_15 | Supper I | 23:00 | TABLE_SERVICE |
+| step_16 | Supper II | 23:30 | BUFFET |
 
 ## ATTRACTIONS
 

@@ -50,15 +50,15 @@ describe('issue #301 predefined timeline data contract', () => {
 
   it('documents the Google Doc timeline contract', () => {
     const template = read('schema/google-doc-template.md');
-    expect(template).toContain('First guests arrival, kitchen courses and Wedding closure are mandatory');
-    expect(template).toContain('| step_01 | 16:30 |');
+    expect(template).toContain('| Hour | Step name | Example values |');
+    expect(template).toContain("| 16:00 | Vin d'honneur / Cocktail |");
     expect(template).not.toContain('| step_00 |');
-    expect(template).toContain('| step_11 |');
+    expect(template).not.toContain('| Step ID | Time | Title |');
     for (const title of [
-      "Cocktail / Vin d'honneur",
+      "Vin d'honneur / Cocktail",
       'Ceremony',
       'Grand Entrance',
-      'Wedding cake',
+      'Wedding Cake',
       'Wedding Thank-You',
       'Wishes',
       'First Dance',

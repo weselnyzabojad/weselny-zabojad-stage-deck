@@ -2,6 +2,7 @@ import { calculateStepDurations } from './stepDurations.js';
 import { deriveHardAnchors } from './hardAnchors.js';
 import { applyMandatorySettings } from './mandatorySteps.js';
 import { normalizeSpeechMode } from './speeches.js';
+import { canonicalStepByName } from './canonicalSteps.js';
 import { normalizePrivacy } from '../config/index.js';
 import { resolveEventDateISO } from './eventTime.js';
 
@@ -414,11 +415,70 @@ function mapStepNotes(source, steps, warnings = []) {
       continue;
     }
     const note = text(row.Notes);
-    if (note) step.notes = note;
+    if (note) {
+      step.notes = note;
+      parseTimelineNotes(step, note, warnings);
+    }
   }
 }
 
-function mapTimeline(source, warnings) {
+function mapTimeline(source, warnings, errors = []) {
+  const canonicalRows = table(source, ['Hour', 'Step name', 'Example values']);
+  if (canonicalRows.length > 0) {
+    return mapCanonicalTimeline(canonicalRows, errors);
+  }
+  return mapLegacyTimeline(source, warnings, errors);
+}
+
+function mapCanonicalTimeline(rows, errors) {
+  const steps = [];
+  const anchorIds = {};
+  const seen = new Set();
+  for (const row of rows) {
+    const rawHour = text(row.Hour);
+    const name = text(row['Step name']);
+    if (!name) {
+      errors.push('TIMELINE: row is missing Step name');
+      continue;
+    }
+    const canonical = canonicalStepByName(name);
+    if (!canonical) {
+      errors.push(`TIMELINE: unknown Step name "${name}"`);
+      continue;
+    }
+    if (seen.has(canonical.id)) {
+      errors.push(`TIMELINE: duplicate Step name "${canonical.name}"`);
+      continue;
+    }
+    if (!rawHour) {
+      errors.push(`TIMELINE: ${canonical.name} is missing Hour`);
+      continue;
+    }
+    const time = clock(rawHour);
+    if (!time) {
+      errors.push(`TIMELINE: ${canonical.name} has invalid Hour "${rawHour}"`);
+      continue;
+    }
+    seen.add(canonical.id);
+    const step = {
+      id: canonical.id,
+      time,
+      title: canonical.name,
+      type: canonical.type,
+      location: 'Venue',
+      isMainSongRequired: canonical.isMainSongRequired,
+    };
+    if (canonical.optionalFlag) step.optionalFlag = canonical.optionalFlag;
+    if (canonical.anchorId) anchorIds[canonical.id] = canonical.anchorId;
+    steps.push(step);
+  }
+  return { steps, anchorIds };
+}
+
+// Legacy Docs used the nine-column Step ID table. Keep reading them so existing
+// weddings can still be imported while the customer template moves to the
+// canonical 3-column contract.
+function mapLegacyTimeline(source, warnings, errors) {
   const rows = table(source, [
     'Step ID',
     'Time',
@@ -438,7 +498,7 @@ function mapTimeline(source, warnings) {
     const title = text(row.Title);
     const type = text(row.Type)?.toUpperCase();
     if (!id || !time || !title || !['FLEXIBLE', 'HARD_ANCHOR'].includes(type)) {
-      warnings.push(`TIMELINE row skipped: ${JSON.stringify(row)}`);
+      errors.push(`TIMELINE row skipped: ${JSON.stringify(row)}`);
       continue;
     }
     const step = {
@@ -926,7 +986,7 @@ export function googleDocTemplateToCartridge(
     errors.push('EVENT: Date must use DD.MM.YYYY so Date ISO can be derived');
   }
 
-  const { steps, anchorIds } = mapTimeline(timeline, warnings);
+  const { steps, anchorIds } = mapTimeline(timeline, warnings, errors);
   if (!steps.length) errors.push('TIMELINE: no valid steps mapped');
 
   const djRows = table(section(parsed, 'DJ CUES'), [

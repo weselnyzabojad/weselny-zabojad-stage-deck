@@ -49,7 +49,7 @@ describe('issue #304 Grand Entrance guest order', () => {
     const entrance = DEMO_WEDDING.steps.find((step) => step.id === 'step_03');
     expect(entrance.grandEntranceOrder).toBe('NEWLYWEDS_FIRST');
     expect(read('schema/google-doc-template.md')).toContain(
-      'Guest order: newlyweds first, guests after.',
+      'Guest order: newlyweds first.',
     );
   });
 
