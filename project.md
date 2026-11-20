@@ -10347,6 +10347,12 @@ per-wedding public API.
 
 ### 17.131 Social Export Studio: 1080×1920 Story templates from real KPIs (decision, 2026-11-18)
 
+> **Superseded in part on 2026-11-21:** the admin Social Studio review in
+> [17.144](#17144-admin-social-media-studio-data-review-and-story-enrichment-decision-2026-11-21)
+> wires the missing recap/live/request data and enriches the admin Stories.
+> Day −1 may show couple first names and venue name/city **in admin mode only**;
+> Day +1 stays anonymized and MC remains unchanged.
+
 **Goal.**
 
 Add a semi-automated Social Export Studio to the post-mortem/event-admin
@@ -11681,3 +11687,109 @@ issue.
 [#1329](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1329),
 [#1330](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1330),
 [#1331](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1331).
+
+### 17.144 Admin Social Media Studio data review and Story enrichment (decision, 2026-11-21)
+
+The owner-admin Social Export Studio becomes the place to review real
+per-wedding data before exporting. The admin studio loads the missing
+recap/live/request data, keeps the MC output unchanged, and enriches each Story
+with the data the owner selected. Day −1 and Day +1 changes are admin-only;
+Season is admin-only already.
+
+This section **supersedes 17.131 in part**: the admin Day −1 Story may show
+couple first names and venue name/city, the admin studio now loads recap data,
+and the captions mirror the enriched cards. Day +1 stays anonymized and MC stays
+unchanged.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F0 | Admin studio data wiring | Fetch recap/live/requests + DJ registry; pass real data to the studio |
+| F0b | Admin-only rendering mode | Shared Day −1/Day +1 components render new fields only in admin |
+| F1 | Day −1 Prep Wrapper | Couple, venue, guests, cultural rules, package + DJ VIP |
+| F2 | Day +1 Post-Event Wrapped | Real times/duration, top requested song, per-game results |
+| F3 | Season Test Zgodności | Planned/completed weddings, destinations, Sto Lat |
+
+**Release target.** Every feature is required for the **first release**. Label
+`release-1.1`; no milestone. No first-release task depends on a Release-1.2
+issue.
+
+**Data contract.**
+
+- The admin studio fetches `getRecapSource(weddingId)` and builds the recap with
+  `buildWeddingRecap({ wedding: cartridge, liveState, songRequests })`.
+- `listVipDjs` resolves the display name for `cartridge.djIdentityId`; the
+  portfolio row supplies `details`, `roles`, `languages` and `servicePackage`.
+- The fetch runs once per studio open, is aborted on close, and is not repeated
+  on Story tab switches. Loading, error, retry and partial-data states are
+  visible.
+- Day −1 admin card: bride/groom first names with nationality flags, venue name
+  + city (never the address), guest total + PL/FR/other + `childrenExpected`,
+  Sto Lat/Gorzko/Bread & Salt, package label + DJ VIP display name.
+- Day −1 keeps the existing country, languages, steps, roles and venue-policy
+  KPIs where they do not duplicate the new data.
+- Day +1 admin card: `firstActualStart`, `lastActualStart`, `actualEnd`,
+  `actualDurationMinutes`; the most requested song (title + artist, accepted
+  requests first, all requests as fallback, deterministic ties); each recap game
+  with name, compatibility % and answered count.
+- Day +1 keeps the existing completion, on-time, drift, changes, requests,
+  compatibility and cultural KPIs. No couple or venue data.
+- Season admin card: planned/completed/upcoming weddings, destination count +
+  aggregated country list, weddings with Sto Lat. The existing compatibility
+  average, answered/total and generic top-question percentage stay.
+- All missing values use a localized empty state, never `0`, `NaN` or a fake
+  claim. FR and PL captions mirror the card.
+
+**Privacy contract.**
+
+- The Day −1 couple/venue enrichment is **admin-only**. The MC Day −1 Story
+  keeps country only.
+- Day +1 stays anonymized on every surface.
+- Address, surnames, contacts, private notes, tokens and raw rows never enter an
+  export.
+- Season data stays aggregate-only, season-scoped and keyed by country/status,
+  never by a wedding.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin portfolio + Social Studio | Real data wiring, admin-only enrichments, caption parity, loading/error/empty states |
+| MC post-mortem | Unchanged KPIs, layout and captions; new fields are gated out |
+| Admin Season | Planned/completed weddings, destinations, Sto Lat |
+| Public landing / season widget / WordPress | Unchanged |
+| Other stage roles | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| Surface | Admin only for the enrichments; MC unchanged |
+| Day −1 privacy | Couple first names + venue name/city in admin; no address; MC country only |
+| Day +1 privacy | Anonymized; no couple or venue |
+| Admin data path | `getRecapSource` + `buildWeddingRecap` + `listVipDjs` |
+| Day −1 extras | Guests/demographics, cultural rules, package + DJ VIP |
+| Day +1 extras | Real times/duration, top requested song, per-game results |
+| Season extras | Planned/completed weddings, destinations, Sto Lat |
+| Top question | Keep the generic `Q&R` label + percentage |
+| Captions | FR/PL mirror the card |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1338](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1338) | Admin studio data wiring: recap/live/requests, VIP DJ, loading/error states | - |
+| 2 | [#1339](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1339) | Admin-only Story rendering mode; MC unchanged | - |
+| 3 | [#1340](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1340) | Day −1 couple, venue, guests, cultural rules, package + DJ VIP, caption | #1338, #1339 |
+| 4 | [#1341](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1341) | Day +1 real times/duration, top requested song, per-game results, caption | #1338, #1339 |
+| 5 | [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342) | Season planned/completed weddings, destinations, Sto Lat, caption | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1338](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1338),
+[#1339](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1339),
+[#1340](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1340),
+[#1341](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1341),
+[#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342).
