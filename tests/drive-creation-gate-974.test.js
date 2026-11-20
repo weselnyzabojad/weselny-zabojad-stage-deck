@@ -227,6 +227,46 @@ describe('issue #974 per-game Doc-authorized Drive creation', () => {
     }
   });
 
+  it('authorizes each predefined game independently for every Requested value', () => {
+    const cases = [
+      ['YES', true],
+      ['NO', false],
+      ['UNDECIDED', false],
+      [undefined, false],
+      ['MAYBE', false],
+      ['yes', false],
+    ];
+    for (const [requested, allowed] of cases) {
+      for (const gameType of Object.values(GAME_TYPES)) {
+        const other = Object.values(GAME_TYPES).find((type) => type !== gameType);
+        const value = cartridge({ [gameType]: requested, [other]: 'YES' });
+        expect(
+          gameQuestionDocCreationAuthorization(value, gameType),
+          `${gameType} ${String(requested)}`,
+        ).toMatchObject({ allowed });
+        expect(
+          gameQuestionDocCreationAuthorization(value, other),
+          `${other} while ${gameType}=${String(requested)}`,
+        ).toMatchObject({ allowed: true });
+      }
+    }
+  });
+
+  it('returns before resolving folders or creating Docs for rejected game requests', () => {
+    const api = read('supabase/functions/admin_drive/index.ts');
+    const gameSection = api.slice(
+      api.indexOf("action === 'create_game_question_doc'"),
+      api.indexOf("action === 'rewrite_game_question_doc_columns'"),
+    );
+    const gate = gameSection.indexOf('if (preflight.error)');
+    expect(gate).toBeGreaterThan(gameSection.indexOf('gameQuestionDocCreatePreflight'));
+    for (const sideEffect of ['resolveWeddingFolderId', 'ensureFolderPath', 'connector.createGoogleDoc']) {
+      expect(gate, sideEffect).toBeLessThan(gameSection.indexOf(sideEffect));
+    }
+    expect(gameSection.slice(gate)).toContain('return json(');
+    expect(gameSection).not.toContain('body?.enabled');
+  });
+
   it('disables Create in the admin UI with the Doc reason', () => {
     const blocked = cartridge({
       [GAME_TYPES.TEST_WIEDZY]: 'NO',
