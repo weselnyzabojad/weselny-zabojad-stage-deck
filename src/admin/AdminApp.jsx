@@ -37,6 +37,7 @@ import {
 import AdminQrCards from './AdminQrCards';
 import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
+import AdminStatusDashboard from './AdminStatusDashboard';
 import AdminPortfolioOverview from './AdminPortfolioOverview';
 import AdminVenueLocationEditor from './AdminVenueLocationEditor';
 import { ADMIN_BUTTON } from './adminUi';
@@ -403,13 +404,15 @@ function useAdminViewportSupported() {
   return supported;
 }
 
-export default function AdminApp() {
+export default function AdminApp({ statusMode = false }) {
   const supported = useAdminViewportSupported();
-  if (!supported) return <AdminViewportBlocked />;
-  return <AdminAppContent />;
+  // `/status` is the phone-first Wedding Monitor PWA; `/admin` keeps the
+  // desktop-only gate (issue #1288).
+  if (!statusMode && !supported) return <AdminViewportBlocked />;
+  return <AdminAppContent statusMode={statusMode} />;
 }
 
-function AdminAppContent() {
+function AdminAppContent({ statusMode = false }) {
   const configured = adminConfigured();
   const [session, setSession] = useState(null);
   const [mfa, setMfa] = useState(null);
@@ -887,9 +890,11 @@ function AdminAppContent() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2">
           <div>
             <div className="font-heading text-[10px] font-semibold uppercase tracking-[0.3em] text-brand-soft">
-              Owner admin
+              {statusMode ? 'Owner monitor' : 'Owner admin'}
             </div>
-            <h1 className="font-heading text-lg font-bold text-ink">Wedding library</h1>
+            <h1 className="font-heading text-lg font-bold text-ink">
+              {statusMode ? 'Wedding Monitor' : 'Wedding library'}
+            </h1>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="rounded border border-line bg-raised px-2 py-1 font-mono text-[10px] text-muted">
@@ -924,10 +929,11 @@ function AdminAppContent() {
           </div>
         </div>
         <AdminHealthBar refreshKey={healthRefresh} />
-        <nav
-          aria-label="Admin sections"
-          className="mx-auto mt-2 max-w-6xl border-b border-monitor-border text-xs"
-        >
+        {statusMode ? null : (
+          <nav
+            aria-label="Admin sections"
+            className="mx-auto mt-2 max-w-6xl border-b border-monitor-border text-xs"
+          >
           <div role="tablist" aria-label="Admin sections" className="flex gap-5">
             {ADMIN_TABS.map(([id, label]) => {
               const active = tab === id;
@@ -953,16 +959,21 @@ function AdminAppContent() {
               );
             })}
           </div>
-        </nav>
+          </nav>
+        )}
       </header>
 
       <main
-        id="admin-tab-panel"
-        role="tabpanel"
-        aria-labelledby={`admin-tab-${tab}`}
+        id={statusMode ? 'admin-status-panel' : 'admin-tab-panel'}
+        role={statusMode ? 'region' : 'tabpanel'}
+        aria-labelledby={statusMode ? undefined : `admin-tab-${tab}`}
         tabIndex={-1}
         className="mx-auto max-w-6xl space-y-4 px-4 py-4"
       >
+        {statusMode ? (
+          <AdminStatusDashboard />
+        ) : (
+          <>
         {authError || error ? <ErrorLine>{authError || error}</ErrorLine> : null}
 
         {readOnly ? (
@@ -1380,6 +1391,8 @@ function AdminAppContent() {
             ))}
           </section>
         ) : null}
+          </>
+        )}
       </main>
 
       <AdminToast toasts={toasts} onDismiss={dismissToast} />

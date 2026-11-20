@@ -51,7 +51,7 @@ describe('issue #805 public landing route', () => {
 
     const landingBranch = main.indexOf('IS_LANDING || IS_BANNER ?');
     const requestBranch = main.indexOf('SONG_REQUEST_ROUTE ? (');
-    const adminBranch = main.indexOf('IS_ADMIN ? (');
+    const adminBranch = main.indexOf('IS_ADMIN || IS_STATUS ? (');
     const appFallback = main.indexOf('<App />');
     expect(landingBranch).toBeGreaterThan(-1);
     expect(landingBranch).toBeLessThan(requestBranch);

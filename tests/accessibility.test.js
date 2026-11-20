@@ -22,7 +22,7 @@ describe('issue #97 skip link and focus targets', () => {
 
   it('gives the admin tabs a focusable panel', () => {
     const source = read('src/admin/AdminApp.jsx');
-    expect(source).toContain('id="admin-tab-panel"');
+    expect(source).toContain("id={statusMode ? 'admin-status-panel' : 'admin-tab-panel'}");
     expect(source).toContain('changeTab');
   });
 });

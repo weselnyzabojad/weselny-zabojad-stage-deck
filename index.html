@@ -11,6 +11,9 @@
          A plain same-origin script keeps the production CSP at
          `script-src 'self'` without inline code or a hash. -->
     <script src="/theme-bootstrap.js"></script>
+    <!-- Wedding Monitor PWA (issue #1288): swaps the manifest and registers
+         the scoped `/status` worker only on that route. -->
+    <script src="/status-bootstrap.js" defer></script>
 
     <!-- Allow pinch zoom so the app meets WCAG 1.4.4 Resize Text. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

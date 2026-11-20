@@ -1,4 +1,4 @@
-import { copyFile, mkdir, rename, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -53,6 +53,9 @@ export function landingSurfacePlugin({ landing = false } = {}) {
         copyFile(LANDING_404_HTML, path.join(outDir, '404.html')),
         copyFile(LANDING_404_CSS, path.join(outDir, '404.css')),
         writeFile(path.join(outDir, '_redirects'), LANDING_REDIRECTS, 'utf8'),
+        // Issue #1288: the Wedding Monitor PWA belongs to the full deck only.
+        rm(path.join(outDir, 'status'), { recursive: true, force: true }),
+        rm(path.join(outDir, 'status-bootstrap.js'), { force: true }),
       ])
     },
   }

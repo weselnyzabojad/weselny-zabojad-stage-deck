@@ -31,7 +31,9 @@ describe('issue #1137 couple-facing wedding recap', () => {
     expect(main).toContain('WeddingRecapPage');
     expect(main).toContain('RECAP_TOKEN');
     expect(main).toContain('<WeddingRecapPage token={RECAP_TOKEN} />');
-    expect(main).toContain('IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE ? null');
+    expect(main).toContain(
+      'IS_LANDING || IS_BANNER || RECAP_TOKEN || EMBED_ROUTE || IS_STATUS ? null',
+    );
   });
 
   it('renders the localized loading state', () => {
