@@ -194,7 +194,7 @@ Verify names only; never paste values into GitHub.
 
 ## 10. Public under-construction release addendum (2026-11-20)
 
-Status: **Phase 3 complete — public surface deployed behind SSO.** This addendum covers
+Status: **Phase 4 complete — production publicly verified.** This addendum covers
 the reduced public surface (`RELEASE_SURFACE=public`) and the season statistics
 iframe. The full landing and `/extra/banner` are intentionally not part of it.
 
@@ -213,7 +213,7 @@ iframe. The full landing and `/extra/banner` are intentionally not part of it.
 
 | Item | Value |
 | --- | --- |
-| Production deploy | `6b008afb04e972b1d37d944e` / `99925f9` (public surface, ready) |
+| Production deploy | `6b0092bb901bfc8402e2e88c` / `0b185c0` (public surface, ready) |
 | Previous deploy | `6af60cd14998c3e401f8923e` / `b74bfe8` |
 | Build base directory | **Repo root** (was the obsolete `universal-wedding-stage-deck` nested path) |
 | Framework detection | `vite` (was `hydrogen`) |
@@ -235,6 +235,23 @@ iframe. The full landing and `/extra/banner` are intentionally not part of it.
   public 404 redirect.
 - `https://deck.weselnyzabojad.pl/` still returns **401**; SSO is intentionally
   still on.
+
+### Phase 4 verification (2026-11-20)
+
+- SSO opened for production; non-production projects/deploy previews remain
+  gated (`deploy-preview-1307` and `development--…` both return 401).
+- `/` returns **200** with the under-construction page.
+- `/embed/season-stats?lang=pl|fr` returns **200** with
+  `frame-ancestors 'self' https://www.weselnyzabojad.pl https://weselnyzabojad.pl`.
+- The trailing-slash embed URL redirects 301 to the canonical no-slash URL and
+  keeps the allowlist.
+- `/extra/banner`, `/join`, `/admin`, `/recap/*`, `/status` and missing assets
+  return the branded **404**.
+- `/` keeps `frame-ancestors 'none'`.
+- CSP header order fixed: global `/*` first, specific `/extra/banner*` and
+  `/embed/*` after it. The embed is served as a single-segment
+  `/embed/season-stats.html` rewrite because Netlify header wildcards do not
+  match across `/`.
 
 ### Database chain — Phase 2 completed (2026-11-20)
 
@@ -290,7 +307,7 @@ Verification after Phase 2:
 | --- | --- |
 | Apply the four migrations | Done 2026-11-20 |
 | Set `RELEASE_SURFACE=public` and deploy | Done 2026-11-20 |
-| Remove the SSO gate | Pending |
+| Remove the SSO gate | Done 2026-11-20 |
 | Send the webmaster season snippet | Pending |
 
 **Do not execute sections 5–6 until every gate in section 1 is closed and the owner records GO here.**
