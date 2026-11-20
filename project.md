@@ -11171,3 +11171,72 @@ deployment; schema/Doc/Edge Function data model; physical device purchase.
 [#1288](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1288),
 [#1289](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1289),
 [#1290](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1290).
+
+### 17.139 Conditional song-request card on the landing page (decision, 2026-11-20)
+
+**Goal.**
+
+Make feature 7, "Demandes de chansons", stand out from the six standard
+cards in the landing page's "Ce que Stage Deck vous apporte" section and state
+that guest song requests are a conditional partner-package option. The card
+keeps its current title and description; the change adds a warm/gold surface, a
+dark "exclusive option" badge and a bottom lock note, localized in EN, FR and PL.
+
+**Feature group.** Single-feature request.
+
+**Release target.** Landing pre-release (`landing-pre-release` workstream, no
+milestone). Required before the landing release. No `Release-1.2` milestone and
+no `release-1.2` label.
+
+**Google Doc contract.** Not Doc-linked. No schema, parser, field-map, template
+or fixture changes.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Landing `/`, feature card 7 | Warm/gold-tinted background and subtle gold border; dark uppercase badge top-right; bottom rounded lock note |
+| Landing `/`, feature cards 1–6 | Unchanged white standard cards |
+| Landing, other sections | Unchanged |
+| Deck, role views, admin, Song Request flow | Unchanged |
+
+**Design contract.**
+
+| Element | Decision |
+| --- | --- |
+| Card surface | Light warm/gold tint using the existing `#C5A059` palette; subtle gold border |
+| Badge | Dark navy/charcoal surface, uppercase light/gold text, absolute top-right inside a `relative` card, clear of icon and title at every breakpoint |
+| Badge copy | `landing.features.7.badge` |
+| Bottom note | Rounded subtle surface, inline-SVG lock icon (`aria-hidden`), text from `landing.features.7.condition`, pinned to the card bottom |
+| Body copy | Existing `landing.features.7.title` / `.body` unchanged; no duplicated exclusivity wording |
+| Icon library | Inline SVG; `lucide-react` is not installed and no dependency is added |
+| Grid | Existing `sm:grid-cols-2 lg:grid-cols-3`; card height stays coherent in its row |
+
+**Translations.**
+
+| Key | FR | EN | PL |
+| --- | --- | --- | --- |
+| `landing.features.7.badge` | Option exclusive | Exclusive option | Opcja ekskluzywna |
+| `landing.features.7.condition` | Exclusif aux formules de nos partenaires privilégiés | Exclusive to packages with our preferred partners | Wyłącznie w pakietach z naszymi zaufanymi partnerami |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | Landing pre-release; no milestone, no `release-1.2` |
+| Scope | Landing feature card 7 only; cards 1–6 and other sections unchanged |
+| Icon | Existing inline-SVG pattern; no new dependency |
+| Copy | Title/body unchanged; badge and note only |
+| i18n | New keys in all three dictionaries; no hardcoded UI string |
+| Doc linkage | Not Doc-linked |
+
+**Task split.** One atomic UI + i18n change in `LandingPage.jsx` and the three
+dictionaries.
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1294](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1294) | Highlight card 7, badge and lock note; EN/FR/PL keys; responsive check; validation | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1294](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1294).
