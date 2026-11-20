@@ -402,18 +402,11 @@ function parseTimelineNotes(step, notes, warnings) {
 }
 
 function mapStepNotes(source, steps, warnings = []) {
-  const rows = table(source, ['Step ID', 'Notes']);
+  const rowsByName = table(source, ['Step name', 'Notes']);
+  const rows = rowsByName.length ? rowsByName : table(source, ['Step ID', 'Notes']);
   for (const row of rows) {
-    const id = text(row['Step ID']);
-    if (!id) {
-      warnings.push('NOTES row skipped: missing Step ID');
-      continue;
-    }
-    const step = steps.find((entry) => entry.id === id);
-    if (!step) {
-      warnings.push(`NOTES row skipped: unknown Step ID "${id}"`);
-      continue;
-    }
+    const step = resolveSatelliteStep(steps, row, 'NOTES', warnings);
+    if (!step) continue;
     const note = text(row.Notes);
     if (note) {
       step.notes = note;
@@ -535,9 +528,34 @@ function mapLegacyTimeline(source, warnings, errors) {
   return { steps, anchorIds };
 }
 
-function mergeStepRows(steps, rows, apply) {
+function resolveSatelliteStep(steps, row, section, warnings) {
+  const byName = Object.prototype.hasOwnProperty.call(row, 'Step name');
+  const value = text(byName ? row['Step name'] : row['Step ID']);
+  if (!value) {
+    warnings.push(`${section} row skipped: missing ${byName ? 'Step name' : 'Step ID'}`);
+    return null;
+  }
+  if (byName) {
+    const canonical = canonicalStepByName(value);
+    if (!canonical) {
+      warnings.push(`${section} row skipped: unknown Step name "${value}"`);
+      return null;
+    }
+    const step = steps.find((entry) => entry.id === canonical.id);
+    if (!step) {
+      warnings.push(`${section} row skipped: ${canonical.name} is not in the timeline`);
+      return null;
+    }
+    return step;
+  }
+  const step = steps.find((entry) => entry.id === value);
+  if (!step) warnings.push(`${section} row skipped: unknown Step ID "${value}"`);
+  return step ?? null;
+}
+
+function mergeStepRows(steps, rows, apply, { section = 'SATELLITE', warnings = [] } = {}) {
   for (const row of rows) {
-    const step = steps.find((entry) => entry.id === text(row['Step ID']));
+    const step = resolveSatelliteStep(steps, row, section, warnings);
     if (step) apply(step, row);
   }
 }
@@ -1004,32 +1022,54 @@ export function googleDocTemplateToCartridge(
   if (!steps.length) errors.push('TIMELINE: no valid steps mapped');
 
   const djRows = table(section(parsed, 'DJ CUES'), [
-    'Step ID',
+    'Step name',
     'Playlist',
     'Track',
     'Cutoff',
     'Note',
   ]);
-  mergeStepRows(steps, djRows, (step, row) => {
-    step.dj = {
-      playlist: text(row.Playlist),
-      track: text(row.Track),
-      cutoff: clock(row.Cutoff),
-      note: text(row.Note),
-    };
-  });
+  const legacyDjRows = djRows.length
+    ? []
+    : table(section(parsed, 'DJ CUES'), ['Step ID', 'Playlist', 'Track', 'Cutoff', 'Note']);
+  for (const rows of [djRows, legacyDjRows]) {
+    mergeStepRows(
+      steps,
+      rows,
+      (step, row) => {
+        step.dj = {
+          playlist: text(row.Playlist),
+          track: text(row.Track),
+          cutoff: clock(row.Cutoff),
+          note: text(row.Note),
+        };
+      },
+      { section: 'DJ CUES', warnings },
+    );
+  }
 
   mapStepNotes(section(parsed, 'NOTES'), steps, warnings);
 
-  mergeStepRows(
-    steps,
-    table(section(parsed, 'SUBTASKS'), ['Step ID', 'Subtask ID', 'Label', 'Done']),
-    (step, row) => {
-      step.subTasks = step.subTasks ?? [];
-      const label = text(row.Label);
-      if (label) step.subTasks.push(label);
-    },
-  );
+  const subTaskRows = table(section(parsed, 'SUBTASKS'), [
+    'Step name',
+    'Subtask ID',
+    'Label',
+    'Done',
+  ]);
+  const legacySubTaskRows = subTaskRows.length
+    ? []
+    : table(section(parsed, 'SUBTASKS'), ['Step ID', 'Subtask ID', 'Label', 'Done']);
+  for (const rows of [subTaskRows, legacySubTaskRows]) {
+    mergeStepRows(
+      steps,
+      rows,
+      (step, row) => {
+        step.subTasks = step.subTasks ?? [];
+        const label = text(row.Label);
+        if (label) step.subTasks.push(label);
+      },
+      { section: 'SUBTASKS', warnings },
+    );
+  }
 
   const importantSongsSource = section(parsed, 'IMPORTANT SONGS');
   const importantSongs = mapImportantSongs(importantSongsSource, warnings);

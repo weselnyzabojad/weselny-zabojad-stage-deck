@@ -245,14 +245,15 @@ presentation, or delete a row to exclude that step. A remaining blank or invalid
 hour is an import error. `Example values` is read-only guidance and is never
 parsed.
 
-Three satellite sections still attach by the internal `Step ID`; never repeat
-step metadata in them.
+Three satellite sections attach by the canonical `Step name`; never repeat step
+metadata in them. A missing, unknown or deleted Step name is warned and the row
+is dropped without creating a step or cue.
 
 | Section | Row key | Attaches to |
 | --- | --- | --- |
-| `DJ CUES` | `Step ID` | `steps[].dj` |
-| `MC CUES` | `Step ID` | `steps[].mcCues[]` |
-| `SUBTASKS` | `Step ID` + `Subtask ID` | `steps[].subTasks[]` |
+| `DJ CUES` | `Step name` | `steps[].dj` |
+| `MC CUES` | `Step name` | `steps[].mcCues[]` |
+| `SUBTASKS` | `Step name` + `Subtask ID` | `steps[].subTasks[]` |
 
 `HARD ANCHORS` is its own list. A `HARD_ANCHOR` step must set `Anchor ID` to an
 anchor that exists in the anchor table, and the anchor must exist for the step

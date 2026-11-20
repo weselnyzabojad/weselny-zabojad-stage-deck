@@ -122,25 +122,25 @@ First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
 
 ## DJ CUES
 
-| Step ID | Playlist | Track | Cutoff | Note |
+| Step name | Playlist | Track | Cutoff | Note |
 | --- | --- | --- | --- | --- |
-| step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |
-| step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 |  |
+| Ceremony | Ceremony Procession | Canon in D - Pachelbel | 18:20 |  |
+| Grand Entrance | Dinner Jazz | Fly Me to the Moon - Frank Sinatra | 20:15 |  |
 
 ## NOTES
 
-| Step ID | Notes |
+| Step name | Notes |
 | --- | --- |
-| step_01 | Guests gather in the garden for the aperitif. |
-| step_03 | Keep the newlyweds by the door until the MC announces them. Guest order: newlyweds first. |
-| step_08 | Mode NORMAL; start at 12s; stop after 4m 30s. |
+| Vin d'honneur / Cocktail | Guests gather in the garden for the aperitif. |
+| Grand Entrance | Keep the newlyweds by the door until the MC announces them. Guest order: newlyweds first. |
+| First Dance | Mode NORMAL; start at 12s; stop after 4m 30s. |
 
 ## SUBTASKS
 
-| Step ID | Subtask ID | Label | Done |
+| Step name | Subtask ID | Label | Done |
 | --- | --- | --- | --- |
-| step_03 | step_03_speech_mic | Confirm the speech mic is on | false |
-| step_03 | step_03_rosol | Rosół + Tartare with Vodka shot | false |
+| Grand Entrance | step_03_speech_mic | Confirm the speech mic is on | false |
+| Grand Entrance | step_03_rosol | Rosół + Tartare with Vodka shot | false |
 
 ## VENUE LOGISTICS
 
