@@ -59,9 +59,9 @@ describe('issue #1239 landing iframe route /extra/banner', () => {
       "frame-ancestors 'self' https://www.weselnyzabojad.pl https://weselnyzabojad.pl;",
     );
     expect(cspOf(banner)).not.toMatch(/frame-ancestors[^;]*\*/);
-    expect(netlify.indexOf('for = "/extra/banner*"')).toBeLessThan(
-      netlify.indexOf('for = "/*"'),
-    );
+    const globalIndex = netlify.indexOf('for = "/*"');
+    expect(globalIndex).toBeLessThan(netlify.indexOf('for = "/extra/banner*"'));
+    expect(globalIndex).toBeLessThan(netlify.indexOf('for = "/embed/*"'));
     expect(cspOf(block('/*'))).toContain("frame-ancestors 'none';");
     expect(netlify).not.toContain('X-Frame-Options =');
   });
