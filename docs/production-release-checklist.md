@@ -194,7 +194,7 @@ Verify names only; never paste values into GitHub.
 
 ## 10. Public under-construction release addendum (2026-11-20)
 
-Status: **Phase 1 prepared only — no production change.** This addendum covers
+Status: **Phase 2 complete — database prepared, no deploy or SSO change.** This addendum covers
 the reduced public surface (`RELEASE_SURFACE=public`) and the season statistics
 iframe. The full landing and `/extra/banner` are intentionally not part of it.
 
@@ -221,22 +221,30 @@ iframe. The full landing and `/extra/banner` are intentionally not part of it.
 | `RELEASE_SURFACE` | **Not set yet**; set to `public` in the production context only at Phase 3 |
 | Existing vars | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_DECK_MODE=production` confirmed |
 
-### Database chain (requires separate GO)
+### Database chain — Phase 2 completed (2026-11-20)
 
-Apply in order:
+Applied in order:
 
-1. `202611160003_wedding_recaps`
-2. `202611180001_wedding_venue_location`
-3. `202611180002_season_event_facts`
-4. `202611180003_season_plan_rpc`
+| Repository migration | Production version |
+| --- | --- |
+| `202611160003_wedding_recaps` | `20261120175647` |
+| `202611180001_wedding_venue_location` | `20261120175649` |
+| `202611180002_season_event_facts` | `20261120175650` |
+| `202611180003_season_plan_rpc` | `20261120175651` |
 
-Skip `202611180004_season_compatibility` for this release. Migration 1 is
-required because the season facts table references `wedding_recaps`. No Edge
-Function deployment is required for the embed.
+`202611180004_season_compatibility` is intentionally **not applied** for this
+release. Migration 1 was required because the season facts table references
+`wedding_recaps`. No Edge Function deployment was required.
 
-Production database baseline after rollback: last migration
-`20261113221320 | fixed_search_path`; `weddings = 0`; no PITR and no backups
-available. Apply only after explicit GO and re-check the anon RPC returns 200.
+Verification after Phase 2:
+
+- `get_public_season_stats` with the anon key returns **HTTP 200**.
+- The response is the calm empty state: `hasData: false`,
+  `seasonPlan.state: "none"`, `nextWedding: null`.
+- `season_event_facts`, `wedding_recaps`, `venue_city` and `venue_country` exist.
+- `weddings = 0`, `admin_audit_log = 2`, `live_sync_state = 2` — unchanged.
+- No PITR or database backup exists; the inverse schema plan remains the rollback
+  path for these four migrations.
 
 ### Deployment sequence (after GO)
 
@@ -265,7 +273,7 @@ available. Apply only after explicit GO and re-check the anon RPC returns 200.
 
 | Gate | Owner GO |
 | --- | --- |
-| Apply the four migrations | Pending |
+| Apply the four migrations | Done 2026-11-20 |
 | Set `RELEASE_SURFACE=public` and deploy | Pending |
 | Remove the SSO gate | Pending |
 | Send the webmaster season snippet | Pending |
