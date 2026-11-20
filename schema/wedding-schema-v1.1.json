@@ -10,7 +10,6 @@
     "weddingId",
     "coupleProfile",
     "date",
-    "syncPin",
     "servicePackage",
     "steps"
   ],
@@ -864,25 +863,63 @@
           "additionalProperties": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["gameId", "questions"],
+            "required": [
+              "gameId",
+              "questions"
+            ],
             "properties": {
-              "gameId": { "type": "string", "minLength": 1 },
-              "startedAt": { "type": ["string", "null"] },
-              "updatedAt": { "type": ["string", "null"] },
-              "completedAt": { "type": ["string", "null"] },
-              "totalQuestions": { "type": "integer", "minimum": 0 },
-              "answeredCount": { "type": "integer", "minimum": 0 },
-              "score": { "type": "integer", "minimum": 0 },
+              "gameId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "startedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "updatedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "completedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "totalQuestions": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "answeredCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "score": {
+                "type": "integer",
+                "minimum": 0
+              },
               "questions": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "object",
                   "additionalProperties": false,
-                  "required": ["answeredAt"],
+                  "required": [
+                    "answeredAt"
+                  ],
                   "properties": {
-                    "answeredAt": { "type": "string" },
-                    "revealed": { "type": "boolean" },
-                    "isCompatible": { "type": "boolean" }
+                    "answeredAt": {
+                      "type": "string"
+                    },
+                    "revealed": {
+                      "type": "boolean"
+                    },
+                    "isCompatible": {
+                      "type": "boolean"
+                    }
                   }
                 }
               }

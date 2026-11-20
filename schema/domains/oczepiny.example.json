@@ -13,9 +13,6 @@
       "winnersWithCouple": true,
       "photographerAvailable": true
     },
-    "photographerBriefed": {
-      "notes": "Cameraman confirmed the midnight window."
-    },
     "music": {
       "track": "Oczepiny mix",
       "playlist": [
@@ -23,14 +20,6 @@
       ],
       "enabled": true
     },
-    "subEvents": [
-      { "id": "veil_toss", "title": "Veil toss" },
-      { "id": "bouquet_toss", "title": "Bouquet toss" },
-      { "id": "bow_tie_game", "title": "Bow-tie game" },
-      { "id": "cravat_toss", "title": "Cravat toss" },
-      { "id": "winner_photo", "title": "Winner photo" },
-      { "id": "winners_with_couple_photo", "title": "Winners with couple photo" }
-    ],
     "variant": "MIDNIGHT",
     "throwings": {
       "veil": true,
@@ -43,6 +32,32 @@
     },
     "countdown": {
       "mode": "MC"
-    }
+    },
+    "subEvents": [
+      {
+        "id": "veil_toss",
+        "title": "Veil toss"
+      },
+      {
+        "id": "bouquet_toss",
+        "title": "Bouquet toss"
+      },
+      {
+        "id": "bow_tie_game",
+        "title": "Bow-tie game"
+      },
+      {
+        "id": "cravat_toss",
+        "title": "Cravat toss"
+      },
+      {
+        "id": "winner_photo",
+        "title": "Winner photo"
+      },
+      {
+        "id": "winners_with_couple_photo",
+        "title": "Winners with couple photo"
+      }
+    ]
   }
 }

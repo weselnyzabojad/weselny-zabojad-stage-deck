@@ -12,8 +12,8 @@ export const SECTION_MANIFEST = Object.freeze([
     order: 1,
     marker: 'EVENT',
     required: true,
-    schemaPath: ['weddingId', 'date', 'dateISO', 'syncPin', 'servicePackage', 'childrenExpected'],
-    purpose: 'Identity, date, room key and service package.',
+    schemaPath: ['date', 'childrenExpected'],
+    purpose: 'Event date and children flag; identity and package come from the app.',
   },
   {
     order: 2,
@@ -83,7 +83,7 @@ export const SECTION_MANIFEST = Object.freeze([
     marker: 'VENUE LOGISTICS',
     required: false,
     schemaPath: ['venueDetails'],
-    purpose: 'Address, coordinates, manager, installation, travel and hotel.',
+    purpose: 'Venue name, address, coordinates, manager and noise curfew.',
   },
   {
     order: 12,
@@ -111,7 +111,7 @@ export const SECTION_MANIFEST = Object.freeze([
     marker: 'PHOTO PLAN',
     required: false,
     schemaPath: ['photoPlan'],
-    purpose: 'Sunset source, mini session, group photos and effects (D6).',
+    purpose: 'Sunset source, mini session and group photos (D6).',
   },
   {
     order: 15,
@@ -161,27 +161,6 @@ export const SECTION_MANIFEST = Object.freeze([
     required: false,
     schemaPath: ['kitchen'],
     purpose: 'Courses, dietary counts, vendor meals and service anchors.',
-  },
-  {
-    order: 23,
-    marker: 'PRIVACY',
-    required: false,
-    schemaPath: ['privacy'],
-    purpose: 'Optional cloud-sync encryption metadata.',
-  },
-  {
-    order: 24,
-    marker: 'LIVE SYNC STATE',
-    required: false,
-    schemaPath: ['liveSyncState'],
-    purpose: 'Optional demo seed; production state is generated at runtime.',
-  },
-  {
-    order: 25,
-    marker: 'EXTENSIONS',
-    required: false,
-    schemaPath: ['extensions'],
-    purpose: 'Forward-compatible JSON for app-specific additions.',
   },
   {
     order: 26,

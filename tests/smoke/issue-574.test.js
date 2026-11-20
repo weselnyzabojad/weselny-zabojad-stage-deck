@@ -1,7 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs';
+﻿import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { resolvePhotographerAvailable } from '../../src/lib/photoPlan.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');

@@ -54,29 +54,6 @@
             "windowStart": {
               "$ref": "#/$defs/clock"
             },
-            "latestStart": {
-              "$ref": "#/$defs/clock"
-            },
-            "loadInMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "setupMinutes": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "parking": {
-              "type": "string"
-            },
-            "power": {
-              "type": "string"
-            },
-            "loadingDock": {
-              "type": "boolean"
-            },
-            "elevator": {
-              "type": "boolean"
-            },
             "noiseCurfew": {
               "$ref": "#/$defs/clock"
             }

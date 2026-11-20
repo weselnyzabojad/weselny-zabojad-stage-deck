@@ -1,20 +1,16 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 import { resolvePhotoPlan } from '../../src/lib/photoPlan.js';
 
 const read = (path) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8');
 
 describe('issue #378 group-photo data alignment', () => {
-  it('maps an explicit group-photo step id from the Google Doc', () => {
-    const template = read('schema/google-doc-template.md').replace(
-      'Group photos step ID:',
-      'Group photos step ID: step_07',
-    );
-    const parsed = parseGoogleDocTemplate(template);
+  it('does not map a group-photo step id from the Google Doc', () => {
+    const parsed = parseGoogleDocTemplate(read('schema/google-doc-template.md'));
     const result = googleDocTemplateToCartridge(parsed);
-    expect(result.cartridge.photoPlan.groupPhotos.stepId).toBe('step_07');
+    expect(result.cartridge.photoPlan.groupPhotos.stepId).toBeUndefined();
   });
 
   it('preserves group order and does not emit removed sizing fields', () => {

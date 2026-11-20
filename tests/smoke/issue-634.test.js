@@ -1,8 +1,8 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { resolveActiveAttractions } from '../../src/lib/attractionReminders.js';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));

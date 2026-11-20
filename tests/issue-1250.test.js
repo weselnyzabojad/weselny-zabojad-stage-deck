@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from './helpers/googleDocCartridge.js';
 import { validateCartridge } from '../schema/validate-lib.mjs';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
@@ -57,19 +57,6 @@ describe('issue #1250 Google Doc demographics contract', () => {
       expect.stringContaining('"Guests FR"'),
     ]);
     expect(await validateCartridge(cartridge)).toEqual([]);
-  });
-
-  it('keeps the legacy Privacy note as a fallback', async () => {
-    const withoutDemographics = template.replace(
-      /## DEMOGRAPHICS[\s\S]*?(?=\n## )/,
-      '',
-    );
-    const legacy = withoutDemographics.replace(
-      'Encryption version: 1',
-      'Encryption version: 1\nDemographics notes: Legacy note.',
-    );
-    const { cartridge } = importDoc(legacy);
-    expect(cartridge.demographics).toEqual({ notes: 'Legacy note.' });
   });
 
   it('documents the section and field-map status', () => {

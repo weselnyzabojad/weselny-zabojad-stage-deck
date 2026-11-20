@@ -1,9 +1,9 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { collectSemanticErrors } from '../../src/lib/cartridgeValidation.js';
 import { resolvePhotoPlan } from '../../src/lib/photoPlan.js';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const json = (p) => JSON.parse(read(p));
@@ -61,6 +61,6 @@ describe('issue #636 per-effect venue approvals', () => {
     const result = googleDocTemplateToCartridge(
       parseGoogleDocTemplate(read('schema/google-doc-template.md')),
     );
-    expect(result.cartridge.photoPlan.specialEffects.approvals).toBeUndefined();
+    expect(result.cartridge.photoPlan.specialEffects).toBeUndefined();
   });
 });

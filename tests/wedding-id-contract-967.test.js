@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { validateWeddingId } from '../src/admin/adminUtils.js';
-import { googleDocTemplateToCartridge } from '../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from './helpers/googleDocCartridge.js';
 import { parseGoogleDocTemplate } from '../src/lib/googleDocTemplate.js';
 import { resolveEventDateISO } from '../src/lib/eventTime.js';
 import {
@@ -17,11 +17,9 @@ const template = readFileSync(
   'utf8',
 );
 const parseWithId = (weddingId) =>
-  googleDocTemplateToCartridge(
-    parseGoogleDocTemplate(
-      template.replace(/^Wedding ID:.*$/m, `Wedding ID: ${weddingId}`),
-    ),
-  );
+  googleDocTemplateToCartridge(parseGoogleDocTemplate(template), {
+    weddingId,
+  });
 
 describe('issue #967 UM wedding ID contract', () => {
   it('accepts the UM format in admin validation and rejects legacy values', () => {

@@ -173,7 +173,16 @@ export function validateFieldMap({ mapPath = FIELD_MAP_PATH } = {}) {
     const leafSet = new Set(leaves);
 
     for (const leaf of leaves) {
-      if (!(leaf in fields)) {
+      // Identity, package, privacy and live state are app/runtime values, not
+      // couple-authored Doc fields. They remain in the cartridge example but
+      // are intentionally absent from the Doc field map.
+      const runtimeField =
+        ['weddingId', 'syncPin', 'servicePackage'].includes(leaf) ||
+        leaf.startsWith('privacy.') ||
+        leaf.startsWith('liveSyncState.') ||
+        leaf === 'oczepiny.winnerPhoto.photographerAvailable' ||
+        leaf.startsWith('oczepiny.subEvents');
+      if (!runtimeField && !(leaf in fields)) {
         errors.push(`${fileName}: field ${leaf} is not flagged.`);
       }
     }

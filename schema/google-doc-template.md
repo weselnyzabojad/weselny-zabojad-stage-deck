@@ -15,13 +15,8 @@
 
 ## EVENT
 
-Wedding ID: Weronika&Guillaume-UM-2027-04-002
 Date: 20.08.2026
-Date ISO: 2026-08-20
-Sync PIN: 2008
-Service package: HOST_AND_DJ_VIP
 Children expected: yes
-Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Ceremony type: RELIGIOUS
 Ceremony MC support: yes
 Ceremony location: St. Mary Church
@@ -80,30 +75,15 @@ Game enabled: yes
 Countdown mode: MC
 Winners only photo: yes
 Winners + couple photo: yes
-Photographer available: yes
 
 Enabled: true
 Order: MIDNIGHT
 Toss: VEIL
 Ties: BOW_TIE
 Winner photo enabled: true
-Photographer briefed notes: Briefed the photographer and cameraman.
 Music enabled: true
 Music track: Oczepiny mix
 Music playlist: Midnight, Party
-
-### Sub-events
-
-Only the four throwings and the two winner-photo moments are allowed.
-
-| Title |
-| --- |
-| Veil toss |
-| Bouquet toss |
-| Bow-tie game |
-| Cravat toss |
-| Winner photo |
-| Winners with couple photo |
 
 ## TIMELINE
 
@@ -163,33 +143,7 @@ Address: Dwór X, ul. Przykładowa 1, 59-400 Jawor
 Manager name: Anna Kowalska
 Manager phone: +48 600 000 000
 Manager email: anna@venue.example
-Installation latest start: 12:00
-Load-in minutes: 45
-Setup minutes: 90
-Parking: Staff car park behind the building.
-Power: 2x 230V sockets at the DJ table.
-Loading dock: true
-Elevator: false
 Noise curfew: 01:00
-Insurance: Certificate sent 2026-08-01.
-Key holder: Anna Kowalska
-Travel baseline minutes: 55
-Travel distance km: 62
-Travel origin label: Jawor 59-400
-Accommodation name: Hotel Przykład
-Accommodation address: ul. Hotelowa 2, 59-400 Jawor
-Accommodation latitude: 51.06
-Accommodation longitude: 16.2
-Accommodation distance km: 3.5
-Accommodation check-in: 15:00
-Accommodation check-out: 11:00
-Accommodation booking ref: WED-2026-08
-Accommodation rooms: 2
-Accommodation contact name: Recepcja
-Accommodation contact phone: +48 600 111 111
-Accommodation paid by: COUPLE
-Accommodation notes: Breakfast from 07:00.
-Notes: Load-in before the 16:00 ceremony rehearsal.
 
 ## VIEW VISIBILITY
 
@@ -220,13 +174,8 @@ requirements are managed in `/admin`, never in this Doc.
 Mini session enabled: true
 Mini session location: Garden
 Mini session backup location: Ballroom window
-Group photos step ID:
 Group photos location: OUTDOOR
 Group photos description: Formal photos with immediate family and witnesses only.
-Sparklers: true
-Fire: false
-Heavy smoke: true
-Other effects: Cold sparks
 
 ### Group Photos
 
@@ -292,7 +241,6 @@ Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume…
 Time: 20:30
 Cutting song: Cake — The Coup
 Sparklers: true
-Photographer cue: Front-left of the cake table
 
 ## GAMES
 
@@ -336,30 +284,6 @@ Gluten free: 1
 | Anchor ID | Time | Label |
 | --- | --- | --- |
 | cake_service | 21:30 | Cake service |
-
-## PRIVACY
-
-Cloud sync: ENCRYPTED_HOST_KEY
-Encryption algorithm: AES-GCM
-Encryption key holder: HOST
-Encryption version: 1
-
-## LIVE SYNC STATE
-
-> Runtime state. Leave these lines out of the couple's template. They exist only
-> when exporting a demo cartridge.
-
-Active step ID: step_03
-Completed step IDs: step_01, step_02
-Actual timestamps: step_01=2026-08-20T16:31:00+02:00, step_02=2026-08-20T17:00:00+02:00, step_03=2026-08-20T18:25:00+02:00
-
-## EXTENSIONS
-
-Optional JSON for app-specific additions. Leave as an empty object when unused.
-
-```json
-{}
-```
 
 ## MANDATORY STEPS
 

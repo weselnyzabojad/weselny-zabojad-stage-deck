@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs';
+﻿import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../../src/lib/googleDocTemplate.js';
-import { googleDocTemplateToCartridge } from '../../src/lib/googleDocCartridge.js';
+import { googleDocTemplateToCartridge } from '../helpers/googleDocCartridge.js';
 
 const read = (p) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 
@@ -53,7 +53,7 @@ Supported: FR, PL, EN
 ## NOTES
 | Step ID | Notes |
 | --- | --- |
-| step_01 | Toast et lancer les verres derrière soi. |
+| step_01 | Toast et lancer les verres derriĂ¨re soi. |
 | step_01 | Confirm the speech mic is on. |
 
 ## SUBTASKS
