@@ -15,7 +15,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 
 describe('landing-only release surface (issue #1152)', () => {
   it('defaults to the full release and accepts the documented values', () => {
-    expect(RELEASE_SURFACES).toEqual(['full', 'landing']);
+    expect(RELEASE_SURFACES).toEqual(['full', 'landing', 'public']);
     expect(parseReleaseSurface(undefined)).toBe('full');
     expect(parseReleaseSurface('')).toBe('full');
     expect(parseReleaseSurface('   ')).toBe('full');
@@ -80,8 +80,8 @@ describe('landing-only release surface (issue #1152)', () => {
 
   it('disables the PWA and copies the branded 404 in landing mode only', () => {
     const config = read('vite.config.js');
-    expect(config).toContain('landingSurfacePlugin({ landing })');
-    expect(config).toContain('!landing && VitePWA({');
+    expect(config).toContain('landingSurfacePlugin({ landing, publicSurface })');
+    expect(config).toContain('!landing && !publicSurface && VitePWA({');
     expect(config).toContain('parseReleaseSurface(process.env.RELEASE_SURFACE)');
 
     // Issue #1288: landing-only artifacts must not ship the monitor PWA.
