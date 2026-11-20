@@ -16,11 +16,11 @@ const global = block('/*');
 const cspOf = (source) => /Content-Security-Policy = "([^"]+)"/.exec(source)?.[1] ?? '';
 
 describe('issue #1216 Netlify embed policy and WordPress handoff', () => {
-  it('places the embed rule before the global rule so the first match wins', () => {
+  it('places the embed rule after the global rule so the last match wins', () => {
     expect(embed.length).toBeGreaterThan(0);
     expect(global.length).toBeGreaterThan(0);
-    expect(netlify.indexOf('for = "/embed/*"')).toBeLessThan(
-      netlify.indexOf('for = "/*"'),
+    expect(netlify.indexOf('for = "/*"')).toBeLessThan(
+      netlify.indexOf('for = "/embed/*"'),
     );
   });
 
