@@ -1,0 +1,25 @@
+{
+  "$schema": "./music-policy.json",
+  "musicPolicy": {
+    "discoPoloPolicy": "ON_REQUEST",
+    "mustPlay": [
+      { "id": "grand_entrance", "track": "Marry You - Bruno Mars", "note": "Grand entrance cue." }
+    ],
+    "doNotPlay": [
+      { "track": "Macarena - Los del Río" }
+    ],
+    "requestsOpen": true,
+    "requestWindow": { "start": "20:00", "end": "23:00" },
+    "importantSongs": [
+      {
+        "id": "grand_entrance",
+        "moment": "GRAND_ENTRANCE",
+        "title": "Marry You",
+        "artist": "Bruno Mars",
+        "stepId": "step_03",
+        "source": { "type": "SPOTIFY", "url": "https://open.spotify.com/track/DEMO_GRAND_ENTRANCE" }
+      }
+    ]
+  }
+}
+

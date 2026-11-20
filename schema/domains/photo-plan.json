@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://weselnyzabojad.example/schemas/domains/photo-plan.json",
+  "title": "Photo plan domain",
+  "description": "Sunset and photo-plan support mapped from the Google Doc.",
+  "type": "object",
+  "properties": {
+    "photoPlan": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "sunset": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "provider": {
+              "type": "string"
+            },
+            "latitude": {
+              "type": "number"
+            },
+            "longitude": {
+              "type": "number"
+            },
+            "lastFetchedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "sunsetTime": {
+              "type": "string",
+              "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$",
+              "description": "Time in HH:mm format"
+            },
+            "goldenHourStart": {
+              "type": "string",
+              "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$",
+              "description": "Time in HH:mm format"
+            },
+            "civilTwilightEnd": {
+              "type": "string",
+              "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$",
+              "description": "Time in HH:mm format"
+            },
+            "status": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "provider",
+            "status"
+          ]
+        },
+        "miniSession": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/mini-session.json#/properties/miniSession"
+        },
+        "groupPhotos": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/group-photos.json#/properties/groupPhotos"
+        },
+        "specialEffects": {
+          "$ref": "https://weselnyzabojad.example/schemas/domains/special-effects.json#/properties/specialEffects"
+        }
+      },
+      "required": [
+        "sunset"
+      ]
+    }
+  },
+  "required": [
+    "photoPlan"
+  ]
+}

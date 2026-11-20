@@ -1,0 +1,52 @@
+# Local-only provider stand-ins for the admin panel.
+#
+# `npm run local:start` starts these automatically. They join the Supabase CLI
+# network so Edge Functions reach them by name; host ports are exposed only for
+# manual curl/debugging.
+services:
+  google-drive-mock:
+    image: node:22-alpine
+    container_name: stage-deck-google-drive-mock
+    working_dir: /app
+    command: ["node", "server.mjs"]
+    environment:
+      PORT: "8080"
+      MOCK_CARTRIDGE_PATH: /seed/cartridge.json
+    volumes:
+      - ./tools/google-drive-mock:/app:ro
+      - ./schema/wedding-cartridge.example.json:/seed/cartridge.json:ro
+    ports:
+      - "127.0.0.1:8099:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - supabase
+    restart: unless-stopped
+
+  service-mock:
+    image: node:22-alpine
+    container_name: stage-deck-service-mock
+    working_dir: /app
+    command: ["node", "server.mjs"]
+    environment:
+      PORT: "8080"
+    volumes:
+      - ./tools/service-mock:/app:ro
+    ports:
+      - "127.0.0.1:8098:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - supabase
+    restart: unless-stopped
+
+networks:
+  supabase:
+    external: true
+    name: supabase_network_stage-deck

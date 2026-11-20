@@ -1,0 +1,454 @@
+﻿# Wedding harmonogram — Google Doc template (v1.1)
+
+> **Status: current.** This is the v1.1 customer template shipped with the first
+> release. `schema/wedding-schema-v1.1.json` is the canonical contract.
+>
+> **How to use:** copy this file into a Google Doc, keep every `## SECTION`
+> marker exactly as written, replace the example values, and delete rows you do
+> not need. Do not rename, reorder or duplicate markers. Never add a second
+> section with the same marker.
+>
+> The importer reads only stable `## SECTION` markers and fixed table headers.
+> `###` headings are sub-headings inside a section and may be renamed freely.
+> Full conventions and the field map live in
+> `docs/google-doc-template-conventions.md`.
+
+## EVENT
+
+Wedding ID: Weronika&Guillaume-UM-2027-04-002
+Date: 20.08.2026
+Date ISO: 2026-08-20
+Sync PIN: 2008
+Service package: HOST_AND_DJ_VIP
+Children expected: yes
+Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
+Ceremony type: RELIGIOUS
+Ceremony MC support: yes
+Ceremony location: St. Mary Church
+Ceremony notes: Full mass; MC introduces the couple at the church door.
+
+## COUPLE IDENTITY
+
+Bride first name, Bride nationality, Groom first name, Groom nationality and
+Shared languages are required.
+
+Bride first name: Jennifer
+Bride nationality: FR
+Groom first name: Guillaume
+Groom nationality: FR
+Shared languages: FR, PL, EN
+
+## LANGUAGES
+
+`Supported` is the required ordered list of ISO 639-1 codes; its order is the
+content-column and MC display order. Any two-letter code is accepted and stored
+uppercase. Missing or empty `Supported` blocks publication.
+
+Default content: PL
+Supported: PL, FR, EN
+Notes: Couple speaks FR/PL; most guests understand EN.
+
+## DEMOGRAPHICS
+
+Optional guest counts. Enter non-negative whole numbers only; leave a line
+blank when the count is unknown. Missing counts stay empty and are never
+replaced with zero. `Notes` is a short free-text line, not a contact list.
+
+Guests total: 96
+Guests PL: 64
+Guests FR: 24
+Guests other: 8
+Notes: 12 children; two guests need vegetarian meals.
+
+## CULTURAL RULES
+
+Sto Lat, Gorzko and Bread & Salt statuses are required. Sto Lat accepts
+`YES`, `ON_REQUEST` or `NO`; a wedding counts for the Sto Lat KPI when the
+normalized status is `YES` or `ON_REQUEST`. The Bread & Salt note is optional.
+
+| Rule | Status | Note |
+| --- | --- | --- |
+| stoLat | ON_REQUEST | Explain the symbolism in FR when guests ask. |
+| gorzko | IF_GUESTS_START | Only during cake. |
+| breadSalt | YES | Vodka vs water shot; break glasses. |
+
+## OCZEPINY
+
+Oczepiny variant: MIDNIGHT
+Throwings: veil=yes, bouquet=yes, bow tie=yes, cravat=no
+Game enabled: yes
+Countdown mode: MC
+Winners only photo: yes
+Winners + couple photo: yes
+Photographer available: yes
+
+Enabled: true
+Order: MIDNIGHT
+Toss: VEIL
+Ties: BOW_TIE
+Winner photo enabled: true
+Photographer briefed notes: Briefed the photographer and cameraman.
+Music enabled: true
+Music track: Oczepiny mix
+Music playlist: Midnight, Party
+
+### Sub-events
+
+Only the four throwings and the two winner-photo moments are allowed.
+
+| Title |
+| --- |
+| Veil toss |
+| Bouquet toss |
+| Bow-tie game |
+| Cravat toss |
+| Winner photo |
+| Winners with couple photo |
+
+## TIMELINE
+
+First guests arrival, kitchen courses and Wedding closure are mandatory
+constraints. The importer embeds them into timeline steps with a `mandatory`
+metadata object; the step time is the only clock value. Each step duration is
+derived at runtime from the next step's time (and the mandatory closure time for
+the final step); it is never authored or stored.
+
+Use the canonical step titles (Ceremony, Vin d'honneur / Cocktail, Bread & Salt,
+Wishes, Grand Entrance, Dinner, First Dance, Wedding Cake, Supper I/II/III,
+Test Wiedzy, Test Zgodności, Oczepiny, Musical Set, Last Dance) — see
+`docs/google-doc-template-conventions.md` §6. Detection reads the flags, never
+the localized title. `Optional Flag` accepts only `oczepiny` or `dj_set`; leave
+it blank for ordinary steps.
+
+| Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| step_01 | 16:30 | Cocktail / Vin d'honneur | FLEXIBLE | Garden |  | false |  |  |
+| step_02 | 17:00 | Ceremony | FLEXIBLE | Garden Gazebo |  | false |  |  |
+| step_03 | 18:00 | Grand Entrance | FLEXIBLE | Main Hall |  | true |  | Planned 18:00; actual start logged live. Guest order: newlyweds first, guests after. |
+| step_05 | 20:30 | Wedding cake | HARD_ANCHOR | Terrace | cake_midnight | true |  |  |
+| step_06 | 21:00 | Wedding Thank-You | FLEXIBLE | Main Hall |  | false |  |  |
+| step_07 | 21:15 | Wishes | FLEXIBLE | Garden |  | false |  |  |
+| step_08 | 21:45 | First Dance | FLEXIBLE | Main Hall |  | true |  | Mode NORMAL; start at 12s; stop after 4m 30s. |
+| step_09 | 00:00 | Oczepiny | HARD_ANCHOR | Main Hall | oczepiny_midnight | false | oczepiny |  |
+| step_10 | 01:00 | Test Wiedzy | FLEXIBLE | Main Hall |  | false |  |  |
+| step_speed_foto | 01:30 | Speed Foto | FLEXIBLE | Dancefloor |  | false |  | Guests run in, pose, clear. |
+| step_11 | 01:45 | Test Zgodności | FLEXIBLE | Main Hall |  | false |  |  |
+| step_12 | 02:00 | Musical Set | FLEXIBLE | Main Hall |  | false | dj_set |  |
+
+## DJ CUES
+
+| Step ID | Playlist | Track | Cutoff | Note |
+| --- | --- | --- | --- | --- |
+| step_02 | Ceremony Procession | Canon in D — Pachelbel | 18:20 |  |
+| step_03 | Dinner Jazz | Fly Me to the Moon — Frank Sinatra | 20:15 |  |
+
+## NOTES
+
+| Step ID | Notes |
+| --- | --- |
+| step_01 | Guests gather in the garden for the aperitif. |
+| step_03 | Keep the newlyweds by the door until the MC announces them. |
+
+## SUBTASKS
+
+| Step ID | Subtask ID | Label | Done |
+| --- | --- | --- | --- |
+| step_03 | step_03_speech_mic | Confirm the speech mic is on | false |
+| step_03 | step_03_rosol | Rosół + Tartare with Vodka shot | false |
+
+## VENUE LOGISTICS
+
+Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
+Address: Dwór X, ul. Przykładowa 1, 59-400 Jawor
+Manager name: Anna Kowalska
+Manager phone: +48 600 000 000
+Manager email: anna@venue.example
+Installation latest start: 12:00
+Load-in minutes: 45
+Setup minutes: 90
+Parking: Staff car park behind the building.
+Power: 2x 230V sockets at the DJ table.
+Loading dock: true
+Elevator: false
+Noise curfew: 01:00
+Insurance: Certificate sent 2026-08-01.
+Key holder: Anna Kowalska
+Travel baseline minutes: 55
+Travel distance km: 62
+Travel origin label: Jawor 59-400
+Accommodation name: Hotel Przykład
+Accommodation address: ul. Hotelowa 2, 59-400 Jawor
+Accommodation latitude: 51.06
+Accommodation longitude: 16.2
+Accommodation distance km: 3.5
+Accommodation check-in: 15:00
+Accommodation check-out: 11:00
+Accommodation booking ref: WED-2026-08
+Accommodation rooms: 2
+Accommodation contact name: Recepcja
+Accommodation contact phone: +48 600 111 111
+Accommodation paid by: COUPLE
+Accommodation notes: Breakfast from 07:00.
+Notes: Load-in before the 16:00 ceremony rehearsal.
+
+## VIEW VISIBILITY
+
+List a row only to override the D1 default matrix. Omit this table to keep the
+defaults. Every role defaults to its `viewVisibility` preset.
+
+| Role | Section | Visible |
+| --- | --- | --- |
+| photo | music | false |
+| mc | venueAccommodation | true |
+
+## MEDIA TEAM
+
+| Team ID | Role | Name | Phone | Start | End | Deliverables | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| photo_main | PHOTO | Marek | +48 600 222 222 | 14:00 | 23:30 | Ceremony; Group photos; First dance; Oczepiny | Leaves after the winner photo. |
+| video_main | VIDEO | Ola | +48 600 333 333 | 14:30 | 00:30 | Highlight film | Needs a clean feed from the DJ booth. |
+
+## MUSICIANS
+
+Musician expected: false
+
+Set this to `true` or `false` only. Names, instruments, availability and ceremony
+requirements are managed in `/admin`, never in this Doc.
+
+## PHOTO PLAN
+
+Mini session enabled: true
+Mini session location: Garden
+Mini session backup location: Ballroom window
+Group photos step ID:
+Group photos location: OUTDOOR
+Group photos description: Formal photos with immediate family and witnesses only.
+Sparklers: true
+Fire: false
+Heavy smoke: true
+Other effects: Cold sparks
+
+### Group Photos
+
+Group ID and Label are required in every row.
+
+| Group ID | Label |
+| --- | --- |
+| bride_family | Bride's family |
+| groom_family | Groom's family |
+| friends | Friends |
+
+## IMPORTANT SONGS
+
+| Moment ID | Moment | Title | Artist | Version | Source type | File / Link | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 |  |
+| first_dance | FIRST_DANCE | Perfect | Ed Sheeran | Album version | STREAMING |  | Duet version if available. |
+| cake_cutting | CAKE_CUTTING | Cake | The Coup | Album version | STREAMING |  |  |
+
+## MUSIC POLICY
+
+Disco Polo policy: No
+
+### Must Play
+
+| Song ID | Track | Note |
+| --- | --- | --- |
+| first_dance | Perfect — Ed Sheeran | First dance. |
+| last_song | Wonderful Tonight — Eric Clapton | Last song of the night. |
+
+### Do Not Play
+
+| Track |
+| --- |
+| Macarena - Los del Río |
+
+## GUEST REQUESTS
+
+Rules: One request per guest; the DJ decides the order.
+
+## SPEECHES
+
+Speech mode: COMPLEX
+
+`Speech mode` is the wedding-level authorization for speech Doc creation and
+accepts exactly `OFF`, `LIGHT` or `COMPLEX`. Only `COMPLEX` authorizes creating
+speech Docs and folders. A missing or invalid value warns and leaves the mode
+unset; there is no silent `OFF` default. The rows below are documentation only;
+speech records and scripts live in the encrypted speech bundle.
+
+| Speech ID | Order | Speaker | Relationship |
+| --- | --- | --- | --- |
+| speech_witness | 1 | Bartek | Best man |
+
+### Speech Script speech_witness
+
+```text
+Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume…
+```
+
+## CAKE
+
+Time: 20:30
+Cutting song: Cake — The Coup
+Sparklers: true
+Photographer cue: Front-left of the cake table
+
+## GAMES
+
+| Game | Requested | Requested by | Languages | Existing questions | Requires photographer | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Test Wiedzy | UNDECIDED |  | PL, FR, EN | Yes | no | Question list Doc: gdoc_test_wiedzy |
+| Test Zgodności | UNDECIDED |  | PL, FR, EN | No | no | Question list Doc: gdoc_test_zgodnosci; link to Oczepiny? |
+| Speed Foto | YES |  |  | No | yes | Guests run in, pose, clear. |
+
+Only `YES` authorizes creating that game's question Doc and folder. `NO` and
+`UNDECIDED` never do. Each row maps its `Requested` value to its own predefined
+timeline step, so `YES` for Test Wiedzy never authorizes Test Zgodności (and
+vice versa). Missing or invalid values warn and leave the step's `requested`
+unset; consent is never inferred from another mention. `enabled` keeps its
+display/runtime meaning (`YES` and `UNDECIDED` enabled, `NO` disabled) and is
+not creation authorization.
+
+## KITCHEN
+
+### Courses
+
+| Course ID | Name | Time | Dietary notes |
+| --- | --- | --- | --- |
+| soup | Soup | 17:00 | 1 vegan |
+| main | Main | 18:00 | 2 vegetarian, 1 gluten-free |
+
+### Dietary Counts
+
+Vegetarian: 2
+Vegan: 1
+Gluten free: 1
+
+### Vendor Meals
+
+| Vendor | Count | Time | Notes |
+| --- | --- | --- | --- |
+| Photo | 2 | 17:30 | Vegetarian |
+
+### Service Anchors
+
+| Anchor ID | Time | Label |
+| --- | --- | --- |
+| cake_service | 21:30 | Cake service |
+
+## PRIVACY
+
+Cloud sync: ENCRYPTED_HOST_KEY
+Encryption algorithm: AES-GCM
+Encryption key holder: HOST
+Encryption version: 1
+
+## LIVE SYNC STATE
+
+> Runtime state. Leave these lines out of the couple's template. They exist only
+> when exporting a demo cartridge.
+
+Active step ID: step_03
+Completed step IDs: step_01, step_02
+Actual timestamps: step_01=2026-08-20T16:31:00+02:00, step_02=2026-08-20T17:00:00+02:00, step_03=2026-08-20T18:25:00+02:00
+
+## EXTENSIONS
+
+Optional JSON for app-specific additions. Leave as an empty object when unused.
+
+```json
+{}
+```
+
+## MANDATORY STEPS
+
+| Field | Time |
+| --- | --- |
+| First guests arrival | 15:30 |
+| Wedding closure | 02:00 |
+| Closure extension allowed | true |
+| Closure extension until | 03:00 |
+| Cake service mode | KITCHEN_RETURN |
+| Last song | Perfect - Ed Sheeran |
+
+### Kitchen Services
+
+One row per meal course, in serving order. The number of courses is not fixed —
+add or remove rows as needed. Each course is an exact-hour mandatory milestone.
+
+| Course ID | Name | Time | Service Mode |
+| --- | --- | --- | --- |
+| dinner | Dinner | 18:30 | TABLE_SERVICE |
+| supper_1 | Supper I | 21:30 | TABLE_SERVICE |
+| supper_2 | Supper II | 23:30 | BUFFET |
+
+## ATTRACTIONS
+
+Optional parallel attractions. They never create timeline steps. Delete rows you
+do not need; every row present in the table is active. Attraction ID, Type, Name,
+Start, End and Location are required in every row; Provider and Notes are
+optional.
+
+| Attraction ID | Type | Name | Start | End | Location | Provider | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| photobooth | PHOTO_BOOTH | Fotobudka | 20:00 | 23:30 | Garden | Foto Fun | Unlimited prints |
+| guestbook | GUEST_BOOK | Guest book | 18:00 | 23:30 | Hall foyer |  | Signing pens on the table |
+| polaroids | POLAROIDS | Polaroids / Instax | 19:00 | 23:00 | Garden |  | One photo per guest |
+
+## CEREMONY SCRIPT
+
+Optional verbatim ceremony script, attached to the Ceremony step by `Step ID`.
+Each `###` heading is one ceremony part; its fenced blocks are the per-language
+lines (the fence language is `pl`, `fr` or `en`). Copy the script **verbatim** —
+never summarize or translate it.
+
+Step ID: step_02
+
+### Welcome and Introduction
+
+```pl
+Drodzy goście, witamy was bardzo serdecznie w tym wyjątkowym dniu.
+```
+```fr
+Chère famille, chers amis, soyez les bienvenus en ce jour si spécial.
+```
+```en
+Welcome, family and friends — we are gathered here to celebrate this couple.
+```
+
+### The Pronouncement
+
+```pl
+Ogłaszam, że jesteście małżeństwem!
+```
+```fr
+Je vous déclare officiellement mari et femme !
+```
+```en
+I now pronounce you married!
+```
+
+## CEREMONY SUBSTEPS
+
+Optional informational moments inside the Ceremony step. They never become
+timeline steps, do not affect durations, drift or anchors, and are displayed
+nested under the Ceremony card. `Step ID` must reference a step that owns a
+ceremony object. `Time`, `Notes`, `Music cue` and `Responsible role` are
+optional; `Responsible role` accepts MC, DJ, Musician, Speaker or Venue.
+
+| Step ID | Sub-step ID | Time | Title | Notes | Music cue | Responsible role |
+| --- | --- | --- | --- | --- | --- | --- |
+| step_02 | ceremony_entrance | 17:00 | Bridal entrance | Doors open; guests stand. | Canon in D | Musician |
+| step_02 | ceremony_vows | 17:15 | Vows | Microphones for the couple. |  | MC |
+| step_02 | ceremony_rings | 17:25 | Ring exchange | Photographer moves to the altar. |  | Musician |
+
+## WITNESSES
+
+Witnesses are key persons, not guests or media crew. Contact details are
+admin-only and must never be rendered on a stage role view.
+
+| Witness ID | Name | Language | Phone | Email |
+| --- | --- | --- | --- | --- |
+| witness_bartek | Bartek | PL | +48 600 222 333 | bartek@example.com |
+| witness_valentin | Valentin | FR |  |  |

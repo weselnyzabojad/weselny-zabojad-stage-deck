@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, development]
   pull_request:
-    branches: [master]
+    branches: [master, development]
   workflow_dispatch:
 
 permissions:
@@ -13,10 +13,6 @@ permissions:
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
-
-defaults:
-  run:
-    working-directory: universal-wedding-stage-deck
 
 jobs:
   validate:
@@ -32,13 +28,16 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: universal-wedding-stage-deck/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Lint
         run: npm run lint
+
+      - name: Validate environment
+        run: npm run validate:env -- --allow-missing
 
       - name: Validate translations
         run: npm run validate:i18n

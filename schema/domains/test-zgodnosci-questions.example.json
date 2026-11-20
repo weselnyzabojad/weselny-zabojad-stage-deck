@@ -1,0 +1,17 @@
+{
+  "gameType": "TEST_ZGODNOSCI",
+  "questions": [
+    {
+      "id": "z01",
+      "prompt": {
+        "PL": "Kto pierwszy powiedział „kocham cię”?"
+      }
+    },
+    {
+      "id": "z02",
+      "prompt": {
+        "PL": "Gdzie odbyła się pierwsza wspólna podróż?"
+      }
+    }
+  ]
+}

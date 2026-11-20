@@ -1,0 +1,12 @@
+{
+  "$schema": "./languages.json",
+  "languages": {
+    "supported": [
+      "PL",
+      "EN",
+      "FR"
+    ],
+    "defaultContent": "PL",
+    "notes": "Column order for generated Docs and MC display."
+  }
+}

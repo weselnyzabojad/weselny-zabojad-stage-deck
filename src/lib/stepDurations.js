@@ -1,0 +1,3 @@
+// Shared step-duration logic lives with the Edge Functions so the browser,
+// recap and admin aggregation use one implementation.
+export * from '../../supabase/functions/_shared/stepDurations.js';
