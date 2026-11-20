@@ -885,6 +885,10 @@ const en = {
   'landing.intro.p2': 'Stage Deck was born from that requirement: a unique collaborative space that connects all your vendors in real time on the big day, leaving your mind completely free to savour every moment.',
   'landing.intro.p2.highlight': 'Stage Deck',
   'landing.intro.trust': 'Built to Weselny Żabojad standards, with the insight of experienced wedding professionals who run real weddings every week.',
+  'underConstruction.title': 'Coming soon',
+  'underConstruction.subtitle':
+    'We are putting the finishing touches on this page. It will be live very soon. In the meantime, feel free to get in touch.',
+  'underConstruction.cta': "Let's talk about your event",
   'landing.hero.eyebrow': 'Available to wedding vendors, for future newlyweds',
   'landing.ribbon.prefix': 'Imagined by',
   'landing.ribbon.prefixShort': 'By',

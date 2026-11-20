@@ -888,6 +888,10 @@ const pl = {
   'landing.intro.p2': 'Z tej potrzeby powstał Stage Deck: wyjątkowa przestrzeń współpracy, która łączy wszystkich Waszych usługodawców w czasie rzeczywistym w dniu ślubu, zostawiając Wam całkowicie wolną głowę, byście delektowali się każdą chwilą.',
   'landing.intro.p2.highlight': 'Stage Deck',
   'landing.intro.trust': 'Zbudowane zgodnie ze standardami Weselny Żabojad, z wiedzą doświadczonych specjalistów z branży weselnej, którzy co tydzień prowadzą prawdziwe wesela.',
+  'underConstruction.title': 'Już wkrótce',
+  'underConstruction.subtitle':
+    'Dopracowujemy ostatnie szczegóły tej strony. Wkrótce będzie dostępna. W międzyczasie zapraszamy do kontaktu.',
+  'underConstruction.cta': 'Porozmawiajmy o Waszym wydarzeniu',
   'landing.hero.eyebrow': 'Do dyspozycji usługodawców, dla przyszłych nowożeńców',
   'landing.ribbon.prefix': 'Stworzone przez',
   'landing.ribbon.prefixShort': 'Projekt',
