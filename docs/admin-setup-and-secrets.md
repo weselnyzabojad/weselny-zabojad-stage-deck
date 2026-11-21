@@ -400,3 +400,7 @@ configuration renders the Netlify card as `down` with an explicit detail.
 - `supabase/schema.sql` — database schema and RLS.
 - `supabase/migrations/` — migrations.
 - `supabase/functions/` — Edge Functions.
+
+## Google Docs API (timeline sync)
+
+Enable the Google Docs API for the service-account project and keep the account on the same OAuth client used by the Drive connector. Timeline sync uses the documents scope and documents.get / documents.batchUpdate.
