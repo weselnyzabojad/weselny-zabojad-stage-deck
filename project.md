@@ -11693,6 +11693,10 @@ issue.
 > **Updated on 2026-11-21:** issue #1342 is repurposed from Season to **Month**.
 > The Season scope moves to #1347 and a **Before season** Story is added as
 > #1346; the monthly/countdown data is #1345. See 17.145.
+>
+> **Updated again on 2026-11-21:** every admin social Story now lives in the
+> **Social Media Studio** tab (#1352); the per-row Social button is removed.
+> The Next month weddings Story is #1351. See 17.146.
 
 The owner-admin Social Export Studio becomes the place to review real
 per-wedding data before exporting. The admin studio loads the missing
@@ -11809,6 +11813,9 @@ Issue #1342 is repurposed from Season to Month; the Season scope moves to
 This section **supersedes 17.144 F3 and the #1342 Season contract**. The admin
 Studio remains the only surface; MC and public season output are unchanged.
 
+> **Updated on 2026-11-21:** Month, Before season and Season are hosted in the
+> Social Media Studio tab (#1352); see 17.146.
+
 **Features.**
 
 | # | Feature | Outcome |
@@ -11893,3 +11900,106 @@ Studio remains the only surface; MC and public season output are unchanged.
 [#1345](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1345),
 [#1346](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1346),
 [#1347](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1347).
+
+### 17.146 Social Media Studio tab and Next month weddings Story (decision, 2026-11-21)
+
+The owner admin gets one dedicated **Social Media Studio** tab for every social
+Story, and a new **Next month** Story previews the weddings of the upcoming
+month during the last week of the current month. The per-row Social shortcut is
+removed; the tab becomes the only admin entry point.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F1 | Next month weddings Story | Last 7 days of the month, next month's weddings in groups of 4, names/city/country/date |
+| F2 | Social Media Studio tab | Dedicated admin tab, default first upcoming wedding, all Story templates in one place |
+
+**Release target.** Both features are required for the **first release**. Label
+`release-1.1`; no milestone.
+
+**Next month Story contract.**
+
+- The target is the next calendar month in the venue timezone; December rolls
+  to January of the next year.
+- The Story is offered only during the last 7 calendar days of the current
+  month. There is no preview outside that window.
+- It is offered only when the next month contains at least one wedding;
+  otherwise the tab shows the empty state.
+- Weddings are sorted by date ascending and grouped into Stories of at most 4.
+  A larger month produces multiple PNGs, each with a `1/N` page indicator.
+- Each wedding row shows the bride's first name and the groom's first name as
+  `<Bride> & <Groom>`, the venue city, the country and a localized day + month.
+- No surname, address, venue name, contact or private note is rendered.
+- FR/PL captions mirror the card. Filenames are
+  `stage-deck-next-month-<YYYY-MM>-<page>.png`.
+
+**Social Media Studio tab contract.**
+
+- `ADMIN_TABS` gains `['social', 'Social Media Studio']`, placed after Overview.
+  The tab is reachable by click and keyboard and renders inside `/admin`.
+- A new `AdminSocialStudio` component hosts the Story template picker, wedding
+  selector and season year selector, and reuses `SocialExportStudio`.
+- The default selection is the first upcoming wedding by date, opening Day −1.
+  With no upcoming wedding, the tab shows an empty state.
+- Day −1, Day +1 and Month use the wedding selector. Before season and Season
+  use the season year selector. Next month appears only inside its window.
+- All admin templates are registered in one place: Day −1, Day +1, Month, Next
+  month, Before season and Season.
+- The per-row Social button and inline studio are removed from
+  `AdminPortfolioOverview`; no dead state or import remains.
+- Read-only admin can preview/export but cannot mutate data. Demo mode still
+  works.
+- Per-wedding data comes from #1338; admin-only rendering comes from #1339.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin Social Media Studio | New tab, all Story templates, Next month window, default first upcoming wedding |
+| Admin portfolio | Per-row Social button removed; portfolio table unchanged |
+| MC post-mortem | Unchanged |
+| Public season widget / landing / WordPress | Unchanged |
+| Other stage roles | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| Tab name | Social Media Studio |
+| Tab placement | After Overview |
+| Default context | First upcoming wedding, Day −1 |
+| No upcoming wedding | Empty state |
+| Per-row button | Removed; tab is the only admin entry point |
+| Next month window | Last 7 calendar days of the current month |
+| Next month grouping | 4 weddings per Story, multiple Stories, `1/N` |
+| Next month fields | First names, city, country, localized day + month |
+| Privacy | No surname, address, venue name, contact or private note |
+| Surfaces | Admin only; MC and public unchanged |
+
+**Alignment.**
+
+| Issue | Alignment |
+| --- | --- |
+| [#1338](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1338) | Scope updated from the per-row action to the Social Media Studio tab |
+| [#1339](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1339) | Admin-only rendering mode consumed by the tab |
+| [#1340](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1340) | Day −1 template hosted in the tab |
+| [#1341](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1341) | Day +1 template hosted in the tab |
+| [#1342](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1342) | Month template hosted in the tab |
+| [#1345](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1345) | Monthly aggregates feed Month and Before season in the tab |
+| [#1346](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1346) | Before season template hosted in the tab |
+| [#1347](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1347) | Season template hosted in the tab |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1352) | Social Media Studio tab, selectors, default wedding, remove per-row action | #1338; integrates #1339-#1347 |
+| 2 | [#1351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1351) | Next month Story model, 4-per-Story pagination, window, captions | #1352 |
+
+**Open questions.** None.
+
+**Tracking.** [#1352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1352),
+[#1351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1351),
+[#1338](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1338).
