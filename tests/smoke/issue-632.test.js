@@ -31,13 +31,15 @@ describe('issue #632 cultural rule note cleanup', () => {
     expect(read('src/demo/demoWedding.js')).not.toContain('No Gorzko Gorzko');
   });
 
-  it('keeps only the Bread & Salt note from the Google Doc mapping', () => {
-    const result = googleDocTemplateToCartridge(
-      parseGoogleDocTemplate(read('schema/google-doc-template.md')),
+  it('maps only the Bread & Salt Example cell when the couple fills it', () => {
+    const source = read('schema/google-doc-template.md').replace(
+      '| breadSalt | YES |  |',
+      '| breadSalt | YES | Vodka vs water shot; break glasses. |',
     );
+    const result = googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
     const rules = result.cartridge.culturalRules;
     expect(rules.sto_lat).not.toHaveProperty('note');
     expect(rules.gorzko).not.toHaveProperty('note');
-    expect(rules.bread_salt.note).toBeTruthy();
+    expect(rules.bread_salt.note).toBe('Vodka vs water shot; break glasses.');
   });
 });

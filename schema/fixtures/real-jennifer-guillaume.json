@@ -145,11 +145,10 @@
       "photographerAvailable": true
     },
     "music": {
-      "track": "Oczepiny mix",
-      "playlist": [
+      "songs": [
         "Midnight"
       ],
-      "enabled": true
+      "decidedByDj": false
     },
     "subEvents": [
       {
@@ -177,18 +176,11 @@
         "title": "Winners with couple photo"
       }
     ],
-    "variant": "MIDNIGHT",
-    "throwings": {
-      "veil": true,
-      "bouquet": true,
-      "bowTie": true,
-      "cravat": false
-    },
     "game": {
       "enabled": true
     },
     "countdown": {
-      "mode": "MC"
+      "mode": "SONGS"
     }
   },
   "steps": [

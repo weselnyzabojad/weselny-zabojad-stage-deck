@@ -217,22 +217,21 @@ export function resolveOczepiny(wedding, hardAnchors = [], mediaTeam = resolveMe
 
   return {
     enabled: true,
-    order: ['MIDNIGHT', 'AFTER_CAKE', 'CUSTOM'].includes(raw.order) ? raw.order : 'CUSTOM',
+    order: ['MIDNIGHT', 'EARLY'].includes(raw.order) ? raw.order : 'MIDNIGHT',
     anchorId: text(raw.anchorId),
     anchor: anchor
       ? { id: text(anchor.id) ?? anchorTime, label: text(anchor.label) ?? 'Oczepini anchor', time: anchorTime }
       : null,
-    toss: ['VEIL', 'BOUQUET', 'OFF'].includes(raw.toss) ? raw.toss : null,
-    ties: ['BOW_TIE', 'TIE', 'OFF'].includes(raw.ties) ? raw.ties : null,
+    toss: ['VEIL', 'BOUQUET'].includes(raw.toss) ? raw.toss : null,
+    ties: ['BOW_TIE', 'CRAVAT'].includes(raw.ties) ? raw.ties : null,
     winnerPhoto,
     winnerPhotoWarning,
     music: raw.music && typeof raw.music === 'object'
       ? {
-          enabled: raw.music.enabled === true,
-          track: text(raw.music.track),
-          playlist: Array.isArray(raw.music.playlist)
-            ? raw.music.playlist.map(text).filter(Boolean)
+          songs: Array.isArray(raw.music.songs)
+            ? raw.music.songs.map(text).filter(Boolean)
             : [],
+          decidedByDj: raw.music.decidedByDj === true,
         }
       : null,
     subEvents: Array.isArray(raw.subEvents)

@@ -40,10 +40,11 @@ describe('issue #535 role-view i18n and cartridge data boundary', () => {
         wedding: {
           oczepiny: {
             enabled: true,
-            variant: 'MIDNIGHT',
-            throwings: { veil: true, bouquet: false, bowTie: true, cravat: false },
+            order: 'MIDNIGHT',
+            toss: 'VEIL',
+            ties: 'BOW_TIE',
             game: { enabled: true },
-            countdown: { mode: 'MC' },
+            countdown: { mode: 'MC_MIC_COUNTDOWN' },
           },
         },
       }),

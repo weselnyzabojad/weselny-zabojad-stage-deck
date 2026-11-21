@@ -9,7 +9,7 @@ describe('issue #560 oczepiny domain schema', () => {
   it('defines the domain schema and validates its example', () => {
     const domain = json('schema/domains/oczepiny.json');
     expect(domain.$id).toContain('/domains/oczepiny.json');
-    expect(domain.properties.oczepiny.properties.variant.enum).toEqual(['EARLY', 'MIDNIGHT']);
+    expect(domain.properties.oczepiny.properties.order.enum).toEqual(['MIDNIGHT', 'EARLY']);
 
     const ajv = new Ajv2020({ allErrors: true, strict: false });
     const validate = ajv.compile(domain);

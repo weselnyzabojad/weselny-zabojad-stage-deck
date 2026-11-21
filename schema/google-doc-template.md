@@ -76,11 +76,11 @@
 
 **How to fill:** replace the example rows and keep the `Rule` names unchanged; Sto Lat accepts only `YES`, `ON_REQUEST` or `NO`.
 
-| Rule | Status | Note |
+| Rule | Status | Example |
 | --- | --- | --- |
-| stoLat | ON_REQUEST | Explain the symbolism in FR when guests ask. |
-| gorzko | IF_GUESTS_START | Only during cake. |
-| breadSalt | YES | Vodka vs water shot; break glasses. |
+| stoLat | ON_REQUEST |  |
+| gorzko | IF_GUESTS_START |  |
+| breadSalt | YES |  |
 
 A wedding counts for the Sto Lat KPI when the normalized status is `YES` or
 `ON_REQUEST`.
@@ -91,20 +91,16 @@ A wedding counts for the Sto Lat KPI when the normalized status is `YES` or
 
 | Field | Your value | Example |
 | --- | --- | --- |
-| Oczepiny variant | MIDNIGHT | MIDNIGHT, AFTER_CAKE or CUSTOM |
-| Throwings | veil=yes, bouquet=yes, bow tie=yes, cravat=no | Four comma-separated yes/no flags |
+| Enabled | true | true or false |
+| Order | MIDNIGHT | MIDNIGHT or EARLY |
+| Toss | VEIL | VEIL or BOUQUET |
+| Ties | BOW_TIE | BOW_TIE or CRAVAT |
 | Game enabled | yes | yes or no |
-| Countdown mode | MC | MC or DJ |
+| Countdown mode | SONGS | SONGS or MC_MIC_COUNTDOWN |
+| Winner photo enabled | true | true or false |
 | Winners only photo | yes | yes or no |
 | Winners + couple photo | yes | yes or no |
-| Enabled | true | true or false |
-| Order | MIDNIGHT | MIDNIGHT, AFTER_CAKE or CUSTOM |
-| Toss | VEIL | VEIL, BOUQUET or BOW_TIE |
-| Ties | BOW_TIE | BOW_TIE or CRAVAT |
-| Winner photo enabled | true | true or false |
-| Music enabled | true | true or false |
-| Music track | Oczepiny mix | Track name |
-| Music playlist | Midnight, Party | Comma-separated playlist names |
+| songs | default | `default`, or semicolon-separated artist — title entries |
 
 ## TIMELINE
 

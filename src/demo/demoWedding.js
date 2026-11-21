@@ -137,11 +137,9 @@ export const DEMO_WEDDING = {
   },
   oczepiny: {
     enabled: true,
-    variant: "MIDNIGHT",
     order: "MIDNIGHT",
-    throwings: { veil: true, bouquet: true, bowTie: true, cravat: false },
     game: { enabled: true },
-    countdown: { mode: "MC" },
+    countdown: { mode: "SONGS" },
     toss: "VEIL",
     ties: "BOW_TIE",
     winnerPhoto: {
@@ -154,7 +152,7 @@ export const DEMO_WEDDING = {
     photographerBriefed: {
       notes: "Cameraman confirmed the midnight window."
     },
-    music: { enabled: true, track: "Oczepiny mix", playlist: ["Midnight"] },
+    music: { songs: ["Perfect — Ed Sheeran"], decidedByDj: false },
     subEvents: [
       { id: "veil_toss", title: "Veil toss" },
       { id: "bouquet_toss", title: "Bouquet toss" },
