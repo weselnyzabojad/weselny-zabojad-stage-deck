@@ -192,7 +192,7 @@ function clientTemplateFilename({ brideName, groomName, weddingId }: Record<stri
       .replace(/[\\/:*?"<>|]/g, ' ')
       .replace(/\s+/g, ' ')
       .trim();
-  return `Wedding harmonogram - ${clean(brideName)} & ${clean(groomName)} (${clean(weddingId)})`
+  return `Wedding scenario - ${clean(brideName)} & ${clean(groomName)} (${clean(weddingId)})`
     .slice(0, 180)
     .trim();
 }

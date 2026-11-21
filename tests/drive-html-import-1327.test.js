@@ -46,7 +46,7 @@ describe('issue #1327 Drive HTML import for the client template', () => {
 
   it('uses the exact filename, create-once guard and by-name second guard', () => {
     expect(adminDrive).toContain(
-      '`Wedding harmonogram - ${clean(brideName)} & ${clean(groomName)} (${clean(weddingId)})`',
+      '`Wedding scenario - ${clean(brideName)} & ${clean(groomName)} (${clean(weddingId)})`',
     );
     expect(adminDrive).toContain('.slice(0, 180)');
     expect(adminDrive).toContain('if (wedding.template_doc_id)');

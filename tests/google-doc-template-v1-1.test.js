@@ -9,7 +9,7 @@ describe('Google Doc customer template v1.1', () => {
   const schemaReadme = read('schema/README.md');
 
   it('is labelled as the current v1.1 customer template', () => {
-    expect(template).toContain('# Wedding harmonogram - Google Doc template (v1.1)');
+    expect(template).toContain('# Wedding scenario - Google Doc template (v1.1)');
     expect(template).toContain('This is the v1.1 customer template shipped with the first');
     expect(template).not.toContain('PROVISIONAL');
   });

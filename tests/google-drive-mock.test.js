@@ -114,11 +114,11 @@ describe('dockerized Google Drive mock', () => {
     const wedding = siblings.files.find((file) => file.name === MOCK_WEDDING_FOLDER);
     const doc = await connector.createGoogleDocFromHtml({
       parentId: wedding.id,
-      name: 'Wedding harmonogram - Anna & Piotr',
+      name: 'Wedding scenario - Anna & Piotr',
       html: '<h1>Anna &amp; Piotr</h1><h2>TIMELINE</h2>',
     });
     expect(doc.mimeType).toBe(DRIVE_DOC_MIME_TYPE);
-    expect(doc.name).toBe('Wedding harmonogram - Anna & Piotr');
+    expect(doc.name).toBe('Wedding scenario - Anna & Piotr');
     expect((await connector.readSource(doc.id)).text).toContain('<h1>Anna &amp; Piotr</h1>');
   });
 
