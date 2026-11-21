@@ -6,14 +6,16 @@
 // key, Authorization headers or raw Google error payloads.
 
 export const DRIVE_READONLY_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
+export const DOCUMENTS_SCOPE = 'https://www.googleapis.com/auth/documents';
 // Issue #924/#932: the service account creates and rewrites its own Docs. Pair
 // drive.file (write only files this app creates) with readonly (read the shared
 // wedding tree). Do not request full `drive` scope.
 export const DRIVE_FILE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-export const DRIVE_REQUEST_SCOPES = `${DRIVE_READONLY_SCOPE} ${DRIVE_FILE_SCOPE}`;
+export const DRIVE_REQUEST_SCOPES = `${DRIVE_READONLY_SCOPE} ${DRIVE_FILE_SCOPE} ${DOCUMENTS_SCOPE}`;
 export const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 export const GOOGLE_DRIVE_FILES_ENDPOINT = 'https://www.googleapis.com/drive/v3/files';
 export const GOOGLE_DRIVE_UPLOAD_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3/files';
+export const GOOGLE_DOCS_ENDPOINT = 'https://docs.googleapis.com/v1/documents';
 export const DRIVE_METADATA_FIELDS =
   'id,name,mimeType,modifiedTime,version,md5Checksum,size,parents,webViewLink';
 export const DRIVE_PERMISSION_FIELDS = 'id,type,role,emailAddress,displayName,domain';
@@ -261,6 +263,7 @@ export function createGoogleDriveConnector({
   tokenEndpoint = null,
   filesEndpoint = null,
   uploadEndpoint = null,
+  docsEndpoint = null,
 } = {}) {
   const base = typeof apiBase === 'string' ? apiBase.trim().replace(/\/+$/, '') : '';
   const resolvedTokenEndpoint = tokenEndpoint ?? (base ? `${base}/token` : GOOGLE_TOKEN_ENDPOINT);
@@ -268,6 +271,8 @@ export function createGoogleDriveConnector({
     filesEndpoint ?? (base ? `${base}/drive/v3/files` : GOOGLE_DRIVE_FILES_ENDPOINT);
   const resolvedUploadEndpoint =
     uploadEndpoint ?? (base ? `${base}/upload/drive/v3/files` : GOOGLE_DRIVE_UPLOAD_ENDPOINT);
+  const resolvedDocsEndpoint =
+    docsEndpoint ?? (base ? `${base}/v1/documents` : GOOGLE_DOCS_ENDPOINT);
   let cachedToken = null;
   let tokenExpiresAt = 0;
 
@@ -760,6 +765,35 @@ export function createGoogleDriveConnector({
     return true;
   }
 
+  async function getDocument(fileId) {
+    if (typeof fileId !== 'string' || fileId.trim().length === 0) {
+      throw createDriveError('drive_invalid_request', 'A Google Doc id is required.');
+    }
+    const response = await authorizedRequest(
+      `${resolvedDocsEndpoint}/${encodeURIComponent(fileId)}`,
+      { method: 'GET' },
+    );
+    return readJson(response);
+  }
+
+  async function batchUpdateDocument(fileId, requests = []) {
+    if (typeof fileId !== 'string' || fileId.trim().length === 0) {
+      throw createDriveError('drive_invalid_request', 'A Google Doc id is required.');
+    }
+    if (!Array.isArray(requests) || requests.length === 0) {
+      return { replies: [] };
+    }
+    const response = await authorizedRequest(
+      `${resolvedDocsEndpoint}/${encodeURIComponent(fileId)}:batchUpdate`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requests }),
+      },
+    );
+    return readJson(response);
+  }
+
   async function readSource(fileId, { maxBytes = MAX_SOURCE_BYTES } = {}) {
     const file = await getFileMetadata(fileId);
     const limit = Math.max(1, Number(maxBytes) || MAX_SOURCE_BYTES);
@@ -842,6 +876,8 @@ export function createGoogleDriveConnector({
     createGoogleDoc,
     createGoogleDocFromHtml,
     updateGoogleDocText,
+    getDocument,
+    batchUpdateDocument,
     moveFile,
     renameFile,
     listPermissions,

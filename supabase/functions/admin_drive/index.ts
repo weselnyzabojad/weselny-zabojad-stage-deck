@@ -49,6 +49,8 @@ import {
 import { isOriginAllowed, withCors } from '../_shared/cors.js';
 import { templateReadiness } from '../_shared/templateReadiness.js';
 import { CLIENT_TEMPLATE_MARKDOWN } from '../_shared/clientTemplateSource.js';
+import { buildTimelineDocRows, createTimelineDraft } from '../_shared/timelineModel.js';
+import { planTimelineDocUpdate, timelineTableText } from '../_shared/timelineDocSync.js';
 import { renderClientTemplateHtml } from '../../../src/lib/clientTemplate.js';
 
 const WEDDING_ID_PATTERN = /^[A-Za-z0-9&]+-UM-\d{4}-\d{2}-\d{3}$/;
@@ -261,6 +263,7 @@ async function handleRequest(req: Request) {
         'share_file',
         'revoke_permission',
         'create_wedding_template_doc',
+        'sync_wedding_timeline',
       ].includes(action)
     ) {
       return json({ error: 'Unsupported Drive action.' }, 400);
@@ -275,6 +278,7 @@ async function handleRequest(req: Request) {
         'rewrite_game_question_doc_columns',
         'parse_game_question_doc',
         'create_wedding_template_doc',
+        'sync_wedding_timeline',
       ].includes(action)
     ) {
       const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
@@ -323,6 +327,79 @@ async function handleRequest(req: Request) {
         checkedAt: new Date().toISOString(),
         files: result.files,
         nextPageToken: result.nextPageToken,
+      });
+    }
+
+    if (action === 'sync_wedding_timeline') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      const expectedRevision = Number(body?.expectedRevision);
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data: wedding, error: weddingError } = await admin
+        .from('weddings')
+        .select('cartridge, cartridge_revision, template_doc_id, archived_at')
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (weddingError) throw weddingError;
+      if (!wedding?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      if (wedding.archived_at) return json({ error: 'Archived weddings are read-only.' }, 409);
+      if (!wedding.template_doc_id) {
+        return json({ error: 'Timeline Doc is not linked.', code: 'timeline_unlinked' }, 400);
+      }
+      if (!Number.isInteger(expectedRevision) || expectedRevision !== wedding.cartridge_revision) {
+        return json(
+          {
+            error: 'The timeline changed in another tab. Reload and try again.',
+            code: 'timeline_stale',
+            currentRevision: wedding.cartridge_revision,
+          },
+          409,
+        );
+      }
+
+      const rows = buildTimelineDocRows(createTimelineDraft(wedding.cartridge.steps ?? []));
+      let document;
+      try {
+        document = await connector.getDocument(wedding.template_doc_id);
+      } catch (error: any) {
+        const code = typeof error?.code === 'string' ? error.code : 'timeline_doc_unavailable';
+        return json({ error: error?.message ?? 'The linked Doc could not be read.', code }, 400);
+      }
+      const plan = planTimelineDocUpdate(document, rows);
+      if (plan.error) {
+        return json({ error: plan.error.message, code: plan.error.code }, 400);
+      }
+      await connector.batchUpdateDocument(wedding.template_doc_id, plan.requests);
+      const verified = timelineTableText(await connector.getDocument(wedding.template_doc_id));
+      const expected = [['Hour', 'Step name', 'Example values'], ...rows.map((row) => [row.Hour, row['Step name'], row['Example values']])];
+      if (JSON.stringify(verified) !== JSON.stringify(expected)) {
+        return json(
+          { error: 'The Doc read-back does not match the saved timeline.', code: 'timeline_verify_failed' },
+          409,
+        );
+      }
+
+      const syncedAt = new Date().toISOString();
+      const { error: updateError } = await admin
+        .from('weddings')
+        .update({
+          timeline_doc_synced_revision: wedding.cartridge_revision,
+          timeline_doc_synced_at: syncedAt,
+        })
+        .eq('wedding_id', weddingId);
+      if (updateError) throw updateError;
+      await writeShareAudit(admin, allowlisted, 'sync_wedding_timeline', wedding.template_doc_id, {
+        weddingId,
+        revision: wedding.cartridge_revision,
+        rows: rows.length,
+      });
+      return json({
+        ok: true,
+        weddingId,
+        revision: wedding.cartridge_revision,
+        syncedAt,
+        rows: rows.length,
       });
     }
 
