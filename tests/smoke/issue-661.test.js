@@ -15,15 +15,28 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
     }
   });
 
-  it('maps the required statuses and the optional Bread & Salt note', async () => {
+  it('maps the required statuses and leaves the empty Example note absent', async () => {
     const { cartridge, warnings } = parse();
 
     expect(cartridge.culturalRules).toEqual({
       sto_lat: { status: 'ON_REQUEST' },
       gorzko: { status: 'IF_GUESTS_START' },
-      bread_salt: { status: 'YES', note: 'Vodka vs water shot; break glasses.' },
+      bread_salt: { status: 'YES' },
     });
     expect(warnings).toEqual([]);
+    expect(await validateCartridge(cartridge)).toEqual([]);
+  });
+
+  it('maps a filled Bread & Salt Example cell to the optional note', async () => {
+    const source = template.replace(
+      '| breadSalt | YES |  |',
+      '| breadSalt | YES | Vodka vs water shot; break glasses. |',
+    );
+    const { cartridge } = parse(source);
+    expect(cartridge.culturalRules.bread_salt).toEqual({
+      status: 'YES',
+      note: 'Vodka vs water shot; break glasses.',
+    });
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
@@ -37,11 +50,7 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
   });
 
   it('degrades a missing Bread & Salt note safely', async () => {
-    const source = template.replace(
-      '| breadSalt | YES | Vodka vs water shot; break glasses. |',
-      '| breadSalt | YES |  |',
-    );
-    const { cartridge } = parse(source);
+    const { cartridge } = parse();
 
     expect(cartridge.culturalRules.bread_salt).toEqual({ status: 'YES' });
     expect(await validateCartridge(cartridge)).toEqual([]);

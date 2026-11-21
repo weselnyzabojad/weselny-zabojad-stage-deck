@@ -14,24 +14,16 @@
       "photographerAvailable": true
     },
     "music": {
-      "track": "Oczepiny mix",
-      "playlist": [
-        "Midnight"
+      "songs": [
+        "Perfect — Ed Sheeran"
       ],
-      "enabled": true
-    },
-    "variant": "MIDNIGHT",
-    "throwings": {
-      "veil": true,
-      "bouquet": true,
-      "bowTie": true,
-      "cravat": false
+      "decidedByDj": false
     },
     "game": {
       "enabled": true
     },
     "countdown": {
-      "mode": "MC"
+      "mode": "SONGS"
     },
     "subEvents": [
       {

@@ -13,16 +13,28 @@
           "type": "boolean"
         },
         "order": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "MIDNIGHT",
+            "EARLY"
+          ]
         },
         "anchorId": {
           "type": "string"
         },
         "toss": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "VEIL",
+            "BOUQUET"
+          ]
         },
         "ties": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "BOW_TIE",
+            "CRAVAT"
+          ]
         },
         "winnerPhoto": {
           "type": "object",
@@ -53,24 +65,21 @@
         },
         "music": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "track": {
-              "type": "string"
-            },
-            "playlist": {
+            "songs": {
               "type": "array",
               "items": {
                 "type": "string"
               }
             },
-            "enabled": {
+            "decidedByDj": {
               "type": "boolean"
             }
           },
           "required": [
-            "track",
-            "playlist",
-            "enabled"
+            "songs",
+            "decidedByDj"
           ]
         },
         "subEvents": {
@@ -100,31 +109,6 @@
             ]
           }
         },
-        "variant": {
-          "type": "string",
-          "enum": [
-            "EARLY",
-            "MIDNIGHT"
-          ]
-        },
-        "throwings": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "veil": {
-              "type": "boolean"
-            },
-            "bouquet": {
-              "type": "boolean"
-            },
-            "bowTie": {
-              "type": "boolean"
-            },
-            "cravat": {
-              "type": "boolean"
-            }
-          }
-        },
         "game": {
           "type": "object",
           "additionalProperties": false,
@@ -141,8 +125,8 @@
             "mode": {
               "type": "string",
               "enum": [
-                "MC",
-                "NONE"
+                "SONGS",
+                "MC_MIC_COUNTDOWN"
               ]
             }
           }

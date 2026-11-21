@@ -55,22 +55,22 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
     expect(ocz).toMatchObject({
       enabled: true,
       order: 'MIDNIGHT',
-      variant: 'MIDNIGHT',
       toss: 'VEIL',
       ties: 'BOW_TIE',
       game: { enabled: true },
-      countdown: { mode: 'MC' },
+      countdown: { mode: 'SONGS' },
       winnerPhoto: {
         enabled: true,
         winnersOnly: true,
         winnersWithCouple: true,
         photographerAvailable: true,
       },
-      music: { enabled: true, track: 'Oczepiny mix', playlist: ['Midnight', 'Party'] },
-      throwings: { veil: true, bouquet: true, bowTie: true, cravat: false },
+      music: { songs: [], decidedByDj: true },
     });
     expect(ocz).not.toHaveProperty('props');
     expect(ocz).not.toHaveProperty('anchorId');
+    expect(ocz).not.toHaveProperty('variant');
+    expect(ocz).not.toHaveProperty('throwings');
     expect(ocz.winnerPhoto.photographerCue).toBe('');
     expect(ocz.subEvents).toEqual([
       { id: 'veil_toss', title: 'Veil toss' },
@@ -87,25 +87,28 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
   it('warns when a required Doc value is missing', () => {
     const result = parse(
       template.replace(
-        '| Toss | VEIL | VEIL, BOUQUET or BOW_TIE |',
-        '| Toss |  | VEIL, BOUQUET or BOW_TIE |',
+        '| Toss | VEIL | VEIL or BOUQUET |',
+        '| Toss |  | VEIL or BOUQUET |',
       ),
     );
 
     expect(result.warnings.some((warning) => warning.includes('missing Toss'))).toBe(true);
   });
 
-  it('keeps the optional music and briefing values safe when absent', async () => {
+  it('keeps music empty when countdown uses the MC mic', async () => {
     const source = template
-      .replace('| Music track | Oczepiny mix | Track name |', '| Music track |  | Track name |')
       .replace(
-        '| Music playlist | Midnight, Party | Comma-separated playlist names |',
-        '| Music playlist |  | Comma-separated playlist names |',
+        '| Countdown mode | SONGS | SONGS or MC_MIC_COUNTDOWN |',
+        '| Countdown mode | MC_MIC_COUNTDOWN | SONGS or MC_MIC_COUNTDOWN |',
+      )
+      .replace(
+        '| songs | default | `default`, or semicolon-separated artist — title entries |',
+        '| songs |  | `default`, or semicolon-separated artist — title entries |',
       );
     const { cartridge, warnings } = parse(source);
     const ocz = cartridge.oczepiny;
 
-    expect(ocz.music).toEqual({ enabled: true, track: '', playlist: [] });
+    expect(ocz.music).toEqual({ songs: [], decidedByDj: false });
     expect(ocz).not.toHaveProperty('photographerBriefed');
     expect(warnings).toEqual([]);
     expect(await validateCartridge(cartridge)).toEqual([]);

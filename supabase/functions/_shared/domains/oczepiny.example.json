@@ -1,0 +1,55 @@
+{
+  "$schema": "./oczepiny.json",
+  "oczepiny": {
+    "enabled": true,
+    "order": "MIDNIGHT",
+    "anchorId": "ocsepiny",
+    "toss": "VEIL",
+    "ties": "BOW_TIE",
+    "winnerPhoto": {
+      "enabled": true,
+      "photographerCue": "Winner photo with the couple, then clear the floor.",
+      "winnersOnly": true,
+      "winnersWithCouple": true,
+      "photographerAvailable": true
+    },
+    "music": {
+      "songs": [
+        "Perfect — Ed Sheeran"
+      ],
+      "decidedByDj": false
+    },
+    "game": {
+      "enabled": true
+    },
+    "countdown": {
+      "mode": "SONGS"
+    },
+    "subEvents": [
+      {
+        "id": "veil_toss",
+        "title": "Veil toss"
+      },
+      {
+        "id": "bouquet_toss",
+        "title": "Bouquet toss"
+      },
+      {
+        "id": "bow_tie_game",
+        "title": "Bow-tie game"
+      },
+      {
+        "id": "cravat_toss",
+        "title": "Cravat toss"
+      },
+      {
+        "id": "winner_photo",
+        "title": "Winner photo"
+      },
+      {
+        "id": "winners_with_couple_photo",
+        "title": "Winners with couple photo"
+      }
+    ]
+  }
+}

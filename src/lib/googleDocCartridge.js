@@ -184,7 +184,7 @@ function mapCulturalRules(rows, warnings = []) {
     } else if (text(row.Status)) {
       rules[key].status = text(row.Status);
     }
-    if (key === 'bread_salt' && text(row.Note)) rules[key].note = text(row.Note);
+    if (key === 'bread_salt' && text(row.Example)) rules[key].note = text(row.Example);
   }
   return rules;
 }
@@ -298,37 +298,21 @@ function mapCeremonySubSteps(source, steps, warnings = []) {
 
 
 function mapOczepiny(source, warnings = []) {
-  const throwings = {};
   const missing = [];
-  const rawThrowings = text(kv(source, 'Throwings')) ?? '';
-  const throwingKeys = { veil: 'veil', bouquet: 'bouquet', bowtie: 'bowTie', cravat: 'cravat' };
-  const throwingLabels = { veil: 'veil', bouquet: 'bouquet', bowTie: 'bow-tie', cravat: 'cravat' };
-  for (const part of rawThrowings.split(',')) {
-    const [rawKey, value] = part.split('=').map((item) => item.trim());
-    const key = throwingKeys[normalizeKey(rawKey)];
-    if (!key) continue;
-    throwings[key] = bool(value, false);
-  }
-  for (const [key, label] of Object.entries(throwingLabels)) {
-    if (!(key in throwings)) missing.push(`${label} throwing`);
-  }
-
   const enabled = bool(kv(source, 'Enabled'));
-  const order = text(kv(source, 'Order')) ?? text(kv(source, 'Oczepiny variant'));
-  const variant = text(kv(source, 'Oczepiny variant')) ?? text(kv(source, 'Order'));
-  const toss = text(kv(source, 'Toss'));
-  const ties = text(kv(source, 'Ties'));
+  const order = text(kv(source, 'Order'))?.toUpperCase();
+  const toss = text(kv(source, 'Toss'))?.toUpperCase();
+  const ties = text(kv(source, 'Ties'))?.toUpperCase();
   const gameEnabled = bool(kv(source, 'Game enabled'));
-  const countdownMode = text(kv(source, 'Countdown mode'));
+  const countdownMode = text(kv(source, 'Countdown mode'))?.toUpperCase();
   const winnerEnabled = bool(kv(source, 'Winner photo enabled'));
   const winnersOnly = bool(kv(source, 'Winners only photo'));
   const winnersWithCouple = bool(kv(source, 'Winners + couple photo'));
-  const musicEnabled = bool(kv(source, 'Music enabled'));
+  const rawSongs = text(kv(source, 'songs'));
 
   for (const [value, label] of [
     [enabled, 'Enabled'],
     [order, 'Order'],
-    [variant, 'Oczepiny variant'],
     [toss, 'Toss'],
     [ties, 'Ties'],
     [gameEnabled, 'Game enabled'],
@@ -336,14 +320,41 @@ function mapOczepiny(source, warnings = []) {
     [winnerEnabled, 'Winner photo enabled'],
     [winnersOnly, 'Winners only photo'],
     [winnersWithCouple, 'Winners + couple photo'],
-    [musicEnabled, 'Music enabled'],
   ]) {
     if (value === null || value === undefined) missing.push(label);
   }
   if (missing.length) warnings.push(`OCZEPINY: missing ${missing.join(', ')}`);
 
-  // The allowed list is fixed; the throwing/winner flags describe the plan but
-  // the couple no longer authors the sub-event table.
+  if (order && !['MIDNIGHT', 'EARLY'].includes(order)) {
+    warnings.push(`OCZEPINY: invalid Order "${order}" (expected MIDNIGHT or EARLY)`);
+  }
+  if (toss && !['VEIL', 'BOUQUET'].includes(toss)) {
+    warnings.push(`OCZEPINY: invalid Toss "${toss}" (expected VEIL or BOUQUET)`);
+  }
+  if (ties && !['BOW_TIE', 'CRAVAT'].includes(ties)) {
+    warnings.push(`OCZEPINY: invalid Ties "${ties}" (expected BOW_TIE or CRAVAT)`);
+  }
+  if (countdownMode && !['SONGS', 'MC_MIC_COUNTDOWN'].includes(countdownMode)) {
+    warnings.push(
+      `OCZEPINY: invalid Countdown mode "${countdownMode}" (expected SONGS or MC_MIC_COUNTDOWN)`,
+    );
+  }
+
+  let songs = [];
+  let decidedByDj = false;
+  if (countdownMode === 'SONGS') {
+    if (rawSongs?.toLowerCase() === 'default') {
+      decidedByDj = true;
+    } else {
+      songs = list(rawSongs);
+      if (songs.length === 0) {
+        warnings.push('OCZEPINY: songs are required when Countdown mode is SONGS');
+      }
+    }
+  }
+
+  // The allowed list is fixed; the toss/ties flags describe the plan but the
+  // couple no longer authors a throwing table.
   const subEvents = [
     { id: 'veil_toss', title: 'Veil toss' },
     { id: 'bouquet_toss', title: 'Bouquet toss' },
@@ -356,28 +367,22 @@ function mapOczepiny(source, warnings = []) {
   return {
     enabled: enabled ?? true,
     order,
-    variant,
     toss,
     ties,
-    throwings: Object.keys(throwings).length ? throwings : undefined,
     game: {
       enabled: gameEnabled ?? false,
     },
-    countdown: { mode: countdownMode ?? 'MC' },
+    countdown: { mode: countdownMode ?? 'MC_MIC_COUNTDOWN' },
     winnerPhoto: {
       enabled: winnerEnabled ?? false,
-      // The photographer cue is app/admin data, never a Doc value.
       photographerCue: '',
       winnersOnly: winnersOnly ?? false,
       winnersWithCouple: winnersWithCouple ?? false,
-      // Derived from the assigned media team after the cartridge is assembled.
       photographerAvailable: false,
     },
     music: {
-      enabled: musicEnabled ?? false,
-      // Track/playlist are optional in the Doc but required by the schema.
-      track: text(kv(source, 'Music track')) ?? '',
-      playlist: list(kv(source, 'Music playlist')),
+      songs,
+      decidedByDj,
     },
     subEvents,
   };
@@ -1291,7 +1296,7 @@ export function googleDocTemplateToCartridge(
     servicePackage,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
-      table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Note']),
+      table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Example']),
       warnings,
     ),
     steps: stepsWithMandatory,

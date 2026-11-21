@@ -279,14 +279,20 @@ is dropped without creating a step or cue.
 anchor that exists in the anchor table, and the anchor must exist for the step
 (validation rule 3).
 
-### OCZEPINY
+### CULTURAL RULES / OCZEPINY
 
-Fixed-field rows map to `oczepiny.*`; the `### Sub-events` table maps its
-`Title` column to `oczepiny.subEvents[]`. Only the four throwing moments (veil,
-bouquet, bow-tie, cravat) and the two winner-photo moments are allowed, and the
-parser derives their canonical IDs. `anchorId` and the winner-photo cue are
-app/admin data, never Doc values. The MIDNIGHT anchor still comes from the
-timeline step and hard-anchor table (D5: Oczepini and Bread & Salt coexist).
+`CULTURAL RULES` uses `Rule | Status | Example`. The Example cells are empty in
+the template; when filled, the `breadSalt` example maps to
+`culturalRules.bread_salt.note`.
+
+Oczepiny fixed fields map to `oczepiny.*`. `Order` accepts `MIDNIGHT` or
+`EARLY`; `Toss` accepts `VEIL` or `BOUQUET`; `Ties` accepts `BOW_TIE` or
+`CRAVAT`. `Countdown mode` accepts `SONGS` or `MC_MIC_COUNTDOWN`. `songs` is a
+semicolon-separated list for `SONGS`; `default` maps to an empty list with
+`music.decidedByDj = true`. The fixed sub-event list is derived, not authored.
+`anchorId` and the winner-photo cue are app/admin data, never Doc values. The
+MIDNIGHT anchor still comes from the timeline step and hard-anchor table (D5:
+Oczepini and Bread & Salt coexist).
 
 ### VIEW VISIBILITY
 
