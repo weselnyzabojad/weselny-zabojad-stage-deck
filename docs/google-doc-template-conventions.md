@@ -371,6 +371,8 @@ runtime. `EXTENSIONS` is a JSON object and must stay empty for normal weddings.
 | `validateGoogleDocTemplate(parsed)` | `{ errors, warnings }` |
 | `parseMarkdownTables(lines)` | `[{ header, rows }]` |
 | `parseFieldValues(tables)` | `{ field: value }` from `Field \| Your value \| Example` tables |
+| `validateFieldTables(parsed)` | `[error]` for old, missing, duplicate or unknown fixed-field labels |
+| `FIELD_MANIFEST` | required labels per fixed-field section |
 | `parseKeyValues(lines)` | `{ key: value }` (legacy format; rejected by the v1.1 parser) |
 | `parseBullets(lines)` / `parseCodeBlocks(lines)` | arrays |
 | `sectionForMarker(marker)` | manifest entry or `null` |
@@ -386,6 +388,8 @@ Error policy:
   marker, malformed table row.
 - **Error:** an old `Field: value` line in a fixed-field section. The message
   names the section and field and points to the migration procedure below.
+- **Error:** a missing, duplicate or unknown label in a fixed-field table. The
+  message names the section and label.
 - **Warning:** out-of-order sections, extra whitespace in a marker, missing
   optional section.
 - The parser never invents data. A missing optional section leaves the

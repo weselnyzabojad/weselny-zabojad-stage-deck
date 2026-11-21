@@ -219,6 +219,75 @@ const BULLET_PATTERN = /^\s*[-*][ \t]+(.*)$/;
 const FENCE_PATTERN = /^\s*```([A-Za-z0-9_-]*)\s*$/;
 const FIELD_TABLE_HEADER = Object.freeze(['Field', 'Your value', 'Example']);
 
+// Required labels for every fixed-field table. A section may be omitted when it
+// is optional, but once present every label in the list must appear exactly
+// once. The `Example` column is never part of the contract value.
+export const FIELD_MANIFEST = Object.freeze({
+  EVENT: [
+    'Date',
+    'Children expected',
+    'Ceremony type',
+    'Ceremony MC support',
+    'Ceremony location',
+    'Ceremony notes',
+  ],
+  'COUPLE IDENTITY': [
+    'Bride first name',
+    'Bride nationality',
+    'Groom first name',
+    'Groom nationality',
+    'Shared languages',
+  ],
+  LANGUAGES: ['Default content', 'Supported', 'Notes'],
+  DEMOGRAPHICS: ['Guests total', 'Guests PL', 'Guests FR', 'Guests other', 'Notes'],
+  OCZEPINY: [
+    'Oczepiny variant',
+    'Throwings',
+    'Game enabled',
+    'Countdown mode',
+    'Winners only photo',
+    'Winners + couple photo',
+    'Enabled',
+    'Order',
+    'Toss',
+    'Ties',
+    'Winner photo enabled',
+    'Music enabled',
+    'Music track',
+    'Music playlist',
+  ],
+  'VENUE LOGISTICS': [
+    'Venue',
+    'Address',
+    'Manager name',
+    'Manager phone',
+    'Manager email',
+    'Noise curfew',
+  ],
+  MUSICIANS: ['Musician expected'],
+  'PHOTO PLAN': [
+    'Mini session enabled',
+    'Mini session location',
+    'Mini session backup location',
+    'Group photos location',
+    'Group photos description',
+  ],
+  'MUSIC POLICY': ['Disco Polo policy'],
+  'GUEST REQUESTS': ['Rules'],
+  SPEECHES: ['Speech mode'],
+  CAKE: ['Time', 'Cutting song', 'Sparklers'],
+  KITCHEN: ['Vegetarian', 'Vegan', 'Gluten free'],
+  'MANDATORY STEPS': [
+    'First guests arrival',
+    'Wedding closure',
+    'Closure extension allowed',
+    'Closure extension until',
+    'Cake service mode',
+    'Last song',
+  ],
+  'CEREMONY SCRIPT': ['Step ID'],
+});
+
 function stripInlineMarkup(value) {
   return value
     .trim()
@@ -304,6 +373,81 @@ export function parseFieldValues(tables = []) {
   }
 
   return entries;
+}
+
+function isFieldTable(table) {
+  const cells = (table?.header ?? []).map((cell) => String(cell).toLowerCase());
+  return (
+    cells.length === FIELD_TABLE_HEADER.length &&
+    cells.every((cell, index) => cell === FIELD_TABLE_HEADER[index].toLowerCase())
+  );
+}
+
+function fieldTableRows(section) {
+  return (section?.tables ?? [])
+    .filter(isFieldTable)
+    .flatMap((table) =>
+      (table.rows ?? []).map((row) => ({
+        label: stripInlineMarkup(row.Field ?? ''),
+        value: stripInlineMarkup(row['Your value'] ?? ''),
+      })),
+    );
+}
+
+function oldFormatLabels(section) {
+  return Object.keys(parseKeyValues(section?.lines ?? []));
+}
+
+// Validates the table contract for every fixed-field section: missing, unknown
+// and duplicate labels are hard errors, and an old `Field: value` line is
+// rejected with the migration procedure instead of falling back silently.
+export function validateFieldTables(parsed) {
+  const errors = [];
+  const sections = parsed?.sections ?? [];
+
+  for (const section of sections) {
+    const expected = FIELD_MANIFEST[section.marker];
+    if (!expected) continue;
+
+    const legacyLabels = oldFormatLabels(section);
+    if (legacyLabels.length > 0) {
+      for (const label of legacyLabels) {
+        errors.push(
+          `## ${section.marker}: old "${label}: value" line is not supported. ` +
+            'Use the "Field | Your value | Example" table row instead; see ' +
+            'docs/google-doc-template-conventions.md "Migrating an existing Doc".',
+        );
+      }
+      continue;
+    }
+
+    const rows = fieldTableRows(section);
+    const seen = new Set();
+    for (const { label } of rows) {
+      if (!expected.includes(label)) {
+        errors.push(
+          `## ${section.marker}: unknown field label "${label}". Use one of: ${expected.join(', ')}.`,
+        );
+        continue;
+      }
+      if (seen.has(label)) {
+        errors.push(`## ${section.marker}: duplicate field label "${label}".`);
+        continue;
+      }
+      seen.add(label);
+    }
+
+    const missing = expected.filter((label) => !seen.has(label));
+    if (missing.length > 0) {
+      errors.push(
+        `## ${section.marker}: missing field label${missing.length > 1 ? 's' : ''} ` +
+          missing.map((label) => `"${label}"`).join(', ') +
+          '. Add each row to the "Field | Your value | Example" table.',
+      );
+    }
+  }
+
+  return errors;
 }
 
 export function parseBullets(lines = []) {
@@ -492,6 +636,8 @@ export function validateGoogleDocTemplate(parsed) {
         'Parsing still works, but keep the template order for readable diffs.',
     );
   }
+
+  errors.push(...validateFieldTables(parsed));
 
   return { errors, warnings };
 }
