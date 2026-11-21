@@ -65,13 +65,11 @@ Canonical order and mapping:
 | 9 | `## SUBTASKS` | no | `steps[].subTasks` |
 | 10 | `## HARD ANCHORS` | no | `hardAnchors` |
 | 11 | `## VENUE LOGISTICS` | no | `venueDetails` domain contract only (not a cartridge field) |
-| 12 | `## VIEW VISIBILITY` | yes | `viewVisibility` |
 | 13 | `## MEDIA TEAM` | no | `mediaTeam` |
 | 14 | `## PHOTO PLAN` | no | `photoPlan` |
 | 15 | `## IMPORTANT SONGS` | no | `musicPolicy.importantSongs` |
 | 16 | `## MUSIC POLICY` | no | `musicPolicy` |
-| 17 | `## GUEST REQUESTS` | no | `musicPolicy.requestWindow`, `requestsOpen` |
-| 18 | `## SPEECHES` | no | `speechMode` |
+| 18 | `## SPEECHES` | no | `speechMode`, `speeches[]` |
 | 19 | `## CAKE` | no | `cake` |
 | 20 | `## GAMES` | no | `steps[].game` |
 | 21 | `## KITCHEN` | no | `kitchen` |
@@ -122,8 +120,7 @@ Rules:
 
 The fixed-field sections are `EVENT`, `COUPLE IDENTITY`, `LANGUAGES`,
 `DEMOGRAPHICS`, `OCZEPINY`, `VENUE LOGISTICS`, `MUSICIANS`, `PHOTO PLAN`,
-`MUSIC POLICY`, `GUEST REQUESTS`, `SPEECHES`, `CAKE`, `MANDATORY STEPS`,
-`KITCHEN` -> `Dietary Counts`, and `CEREMONY SCRIPT`.
+`MUSIC POLICY`, `SPEECHES`, `CAKE` and `MANDATORY STEPS`.
 
 ### Tables
 
@@ -294,13 +291,6 @@ semicolon-separated list for `SONGS`; `default` maps to an empty list with
 MIDNIGHT anchor still comes from the timeline step and hard-anchor table (D5:
 Oczepini and Bread & Salt coexist).
 
-### VIEW VISIBILITY
-
-Only override rows. Each row maps to `viewVisibility[<role>][<section>]`.
-Omit the whole section to keep the D1 defaults. All four roles
-(`mc`, `dj`, `photo`) must exist in the final object; missing roles
-default to all-false.
-
 ### MEDIA TEAM / PHOTO PLAN
 
 `MEDIA TEAM` rows map to `mediaTeam[]`; IDs are generated as
@@ -312,15 +302,15 @@ optionally binds the list to the group-photo timeline step. Group-photo timing
 comes from that step's planned time; `minGroupSize` and duration are not used as
 gates. Sunset source is `ONLINE_API` only (D6); never write an estimated sunset.
 
-### MUSIC POLICY / IMPORTANT SONGS / GUEST REQUESTS
+### MUSIC POLICY / IMPORTANT SONGS
 
 `IMPORTANT SONGS` maps to `musicPolicy.importantSongs[]`; the song `id`,
 `moment`, `title`, `artist` and `source.type` are required, while `stepId` and
 the request open/window settings are app/admin data and are never read from the
 Doc. `MUSIC POLICY` fixed-field table plus the `### Must Play` and `### Do Not Play`
-tables map the remaining Doc-sourced fields. `GUEST REQUESTS` supplies the
-request rules only. Reuse the same `id` when a song is both an important song
-and a must-play entry.
+tables map the remaining Doc-sourced fields. Guest request rules are app-owned
+and the `## GUEST REQUESTS` section is no longer in the Doc. Reuse the same
+`id` when a song is both an important song and a must-play entry.
 
 ### SPEECHES
 
@@ -333,11 +323,10 @@ but the value is missing or invalid, the parser warns and leaves `speechMode`
 unset; an older Doc without the field follows the same rule. There is no silent
 `OFF` default and no inference from another value.
 
-The main wedding Doc no longer maps a `speeches[]` array. Table rows under
-`## SPEECHES` stay documentation only. Speech records and scripts live in the
-dedicated encrypted bundle and are created from separate per-speech Docs
-(`SPEAKER [xx]` / `MC [yy]` labels). Parsing produces no Drive reads, folder
-creation or Doc creation.
+The `Order | Speaker | Relationship` table creates speech records with generated
+IDs (`slug(speaker)` plus duplicate suffixes). Scripts are not part of this Doc;
+they stay in the encrypted speech bundle. Parsing produces no Drive reads,
+folder creation or Doc creation.
 
 ### CAKE / GAMES / KITCHEN
 
@@ -345,14 +334,18 @@ Direct fixed-field table mapping to `cake`, `steps[].game` and `kitchen.*`. `GAM
 `YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
 `docs/optional-games.md`).
 
-`## KITCHEN → Courses` is the only kitchen course table:
-`Course ID | Name | Time | Service Mode | Dietary notes`. `Service Mode` accepts
-`TABLE_SERVICE` or `BUFFET`. Remove the old `## MANDATORY STEPS → Kitchen
-Services` table. First guests arrival, closure and closure extension stay in
-`## MANDATORY STEPS`.
+`## KITCHEN → Courses` and `### Service Anchors` are the only kitchen tables.
+`Service Mode` accepts `TABLE_SERVICE` or `BUFFET`. Dietary counts and vendor
+meals are app/kitchen-owned and no longer appear in the Doc.
 
-`## CAKE → Time` is the cake source of truth. `## KITCHEN` times are the kitchen
-source of truth. A differing `## TIMELINE` time warns; the section value wins.
+`## CAKE` keeps only `Cutting song`; the cake time comes from the `## TIMELINE`
+`Wedding Cake` step, and sparklers are venue-manager-owned.
+
+### VIEW VISIBILITY / CEREMONY SCRIPT / CEREMONY SUBSTEPS
+
+These sections are app-owned and no longer appear in the customer Doc.
+`viewVisibility` comes from role defaults, and ceremony scripts/sub-steps come
+from the app or speech bundle.
 
 ### PRE-WEDDING TODOS
 

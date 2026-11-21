@@ -25,11 +25,6 @@ function bool(value, fallback = null) {
   return fallback;
 }
 
-function int(value, fallback = null) {
-  const number = Number.parseInt(String(value ?? '').replace(/[^\d-]/g, ''), 10);
-  return Number.isInteger(number) ? number : fallback;
-}
-
 // Optional guest counts (issue #1250). Only non-negative whole numbers are
 // accepted; invalid input is warned about and left absent so the importer never
 // invents a zero.
@@ -671,6 +666,30 @@ function mapSpeechMode(source, warnings = []) {
   return mode;
 }
 
+function mapSpeeches(source, warnings = []) {
+  const seen = new Set();
+  return table(source, ['Order', 'Speaker', 'Relationship']).reduce((speeches, row) => {
+    const order = Number.parseInt(text(row.Order) ?? '', 10);
+    const speaker = text(row.Speaker);
+    const relationship = text(row.Relationship);
+    const missing = [
+      !Number.isInteger(order) && 'Order',
+      !speaker && 'Speaker',
+      !relationship && 'Relationship',
+    ].filter(Boolean);
+    if (missing.length) {
+      warnings.push(`SPEECHES row skipped: missing ${missing.join(', ')}`);
+      return speeches;
+    }
+    speeches.push({
+      id: uniqueId(slug(speaker), seen),
+      order,
+      speaker: { name: speaker, relationship },
+    });
+    return speeches;
+  }, []);
+}
+
 function mapMusicians(source, warnings = []) {
   const raw = text(kv(source, 'Musician expected'));
   const expected = bool(raw, null);
@@ -936,17 +955,6 @@ function mapKitchen(source) {
         : 'TABLE_SERVICE',
       dietaryNotes: text(row['Dietary notes']),
     })),
-    dietaryCounts: {
-      vegetarian: int(kv(source, 'Vegetarian')),
-      vegan: int(kv(source, 'Vegan')),
-      glutenFree: int(kv(source, 'Gluten free')),
-    },
-    vendorMeals: subTable(source, 'Vendor Meals', ['Vendor', 'Count', 'Time', 'Notes']).map((row) => ({
-      vendor: text(row.Vendor),
-      count: int(row.Count),
-      time: clock(row.Time),
-      notes: text(row.Notes),
-    })),
     serviceAnchors: subTable(source, 'Service Anchors', ['Anchor ID', 'Time', 'Label']).map((row) => ({
       id: slug(row['Anchor ID']),
       time: clock(row.Time),
@@ -1150,22 +1158,9 @@ export function googleDocTemplateToCartridge(
   const cakeSource = section(parsed, 'CAKE');
   const cake = cakeSource
     ? (() => {
-        const time = clock(kv(cakeSource, 'Time'));
         const cuttingSong = text(kv(cakeSource, 'Cutting song'));
-        const sparklers = bool(kv(cakeSource, 'Sparklers'));
-        const missing = [
-          !time && 'Time',
-          !cuttingSong && 'Cutting song',
-          sparklers === null && 'Sparklers',
-        ].filter(Boolean);
-        if (missing.length) {
-          warnings.push(`CAKE: missing ${missing.join(', ')}`);
-        }
-        return {
-          time,
-          cuttingSong,
-          sparklers,
-        };
+        if (!cuttingSong) warnings.push('CAKE: missing Cutting song');
+        return { cuttingSong };
       })()
     : undefined;
 
@@ -1173,6 +1168,7 @@ export function googleDocTemplateToCartridge(
   const games = gamesSource ? mapGames(gamesSource, warnings) : undefined;
   const gameLists = Array.isArray(games?.questionLists) ? games.questionLists : [];
   const speechMode = mapSpeechMode(section(parsed, 'SPEECHES'), warnings);
+  const speeches = mapSpeeches(section(parsed, 'SPEECHES'), warnings);
 
   const kitchenSource = section(parsed, 'KITCHEN');
   const kitchen = kitchenSource ? mapKitchen(kitchenSource) : undefined;
@@ -1200,13 +1196,8 @@ export function googleDocTemplateToCartridge(
   const cakeStep =
     stepsWithMandatory.find((step) => step.id === 'step_05') ??
     stepsWithMandatory.find((step) => /cake/i.test(step.title ?? ''));
-  if (cake?.time && cakeStep) {
-    if (cakeStep.time && cakeStep.time !== cake.time) {
-      warnings.push(
-        `CAKE: Time ${cake.time} differs from TIMELINE ${cakeStep.time}; using CAKE`,
-      );
-    }
-    cakeStep.time = cake.time;
+  if (cake && cakeStep) {
+    cake.time = cakeStep.time;
     cakeStep.type = 'HARD_ANCHOR';
   }
   const hardAnchors = deriveHardAnchors(stepsWithMandatory);
@@ -1336,6 +1327,7 @@ export function googleDocTemplateToCartridge(
     musicPolicy,
     attractions,
     ...(speechMode ? { speechMode } : {}),
+    ...(speeches.length ? { speeches } : {}),
     extensions,
     privacy: normalizePrivacy(),
     demographics: mapDemographics(section(parsed, 'DEMOGRAPHICS'), warnings),

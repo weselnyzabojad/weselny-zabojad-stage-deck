@@ -41,31 +41,31 @@ describe('issue #1322 consolidate kitchen and cake Doc hours', () => {
     }
   });
 
-  it('uses CAKE Time and KITCHEN Time over a divergent TIMELINE', () => {
+  it('derives CAKE time from the TIMELINE and keeps KITCHEN time authority', () => {
     const source = template
-      .replace('| Time | 20:30 | HH:MM |', '| Time | 21:00 | HH:MM |')
+      .replace(
+        '| 20:30 | Wedding Cake | Cake time, serve mode, music cue |',
+        '| 21:00 | Wedding Cake | Cake time, serve mode, music cue |',
+      )
       .replace(
         '| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |',
         '| step_04 | Dinner | 20:00 | TABLE_SERVICE | 1 vegan |',
       );
     const { cartridge, warnings } = parse(source);
-    expect(warnings).toContain('CAKE: Time 21:00 differs from TIMELINE 20:30; using CAKE');
     expect(warnings).toContain(
       'KITCHEN: Dinner time 20:00 differs from TIMELINE 19:00; using KITCHEN',
     );
+    expect(cartridge.cake.time).toBe('21:00');
     expect(cartridge.steps.find((step) => step.id === 'step_05').time).toBe('21:00');
     expect(cartridge.steps.find((step) => step.id === 'step_04').time).toBe('20:00');
   });
 
-  it('keeps the TIMELINE time when a section time is missing', () => {
-    const source = template
-      .replace('| Time | 20:30 | HH:MM |', '| Time |  | HH:MM |')
-      .replace(
-        '| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |',
-        '| step_04 | Dinner |  | TABLE_SERVICE | 1 vegan |',
-      );
-    const { cartridge, warnings } = parse(source);
-    expect(warnings).toContain('CAKE: missing Time');
+  it('keeps the TIMELINE time when a KITCHEN time is missing', () => {
+    const source = template.replace(
+      '| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |',
+      '| step_04 | Dinner |  | TABLE_SERVICE | 1 vegan |',
+    );
+    const { cartridge } = parse(source);
     expect(cartridge.steps.find((step) => step.id === 'step_05').time).toBe('20:30');
     expect(cartridge.steps.find((step) => step.id === 'step_04').time).toBe('19:00');
   });

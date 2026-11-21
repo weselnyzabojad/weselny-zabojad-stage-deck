@@ -86,13 +86,6 @@ export const SECTION_MANIFEST = Object.freeze([
     purpose: 'Venue name, address, coordinates, manager and noise curfew.',
   },
   {
-    order: 12,
-    marker: 'VIEW VISIBILITY',
-    required: true,
-    schemaPath: ['viewVisibility'],
-    purpose: 'Per-role, per-section visibility matrix (D1).',
-  },
-  {
     order: 13,
     marker: 'MEDIA TEAM',
     required: false,
@@ -126,13 +119,6 @@ export const SECTION_MANIFEST = Object.freeze([
     required: false,
     schemaPath: ['musicPolicy', 'musicPolicy.discoPoloPolicy'],
     purpose: 'Must-play, do-not-play, request window and Disco Polo policy.',
-  },
-  {
-    order: 17,
-    marker: 'GUEST REQUESTS',
-    required: false,
-    schemaPath: ['musicPolicy.requestWindow', 'musicPolicy.requestsOpen'],
-    purpose: 'Whether and when guests may request songs.',
   },
   {
     order: 18,
@@ -175,20 +161,6 @@ export const SECTION_MANIFEST = Object.freeze([
     required: false,
     schemaPath: ['attractions'],
     purpose: 'Parallel attractions (photobooth, guest book, Polaroids) with availability windows.',
-  },
-  {
-    order: 28,
-    marker: 'CEREMONY SCRIPT',
-    required: false,
-    schemaPath: ['steps[].teleprompter'],
-    purpose: 'Verbatim trilingual ceremony script attached to the Ceremony step.',
-  },
-  {
-    order: 28.5,
-    marker: 'CEREMONY SUBSTEPS',
-    required: false,
-    schemaPath: ['steps[].ceremony.subSteps'],
-    purpose: 'Informational ceremony moments nested under the Ceremony step.',
   },
   {
     order: 29,
@@ -263,10 +235,8 @@ export const FIELD_MANIFEST = Object.freeze({
     'Group photos description',
   ],
   'MUSIC POLICY': ['Disco Polo policy'],
-  'GUEST REQUESTS': ['Rules'],
   SPEECHES: ['Speech mode'],
-  CAKE: ['Time', 'Cutting song', 'Sparklers'],
-  KITCHEN: ['Vegetarian', 'Vegan', 'Gluten free'],
+  CAKE: ['Cutting song'],
   'MANDATORY STEPS': [
     'First guests arrival',
     'Wedding closure',
@@ -275,7 +245,6 @@ export const FIELD_MANIFEST = Object.freeze({
     'Cake service mode',
     'Last song',
   ],
-  'CEREMONY SCRIPT': ['Step ID'],
 });
 
 function stripInlineMarkup(value) {

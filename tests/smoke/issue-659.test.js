@@ -16,31 +16,23 @@ describe('issue #659 cake Google Doc source flags', () => {
     expect(template).not.toContain('Serve time');
   });
 
-  it('maps the required cake fields and leaves out serveTime', async () => {
+  it('maps only the cutting song and derives time from the timeline', async () => {
     const { cartridge, warnings } = parse();
 
     expect(cartridge.cake).toEqual({
       time: '20:30',
       cuttingSong: 'Cake — The Coup',
-      sparklers: true,
     });
+    expect(cartridge.cake).not.toHaveProperty('sparklers');
     expect(cartridge.cake).not.toHaveProperty('serveTime');
     expect(warnings).toEqual([]);
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('warns when a required cake value is missing', () => {
-    for (const [row, message] of [
-      ['| Time | 20:30 | HH:MM |', 'CAKE: missing Time'],
-      ['| Cutting song | Cake — The Coup | Track — Artist |', 'CAKE: missing Cutting song'],
-      ['| Sparklers | true | true or false |', 'CAKE: missing Sparklers'],
-    ]) {
-      const source = template.replace(
-        row,
-        row.replace(/^\| ([^|]+) \| [^|]+ \|/, '| $1 |  |'),
-      );
-      const result = parse(source);
-      expect(result.warnings.some((warning) => warning.includes(message)), message).toBe(true);
-    }
+  it('warns when the cutting song is missing', () => {
+    const row = '| Cutting song | Cake — The Coup | Track — Artist |';
+    const source = template.replace(row, row.replace(/^\| ([^|]+) \| [^|]+ \|/, '| $1 |  |'));
+    const result = parse(source);
+    expect(result.warnings).toContain('CAKE: missing Cutting song');
   });
 });

@@ -18,7 +18,6 @@ describe('Google Doc customer template v1.1', () => {
     expect(template).not.toMatch(/[\uFFFD]|Ã|â€|��/);
     expect(template).toContain('| Venue | Dwór X, ul. Przykładowa 1, 59-400 Jawor |');
     expect(template).toContain('Rosół + Tartare with Vodka shot');
-    expect(template).toContain('Drodzy Państwo, chciałbym powiedzieć kilka słów');
     expect(template).toContain('Macarena - Los del Río');
   });
 

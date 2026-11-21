@@ -34,35 +34,37 @@ describe('issue #671 speeches Google Doc source flags', () => {
     expect(read('src/demo/demoWedding.js')).not.toContain('mcIntro');
   });
 
-  it('keeps only the required Doc columns and the separate script', () => {
+  it('keeps only the required Doc columns and removes the script block', () => {
     const speeches = template.slice(
       template.indexOf('## SPEECHES'),
       template.indexOf('## CAKE'),
     );
-    expect(speeches).toContain('| Speech ID | Order | Speaker | Relationship |');
+    expect(speeches).toContain('| Order | Speaker | Relationship |');
+    expect(speeches).not.toContain('| Speech ID |');
+    expect(speeches).not.toContain('### Speech Script');
     for (const column of ['Time', 'Language', 'Delivery', 'Consent', 'Visible roles']) {
       expect(speeches, column).not.toContain(`| ${column}`);
     }
-    expect(speeches).toContain('### Speech Script speech_witness');
   });
 
-  it('keeps SPEECHES out of the published cartridge', async () => {
+  it('creates speech records in the cartridge', async () => {
     const { cartridge, warnings } = parse();
 
-    expect(cartridge).not.toHaveProperty('speeches');
+    expect(cartridge.speeches).toEqual([
+      {
+        id: 'bartek',
+        order: 1,
+        speaker: { name: 'Bartek', relationship: 'Best man' },
+      },
+    ]);
     expect(warnings).toEqual([]);
     expect(await validateCartridge(cartridge)).toEqual([]);
   });
 
-  it('does not reintroduce speech rows or warnings into the cartridge', () => {
-    const result = parse(
-      template.replace(
-        '| speech_witness | 1 | Bartek | Best man |',
-        '| speech_witness | 1 |  | Best man |',
-      ),
-    );
+  it('skips an incomplete row without inventing a record', () => {
+    const result = parse(template.replace('| 1 | Bartek | Best man |', '| 1 |  | Best man |'));
 
-    expect(result.warnings).not.toContain('SPEECHES row skipped: missing Speaker');
-    expect(result.cartridge).not.toHaveProperty('speeches');
+    expect(result.warnings).toContain('SPEECHES row skipped: missing Speaker');
+    expect(result.cartridge.speeches ?? []).toEqual([]);
   });
 });
