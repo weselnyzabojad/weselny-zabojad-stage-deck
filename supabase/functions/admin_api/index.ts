@@ -57,6 +57,7 @@ import {
   publishCartridge,
 } from '../_shared/adminPublish.js';
 import { makeCartridgeValidator } from '../_shared/cartridgeValidator.js';
+import { buildTimelineContext } from '../_shared/timelineContext.js';
 import {
   normalizeMusicianPayload,
   withMusicianSnapshot,
@@ -2878,6 +2879,23 @@ async function handleRequest(req: Request) {
         audit: audit.data ?? [],
         publicDeckUrl: serverEnv('PUBLIC_DECK_URL', 'https://www.weselnyzabojad.pl/deck'),
       });
+    }
+
+    if (action === 'timeline_context') {
+      const weddingId = typeof body?.weddingId === 'string' ? body.weddingId.trim() : '';
+      if (!WEDDING_ID_PATTERN.test(weddingId)) {
+        return json({ error: 'Invalid weddingId.' }, 400);
+      }
+      const { data: row, error } = await admin
+        .from('weddings')
+        .select(
+          'wedding_id, couple, date, cartridge, cartridge_revision, template_doc_id, timeline_doc_synced_revision, timeline_doc_synced_at',
+        )
+        .eq('wedding_id', weddingId)
+        .maybeSingle();
+      if (error) throw error;
+      if (!row?.cartridge) return json({ error: 'Wedding not found.' }, 404);
+      return json(buildTimelineContext(row));
     }
 
     if (action === 'publish') {
