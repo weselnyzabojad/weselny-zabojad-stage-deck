@@ -121,17 +121,18 @@ describe('issue #1329 canonical step catalog and 3-column timeline', () => {
       venueAddress: 'ul. Lipowa 12',
       template,
     });
-    expect(html).toContain('<h1>Anna &amp; Piotr</h1>');
-    expect(html).toContain('<p>Venue: Dwor Pod Lipami</p>');
-    expect(html).toContain('<p>Address: ul. Lipowa 12</p>');
+    expect(html).toMatch(/<h1[^>]*>Anna &amp; Piotr<\/h1>/);
+    expect(html).toContain('Venue: Dwor Pod Lipami</p>');
+    expect(html).toContain('Address: ul. Lipowa 12</p>');
     for (const section of parseGoogleDocTemplate(template).sections) {
-      expect(html, section.marker).toContain(`<h2>${section.marker}</h2>`);
+      expect(html, section.marker).toContain(`data-doc-section="${section.marker}"`);
+      expect(html, section.marker).toContain(`>${section.marker}</h2>`);
     }
-    const timeline = html.slice(html.indexOf('<h2>TIMELINE</h2>'), html.indexOf('<h2>DJ CUES</h2>'));
-    expect(timeline).toContain('<th>Hour</th><th>Step name</th><th>Example values</th>');
-    expect(timeline).toContain('<td>Oczepiny</td>');
+    const timeline = html.slice(html.indexOf('data-doc-section="TIMELINE"'), html.indexOf('data-doc-section="DJ CUES"'));
+    expect(timeline).toMatch(/Hour<\/th><th[^>]*>Step name<\/th><th[^>]*>Example values<\/th>/);
+    expect(timeline).toContain('>Oczepiny</td>');
     expect(timeline).not.toContain('Step ID');
-    expect(html).toContain('<h2>WITNESSES</h2>');
+    expect(html).toContain('data-doc-section="WITNESSES"');
   });
 
   it('rejects missing header values', () => {
