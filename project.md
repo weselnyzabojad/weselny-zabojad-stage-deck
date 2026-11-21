@@ -12047,10 +12047,10 @@ old Docs are rejected with a migration procedure.
 
 - Landing-inspired palette: `#FBF9F5` warm page, white cards, `#C5A059` gold,
   `#1A1A1A` ink, restrained French-blue/red details only where already present.
-- Cover header: logo at top-left, then `Bride & Groom`, venue name and venue
-  address with clear hierarchy. The provisional logo is
-  `src/assets/img/logo.png`, embedded as a base64 data URI; the final
-  owner-provided logo swap is #1360 (17.148).
+- Cover header: `logo.png` at top-left and a reserved right-hand slot for the
+  second owner-provided logo, then `Bride & Groom`, venue name and venue address
+  with clear hierarchy. Both logos are embedded as base64 data URIs; the second
+  logo is #1360 (17.148).
 - Section intro block, then the table; consistent “How to fill” treatment.
 - Tinted table header rows, visible borders, padding, readable column widths and
   generous spacing.
@@ -12098,47 +12098,49 @@ old Docs are rejected with a migration procedure.
 [#1357](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1357),
 [#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358).
 
-### 17.148 Client Doc logo: provisional asset and final owner logo swap (decision, 2026-11-21)
+### 17.148 Client Doc logo pair: existing logo and second owner logo (decision, 2026-11-21)
 
-The generated customer Doc gets a cover-left logo from the existing
-`src/assets/img/logo.png`, embedded as a base64 data URI so the Drive HTML import
-stays self-contained. That asset is provisional; a separate blocked task swaps
-in the final owner-provided logo when #1241 unblocks.
+The generated customer Doc uses **two** logos in the cover: the existing
+`src/assets/img/logo.png` on the left and a reserved right-hand slot for the
+owner-provided logo from #1241. The existing logo is not provisional and is not
+removed. Both logos are embedded as base64 data URIs so the Drive HTML import
+stays self-contained.
 
 **Features.**
 
 | # | Feature | Outcome |
 | --- | --- | --- |
-| F1 | Provisional logo in the Doc | `logo.png` at top-left of the cover, base64 inline, release-1.1 |
-| F2 | Final logo swap | Replace the provisional asset with the #1241 logo, landing-pre-release |
+| F1 | Existing logo in the Doc | `logo.png` at top-left, base64 inline, release-1.1 |
+| F2 | Second owner logo | Fill the reserved right-hand slot from #1241, equal height, landing-pre-release |
 
 **Release target.**
 
-- Provisional logo: part of **#1358**, first release (`release-1.1`; no
+- Existing logo: part of **#1358**, first release (`release-1.1`; no
   milestone).
-- Final logo swap: **#1360**, `landing-pre-release` label; no milestone.
-  Blocked by #1241 until the owner provides the final asset.
+- Second owner logo: **#1360**, `landing-pre-release` label; no milestone.
+  Blocked by #1241 until the owner provides the second asset.
 
 **Google Doc contract.**
 
-- The logo sits at the top-left of the cover, above the couple names and venue
-  block.
-- The image keeps its aspect ratio, has a sensible max width and never
-  overflows the Doc page.
-- It is embedded as a base64 data URI; no external image URL, font, script or
-  network asset is required.
-- Alt text is `Weselny Żabojad`.
-- The provisional `src/assets/img/logo.png` (2114×1010, ratio 2.09) is used
-  now; the final asset may use a new filename and must update the renderer and
-  tests together.
+- The cover uses a two-logo row: `logo.png` on the left, the #1241 logo on the
+  right. The right slot is empty until #1360 lands.
+- Both logos use the same visual height, keep their aspect ratios and never
+  overflow the Doc page.
+- Each logo is embedded as a base64 data URI; no external image URL, font,
+  script or network asset is required.
+- Alt text is present for both logos; the existing logo keeps
+  `Weselny Żabojad`.
+- The existing `src/assets/img/logo.png` (2114×1010, ratio 2.09) stays in the
+  left slot. The second asset may use a new filename and must update the
+  renderer and tests together.
 - No other section, table, field, parser or schema behaviour changes.
 
 **View scope.**
 
 | Surface | Behaviour |
 | --- | --- |
-| Customer Google Doc | Cover-left logo, inline data URI, alt text |
-| Admin preview / generated example | Same logo and cover layout |
+| Customer Google Doc | Two-logo cover row: existing logo left, second logo right, inline data URIs, alt text |
+| Admin preview / generated example | Same two-logo cover layout |
 | Landing header | Owned by #1241; not changed here |
 | Stage role views | Unchanged |
 | Parser / schema | Unchanged |
@@ -12147,20 +12149,22 @@ in the final owner-provided logo when #1241 unblocks.
 
 | Topic | Decision |
 | --- | --- |
-| Current asset | `src/assets/img/logo.png`, provisional |
-| Placement | Cover, top-left |
-| Embedding | Base64 inline data URI |
-| Alt text | `Weselny Żabojad` |
-| Final asset | Swap via #1360 when #1241 unblocks |
-| Release split | Logo in #1358 = release-1.1; final swap = landing-pre-release |
+| Current asset | `src/assets/img/logo.png`, permanent left logo |
+| Second asset | Owner logo from #1241, right slot |
+| Placement | One logo left, one logo right |
+| Before #1241 | Right slot reserved and empty |
+| Visual balance | Equal visual height, ratios preserved |
+| Embedding | Base64 inline data URIs for both |
+| Alt text | Present for both; existing logo keeps `Weselny Żabojad` |
+| Release split | Logo pair in #1358 = release-1.1; second logo = landing-pre-release |
 | Landing header | #1241 only; no duplication |
 
 **Task split.**
 
 | Order | Issue | Scope | Depends on |
 | --- | --- | --- | --- |
-| 1 | [#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358) | Cover-left provisional logo in the branded layout, base64 inline, tests | #1356 |
-| 2 | [#1360](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1360) | Replace with the final owner-provided logo, resize if needed, refresh preview | #1241 |
+| 1 | [#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358) | Existing logo left + reserved right slot in the branded layout, base64 inline, tests | #1356 |
+| 2 | [#1360](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1360) | Add the second owner-provided logo in the right slot, equal height, refresh preview | #1241 |
 
 **Open questions.** None.
 
