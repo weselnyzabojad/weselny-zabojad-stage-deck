@@ -14,6 +14,15 @@ import {
 const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
 const NO_ROWS = [];
 
+function socialPeriod(row) {
+  const iso = String(row?.dateISO ?? '').trim();
+  const isoMatch = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
+  if (isoMatch) return { year: Number(isoMatch[1]), month: Number(isoMatch[2]) };
+  const dotted = /^\d{2}\.(\d{2})\.(\d{4})$/.exec(String(row?.date ?? '').trim());
+  if (dotted) return { year: Number(dotted[2]), month: Number(dotted[1]) };
+  return { year: null, month: null };
+}
+
 const STATUS_KEYS = {
   active: 'admin.portfolio.status.active',
   archived: 'admin.portfolio.status.archived',
@@ -648,7 +657,12 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   const [reload, setReload] = useState(0);
   const [socialRow, setSocialRow] = useState(null);
   const [seasonYear, setSeasonYear] = useState(() => new Date().getFullYear());
-  const season = useSeasonStats({ active: Boolean(socialRow), seasonYear });
+  const period = socialPeriod(socialRow);
+  const season = useSeasonStats({
+    active: Boolean(socialRow),
+    seasonYear: period.year ?? seasonYear,
+    month: period.month,
+  });
   const social = useSocialData({ row: socialRow, active: Boolean(socialRow) });
 
   useEffect(() => {
@@ -684,7 +698,11 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
         onQueryChange={setQuery}
         onSort={setSort}
         onRefresh={() => setReload((value) => value + 1)}
-        onSocial={setSocialRow}
+        onSocial={(row) => {
+          const next = socialPeriod(row);
+          if (next.year) setSeasonYear(next.year);
+          setSocialRow(row);
+        }}
         readOnly={readOnly}
         demo={ADMIN_DEMO}
       />

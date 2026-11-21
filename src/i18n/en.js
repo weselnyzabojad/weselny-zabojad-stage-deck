@@ -349,6 +349,8 @@ const en = {
   'social.templates': 'Story templates',
   'social.template.dayMinusOne': 'Day −1 · Prep Wrapper',
   'social.template.dayPlusOne': 'Day +1 · Post-Event Wrapped',
+  'social.template.month': 'Month Story',
+  'social.template.beforeSeason': 'Before season',
   'social.template.season': 'Season · Test Zgodności',
   'social.background': 'Background',
   'social.background.dark': 'Dark card',

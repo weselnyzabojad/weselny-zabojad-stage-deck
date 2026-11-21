@@ -13,11 +13,13 @@ import {
   buildDayPlusOneModel,
   dayPlusOneCaptionLines,
 } from '../lib/socialDayPlusOne.js';
-import { buildSeasonModel, seasonCaptionLines } from '../lib/socialSeason.js';
+import { buildSeasonModel, buildMonthModel, buildBeforeSeasonModel, seasonCaptionLines, monthCaptionLines, beforeSeasonCaptionLines } from '../lib/socialSeason.js';
 import StoryFrame from './social/StoryFrame.jsx';
 import DayMinusOneStory from './social/DayMinusOneStory.jsx';
 import DayPlusOneStory from './social/DayPlusOneStory.jsx';
 import SeasonStory from './social/SeasonStory.jsx';
+import MonthStory from './social/MonthStory.jsx';
+import BeforeSeasonStory from './social/BeforeSeasonStory.jsx';
 
 const PREVIEW_WIDTH = 270;
 const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
@@ -25,6 +27,8 @@ const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
 const TEMPLATE_LABEL_KEYS = {
   dayMinusOne: 'social.template.dayMinusOne',
   dayPlusOne: 'social.template.dayPlusOne',
+  month: 'social.template.month',
+  beforeSeason: 'social.template.beforeSeason',
   season: 'social.template.season',
 };
 
@@ -62,11 +66,20 @@ export default function SocialExportStudio({
   onClose = null,
 }) {
   const { t } = useI18n();
-  const available = useMemo(() => templatesForSurface(surface), [surface]);
+  const seasonModel = useMemo(() => buildSeasonModel(seasonData), [seasonData]);
+  const available = useMemo(
+    () =>
+      templatesForSurface(surface).filter(
+        (entry) => entry.id !== 'season' || seasonModel.available,
+      ),
+    [surface, seasonModel.available],
+  );
   const availableTemplates = useMemo(
     () => ({
       dayMinusOne: DayMinusOneStory,
       dayPlusOne: DayPlusOneStory,
+      month: MonthStory,
+      beforeSeason: BeforeSeasonStory,
       season: SeasonStory,
       ...templates,
     }),
@@ -97,15 +110,28 @@ export default function SocialExportStudio({
         pl: dayPlusOneCaptionLines(model, 'pl'),
       };
     }
-    if (template?.id === 'season') {
-      const model = buildSeasonModel(seasonData);
+    if (template?.id === 'month') {
+      const model = buildMonthModel(seasonData);
       return {
-        fr: seasonCaptionLines(model, 'fr'),
-        pl: seasonCaptionLines(model, 'pl'),
+        fr: monthCaptionLines(model, 'fr'),
+        pl: monthCaptionLines(model, 'pl'),
+      };
+    }
+    if (template?.id === 'beforeSeason') {
+      const model = buildBeforeSeasonModel(seasonData);
+      return {
+        fr: beforeSeasonCaptionLines(model, 'fr'),
+        pl: beforeSeasonCaptionLines(model, 'pl'),
+      };
+    }
+    if (template?.id === 'season') {
+      return {
+        fr: seasonCaptionLines(seasonModel, 'fr'),
+        pl: seasonCaptionLines(seasonModel, 'pl'),
       };
     }
     return { fr: [], pl: [] };
-  }, [template?.id, wedding, liveState, recap, seasonData, surface]);
+  }, [template?.id, wedding, liveState, recap, seasonData, seasonModel, surface]);
   const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>

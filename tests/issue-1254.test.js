@@ -84,6 +84,8 @@ describe('issue #1254 Social Export Studio shared engine', () => {
     expect(templatesForSurface('admin').map((item) => item.id)).toEqual([
       'dayMinusOne',
       'dayPlusOne',
+      'month',
+      'beforeSeason',
       'season',
     ]);
   });
@@ -99,7 +101,9 @@ describe('issue #1254 Social Export Studio shared engine', () => {
     expect(mc).toContain('Copy FR caption');
     expect(mc).toContain('Copy PL caption');
     const admin = renderStudio({ surface: 'admin' });
-    expect(admin).toContain('Season · Test Zgodności');
+    expect(admin).toContain('Month Story');
+    expect(admin).toContain('Before season');
+    expect(admin).not.toContain('Season · Test Zgodności');
   });
 
   it('is mounted in MC and admin with a per-row Social button', () => {
