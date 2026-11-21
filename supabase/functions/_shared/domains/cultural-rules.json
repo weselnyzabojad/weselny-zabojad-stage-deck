@@ -21,6 +21,13 @@
                 "ON_REQUEST",
                 "NO"
               ]
+            },
+            "actor": {
+              "type": "string",
+              "enum": [
+                "VENUE",
+                "PARENTS"
+              ]
             }
           },
           "required": [
@@ -33,6 +40,13 @@
           "properties": {
             "status": {
               "type": "string"
+            },
+            "actor": {
+              "type": "string",
+              "enum": [
+                "VENUE",
+                "PARENTS"
+              ]
             }
           },
           "required": [
@@ -45,6 +59,13 @@
           "properties": {
             "status": {
               "type": "string"
+            },
+            "actor": {
+              "type": "string",
+              "enum": [
+                "VENUE",
+                "PARENTS"
+              ]
             },
             "note": {
               "type": "string"

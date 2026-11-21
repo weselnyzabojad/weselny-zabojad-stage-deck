@@ -1,0 +1,18 @@
+{
+  "$schema": "./cultural-rules.json",
+  "culturalRules": {
+    "sto_lat": {
+      "status": "NO",
+      "actor": "VENUE"
+    },
+    "gorzko": {
+      "status": "STRICT_NO",
+      "actor": "PARENTS"
+    },
+    "bread_salt": {
+      "status": "YES",
+      "actor": "VENUE",
+      "note": "Vodka vs water shot, break glasses"
+    }
+  }
+}

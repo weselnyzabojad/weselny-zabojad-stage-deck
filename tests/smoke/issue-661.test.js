@@ -29,8 +29,8 @@ describe('issue #661 cultural-rules Google Doc source flags', () => {
 
   it('maps a filled Bread & Salt Example cell to the optional note', async () => {
     const source = template.replace(
-      '| breadSalt | YES |  |',
-      '| breadSalt | YES | Vodka vs water shot; break glasses. |',
+      '| breadSalt | YES |  |  |',
+      '| breadSalt | YES |  | Vodka vs water shot; break glasses. |',
     );
     const { cartridge } = parse(source);
     expect(cartridge.culturalRules.bread_salt).toEqual({

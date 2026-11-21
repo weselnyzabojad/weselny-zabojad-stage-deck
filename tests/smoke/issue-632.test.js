@@ -33,8 +33,8 @@ describe('issue #632 cultural rule note cleanup', () => {
 
   it('maps only the Bread & Salt Example cell when the couple fills it', () => {
     const source = read('schema/google-doc-template.md').replace(
-      '| breadSalt | YES |  |',
-      '| breadSalt | YES | Vodka vs water shot; break glasses. |',
+      '| breadSalt | YES |  |  |',
+      '| breadSalt | YES |  | Vodka vs water shot; break glasses. |',
     );
     const result = googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
     const rules = result.cartridge.culturalRules;

@@ -192,6 +192,16 @@ function mapCulturalRules(rows, warnings = []) {
       rules[key].status = text(row.Status);
     }
     if (key === 'bread_salt' && text(row.Example)) rules[key].note = text(row.Example);
+    const actor = text(row.Actors)?.toUpperCase();
+    if (actor) {
+      if (['VENUE', 'PARENTS'].includes(actor)) {
+        rules[key].actor = actor;
+      } else {
+        warnings.push(
+          `CULTURAL RULES: ${row.Rule}: invalid Actors "${row.Actors}" (expected VENUE or PARENTS)`,
+        );
+      }
+    }
   }
   return rules;
 }
@@ -1312,7 +1322,7 @@ export function googleDocTemplateToCartridge(
     servicePackage,
     childrenExpected: bool(kv(event, 'Children expected'), false),
     culturalRules: mapCulturalRules(
-      table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Example']),
+      table(section(parsed, 'CULTURAL RULES'), ['Rule', 'Status', 'Actors', 'Example']),
       warnings,
     ),
     steps: stepsWithMandatory,
