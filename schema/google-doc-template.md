@@ -101,15 +101,6 @@ A wedding counts for the Sto Lat KPI when the normalized status is `YES` or
 
 **How to fill:** replace the example hours and delete rows you do not need; use the canonical Step names exactly as written.
 
-The timeline is a fixed catalog. Change only the Hour, move rows to suit the
-evening, or delete a row to exclude that step. Row order is presentation-only;
-the parsed order is by Hour. Deleting a row creates no step, cue, subtask, game
-or anchor. Every remaining row needs a valid `HH:MM` Hour; a blank or invalid
-Hour is an import error. The `Example values` column is reference-only guidance
-and is never parsed; use `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` for
-details. First guests arrival and Wedding closure stay in
-`## MANDATORY STEPS`.
-
 | Hour | Step name | Example values |
 | --- | --- | --- |
 | 16:00 | Vin d'honneur / Cocktail | Location, arrival note |
@@ -131,6 +122,15 @@ details. First guests arrival and Wedding closure stay in
 | 01:30 | Speed Foto | Guest order, photo note |
 | 01:45 | Test Zgodności | Languages, request, photographer |
 | 01:50 | Last Dance | Song, closing note |
+
+The timeline is a fixed catalog. Change only the Hour, move rows to suit the
+evening, or delete a row to exclude that step. Row order is presentation-only;
+the parsed order is by Hour. Deleting a row creates no step, cue, subtask, game
+or anchor. Every remaining row needs a valid `HH:MM` Hour; a blank or invalid
+Hour is an import error. The `Example values` column is reference-only guidance
+and is never parsed; use `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` for
+details. First guests arrival and Wedding closure stay in
+`## MANDATORY STEPS`.
 
 ## DJ CUES
 
