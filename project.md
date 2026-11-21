@@ -11551,6 +11551,9 @@ blocks publish or live use.
 
 > **Updated on 2026-11-21:** the generated HTML is restructured into clear
 > fill-in tables with branded layout in 17.147 (#1356-#1358).
+>
+> **Updated again on 2026-11-21:** the admin timeline editor and the targeted
+> `TIMELINE` Doc sync are planned in 17.152 (#1374-#1378).
 
 The customer template becomes a generated Google Doc created through the Drive
 HTML import API in the wedding folder, and the timeline becomes a 3-column
@@ -12387,3 +12390,106 @@ not carry into Google Docs.
 **Open questions.** None.
 
 **Tracking.** [#1371](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1371).
+
+### 17.152 Admin timeline editor and targeted Google Doc TIMELINE sync (decision, 2026-11-21)
+
+Each wedding card in `/admin` gains an interactive timeline editor. The admin
+can edit hours, add custom moments, exclude/re-add canonical steps, validate the
+schedule, save a new cartridge revision, and push the saved timeline to the
+customer's linked Google Doc as a separate, explicit action. Only the
+`TIMELINE` table is updated.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F1 | Shared catalog | `CANONICAL_STEPS` becomes `schema/canonical-steps.json`, used by client and Edge |
+| F2 | Timeline model | Classification, custom steps, midnight ordering, validation, warnings and Doc rows |
+| F3 | Context and status | `timeline_context`, sync columns and `unlinked` / `synced` / `pending` status |
+| F4 | Doc sync | Google Docs `batchUpdate` limited to the `TIMELINE` table |
+| F5 | Admin UI | Wedding-card editor, inline editing, add/exclude/delete, Save and Sync controls, i18n |
+
+**Release target.** Every feature is required for the **first release**. Label
+`release-1.1`; no milestone.
+
+**Domain contract.**
+
+- The canonical catalog lives in `schema/canonical-steps.json`; the existing
+  `src/lib/canonicalSteps.js` becomes a loader, not a second hardcoded list.
+  Edge functions receive a parity-checked copy.
+- Mandatory `First guests arrival` and `Wedding closure` are locked bookends:
+  visible for context, not editable or removable.
+- Canonical step names stay read-only. Hours and row presence are editable.
+- Custom steps use a generated stable ID, an editable title, an `HH:MM` hour,
+  an optional note and `location: 'Venue'`.
+- Excluding a canonical step removes it and its linked DJ cue, notes, subtasks,
+  game, ceremony and anchor metadata. The UI warns when linked data exists.
+  Re-adding uses catalog defaults, not the previous linked payload.
+- Ordering uses the service-day clock with the 06:00 rollover:
+  `16:00 → 23:50 → 00:00 → 01:50`. Re-sort happens on blur/confirm, never
+  mid-keystroke.
+- Blocking validation: invalid/missing `HH:MM`, empty custom title.
+  Non-blocking warnings: duplicate time, before arrival, after closure.
+
+**Persistence and sync contract.**
+
+- `Save` publishes a new cartridge revision through the existing publish path,
+  with `expectedRevision` and the existing stale-revision protection. Live roles
+  see the saved revision.
+- `Sync to Google Doc` is a separate action. It uses
+  `weddings.template_doc_id`, rejects a stale `expectedRevision` before any
+  Docs call, and updates only the `TIMELINE` table.
+- Sync status columns: `timeline_doc_synced_revision` and
+  `timeline_doc_synced_at`. The UI computes `unlinked`, `pending` or `synced`;
+  `syncing` and `error` are transient UI states.
+- Sync is blocked while local edits are dirty; the admin must Save first.
+- The Doc update builds rows server-side from the stored cartridge, never from
+  the client payload. The header stays `Hour | Step name | Example values`.
+  Other sections and formatting are untouched.
+- Missing Doc link, deleted/moved Doc, missing `TIMELINE` heading/table, wrong
+  header and Docs API failures return actionable error codes.
+- Google Docs API must be enabled for the service account and the Docs scope
+  added to the connector. This is an operational prerequisite.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Admin wedding card | Edit timeline panel/modal, vertical timeline, inline hours, custom steps, Save/Discard/Sync, sync status |
+| Admin API | `timeline_context`, existing publish path, sync status columns |
+| Customer Google Doc | Only the `TIMELINE` table changes; all other sections untouched |
+| MC / DJ / Photographer / Speaker / Venue Manager | Consume the saved cartridge revision; no new UI |
+| Social Media Studio / public landing / WordPress | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| Editor location | Wedding card, not a new top-level tab |
+| Catalog | Promoted to `schema/canonical-steps.json` |
+| Save | Publishes a cartridge revision |
+| Doc sync | Separate explicit action after Save |
+| Sync target | `TIMELINE` table only |
+| Re-add excluded | Catalog defaults; linked payload is not restored |
+| Custom step | Title + hour + optional note; location `Venue` |
+| i18n | FR/PL/EN for all editor labels and messages |
+| Mandatory bookends | Locked, non-editable, non-removable |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1374](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1374) | Promote the canonical catalog to `schema/canonical-steps.json` and shared loaders | - |
+| 2 | [#1375](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1375) | Timeline model, custom steps, midnight ordering, validation, warnings and Doc rows | #1374 |
+| 3 | [#1376](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1376) | `timeline_context`, sync columns and status transitions | - |
+| 4 | [#1377](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1377) | Google Docs `batchUpdate` for the `TIMELINE` table and sync status write | #1374, #1375, #1376 |
+| 5 | [#1378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1378) | Wedding-card editor UI, interactions, i18n and accessibility | #1374, #1375, #1376, #1377 |
+
+**Open questions.** None.
+
+**Tracking.** [#1374](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1374),
+[#1375](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1375),
+[#1376](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1376),
+[#1377](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1377),
+[#1378](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1378).
