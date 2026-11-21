@@ -27,8 +27,11 @@
     },
     "cultural-rules.example.json": {
       "culturalRules.sto_lat.status": "required",
+      "culturalRules.sto_lat.actor": "optional",
       "culturalRules.gorzko.status": "required",
+      "culturalRules.gorzko.actor": "optional",
       "culturalRules.bread_salt.status": "required",
+      "culturalRules.bread_salt.actor": "optional",
       "culturalRules.bread_salt.note": "optional"
     },
     "languages.example.json": {

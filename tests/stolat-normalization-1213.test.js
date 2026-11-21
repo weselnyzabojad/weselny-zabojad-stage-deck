@@ -11,7 +11,7 @@ const template = read('schema/google-doc-template.md');
 function parseStoLat(status) {
   const source = template.replace(
     /^\| stoLat \|.*\|$/m,
-    `| stoLat | ${status} | Note. |`,
+    `| stoLat | ${status} |  |  |`,
   );
   const parsed = googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
   return parsed;

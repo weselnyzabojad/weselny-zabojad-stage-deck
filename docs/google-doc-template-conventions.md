@@ -278,8 +278,9 @@ anchor that exists in the anchor table, and the anchor must exist for the step
 
 ### CULTURAL RULES / OCZEPINY
 
-`CULTURAL RULES` uses `Rule | Status | Example`. The Example cells are empty in
-the template; when filled, the `breadSalt` example maps to
+`CULTURAL RULES` uses `Rule | Status | Actors | Example`. `Actors` accepts
+`VENUE` or `PARENTS`; an empty cell means the newlyweds. The Example cells are
+empty in the template; when filled, the `breadSalt` example maps to
 `culturalRules.bread_salt.note`.
 
 Oczepiny fixed fields map to `oczepiny.*`. `Order` accepts `MIDNIGHT` or

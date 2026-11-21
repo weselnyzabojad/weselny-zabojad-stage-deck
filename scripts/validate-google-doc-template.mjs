@@ -23,7 +23,7 @@ const EXPECTED_TABLES = {
   'COUPLE IDENTITY': ['Field', 'Your value', 'Example'],
   'LANGUAGES': ['Field', 'Your value', 'Example'],
   'DEMOGRAPHICS': ['Field', 'Your value', 'Example'],
-  'CULTURAL RULES': ['Rule', 'Status', 'Example'],
+  'CULTURAL RULES': ['Rule', 'Status', 'Actors', 'Example'],
   'MANDATORY STEPS': ['Field', 'Your value', 'Example'],
   'TIMELINE': ['Hour', 'Step name', 'Example values'],
   'DJ CUES': ['Step name', 'Playlist', 'Track', 'Cutoff', 'Note'],

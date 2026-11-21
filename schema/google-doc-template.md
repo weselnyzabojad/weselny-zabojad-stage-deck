@@ -74,13 +74,13 @@
 
 ## CULTURAL RULES
 
-**How to fill:** replace the example rows and keep the `Rule` names unchanged; Sto Lat accepts only `YES`, `ON_REQUEST` or `NO`.
+**How to fill:** replace the example rows and keep the `Rule` names unchanged; `Actors` accepts `VENUE` or `PARENTS` (leave blank for the newlyweds); Sto Lat accepts only `YES`, `ON_REQUEST` or `NO`.
 
-| Rule | Status | Example |
-| --- | --- | --- |
-| stoLat | ON_REQUEST |  |
-| gorzko | IF_GUESTS_START |  |
-| breadSalt | YES |  |
+| Rule | Status | Actors | Example |
+| --- | --- | --- | --- |
+| stoLat | ON_REQUEST |  |  |
+| gorzko | IF_GUESTS_START |  |  |
+| breadSalt | YES |  |  |
 
 A wedding counts for the Sto Lat KPI when the normalized status is `YES` or
 `ON_REQUEST`.
