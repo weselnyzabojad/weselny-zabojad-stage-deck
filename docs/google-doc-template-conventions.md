@@ -273,7 +273,7 @@ is dropped without creating a step or cue.
 | --- | --- | --- |
 | `DJ CUES` | `Step name` | `steps[].dj` |
 | `MC CUES` | `Step name` | `steps[].mcCues[]` |
-| `SUBTASKS` | `Step name` + `Subtask ID` | `steps[].subTasks[]` |
+| `SUBTASKS` | `Step name` + `Label` | `steps[].subTasks[]`; IDs generated as `stepId + "_" + slug(label)` |
 
 `HARD ANCHORS` is its own list. A `HARD_ANCHOR` step must set `Anchor ID` to an
 anchor that exists in the anchor table, and the anchor must exist for the step
@@ -303,12 +303,14 @@ default to all-false.
 
 ### MEDIA TEAM / PHOTO PLAN
 
-`MEDIA TEAM` rows map to `mediaTeam[]`. `PHOTO PLAN` fixed fields map to
-`photoPlan.*`; `### Group Photos` maps to `photoPlan.groupPhotos.groups[]` in
-document order. `Group photos step ID` optionally binds the list to the
-group-photo timeline step. Group-photo timing comes from that step's planned
-time; `minGroupSize` and duration are not used as gates. Sunset source is
-`ONLINE_API` only (D6); never write an estimated sunset.
+`MEDIA TEAM` rows map to `mediaTeam[]`; IDs are generated as
+`role + "_" + slug(name)`. `PHOTO PLAN` fixed fields map to
+`photoPlan.*`; `### Group Photos` is `Label | Note` and maps to
+`photoPlan.groupPhotos.groups[]` in document order. Group IDs are generated from
+the label with duplicate suffixes; the note is optional. `Group photos step ID`
+optionally binds the list to the group-photo timeline step. Group-photo timing
+comes from that step's planned time; `minGroupSize` and duration are not used as
+gates. Sunset source is `ONLINE_API` only (D6); never write an estimated sunset.
 
 ### MUSIC POLICY / IMPORTANT SONGS / GUEST REQUESTS
 

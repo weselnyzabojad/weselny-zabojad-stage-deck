@@ -28,10 +28,10 @@ const EXPECTED_TABLES = {
   'TIMELINE': ['Hour', 'Step name', 'Example values'],
   'DJ CUES': ['Step name', 'Playlist', 'Track', 'Cutoff', 'Note'],
   'NOTES': ['Step name', 'Notes'],
-  'SUBTASKS': ['Step name', 'Subtask ID', 'Label', 'Done'],
+  'SUBTASKS': ['Step name', 'Label', 'Done'],
   'VENUE LOGISTICS': ['Field', 'Your value', 'Example'],
   'VIEW VISIBILITY': ['Role', 'Section', 'Visible'],
-  'MEDIA TEAM': ['Team ID', 'Role', 'Name', 'Phone', 'Start', 'End', 'Deliverables', 'Notes'],
+  'MEDIA TEAM': ['Role', 'Name', 'Phone', 'Start', 'End', 'Deliverables', 'Notes'],
   'PHOTO PLAN': ['Field', 'Your value', 'Example'],
   'IMPORTANT SONGS': [
     'Moment ID',

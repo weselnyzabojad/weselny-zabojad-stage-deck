@@ -20,7 +20,6 @@ describe('issue #666 mini-session Google Doc source flags', () => {
     expect(cartridge.photoPlan.miniSession).toEqual({
       enabled: true,
       location: 'Garden',
-      backupLocation: 'Ballroom window',
     });
     expect(cartridge.photoPlan.miniSession).not.toHaveProperty(
       'latestStartMinutesBeforeSunset',
@@ -43,15 +42,10 @@ describe('issue #666 mini-session Google Doc source flags', () => {
   });
 
   it('omits the optional locations safely', async () => {
-    const source = template
-      .replace(
-        '| Mini session location | Garden | Location |',
-        '| Mini session location |  | Location |',
-      )
-      .replace(
-        '| Mini session backup location | Ballroom window | Location |',
-        '| Mini session backup location |  | Location |',
-      );
+    const source = template.replace(
+      '| Mini session location | Garden | Location |',
+      '| Mini session location |  | Location |',
+    );
     const { cartridge, warnings } = parse(source);
 
     expect(cartridge.photoPlan.miniSession).toEqual({ enabled: true });

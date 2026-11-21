@@ -36,8 +36,8 @@ describe('issue #633 guest coverage groups after the group-photo merge', () => {
     expect(result.cartridge.photoPlan.groupPhotos).toMatchObject({
       description: 'Formal photos with immediate family and witnesses only.',
       groups: [
-        { id: 'bride_family', label: "Bride's family" },
-        { id: 'groom_family', label: "Groom's family" },
+        { id: 'bride_s_family', label: "Bride's family" },
+        { id: 'groom_s_family', label: "Groom's family" },
         { id: 'friends', label: 'Friends' },
       ],
     });

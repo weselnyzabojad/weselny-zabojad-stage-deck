@@ -275,6 +275,13 @@
             "minLength": 1
           }
         },
+        "subTaskIds": {
+          "type": "object",
+          "description": "Application-generated stable IDs keyed by subtask label.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "mcCues": {
           "type": "array",
           "description": "Localized MC lines for this step (language, timing, text).",

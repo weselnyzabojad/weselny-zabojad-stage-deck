@@ -62,7 +62,8 @@
       "groupPhotos.location": "required",
       "groupPhotos.description": "optional",
       "groupPhotos.groups[].id": "no",
-      "groupPhotos.groups[].label": "required"
+      "groupPhotos.groups[].label": "required",
+      "groupPhotos.groups[].note": "optional"
     },
     "mini-session.example.json": {
       "miniSession.enabled": "required",

@@ -65,9 +65,13 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
   it('drops embedded speeches and maps media, photo and todos', () => {
     expect(result.cartridge).not.toHaveProperty('speeches');
     expect(result.cartridge.mediaTeam).toHaveLength(2);
+    expect(result.cartridge.mediaTeam.map((member) => member.id)).toEqual([
+      'photo_marek',
+      'video_ola',
+    ]);
     expect(result.cartridge.photoPlan.groupPhotos.groups.map((group) => group.id)).toEqual([
-      'bride_family',
-      'groom_family',
+      'bride_s_family',
+      'groom_s_family',
       'friends',
     ]);
     expect(result.cartridge.photoPlan.groupPhotos).not.toHaveProperty('minGroupSize');
