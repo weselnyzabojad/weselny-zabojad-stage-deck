@@ -12171,3 +12171,165 @@ stays self-contained.
 **Tracking.** [#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358),
 [#1360](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1360),
 [#1241](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1241).
+
+### 17.149 Wedding Google Doc contract revision (decision, 2026-11-21)
+
+The current wedding Google Doc is simplified to match the application-owned
+data model. Couple names and shared languages come from the wedding folder, the
+Doc keeps only per-person nationality and spoken languages, ceremony type gains
+`OFF`, Oczepiny uses a smaller field set, and identifiers that the application
+can generate disappear from the customer-facing tables. Sections whose data is
+owned by the app, venue manager or speech bundle are removed from the Doc but
+remain in the cartridge contract.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F1-A | Couple, languages and ceremony | `OFF` ceremony, per-person spoken languages, host languages, app-owned names/shared languages |
+| F1-B | Cultural rules and Oczepiny | Empty cultural examples, simplified Oczepiny order/toss/ties/countdown/songs |
+| F1-C | IDs, media team and photo plan | Generated subtask/media/group IDs, optional backup location and group note |
+| F1-D | Speeches and app-owned fields | Speech records from the Doc, removed app-owned sections, cake/kitchen cleanup |
+
+**Release target.** Every feature is required for the **first release**. Label
+`release-1.1`; no milestone.
+
+**Google Doc contract.**
+
+- `Ceremony type` accepts `RELIGIOUS`, `CIVIL`, `HUMANIST` or `OFF`. `OFF`
+  creates no ceremony object and removes/ignores the Ceremony timeline step.
+- `COUPLE IDENTITY` contains one `### Bride` and one `### Groom` table with
+  `Nationality` and `Spoken languages`. First names are read from the wedding
+  folder/admin and displayed by the renderer; they are never Doc fields.
+  `Shared languages` is removed from the Doc and computed as the intersection of
+  the per-person spoken languages.
+- `LANGUAGES` keeps `Notes`, renames `Supported` to `Host languages` and deletes
+  `Default content`. The schema field becomes `languages.hostLanguages`; no
+  `defaultContent` field remains.
+- `CULTURAL RULES` renames `Note` to `Example`; example cells stay empty. The
+  column still maps to `culturalRules.bread_salt.note`.
+- `OCZEPINY` keeps `Order` (`MIDNIGHT` or `EARLY`), `Toss` (`VEIL`/`BOUQUET`),
+  `Ties` (`BOW_TIE`/`CRAVAT`) and `Countdown mode`
+  (`SONGS`/`MC_MIC_COUNTDOWN`). `Oczepiny variant`, `Throwings`, `Music enabled`
+  and `Music playlist` are deleted. `Music track` becomes `songs`.
+- `songs` is mandatory for `SONGS`, ignored for `MC_MIC_COUNTDOWN`, and holds
+  semicolon-separated `artist + title` entries. `default` maps to an empty song
+  list with `oczepiny.music.decidedByDj = true`.
+- `SUBTASKS`, `MEDIA TEAM` and Group Photos no longer show IDs. IDs are generated
+  deterministically from step/label, role/name and label, with duplicate
+  suffixes. Group Photos becomes `Label | Note`; the note is optional.
+- The mini-session backup location may stay blank; the photographer decides it.
+- `SPEECHES` keeps `Speech mode`, drops `Speech ID` and the script block, and
+  uses a required `Order | Speaker | Relationship` table. Rows produce
+  `{ id, order, speaker: { name, relationship } }` records with generated IDs,
+  regardless of `Speech mode`; scripts remain in the speech bundle.
+- `VIEW VISIBILITY`, `GUEST REQUESTS`, `CEREMONY SCRIPT` and
+  `CEREMONY SUBSTEPS` are removed from the Doc; their schema data stays
+  app-owned.
+- `CAKE` keeps `Cutting song`; `Time` is derived from the timeline
+  `Wedding Cake` step and `Sparklers` is optional venue-manager data.
+- `KITCHEN` keeps `Courses` and `Service Anchors`; `Dietary Counts` and
+  `Vendor Meals` are removed from the Doc and schema.
+- The new format is the only accepted format. Old Docs fail with a section,
+  label and migration message; there is no silent fallback.
+- Generated HTML and `docs/examples/wedding-google-doc.example.html` stay in
+  parity with the markdown contract.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Couple Google Doc | Revised tables, generated IDs hidden, removed app-owned sections |
+| Generated HTML / example preview | Same contract and injected couple names |
+| Parser / cartridge / schema | New fields, generated IDs, derived cake time, speech records |
+| Stage role views | Unchanged in F1 |
+| Admin Studio / season stories / landing | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | `release-1.1`; no milestone |
+| Couple identity | Per-person nationality + spoken languages; names from wedding folder; shared languages computed |
+| Host languages | `Host languages` label; schema `hostLanguages`; no `defaultContent` |
+| Ceremony OFF | No ceremony object and no Ceremony timeline step |
+| Cultural examples | Empty cells; column still maps to `bread_salt.note` |
+| Oczepiny | Simplified order/toss/ties/countdown/songs; `default` means DJ choice |
+| Generated IDs | Subtask `stepId + slug(label)`, media `role + slug(name)`, group `slug(label)` |
+| Speeches | Doc table creates records; scripts stay in the bundle |
+| Removed sections | Schema fields stay app-owned |
+| Cake time | Derived from the timeline |
+| Cake sparklers | Venue-manager-owned |
+| Migration | Old Docs rejected with migration guidance |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1364) | Couple identity, host languages, ceremony `OFF` | - |
+| 2 | [#1365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1365) | Cultural rules examples, Oczepiny contract | #1364 |
+| 3 | [#1366](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1366) | Subtask/media/group IDs, photo plan | #1365 |
+| 4 | [#1367](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1367) | Speeches, removed sections, cake/kitchen | #1365 |
+
+**Open questions.** None.
+
+**Tracking.** [#1364](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1364),
+[#1365](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1365),
+[#1366](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1366),
+[#1367](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1367).
+
+### 17.150 Cultural rule actors and role views (decision, 2026-11-21)
+
+Cultural rules gain an actor so the Doc can distinguish newlyweds (the implicit
+default), the venue team and the parents. The MC sees every rule with
+parent-owned rules highlighted and receives a generated French explanation
+action for the French-speaking side; the Venue Manager sees only venue-owned
+rules.
+
+**Release target.** First release. Label `release-1.1`; no milestone.
+
+**Google Doc contract.**
+
+- CULTURAL RULES table becomes `Rule | Status | Actors | Example`.
+- `Actors` accepts only `VENUE` or `PARENTS`. An empty cell means the newlyweds;
+  `NEWLYWEDS` is never written.
+- Schema adds optional `culturalRules.<rule>.actor` with enum `VENUE`/`PARENTS`;
+  absent means newlyweds.
+- Invalid actor values fail with the section, rule and allowed values.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Customer Google Doc | `Actors` column in CULTURAL RULES |
+| MC Master | All rules; PARENTS highlighted; French parent-explanation action |
+| Venue Manager | Only `actor = VENUE` rules with rule and status |
+| DJ / photographer / speaker / admin | Unchanged |
+| Landing / WordPress / season stories | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Actor values | `VENUE` or `PARENTS`; empty means newlyweds |
+| Cardinality | One actor per rule |
+| MC action | `Expliquer <rule> aux parents francophones` |
+| French side | Nationality first, then per-person spoken languages |
+| Both sides French | Show an action for both parent groups |
+| Neither side French | No parent-explanation action |
+| MC action state | Instruction only; no acknowledgement state |
+| Venue view | VENUE rules only |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1368](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1368) | Cultural rule `Actors` Doc/schema/parser contract | #1365 |
+| 2 | [#1369](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1369) | MC cultural-rule responsibilities | #1368 |
+| 3 | [#1370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1370) | Venue Manager cultural-rule responsibilities | #1368 |
+
+**Open questions.** None.
+
+**Tracking.** [#1368](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1368),
+[#1369](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1369),
+[#1370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1370).
