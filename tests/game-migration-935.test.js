@@ -29,7 +29,7 @@ const embedded = [
 function cartridge(overrides = {}) {
   return {
     weddingId,
-    extensions: { languages: { supported: ['PL', 'FR'] } },
+    extensions: { languages: { hostLanguages: ['PL', 'FR'] } },
     liveSyncState: {
       game_results: {
         test_wiedzy: {
@@ -257,7 +257,7 @@ describe('issue #935 legacy game question migration', () => {
   it('folds legacy games.questionLists metadata into the step and drops questions', () => {
     const legacy = {
       weddingId,
-      extensions: { languages: { supported: ['PL'] } },
+      extensions: { languages: { hostLanguages: ['PL'] } },
       games: {
         enabled: true,
         questionLists: [

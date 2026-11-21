@@ -15,7 +15,7 @@ const closureStep = (mandatory = {}) => ({
 });
 
 const base = {
-  extensions: { languages: { supported: ['PL'] } },
+  extensions: { languages: { hostLanguages: ['PL'] } },
   steps: [closureStep({ closureExtensionUntil: '03:00' })],
 };
 
@@ -63,7 +63,7 @@ describe('issue #448 venue extension hour', () => {
   it('keeps old cartridges without the field valid', () => {
     expect(
       collectSemanticErrors({
-        extensions: { languages: { supported: ['PL'] } },
+        extensions: { languages: { hostLanguages: ['PL'] } },
         steps: [closureStep()],
       }),
     ).toEqual([]);

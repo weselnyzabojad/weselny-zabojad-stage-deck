@@ -316,7 +316,7 @@ export function parseGameQuestionDoc(markdown, gameType, { languages } = {}) {
     headerLanguages.join('|') !== expectedLanguages.join('|')
   ) {
     errors.push(
-      columnError('language_order_mismatch', 'Language columns must follow extensions.languages.supported order.'),
+      columnError('language_order_mismatch', 'Language columns must follow extensions.languages.hostLanguages order.'),
     );
   }
 

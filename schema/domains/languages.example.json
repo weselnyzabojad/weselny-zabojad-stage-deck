@@ -1,12 +1,6 @@
 {
-  "$schema": "./languages.json",
   "languages": {
-    "supported": [
-      "PL",
-      "EN",
-      "FR"
-    ],
-    "defaultContent": "PL",
-    "notes": "Column order for generated Docs and MC display."
+    "hostLanguages": ["PL", "FR", "EN"],
+    "notes": "Couple speaks FR/PL; most guests understand EN."
   }
 }

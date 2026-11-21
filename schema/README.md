@@ -111,7 +111,7 @@ rejected; put app-specific data under `extensions`.
 | `speechMode` | no | `OFF`, `LIGHT`, `COMPLEX`, from `## SPEECHES` → `Speech mode`; the Doc section is optional. |
 | `witnesses` | no | Key persons with language, admin-only contacts and speech ids. |
 | `liveSyncState` | no | Optional seed for the synced live state. |
-| `extensions` | publish | `extensions.languages.supported` is required for publication: ordered ISO 639-1 codes; other extension keys remain forward-compatible. |
+| `extensions` | publish | `extensions.languages.hostLanguages` is required for publication: ordered ISO 639-1 codes; other extension keys remain forward-compatible. |
 
 ## Steps
 

@@ -99,7 +99,7 @@ export function buildDayMinusOneModel({
     wedding?.details?.venuePolicy ??
     null;
   const policy = normalizeVenuePolicies(rawPolicy);
-  const languages = asArray(cartridge.extensions?.languages?.supported ?? wedding?.languages)
+  const languages = asArray(cartridge.extensions?.languages?.hostLanguages ?? wedding?.languages)
     .map((code) => String(code).toUpperCase().slice(0, 2))
     .filter(Boolean);
   const steps = asArray(cartridge.steps);

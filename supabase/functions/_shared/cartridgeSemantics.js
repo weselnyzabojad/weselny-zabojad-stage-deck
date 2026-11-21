@@ -297,11 +297,11 @@ export function sanitizeCartridge(cartridge) {
     delete clean.liveSyncState.manual_offset_minutes;
   }
 
-  const supported = clean.extensions?.languages?.supported;
-  if (Array.isArray(supported)) {
-    clean.extensions.languages.supported = [
+  const hostLanguages = clean.extensions?.languages?.hostLanguages;
+  if (Array.isArray(hostLanguages)) {
+    clean.extensions.languages.hostLanguages = [
       ...new Set(
-        supported
+        hostLanguages
           .filter((code) => typeof code === 'string')
           .map((code) => code.trim().toUpperCase())
           .filter(Boolean),
@@ -379,17 +379,17 @@ export function collectSemanticErrors(cartridge) {
   const ids = new Set();
   const stepIds = [];
 
-  const supportedLanguages = cartridge?.extensions?.languages?.supported;
-  if (!Array.isArray(supportedLanguages) || supportedLanguages.length === 0) {
+  const hostLanguages = cartridge?.extensions?.languages?.hostLanguages;
+  if (!Array.isArray(hostLanguages) || hostLanguages.length === 0) {
     pushError(
-      '/extensions/languages/supported',
-      'extensions.languages.supported must list at least one language',
+      '/extensions/languages/hostLanguages',
+      'extensions.languages.hostLanguages must list at least one language',
     );
   } else {
-    for (const [index, code] of supportedLanguages.entries()) {
+    for (const [index, code] of hostLanguages.entries()) {
       if (typeof code !== 'string' || !/^[A-Za-z]{2}$/.test(code)) {
         pushError(
-          `/extensions/languages/supported/${index}`,
+          `/extensions/languages/hostLanguages/${index}`,
           'language codes must be two-letter ISO 639-1 values',
         );
       }

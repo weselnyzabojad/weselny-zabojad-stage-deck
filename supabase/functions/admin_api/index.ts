@@ -899,7 +899,7 @@ async function migrationChecks({
   bundles: any[];
   weddingFolderId: string;
 }) {
-  const languages = normalizeGameLanguages(cartridge?.extensions?.languages?.supported);
+  const languages = normalizeGameLanguages(cartridge?.extensions?.languages?.hostLanguages);
   const entries = collectLegacyGameEntries(cartridge);
   const bundled = new Set(
     bundles
@@ -1917,7 +1917,7 @@ async function handleRequest(req: Request) {
       });
       return json({
         ...publicMigrationPlan(plan),
-        languages: normalizeGameLanguages(wedding.cartridge?.extensions?.languages?.supported) ?? [],
+        languages: normalizeGameLanguages(wedding.cartridge?.extensions?.languages?.hostLanguages) ?? [],
         weddingFolderId: weddingFolderId || null,
       });
     }
@@ -1990,7 +1990,7 @@ async function handleRequest(req: Request) {
 
       const masterKey = serverEnv('SPEECH_SECRET_MASTER_KEY');
       const languageOrder =
-        normalizeGameLanguages(cartridge?.extensions?.languages?.supported) ?? [];
+        normalizeGameLanguages(cartridge?.extensions?.languages?.hostLanguages) ?? [];
       let migrated = 0;
       let discarded = 0;
 
@@ -2848,7 +2848,7 @@ async function handleRequest(req: Request) {
           const songRequestEligible =
             (servicePackage === 'HOST_AND_DJ_VIP' || servicePackage === 'DJ_MC') &&
             activeVipIds.has(djIdentityId);
-          const supportedLanguages = row.cartridge?.extensions?.languages?.supported;
+          const supportedLanguages = row.cartridge?.extensions?.languages?.hostLanguages;
           const languageWarning =
             Array.isArray(supportedLanguages) && supportedLanguages.length > 0
               ? null

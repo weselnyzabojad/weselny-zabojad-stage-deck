@@ -15,16 +15,21 @@ Venue: Hotel Jura Osiek
 Ceremony type: RELIGIOUS
 
 ## COUPLE IDENTITY
-Couple: Ilona & Adrien
-Bride first name: Ilona
-Bride nationality: PL
-Groom first name: Adrien
-Groom nationality: FR
-Shared languages: PL, FR, EN
+### Bride
+| Field | Your value | Example |
+| --- | --- | --- |
+| Nationality | PL | ISO 3166-1 code |
+| Spoken languages | PL, FR, EN | ISO 639-1 codes |
+### Groom
+| Field | Your value | Example |
+| --- | --- | --- |
+| Nationality | FR | ISO 3166-1 code |
+| Spoken languages | PL, FR, EN | ISO 639-1 codes |
 
 ## LANGUAGES
-Default content: FR
-Supported: FR, PL, EN
+| Field | Your value | Example |
+| --- | --- | --- |
+| Host languages | FR, PL, EN | Ordered ISO 639-1 codes |
 
 ## CULTURAL RULES
 | Rule | Status | Note |
@@ -34,9 +39,9 @@ Supported: FR, PL, EN
 | breadSalt | YES | Vodka vs water shot. |
 
 ## MANDATORY STEPS
-| Field | Time |
-| --- | --- |
-| Wedding closure | 02:00 |
+| Field | Your value | Example |
+| --- | --- | --- |
+| Wedding closure | 02:00 | HH:MM |
 
 ## TIMELINE
 | Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |

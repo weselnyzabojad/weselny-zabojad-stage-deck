@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/test-wiedzy-questions.json",
   "title": "Test Wiedzy question set",
-  "description": "Parsed Test Wiedzy question set. Prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.supported. Level is EASY/MEDIUM/HARD and Answer is the BRIDE/GROOM token; the display layer resolves names from coupleProfile.",
+  "description": "Parsed Test Wiedzy question set. Prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.hostLanguages. Level is EASY/MEDIUM/HARD and Answer is the BRIDE/GROOM token; the display layer resolves names from coupleProfile.",
   "type": "object",
   "additionalProperties": false,
   "required": [

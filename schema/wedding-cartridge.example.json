@@ -7,12 +7,22 @@
       "firstName": "Jennifer",
       "nationalities": [
         "FR"
+      ],
+      "spokenLanguages": [
+        "FR",
+        "PL",
+        "EN"
       ]
     },
     "groom": {
       "firstName": "Guillaume",
       "nationalities": [
         "FR"
+      ],
+      "spokenLanguages": [
+        "FR",
+        "PL",
+        "EN"
       ]
     },
     "commonLanguages": [
@@ -266,7 +276,7 @@
   ],
   "extensions": {
     "languages": {
-      "supported": [
+      "hostLanguages": [
         "FR",
         "PL",
         "EN"

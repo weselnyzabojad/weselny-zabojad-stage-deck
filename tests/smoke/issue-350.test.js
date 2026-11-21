@@ -15,7 +15,7 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(result.cartridge.weddingId).toBe('Test&Couple-UM-2026-01-001');
     expect(result.cartridge.couple).toBeUndefined();
     expect(result.cartridge.coupleProfile.bride.firstName).toBe('Jennifer');
-    expect(result.cartridge.extensions.languages.supported).toEqual(['PL', 'FR', 'EN']);
+    expect(result.cartridge.extensions.languages.hostLanguages).toEqual(['PL', 'FR', 'EN']);
     expect(result.cartridge).not.toHaveProperty('ceremony');
     expect(
       result.cartridge.steps.find((step) => step.ceremony)?.ceremony.type,

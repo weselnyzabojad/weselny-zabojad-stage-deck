@@ -225,7 +225,7 @@ function GamePanel({
           className="mt-2 rounded border border-alert/60 bg-alert/15 p-2 text-[10px] font-semibold text-alert-soft"
         >
           Content languages are missing. Add{' '}
-          <span className="font-mono">extensions.languages.supported</span> before creating a
+          <span className="font-mono">extensions.languages.hostLanguages</span> before creating a
           question Doc.
         </p>
       ) : null}
@@ -797,7 +797,7 @@ export default function AdminGamesPanel({ wedding, readOnly = false, onChanged }
           role="alert"
           className="mt-2 rounded border border-alert/60 bg-alert/15 p-2 text-[10px] font-semibold text-alert-soft"
         >
-          Content languages missing: set <span className="font-mono">extensions.languages.supported</span>{' '}
+          Content languages missing: set <span className="font-mono">extensions.languages.hostLanguages</span>{' '}
           before creating or parsing game question Docs.
         </p>
       ) : null}

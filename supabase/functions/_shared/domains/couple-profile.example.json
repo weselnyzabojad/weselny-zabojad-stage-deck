@@ -1,0 +1,32 @@
+{
+  "$schema": "./couple-profile.json",
+  "coupleProfile": {
+    "bride": {
+      "firstName": "Jennifer",
+      "nationalities": [
+        "FR"
+      ],
+      "spokenLanguages": [
+        "FR",
+        "PL",
+        "EN"
+      ]
+    },
+    "groom": {
+      "firstName": "Guillaume",
+      "nationalities": [
+        "FR"
+      ],
+      "spokenLanguages": [
+        "FR",
+        "PL",
+        "EN"
+      ]
+    },
+    "commonLanguages": [
+      "FR",
+      "PL",
+      "EN"
+    ]
+  }
+}

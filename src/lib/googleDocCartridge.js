@@ -191,6 +191,7 @@ function mapCulturalRules(rows, warnings = []) {
 
 function mapCeremony(event) {
   const type = text(kv(event, 'Ceremony type'))?.toUpperCase() ?? null;
+  if (type === 'OFF') return null;
   return {
     type: ['RELIGIOUS', 'CIVIL', 'HUMANIST'].includes(type) ? type : null,
     mcSupportRequested: bool(kv(event, 'Ceremony MC support'), false),
@@ -962,6 +963,8 @@ export function googleDocTemplateToCartridge(
     now = new Date(),
     weddingId: providedWeddingId = null,
     servicePackage: providedServicePackage = null,
+    brideFirstName: providedBrideFirstName = null,
+    groomFirstName: providedGroomFirstName = null,
   } = {},
 ) {
   const errors = [];
@@ -972,11 +975,18 @@ export function googleDocTemplateToCartridge(
   if (!timeline) errors.push('Missing TIMELINE section');
 
   const coupleSource = section(parsed, 'COUPLE IDENTITY');
-  const brideFirstName = text(kv(coupleSource, 'Bride first name'));
-  const groomFirstName = text(kv(coupleSource, 'Groom first name'));
-  const brideNationalities = list(kv(coupleSource, 'Bride nationality'));
-  const groomNationalities = list(kv(coupleSource, 'Groom nationality'));
-  const commonLanguages = list(kv(coupleSource, 'Shared languages'));
+  const brideSource = subsection(coupleSource, 'Bride');
+  const groomSource = subsection(coupleSource, 'Groom');
+  const brideFirstName = text(providedBrideFirstName);
+  const groomFirstName = text(providedGroomFirstName);
+  const brideNationalities = languageCodes(list(kv(brideSource, 'Nationality')));
+  const groomNationalities = languageCodes(list(kv(groomSource, 'Nationality')));
+  const brideSpokenLanguages = languageCodes(list(kv(brideSource, 'Spoken languages')));
+  const groomSpokenLanguages = languageCodes(list(kv(groomSource, 'Spoken languages')));
+  const groomLanguageSet = new Set(groomSpokenLanguages);
+  const commonLanguages = brideSpokenLanguages.filter((code) => groomLanguageSet.has(code));
+  const ceremonyType = text(kv(event, 'Ceremony type'))?.toUpperCase() ?? null;
+  const ceremonyOff = ceremonyType === 'OFF';
   // Legacy Docs may still carry these fields; the current template and field
   // map do not. Context wins, then the legacy line keeps old fixtures readable.
   const weddingId = text(providedWeddingId) ?? text(kv(event, 'Wedding ID'));
@@ -999,15 +1009,23 @@ export function googleDocTemplateToCartridge(
       `EVENT: Wedding ID "${weddingId}" must match Name&Name-UM-YYYY-MM-NNN, e.g. Weronika&Guillaume-UM-2027-04-002`,
     );
   }
-  if (!brideFirstName) errors.push('COUPLE IDENTITY: Bride first name is required');
-  if (!groomFirstName) errors.push('COUPLE IDENTITY: Groom first name is required');
+  if (!brideFirstName) {
+    errors.push('COUPLE IDENTITY: Bride first name is required from admin context');
+  }
+  if (!groomFirstName) {
+    errors.push('COUPLE IDENTITY: Groom first name is required from admin context');
+  }
   const missingCoupleFields = [
     !brideNationalities.length && 'Bride nationality',
     !groomNationalities.length && 'Groom nationality',
-    !commonLanguages.length && 'Shared languages',
+    !brideSpokenLanguages.length && 'Bride spoken languages',
+    !groomSpokenLanguages.length && 'Groom spoken languages',
   ].filter(Boolean);
   if (missingCoupleFields.length) {
     warnings.push(`COUPLE IDENTITY: missing ${missingCoupleFields.join(', ')}`);
+  }
+  if (!commonLanguages.length) {
+    warnings.push('COUPLE IDENTITY: no shared spoken language');
   }
   if (!date) errors.push('EVENT: Date is required');
   if (!dateISO) {
@@ -1015,6 +1033,12 @@ export function googleDocTemplateToCartridge(
   }
 
   const { steps, anchorIds } = mapTimeline(timeline, warnings, errors);
+  if (ceremonyOff) {
+    const ceremonyIndex = steps.findIndex(
+      (step) => step.id === 'step_02' || /ceremony/i.test(step.title ?? ''),
+    );
+    if (ceremonyIndex >= 0) steps.splice(ceremonyIndex, 1);
+  }
   if (!steps.length) errors.push('TIMELINE: no valid steps mapped');
 
   const djRows = table(section(parsed, 'DJ CUES'), [
@@ -1162,7 +1186,7 @@ export function googleDocTemplateToCartridge(
   const hardAnchors = deriveHardAnchors(stepsWithMandatory);
   const ceremony = mapCeremony(event);
   const ceremonyStep = stepsWithMandatory.find((step) => /ceremony/i.test(step.title ?? ''));
-  if (ceremony.type && ceremonyStep) {
+  if (ceremony?.type && ceremonyStep) {
     ceremonyStep.ceremony = ceremony;
     delete ceremonyStep.ceremonyType;
     delete ceremonyStep.ceremonyLocation;
@@ -1189,22 +1213,19 @@ export function googleDocTemplateToCartridge(
   }
   const languagesSource = section(parsed, 'LANGUAGES');
   if (!languagesSource) errors.push('Missing LANGUAGES section');
-  const supportedLanguages = languageCodes(kv(languagesSource, 'Supported'));
-  if (languagesSource && supportedLanguages.length === 0) {
-    errors.push('LANGUAGES: Supported must list at least one ISO 639-1 code');
+  const hostLanguages = languageCodes(kv(languagesSource, 'Host languages'));
+  if (languagesSource && hostLanguages.length === 0) {
+    errors.push('LANGUAGES: Host languages must list at least one ISO 639-1 code');
   }
-  const invalidLanguages = supportedLanguages.filter((code) => !/^[A-Z]{2}$/.test(code));
+  const invalidLanguages = hostLanguages.filter((code) => !/^[A-Z]{2}$/.test(code));
   if (invalidLanguages.length > 0) {
-    errors.push('LANGUAGES: Supported must contain two-letter ISO 639-1 codes');
+    errors.push('LANGUAGES: Host languages must contain two-letter ISO 639-1 codes');
   }
   const extensions = {
     stepAnchorIds: anchorIds,
     dateISO,
     languages: {
-      supported: supportedLanguages.filter((code) => /^[A-Z]{2}$/.test(code)),
-      ...(languagesSource && text(kv(languagesSource, 'Default content'))
-        ? { defaultContent: text(kv(languagesSource, 'Default content')) }
-        : {}),
+      hostLanguages: hostLanguages.filter((code) => /^[A-Z]{2}$/.test(code)),
       ...(languagesSource && text(kv(languagesSource, 'Notes'))
         ? { notes: text(kv(languagesSource, 'Notes')) }
         : {}),
@@ -1256,10 +1277,12 @@ export function googleDocTemplateToCartridge(
       bride: {
         firstName: brideFirstName,
         nationalities: brideNationalities,
+        spokenLanguages: brideSpokenLanguages,
       },
       groom: {
         firstName: groomFirstName,
         nationalities: groomNationalities,
+        spokenLanguages: groomSpokenLanguages,
       },
       commonLanguages,
     },

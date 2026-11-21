@@ -19,7 +19,7 @@ export function normalizeSocialData({ row = null, source = null, vipDjs = [] } =
     asArray(vipDjs).find((entry) => entry?.id === row?.djIdentityId) ??
     null;
   const languages = asArray(
-    cartridge?.extensions?.languages?.supported ?? row?.languages,
+    cartridge?.extensions?.languages?.hostLanguages ?? row?.languages,
   )
     .map((code) => String(code).toUpperCase())
     .filter((code) => /^[A-Z]{2}$/.test(code));

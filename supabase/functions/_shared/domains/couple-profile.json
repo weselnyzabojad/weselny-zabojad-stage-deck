@@ -55,6 +55,14 @@
             "type": "string",
             "pattern": "^[A-Za-z]{2}$"
           }
+        },
+        "spokenLanguages": {
+          "type": "array",
+          "uniqueItems": true,
+          "description": "ISO 639-1 languages spoken by this person. The app computes commonLanguages as the intersection of both lists.",
+          "items": {
+            "$ref": "#/$defs/language"
+          }
         }
       },
       "required": [

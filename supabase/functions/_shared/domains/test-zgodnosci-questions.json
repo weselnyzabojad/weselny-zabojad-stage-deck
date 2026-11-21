@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://weselnyzabojad.example/schemas/domains/test-zgodnosci-questions.json",
   "title": "Test Zgodności question set",
-  "description": "Parsed Test Zgodności question set. Question prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.supported. This set is encrypted as one game bundle and is never stored in the wedding cartridge.",
+  "description": "Parsed Test Zgodności question set. Question prompts are keyed by the ordered ISO 639-1 codes from extensions.languages.hostLanguages. This set is encrypted as one game bundle and is never stored in the wedding cartridge.",
   "type": "object",
   "additionalProperties": false,
   "required": [

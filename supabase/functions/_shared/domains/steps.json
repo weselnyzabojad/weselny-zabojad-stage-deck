@@ -446,7 +446,8 @@
           "enum": [
             "RELIGIOUS",
             "CIVIL",
-            "HUMANIST"
+            "HUMANIST",
+            "OFF"
           ]
         },
         "mcSupportRequested": {

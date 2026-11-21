@@ -158,7 +158,7 @@ function renderTable(lines) {
   ].join('');
 }
 
-function renderLines(lines = []) {
+function renderLines(lines = [], context = {}) {
   const out = [];
   let index = 0;
   while (index < lines.length) {
@@ -197,7 +197,14 @@ function renderLines(lines = []) {
     }
 
     if (/^###\s+/.test(line)) {
-      out.push(`<h3 style="${H3_STYLE}">${inline(line.replace(/^###\s+/, ''))}</h3>`);
+      const heading = line.replace(/^###\s+/, '');
+      const label =
+        heading === 'Bride' && context.brideName
+          ? `Bride: ${context.brideName}`
+          : heading === 'Groom' && context.groomName
+            ? `Groom: ${context.groomName}`
+            : heading;
+      out.push(`<h3 style="${H3_STYLE}">${inline(label)}</h3>`);
       index += 1;
       continue;
     }
@@ -279,7 +286,7 @@ export function renderClientTemplateHtml({
   const sections = parsed.sections
     .map(
       (section) =>
-        `<section data-doc-section="${escapeHtml(section.marker)}" style="${SECTION_STYLE}">\n<h2 style="${H2_STYLE}">${escapeHtml(section.marker)}</h2>\n${renderLines(section.lines)}</section>`,
+        `<section data-doc-section="${escapeHtml(section.marker)}" style="${SECTION_STYLE}">\n<h2 style="${H2_STYLE}">${escapeHtml(section.marker)}</h2>\n${renderLines(section.lines, { brideName, groomName })}</section>`,
     )
     .join('\n');
 

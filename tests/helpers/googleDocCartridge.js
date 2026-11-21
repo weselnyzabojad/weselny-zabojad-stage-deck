@@ -5,6 +5,8 @@ export * from '../../src/lib/googleDocCartridge.js';
 const DEFAULT_CONTEXT = Object.freeze({
   weddingId: 'Test&Couple-UM-2026-01-001',
   servicePackage: 'HOST_AND_DJ_VIP',
+  brideFirstName: 'Jennifer',
+  groomFirstName: 'Guillaume',
 });
 
 // Test wrapper: the canonical template no longer carries identity or package

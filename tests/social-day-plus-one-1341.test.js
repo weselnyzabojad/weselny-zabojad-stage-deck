@@ -12,7 +12,7 @@ const wedding = {
   venue_city: 'Warszawa',
   cartridge: {
     date: '2026-08-20',
-    extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+    extensions: { dateISO: '2026-08-20', languages: { hostLanguages: ['PL', 'FR'] } },
     steps: [{ id: 'step_01', time: '17:00', title: 'Ceremony' }],
   },
 };

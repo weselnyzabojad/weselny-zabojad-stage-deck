@@ -231,14 +231,8 @@ export const FIELD_MANIFEST = Object.freeze({
     'Ceremony location',
     'Ceremony notes',
   ],
-  'COUPLE IDENTITY': [
-    'Bride first name',
-    'Bride nationality',
-    'Groom first name',
-    'Groom nationality',
-    'Shared languages',
-  ],
-  LANGUAGES: ['Default content', 'Supported', 'Notes'],
+  'COUPLE IDENTITY': ['Nationality', 'Spoken languages'],
+  LANGUAGES: ['Host languages', 'Notes'],
   DEMOGRAPHICS: ['Guests total', 'Guests PL', 'Guests FR', 'Guests other', 'Notes'],
   OCZEPINY: [
     'Oczepiny variant',
@@ -398,6 +392,36 @@ function oldFormatLabels(section) {
   return Object.keys(parseKeyValues(section?.lines ?? []));
 }
 
+function fieldLabelErrors(section, expected, scope) {
+  const errors = [];
+  const rows = fieldTableRows(section);
+  const seen = new Set();
+  for (const { label } of rows) {
+    if (!expected.includes(label)) {
+      errors.push(
+        `${scope}: unknown field label "${label}". Use one of: ${expected.join(', ')}.`,
+      );
+      continue;
+    }
+    if (seen.has(label)) {
+      errors.push(`${scope}: duplicate field label "${label}".`);
+      continue;
+    }
+    seen.add(label);
+  }
+
+  const missing = expected.filter((label) => !seen.has(label));
+  if (missing.length > 0) {
+    errors.push(
+      `${scope}: missing field label${missing.length > 1 ? 's' : ''} ` +
+        missing.map((label) => `"${label}"`).join(', ') +
+        '. Add each row to the "Field | Your value | Example" table.',
+    );
+  }
+
+  return errors;
+}
+
 // Validates the table contract for every fixed-field section: missing, unknown
 // and duplicate labels are hard errors, and an old `Field: value` line is
 // rejected with the migration procedure instead of falling back silently.
@@ -421,30 +445,25 @@ export function validateFieldTables(parsed) {
       continue;
     }
 
-    const rows = fieldTableRows(section);
-    const seen = new Set();
-    for (const { label } of rows) {
-      if (!expected.includes(label)) {
+    if (section.marker === 'COUPLE IDENTITY') {
+      for (const title of ['Bride', 'Groom']) {
+        const subSection = section.subSections.find((entry) => entry.title === title);
+        if (!subSection) {
+          errors.push(`## COUPLE IDENTITY: missing "### ${title}" table.`);
+          continue;
+        }
         errors.push(
-          `## ${section.marker}: unknown field label "${label}". Use one of: ${expected.join(', ')}.`,
+          ...fieldLabelErrors(
+            subSection,
+            expected,
+            `## COUPLE IDENTITY ### ${title}`,
+          ),
         );
-        continue;
       }
-      if (seen.has(label)) {
-        errors.push(`## ${section.marker}: duplicate field label "${label}".`);
-        continue;
-      }
-      seen.add(label);
+      continue;
     }
 
-    const missing = expected.filter((label) => !seen.has(label));
-    if (missing.length > 0) {
-      errors.push(
-        `## ${section.marker}: missing field label${missing.length > 1 ? 's' : ''} ` +
-          missing.map((label) => `"${label}"`).join(', ') +
-          '. Add each row to the "Field | Your value | Example" table.',
-      );
-    }
+    errors.push(...fieldLabelErrors(section, expected, `## ${section.marker}`));
   }
 
   return errors;

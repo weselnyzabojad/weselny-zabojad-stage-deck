@@ -4,11 +4,13 @@
   "coupleProfile": {
     "bride": {
       "firstName": "Test",
-      "nationalities": []
+      "nationalities": [],
+      "spokenLanguages": []
     },
     "groom": {
       "firstName": "Couple",
-      "nationalities": []
+      "nationalities": [],
+      "spokenLanguages": []
     },
     "commonLanguages": []
   },
@@ -87,7 +89,7 @@
   },
   "extensions": {
     "languages": {
-      "supported": [
+      "hostLanguages": [
         "PL",
         "EN",
         "FR"

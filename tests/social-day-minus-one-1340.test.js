@@ -14,7 +14,7 @@ const wedding = {
   vipDjName: 'DJ Mark',
   cartridge: {
     date: '2026-08-20',
-    extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+    extensions: { dateISO: '2026-08-20', languages: { hostLanguages: ['PL', 'FR'] } },
     coupleProfile: {
       bride: { firstName: 'Anna', nationalities: ['PL'] },
       groom: { firstName: 'Piotr', nationalities: ['FR'] },

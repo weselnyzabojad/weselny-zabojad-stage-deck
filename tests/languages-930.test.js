@@ -1,4 +1,4 @@
-﻿import { readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parseGoogleDocTemplate } from '../src/lib/googleDocTemplate.js';
 import { googleDocTemplateToCartridge } from './helpers/googleDocCartridge.js';
@@ -16,9 +16,9 @@ describe('issue #930 required content-language contract', () => {
   it('defines the ordered language domain and references it from extensions', () => {
     const domain = json('schema/domains/languages.json');
     expect(domain.$id).toContain('languages.json');
-    expect(domain.properties.languages.required).toEqual(['supported']);
-    expect(domain.properties.languages.properties.supported.minItems).toBe(1);
-    expect(domain.properties.languages.properties.supported.uniqueItems).toBe(true);
+    expect(domain.properties.languages.required).toEqual(['hostLanguages']);
+    expect(domain.properties.languages.properties.hostLanguages.minItems).toBe(1);
+    expect(domain.properties.languages.properties.hostLanguages.uniqueItems).toBe(true);
     expect(json('schema/wedding-schema-v1.1.json').properties.extensions.properties.languages.$ref).toBe(
       'https://weselnyzabojad.example/schemas/domains/languages.json#/properties/languages',
     );
@@ -31,33 +31,33 @@ describe('issue #930 required content-language contract', () => {
   it('maps and uppercases the ordered Supported list', () => {
     const result = map(
       template().replace(
-        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
-        '| Supported | pl, fr, en | Ordered ISO 639-1 codes |',
+        '| Host languages | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Host languages | pl, fr, en | Ordered ISO 639-1 codes |',
       ),
     );
     expect(result.errors).toEqual([]);
-    expect(result.cartridge.extensions.languages.supported).toEqual(['PL', 'FR', 'EN']);
+    expect(result.cartridge.extensions.languages.hostLanguages).toEqual(['PL', 'FR', 'EN']);
   });
 
   it('rejects a missing or empty Supported list with a clear error', () => {
     const missing = map(
-      template().replace(/^\| Supported \|.*\r?\n/m, ''),
+      template().replace(/^\| Host languages \|.*\r?\n/m, ''),
     );
-    expect(missing.errors.join('\n')).toContain('LANGUAGES: Supported must list at least one');
+    expect(missing.errors.join('\n')).toContain('LANGUAGES: Host languages must list at least one');
     const empty = map(
       template().replace(
-        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
-        '| Supported |  | Ordered ISO 639-1 codes |',
+        '| Host languages | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Host languages |  | Ordered ISO 639-1 codes |',
       ),
     );
-    expect(empty.errors.join('\n')).toContain('LANGUAGES: Supported must list at least one');
+    expect(empty.errors.join('\n')).toContain('LANGUAGES: Host languages must list at least one');
   });
 
   it('rejects non ISO 639-1 codes', () => {
     const result = map(
       template().replace(
-        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
-        '| Supported | Polish, EN | Ordered ISO 639-1 codes |',
+        '| Host languages | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Host languages | Polish, EN | Ordered ISO 639-1 codes |',
       ),
     );
     expect(result.errors.join('\n')).toContain('two-letter ISO 639-1');
@@ -66,16 +66,16 @@ describe('issue #930 required content-language contract', () => {
   it('blocks publication when an existing cartridge lacks languages', () => {
     const errors = collectSemanticErrors({ steps: [] });
     expect(errors).toContainEqual({
-      location: '/extensions/languages/supported',
-      message: 'extensions.languages.supported must list at least one language',
+      location: '/extensions/languages/hostLanguages',
+      message: 'extensions.languages.hostLanguages must list at least one language',
     });
   });
 
   it('allows any two-letter code and normalizes uppercase on publish', () => {
     const semantics = read('supabase/functions/_shared/cartridgeSemantics.js');
     expect(semantics).toContain("code.trim().toUpperCase()");
-    expect(semantics).toContain("'extensions.languages.supported must list at least one language'");
-    expect(json('schema/domains/languages.json').properties.languages.properties.supported.items.pattern).toBe(
+    expect(semantics).toContain("'extensions.languages.hostLanguages must list at least one language'");
+    expect(json('schema/domains/languages.json').properties.languages.properties.hostLanguages.items.pattern).toBe(
       '^[A-Za-z]{2}$',
     );
   });
@@ -87,7 +87,7 @@ describe('issue #930 required content-language contract', () => {
       'schema/fixtures/valid-timeline.json',
       'schema/fixtures/real-jennifer-guillaume.json',
     ]) {
-      expect(json(file).extensions.languages.supported.length).toBeGreaterThan(0);
+      expect(json(file).extensions.languages.hostLanguages.length).toBeGreaterThan(0);
     }
     expect(json('schema/fixtures/invalid-missing-languages.json').extensions).toBeUndefined();
   });
@@ -99,7 +99,7 @@ describe('issue #930 required content-language contract', () => {
       "schemaPath: ['extensions', 'extensions.languages']",
     );
     expect(read('schema/google-doc-template.md')).toContain(
-      '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
+      '| Host languages | PL, FR, EN | Ordered ISO 639-1 codes |',
     );
   });
 
