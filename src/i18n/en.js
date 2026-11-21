@@ -350,6 +350,7 @@ const en = {
   'social.template.dayMinusOne': 'Day −1 · Prep Wrapper',
   'social.template.dayPlusOne': 'Day +1 · Post-Event Wrapped',
   'social.template.month': 'Month Story',
+  'social.template.nextMonth': 'Next month',
   'social.template.beforeSeason': 'Before season',
   'social.template.season': 'Season · Test Zgodności',
   'social.background': 'Background',

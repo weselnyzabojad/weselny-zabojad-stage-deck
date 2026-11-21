@@ -14,12 +14,14 @@ import {
   dayPlusOneCaptionLines,
 } from '../lib/socialDayPlusOne.js';
 import { buildSeasonModel, buildMonthModel, buildBeforeSeasonModel, seasonCaptionLines, monthCaptionLines, beforeSeasonCaptionLines } from '../lib/socialSeason.js';
+import { buildNextMonthModel, nextMonthCaptionLines } from '../lib/socialNextMonth.js';
 import StoryFrame from './social/StoryFrame.jsx';
 import DayMinusOneStory from './social/DayMinusOneStory.jsx';
 import DayPlusOneStory from './social/DayPlusOneStory.jsx';
 import SeasonStory from './social/SeasonStory.jsx';
 import MonthStory from './social/MonthStory.jsx';
 import BeforeSeasonStory from './social/BeforeSeasonStory.jsx';
+import NextMonthStory from './social/NextMonthStory.jsx';
 
 const PREVIEW_WIDTH = 270;
 const PREVIEW_SCALE = PREVIEW_WIDTH / 1080;
@@ -28,6 +30,7 @@ const TEMPLATE_LABEL_KEYS = {
   dayMinusOne: 'social.template.dayMinusOne',
   dayPlusOne: 'social.template.dayPlusOne',
   month: 'social.template.month',
+  nextMonth: 'social.template.nextMonth',
   beforeSeason: 'social.template.beforeSeason',
   season: 'social.template.season',
 };
@@ -55,6 +58,7 @@ export default function SocialExportStudio({
   templates = {},
   captionLinesByTemplate = {},
   seasonData = null,
+  nextMonthWeddings = [],
   seasonYear = null,
   seasonYears = [],
   onSeasonYear = null,
@@ -67,18 +71,29 @@ export default function SocialExportStudio({
 }) {
   const { t } = useI18n();
   const seasonModel = useMemo(() => buildSeasonModel(seasonData), [seasonData]);
+  const nextMonthModel = useMemo(
+    () =>
+      buildNextMonthModel({
+        weddings: nextMonthWeddings,
+        timeZone: wedding?.cartridge?.extensions?.timeZone ?? 'UTC',
+      }),
+    [nextMonthWeddings, wedding?.cartridge?.extensions?.timeZone],
+  );
   const available = useMemo(
     () =>
-      templatesForSurface(surface).filter(
-        (entry) => entry.id !== 'season' || seasonModel.available,
-      ),
-    [surface, seasonModel.available],
+      templatesForSurface(surface).filter((entry) => {
+        if (entry.id === 'season') return seasonModel.available;
+        if (entry.id === 'nextMonth') return nextMonthModel.available;
+        return true;
+      }),
+    [surface, seasonModel.available, nextMonthModel.available],
   );
   const availableTemplates = useMemo(
     () => ({
       dayMinusOne: DayMinusOneStory,
       dayPlusOne: DayPlusOneStory,
       month: MonthStory,
+      nextMonth: NextMonthStory,
       beforeSeason: BeforeSeasonStory,
       season: SeasonStory,
       ...templates,
@@ -117,6 +132,12 @@ export default function SocialExportStudio({
         pl: monthCaptionLines(model, 'pl'),
       };
     }
+    if (template?.id === 'nextMonth') {
+      return {
+        fr: nextMonthCaptionLines(nextMonthModel, 'fr'),
+        pl: nextMonthCaptionLines(nextMonthModel, 'pl'),
+      };
+    }
     if (template?.id === 'beforeSeason') {
       const model = buildBeforeSeasonModel(seasonData);
       return {
@@ -131,7 +152,7 @@ export default function SocialExportStudio({
       };
     }
     return { fr: [], pl: [] };
-  }, [template?.id, wedding, liveState, recap, seasonData, seasonModel, surface]);
+  }, [template?.id, wedding, liveState, recap, seasonData, seasonModel, nextMonthModel, surface]);
   const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>
@@ -272,7 +293,7 @@ export default function SocialExportStudio({
               label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
             >
               {Template ? (
-                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} />
+                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} weddings={nextMonthWeddings} />
               ) : (
                 <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
               )}
@@ -346,7 +367,7 @@ export default function SocialExportStudio({
           label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
         >
           {Template ? (
-            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} />
+            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} weddings={nextMonthWeddings} />
           ) : (
             <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
           )}

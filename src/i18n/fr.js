@@ -352,6 +352,7 @@ const fr = {
   'social.template.dayMinusOne': 'J−1 · Prep Wrapper',
   'social.template.dayPlusOne': 'J+1 · Post-Event Wrapped',
   'social.template.month': 'Mois',
+  'social.template.nextMonth': 'Mois prochain',
   'social.template.beforeSeason': 'Avant-saison',
   'social.template.season': 'Saison · Test Zgodności',
   'social.background': 'Fond',

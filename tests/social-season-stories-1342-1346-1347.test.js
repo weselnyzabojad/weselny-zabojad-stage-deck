@@ -147,15 +147,16 @@ describe('season lifecycle stories (#1342, #1346, #1347)', () => {
 
   it('hides the Season tab before it is available and keeps month data separate', () => {
     const studio = read('src/components/SocialExportStudio.jsx');
-    expect(studio).toContain("entry.id !== 'season' || seasonModel.available");
+    expect(studio).toContain("if (entry.id === 'season') return seasonModel.available;");
+    expect(studio).toContain("if (entry.id === 'nextMonth') return nextMonthModel.available;");
     expect(studio).toContain("month: MonthStory");
     expect(studio).toContain("beforeSeason: BeforeSeasonStory");
     expect(studio).toContain('monthCaptionLines');
     expect(studio).toContain('beforeSeasonCaptionLines');
 
-    const portfolio = read('src/admin/AdminPortfolioOverview.jsx');
-    expect(portfolio).toContain('month: period.month');
-    expect(portfolio).toContain('socialPeriod(row)');
+    const studioAdmin = read('src/admin/AdminSocialStudio.jsx');
+    expect(studioAdmin).toContain('month: period.month');
+    expect(studioAdmin).toContain('socialPeriod(selected)');
   });
 
   it('never renders identity data in the lifecycle captions', () => {

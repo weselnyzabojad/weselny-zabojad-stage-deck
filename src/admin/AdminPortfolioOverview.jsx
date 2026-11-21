@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '../i18n/useI18n';
 import { fetchPortfolioKpis } from './adminApi';
-import SocialExportStudio from '../components/SocialExportStudio';
-import { useSeasonStats } from './useSeasonStats';
-import { useSocialData } from './useSocialData';
 import {
   nextPortfolioSort,
   portfolioYears,
@@ -13,15 +10,6 @@ import {
 
 const ADMIN_DEMO = import.meta.env.DEV && import.meta.env.VITE_ADMIN_DEMO === '1';
 const NO_ROWS = [];
-
-function socialPeriod(row) {
-  const iso = String(row?.dateISO ?? '').trim();
-  const isoMatch = /^(\d{4})-(\d{2})-\d{2}$/.exec(iso);
-  if (isoMatch) return { year: Number(isoMatch[1]), month: Number(isoMatch[2]) };
-  const dotted = /^\d{2}\.(\d{2})\.(\d{4})$/.exec(String(row?.date ?? '').trim());
-  if (dotted) return { year: Number(dotted[2]), month: Number(dotted[1]) };
-  return { year: null, month: null };
-}
 
 const STATUS_KEYS = {
   active: 'admin.portfolio.status.active',
@@ -155,7 +143,6 @@ export function PortfolioOverviewView({
   onQueryChange = () => {},
   onSort = () => {},
   onRefresh = () => {},
-  onSocial = null,
   readOnly = false,
   demo = false,
 }) {
@@ -572,15 +559,6 @@ export function PortfolioOverviewView({
                       <td className="px-3 py-2">
                         <div className="font-semibold text-ink">{row.couple || t('admin.portfolio.noData')}</div>
                         <div className="font-mono text-[9px] text-muted">{row.id}</div>
-                        {onSocial ? (
-                          <button
-                            type="button"
-                            onClick={() => onSocial(row)}
-                            className="mt-1 rounded border border-line bg-raised px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-brand-strong"
-                          >
-                            {t('social.open')}
-                          </button>
-                        ) : null}
                       </td>
                       <td className="px-3 py-2 font-mono text-[10px] text-muted">{row.date || t('admin.portfolio.noData')}</td>
                       <td className="px-3 py-2"><StatusPill status={row.status} t={t} /></td>
@@ -655,15 +633,6 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reload, setReload] = useState(0);
-  const [socialRow, setSocialRow] = useState(null);
-  const [seasonYear, setSeasonYear] = useState(() => new Date().getFullYear());
-  const period = socialPeriod(socialRow);
-  const season = useSeasonStats({
-    active: Boolean(socialRow),
-    seasonYear: period.year ?? seasonYear,
-    month: period.month,
-  });
-  const social = useSocialData({ row: socialRow, active: Boolean(socialRow) });
 
   useEffect(() => {
     let active = true;
@@ -698,35 +667,9 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
         onQueryChange={setQuery}
         onSort={setSort}
         onRefresh={() => setReload((value) => value + 1)}
-        onSocial={(row) => {
-          const next = socialPeriod(row);
-          if (next.year) setSeasonYear(next.year);
-          setSocialRow(row);
-        }}
         readOnly={readOnly}
         demo={ADMIN_DEMO}
       />
-      {socialRow ? (
-        <div className="mt-4">
-          <SocialExportStudio
-            surface="admin"
-            wedding={social.data?.wedding ?? socialRow}
-            liveState={social.data?.liveState ?? null}
-            recap={social.data?.recap ?? null}
-            requests={social.data?.requests ?? []}
-            dataLoading={social.loading}
-            dataError={social.error}
-            onRetry={social.retry}
-            seasonData={season.data}
-            seasonYear={seasonYear}
-            seasonYears={[seasonYear - 2, seasonYear - 1, seasonYear, seasonYear + 1]}
-            onSeasonYear={setSeasonYear}
-            seasonLoading={season.loading}
-            seasonError={season.error}
-            onClose={() => setSocialRow(null)}
-          />
-        </div>
-      ) : null}
     </>
   );
 }
