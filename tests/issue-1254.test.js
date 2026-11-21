@@ -110,6 +110,6 @@ describe('issue #1254 Social Export Studio shared engine', () => {
     expect(overview).toContain('onSocial');
     expect(overview).toContain("social.open");
     expect(overview).toContain("surface=\"admin\"");
-    expect(overview).toContain('wedding={socialRow}');
+    expect(overview).toContain('wedding={social.data?.wedding ?? socialRow}');
   });
 });

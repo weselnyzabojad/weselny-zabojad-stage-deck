@@ -363,6 +363,8 @@ const en = {
   'social.copied': 'Caption copied.',
   'social.copyError': 'Could not copy the caption.',
   'social.close': 'Close',
+  'social.loading': 'Loading wedding data...',
+  'social.retry': 'Retry',
   'social.placeholder': 'Template content is being prepared.',
   'social.privacy': 'Exports never include surnames, contacts, addresses or private notes.',
   'social.sizeHint': 'True 1080×1920 PNG. Keep critical text inside the Story safe margins.',

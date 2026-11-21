@@ -3,6 +3,7 @@ import { useI18n } from '../i18n/useI18n';
 import { fetchPortfolioKpis } from './adminApi';
 import SocialExportStudio from '../components/SocialExportStudio';
 import { useSeasonStats } from './useSeasonStats';
+import { useSocialData } from './useSocialData';
 import {
   nextPortfolioSort,
   portfolioYears,
@@ -648,6 +649,7 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
   const [socialRow, setSocialRow] = useState(null);
   const [seasonYear, setSeasonYear] = useState(() => new Date().getFullYear());
   const season = useSeasonStats({ active: Boolean(socialRow), seasonYear });
+  const social = useSocialData({ row: socialRow, active: Boolean(socialRow) });
 
   useEffect(() => {
     let active = true;
@@ -690,7 +692,13 @@ export default function AdminPortfolioOverview({ readOnly = false }) {
         <div className="mt-4">
           <SocialExportStudio
             surface="admin"
-            wedding={socialRow}
+            wedding={social.data?.wedding ?? socialRow}
+            liveState={social.data?.liveState ?? null}
+            recap={social.data?.recap ?? null}
+            requests={social.data?.requests ?? []}
+            dataLoading={social.loading}
+            dataError={social.error}
+            onRetry={social.retry}
             seasonData={season.data}
             seasonYear={seasonYear}
             seasonYears={[seasonYear - 2, seasonYear - 1, seasonYear, seasonYear + 1]}
