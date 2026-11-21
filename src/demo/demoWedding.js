@@ -58,8 +58,16 @@ export const DEMO_WEDDING = {
   servicePackage: "HOST_AND_DJ_VIP",
   driftMinutes: 25,
   coupleProfile: {
-    bride: { firstName: "Jennifer", nationalities: ["FR"] },
-    groom: { firstName: "Guillaume", nationalities: ["FR"] },
+    bride: {
+      firstName: "Jennifer",
+      nationalities: ["FR"],
+      spokenLanguages: ["FR", "PL", "EN"]
+    },
+    groom: {
+      firstName: "Guillaume",
+      nationalities: ["FR"],
+      spokenLanguages: ["FR", "PL", "EN"]
+    },
     commonLanguages: ["FR", "PL", "EN"]
   },
   mediaTeam: [
@@ -274,7 +282,7 @@ export const DEMO_WEDDING = {
   },
   extensions: {
     languages: {
-      supported: ["FR", "PL", "EN"]
+      hostLanguages: ["FR", "PL", "EN"]
     }
   },
   speechMode: "COMPLEX",

@@ -18,7 +18,7 @@ const cartridge = {
   steps: [
     { id: 'step_01', time: '17:00', title: 'Ceremony', mandatory: { kind: 'FIRST_GUESTS_ARRIVAL' } },
   ],
-  extensions: { languages: { supported: ['PL', 'fr', 'EN'] }, dateISO: '2026-08-20' },
+  extensions: { languages: { hostLanguages: ['PL', 'fr', 'EN'] }, dateISO: '2026-08-20' },
   servicePackage: 'HOST_AND_DJ_VIP',
   djIdentityId: 'dj_mark',
 };

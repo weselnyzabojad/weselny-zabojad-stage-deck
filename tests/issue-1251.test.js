@@ -21,7 +21,7 @@ const wedding = {
   cartridge_revision: 7,
   cartridge: {
     servicePackage: 'HOST_AND_DJ_VIP',
-    extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+    extensions: { dateISO: '2026-08-20', languages: { hostLanguages: ['PL', 'FR'] } },
     steps: [
       { id: 'a', time: '17:00', type: 'CEREMONY', location: 'Garden' },
       { id: 'b', time: '18:00', type: 'DINNER', location: 'Hall' },

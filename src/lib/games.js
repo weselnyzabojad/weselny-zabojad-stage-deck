@@ -102,7 +102,7 @@ export function gamesAvailable(wedding) {
 
 // Ordered ISO 639-1 codes used for every question prompt (issue #930/#934).
 export function resolveGameLanguages(wedding) {
-  return normalizeGameLanguages(wedding?.extensions?.languages?.supported) ?? [];
+  return normalizeGameLanguages(wedding?.extensions?.languages?.hostLanguages) ?? [];
 }
 
 // The explicit gameType wins; legacy cartridges without it are inferred from

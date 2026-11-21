@@ -19,7 +19,7 @@ const wedding = {
     extensions: {
       dateISO: '2026-08-20',
       timeZone: 'Europe/Warsaw',
-      languages: { supported: ['PL', 'FR', 'EN'] },
+      languages: { hostLanguages: ['PL', 'FR', 'EN'] },
     },
     steps: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
     hardAnchors: [{ id: 'cake_service' }],

@@ -17,11 +17,13 @@
       "cake.sparklers": "required"
     },
     "couple-profile.example.json": {
-      "coupleProfile.bride.firstName": "required",
+      "coupleProfile.bride.firstName": "delete",
       "coupleProfile.bride.nationalities": "required",
-      "coupleProfile.groom.firstName": "required",
+      "coupleProfile.bride.spokenLanguages": "required",
+      "coupleProfile.groom.firstName": "delete",
       "coupleProfile.groom.nationalities": "required",
-      "coupleProfile.commonLanguages": "required"
+      "coupleProfile.groom.spokenLanguages": "required",
+      "coupleProfile.commonLanguages": "delete"
     },
     "cultural-rules.example.json": {
       "culturalRules.sto_lat.status": "required",
@@ -30,8 +32,7 @@
       "culturalRules.bread_salt.note": "optional"
     },
     "languages.example.json": {
-      "languages.supported": "required",
-      "languages.defaultContent": "optional",
+      "languages.hostLanguages": "required",
       "languages.notes": "optional"
     },
     "demographics.example.json": {
@@ -232,12 +233,14 @@
     },
     "wedding-cartridge.example.json": {
       "schemaVersion": "no",
-      "coupleProfile.bride.firstName": "required",
+      "coupleProfile.bride.firstName": "delete",
       "coupleProfile.bride.nationalities": "required",
-      "coupleProfile.groom.firstName": "required",
+      "coupleProfile.bride.spokenLanguages": "required",
+      "coupleProfile.groom.firstName": "delete",
       "coupleProfile.groom.nationalities": "required",
-      "coupleProfile.commonLanguages": "required",
-      "extensions.languages.supported": "required",
+      "coupleProfile.groom.spokenLanguages": "required",
+      "coupleProfile.commonLanguages": "delete",
+      "extensions.languages.hostLanguages": "required",
       "date": "required",
       "role": "no",
       "mediaTeam[].id": "no",

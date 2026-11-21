@@ -17,7 +17,7 @@ const EXPECTED_INVALID_REASONS = {
   'invalid-fire-safety.json': 'fire effects require venue approval',
   'invalid-iso-timestamp.json': 'must match pattern',
   'invalid-missing-cultural-rule.json': 'bread_salt',
-  'invalid-missing-languages.json': 'extensions.languages.supported must list at least one language',
+  'invalid-missing-languages.json': 'extensions.languages.hostLanguages must list at least one language',
   'invalid-music-window.json': 'requestWindow.end must be after start',
   'invalid-oczepiny-anchor.json': 'MIDNIGHT Oczepiny requires an anchorId or an oczepiny step',
   'invalid-song-step-ref.json': 'unknown step id',

@@ -30,7 +30,7 @@ const masterKey = 'local-32-byte-random-value-000000';
 const weddingId = 'Test&Wedding-UM-2026-08-001';
 
 const wedding = {
-  extensions: { languages: { supported: ['FR', 'PL', 'EN'] } },
+  extensions: { languages: { hostLanguages: ['FR', 'PL', 'EN'] } },
   coupleProfile: {
     bride: { firstName: 'Jennifer' },
     groom: { firstName: 'Guillaume' },

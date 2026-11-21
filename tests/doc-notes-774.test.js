@@ -15,15 +15,26 @@ Sync PIN: 1010
 Service package: HOST_ONLY
 
 ## COUPLE IDENTITY
-Bride first name: Ilona
-Bride nationality: PL
-Groom first name: Adrien
-Groom nationality: FR
-Shared languages: PL, FR
+
+### Bride
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Nationality | PL | ISO 3166-1 code |
+| Spoken languages | PL, FR | ISO 639-1 codes |
+
+### Groom
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Nationality | FR | ISO 3166-1 code |
+| Spoken languages | PL, FR | ISO 639-1 codes |
 
 ## LANGUAGES
-Default content: FR
-Supported: FR, PL
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Host languages | FR, PL | Ordered ISO 639-1 codes |
 
 ## CULTURAL RULES
 | Rule | Status | Note |
@@ -33,9 +44,9 @@ Supported: FR, PL
 | breadSalt | YES |  |
 
 ## MANDATORY STEPS
-| Field | Time |
-| --- | --- |
-| Wedding closure | 18:00 |
+| Field | Your value | Example |
+| --- | --- | --- |
+| Wedding closure | 18:00 | HH:MM |
 
 ## TIMELINE
 | Step ID | Time | Title | Type | Location | Anchor ID | Main Song Required | Optional Flag | Notes |

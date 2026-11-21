@@ -29,6 +29,7 @@ describe('issue #303 ceremony variants', () => {
       'RELIGIOUS',
       'CIVIL',
       'HUMANIST',
+      'OFF',
     ]);
   });
 

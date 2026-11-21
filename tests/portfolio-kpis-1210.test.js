@@ -24,7 +24,7 @@ function wedding(id, overrides = {}) {
     updated_at: '2026-08-21T00:00:00.000Z',
     cartridge: {
       servicePackage: 'HOST_AND_DJ_VIP',
-      extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+      extensions: { dateISO: '2026-08-20', languages: { hostLanguages: ['PL', 'FR'] } },
       steps: [
         { id: 'a', time: '18:00' },
         { id: 'b', time: '19:00' },
@@ -141,7 +141,7 @@ describe('issue #1210 portfolio KPI data layer', () => {
             archived_at: '2026-08-22T00:00:00.000Z',
             cartridge: {
               servicePackage: 'HOST_ONLY',
-              extensions: { dateISO: '2025-07-01', languages: { supported: ['EN'] } },
+              extensions: { dateISO: '2025-07-01', languages: { hostLanguages: ['EN'] } },
               steps: [],
             },
           }),

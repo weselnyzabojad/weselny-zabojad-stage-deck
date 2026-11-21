@@ -183,8 +183,8 @@ export function buildPortfolioRow({
   const requestRows = Array.isArray(requests) ? requests : [];
   const accepted = requestRows.filter((row) => row?.status === 'accepted').length;
   const played = requestRows.filter((row) => Boolean(row?.played_at)).length;
-  const languages = Array.isArray(cartridge.extensions?.languages?.supported)
-    ? cartridge.extensions.languages.supported
+  const languages = Array.isArray(cartridge.extensions?.languages?.hostLanguages)
+    ? cartridge.extensions.languages.hostLanguages
     : [];
   const date = dateISO(cartridge, wedding?.date);
   const status = resolvePortfolioStatus(wedding, now);

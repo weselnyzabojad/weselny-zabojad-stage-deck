@@ -46,7 +46,7 @@ function legacyListEntries(cartridge) {
 }
 
 export function cartridgeGameLanguages(cartridge) {
-  return normalizeGameLanguages(cartridge?.extensions?.languages?.supported);
+  return normalizeGameLanguages(cartridge?.extensions?.languages?.hostLanguages);
 }
 
 // Per-step `game.enabled` wins. Legacy `games.enabled` / `games.questionLists`

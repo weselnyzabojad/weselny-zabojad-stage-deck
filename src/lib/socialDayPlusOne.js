@@ -199,7 +199,7 @@ export function buildDayPlusOneModel({
     requestsPlayed: requestRows.length > 0 ? played : number(wedding?.requestsPlayed),
     gameCount: games.games || number(wedding?.gameCount) || null,
     compatibilityPct: games.compatibilityPct ?? number(wedding?.compatibilityPct),
-    languages: asArray(cartridge.extensions?.languages?.supported ?? wedding?.languages),
+    languages: asArray(cartridge.extensions?.languages?.hostLanguages ?? wedding?.languages),
     cultural: {
       stoLat:
         cartridge.culturalRules?.sto_lat?.status ??

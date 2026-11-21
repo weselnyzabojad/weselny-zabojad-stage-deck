@@ -24,31 +24,40 @@
 | --- | --- | --- |
 | Date | 20.08.2026 | DD.MM.YYYY |
 | Children expected | yes | yes or no |
-| Ceremony type | RELIGIOUS | CIVIL or RELIGIOUS |
+| Ceremony type | RELIGIOUS | CIVIL, RELIGIOUS, HUMANIST or OFF |
 | Ceremony MC support | yes | yes or no |
 | Ceremony location | St. Mary Church | Venue or church name |
 | Ceremony notes | Full mass; MC introduces the couple at the church door. | Short note |
 
 ## COUPLE IDENTITY
 
-**How to fill:** replace the example names, nationalities and shared languages.
+**How to fill:** replace each person's nationality and spoken languages; names come from the wedding folder.
+
+### Bride
+
+**How to fill:** replace the example nationality and spoken languages.
 
 | Field | Your value | Example |
 | --- | --- | --- |
-| Bride first name | Jennifer | First name |
-| Bride nationality | FR | ISO 3166-1 code, e.g. FR |
-| Groom first name | Guillaume | First name |
-| Groom nationality | FR | ISO 3166-1 code, e.g. FR |
-| Shared languages | FR, PL, EN | ISO 639-1 codes, comma separated |
+| Nationality | FR | ISO 3166-1 code, e.g. FR |
+| Spoken languages | FR, PL, EN | ISO 639-1 codes, comma separated |
+
+### Groom
+
+**How to fill:** replace the example nationality and spoken languages.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Nationality | FR | ISO 3166-1 code, e.g. FR |
+| Spoken languages | FR, PL, EN | ISO 639-1 codes, comma separated |
 
 ## LANGUAGES
 
-**How to fill:** replace the example languages; keep `Supported` ordered.
+**How to fill:** replace the example host languages; keep `Host languages` ordered.
 
 | Field | Your value | Example |
 | --- | --- | --- |
-| Default content | PL | One supported code |
-| Supported | PL, FR, EN | Ordered ISO 639-1 codes |
+| Host languages | PL, FR, EN | Ordered ISO 639-1 codes |
 | Notes | Couple speaks FR/PL; most guests understand EN. | Short note |
 
 ## DEMOGRAPHICS

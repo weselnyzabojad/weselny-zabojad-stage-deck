@@ -23,7 +23,7 @@ const wedding = (cartridge) => ({
 });
 
 const cartridge = (overrides = {}) => ({
-  extensions: { languages: { supported: ['PL', 'FR'] } },
+  extensions: { languages: { hostLanguages: ['PL', 'FR'] } },
   steps: [
     {
       id: 'game_wiedzy',
@@ -65,7 +65,7 @@ describe('issue #933 admin game panels', () => {
 
   it('falls back to legacy games.enabled and games.questionLists without an admin toggle', () => {
     const legacy = {
-      extensions: { languages: { supported: ['PL'] } },
+      extensions: { languages: { hostLanguages: ['PL'] } },
       games: {
         enabled: true,
         questionLists: [
@@ -115,7 +115,7 @@ describe('issue #933 admin game panels', () => {
     const markup = renderToStaticMarkup(
       createElement(AdminGamesPanel, {
         wedding: wedding({
-          extensions: { languages: { supported: ['PL'] } },
+          extensions: { languages: { hostLanguages: ['PL'] } },
           steps: [
             {
               id: 'game_wiedzy',

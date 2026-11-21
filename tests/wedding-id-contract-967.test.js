@@ -74,7 +74,7 @@ describe('issue #967 UM wedding ID contract', () => {
       steps: [
         { id: 'step_01', time: '16:00', title: 'Arrival', type: 'FLEXIBLE', location: 'Garden' },
       ],
-      extensions: { languages: { supported: ['FR'] } },
+      extensions: { languages: { hostLanguages: ['FR'] } },
     };
     const errors = await validateCartridge(legacy);
     expect(errors.some((error) => error.message.includes('must match pattern'))).toBe(true);

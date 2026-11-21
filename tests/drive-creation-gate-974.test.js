@@ -36,7 +36,7 @@ function gameStep(gameType, requested) {
 
 function cartridge(requests, extra = {}) {
   return {
-    extensions: { languages: { supported: ['PL', 'FR'] } },
+    extensions: { languages: { hostLanguages: ['PL', 'FR'] } },
     steps: Object.entries(requests).map(([gameType, requested]) => gameStep(gameType, requested)),
     ...extra,
   };

@@ -9,7 +9,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 const wedding = {
   cartridge: {
     date: '2026-08-20',
-    extensions: { dateISO: '2026-08-20', languages: { supported: ['PL', 'FR'] } },
+    extensions: { dateISO: '2026-08-20', languages: { hostLanguages: ['PL', 'FR'] } },
     steps: [{ id: 'step_01', time: '17:00', title: 'Ceremony' }],
   },
   venue_country: 'PL',

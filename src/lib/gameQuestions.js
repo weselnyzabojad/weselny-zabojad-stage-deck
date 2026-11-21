@@ -2,7 +2,7 @@
 // encrypted game question bundle. These are admin-time parsers; the stage never
 // scrapes Docs.
 //
-// Issue #932: question Docs use one column per `extensions.languages.supported`
+// Issue #932: question Docs use one column per `extensions.languages.hostLanguages`
 // entry in that order. The Doc keeps the stable `|` table format used by the
 // speech Doc template; question text is copied verbatim.
 
@@ -321,7 +321,7 @@ export function parseGameQuestionDoc(markdown, gameType, { languages } = {}) {
     headerLanguages.join('|') !== expectedLanguages.join('|')
   ) {
     errors.push(
-      columnError('language_order_mismatch', 'Language columns must follow extensions.languages.supported order.'),
+      columnError('language_order_mismatch', 'Language columns must follow extensions.languages.hostLanguages order.'),
     );
   }
 

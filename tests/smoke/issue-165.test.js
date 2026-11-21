@@ -42,7 +42,7 @@ const BASE_CARTRIDGE = {
   date: '20.08.2026',
   syncPin: '2008',
   servicePackage: 'HOST_ONLY',
-  extensions: { languages: { supported: ['FR', 'PL', 'EN'] } },
+  extensions: { languages: { hostLanguages: ['FR', 'PL', 'EN'] } },
   culturalRules: {
     sto_lat: { status: 'YES' },
     gorzko: { status: 'STRICT_NO' },

@@ -245,13 +245,15 @@ non-obvious mappings.
 
 | Doc field | Cartridge field |
 | --- | --- |
-| `Wedding ID` | `weddingId` |
+| `Wedding ID` | `weddingId` (admin context; not a Doc field) |
 | `Venue` (VENUE LOGISTICS) | `venueDetails.venue` (domain mapping only) |
-| `Bride first name`, `Bride nationality` | `coupleProfile.bride.firstName`, `.nationalities[]` |
-| `Groom first name`, `Groom nationality` | `coupleProfile.groom.firstName`, `.nationalities[]` |
-| `Shared languages` | `coupleProfile.commonLanguages[]` |
-| `Default content` | `languages.defaultContent` |
-| `Supported` | `languages.supported[]` |
+| `Nationality` under `### Bride` | `coupleProfile.bride.nationalities[]` |
+| `Spoken languages` under `### Bride` | `coupleProfile.bride.spokenLanguages[]` |
+| `Nationality` under `### Groom` | `coupleProfile.groom.nationalities[]` |
+| `Spoken languages` under `### Groom` | `coupleProfile.groom.spokenLanguages[]` |
+| Bride/groom first names | `coupleProfile.*.firstName` (admin context; not a Doc field) |
+| `Host languages` | `languages.hostLanguages[]` |
+| Shared languages | `coupleProfile.commonLanguages[]` (computed intersection) |
 
 ### TIMELINE and its satellites
 
