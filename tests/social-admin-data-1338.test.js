@@ -73,15 +73,15 @@ describe('issue #1338 Admin Social Studio data wiring', () => {
   });
 
   it('wires the studio and keeps existing season props', () => {
-    const portfolio = read('src/admin/AdminPortfolioOverview.jsx');
-    expect(portfolio).toContain("import { useSocialData } from './useSocialData';");
-    expect(portfolio).toContain('const social = useSocialData({ row: socialRow, active: Boolean(socialRow) });');
-    expect(portfolio).toContain('wedding={social.data?.wedding ?? socialRow}');
-    expect(portfolio).toContain('liveState={social.data?.liveState ?? null}');
-    expect(portfolio).toContain('recap={social.data?.recap ?? null}');
-    expect(portfolio).toContain('requests={social.data?.requests ?? []}');
-    expect(portfolio).toContain('seasonData={season.data}');
-    expect(portfolio).toContain('onRetry={social.retry}');
+    const studio = read('src/admin/AdminSocialStudio.jsx');
+    expect(studio).toContain("import { useSocialData } from './useSocialData';");
+    expect(studio).toContain('const social = useSocialData({ row: selected, active: Boolean(selected) });');
+    expect(studio).toContain('wedding={social.data?.wedding ?? selected}');
+    expect(studio).toContain('liveState={social.data?.liveState ?? null}');
+    expect(studio).toContain('recap={social.data?.recap ?? null}');
+    expect(studio).toContain('requests={social.data?.requests ?? []}');
+    expect(studio).toContain('seasonData={season.data}');
+    expect(studio).toContain('onRetry={social.retry}');
   });
 
   it('shows loading, error and retry states in the admin studio', () => {

@@ -85,6 +85,7 @@ describe('issue #1254 Social Export Studio shared engine', () => {
       'dayMinusOne',
       'dayPlusOne',
       'month',
+      'nextMonth',
       'beforeSeason',
       'season',
     ]);
@@ -111,9 +112,10 @@ describe('issue #1254 Social Export Studio shared engine', () => {
     expect(postMortem).toContain("surface=\"mc\"");
     expect(postMortem).toContain('SocialExportStudio');
     const overview = read('src/admin/AdminPortfolioOverview.jsx');
-    expect(overview).toContain('onSocial');
-    expect(overview).toContain("social.open");
-    expect(overview).toContain("surface=\"admin\"");
-    expect(overview).toContain('wedding={social.data?.wedding ?? socialRow}');
+    expect(overview).not.toContain('onSocial');
+    expect(overview).not.toContain('SocialExportStudio');
+    const studio = read('src/admin/AdminSocialStudio.jsx');
+    expect(studio).toContain('SocialExportStudio');
+    expect(studio).toContain('surface="admin"');
   });
 });

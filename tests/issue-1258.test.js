@@ -90,7 +90,7 @@ describe('issue #1258 season Test Zgodności template', () => {
     const studio = read('src/components/SocialExportStudio.jsx');
     expect(studio).toContain('SeasonStory');
     expect(studio).toContain("template?.id === 'season'");
-    const overview = read('src/admin/AdminPortfolioOverview.jsx');
+    const overview = read('src/admin/AdminSocialStudio.jsx');
     expect(overview).toContain('useSeasonStats');
     expect(overview).toContain('seasonData={season.data}');
   });

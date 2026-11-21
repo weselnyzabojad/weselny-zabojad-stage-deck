@@ -39,6 +39,7 @@ import AdminToast from './AdminToast';
 import AdminHealthBar from './AdminHealthBar';
 import AdminStatusDashboard from './AdminStatusDashboard';
 import AdminPortfolioOverview from './AdminPortfolioOverview';
+import AdminSocialStudio from './AdminSocialStudio';
 import AdminVenueLocationEditor from './AdminVenueLocationEditor';
 import AdminWeddingIdentityEditor from './AdminWeddingIdentityEditor';
 import { ADMIN_BUTTON } from './adminUi';
@@ -64,6 +65,7 @@ import {
 
 const ADMIN_TABS = [
   ['overview', 'Overview'],
+  ['social', 'Social Media Studio'],
   ['weddings', 'Weddings'],
   ['presence', 'Live presence'],
   ['audit', 'Audit log'],
@@ -1033,6 +1035,10 @@ function AdminAppContent({ statusMode = false }) {
         {loading ? <AdminSkeleton rows={3} /> : null}
 
         {tab === 'overview' ? <AdminPortfolioOverview readOnly={readOnly} /> : null}
+
+        {tab === 'social' ? (
+          <AdminSocialStudio weddings={data?.weddings ?? []} readOnly={readOnly} />
+        ) : null}
 
         {tab === 'weddings' ? (
           <>
