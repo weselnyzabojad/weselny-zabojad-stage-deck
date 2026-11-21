@@ -43,7 +43,7 @@ describe('issue #1322 consolidate kitchen and cake Doc hours', () => {
 
   it('uses CAKE Time and KITCHEN Time over a divergent TIMELINE', () => {
     const source = template
-      .replace('Time: 20:30', 'Time: 21:00')
+      .replace('| Time | 20:30 | HH:MM |', '| Time | 21:00 | HH:MM |')
       .replace(
         '| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |',
         '| step_04 | Dinner | 20:00 | TABLE_SERVICE | 1 vegan |',
@@ -59,7 +59,7 @@ describe('issue #1322 consolidate kitchen and cake Doc hours', () => {
 
   it('keeps the TIMELINE time when a section time is missing', () => {
     const source = template
-      .replace('Time: 20:30', 'Time: ')
+      .replace('| Time | 20:30 | HH:MM |', '| Time |  | HH:MM |')
       .replace(
         '| step_04 | Dinner | 19:00 | TABLE_SERVICE | 1 vegan |',
         '| step_04 | Dinner |  | TABLE_SERVICE | 1 vegan |',

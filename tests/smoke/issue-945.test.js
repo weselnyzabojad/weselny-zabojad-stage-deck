@@ -137,7 +137,7 @@ describe('issue #945 guest coverage merged into group photos', () => {
     const template = read('schema/google-doc-template.md');
     const fieldMap = json('schema/google-doc-field-map.json');
     expect(template).not.toMatch(/Guest coverage/i);
-    expect(template).toContain('Group photos description:');
+    expect(template).toContain('| Group photos description |');
     expect(fieldMap.files['guest-coverage.example.json']).toBeUndefined();
     expect(fieldMap.files['group-photos.example.json']['groupPhotos.description']).toBe(
       'optional',

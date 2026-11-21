@@ -10,7 +10,7 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 
 describe('issue #664 group-photos Google Doc source flags', () => {
   it('keeps the required location and group labels in the template', () => {
-    expect(template).toContain('Group photos location: OUTDOOR');
+    expect(template).toContain('| Group photos location | OUTDOOR |');
     expect(template).toContain("| bride_family | Bride's family |");
     expect(template).toContain("| groom_family | Groom's family |");
     expect(template).toContain('| friends | Friends |');
@@ -44,7 +44,12 @@ describe('issue #664 group-photos Google Doc source flags', () => {
   });
 
   it('warns when the required location is missing', () => {
-    const result = parse(template.replace('Group photos location: OUTDOOR', 'Group photos location: '));
+    const result = parse(
+      template.replace(
+        '| Group photos location | OUTDOOR | INDOOR or OUTDOOR |',
+        '| Group photos location |  | INDOOR or OUTDOOR |',
+      ),
+    );
 
     expect(result.warnings).toContain('GROUP PHOTOS: missing location');
   });

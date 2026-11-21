@@ -1,65 +1,71 @@
-﻿# Wedding harmonogram — Google Doc template (v1.1)
+﻿# Wedding harmonogram - Google Doc template (v1.1)
 
 > **Status: current.** This is the v1.1 customer template shipped with the first
 > release. `schema/wedding-schema-v1.1.json` is the canonical contract.
 >
 > **How to use:** copy this file into a Google Doc, keep every `## SECTION`
-> marker exactly as written, replace the example values, and delete rows you do
-> not need. Do not rename, reorder or duplicate markers. Never add a second
-> section with the same marker.
+> marker exactly as written, and replace the example values. Do not rename,
+> reorder or duplicate markers, and do not add a second section with the same
+> marker. Delete repeating example rows you do not need.
 >
-> The importer reads only stable `## SECTION` markers and fixed table headers.
-> `###` headings are sub-headings inside a section and may be renamed freely.
+> The importer reads stable `## SECTION` markers and fixed table headers. Every
+> fixed field uses `Field | Your value | Example`; the `Example` column is
+> reference-only and is never imported. `###` headings are sub-headings inside a
+> section and may be renamed freely.
+>
 > Full conventions and the field map live in
 > `docs/google-doc-template-conventions.md`.
 
 ## EVENT
 
-Date: 20.08.2026
-Children expected: yes
-Ceremony type: RELIGIOUS
-Ceremony MC support: yes
-Ceremony location: St. Mary Church
-Ceremony notes: Full mass; MC introduces the couple at the church door.
+**How to fill:** replace each example with your event details.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Date | 20.08.2026 | DD.MM.YYYY |
+| Children expected | yes | yes or no |
+| Ceremony type | RELIGIOUS | CIVIL or RELIGIOUS |
+| Ceremony MC support | yes | yes or no |
+| Ceremony location | St. Mary Church | Venue or church name |
+| Ceremony notes | Full mass; MC introduces the couple at the church door. | Short note |
 
 ## COUPLE IDENTITY
 
-Bride first name, Bride nationality, Groom first name, Groom nationality and
-Shared languages are required.
+**How to fill:** replace the example names, nationalities and shared languages.
 
-Bride first name: Jennifer
-Bride nationality: FR
-Groom first name: Guillaume
-Groom nationality: FR
-Shared languages: FR, PL, EN
+| Field | Your value | Example |
+| --- | --- | --- |
+| Bride first name | Jennifer | First name |
+| Bride nationality | FR | ISO 3166-1 code, e.g. FR |
+| Groom first name | Guillaume | First name |
+| Groom nationality | FR | ISO 3166-1 code, e.g. FR |
+| Shared languages | FR, PL, EN | ISO 639-1 codes, comma separated |
 
 ## LANGUAGES
 
-`Supported` is the required ordered list of ISO 639-1 codes; its order is the
-content-column and MC display order. Any two-letter code is accepted and stored
-uppercase. Missing or empty `Supported` blocks publication.
+**How to fill:** replace the example languages; keep `Supported` ordered.
 
-Default content: PL
-Supported: PL, FR, EN
-Notes: Couple speaks FR/PL; most guests understand EN.
+| Field | Your value | Example |
+| --- | --- | --- |
+| Default content | PL | One supported code |
+| Supported | PL, FR, EN | Ordered ISO 639-1 codes |
+| Notes | Couple speaks FR/PL; most guests understand EN. | Short note |
 
 ## DEMOGRAPHICS
 
-Optional guest counts. Enter non-negative whole numbers only; leave a line
-blank when the count is unknown. Missing counts stay empty and are never
-replaced with zero. `Notes` is a short free-text line, not a contact list.
+**How to fill:** replace the example counts; leave an unknown count blank.
 
-Guests total: 96
-Guests PL: 64
-Guests FR: 24
-Guests other: 8
-Notes: 12 children; two guests need vegetarian meals.
+| Field | Your value | Example |
+| --- | --- | --- |
+| Guests total | 96 | Non-negative whole number |
+| Guests PL | 64 | Non-negative whole number |
+| Guests FR | 24 | Non-negative whole number |
+| Guests other | 8 | Non-negative whole number |
+| Notes | 12 children; two guests need vegetarian meals. | Short note |
 
 ## CULTURAL RULES
 
-Sto Lat, Gorzko and Bread & Salt statuses are required. Sto Lat accepts
-`YES`, `ON_REQUEST` or `NO`; a wedding counts for the Sto Lat KPI when the
-normalized status is `YES` or `ON_REQUEST`. The Bread & Salt note is optional.
+**How to fill:** replace the example rows and keep the `Rule` names unchanged; Sto Lat accepts only `YES`, `ON_REQUEST` or `NO`.
 
 | Rule | Status | Note |
 | --- | --- | --- |
@@ -67,36 +73,42 @@ normalized status is `YES` or `ON_REQUEST`. The Bread & Salt note is optional.
 | gorzko | IF_GUESTS_START | Only during cake. |
 | breadSalt | YES | Vodka vs water shot; break glasses. |
 
+A wedding counts for the Sto Lat KPI when the normalized status is `YES` or
+`ON_REQUEST`.
+
 ## OCZEPINY
 
-Oczepiny variant: MIDNIGHT
-Throwings: veil=yes, bouquet=yes, bow tie=yes, cravat=no
-Game enabled: yes
-Countdown mode: MC
-Winners only photo: yes
-Winners + couple photo: yes
+**How to fill:** replace each example with your Oczepiny choices.
 
-Enabled: true
-Order: MIDNIGHT
-Toss: VEIL
-Ties: BOW_TIE
-Winner photo enabled: true
-Music enabled: true
-Music track: Oczepiny mix
-Music playlist: Midnight, Party
+| Field | Your value | Example |
+| --- | --- | --- |
+| Oczepiny variant | MIDNIGHT | MIDNIGHT, AFTER_CAKE or CUSTOM |
+| Throwings | veil=yes, bouquet=yes, bow tie=yes, cravat=no | Four comma-separated yes/no flags |
+| Game enabled | yes | yes or no |
+| Countdown mode | MC | MC or DJ |
+| Winners only photo | yes | yes or no |
+| Winners + couple photo | yes | yes or no |
+| Enabled | true | true or false |
+| Order | MIDNIGHT | MIDNIGHT, AFTER_CAKE or CUSTOM |
+| Toss | VEIL | VEIL, BOUQUET or BOW_TIE |
+| Ties | BOW_TIE | BOW_TIE or CRAVAT |
+| Winner photo enabled | true | true or false |
+| Music enabled | true | true or false |
+| Music track | Oczepiny mix | Track name |
+| Music playlist | Midnight, Party | Comma-separated playlist names |
 
 ## TIMELINE
 
-The timeline is a fixed catalog. Keep the canonical Step names exactly as
-written; the importer never reads a title or row position to invent a step.
-Change only the Hour, move rows to suit the evening, or delete a row to exclude
-that step. Row order is presentation-only; the parsed order is by Hour. Deleting
-a row creates no step, cue, subtask, game or anchor. Every remaining row needs a
-valid `HH:MM` Hour; a blank or invalid Hour is an import error.
+**How to fill:** replace the example hours and delete rows you do not need; use the canonical Step names exactly as written.
 
-The Example values column is reference-only guidance. It is never parsed and
-never sets a field. Use `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` for details.
-First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
+The timeline is a fixed catalog. Change only the Hour, move rows to suit the
+evening, or delete a row to exclude that step. Row order is presentation-only;
+the parsed order is by Hour. Deleting a row creates no step, cue, subtask, game
+or anchor. Every remaining row needs a valid `HH:MM` Hour; a blank or invalid
+Hour is an import error. The `Example values` column is reference-only guidance
+and is never parsed; use `DJ CUES`, `NOTES`, `SUBTASKS` and `MC CUES` for
+details. First guests arrival and Wedding closure stay in
+`## MANDATORY STEPS`.
 
 | Hour | Step name | Example values |
 | --- | --- | --- |
@@ -122,12 +134,16 @@ First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
 
 ## DJ CUES
 
+**How to fill:** replace the example rows and use the canonical `Step name`; one row per cue.
+
 | Step name | Playlist | Track | Cutoff | Note |
 | --- | --- | --- | --- | --- |
 | Ceremony | Ceremony Procession | Canon in D - Pachelbel | 18:20 |  |
 | Grand Entrance | Dinner Jazz | Fly Me to the Moon - Frank Sinatra | 20:15 |  |
 
 ## NOTES
+
+**How to fill:** replace the example rows and use the canonical `Step name`; keep one note per step.
 
 | Step name | Notes |
 | --- | --- |
@@ -137,6 +153,8 @@ First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
 
 ## SUBTASKS
 
+**How to fill:** replace the example rows and use the canonical `Step name`; keep stable `Subtask ID` values.
+
 | Step name | Subtask ID | Label | Done |
 | --- | --- | --- | --- |
 | Grand Entrance | step_03_speech_mic | Confirm the speech mic is on | false |
@@ -144,17 +162,20 @@ First guests arrival and Wedding closure stay in `## MANDATORY STEPS`.
 
 ## VENUE LOGISTICS
 
-Venue: Dwór X, ul. Przykładowa 1, 59-400 Jawor
-Address: Dwór X, ul. Przykładowa 1, 59-400 Jawor
-Manager name: Anna Kowalska
-Manager phone: +48 600 000 000
-Manager email: anna@venue.example
-Noise curfew: 01:00
+**How to fill:** replace each example with your venue contact and logistics details.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Venue | Dwór X, ul. Przykładowa 1, 59-400 Jawor | Full venue name and address |
+| Address | Dwór X, ul. Przykładowa 1, 59-400 Jawor | Street, postal code and city |
+| Manager name | Anna Kowalska | Venue manager |
+| Manager phone | +48 600 000 000 | International phone number |
+| Manager email | anna@venue.example | Email address |
+| Noise curfew | 01:00 | HH:MM |
 
 ## VIEW VISIBILITY
 
-List a row only to override the D1 default matrix. Omit this table to keep the
-defaults. Every role defaults to its `viewVisibility` preset.
+**How to fill:** replace the example rows only when you need to override a default; omit the whole section to keep defaults.
 
 | Role | Section | Visible |
 | --- | --- | --- |
@@ -163,6 +184,8 @@ defaults. Every role defaults to its `viewVisibility` preset.
 
 ## MEDIA TEAM
 
+**How to fill:** replace the example rows with one row per crew member; delete rows for crew you do not have.
+
 | Team ID | Role | Name | Phone | Start | End | Deliverables | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | photo_main | PHOTO | Marek | +48 600 222 222 | 14:00 | 23:30 | Ceremony; Group photos; First dance; Oczepiny | Leaves after the winner photo. |
@@ -170,22 +193,27 @@ defaults. Every role defaults to its `viewVisibility` preset.
 
 ## MUSICIANS
 
-Musician expected: false
+**How to fill:** replace the example with `true` or `false`; musician details are managed in `/admin`.
 
-Set this to `true` or `false` only. Names, instruments, availability and ceremony
-requirements are managed in `/admin`, never in this Doc.
+| Field | Your value | Example |
+| --- | --- | --- |
+| Musician expected | false | true or false |
 
 ## PHOTO PLAN
 
-Mini session enabled: true
-Mini session location: Garden
-Mini session backup location: Ballroom window
-Group photos location: OUTDOOR
-Group photos description: Formal photos with immediate family and witnesses only.
+**How to fill:** replace each example with your photo-plan choices, then replace the example group rows.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Mini session enabled | true | true or false |
+| Mini session location | Garden | Location |
+| Mini session backup location | Ballroom window | Location |
+| Group photos location | OUTDOOR | INDOOR or OUTDOOR |
+| Group photos description | Formal photos with immediate family and witnesses only. | Short note |
 
 ### Group Photos
 
-Group ID and Label are required in every row.
+**How to fill:** replace the example rows and keep `Group ID` and `Label` in every row.
 
 | Group ID | Label |
 | --- | --- |
@@ -195,6 +223,8 @@ Group ID and Label are required in every row.
 
 ## IMPORTANT SONGS
 
+**How to fill:** replace the example rows; one row per important moment and keep `Moment ID` stable.
+
 | Moment ID | Moment | Title | Artist | Version | Source type | File / Link | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | grand_entrance | GRAND_ENTRANCE | Marry You | Bruno Mars | Album version | CUSTOMER_FILE | assets/audio/marry-you-bruno-mars.mp3 |  |
@@ -203,9 +233,15 @@ Group ID and Label are required in every row.
 
 ## MUSIC POLICY
 
-Disco Polo policy: No
+**How to fill:** replace the example policy, then replace the example must-play and do-not-play rows.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Disco Polo policy | No | Yes or No |
 
 ### Must Play
+
+**How to fill:** replace the example rows; keep `Song ID` stable.
 
 | Song ID | Track | Note |
 | --- | --- | --- |
@@ -214,17 +250,27 @@ Disco Polo policy: No
 
 ### Do Not Play
 
+**How to fill:** replace the example rows; one track per row.
+
 | Track |
 | --- |
 | Macarena - Los del Río |
 
 ## GUEST REQUESTS
 
-Rules: One request per guest; the DJ decides the order.
+**How to fill:** replace the example with your request rules.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Rules | One request per guest; the DJ decides the order. | Short rule |
 
 ## SPEECHES
 
-Speech mode: COMPLEX
+**How to fill:** replace the example speech mode and rows; keep scripts in the fenced blocks below.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Speech mode | COMPLEX | OFF, LIGHT or COMPLEX |
 
 `Speech mode` is the wedding-level authorization for speech Doc creation and
 accepts exactly `OFF`, `LIGHT` or `COMPLEX`. Only `COMPLEX` authorizes creating
@@ -232,23 +278,33 @@ speech Docs and folders. A missing or invalid value warns and leaves the mode
 unset; there is no silent `OFF` default. The rows below are documentation only;
 speech records and scripts live in the encrypted speech bundle.
 
+**How to fill:** replace the example rows; one row per speech.
+
 | Speech ID | Order | Speaker | Relationship |
 | --- | --- | --- | --- |
 | speech_witness | 1 | Bartek | Best man |
 
 ### Speech Script speech_witness
 
+**How to fill:** replace the example script with the verbatim speech, using one fenced block per language.
+
 ```text
-Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume…
+Drodzy Państwo, chciałbym powiedzieć kilka słów o Jennifer i Guillaume.
 ```
 
 ## CAKE
 
-Time: 20:30
-Cutting song: Cake — The Coup
-Sparklers: true
+**How to fill:** replace each example with your cake plan.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Time | 20:30 | HH:MM |
+| Cutting song | Cake — The Coup | Track — Artist |
+| Sparklers | true | true or false |
 
 ## GAMES
+
+**How to fill:** replace the example rows; answer `YES`, `NO` or `UNDECIDED` in `Requested`.
 
 | Game | Requested | Requested by | Languages | Existing questions | Requires photographer | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -266,7 +322,11 @@ not creation authorization.
 
 ## KITCHEN
 
+**How to fill:** replace the example courses, counts, vendor meals and anchors; delete rows you do not need.
+
 ### Courses
+
+**How to fill:** replace the example rows; one row per kitchen course and keep `Course ID` stable.
 
 | Course ID | Name | Time | Service Mode | Dietary notes |
 | --- | --- | --- | --- | --- |
@@ -276,11 +336,17 @@ not creation authorization.
 
 ### Dietary Counts
 
-Vegetarian: 2
-Vegan: 1
-Gluten free: 1
+**How to fill:** replace the example counts with whole numbers.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Vegetarian | 2 | Non-negative whole number |
+| Vegan | 1 | Non-negative whole number |
+| Gluten free | 1 | Non-negative whole number |
 
 ### Vendor Meals
+
+**How to fill:** replace the example rows; one row per vendor meal.
 
 | Vendor | Count | Time | Notes |
 | --- | --- | --- | --- |
@@ -288,27 +354,28 @@ Gluten free: 1
 
 ### Service Anchors
 
+**How to fill:** replace the example rows; one row per service anchor.
+
 | Anchor ID | Time | Label |
 | --- | --- | --- |
 | cake_service | 21:30 | Cake service |
 
 ## MANDATORY STEPS
 
-| Field | Time |
-| --- | --- |
-| First guests arrival | 15:30 |
-| Wedding closure | 02:00 |
-| Closure extension allowed | true |
-| Closure extension until | 03:00 |
-| Cake service mode | KITCHEN_RETURN |
-| Last song | Perfect - Ed Sheeran |
+**How to fill:** replace each example time and flag; do not delete these fields.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| First guests arrival | 15:30 | HH:MM |
+| Wedding closure | 02:00 | HH:MM |
+| Closure extension allowed | true | true or false |
+| Closure extension until | 03:00 | HH:MM |
+| Cake service mode | KITCHEN_RETURN | KITCHEN_RETURN or CUT_IN_PLACE |
+| Last song | Perfect — Ed Sheeran | Track — Artist |
 
 ## ATTRACTIONS
 
-Optional parallel attractions. They never create timeline steps. Delete rows you
-do not need; every row present in the table is active. Attraction ID, Type, Name,
-Start, End and Location are required in every row; Provider and Notes are
-optional.
+**How to fill:** replace the example rows; every row you keep is active, so delete attractions you do not want.
 
 | Attraction ID | Type | Name | Start | End | Location | Provider | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -318,12 +385,16 @@ optional.
 
 ## CEREMONY SCRIPT
 
+**How to fill:** replace the example `Step ID`, then replace each fenced block with the verbatim script line for that language.
+
+| Field | Your value | Example |
+| --- | --- | --- |
+| Step ID | step_02 | Canonical ceremony step ID |
+
 Optional verbatim ceremony script, attached to the Ceremony step by `Step ID`.
 Each `###` heading is one ceremony part; its fenced blocks are the per-language
-lines (the fence language is `pl`, `fr` or `en`). Copy the script **verbatim** —
+lines (the fence language is `pl`, `fr` or `en`). Copy the script **verbatim** -
 never summarize or translate it.
-
-Step ID: step_02
 
 ### Welcome and Introduction
 
@@ -334,7 +405,7 @@ Drodzy goście, witamy was bardzo serdecznie w tym wyjątkowym dniu.
 Chère famille, chers amis, soyez les bienvenus en ce jour si spécial.
 ```
 ```en
-Welcome, family and friends — we are gathered here to celebrate this couple.
+Welcome, family and friends - we are gathered here to celebrate this couple.
 ```
 
 ### The Pronouncement
@@ -351,11 +422,7 @@ I now pronounce you married!
 
 ## CEREMONY SUBSTEPS
 
-Optional informational moments inside the Ceremony step. They never become
-timeline steps, do not affect durations, drift or anchors, and are displayed
-nested under the Ceremony card. `Step ID` must reference a step that owns a
-ceremony object. `Time`, `Notes`, `Music cue` and `Responsible role` are
-optional; `Responsible role` accepts MC, DJ, Musician, Speaker or Venue.
+**How to fill:** replace the example rows; one row per ceremony moment and keep `Sub-step ID` stable.
 
 | Step ID | Sub-step ID | Time | Title | Notes | Music cue | Responsible role |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -365,8 +432,7 @@ optional; `Responsible role` accepts MC, DJ, Musician, Speaker or Venue.
 
 ## WITNESSES
 
-Witnesses are key persons, not guests or media crew. Contact details are
-admin-only and must never be rendered on a stage role view.
+**How to fill:** replace the example rows; one row per witness and keep contact details current.
 
 | Witness ID | Name | Language | Phone | Email |
 | --- | --- | --- | --- | --- |

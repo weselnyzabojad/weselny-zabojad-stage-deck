@@ -29,20 +29,37 @@ describe('issue #930 required content-language contract', () => {
   });
 
   it('maps and uppercases the ordered Supported list', () => {
-    const result = map(template().replace('Supported: PL, FR, EN', 'Supported: pl, fr, en'));
+    const result = map(
+      template().replace(
+        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Supported | pl, fr, en | Ordered ISO 639-1 codes |',
+      ),
+    );
     expect(result.errors).toEqual([]);
     expect(result.cartridge.extensions.languages.supported).toEqual(['PL', 'FR', 'EN']);
   });
 
   it('rejects a missing or empty Supported list with a clear error', () => {
-    const missing = map(template().replace(/Supported: PL, FR, EN\r?\n/, ''));
+    const missing = map(
+      template().replace(/^\| Supported \|.*\r?\n/m, ''),
+    );
     expect(missing.errors.join('\n')).toContain('LANGUAGES: Supported must list at least one');
-    const empty = map(template().replace('Supported: PL, FR, EN', 'Supported:'));
+    const empty = map(
+      template().replace(
+        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Supported |  | Ordered ISO 639-1 codes |',
+      ),
+    );
     expect(empty.errors.join('\n')).toContain('LANGUAGES: Supported must list at least one');
   });
 
   it('rejects non ISO 639-1 codes', () => {
-    const result = map(template().replace('Supported: PL, FR, EN', 'Supported: Polish, EN'));
+    const result = map(
+      template().replace(
+        '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
+        '| Supported | Polish, EN | Ordered ISO 639-1 codes |',
+      ),
+    );
     expect(result.errors.join('\n')).toContain('two-letter ISO 639-1');
   });
 
@@ -82,7 +99,7 @@ describe('issue #930 required content-language contract', () => {
       "schemaPath: ['extensions', 'extensions.languages']",
     );
     expect(read('schema/google-doc-template.md')).toContain(
-      '`Supported` is the required ordered list of ISO 639-1 codes',
+      '| Supported | PL, FR, EN | Ordered ISO 639-1 codes |',
     );
   });
 

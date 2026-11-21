@@ -85,15 +85,23 @@ describe('issue #668 oczepiny Google Doc source flags', () => {
   });
 
   it('warns when a required Doc value is missing', () => {
-    const result = parse(template.replace('Toss: VEIL', 'Toss: '));
+    const result = parse(
+      template.replace(
+        '| Toss | VEIL | VEIL, BOUQUET or BOW_TIE |',
+        '| Toss |  | VEIL, BOUQUET or BOW_TIE |',
+      ),
+    );
 
     expect(result.warnings.some((warning) => warning.includes('missing Toss'))).toBe(true);
   });
 
   it('keeps the optional music and briefing values safe when absent', async () => {
     const source = template
-      .replace('Music track: Oczepiny mix', 'Music track: ')
-      .replace('Music playlist: Midnight, Party', 'Music playlist: ');
+      .replace('| Music track | Oczepiny mix | Track name |', '| Music track |  | Track name |')
+      .replace(
+        '| Music playlist | Midnight, Party | Comma-separated playlist names |',
+        '| Music playlist |  | Comma-separated playlist names |',
+      );
     const { cartridge, warnings } = parse(source);
     const ocz = cartridge.oczepiny;
 

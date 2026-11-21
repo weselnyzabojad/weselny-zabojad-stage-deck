@@ -23,7 +23,7 @@ describe('issue #287 Oczepiny variant schema', () => {
   });
   it('documents the Google Doc fields', () => {
     const template = read('schema/google-doc-template.md');
-    expect(template).toContain('Oczepiny variant: MIDNIGHT');
-    expect(template).toContain('Throwings:');
+    expect(template).toContain('| Oczepiny variant | MIDNIGHT |');
+    expect(template).toContain('| Throwings |');
   });
 });

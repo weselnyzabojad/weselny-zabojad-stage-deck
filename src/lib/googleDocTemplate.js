@@ -217,6 +217,7 @@ const TABLE_SEPARATOR_PATTERN = /^\s*\|?[\s:|-]*-[\s:|-]*\|?\s*$/;
 const KEY_VALUE_PATTERN = /^([A-Za-z][\w ./+-]*?):[ \t]*(.*)$/;
 const BULLET_PATTERN = /^\s*[-*][ \t]+(.*)$/;
 const FENCE_PATTERN = /^\s*```([A-Za-z0-9_-]*)\s*$/;
+const FIELD_TABLE_HEADER = Object.freeze(['Field', 'Your value', 'Example']);
 
 function stripInlineMarkup(value) {
   return value
@@ -284,6 +285,27 @@ export function parseKeyValues(lines = []) {
   return entries;
 }
 
+// The v1.1 template presents fixed fields as `Field | Your value | Example`
+// tables. Only `Field` and `Your value` are read; `Example` is reference-only.
+export function parseFieldValues(tables = []) {
+  const entries = {};
+  const header = FIELD_TABLE_HEADER.map((cell) => cell.toLowerCase());
+
+  for (const table of tables) {
+    const cells = (table?.header ?? []).map((cell) => String(cell).toLowerCase());
+    if (cells.length !== header.length || cells.some((cell, index) => cell !== header[index])) {
+      continue;
+    }
+    for (const row of table.rows ?? []) {
+      const field = stripInlineMarkup(row.Field ?? '');
+      if (!field) continue;
+      entries[field] = stripInlineMarkup(row['Your value'] ?? '');
+    }
+  }
+
+  return entries;
+}
+
 export function parseBullets(lines = []) {
   const bullets = [];
   let inFence = false;
@@ -338,17 +360,21 @@ function parseSubSections(lines = []) {
 
   if (current) subSections.push(current);
 
-  return subSections.map((subSection) => ({
-    title: subSection.title,
-    lines: subSection.lines,
-    keyValues: parseKeyValues(subSection.lines),
-    tables: parseMarkdownTables(subSection.lines),
-    bullets: parseBullets(subSection.lines),
-    codeBlocks: parseCodeBlocks(subSection.lines),
-  }));
+  return subSections.map((subSection) => {
+    const tables = parseMarkdownTables(subSection.lines);
+    return {
+      title: subSection.title,
+      lines: subSection.lines,
+      keyValues: { ...parseFieldValues(tables), ...parseKeyValues(subSection.lines) },
+      tables,
+      bullets: parseBullets(subSection.lines),
+      codeBlocks: parseCodeBlocks(subSection.lines),
+    };
+  });
 }
 
 function makeSection(meta, startLine, lines) {
+  const tables = parseMarkdownTables(lines);
   return {
     marker: meta.marker,
     order: meta.order,
@@ -358,8 +384,8 @@ function makeSection(meta, startLine, lines) {
     startLine,
     lines,
     raw: lines.join('\n').trim(),
-    keyValues: parseKeyValues(lines),
-    tables: parseMarkdownTables(lines),
+    keyValues: { ...parseFieldValues(tables), ...parseKeyValues(lines) },
+    tables,
     bullets: parseBullets(lines),
     codeBlocks: parseCodeBlocks(lines),
     subSections: parseSubSections(lines),

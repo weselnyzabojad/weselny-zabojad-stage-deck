@@ -18,7 +18,9 @@ describe('issue #277 children expected badge', () => {
   it('adds the schema and Google Doc boolean', () => {
     const schema = JSON.parse(read('schema/wedding-schema-v1.1.json'));
     expect(schema.properties.childrenExpected.type).toBe('boolean');
-    expect(read('schema/google-doc-template.md')).toContain('Children expected: yes');
+    expect(read('schema/google-doc-template.md')).toContain(
+      '| Children expected | yes | yes or no |',
+    );
   });
 
   it('renders in the MC and Photographer secondary bars', () => {

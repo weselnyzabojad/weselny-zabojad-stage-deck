@@ -933,7 +933,10 @@ function mapKitchen(source) {
 }
 
 function mapMandatory(source) {
-  const rows = table(source, ['Field', 'Time']);
+  const fieldRows = table(source, ['Field', 'Your value', 'Example']);
+  const rows = fieldRows.length
+    ? fieldRows.map((row) => ({ Field: row.Field, Time: row['Your value'] }))
+    : table(source, ['Field', 'Time']);
   const get = (name) => {
     const target = normalizeKey(name);
     const row = rows.find((entry) => normalizeKey(entry.Field) === target);

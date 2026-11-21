@@ -34,7 +34,9 @@ describe('issue #1250 Google Doc demographics contract', () => {
 
   it('keeps a partial section partial instead of inventing zeroes', async () => {
     const { cartridge, warnings } = importDoc(
-      replaceDemographics('Guests total: 80\nNotes: Small ceremony.'),
+      replaceDemographics(
+        '| Field | Your value | Example |\n| --- | --- | --- |\n| Guests total | 80 | 100 |\n| Notes | Small ceremony. | Short note |',
+      ),
     );
     expect(cartridge.demographics).toEqual({
       total: 80,
@@ -47,7 +49,7 @@ describe('issue #1250 Google Doc demographics contract', () => {
   it('warns and omits invalid counts', async () => {
     const { cartridge, warnings } = importDoc(
       replaceDemographics(
-        'Guests total: -5\nGuests PL: 3.5\nGuests FR: abc\nGuests other: 7',
+        '| Field | Your value | Example |\n| --- | --- | --- |\n| Guests total | -5 | 100 |\n| Guests PL | 3.5 | 10 |\n| Guests FR | abc | 10 |\n| Guests other | 7 | 10 |',
       ),
     );
     expect(cartridge.demographics).toEqual({ other: 7 });
@@ -61,10 +63,10 @@ describe('issue #1250 Google Doc demographics contract', () => {
 
   it('documents the section and field-map status', () => {
     expect(template).toContain('## DEMOGRAPHICS');
-    expect(template).toContain('Guests total:');
-    expect(template).toContain('Guests PL:');
-    expect(template).toContain('Guests FR:');
-    expect(template).toContain('Guests other:');
+    expect(template).toContain('| Guests total |');
+    expect(template).toContain('| Guests PL |');
+    expect(template).toContain('| Guests FR |');
+    expect(template).toContain('| Guests other |');
     const fieldMap = JSON.parse(read('schema/google-doc-field-map.json'));
     expect(fieldMap.files['demographics.example.json']).toEqual({
       'demographics.total': 'optional',
