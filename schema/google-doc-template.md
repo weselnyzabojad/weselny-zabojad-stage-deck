@@ -1,4 +1,4 @@
-﻿# Wedding harmonogram - Google Doc template (v1.1)
+﻿# Wedding scenario - Google Doc template (v1.1)
 
 > **Status: current.** This is the v1.1 customer template shipped with the first
 > release. `schema/wedding-schema-v1.1.json` is the canonical contract.
