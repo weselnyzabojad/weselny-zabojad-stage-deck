@@ -9,8 +9,8 @@ The couple writes one Google Doc per wedding. The importer maps that Doc to a
 reading:
 
 1. stable `## SECTION` markers,
-2. fixed table headers,
-3. fixed `Key: value` field names,
+2. fixed `Field | Your value | Example` tables,
+3. fixed repeating-table business headers,
 4. fenced text blocks for verbatim scripts.
 
 Files:
@@ -95,29 +95,47 @@ raise an import warning. Guest notes come only from the `Notes` key under
 
 ## 2. Formatting rules
 
-### Key/value sections
+### Fixed-field tables
 
-Use one `Key: value` pair per line. Keys are the exact English labels shown in
-the template. Values keep their original language and punctuation.
+Every fixed field is one row in a three-column table. The header is exactly
+`Field | Your value | Example` and is case-sensitive.
 
 ```text
-Wedding ID: Jennifer&Guillaume-UM-2026-08-001
-Date ISO: 2026-08-20
-Sync PIN: 2008
+| Field | Your value | Example |
+| --- | --- | --- |
+| Date | 20.08.2026 | DD.MM.YYYY |
+| Children expected | yes | yes or no |
 ```
 
 Rules:
 
-- The first colon separates key and value; later colons belong to the value.
-- Do not use a colon in field names.
-- Surrounding backticks and bold/italic markers are stripped.
-- An empty value means "unknown", not "false" or "no". Never invent a value.
+- `Field` is the exact English label shown in the template. Never rename it.
+- `Your value` is the only value the importer reads.
+- `Example` is reference-only. It is never parsed and never sets a cartridge
+  value.
+- Empty `Your value` cells mean "unknown", not "false" or "no". Never invent a
+  value.
 - `true` / `false` are booleans; `0` is a number, not a missing value.
+- The first colon inside a value belongs to the value; field labels do not use
+  colons.
+- Surrounding backticks and bold/italic markers are stripped from values.
+
+The fixed-field sections are `EVENT`, `COUPLE IDENTITY`, `LANGUAGES`,
+`DEMOGRAPHICS`, `OCZEPINY`, `VENUE LOGISTICS`, `MUSICIANS`, `PHOTO PLAN`,
+`MUSIC POLICY`, `GUEST REQUESTS`, `SPEECHES`, `CAKE`, `MANDATORY STEPS`,
+`KITCHEN` -> `Dietary Counts`, and `CEREMONY SCRIPT`.
 
 ### Tables
 
 Every table uses the GitHub pipe format with a header row, a separator row, and
 one row per item. Header names are fixed and case-sensitive.
+
+Fixed fields use the three-column `Field | Your value | Example` table above.
+Repeating sections keep their business columns (for example `Hour | Step name |
+Example values` or `Step name | Playlist | Track | Cutoff | Note`) and start
+with a short instruction to replace the example rows. Repeating table rows are
+examples until the couple replaces or deletes them; no row is treated as a
+default value.
 
 ```text
 | Hour | Step name | Example values |
@@ -261,7 +279,7 @@ anchor that exists in the anchor table, and the anchor must exist for the step
 
 ### OCZEPINY
 
-Key/value fields map to `oczepiny.*`; the `### Sub-events` table maps its
+Fixed-field rows map to `oczepiny.*`; the `### Sub-events` table maps its
 `Title` column to `oczepiny.subEvents[]`. Only the four throwing moments (veil,
 bouquet, bow-tie, cravat) and the two winner-photo moments are allowed, and the
 parser derives their canonical IDs. `anchorId` and the winner-photo cue are
@@ -277,7 +295,7 @@ default to all-false.
 
 ### MEDIA TEAM / PHOTO PLAN
 
-`MEDIA TEAM` rows map to `mediaTeam[]`. `PHOTO PLAN` key/values map to
+`MEDIA TEAM` rows map to `mediaTeam[]`. `PHOTO PLAN` fixed fields map to
 `photoPlan.*`; `### Group Photos` maps to `photoPlan.groupPhotos.groups[]` in
 document order. `Group photos step ID` optionally binds the list to the
 group-photo timeline step. Group-photo timing comes from that step's planned
@@ -289,7 +307,7 @@ time; `minGroupSize` and duration are not used as gates. Sunset source is
 `IMPORTANT SONGS` maps to `musicPolicy.importantSongs[]`; the song `id`,
 `moment`, `title`, `artist` and `source.type` are required, while `stepId` and
 the request open/window settings are app/admin data and are never read from the
-Doc. `MUSIC POLICY` key/values plus the `### Must Play` and `### Do Not Play`
+Doc. `MUSIC POLICY` fixed-field table plus the `### Must Play` and `### Do Not Play`
 tables map the remaining Doc-sourced fields. `GUEST REQUESTS` supplies the
 request rules only. Reuse the same `id` when a song is both an important song
 and a must-play entry.
@@ -313,7 +331,7 @@ creation or Doc creation.
 
 ### CAKE / GAMES / KITCHEN
 
-Direct table/key mapping to `cake`, `steps[].game` and `kitchen.*`. `GAMES` writes only
+Direct fixed-field table mapping to `cake`, `steps[].game` and `kitchen.*`. `GAMES` writes only
 `YES`, `NO` or `UNDECIDED`; never infer consent from a mention elsewhere (see
 `docs/optional-games.md`).
 
@@ -352,25 +370,44 @@ runtime. `EXTENSIONS` is a JSON object and must stay empty for normal weddings.
 | `parseGoogleDocTemplate(text)` | `{ preamble, sections, byMarker, duplicates }` |
 | `validateGoogleDocTemplate(parsed)` | `{ errors, warnings }` |
 | `parseMarkdownTables(lines)` | `[{ header, rows }]` |
-| `parseKeyValues(lines)` | `{ key: value }` |
+| `parseFieldValues(tables)` | `{ field: value }` from `Field \| Your value \| Example` tables |
+| `parseKeyValues(lines)` | `{ key: value }` (legacy format; rejected by the v1.1 parser) |
 | `parseBullets(lines)` / `parseCodeBlocks(lines)` | arrays |
 | `sectionForMarker(marker)` | manifest entry or `null` |
 | `canonicalSectionOrder()` | ordered marker list |
 
 Each parsed section contains `marker`, `order`, `required`, `schemaPath`,
-`startLine`, `raw`, `keyValues`, `tables`, `bullets`, `codeBlocks` and
-`subSections`.
+`startLine`, `raw`, `keyValues` (fixed-field table values plus legacy key/value
+lines), `tables`, `bullets`, `codeBlocks` and `subSections`.
 
 Error policy:
 
 - **Error:** unknown marker, duplicate marker, missing required marker, lowercase
   marker, malformed table row.
+- **Error:** an old `Field: value` line in a fixed-field section. The message
+  names the section and field and points to the migration procedure below.
 - **Warning:** out-of-order sections, extra whitespace in a marker, missing
   optional section.
 - The parser never invents data. A missing optional section leaves the
   corresponding cartridge block empty.
 - The importer must validate the parsed structure before replacing the active
   wedding, exactly like the JSON importer.
+
+### Migrating an existing Doc
+
+The v1.1 contract accepts only the table format. There is no silent fallback to
+`Field: value` lines.
+
+1. Copy the current `schema/google-doc-template.md` into a new Google Doc.
+2. Copy each value from the old Doc into the matching `Your value` cell, or the
+   matching repeating-table row. Keep existing IDs and canonical `Step name`
+   values.
+3. Delete every old `Field: value` line and every old example row you replaced.
+4. Keep the `## SECTION` markers and fixed table headers unchanged.
+5. Run `npm run validate:template` on the saved markdown and re-import.
+
+Old-format Docs fail with an error that names the section and the first
+offending field instead of importing partial data.
 
 Run the template check:
 

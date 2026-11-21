@@ -9,11 +9,11 @@ const template = read('schema/google-doc-template.md');
 
 describe('issue #673 venue-details Google Doc source flags', () => {
   it('keeps the required venue fields and drops windowEnd', () => {
-    expect(template).toContain('Venue: Dwór X');
-    expect(template).toContain('Address: ');
-    expect(template).toContain('Manager name: Anna Kowalska');
-    expect(template).toContain('Manager phone: +48 600 000 000');
-    expect(template).toContain('Manager email: anna@venue.example');
+    expect(template).toContain('| Venue | Dwór X');
+    expect(template).toContain('| Address | ');
+    expect(template).toContain('| Manager name | Anna Kowalska |');
+    expect(template).toContain('| Manager phone | +48 600 000 000 |');
+    expect(template).toContain('| Manager email | anna@venue.example |');
     expect(template).not.toContain('Installation latest start');
     expect(template).not.toContain('Load-in minutes');
     expect(template).not.toContain('Setup minutes');

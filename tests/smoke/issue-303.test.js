@@ -35,10 +35,10 @@ describe('issue #303 ceremony variants', () => {
   it('parses the Google Doc ceremony contract', () => {
     const template = read('schema/google-doc-template.md');
     for (const line of [
-      'Ceremony type: RELIGIOUS',
-      'Ceremony MC support: yes',
-      'Ceremony location:',
-      'Ceremony notes:',
+      '| Ceremony type | RELIGIOUS |',
+      '| Ceremony MC support | yes |',
+      '| Ceremony location |',
+      '| Ceremony notes |',
     ]) {
       expect(template).toContain(line);
     }

@@ -30,15 +30,15 @@ describe('issue #659 cake Google Doc source flags', () => {
   });
 
   it('warns when a required cake value is missing', () => {
-    const cakeStart = template.indexOf('## CAKE');
-    for (const [line, message] of [
-      ['Time: 20:30', 'CAKE: missing Time'],
-      ['Cutting song: Cake — The Coup', 'CAKE: missing Cutting song'],
-      ['Sparklers: true', 'CAKE: missing Sparklers'],
+    for (const [row, message] of [
+      ['| Time | 20:30 | HH:MM |', 'CAKE: missing Time'],
+      ['| Cutting song | Cake — The Coup | Track — Artist |', 'CAKE: missing Cutting song'],
+      ['| Sparklers | true | true or false |', 'CAKE: missing Sparklers'],
     ]) {
-      const source =
-        template.slice(0, cakeStart) +
-        template.slice(cakeStart).replace(line, `${line.split(':')[0]}: `);
+      const source = template.replace(
+        row,
+        row.replace(/^\| ([^|]+) \| [^|]+ \|/, '| $1 |  |'),
+      );
       const result = parse(source);
       expect(result.warnings.some((warning) => warning.includes(message)), message).toBe(true);
     }

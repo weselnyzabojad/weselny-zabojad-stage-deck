@@ -11,7 +11,10 @@ const template = read('schema/google-doc-template.md');
 const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
 
 function withSpeechMode(value) {
-  return template.replace(/^Speech mode:.*$/m, `Speech mode: ${value}`);
+  return template.replace(
+    /^\| Speech mode \|.*$/m,
+    `| Speech mode | ${value} | OFF, LIGHT or COMPLEX |`,
+  );
 }
 
 describe('issue #973 speech mode Doc contract', () => {
@@ -44,7 +47,7 @@ describe('issue #973 speech mode Doc contract', () => {
 
   it('applies the same rule to an older Doc with no Speech mode field', () => {
     const { cartridge, warnings } = parse(
-      template.replace(/^Speech mode:.*\r?\n\r?\n/m, ''),
+      template.replace(/^\| Speech mode \|.*\r?\n/m, ''),
     );
 
     expect(cartridge.speechMode).toBeUndefined();
@@ -80,7 +83,7 @@ describe('issue #973 speech mode Doc contract', () => {
       'required',
     );
     expect(json('schema/domains/speeches.json').required).toEqual(['speeches']);
-    expect(template).toContain('Speech mode: COMPLEX');
+    expect(template).toContain('| Speech mode | COMPLEX | OFF, LIGHT or COMPLEX |');
     expect(template).toContain('Only `COMPLEX` authorizes creating');
     expect(read('docs/google-doc-template-conventions.md')).toContain(
       '`Speech mode` maps to the wedding-level `speechMode`',

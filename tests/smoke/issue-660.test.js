@@ -17,7 +17,7 @@ describe('issue #660 couple-profile Google Doc source flags', () => {
       'Groom nationality',
       'Shared languages',
     ]) {
-      expect(template, label).toContain(`${label}:`);
+      expect(template, label).toContain(`| ${label} |`);
     }
   });
 
@@ -39,7 +39,10 @@ describe('issue #660 couple-profile Google Doc source flags', () => {
       ['Groom nationality', 'missing Groom nationality'],
       ['Shared languages', 'missing Shared languages'],
     ]) {
-      const source = template.replace(`${label}:${template.split(`${label}:`)[1].split('\n')[0]}`, `${label}: `);
+      const source = template.replace(
+        new RegExp(`^(\\| ${label} \\|)[^|]*\\|`, 'm'),
+        '$1  |',
+      );
       const result = parse(source);
       expect(result.warnings, label).toContain(`COUPLE IDENTITY: ${warning}`);
       expect(result.errors).toEqual([]);

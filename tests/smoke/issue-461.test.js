@@ -11,8 +11,11 @@ const template = read('schema/google-doc-template.md');
 
 function parsePolicy(line) {
   const source = line
-    ? template.replace('Disco Polo policy: No', `Disco Polo policy: ${line}`)
-    : template.replace(/Disco Polo policy: No\r?\n/, '');
+    ? template.replace(
+        '| Disco Polo policy | No | Yes or No |',
+        `| Disco Polo policy | ${line} | Yes or No |`,
+      )
+    : template.replace(/^\| Disco Polo policy \|.*\r?\n/m, '');
   return googleDocTemplateToCartridge(parseGoogleDocTemplate(source));
 }
 
@@ -59,7 +62,7 @@ describe('issue #461 discoPoloPolicy contract', () => {
   });
 
   it('keeps the template, example and demo aligned', async () => {
-    expect(template).toContain('Disco Polo policy: No');
+    expect(template).toContain('| Disco Polo policy | No | Yes or No |');
     expect(read('src/lib/googleDocTemplate.js')).toContain("'musicPolicy.discoPoloPolicy'");
     const example = JSON.parse(read('schema/domains/music-policy.example.json'));
     expect(['NO', 'YES', 'ON_REQUEST']).toContain(example.musicPolicy.discoPoloPolicy);

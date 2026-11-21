@@ -10,7 +10,7 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 
 describe('issue #666 mini-session Google Doc source flags', () => {
   it('keeps the required enabled value in the template and drops runtime lead time', () => {
-    expect(template).toContain('Mini session enabled: true');
+    expect(template).toContain('| Mini session enabled | true | true or false |');
     expect(template).not.toContain('latest start before sunset');
   });
 
@@ -30,7 +30,12 @@ describe('issue #666 mini-session Google Doc source flags', () => {
   });
 
   it('warns and defaults enabled to false when the Doc value is missing', async () => {
-    const result = parse(template.replace('Mini session enabled: true', 'Mini session enabled: '));
+    const result = parse(
+      template.replace(
+        '| Mini session enabled | true | true or false |',
+        '| Mini session enabled |  | true or false |',
+      ),
+    );
 
     expect(result.warnings).toContain('MINI SESSION: missing enabled');
     expect(result.cartridge.photoPlan.miniSession.enabled).toBe(false);
@@ -39,8 +44,14 @@ describe('issue #666 mini-session Google Doc source flags', () => {
 
   it('omits the optional locations safely', async () => {
     const source = template
-      .replace('Mini session location: Garden', 'Mini session location: ')
-      .replace('Mini session backup location: Ballroom window', 'Mini session backup location: ');
+      .replace(
+        '| Mini session location | Garden | Location |',
+        '| Mini session location |  | Location |',
+      )
+      .replace(
+        '| Mini session backup location | Ballroom window | Location |',
+        '| Mini session backup location |  | Location |',
+      );
     const { cartridge, warnings } = parse(source);
 
     expect(cartridge.photoPlan.miniSession).toEqual({ enabled: true });

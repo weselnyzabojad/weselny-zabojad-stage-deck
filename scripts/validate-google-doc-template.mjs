@@ -19,19 +19,20 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const templatePath = process.argv[2] ?? path.join(here, '..', 'schema', 'google-doc-template.md');
 
 const EXPECTED_TABLES = {
-  'EVENT': null,
-  'COUPLE IDENTITY': null,
-  'LANGUAGES': null,
+  'EVENT': ['Field', 'Your value', 'Example'],
+  'COUPLE IDENTITY': ['Field', 'Your value', 'Example'],
+  'LANGUAGES': ['Field', 'Your value', 'Example'],
+  'DEMOGRAPHICS': ['Field', 'Your value', 'Example'],
   'CULTURAL RULES': ['Rule', 'Status', 'Note'],
-  'MANDATORY STEPS': ['Field', 'Time'],
+  'MANDATORY STEPS': ['Field', 'Your value', 'Example'],
   'TIMELINE': ['Hour', 'Step name', 'Example values'],
   'DJ CUES': ['Step name', 'Playlist', 'Track', 'Cutoff', 'Note'],
   'NOTES': ['Step name', 'Notes'],
   'SUBTASKS': ['Step name', 'Subtask ID', 'Label', 'Done'],
-  'VENUE LOGISTICS': null,
+  'VENUE LOGISTICS': ['Field', 'Your value', 'Example'],
   'VIEW VISIBILITY': ['Role', 'Section', 'Visible'],
   'MEDIA TEAM': ['Team ID', 'Role', 'Name', 'Phone', 'Start', 'End', 'Deliverables', 'Notes'],
-  'PHOTO PLAN': ['Group ID', 'Label'],
+  'PHOTO PLAN': ['Field', 'Your value', 'Example'],
   'IMPORTANT SONGS': [
     'Moment ID',
     'Moment',
@@ -42,18 +43,13 @@ const EXPECTED_TABLES = {
     'File / Link',
     'Notes',
   ],
-  'MUSIC POLICY': ['Song ID', 'Track', 'Note'],
-  'GUEST REQUESTS': null,
-  'SPEECHES': [
-    'Speech ID',
-    'Order',
-    'Speaker',
-    'Relationship',
-  ],
-  'CAKE': null,
+  'MUSIC POLICY': ['Field', 'Your value', 'Example'],
+  'GUEST REQUESTS': ['Field', 'Your value', 'Example'],
+  'SPEECHES': ['Field', 'Your value', 'Example'],
+  'CAKE': ['Field', 'Your value', 'Example'],
   'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Requires photographer', 'Notes'],
   'KITCHEN': ['Course ID', 'Name', 'Time', 'Service Mode', 'Dietary notes'],
-  'CEREMONY SCRIPT': null,
+  'CEREMONY SCRIPT': ['Field', 'Your value', 'Example'],
   'WITNESSES': [
     'Witness ID',
     'Name',
@@ -77,6 +73,10 @@ if (found.join('|') !== SECTION_ORDER.join('|')) {
 }
 
 for (const section of parsed.sections) {
+  if (!section.raw.includes('**How to fill:**')) {
+    errors.push(`## ${section.marker}: missing the "How to fill" instruction line.`);
+  }
+
   const expected = EXPECTED_TABLES[section.marker];
   if (expected === null) continue;
   if (!expected) continue;

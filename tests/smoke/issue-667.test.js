@@ -10,7 +10,7 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 
 describe('issue #667 music-policy Google Doc source flags', () => {
   it('keeps the required Doc values and drops runtime/admin fields', () => {
-    expect(template).toContain('Disco Polo policy: No');
+    expect(template).toContain('| Disco Polo policy | No | Yes or No |');
     expect(template).toContain('| first_dance | Perfect — Ed Sheeran | First dance. |');
     expect(template).not.toContain('Planned time');
     expect(template).not.toContain('Request window start');

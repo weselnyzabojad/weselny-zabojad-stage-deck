@@ -18,7 +18,12 @@ describe('issue #993 musicians Doc contract', () => {
   });
 
   it('maps true without sourcing details from the Doc', () => {
-    const result = map(template.replace('Musician expected: false', 'Musician expected: true'));
+    const result = map(
+      template.replace(
+        '| Musician expected | false | true or false |',
+        '| Musician expected | true | true or false |',
+      ),
+    );
     expect(result.cartridge.musicians).toEqual({ expected: true, items: [] });
   });
 
@@ -30,7 +35,12 @@ describe('issue #993 musicians Doc contract', () => {
   });
 
   it('defaults an invalid value to false with a warning', () => {
-    const result = map(template.replace('Musician expected: false', 'Musician expected: maybe'));
+    const result = map(
+      template.replace(
+        '| Musician expected | false | true or false |',
+        '| Musician expected | maybe | true or false |',
+      ),
+    );
     expect(result.cartridge.musicians.expected).toBe(false);
     expect(result.warnings.join(' ')).toContain('MUSICIANS: invalid Musician expected');
   });

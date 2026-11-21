@@ -11,7 +11,7 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 describe('issue #665 group-photo Google Doc source flags', () => {
   it('keeps the optional description key and removes guest-coverage keys', () => {
     expect(template).toContain(
-      'Group photos description: Formal photos with immediate family and witnesses only.',
+      '| Group photos description | Formal photos with immediate family and witnesses only. | Short note |',
     );
     expect(template).not.toMatch(/Guest coverage/i);
   });
@@ -35,8 +35,8 @@ describe('issue #665 group-photo Google Doc source flags', () => {
 
   it('degrades the optional description safely', async () => {
     const source = template.replace(
-      'Group photos description: Formal photos with immediate family and witnesses only.',
-      'Group photos description: ',
+      '| Group photos description | Formal photos with immediate family and witnesses only. | Short note |',
+      '| Group photos description |  | Short note |',
     );
     const { cartridge, warnings } = parse(source);
 
