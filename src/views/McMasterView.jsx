@@ -662,6 +662,8 @@ export default function McMasterView({ model }) {
           <CulturalRulesBar
             rules={WEDDING.culturalRules}
             oczepinyStatus={oczepinyStatus}
+            coupleProfile={WEDDING.coupleProfile}
+            showParentActions
             grid
             dense
           >

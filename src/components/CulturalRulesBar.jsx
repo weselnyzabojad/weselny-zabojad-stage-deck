@@ -1,4 +1,5 @@
 import { desktopTone } from '../lib/topBarStyles.js';
+import { culturalParentActions } from '../lib/culturalResponsibilities.js';
 
 const RULES = [
   {
@@ -23,6 +24,16 @@ const RULES = [
       YES: 'YES',
       IF_GUESTS_START: 'GUESTS INITIATE',
       STRICT_NO: 'STRICT NO',
+      TBC: 'TBC',
+    },
+  },
+  {
+    key: 'bread_salt',
+    label: 'Bread & Salt',
+    icon: '🍞',
+    statusLabels: {
+      YES: 'YES',
+      NO: 'NO',
       TBC: 'TBC',
     },
   },
@@ -63,12 +74,14 @@ function RuleChip({
   note = null,
   compact = false,
   dense = false,
+  highlight = false,
 }) {
   const normalizedStatus = (status ?? 'TBC').replaceAll(' ', '_').toUpperCase();
   const toneKey = toneFor(normalizedStatus);
   const tone = desktopTone(toneKey);
   const statusLabel = statusLabels[normalizedStatus] ?? labelFor(normalizedStatus);
   const cleanNote = note?.trim();
+  const highlightClass = highlight ? 'ring-2 ring-amber-500 ring-offset-1' : '';
   // The full state stays available to assistive tech even when pocket hides
   // the visible status text.
   const description = `${label}: ${statusLabel}${cleanNote ? ` — ${cleanNote}` : ''}`;
@@ -82,7 +95,7 @@ function RuleChip({
         role="note"
         aria-label={description}
         title={description}
-        className={`flex items-center rounded-full px-2.5 py-1.5 font-heading text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm backdrop-blur-sm ${tone}`}
+        className={`flex items-center rounded-full px-2.5 py-1.5 font-heading text-[10px] font-bold uppercase tracking-[0.14em] shadow-sm backdrop-blur-sm ${tone} ${highlightClass}`}
       >
         <span>{label}</span>
       </div>
@@ -98,7 +111,7 @@ function RuleChip({
         role="note"
         aria-label={description}
         title={description}
-        className={`flex min-w-0 items-center justify-center rounded-xl px-2 py-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] ${tone}`}
+        className={`flex min-w-0 items-center justify-center rounded-xl px-2 py-1 font-heading text-[10px] font-bold uppercase tracking-[0.12em] ${tone} ${highlightClass}`}
       >
         <span>{label}</span>
       </div>
@@ -115,7 +128,7 @@ function RuleChip({
         dense
           ? 'gap-x-1.5 gap-y-0.5 rounded-xl px-2 py-1'
           : 'gap-2 rounded-2xl px-3 py-1.5'
-      } ${tone}`}
+      } ${tone} ${highlightClass}`}
     >
       <span
         aria-hidden="true"
@@ -160,8 +173,13 @@ export default function CulturalRulesBar({
   grid = false,
   children = null,
   showRules = true,
+  coupleProfile = null,
+  showParentActions = false,
 }) {
   const oczepinyState = oczepinyStatus?.state ?? 'OFF';
+  const parentActions = showParentActions
+    ? culturalParentActions(rules, coupleProfile ?? {})
+    : [];
 
   return (
     <section
@@ -175,7 +193,7 @@ export default function CulturalRulesBar({
       }
     >
       {showRules
-        ? RULES.map(({ key, label, icon, statusLabels }) => {
+        ? (showParentActions ? RULES : RULES.filter((rule) => rule.key !== 'bread_salt')).map(({ key, label, icon, statusLabels }) => {
             const rule = rules[key] ?? {};
             return (
               <RuleChip
@@ -188,6 +206,7 @@ export default function CulturalRulesBar({
                 note={rule.note}
                 compact={compact}
                 dense={dense}
+                highlight={showParentActions && rule.actor === 'PARENTS'}
               />
             );
           })
@@ -210,6 +229,17 @@ export default function CulturalRulesBar({
           }
         />
       ) : null}
+      {parentActions.map((action) => (
+        <div
+          key={`${action.ruleKey}-${action.side}`}
+          data-cultural-action="parents"
+          role="note"
+          className="flex min-w-0 items-center gap-1.5 rounded-xl border-2 border-amber-500 bg-amber-50 px-2.5 py-1 font-heading text-[10px] font-bold uppercase tracking-[0.1em] text-amber-900"
+        >
+          <span aria-hidden="true">🗣️</span>
+          <span>{action.text}</span>
+        </div>
+      ))}
       {children}
     </section>
   );
