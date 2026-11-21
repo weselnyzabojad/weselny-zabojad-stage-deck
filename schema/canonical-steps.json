@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "columns": ["Hour", "Step name", "Example values"],
+  "steps": [
+    { "id": "step_01", "name": "Vin d'honneur / Cocktail", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "16:00", "exampleValues": "Location, arrival note" },
+    { "id": "step_02", "name": "Ceremony", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "17:00", "exampleValues": "Ceremony type, location, MC support" },
+    { "id": "step_03", "name": "Grand Entrance", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": true, "exampleHour": "18:00", "exampleValues": "Guest order, entrance music" },
+    { "id": "step_13", "name": "Bread & Salt", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "18:30", "exampleValues": "Location, custom note" },
+    { "id": "step_04", "name": "Dinner", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "19:00", "exampleValues": "Location, menu note" },
+    { "id": "step_07", "name": "Wishes", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "20:00", "exampleValues": "Location, speaker note" },
+    { "id": "step_05", "name": "Wedding Cake", "type": "HARD_ANCHOR", "optionalFlag": null, "anchorId": "cake_midnight", "isMainSongRequired": true, "exampleHour": "20:30", "exampleValues": "Cake time, serve mode, music cue" },
+    { "id": "step_06", "name": "Wedding Thank-You", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "21:00", "exampleValues": "Location, thank-you note" },
+    { "id": "step_08", "name": "First Dance", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": true, "exampleHour": "21:15", "exampleValues": "Mode, start/stop, song" },
+    { "id": "step_14", "name": "Dance with Bride and Groom", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "21:45", "exampleValues": "Song, floor note" },
+    { "id": "step_12", "name": "Musical Set", "type": "FLEXIBLE", "optionalFlag": "dj_set", "anchorId": null, "isMainSongRequired": false, "exampleHour": "22:00", "exampleValues": "Playlist, start, end" },
+    { "id": "step_15", "name": "Supper I", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "23:00", "exampleValues": "Service mode, dietary notes" },
+    { "id": "step_16", "name": "Supper II", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "23:30", "exampleValues": "Service mode, dietary notes" },
+    { "id": "step_17", "name": "Supper III", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "23:50", "exampleValues": "Service mode, dietary notes" },
+    { "id": "step_09", "name": "Oczepiny", "type": "HARD_ANCHOR", "optionalFlag": "oczepiny", "anchorId": "oczepiny_midnight", "isMainSongRequired": false, "exampleHour": "00:00", "exampleValues": "Toss, ties, winner photo, music" },
+    { "id": "step_10", "name": "Test Wiedzy", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "01:00", "exampleValues": "Languages, request, photographer" },
+    { "id": "step_speed_foto", "name": "Speed Foto", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "01:30", "exampleValues": "Guest order, photo note" },
+    { "id": "step_11", "name": "Test Zgodności", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "01:45", "exampleValues": "Languages, request, photographer" },
+    { "id": "step_19", "name": "Last Dance", "type": "FLEXIBLE", "optionalFlag": null, "anchorId": null, "isMainSongRequired": false, "exampleHour": "01:50", "exampleValues": "Song, closing note" }
+  ]
+}
