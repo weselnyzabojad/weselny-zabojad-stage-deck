@@ -20,9 +20,9 @@ describe('issue #260 isMainSongRequired schema flag', () => {
   });
 
   it('keeps the main-song flag in the canonical step catalog', () => {
-    const catalog = read('src/lib/canonicalSteps.js');
+    const catalog = read('schema/canonical-steps.json');
     expect(catalog).toContain('Grand Entrance');
-    expect(catalog).toContain('isMainSongRequired: true');
+    expect(catalog).toContain('"isMainSongRequired": true');
     expect(read('schema/google-doc-template.md')).not.toContain('Main Song Required');
   });
 });

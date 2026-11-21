@@ -16,7 +16,7 @@ describe('issue #672 steps Google Doc source flags', () => {
     expect(map.files['steps.example.json']['steps[].optionalFlag']).toBe('optional');
     expect(map.todos.some((todo) => todo.file === 'steps.example.json')).toBe(false);
     expect(template).not.toContain('Optional Flag');
-    expect(read('src/lib/canonicalSteps.js')).toContain("optionalFlag: 'oczepiny'");
+    expect(read('schema/canonical-steps.json')).toContain('"optionalFlag": "oczepiny"');
   });
 
   it('maps the Doc-sourced step fields and the optional feature flag', async () => {
@@ -36,9 +36,9 @@ describe('issue #672 steps Google Doc source flags', () => {
 
   it('keeps Optional Flag out of the Doc contract and derives it from the catalog', () => {
     expect(template).not.toContain('Optional Flag');
-    const source = read('src/lib/canonicalSteps.js');
-    expect(source).toContain("optionalFlag: 'oczepiny'");
-    expect(source).toContain("optionalFlag: 'dj_set'");
+    const source = read('schema/canonical-steps.json');
+    expect(source).toContain('"optionalFlag": "oczepiny"');
+    expect(source).toContain('"optionalFlag": "dj_set"');
     expect(source).not.toContain('mystery');
   });
 
