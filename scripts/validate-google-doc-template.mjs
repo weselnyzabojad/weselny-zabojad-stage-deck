@@ -30,7 +30,6 @@ const EXPECTED_TABLES = {
   'NOTES': ['Step name', 'Notes'],
   'SUBTASKS': ['Step name', 'Label', 'Done'],
   'VENUE LOGISTICS': ['Field', 'Your value', 'Example'],
-  'VIEW VISIBILITY': ['Role', 'Section', 'Visible'],
   'MEDIA TEAM': ['Role', 'Name', 'Phone', 'Start', 'End', 'Deliverables', 'Notes'],
   'PHOTO PLAN': ['Field', 'Your value', 'Example'],
   'IMPORTANT SONGS': [
@@ -44,12 +43,10 @@ const EXPECTED_TABLES = {
     'Notes',
   ],
   'MUSIC POLICY': ['Field', 'Your value', 'Example'],
-  'GUEST REQUESTS': ['Field', 'Your value', 'Example'],
   'SPEECHES': ['Field', 'Your value', 'Example'],
   'CAKE': ['Field', 'Your value', 'Example'],
   'GAMES': ['Game', 'Requested', 'Requested by', 'Languages', 'Existing questions', 'Requires photographer', 'Notes'],
   'KITCHEN': ['Course ID', 'Name', 'Time', 'Service Mode', 'Dietary notes'],
-  'CEREMONY SCRIPT': ['Field', 'Your value', 'Example'],
   'WITNESSES': [
     'Witness ID',
     'Name',

@@ -62,8 +62,14 @@ describe('issue #350 Google Doc to cartridge mapping', () => {
     expect(result.cartridge.musicPolicy.doNotPlay.length).toBe(1);
   });
 
-  it('drops embedded speeches and maps media, photo and todos', () => {
-    expect(result.cartridge).not.toHaveProperty('speeches');
+  it('creates speech records and maps media, photo and todos', () => {
+    expect(result.cartridge.speeches).toEqual([
+      {
+        id: 'bartek',
+        order: 1,
+        speaker: { name: 'Bartek', relationship: 'Best man' },
+      },
+    ]);
     expect(result.cartridge.mediaTeam).toHaveLength(2);
     expect(result.cartridge.mediaTeam.map((member) => member.id)).toEqual([
       'photo_marek',

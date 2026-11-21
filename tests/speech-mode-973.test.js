@@ -65,17 +65,25 @@ describe('issue #973 speech mode Doc contract', () => {
     expect(warnings.filter((warning) => warning.startsWith('SPEECHES'))).toEqual([]);
   });
 
-  it('keeps SPEECHES table rows documentation only', () => {
-    const result = parse(
-      template.replace(
-        '| speech_witness | 1 | Bartek | Best man |',
-        '| speech_witness | 1 |  | Best man |',
-      ),
-    );
+  it('creates speech records from the table regardless of the mode', () => {
+    const result = parse(withSpeechMode('OFF'));
 
-    expect(result.cartridge).not.toHaveProperty('speeches');
-    expect(result.cartridge.speechMode).toBe('COMPLEX');
+    expect(result.cartridge.speeches).toEqual([
+      {
+        id: 'bartek',
+        order: 1,
+        speaker: { name: 'Bartek', relationship: 'Best man' },
+      },
+    ]);
+    expect(result.cartridge.speeches[0]).not.toHaveProperty('script');
     expect(result.warnings.filter((warning) => warning.startsWith('SPEECHES'))).toEqual([]);
+  });
+
+  it('skips an incomplete speech row with a warning', () => {
+    const result = parse(template.replace('| 1 | Bartek | Best man |', '| 1 |  | Best man |'));
+
+    expect(result.cartridge.speeches ?? []).toEqual([]);
+    expect(result.warnings).toContain('SPEECHES row skipped: missing Speaker');
   });
 
   it('documents the source in the field map, template and conventions', () => {

@@ -33,11 +33,18 @@ describe('issue #643 speech metadata cleanup', () => {
     expect(read('src/lib/speeches.js')).not.toContain('resolveSpeeches');
   });
 
-  it('no longer maps embedded speech text into the cartridge', () => {
+  it('maps only identity metadata into speech records', () => {
     const result = googleDocTemplateToCartridge(
       parseGoogleDocTemplate(read('schema/google-doc-template.md')),
     );
-    expect(result.cartridge).not.toHaveProperty('speeches');
+    expect(result.cartridge.speeches).toEqual([
+      {
+        id: 'bartek',
+        order: 1,
+        speaker: { name: 'Bartek', relationship: 'Best man' },
+      },
+    ]);
+    expect(result.cartridge.speeches[0]).not.toHaveProperty('script');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.durationMin');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.mic');
     expect(read('src/components/SpeechesCard.jsx')).not.toContain('speech.cue');

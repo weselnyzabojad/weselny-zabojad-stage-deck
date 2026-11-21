@@ -84,13 +84,11 @@ describe('issue #1358 branded client Doc layout', () => {
     expect(html).toMatch(/<col style="width:30%">/);
   });
 
-  it('keeps long scripts as labelled text blocks, not table cells', () => {
-    expect(html).toContain('data-script-language="pl"');
-    expect(html).toContain('data-script-language="fr"');
-    expect(html).toContain('data-script-language="en"');
-    expect(html).toContain('>PL</div>');
-    expect(html).toContain('<pre style=');
-    expect(html).toContain('Drodzy goście, witamy was bardzo serdecznie');
+  it('does not render the removed ceremony scripts anywhere', () => {
+    expect(html).not.toContain('data-script-language');
+    expect(html).not.toContain('<pre style=');
+    expect(html).not.toContain('Drodzy goście, witamy was bardzo serdecznie');
+    expect(html).not.toContain('data-doc-section="CEREMONY SCRIPT"');
   });
 
   it('keeps every section and table header in parity with the markdown source', () => {

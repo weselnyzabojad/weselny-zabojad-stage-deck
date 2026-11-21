@@ -91,10 +91,15 @@ describe('issue #1357 table-based client Doc parser contract', () => {
     );
   });
 
-  it('keeps repeating tables and script code blocks on their current parser path', () => {
+  it('keeps repeating tables and removes the app-owned script sections', () => {
     expect(parsed.byMarker.TIMELINE.tables[0].rows).toHaveLength(19);
-    expect(parsed.byMarker['CEREMONY SCRIPT'].codeBlocks).toHaveLength(6);
-    expect(parsed.byMarker['CEREMONY SCRIPT'].subSections).toHaveLength(2);
+    expect(parsed.byMarker['CEREMONY SCRIPT']).toBeUndefined();
+    expect(parsed.byMarker['CEREMONY SUBSTEPS']).toBeUndefined();
+    expect(parsed.byMarker.SPEECHES.tables[1].rows[0]).toMatchObject({
+      Order: '1',
+      Speaker: 'Bartek',
+      Relationship: 'Best man',
+    });
     expect(parsed.byMarker.WITNESSES.tables[0].rows[0]).toMatchObject({
       'Witness ID': 'witness_bartek',
       Name: 'Bartek',
