@@ -23,7 +23,14 @@ export default function DayPlusOneStory({
 }) {
   const [mountedAt] = useState(() => new Date());
   const adminMode = surface === 'admin';
-  const model = buildDayPlusOneModel({ wedding, liveState, recap, requests, now: now ?? mountedAt });
+  const model = buildDayPlusOneModel({
+    wedding,
+    liveState,
+    recap,
+    requests,
+    now: now ?? mountedAt,
+    surface,
+  });
   const text = (value, suffix = '') => (value == null ? '—' : `${value}${suffix}`);
   return (
     <div className="flex flex-1 flex-col px-16" data-admin-mode={adminMode ? 'true' : 'false'}>
@@ -82,6 +89,37 @@ export default function DayPlusOneStory({
           Sto Lat · {model.cultural.stoLat ?? '—'} · Gorzko · {model.cultural.gorzko ?? '—'}
         </p>
       </div>
+
+      {adminMode && model.admin ? (
+        <div className="mt-5 space-y-2 rounded-3xl border border-white/10 bg-[#0B1220]/80 px-9 py-7">
+          <p className="font-mono text-[24px] uppercase tracking-[0.2em] text-[#93C5FD]">
+            Real timing
+          </p>
+          <p className="font-mono text-[24px] text-[#CBD5E1]">
+            Start {model.admin.firstActualStart ?? '—'} · last {model.admin.lastActualStart ?? '—'} ·
+            end {model.admin.actualEnd ?? '—'} · {model.admin.actualDurationMinutes ?? '—'} min
+          </p>
+          <p className="font-mono text-[24px] text-[#CBD5E1]">
+            Top request:{' '}
+            {model.admin.topRequest
+              ? [model.admin.topRequest.title, model.admin.topRequest.artist]
+                  .filter(Boolean)
+                  .join(' — ')
+              : '—'}
+          </p>
+          <p className="font-mono text-[22px] text-[#CBD5E1]">
+            Games:{' '}
+            {model.admin.games.length
+              ? model.admin.games
+                  .map(
+                    (game) =>
+                      `${game.name ?? '—'} ${game.compatibilityPct ?? '—'}% (${game.answered})`,
+                  )
+                  .join(' · ')
+              : '—'}
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-auto flex items-end justify-between border-t border-white/10 pt-8">
         <span className="font-heading text-[40px] font-semibold text-[#F8FAFC]">Stage Deck</span>

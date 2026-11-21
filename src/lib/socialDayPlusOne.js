@@ -66,14 +66,60 @@ function compatibility(recap, liveState) {
   };
 }
 
+function topRequestedSong(requests = []) {
+  const rows = Array.isArray(requests) ? requests : [];
+  const accepted = rows.filter((row) => row?.status === 'accepted');
+  const pool = accepted.length > 0 ? accepted : rows;
+  const counts = new Map();
+  for (const row of pool) {
+    const title = typeof row?.song === 'string' ? row.song.trim() : '';
+    const artist = typeof row?.artist === 'string' ? row.artist.trim() : '';
+    if (!title && !artist) continue;
+    const key = `${title}\u0000${artist}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  const [winner] = [...counts.entries()].sort((left, right) => {
+    const [leftTitle, leftArtist] = left[0].split('\u0000');
+    const [rightTitle, rightArtist] = right[0].split('\u0000');
+    return (
+      right[1] - left[1] ||
+      leftTitle.localeCompare(rightTitle) ||
+      leftArtist.localeCompare(rightArtist)
+    );
+  });
+  if (!winner) return null;
+  const [title, artist] = winner[0].split('\u0000');
+  return { title: title || null, artist: artist || null, count: winner[1] };
+}
+
+function recapGameSummary(recap) {
+  return (Array.isArray(recap?.games) ? recap.games : []).map((game) => {
+    const questions = Array.isArray(game?.questions)
+      ? game.questions
+      : Object.values(game?.questions ?? {});
+    const measured = questions.filter(
+      (question) => typeof question?.isCompatible === 'boolean',
+    );
+    const compatible = measured.filter((question) => question.isCompatible === true).length;
+    return {
+      name: game?.title ?? game?.gameId ?? null,
+      compatibilityPct:
+        measured.length > 0 ? Math.round((compatible / measured.length) * 100) : null,
+      answered: measured.length,
+    };
+  });
+}
+
 export function buildDayPlusOneModel({
   wedding = null,
   liveState = null,
   recap = null,
   requests = [],
   now = new Date(),
+  surface = 'mc',
 } = {}) {
   const cartridge = wedding?.cartridge ?? {};
+  const adminMode = surface === 'admin';
   const eventDateISO =
     resolveEventDateISO({
       dateISO: cartridge.extensions?.dateISO ?? wedding?.dateISO,
@@ -121,12 +167,24 @@ export function buildDayPlusOneModel({
   const accepted = requestRows.filter((row) => row?.status === 'accepted').length;
   const played = requestRows.filter((row) => Boolean(row?.played_at)).length;
   const games = compatibility(recap, liveState);
+  const admin = adminMode
+    ? {
+        firstActualStart: summary.firstActualStart ?? null,
+        lastActualStart: summary.lastActualStart ?? null,
+        actualEnd: summary.actualEnd ?? null,
+        actualDurationMinutes: number(summary.actualDurationMinutes),
+        topRequest: topRequestedSong(requestRows),
+        games: recapGameSummary(recap),
+      }
+    : null;
 
   return {
     unlocked: Boolean(
       eventComplete || (targetDateISO && today != null && today >= targetDateISO),
     ),
     eventComplete: Boolean(eventComplete),
+    adminMode,
+    admin,
     eventDateISO,
     targetDateISO,
     timeZone,
@@ -155,20 +213,52 @@ export function buildDayPlusOneModel({
   };
 }
 
-export function dayPlusOneCaptionLines(model, locale = 'fr') {
+export function dayPlusOneAdminCaptionLines(model, locale = 'fr') {
+  const admin = model.admin;
+  if (!model.adminMode || !admin) return [];
   const value = (input, suffix = '') => (input == null ? '—' : `${input}${suffix}`);
+  const top = admin.topRequest
+    ? [admin.topRequest.title, admin.topRequest.artist].filter(Boolean).join(' — ')
+    : '—';
+  const games = admin.games.length
+    ? admin.games
+        .map(
+          (game) =>
+            `${game.name ?? '—'} ${game.compatibilityPct == null ? '—' : `${game.compatibilityPct}%`} (${game.answered})`,
+        )
+        .join(' · ')
+    : '—';
   if (locale === 'fr') {
     return [
-      'Le mariage est terminé — voici ce que Stage Deck a réellement exécuté.',
-      `${value(model.completedSteps)}/${value(model.totalSteps)} étapes · ${value(model.onTimePct, '%')} à l’heure`,
-      `${value(model.biggestDelayMinutes, ' min')} de dérive max · ${value(model.scheduleChangeCount)} changements absorbés`,
-      `${value(model.requestsAccepted)} demandes acceptées · ${value(model.compatibilityPct, '%')} de compatibilité`,
+      `Début réel : ${value(admin.firstActualStart)} · dernier départ : ${value(admin.lastActualStart)} · fin : ${value(admin.actualEnd)}`,
+      `Durée réelle : ${value(admin.actualDurationMinutes, ' min')}`,
+      `Titre le plus demandé : ${top}`,
+      `Jeux : ${games}`,
     ];
   }
   return [
-    'Wesele zakończone — oto co Stage Deck naprawdę wykonał.',
-    `${value(model.completedSteps)}/${value(model.totalSteps)} kroków · ${value(model.onTimePct, '%')} na czas`,
-    `${value(model.biggestDelayMinutes, ' min')} maks. odchylenia · ${value(model.scheduleChangeCount)} zmian`,
-    `${value(model.requestsAccepted)} przyjętych próśb · ${value(model.compatibilityPct, '%')} zgodności`,
+    `Rzeczywisty start: ${value(admin.firstActualStart)} · ostatni start: ${value(admin.lastActualStart)} · koniec: ${value(admin.actualEnd)}`,
+    `Rzeczywisty czas: ${value(admin.actualDurationMinutes, ' min')}`,
+    `Najczęściej proszona piosenka: ${top}`,
+    `Gry: ${games}`,
   ];
+}
+
+export function dayPlusOneCaptionLines(model, locale = 'fr') {
+  const value = (input, suffix = '') => (input == null ? '—' : `${input}${suffix}`);
+  const lines =
+    locale === 'fr'
+      ? [
+          'Le mariage est terminé — voici ce que Stage Deck a réellement exécuté.',
+          `${value(model.completedSteps)}/${value(model.totalSteps)} étapes · ${value(model.onTimePct, '%')} à l’heure`,
+          `${value(model.biggestDelayMinutes, ' min')} de dérive max · ${value(model.scheduleChangeCount)} changements absorbés`,
+          `${value(model.requestsAccepted)} demandes acceptées · ${value(model.compatibilityPct, '%')} de compatibilité`,
+        ]
+      : [
+          'Wesele zakończone — oto co Stage Deck naprawdę wykonał.',
+          `${value(model.completedSteps)}/${value(model.totalSteps)} kroków · ${value(model.onTimePct, '%')} na czas`,
+          `${value(model.biggestDelayMinutes, ' min')} maks. odchylenia · ${value(model.scheduleChangeCount)} zmian`,
+          `${value(model.requestsAccepted)} przyjętych próśb · ${value(model.compatibilityPct, '%')} zgodności`,
+        ];
+  return [...lines, ...dayPlusOneAdminCaptionLines(model, locale)];
 }

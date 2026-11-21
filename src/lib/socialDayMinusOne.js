@@ -40,8 +40,52 @@ function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
-export function buildDayMinusOneModel({ wedding = null, liveState = null, now = new Date() } = {}) {
+export function buildDayMinusOneModel({
+  wedding = null,
+  liveState = null,
+  now = new Date(),
+  surface = 'mc',
+} = {}) {
   const cartridge = wedding?.cartridge ?? {};
+  const adminMode = surface === 'admin';
+  const couple = cartridge.coupleProfile ?? {};
+  const admin = adminMode
+    ? {
+        bride: {
+          firstName: couple.bride?.firstName ?? null,
+          nationalities: asArray(couple.bride?.nationalities),
+        },
+        groom: {
+          firstName: couple.groom?.firstName ?? null,
+          nationalities: asArray(couple.groom?.nationalities),
+        },
+        venueName: wedding?.venue_name ?? wedding?.venue ?? null,
+        venueCity: wedding?.venue_city ?? null,
+        guests: {
+          total: Number.isFinite(cartridge.demographics?.total)
+            ? cartridge.demographics.total
+            : null,
+          pl: Number.isFinite(cartridge.demographics?.pl) ? cartridge.demographics.pl : null,
+          fr: Number.isFinite(cartridge.demographics?.fr) ? cartridge.demographics.fr : null,
+          other: Number.isFinite(cartridge.demographics?.other)
+            ? cartridge.demographics.other
+            : null,
+          childrenExpected:
+            typeof cartridge.childrenExpected === 'boolean'
+              ? cartridge.childrenExpected
+              : typeof wedding?.childrenExpected === 'boolean'
+                ? wedding.childrenExpected
+                : null,
+        },
+        cultural: {
+          stoLat: cartridge.culturalRules?.sto_lat?.status ?? null,
+          gorzko: cartridge.culturalRules?.gorzko?.status ?? null,
+          breadSalt: cartridge.culturalRules?.bread_salt?.status ?? null,
+        },
+        servicePackage: cartridge.servicePackage ?? wedding?.servicePackage ?? null,
+        vipDjName: wedding?.vipDjName ?? null,
+      }
+    : null;
   const eventDateISO =
     resolveEventDateISO({
       dateISO: cartridge.extensions?.dateISO ?? wedding?.dateISO,
@@ -62,6 +106,8 @@ export function buildDayMinusOneModel({ wedding = null, liveState = null, now = 
   const roles = asArray(wedding?.roles);
   return {
     readyToPost: Boolean(targetDateISO && venueTodayISO(timeZone, now) === targetDateISO),
+    adminMode,
+    admin,
     eventDateISO,
     targetDateISO,
     timeZone,
@@ -82,6 +128,48 @@ export function buildDayMinusOneModel({ wedding = null, liveState = null, now = 
   };
 }
 
+export function dayMinusOneAdminCaptionLines(model, locale = 'fr') {
+  const admin = model.admin;
+  if (!model.adminMode || !admin) return [];
+  const names = [admin.bride.firstName, admin.groom.firstName].filter(Boolean).join(' & ');
+  const flags = [
+    ...admin.bride.nationalities,
+    ...admin.groom.nationalities,
+  ].filter(Boolean).join(' ');
+  const guests = admin.guests;
+  const guestParts = [
+    guests.total != null ? `${guests.total}` : null,
+    guests.pl != null ? `PL ${guests.pl}` : null,
+    guests.fr != null ? `FR ${guests.fr}` : null,
+    guests.other != null ? `+${guests.other}` : null,
+  ].filter(Boolean);
+  const venue = [admin.venueName, admin.venueCity].filter(Boolean).join(', ');
+  const cultural = [
+    admin.cultural.stoLat ? `Sto Lat ${admin.cultural.stoLat}` : null,
+    admin.cultural.gorzko ? `Gorzko ${admin.cultural.gorzko}` : null,
+    admin.cultural.breadSalt ? `Bread & Salt ${admin.cultural.breadSalt}` : null,
+  ].filter(Boolean);
+  const packageLabel = admin.servicePackage
+    ? admin.servicePackage.replaceAll('_', ' ')
+    : null;
+  if (locale === 'fr') {
+    return [
+      `Couple : ${names || '—'}${flags ? ` (${flags})` : ''}`,
+      `Lieu : ${venue || '—'}`,
+      `Invités : ${guestParts.join(' / ') || '—'}${guests.childrenExpected != null ? ` · enfants : ${guests.childrenExpected ? 'oui' : 'non'}` : ''}`,
+      cultural.length > 0 ? `Rituels : ${cultural.join(' · ')}` : 'Rituels : —',
+      `Formule : ${packageLabel || '—'}${admin.vipDjName ? ` · ${admin.vipDjName}` : ''}`,
+    ];
+  }
+  return [
+    `Para : ${names || '—'}${flags ? ` (${flags})` : ''}`,
+    `Miejsce : ${venue || '—'}`,
+    `Goście : ${guestParts.join(' / ') || '—'}${guests.childrenExpected != null ? ` · dzieci : ${guests.childrenExpected ? 'tak' : 'nie'}` : ''}`,
+    cultural.length > 0 ? `Rytuały : ${cultural.join(' · ')}` : 'Rytuały : —',
+    `Pakiet : ${packageLabel || '—'}${admin.vipDjName ? ` · ${admin.vipDjName}` : ''}`,
+  ];
+}
+
 export function dayMinusOneCaptionLines(model, locale = 'fr') {
   const country = model.country || (locale === 'fr' ? 'Destination' : 'Kierunek');
   const languages = model.languages.length > 0 ? model.languages.join(' / ') : '—';
@@ -93,18 +181,19 @@ export function dayMinusOneCaptionLines(model, locale = 'fr') {
       : model.policy.armed
         ? 'Zasady miejsca aktywne'
         : 'Zasady miejsca do potwierdzenia';
-  if (locale === 'fr') {
-    return [
-      `J−1 avant le mariage — ${country}`,
-      `${model.stepCount} étapes verrouillées · ${model.roleCount} rôles synchronisés`,
-      `Langues : ${languages}`,
-      policy,
-    ];
-  }
-  return [
-    `D−1 przed weselem — ${country}`,
-    `${model.stepCount} kroków zablokowanych · ${model.roleCount} ról zsynchronizowanych`,
-    `Języki: ${languages}`,
-    policy,
-  ];
+  const lines =
+    locale === 'fr'
+      ? [
+          `J−1 avant le mariage — ${country}`,
+          `${model.stepCount} étapes verrouillées · ${model.roleCount} rôles synchronisés`,
+          `Langues : ${languages}`,
+          policy,
+        ]
+      : [
+          `D−1 przed weselem — ${country}`,
+          `${model.stepCount} kroków zablokowanych · ${model.roleCount} ról zsynchronizowanych`,
+          `Języki: ${languages}`,
+          policy,
+        ];
+  return [...lines, ...dayMinusOneAdminCaptionLines(model, locale)];
 }

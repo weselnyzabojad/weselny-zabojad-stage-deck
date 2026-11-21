@@ -84,14 +84,14 @@ export default function SocialExportStudio({
   const dateISO = wedding?.dateISO ?? wedding?.date ?? '';
   const fallbackCaptions = useMemo(() => {
     if (template?.id === 'dayMinusOne') {
-      const model = buildDayMinusOneModel({ wedding, liveState });
+      const model = buildDayMinusOneModel({ wedding, liveState, surface });
       return {
         fr: dayMinusOneCaptionLines(model, 'fr'),
         pl: dayMinusOneCaptionLines(model, 'pl'),
       };
     }
     if (template?.id === 'dayPlusOne') {
-      const model = buildDayPlusOneModel({ wedding, liveState, recap });
+      const model = buildDayPlusOneModel({ wedding, liveState, recap, surface });
       return {
         fr: dayPlusOneCaptionLines(model, 'fr'),
         pl: dayPlusOneCaptionLines(model, 'pl'),
@@ -105,7 +105,7 @@ export default function SocialExportStudio({
       };
     }
     return { fr: [], pl: [] };
-  }, [template?.id, wedding, liveState, recap, seasonData]);
+  }, [template?.id, wedding, liveState, recap, seasonData, surface]);
   const captions = captionLinesByTemplate[template?.id] ?? fallbackCaptions;
 
   const captionFor = (locale) =>

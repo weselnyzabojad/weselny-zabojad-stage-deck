@@ -12,10 +12,20 @@ function Stat({ label, value }) {
   );
 }
 
+function Flags({ codes }) {
+  return (Array.isArray(codes) ? codes : []).map((code) => (
+    <span
+      key={code}
+      className={`fi fi-${String(code).toLowerCase()}`}
+      title={code}
+    />
+  ));
+}
+
 export default function DayMinusOneStory({ wedding = null, liveState = null, now = null, surface = 'mc' }) {
   const [mountedAt] = useState(() => new Date());
   const adminMode = surface === 'admin';
-  const model = buildDayMinusOneModel({ wedding, liveState, now: now ?? mountedAt });
+  const model = buildDayMinusOneModel({ wedding, liveState, now: now ?? mountedAt, surface });
   const languages = model.languages.length > 0 ? model.languages.join(' · ') : '—';
   return (
     <div className="flex flex-1 flex-col px-16" data-admin-mode={adminMode ? 'true' : 'false'}>
@@ -70,6 +80,40 @@ export default function DayMinusOneStory({ wedding = null, liveState = null, now
           </div>
         </div>
       </div>
+
+      {adminMode && model.admin ? (
+        <div className="mt-5 space-y-3 rounded-3xl border border-white/10 bg-[#0B1220]/80 px-9 py-7">
+          <p className="font-mono text-[24px] uppercase tracking-[0.2em] text-[#93C5FD]">
+            Couple & venue
+          </p>
+          <div className="flex items-center gap-4 font-heading text-[44px] font-semibold text-[#F8FAFC]">
+            <span>{model.admin.bride.firstName || '—'}</span>
+            <Flags codes={model.admin.bride.nationalities} />
+            <span className="text-[#93C5FD]">&</span>
+            <span>{model.admin.groom.firstName || '—'}</span>
+            <Flags codes={model.admin.groom.nationalities} />
+          </div>
+          <p className="font-mono text-[26px] text-[#CBD5E1]">
+            {[model.admin.venueName, model.admin.venueCity].filter(Boolean).join(', ') || '—'}
+          </p>
+          <p className="font-mono text-[24px] text-[#CBD5E1]">
+            Guests: {model.admin.guests.total ?? '—'} · PL {model.admin.guests.pl ?? '—'} · FR{' '}
+            {model.admin.guests.fr ?? '—'} · +{model.admin.guests.other ?? '—'}
+            {model.admin.guests.childrenExpected != null
+              ? ` · Children: ${model.admin.guests.childrenExpected ? 'yes' : 'no'}`
+              : ''}
+          </p>
+          <p className="font-mono text-[24px] text-[#CBD5E1]">
+            Sto Lat {model.admin.cultural.stoLat ?? '—'} · Gorzko{' '}
+            {model.admin.cultural.gorzko ?? '—'} · Bread & Salt{' '}
+            {model.admin.cultural.breadSalt ?? '—'}
+          </p>
+          <p className="font-mono text-[24px] text-[#CBD5E1]">
+            Package {model.admin.servicePackage?.replaceAll('_', ' ') ?? '—'}
+            {model.admin.vipDjName ? ` · ${model.admin.vipDjName}` : ''}
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-auto flex items-end justify-between border-t border-white/10 pt-8">
         <span className="font-heading text-[40px] font-semibold text-[#F8FAFC]">Stage Deck</span>
