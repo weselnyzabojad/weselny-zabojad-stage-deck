@@ -18,6 +18,7 @@ import TimelineFocusStack from './TimelineFocusStack';
 import SkipLink from './SkipLink';
 import SpeechSummaryChip from './SpeechSummaryChip';
 import AnchorApprovalPanel from './AnchorApprovalPanel';
+import VenueCulturalRules from './VenueCulturalRules';
 import { decideAnchorApproval } from '../lib/anchorApprovals.js';
 import { useI18n } from '../i18n/useI18n';
 import { useReadReceipt } from '../hooks/useReadReceipt';
@@ -758,7 +759,7 @@ export default function VenueManagerView({
 
       <SecondaryControlBar
         left={<SyncStatusBadge status={syncStatus} error={syncError} remoteUpdatedAt={remoteUpdatedAt} outbox={outbox} />}
-        center={null}
+        center={<VenueCulturalRules rules={wedding?.culturalRules} />}
         right={(
           <>
             <UtilityControlGroup>
