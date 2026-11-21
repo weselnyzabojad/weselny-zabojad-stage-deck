@@ -365,6 +365,8 @@ const fr = {
   'social.copied': 'Légende copiée.',
   'social.copyError': 'Impossible de copier la légende.',
   'social.close': 'Fermer',
+  'social.loading': 'Chargement des donnees du mariage...',
+  'social.retry': 'Reessayer',
   'social.placeholder': 'Le contenu du modèle est en préparation.',
   'social.privacy': 'Les exports n’incluent jamais de noms de famille, contacts, adresses ou notes privées.',
   'social.sizeHint': 'PNG réel 1080×1920. Gardez le texte critique dans les marges sûres.',

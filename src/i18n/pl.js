@@ -363,6 +363,8 @@ const pl = {
   'social.copied': 'Opis skopiowany.',
   'social.copyError': 'Nie udało się skopiować opisu.',
   'social.close': 'Zamknij',
+  'social.loading': 'Ladowanie danych wesela...',
+  'social.retry': 'Ponow',
   'social.placeholder': 'Treść szablonu jest przygotowywana.',
   'social.privacy': 'Eksporty nigdy nie zawierają nazwisk, kontaktów, adresów ani prywatnych notatek.',
   'social.sizeHint': 'Prawdziwy PNG 1080×1920. Krytyczny tekst trzymaj w strefach bezpiecznych.',

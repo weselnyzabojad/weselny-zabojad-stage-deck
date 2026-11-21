@@ -56,6 +56,9 @@ export default function SocialExportStudio({
   onSeasonYear = null,
   seasonLoading = false,
   seasonError = '',
+  dataLoading = false,
+  dataError = '',
+  onRetry = null,
   onClose = null,
 }) {
   const { t } = useI18n();
@@ -157,6 +160,26 @@ export default function SocialExportStudio({
           </button>
         ) : null}
       </div>
+
+      {dataLoading ? (
+        <p role="status" className="mt-2 text-[10px] text-muted">
+          {t('social.loading')}
+        </p>
+      ) : null}
+      {dataError ? (
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-alert-soft">
+          <span role="alert">{dataError}</span>
+          {onRetry ? (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="rounded border border-line bg-raised px-2 py-0.5 font-semibold text-ink"
+            >
+              {t('social.retry')}
+            </button>
+          ) : null}
+        </div>
+      ) : null}
 
       <div className="mt-3 flex flex-wrap gap-1.5" role="tablist" aria-label={t('social.templates')}>
         {available.map((entry) => {
