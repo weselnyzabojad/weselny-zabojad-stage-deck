@@ -12333,3 +12333,57 @@ rules.
 **Tracking.** [#1368](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1368),
 [#1369](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1369),
 [#1370](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1370).
+
+### 17.151 Rename client Doc to “Wedding scenario” (decision, 2026-11-21)
+
+The customer-facing wedding document is renamed from “Wedding harmonogram” to
+“Wedding scenario” in the markdown template, generated HTML, example preview
+and generated Drive filename. The section/table contract, parser, schema and
+field map are unchanged. The almost-empty first PDF page is a development-only
+print artifact: an injected `break-after: page` after the cover forced page 1 to
+contain only the cover. That print CSS is not part of the generated Doc and does
+not carry into Google Docs.
+
+**Release target.** First release. Label `release-1.1`; no milestone.
+
+**Google Doc contract.**
+
+- Template heading: `# Wedding scenario - Google Doc template (v1.1)`.
+- Generated browser title and cover eyebrow use “Wedding scenario”.
+- Generated Drive filename: `Wedding scenario - <bride> & <groom> (<weddingId>)`.
+- Internal `data-cover="wedding-harmonogram"` stays unchanged.
+- No `## SECTION` marker, table header, parser field, schema field or field-map
+  entry changes.
+- No PDF export feature is added; PDF generation remains a development-only
+  artifact.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Customer Google Doc | “Wedding scenario” title and cover copy |
+| Generated HTML / example preview | Same title, browser title and cover eyebrow |
+| Admin Drive creation | Filename starts with “Wedding scenario” |
+| Stage role views | Unchanged |
+| Admin Studio visuals / season stories / landing | Unchanged |
+| Parser / schema / field map | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | `release-1.1`; no milestone |
+| Scope | Visible copy plus generated Drive filename |
+| Internal marker | Keep `data-cover="wedding-harmonogram"` |
+| PDF first page | Development-only print CSS; no production change |
+| PDF export feature | Not planned |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1371](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1371) | Rename visible copy, example preview and generated Drive filename | - |
+
+**Open questions.** None.
+
+**Tracking.** [#1371](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1371).
