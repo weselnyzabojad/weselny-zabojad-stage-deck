@@ -11549,6 +11549,9 @@ blocks publish or live use.
 
 ### 17.143 Client-facing Google Doc template generation and 3-column timeline (decision, 2026-11-21)
 
+> **Updated on 2026-11-21:** the generated HTML is restructured into clear
+> fill-in tables with branded layout in 17.147 (#1356-#1358).
+
 The customer template becomes a generated Google Doc created through the Drive
 HTML import API in the wedding folder, and the timeline becomes a 3-column
 customer table. The couple edits hours, row order and row presence only; the
@@ -12003,3 +12006,92 @@ removed; the tab becomes the only admin entry point.
 **Tracking.** [#1352](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1352),
 [#1351](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1351),
 [#1338](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1338).
+
+### 17.147 Client Doc fill-in tables, parser contract and branded layout (decision, 2026-11-21)
+
+The generated customer Google Doc becomes a structured fill-in document rather
+than a wall of prose and `Field: value` lines. Every fillable section uses a
+clear table, every section carries a short instruction, and the HTML uses the
+landing page's warm editorial identity. The parser changes with the contract;
+old Docs are rejected with a migration procedure.
+
+**Features.**
+
+| # | Feature | Outcome |
+| --- | --- | --- |
+| F1 | Template tables | All fillable sections use tables or labelled text blocks; clear directives |
+| F2 | Table parser | Reads `Field | Your value | Example`; rejects the old key-value format |
+| F3 | Branded layout | Cover, callouts, tinted table headers and landing-inspired palette |
+
+**Release target.** Every feature is required for the **first release**. Label
+`release-1.1`; no milestone.
+
+**Google Doc contract.**
+
+- The document language stays English.
+- Fixed fields use exactly `Field | Your value | Example`. The parser reads
+  `Field` and `Your value`; `Example` is reference-only and never sets a value.
+- Repeating sections keep their business columns; each has a short “replace
+  the example rows” directive. No merged cells, nested tables or second header
+  row.
+- Long speech and ceremony scripts remain fenced text blocks with a language
+  label and a short instruction; they are not forced into narrow table cells.
+- No `## SECTION` marker or cartridge field is renamed, reordered or removed.
+- The new table format is the only accepted format. An old `Field: value` Doc
+  fails with an error naming the section and pointing to the migration
+  procedure. There is no silent fallback.
+- `docs/google-doc-template-conventions.md` documents the table contract, the
+  example column and the old-format rejection.
+
+**Layout contract.**
+
+- Landing-inspired palette: `#FBF9F5` warm page, white cards, `#C5A059` gold,
+  `#1A1A1A` ink, restrained French-blue/red details only where already present.
+- Cover header: `Bride & Groom`, venue name and venue address with clear
+  hierarchy.
+- Section intro block, then the table; consistent “How to fill” treatment.
+- Tinted table header rows, visible borders, padding, readable column widths and
+  generous spacing.
+- Montserrat/Lora are the design reference; Google Docs-safe font fallbacks are
+  used when Drive drops the family.
+- Inline or embedded styles only. No external font, script, image or network
+  asset in the generated Doc.
+- `src/lib/clientTemplate.js` owns the generated HTML;
+  `supabase/functions/_shared/clientTemplateSource.js` and the example preview
+  stay in parity with `schema/google-doc-template.md`.
+
+**View scope.**
+
+| Surface | Behaviour |
+| --- | --- |
+| Couple Google Doc | Fill-in tables, clear directives, branded cover and layout |
+| Admin preview / generated example | Same structure and palette |
+| Admin Studio / stage role views / season stories | Unchanged |
+| Public landing / WordPress | Unchanged |
+
+**Decisions.**
+
+| Topic | Decision |
+| --- | --- |
+| Release | First release; label `release-1.1`; no milestone |
+| Scope | All sections; scripts remain text blocks |
+| Field table | `Field | Your value | Example` |
+| Parser | New format only; old Docs rejected with migration guidance |
+| Language | English |
+| Layout | Landing-inspired warm editorial palette and branded tables |
+| Assets | No external fonts, scripts or images |
+| Issue handling | New follow-up issues referencing closed #1329 |
+
+**Task split.**
+
+| Order | Issue | Scope | Depends on |
+| --- | --- | --- | --- |
+| 1 | [#1356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1356) | Rewrite `schema/google-doc-template.md` into fill-in tables and directives | - |
+| 2 | [#1357](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1357) | Table parser, old-format rejection, fixtures and migration docs | #1356 |
+| 3 | [#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358) | Branded HTML layout, table styling, cover and example preview | #1356 |
+
+**Open questions.** None.
+
+**Tracking.** [#1356](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1356),
+[#1357](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1357),
+[#1358](https://github.com/weselnyzabojad/weselny-zabojad-stage-deck/issues/1358).
