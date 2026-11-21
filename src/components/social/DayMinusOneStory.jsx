@@ -12,12 +12,13 @@ function Stat({ label, value }) {
   );
 }
 
-export default function DayMinusOneStory({ wedding = null, liveState = null, now = null }) {
+export default function DayMinusOneStory({ wedding = null, liveState = null, now = null, surface = 'mc' }) {
   const [mountedAt] = useState(() => new Date());
+  const adminMode = surface === 'admin';
   const model = buildDayMinusOneModel({ wedding, liveState, now: now ?? mountedAt });
   const languages = model.languages.length > 0 ? model.languages.join(' · ') : '—';
   return (
-    <div className="flex flex-1 flex-col px-16">
+    <div className="flex flex-1 flex-col px-16" data-admin-mode={adminMode ? 'true' : 'false'}>
       <div className="flex items-center justify-between">
         <span className="font-mono text-[24px] uppercase tracking-[0.32em] text-[#93C5FD]">
           Stage Deck · J−1

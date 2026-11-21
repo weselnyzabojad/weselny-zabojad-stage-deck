@@ -19,12 +19,14 @@ export default function DayPlusOneStory({
   recap = null,
   requests = [],
   now = null,
+  surface = 'mc',
 }) {
   const [mountedAt] = useState(() => new Date());
+  const adminMode = surface === 'admin';
   const model = buildDayPlusOneModel({ wedding, liveState, recap, requests, now: now ?? mountedAt });
   const text = (value, suffix = '') => (value == null ? '—' : `${value}${suffix}`);
   return (
-    <div className="flex flex-1 flex-col px-16">
+    <div className="flex flex-1 flex-col px-16" data-admin-mode={adminMode ? 'true' : 'false'}>
       <div className="flex items-center justify-between">
         <span className="font-mono text-[24px] uppercase tracking-[0.32em] text-[#93C5FD]">
           Stage Deck · J+1
