@@ -57,6 +57,24 @@ export function resolveSeasonYear({ wedding, recap, now = new Date() } = {}) {
   );
 }
 
+function seasonMonthFromDate(value) {
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text(value) ?? '');
+  if (iso) return Number(iso[2]);
+  const dotted = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(text(value) ?? '');
+  if (dotted) return Number(dotted[2]);
+  return null;
+}
+
+export function resolveEventMonth({ wedding, recap, now = new Date() } = {}) {
+  return (
+    seasonMonthFromDate(wedding?.cartridge?.extensions?.dateISO) ??
+    seasonMonthFromDate(recap?.wedding?.dateISO) ??
+    seasonMonthFromDate(wedding?.date) ??
+    seasonMonthFromDate(recap?.wedding?.date) ??
+    now.getUTCMonth() + 1
+  );
+}
+
 export function isStoLatEnabled(status) {
   const clean = text(status)?.toUpperCase().replace(/[\s-]+/g, '_');
   return clean === 'YES' || clean === 'ON_REQUEST';
@@ -160,6 +178,7 @@ export async function buildSeasonFact({
   return {
     wedding_key: await sha256Hex(weddingId),
     season_year: resolveSeasonYear({ wedding, recap, now }),
+    event_month: resolveEventMonth({ wedding, recap, now }),
     source_recap_id: typeof recapId === 'string' ? recapId : null,
     ...guestsFromCartridge(cartridge),
     country_code: normalizeCountry(wedding?.venue_country),
