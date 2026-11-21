@@ -24,6 +24,18 @@ export const SOCIAL_TEMPLATES = Object.freeze([
     supportsBackground: true,
   },
   {
+    id: 'month',
+    surfaces: ['admin'],
+    accent: 'gold',
+    supportsBackground: false,
+  },
+  {
+    id: 'beforeSeason',
+    surfaces: ['admin'],
+    accent: 'gold',
+    supportsBackground: false,
+  },
+  {
     id: 'season',
     surfaces: ['admin'],
     accent: 'gold',
