@@ -246,7 +246,7 @@ export default function SocialExportStudio({
               label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
             >
               {Template ? (
-                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} />
+                <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} />
               ) : (
                 <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
               )}
@@ -320,7 +320,7 @@ export default function SocialExportStudio({
           label={t(TEMPLATE_LABEL_KEYS[template?.id] ?? 'social.template.dayMinusOne')}
         >
           {Template ? (
-            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} />
+            <Template wedding={wedding} liveState={liveState} recap={recap} requests={requests} seasonData={seasonData} seasonYear={seasonYear} mode={mode} surface={surface} />
           ) : (
             <TemplatePlaceholder template={template ?? { id: 'dayMinusOne' }} t={t} />
           )}
