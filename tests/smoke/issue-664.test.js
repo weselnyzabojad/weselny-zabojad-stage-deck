@@ -11,19 +11,20 @@ const parse = (source = template) => googleDocTemplateToCartridge(parseGoogleDoc
 describe('issue #664 group-photos Google Doc source flags', () => {
   it('keeps the required location and group labels in the template', () => {
     expect(template).toContain('| Group photos location | OUTDOOR |');
-    expect(template).toContain("| bride_family | Bride's family |");
-    expect(template).toContain("| groom_family | Groom's family |");
-    expect(template).toContain('| friends | Friends |');
+    expect(template).toContain("| Bride's family | Immediate family |");
+    expect(template).toContain("| Groom's family | Immediate family |");
+    expect(template).toContain('| Friends |  |');
+    expect(template).not.toContain('| Group ID |');
   });
 
-  it('maps the required location and labels', async () => {
+  it('maps the required location and labels with generated IDs', async () => {
     const { cartridge, warnings } = parse();
 
     expect(cartridge.photoPlan.groupPhotos).toMatchObject({
       location: 'OUTDOOR',
       groups: [
-        { id: 'bride_family', label: "Bride's family" },
-        { id: 'groom_family', label: "Groom's family" },
+        { id: 'bride_s_family', label: "Bride's family", note: 'Immediate family' },
+        { id: 'groom_s_family', label: "Groom's family", note: 'Immediate family' },
         { id: 'friends', label: 'Friends' },
       ],
     });
@@ -33,12 +34,12 @@ describe('issue #664 group-photos Google Doc source flags', () => {
 
   it('warns and skips a group row missing its label', () => {
     const result = parse(
-      template.replace("| bride_family | Bride's family |", '| bride_family |  |'),
+      template.replace("| Bride's family | Immediate family |", '|  | Immediate family |'),
     );
 
     expect(result.warnings).toContain('GROUP PHOTOS: row skipped: missing Label');
     expect(result.cartridge.photoPlan.groupPhotos.groups.map((group) => group.id)).toEqual([
-      'groom_family',
+      'groom_s_family',
       'friends',
     ]);
   });

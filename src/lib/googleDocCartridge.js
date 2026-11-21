@@ -97,6 +97,18 @@ function slug(value, fallback = 'item') {
   );
 }
 
+function uniqueId(base, seen = new Set()) {
+  if (!seen.has(base)) {
+    seen.add(base);
+    return base;
+  }
+  let index = 2;
+  while (seen.has(`${base}_${index}`)) index += 1;
+  const id = `${base}_${index}`;
+  seen.add(id);
+  return id;
+}
+
 const SERVICE_PACKAGES = new Set(['HOST_ONLY', 'DJ_MC', 'HOST_AND_DJ_VIP']);
 
 function normalizeServicePackage(value) {
@@ -673,14 +685,19 @@ function mapMusicians(source, warnings = []) {
 }
 
 function mapPhotoPlan(source, warnings = []) {
-  const groups = subTable(source, 'Group Photos', ['Group ID', 'Label']).reduce((items, row) => {
-    const id = text(row['Group ID']);
+  const seenGroupIds = new Set();
+  const groups = subTable(source, 'Group Photos', ['Label', 'Note']).reduce((items, row) => {
     const label = text(row.Label);
-    if (!id || !label) {
-      warnings.push(`GROUP PHOTOS: row skipped: missing ${!id ? 'Group ID' : 'Label'}`);
+    if (!label) {
+      warnings.push('GROUP PHOTOS: row skipped: missing Label');
       return items;
     }
-    items.push({ id: slug(id), label });
+    const note = text(row.Note);
+    items.push({
+      id: uniqueId(slug(label), seenGroupIds),
+      label,
+      ...(note ? { note } : {}),
+    });
     return items;
   }, []);
   const location = text(kv(source, 'Group photos location'));
@@ -1076,7 +1093,6 @@ export function googleDocTemplateToCartridge(
 
   const subTaskRows = table(section(parsed, 'SUBTASKS'), [
     'Step name',
-    'Subtask ID',
     'Label',
     'Done',
   ]);
@@ -1089,8 +1105,13 @@ export function googleDocTemplateToCartridge(
       rows,
       (step, row) => {
         step.subTasks = step.subTasks ?? [];
+        step.subTaskIds = step.subTaskIds ?? {};
         const label = text(row.Label);
-        if (label) step.subTasks.push(label);
+        if (label) {
+          step.subTasks.push(label);
+          const seen = new Set(Object.values(step.subTaskIds));
+          step.subTaskIds[label] = uniqueId(`${step.id}_${slug(label)}`, seen);
+        }
       },
       { section: 'SUBTASKS', warnings },
     );
@@ -1248,8 +1269,8 @@ export function googleDocTemplateToCartridge(
     errors.push(...calculated.errors.map((message) => `TIMELINE: ${message}`));
   }
 
+  const mediaSeen = new Set();
   const mediaTeam = table(section(parsed, 'MEDIA TEAM'), [
-    'Team ID',
     'Role',
     'Name',
     'Phone',
@@ -1257,18 +1278,22 @@ export function googleDocTemplateToCartridge(
     'End',
     'Deliverables',
     'Notes',
-  ]).map((row) => ({
-    id: slug(row['Team ID']),
-    role: ['PHOTO', 'VIDEO', 'DRONE'].includes(text(row.Role)?.toUpperCase())
+  ]).map((row) => {
+    const role = ['PHOTO', 'VIDEO', 'DRONE'].includes(text(row.Role)?.toUpperCase())
       ? text(row.Role).toUpperCase()
-      : 'PHOTO',
-    name: text(row.Name) ?? row['Team ID'],
-    phone: text(row.Phone),
-    startTime: clock(row.Start),
-    endTime: clock(row.End),
-    deliverables: list(row.Deliverables),
-    notes: text(row.Notes),
-  }));
+      : 'PHOTO';
+    const name = text(row.Name) ?? 'Media team';
+    return {
+      id: uniqueId(`${role.toLowerCase()}_${slug(name)}`, mediaSeen),
+      role,
+      name,
+      phone: text(row.Phone),
+      startTime: clock(row.Start),
+      endTime: clock(row.End),
+      deliverables: list(row.Deliverables),
+      notes: text(row.Notes),
+    };
+  });
   const photographerAvailable = mediaTeam.some((member) => member.role === 'PHOTO');
   const oczepiny = mapOczepiny(section(parsed, 'OCZEPINY'), warnings);
   if (oczepiny) {

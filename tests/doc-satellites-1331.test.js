@@ -18,7 +18,7 @@ describe('issue #1331 re-key Doc satellites to Step name', () => {
   it('uses Step name headers for DJ cues, notes and subtasks', () => {
     expect(template).toContain('| Step name | Playlist | Track | Cutoff | Note |');
     expect(template).toContain('| Step name | Notes |');
-    expect(template).toContain('| Step name | Subtask ID | Label | Done |');
+    expect(template).toContain('| Step name | Label | Done |');
     const satellites = template.slice(
       template.indexOf('## DJ CUES'),
       template.indexOf('## VENUE LOGISTICS'),
